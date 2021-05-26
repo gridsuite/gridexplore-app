@@ -27,3 +27,13 @@ export function selectComputedLanguage(computedLanguage) {
         computedLanguage: computedLanguage,
     };
 }
+
+export const CURRENT_CHILDREN = 'CURRENT_CHILDREN';
+
+export function setCurrentChildren(currentChildren) {
+    console.log('Actions currentChildren', currentChildren);
+    return {
+        type: CURRENT_CHILDREN,
+        currentChildren: currentChildren,
+    };
+}

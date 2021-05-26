@@ -31,13 +31,12 @@ import {
 
 import { useRouteMatch } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 
 import {
     connectNotificationsWsUpdateConfig,
     fetchConfigParameter,
     fetchConfigParameters,
+    fetchRootFolders,
 } from '../utils/rest-api';
 import {
     APP_NAME,
@@ -49,6 +48,9 @@ import { getComputedLanguage } from '../utils/language';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import AppTopBar from './app-top-bar';
+import Grid from '@material-ui/core/Grid';
+import CustomTreeView from './custom-tree-view';
+import DirectoryContent from './directory-content';
 
 const noUserManager = { instance: null, error: null };
 
@@ -64,6 +66,7 @@ const App = () => {
     );
 
     const [userManager, setUserManager] = useState(noUserManager);
+    const [rootDirectories, setRootDirectories] = useState([]);
 
     const history = useHistory();
 
@@ -147,7 +150,7 @@ const App = () => {
                             if (
                                 !sessionStorage.getItem(oidcHackReloaded) &&
                                 error.message ===
-                                    'authority mismatch on settings vs. signin state'
+                                'authority mismatch on settings vs. signin state'
                             ) {
                                 sessionStorage.setItem(oidcHackReloaded, true);
                                 console.log(
@@ -208,21 +211,41 @@ const App = () => {
         connectNotificationsUpdateConfig,
     ]);
 
+    useEffect(() => {
+        if (user != null) {
+            fetchRootFolders().then((data) => {
+                setRootDirectories(data);
+                console.log('App Component : data', data);
+            });
+        }
+    }, [user]);
+
     return (
         <>
             <AppTopBar user={user} userManager={userManager} />
             {user !== null ? (
                 <Switch>
                     <Route exact path="/">
-                        <Box mt={20}>
-                            <Typography
-                                variant="h3"
-                                color="textPrimary"
-                                align="center"
+                        <Grid container style={{ height: '100%' }}>
+                            <Grid
+                                item
+                                xs={2}
+                                style={{
+                                    border: 'solid 1px',
+                                }}
                             >
-                                Connected
-                            </Typography>
-                        </Box>
+                                {rootDirectories.map((rootDirectory) => (
+                                    <CustomTreeView
+                                        rootDirectory={rootDirectory}
+                                        key={rootDirectory.elementUuid}
+                                    />
+                                ))}
+                                <hr />
+                            </Grid>
+                            <Grid item xs={10}>
+                                <DirectoryContent />
+                            </Grid>
+                        </Grid>
                     </Route>
                     <Route exact path="/sign-in-callback">
                         <Redirect to={getPreLoginPath() || '/'} />

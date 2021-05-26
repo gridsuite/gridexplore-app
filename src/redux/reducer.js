@@ -19,6 +19,7 @@ import {
     SELECT_COMPUTED_LANGUAGE,
     SELECT_THEME,
     SELECT_LANGUAGE,
+    CURRENT_CHILDREN,
 } from './actions';
 
 import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
@@ -31,6 +32,7 @@ const paramsInitialState = {
 
 const initialState = {
     computedLanguage: getLocalStorageComputedLanguage(),
+    currentChildren: null,
     user: null,
     signInCallbackError: null,
     ...paramsInitialState,
@@ -40,6 +42,11 @@ export const reducer = createReducer(initialState, {
     [SELECT_THEME]: (state, action) => {
         state.theme = action.theme;
         saveLocalStorageTheme(state.theme);
+    },
+
+    [SELECT_LANGUAGE]: (state, action) => {
+        state.language = action.language;
+        saveLocalStorageLanguage(state.language);
     },
 
     [USER]: (state, action) => {
@@ -54,8 +61,7 @@ export const reducer = createReducer(initialState, {
         state.computedLanguage = action.computedLanguage;
     },
 
-    [SELECT_LANGUAGE]: (state, action) => {
-        state.language = action.language;
-        saveLocalStorageLanguage(state.language);
+    [CURRENT_CHILDREN]: (state, action) => {
+        state.currentChildren = action.currentChildren;
     },
 });

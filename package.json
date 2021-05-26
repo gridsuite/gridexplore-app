@@ -22,7 +22,9 @@
         "react-window": "^1.8.5",
         "reconnecting-websocket": "^4.4.0",
         "redux": "^4.0.5",
-        "typeface-roboto": "0.0.75"
+        "typeface-roboto": "0.0.75",
+        "react-virtualized": "^9.21.2",
+        "memoize-one": "^5.1.1"
     },
     "scripts": {
         "start": "react-scripts start",
@@ -52,6 +54,7 @@
         ]
     },
     "devDependencies": {
+        "clsx": "^1.1.1",
         "prettier": "2.0.5",
         "eslint-config-prettier": "^2.9.0",
         "eslint-plugin-prettier": "^2.6.0"

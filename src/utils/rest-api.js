@@ -12,6 +12,7 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 let PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
 let PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
+let PREFIX_DIRECTORY_SERVER_QUERIES = '/api/directory-server';
 
 function getToken() {
     const state = store.getState();
@@ -89,6 +90,29 @@ export function fetchConfigParameter(name) {
     const fetchParams =
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}`;
+    return backendFetch(fetchParams).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function fetchDirectoryContent(directoryUuid) {
+    console.info("Fetching Folder content '%s'", directoryUuid);
+    const fetchParams =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${directoryUuid}/content`;
+    return backendFetch(fetchParams).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function fetchRootFolders() {
+    console.info('Fetching Root Directories');
+    const fetchParams =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
     return backendFetch(fetchParams).then((response) =>
         response.ok
             ? response.json()
