@@ -11,10 +11,4 @@ module.exports = function (app) {
             ws: true,
         })
     );
-    app.use(
-        createProxyMiddleware('http://localhost:5026/api/directory-server', {
-            pathRewrite: { '^/api/directory-server': '/' },
-            headers: { userId: 'John' },
-        })
-    );
 };
