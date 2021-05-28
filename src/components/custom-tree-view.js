@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import TreeItem from '@material-ui/lab/TreeItem';
@@ -13,14 +13,10 @@ import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { fetchDirectoryContent } from '../utils/rest-api';
-import { useDispatch } from 'react-redux';
-import { setCurrentChildren } from '../redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCurrentChildren, setSelectedDirectory } from '../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-        height: '100%',
-    },
     paper: {
         height: 140,
         width: 100,
@@ -32,52 +28,25 @@ const useStyles = makeStyles((theme) => ({
 
 const CustomTreeView = ({ rootDirectory }) => {
     const [treeData, setTreeData] = useState(rootDirectory);
-    const [selected, setSelected] = React.useState(null);
     const [expanded, setExpanded] = React.useState([]);
     const dispatch = useDispatch();
-
     const classes = useStyles();
 
-    const insertContent = useCallback(
-        (selected, treeDataCopy, childrenToBeInserted) => {
-            if (treeDataCopy.elementUuid === selected) {
-                if (treeDataCopy.children === undefined) {
-                    treeDataCopy.children = childrenToBeInserted;
-                }
-            } else {
-                if (treeDataCopy.children != null) {
-                    treeDataCopy.children.forEach((child) => {
-                        insertContent(selected, child, childrenToBeInserted);
-                    });
-                }
-            }
-        },
-        []
-    );
+    const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
-    useEffect(() => {
-        if (selected != null) {
-            fetchDirectoryContent(selected).then((childrenToBeInserted) => {
-                dispatch(
-                    setCurrentChildren(
-                        childrenToBeInserted.filter(
-                            (child) => child.type !== 'DIRECTORY'
-                        )
-                    )
-                );
-                //console.log('childrenToBeInserted', childrenToBeInserted);
-                let treeDataCopy = { ...treeData };
-                insertContent(
-                    selected,
-                    treeDataCopy,
-                    childrenToBeInserted.filter(
-                        (child) => child.type === 'DIRECTORY'
-                    )
-                );
-                setTreeData(treeDataCopy);
-            });
+    const insertContent = (selected, treeDataCopy, childrenToBeInserted) => {
+        if (treeDataCopy.elementUuid === selected) {
+            if (treeDataCopy.children === undefined) {
+                treeDataCopy.children = childrenToBeInserted;
+            }
+        } else {
+            if (treeDataCopy.children != null) {
+                treeDataCopy.children.forEach((child) => {
+                    insertContent(selected, child, childrenToBeInserted);
+                });
+            }
         }
-    }, [selected, dispatch, insertContent]);
+    };
 
     const renderTree = (nodes) => (
         <TreeItem
@@ -92,13 +61,30 @@ const CustomTreeView = ({ rootDirectory }) => {
     );
 
     const handleSelect = (event, nodeIds) => {
-        console.log('HANDLE SELECT ', nodeIds);
-        setSelected(nodeIds);
-        if (expanded.includes(nodeIds)) {
-            removeElement(nodeIds);
-        } else {
-            addElement(nodeIds);
-        }
+        dispatch(setSelectedDirectory(nodeIds));
+        fetchDirectoryContent(nodeIds).then((childrenToBeInserted) => {
+            dispatch(
+                setCurrentChildren(
+                    childrenToBeInserted.filter(
+                        (child) => child.type !== 'DIRECTORY'
+                    )
+                )
+            );
+            let treeDataCopy = { ...treeData };
+            insertContent(
+                nodeIds,
+                treeDataCopy,
+                childrenToBeInserted.filter(
+                    (child) => child.type === 'DIRECTORY'
+                )
+            );
+            if (expanded.includes(nodeIds)) {
+                removeElement(nodeIds);
+            } else {
+                addElement(nodeIds);
+            }
+            setTreeData(treeDataCopy);
+        });
     };
 
     const removeElement = (nodeIds) => {
@@ -114,7 +100,6 @@ const CustomTreeView = ({ rootDirectory }) => {
     const addElement = (nodeIds) => {
         setExpanded([...expanded, nodeIds]);
     };
-
     return (
         <>
             <TreeView
@@ -124,7 +109,7 @@ const CustomTreeView = ({ rootDirectory }) => {
                 defaultExpandIcon={<ChevronRightIcon />}
                 onNodeSelect={handleSelect}
                 expanded={expanded}
-                selected={selected}
+                selected={selectedDirectory}
             >
                 {renderTree(treeData)}
             </TreeView>

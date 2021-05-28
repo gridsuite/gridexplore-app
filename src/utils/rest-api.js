@@ -12,7 +12,8 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 let PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
 let PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
-let PREFIX_DIRECTORY_SERVER_QUERIES = process.env.REACT_APP_API_GATEWAY + '/directory';
+let PREFIX_DIRECTORY_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/directory';
 
 function getToken() {
     const state = store.getState();

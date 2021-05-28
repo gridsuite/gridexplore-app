@@ -9,47 +9,147 @@ import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import VirtualizedTable from './util/virtualized-table';
 import { useIntl } from 'react-intl';
+import Checkbox from '@material-ui/core/Checkbox';
+import Chip from '@material-ui/core/Chip';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import MapOutlinedIcon from '@material-ui/icons/MapOutlined';
+import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
+import FlashOnOutlinedIcon from '@material-ui/icons/FlashOnOutlined';
+import BubbleChartOutlinedIcon from '@material-ui/icons/BubbleChartOutlined';
+import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
+
+import Tooltip from '@material-ui/core/Tooltip';
+
+const useStyles = makeStyles(() => ({
+    tablePaper: {
+        flexGrow: 1,
+    },
+    cell: {
+        display: 'flex',
+        alignItems: 'center',
+        textAlign: 'center',
+        boxSizing: 'border-box',
+        flex: 1,
+        height: '48px',
+        cursor: 'initial',
+        borderBottom: '1px solid rgba(81, 81, 81, 1)',
+    },
+    succeed: {
+        color: 'green',
+    },
+    fail: {
+        color: 'red',
+    },
+}));
+
+const elementType = {
+    DIRECTORY: 'DIRECTORY',
+    CASE: 'CASE',
+    STUDY: 'STUDY',
+    HYPOTHESIS: 'HYPOTHESIS',
+    CONTINGENCY: 'CONTINGENCY',
+    FILTER: 'FILTER',
+};
 
 const DirectoryContent = () => {
     const currentChildren = useSelector((state) => state.currentChildren);
     const intl = useIntl();
+    const classes = useStyles();
 
-    useEffect(() => {
-        console.log('DirectoryContent currentChildren', currentChildren);
-    }, [currentChildren]);
+    useEffect(() => {}, [currentChildren]);
 
-    useEffect(() => {
-        console.log('MOUNTED');
-        return () => {
-            console.log('UNMOUNTED');
-        };
-    }, []);
+    const abbreviationFromUserName = (name) => {
+        const tab = name.split(' ').map((x) => x.charAt(0));
+        if (tab.length === 1) {
+            return tab[0];
+        } else {
+            return tab[0] + tab[tab.length - 1];
+        }
+    };
+
+    function accessRightsCellRender(cellData) {
+        const isPrivate = cellData.rowData[cellData.dataKey].private;
+        return (
+            <div className={classes.cell}>
+                <Checkbox
+                    checked={isPrivate}
+                    inputProps={{ 'aria-label': 'primary checkbox' }}
+                />
+            </div>
+        );
+    }
+
+    function fileCellRender(cellData) {
+        const fileType = cellData.rowData[cellData.dataKey];
+        return (
+            <div className={classes.cell}>
+                {fileType === elementType.STUDY && (
+                    <LibraryBooksOutlinedIcon style={{ marginLeft: '10px' }} />
+                )}
+                {fileType === elementType.CASE && (
+                    <MapOutlinedIcon style={{ marginLeft: '10px' }} />
+                )}
+                {fileType === elementType.HYPOTHESIS && (
+                    <MapOutlinedIcon style={{ marginLeft: '10px' }} />
+                )}
+                {fileType === elementType.CONTINGENCY && (
+                    <FlashOnOutlinedIcon style={{ marginLeft: '10px' }} />
+                )}
+                {fileType === elementType.FILTER && (
+                    <BubbleChartOutlinedIcon style={{ marginLeft: '10px' }} />
+                )}
+                <p style={{ marginLeft: '10px' }}>{fileType}</p>
+            </div>
+        );
+    }
+
+    function accessOwnerCellRender(cellData) {
+        const owner = cellData.rowData[cellData.dataKey];
+        return (
+            <div className={classes.cell}>
+                <Tooltip title={owner}>
+                    <Chip label={abbreviationFromUserName(owner)} />
+                </Tooltip>
+            </div>
+        );
+    }
 
     return (
         <>
-            {currentChildren && (
+            {currentChildren && currentChildren.length === 0 && (
+                <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                    <FolderOpenRoundedIcon
+                        style={{ width: '100px', height: '100px' }}
+                    />
+                    <h1>empty directory</h1>
+                </div>
+            )}
+            {currentChildren && currentChildren.length > 0 && (
                 <VirtualizedTable
                     rows={currentChildren}
                     columns={[
                         {
-                            width: 300,
-                            label: intl.formatMessage({ id: 'elementUuid' }),
-                            dataKey: 'elementUuid',
+                            width: 100,
+                            label: intl.formatMessage({ id: 'type' }),
+                            dataKey: 'type',
+                            cellRenderer: fileCellRender,
                         },
                         {
-                            width: 200,
+                            width: 100,
                             label: intl.formatMessage({ id: 'elementName' }),
                             dataKey: 'elementName',
                         },
                         {
-                            width: 200,
+                            width: 50,
                             label: intl.formatMessage({ id: 'owner' }),
                             dataKey: 'owner',
+                            cellRenderer: accessOwnerCellRender,
                         },
                         {
-                            width: 200,
-                            label: intl.formatMessage({ id: 'type' }),
-                            dataKey: 'type',
+                            width: 50,
+                            label: intl.formatMessage({ id: 'private' }),
+                            dataKey: 'accessRights',
+                            cellRenderer: accessRightsCellRender,
                         },
                     ]}
                 />

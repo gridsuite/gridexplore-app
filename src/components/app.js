@@ -150,7 +150,7 @@ const App = () => {
                             if (
                                 !sessionStorage.getItem(oidcHackReloaded) &&
                                 error.message ===
-                                'authority mismatch on settings vs. signin state'
+                                    'authority mismatch on settings vs. signin state'
                             ) {
                                 sessionStorage.setItem(oidcHackReloaded, true);
                                 console.log(
@@ -215,60 +215,75 @@ const App = () => {
         if (user != null) {
             fetchRootFolders().then((data) => {
                 setRootDirectories(data);
-                console.log('App Component : data', data);
             });
         }
     }, [user]);
 
     return (
-        <>
+        <div
+            className="singlestretch-child"
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+            }}
+        >
             <AppTopBar user={user} userManager={userManager} />
-            {user !== null ? (
-                <Switch>
-                    <Route exact path="/">
-                        <Grid container style={{ height: '100%' }}>
-                            <Grid
-                                item
-                                xs={2}
-                                style={{
-                                    border: 'solid 1px',
-                                }}
-                            >
-                                {rootDirectories.map((rootDirectory) => (
-                                    <CustomTreeView
-                                        rootDirectory={rootDirectory}
-                                        key={rootDirectory.elementUuid}
-                                    />
-                                ))}
-                                <hr />
+            <div
+                style={{
+                    flexGrow: 1,
+                }}
+            >
+                {user !== null ? (
+                    <Switch>
+                        <Route exact path="/">
+                            <Grid container style={{ height: '100%' }}>
+                                <Grid
+                                    item
+                                    xs={2}
+                                    style={{
+                                        borderRight:
+                                            '1px solid rgba(81, 81, 81, 1)',
+                                    }}
+                                >
+                                    {rootDirectories.map((rootDirectory) => (
+                                        <div key={rootDirectory.elementUuid}>
+                                            <CustomTreeView
+                                                rootDirectory={rootDirectory}
+                                            />
+                                            <hr />
+                                        </div>
+                                    ))}
+                                </Grid>
+                                <Grid item xs={10}>
+                                    <DirectoryContent />
+                                </Grid>
                             </Grid>
-                            <Grid item xs={10}>
-                                <DirectoryContent />
-                            </Grid>
-                        </Grid>
-                    </Route>
-                    <Route exact path="/sign-in-callback">
-                        <Redirect to={getPreLoginPath() || '/'} />
-                    </Route>
-                    <Route exact path="/logout-callback">
-                        <h1>Error: logout failed; you are still logged in.</h1>
-                    </Route>
-                    <Route>
-                        <h1>
-                            <FormattedMessage id="PageNotFound" />
-                        </h1>
-                    </Route>
-                </Switch>
-            ) : (
-                <AuthenticationRouter
-                    userManager={userManager}
-                    signInCallbackError={signInCallbackError}
-                    dispatch={dispatch}
-                    history={history}
-                    location={location}
-                />
-            )}
-        </>
+                        </Route>
+                        <Route exact path="/sign-in-callback">
+                            <Redirect to={getPreLoginPath() || '/'} />
+                        </Route>
+                        <Route exact path="/logout-callback">
+                            <h1>
+                                Error: logout failed; you are still logged in.
+                            </h1>
+                        </Route>
+                        <Route>
+                            <h1>
+                                <FormattedMessage id="PageNotFound" />
+                            </h1>
+                        </Route>
+                    </Switch>
+                ) : (
+                    <AuthenticationRouter
+                        userManager={userManager}
+                        signInCallbackError={signInCallbackError}
+                        dispatch={dispatch}
+                        history={history}
+                        location={location}
+                    />
+                )}
+            </div>
+        </div>
     );
 };
 

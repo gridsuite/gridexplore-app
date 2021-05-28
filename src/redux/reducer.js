@@ -20,6 +20,7 @@ import {
     SELECT_THEME,
     SELECT_LANGUAGE,
     CURRENT_CHILDREN,
+    SELECT_DIRECTORY,
 } from './actions';
 
 import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
@@ -33,6 +34,7 @@ const paramsInitialState = {
 const initialState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     currentChildren: null,
+    selectedDirectory: null,
     user: null,
     signInCallbackError: null,
     ...paramsInitialState,
@@ -63,5 +65,9 @@ export const reducer = createReducer(initialState, {
 
     [CURRENT_CHILDREN]: (state, action) => {
         state.currentChildren = action.currentChildren;
+    },
+
+    [SELECT_DIRECTORY]: (state, action) => {
+        state.selectedDirectory = action.selectedDirectory;
     },
 });
