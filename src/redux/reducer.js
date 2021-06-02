@@ -21,6 +21,7 @@ import {
     SELECT_LANGUAGE,
     CURRENT_CHILDREN,
     SELECT_DIRECTORY,
+    SET_APPS_AND_URLS,
 } from './actions';
 
 import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
@@ -37,6 +38,7 @@ const initialState = {
     selectedDirectory: null,
     user: null,
     signInCallbackError: null,
+    appsAndUrls: [],
     ...paramsInitialState,
 };
 
@@ -69,5 +71,9 @@ export const reducer = createReducer(initialState, {
 
     [SELECT_DIRECTORY]: (state, action) => {
         state.selectedDirectory = action.selectedDirectory;
+    },
+
+    [SET_APPS_AND_URLS]: (state, action) => {
+        state.appsAndUrls = action.appsAndUrls;
     },
 });

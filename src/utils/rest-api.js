@@ -14,6 +14,7 @@ let PREFIX_CONFIG_NOTIFICATION_WS =
 let PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 let PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
+let PREFIX_STUDY_SERVER_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 
 function getToken() {
     const state = store.getState();
@@ -53,7 +54,6 @@ function backendFetch(url, init) {
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
     initCopy.headers.append('Authorization', 'Bearer ' + getToken());
-
     return fetch(url, initCopy);
 }
 
@@ -136,6 +136,21 @@ export function updateConfigParameter(name, value) {
     return backendFetch(updateParams, { method: 'put' }).then((response) =>
         response.ok
             ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function fetchStudiesInfos(uuids) {
+    console.info('Fetching studies metadata ... ');
+    const fetchParams = PREFIX_STUDY_SERVER_QUERIES + `/v1/studies/metadata`;
+    return backendFetch(fetchParams, {
+        method: 'GET',
+        headers: {
+            uuids: uuids,
+        },
+    }).then((response) =>
+        response.ok
+            ? response.json()
             : response.text().then((text) => Promise.reject(text))
     );
 }

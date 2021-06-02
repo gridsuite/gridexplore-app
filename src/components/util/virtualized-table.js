@@ -58,7 +58,13 @@ const styles = (theme) => ({
         color: theme.link.color,
     },
     header: {
-        paddingLeft: 16 + cellPadding,
+        backgroundColor: 'inherit',
+    },
+    rowBackgroundDark: {
+        backgroundColor: theme.row.primary,
+    },
+    rowBackgroundLight: {
+        backgroundColor: theme.row.secondary,
     },
 });
 
@@ -176,10 +182,15 @@ class MuiVirtualizedTable extends React.PureComponent {
 
     getRowClassName = ({ index }) => {
         const { classes, onRowClick } = this.props;
-
-        return clsx(classes.tableRow, classes.flexContainer, {
-            [classes.tableRowHover]: index !== -1 && onRowClick != null,
-        });
+        return clsx(
+            classes.tableRow,
+            classes.flexContainer,
+            index % 2 === 0 && classes.rowBackgroundDark,
+            index % 2 !== 0 && classes.rowBackgroundLight,
+            {
+                [classes.tableRowHover]: index !== -1 && onRowClick != null,
+            }
+        );
     };
 
     cellRenderer = ({ cellData, columnIndex, rowIndex, width }) => {
@@ -262,7 +273,8 @@ class MuiVirtualizedTable extends React.PureComponent {
                 className={clsx(
                     classes.tableCell,
                     classes.flexContainer,
-                    classes.noClick
+                    classes.noClick,
+                    classes.header
                 )}
                 variant="head"
                 style={{ height: headerHeight }}

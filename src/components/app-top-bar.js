@@ -14,12 +14,13 @@ import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as GridExploreLogoLight } from '../images/GridExplore_logo_light.svg';
 import { ReactComponent as GridExploreLogoDark } from '../images/GridExplore_logo_dark.svg';
+import { setAppsAndUrls } from '../redux/actions';
 const AppTopBar = ({ user, userManager }) => {
     const history = useHistory();
 
     const dispatch = useDispatch();
 
-    const [appsAndUrls, setAppsAndUrls] = useState([]);
+    const appsAndUrls = useSelector((state) => state.appsAndUrls);
 
     const theme = useSelector((state) => state[PARAM_THEME]);
 
@@ -34,10 +35,10 @@ const AppTopBar = ({ user, userManager }) => {
     useEffect(() => {
         if (user !== null) {
             fetchAppsAndUrls().then((res) => {
-                setAppsAndUrls(res);
+                dispatch(setAppsAndUrls(res));
             });
         }
-    }, [user]);
+    }, [user, dispatch]);
 
     function hideParameters() {
         setShowParameters(false);

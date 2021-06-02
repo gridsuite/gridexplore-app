@@ -3,8 +3,9 @@
     "paramsChangingError": "An error occured when changing the parameters",
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
     "elementUuid": "Element Uuid",
-    "elementName": "Element Name",
+    "elementName": "Name",
     "owner": "Owner",
     "type": "Type",
-    "private": "Private"
+    "private": "Private",
+    "emptyDir": "Empty directory"
 }

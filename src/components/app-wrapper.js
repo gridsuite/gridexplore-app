@@ -48,6 +48,10 @@ const lightTheme = createMuiTheme({
     link: {
         color: 'blue',
     },
+    row: {
+        primary: '#E8E8E8',
+        secondary: '#F4F4F4',
+    },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
 });
 
@@ -72,7 +76,11 @@ const darkTheme = createMuiTheme({
         fill: 'white',
     },
     link: {
-        color: 'green',
+        color: 'white',
+    },
+    row: {
+        primary: '#272727',
+        secondary: '#323232',
     },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
 });

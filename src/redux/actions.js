@@ -45,3 +45,12 @@ export function setSelectedDirectory(selectedDirectory) {
         selectedDirectory: selectedDirectory,
     };
 }
+
+export const SET_APPS_AND_URLS = 'SET_APPS_AND_URLS';
+
+export function setAppsAndUrls(appsAndUrls) {
+    return {
+        type: SET_APPS_AND_URLS,
+        appsAndUrls: appsAndUrls,
+    };
+}

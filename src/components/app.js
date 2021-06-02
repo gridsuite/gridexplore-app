@@ -210,7 +210,6 @@ const App = () => {
         intlRef,
         connectNotificationsUpdateConfig,
     ]);
-
     useEffect(() => {
         if (user != null) {
             fetchRootFolders().then((data) => {
@@ -239,7 +238,8 @@ const App = () => {
                             <Grid container style={{ height: '100%' }}>
                                 <Grid
                                     item
-                                    xs={2}
+                                    xs={12}
+                                    sm={3}
                                     style={{
                                         borderRight:
                                             '1px solid rgba(81, 81, 81, 1)',
@@ -254,7 +254,7 @@ const App = () => {
                                         </div>
                                     ))}
                                 </Grid>
-                                <Grid item xs={10}>
+                                <Grid item xs={12} sm={9}>
                                     <DirectoryContent />
                                 </Grid>
                             </Grid>
