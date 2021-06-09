@@ -9,13 +9,10 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import VirtualizedTable from './util/virtualized-table';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
-import BubbleChartOutlinedIcon from '@material-ui/icons/BubbleChartOutlined';
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
-import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 
 import Tooltip from '@material-ui/core/Tooltip';
 import { fetchStudiesInfos } from '../utils/rest-api';
@@ -23,6 +20,7 @@ import { fetchStudiesInfos } from '../utils/rest-api';
 const useStyles = makeStyles((theme) => ({
     link: {
         color: theme.link.color,
+        textDecoration: 'none',
     },
     tablePaper: {
         flexGrow: 1,
@@ -66,14 +64,18 @@ const DirectoryContent = () => {
         const isPrivate = cellData.rowData[cellData.dataKey].private;
         return (
             <div className={classes.cell}>
-                <Checkbox checked={isPrivate} />
+                {isPrivate ? (
+                    <FormattedMessage id="private" />
+                ) : (
+                    <FormattedMessage id="public" />
+                )}
             </div>
         );
     }
 
-    function getLink(elementUuid, objectType) {
-        if (elementUuid === null) {
-            return;
+    function getLink(elementUuid, objectType, objectName) {
+        if (elementUuid === null || objectName === null) {
+            return '...';
         }
         let href = '#';
         if (appsAndUrls !== null) {
@@ -87,25 +89,21 @@ const DirectoryContent = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={classes.link}
+                style={{ display: 'flex', alignItems: 'center' }}
             >
-                <OpenInNewIcon />
+                {objectType === elementType.STUDY && (
+                    <LibraryBooksOutlinedIcon style={{ margin: '10px' }} />
+                )}
+                <div>{objectName}</div>
             </a>
         );
     }
 
     function typeCellRender(cellData) {
         const objectType = cellData.rowData[cellData.dataKey];
-        const elementUuid = cellData.rowData['elementUuid'];
         return (
             <div className={classes.cell}>
-                {objectType === elementType.STUDY && (
-                    <LibraryBooksOutlinedIcon style={{ marginLeft: '10px' }} />
-                )}
-                {objectType === elementType.FILTER && (
-                    <BubbleChartOutlinedIcon style={{ marginLeft: '10px' }} />
-                )}
-                <p style={{ marginLeft: '10px' }}>{objectType}</p>
-                {getLink(elementUuid, objectType)}
+                <p>{objectType.toLowerCase()}</p>
             </div>
         );
     }
@@ -123,10 +121,15 @@ const DirectoryContent = () => {
 
     function nameCellRender(cellData) {
         const elementUuid = cellData.rowData['elementUuid'];
+        const objectType = cellData.rowData['type'];
         return (
             <div className={classes.cell}>
                 {childrenMetadata[elementUuid]
-                    ? childrenMetadata[elementUuid].name
+                    ? getLink(
+                          elementUuid,
+                          objectType,
+                          childrenMetadata[elementUuid].name
+                      )
                     : 'NF'}
             </div>
         );
@@ -169,15 +172,15 @@ const DirectoryContent = () => {
                     columns={[
                         {
                             width: 100,
-                            label: intl.formatMessage({ id: 'type' }),
-                            dataKey: 'type',
-                            cellRenderer: typeCellRender,
-                        },
-                        {
-                            width: 100,
                             label: intl.formatMessage({ id: 'elementName' }),
                             dataKey: 'elementName',
                             cellRenderer: nameCellRender,
+                        },
+                        {
+                            width: 100,
+                            label: intl.formatMessage({ id: 'type' }),
+                            dataKey: 'type',
+                            cellRenderer: typeCellRender,
                         },
                         {
                             width: 50,
@@ -187,7 +190,7 @@ const DirectoryContent = () => {
                         },
                         {
                             width: 50,
-                            label: intl.formatMessage({ id: 'private' }),
+                            label: intl.formatMessage({ id: 'accessRights' }),
                             dataKey: 'accessRights',
                             cellRenderer: accessRightsCellRender,
                         },

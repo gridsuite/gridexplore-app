@@ -6,6 +6,8 @@
     "elementName": "Nom",
     "owner": "Propriétaire",
     "type": "Type",
-    "private": "Privé",
-    "emptyDir": "Dossier vide"
+    "private": "privé",
+    "public": "publique",
+    "emptyDir": "Dossier vide",
+    "accessRights": "Droits d'accés"
 }

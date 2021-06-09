@@ -48,21 +48,21 @@ const CustomTreeView = ({ rootDirectory }) => {
         }
     };
 
-    const renderTree = (nodes) => (
+    const renderTree = (node) => (
         <TreeItem
-            key={nodes.elementUuid}
-            nodeId={nodes.elementUuid}
-            label={nodes.elementName}
+            key={node.elementUuid}
+            nodeId={node.elementUuid}
+            label={node.elementName}
         >
-            {Array.isArray(nodes.children)
-                ? nodes.children.map((node) => renderTree(node))
+            {Array.isArray(node.children)
+                ? node.children.map((node) => renderTree(node))
                 : null}
         </TreeItem>
     );
 
-    const handleSelect = (event, nodeIds) => {
-        dispatch(setSelectedDirectory(nodeIds));
-        fetchDirectoryContent(nodeIds).then((childrenToBeInserted) => {
+    const handleSelect = (event, nodeId) => {
+        dispatch(setSelectedDirectory(nodeId));
+        fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
             dispatch(
                 setCurrentChildren(
                     childrenToBeInserted.filter(
@@ -72,33 +72,33 @@ const CustomTreeView = ({ rootDirectory }) => {
             );
             let treeDataCopy = { ...treeData };
             insertContent(
-                nodeIds,
+                nodeId,
                 treeDataCopy,
                 childrenToBeInserted.filter(
                     (child) => child.type === 'DIRECTORY'
                 )
             );
-            if (expanded.includes(nodeIds)) {
-                removeElement(nodeIds);
+            if (expanded.includes(nodeId)) {
+                removeElement(nodeId);
             } else {
-                addElement(nodeIds);
+                addElement(nodeId);
             }
             setTreeData(treeDataCopy);
         });
     };
 
-    const removeElement = (nodeIds) => {
+    const removeElement = (nodeId) => {
         let expandedCopy = [...expanded];
         for (let i = 0; i < expandedCopy.length; i++) {
-            if (expandedCopy[i] === nodeIds) {
+            if (expandedCopy[i] === nodeId) {
                 expandedCopy.splice(i, 1);
             }
         }
         setExpanded(expandedCopy);
     };
 
-    const addElement = (nodeIds) => {
-        setExpanded([...expanded, nodeIds]);
+    const addElement = (nodeId) => {
+        setExpanded([...expanded, nodeId]);
     };
     return (
         <>

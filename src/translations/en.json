@@ -6,6 +6,8 @@
     "elementName": "Name",
     "owner": "Owner",
     "type": "Type",
-    "private": "Private",
-    "emptyDir": "Empty directory"
+    "private": "private",
+    "public": "public",
+    "emptyDir": "Empty directory",
+    "accessRights": "Access rights"
 }
