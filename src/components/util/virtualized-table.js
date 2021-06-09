@@ -38,6 +38,9 @@ const styles = (theme) => ({
             paddingRight:
                 theme.direction === 'rtl' ? '0 !important' : undefined,
         },
+        '& .ReactVirtualized__Table__Grid': {
+            outline: 'none',
+        },
     },
     tableRow: {
         cursor: 'pointer',

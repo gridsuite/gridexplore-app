@@ -12,9 +12,18 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { fetchDirectoryContent } from '../utils/rest-api';
+import { fetchDirectoryContent, insertNewElement } from '../utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentChildren, setSelectedDirectory } from '../redux/actions';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import AddIcon from '@material-ui/icons/Add';
+import withStyles from '@material-ui/core/styles/withStyles';
+import CreateStudyForm from './create-study-form';
+import { useIntl } from 'react-intl';
+import { elementType } from '../utils/elementType';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -24,20 +33,81 @@ const useStyles = makeStyles((theme) => ({
     control: {
         padding: theme.spacing(2),
     },
+    addButtonBox: {
+        textAlign: 'center',
+        borderStyle: 'dashed',
+        borderRadius: 1,
+        opacity: '0.3',
+    },
+    treeItemLabel: {
+        display: 'flex',
+        alignItems: 'center',
+    },
 }));
 
+const StyledMenu = withStyles({
+    paper: {
+        border: '1px solid #d3d4d5',
+    },
+})((props) => (
+    <Menu
+        elevation={0}
+        getContentAnchorEl={null}
+        anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+        }}
+        {...props}
+    />
+));
+
 const CustomTreeView = ({ rootDirectory }) => {
-    const [treeData, setTreeData] = useState(rootDirectory);
-    const [expanded, setExpanded] = React.useState([]);
-    const dispatch = useDispatch();
     const classes = useStyles();
 
+    const [treeData, setTreeData] = useState(rootDirectory);
+    const [expanded, setExpanded] = React.useState([]);
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [openAddNewStudyDialog, setOpenAddNewStudyDialog] = React.useState(
+        false
+    );
+
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
+
+    const dispatch = useDispatch();
+    const intl = useIntl();
+
+    const handleOpenMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+        event.stopPropagation();
+    };
+
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
+
+    const handleOpenAddNewStudy = () => {
+        setAnchorEl(null);
+        setOpenAddNewStudyDialog(true);
+    };
+
+    const merge = (treeDataCopy, childrenToBeInserted) => {
+        const childrenUuids = treeDataCopy.children.map(
+            (child) => child.elementUuid
+        );
+        const mergedArray = treeDataCopy.children.concat(
+            childrenToBeInserted.filter(
+                (item) => childrenUuids.indexOf(item.elementUuid) < 0
+            )
+        );
+        treeDataCopy.children = mergedArray;
+    };
 
     const insertContent = (selected, treeDataCopy, childrenToBeInserted) => {
         if (treeDataCopy.elementUuid === selected) {
             if (treeDataCopy.children === undefined) {
                 treeDataCopy.children = childrenToBeInserted;
+            } else {
+                merge(treeDataCopy, childrenToBeInserted);
             }
         } else {
             if (treeDataCopy.children != null) {
@@ -48,11 +118,26 @@ const CustomTreeView = ({ rootDirectory }) => {
         }
     };
 
+    function onContextMenu(e, nodeIds) {
+        e.stopPropagation();
+        e.preventDefault();
+        handleSelect(nodeIds, false);
+        handleOpenMenu(e);
+    }
+
     const renderTree = (node) => (
         <TreeItem
             key={node.elementUuid}
             nodeId={node.elementUuid}
-            label={node.elementName}
+            label={
+                <div
+                    className={classes.treeItemLabel}
+                    onContextMenu={(e) => onContextMenu(e, node.elementUuid)}
+                >
+                    {node.elementName}
+                </div>
+            }
+            endIcon={<ChevronRightIcon />}
         >
             {Array.isArray(node.children)
                 ? node.children.map((node) => renderTree(node))
@@ -60,13 +145,13 @@ const CustomTreeView = ({ rootDirectory }) => {
         </TreeItem>
     );
 
-    const handleSelect = (event, nodeId) => {
+    const handleSelect = (nodeId, toggle) => {
         dispatch(setSelectedDirectory(nodeId));
         fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
             dispatch(
                 setCurrentChildren(
                     childrenToBeInserted.filter(
-                        (child) => child.type !== 'DIRECTORY'
+                        (child) => child.type !== elementType.DIRECTORY
                     )
                 )
             );
@@ -75,13 +160,15 @@ const CustomTreeView = ({ rootDirectory }) => {
                 nodeId,
                 treeDataCopy,
                 childrenToBeInserted.filter(
-                    (child) => child.type === 'DIRECTORY'
+                    (child) => child.type === elementType.DIRECTORY
                 )
             );
-            if (expanded.includes(nodeId)) {
-                removeElement(nodeId);
-            } else {
-                addElement(nodeId);
+            if (toggle) {
+                if (expanded.includes(nodeId)) {
+                    removeElement(nodeId);
+                } else {
+                    addElement(nodeId);
+                }
             }
             setTreeData(treeDataCopy);
         });
@@ -100,6 +187,20 @@ const CustomTreeView = ({ rootDirectory }) => {
     const addElement = (nodeId) => {
         setExpanded([...expanded, nodeId]);
     };
+
+    function addStudyCreationSubmitted(study) {
+        let element = {
+            elementUuid: study.studyUuid,
+            elementName: study.studyName,
+            type: elementType.STUDY,
+            accessRights: { private: study.studyPrivate },
+            owner: study.userId,
+        };
+        insertNewElement(selectedDirectory, element).then(() => {
+            handleSelect(selectedDirectory, false);
+        });
+    }
+
     return (
         <>
             <TreeView
@@ -107,12 +208,35 @@ const CustomTreeView = ({ rootDirectory }) => {
                 defaultCollapseIcon={<ExpandMoreIcon />}
                 defaultExpanded={['root']}
                 defaultExpandIcon={<ChevronRightIcon />}
-                onNodeSelect={handleSelect}
+                onNodeSelect={(event, nodeId) => handleSelect(nodeId, true)}
                 expanded={expanded}
                 selected={selectedDirectory}
             >
                 {renderTree(treeData)}
             </TreeView>
+            <StyledMenu
+                id="case-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleCloseMenu}
+            >
+                <MenuItem onClick={handleOpenAddNewStudy}>
+                    <ListItemIcon style={{ minWidth: '25px' }}>
+                        <AddIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={intl.formatMessage({
+                            id: 'newStudy',
+                        })}
+                    />
+                </MenuItem>
+            </StyledMenu>
+            <CreateStudyForm
+                open={openAddNewStudyDialog}
+                setOpen={setOpenAddNewStudyDialog}
+                addStudyCreationSubmitted={addStudyCreationSubmitted}
+            />
         </>
     );
 };

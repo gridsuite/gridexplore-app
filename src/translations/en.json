@@ -9,5 +9,21 @@
     "private": "private",
     "public": "public",
     "emptyDir": "Empty directory",
-    "accessRights": "Access rights"
+    "accessRights": "Access rights",
+
+    "addNewStudy": "Add new study",
+    "addNewStudyDescription": "To add a new study, you should enter the following information:",
+    "caseExist": "Does the case already exist?",
+    "studyName": "study name",
+    "studyNameProperty": "Study name: ",
+    "studyDescription": "study description",
+    "studyDescriptionProperty": "Study description: ",
+    "caseName": "case name",
+    "uploadCase": "Upload case",
+
+    "uploadMessage": " No file selected",
+    "cancel": "CANCEL",
+    "create": "CREATE",
+    "newStudy": "Add new study",
+    "creationInProgress": "creation in progress..."
 }

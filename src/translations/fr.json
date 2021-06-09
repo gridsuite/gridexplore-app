@@ -9,5 +9,21 @@
     "private": "privé",
     "public": "publique",
     "emptyDir": "Dossier vide",
-    "accessRights": "Droits d'accés"
+    "accessRights": "Droits d'accés",
+
+    "addNewStudy": "Ajouter une nouvelle étude",
+    "addNewStudyDescription": "Pour ajouter une étude, vous devez saisir les informations suivantes : ",
+    "caseExist": "La situation existe-t-elle déjà ?",
+    "studyName": "nom de l'étude",
+    "studyNameProperty": "Nom de l'étude : ",
+    "studyDescription": "description de l'étude",
+    "studyDescriptionProperty": "Description de l'étude : ",
+    "caseName": "nom de la situation",
+    "uploadCase": "télécharger la situation",
+
+    "uploadMessage": " Aucun fichier sélectionné",
+    "cancel": "ANNULER",
+    "create": "CRÉER",
+    "newStudy": "Ajouter une nouvelle étude",
+    "creationInProgress": "création en cours..."
 }

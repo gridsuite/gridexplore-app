@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import VirtualizedTable from './util/virtualized-table';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -13,9 +13,14 @@ import Chip from '@material-ui/core/Chip';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
+import { elementType } from '../utils/elementType';
 
 import Tooltip from '@material-ui/core/Tooltip';
-import { fetchStudiesInfos } from '../utils/rest-api';
+import {
+    connectNotificationsWsUpdateStudies,
+    fetchStudiesInfos,
+} from '../utils/rest-api';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -37,19 +42,17 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const elementType = {
-    DIRECTORY: 'DIRECTORY',
-    STUDY: 'STUDY',
-    FILTER: 'FILTER',
-};
-
 const DirectoryContent = () => {
-    const currentChildren = useSelector((state) => state.currentChildren);
+    const classes = useStyles();
+
+    const [toggle, setToggle] = useState(false);
     const [childrenMetadata, setChildrenMetadata] = useState({});
+
+    const currentChildren = useSelector((state) => state.currentChildren);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
 
     const intl = useIntl();
-    const classes = useStyles();
+    const websocketExpectedCloseRef = useRef();
 
     const abbreviationFromUserName = (name) => {
         const tab = name.split(' ').map((x) => x.charAt(0));
@@ -75,7 +78,7 @@ const DirectoryContent = () => {
 
     function getLink(elementUuid, objectType, objectName) {
         if (elementUuid === null || objectName === null) {
-            return '...';
+            return;
         }
         let href = '#';
         if (appsAndUrls !== null) {
@@ -124,13 +127,19 @@ const DirectoryContent = () => {
         const objectType = cellData.rowData['type'];
         return (
             <div className={classes.cell}>
-                {childrenMetadata[elementUuid]
-                    ? getLink(
-                          elementUuid,
-                          objectType,
-                          childrenMetadata[elementUuid].name
-                      )
-                    : 'NF'}
+                {childrenMetadata[elementUuid] ? (
+                    getLink(
+                        elementUuid,
+                        objectType,
+                        childrenMetadata[elementUuid].name
+                    )
+                ) : (
+                    <div>
+                        {' '}
+                        <FormattedMessage id="creationInProgress" />{' '}
+                        <CircularProgress size={25} />
+                    </div>
+                )}
             </div>
         );
     }
@@ -152,7 +161,41 @@ const DirectoryContent = () => {
                 setChildrenMetadata(metadata);
             });
         }
+    }, [currentChildren, toggle]);
+
+    const connectNotificationsUpdateStudies = useCallback(() => {
+        const ws = connectNotificationsWsUpdateStudies();
+
+        ws.onmessage = function (event) {
+            let eventData = JSON.parse(event.data);
+            const elements = currentChildren.map((e) => e.elementUuid);
+            if (eventData.headers) {
+                const studyUuid = eventData.headers['studyUuid'];
+                if (elements.includes(studyUuid)) {
+                    setToggle((prev) => !prev);
+                }
+            }
+        };
+        ws.onclose = function () {
+            if (!websocketExpectedCloseRef.current) {
+                console.error('Unexpected Notification WebSocket closed');
+            }
+        };
+        ws.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        return ws;
     }, [currentChildren]);
+
+    useEffect(() => {
+        const ws = connectNotificationsUpdateStudies();
+        // Note: dispatch doesn't change
+
+        // cleanup at unmount event
+        return function () {
+            ws.close();
+        };
+    }, [connectNotificationsUpdateStudies]);
 
     return (
         <>
