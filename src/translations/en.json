@@ -9,5 +9,6 @@
     "private": "private",
     "public": "public",
     "emptyDir": "Empty directory",
-    "accessRights": "Access rights"
+    "accessRights": "Access rights",
+    "creationInProgress": "creation in progress..."
 }

@@ -13,6 +13,7 @@ import Chip from '@material-ui/core/Chip';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Tooltip from '@material-ui/core/Tooltip';
 import { fetchStudiesInfos } from '../utils/rest-api';
@@ -124,13 +125,18 @@ const DirectoryContent = () => {
         const objectType = cellData.rowData['type'];
         return (
             <div className={classes.cell}>
-                {childrenMetadata[elementUuid]
-                    ? getLink(
-                          elementUuid,
-                          objectType,
-                          childrenMetadata[elementUuid].name
-                      )
-                    : 'NF'}
+                {childrenMetadata[elementUuid] ? (
+                    getLink(
+                        elementUuid,
+                        objectType,
+                        childrenMetadata[elementUuid].name
+                    )
+                ) : (
+                    <div>
+                        <FormattedMessage id="creationInProgress" />{' '}
+                        <CircularProgress size={25} />
+                    </div>
+                )}
             </div>
         );
     }
