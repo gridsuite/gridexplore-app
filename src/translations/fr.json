@@ -25,5 +25,7 @@
     "cancel": "ANNULER",
     "create": "CRÉER",
     "newStudy": "Ajouter une nouvelle étude",
-    "creationInProgress": "création en cours..."
+    "creationInProgress": "création en cours...",
+    "studyCreatingError": "Une erreur est survenue lors de la création de l'étude : {studyName}",
+    "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé"
 }

@@ -113,6 +113,19 @@ export function fetchDirectoryContent(directoryUuid) {
     );
 }
 
+export function deleteElement(elementUuid) {
+    console.info("Deleting element %s'", elementUuid);
+    const fetchParams =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${elementUuid}`;
+    return backendFetch(fetchParams, {
+        method: 'delete',
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function fetchRootFolders() {
     console.info('Fetching Root Directories');
     const fetchParams =

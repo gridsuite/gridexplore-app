@@ -12,9 +12,13 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { fetchDirectoryContent, insertNewElement } from '../utils/rest-api';
+import { fetchDirectoryContent } from '../utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCurrentChildren, setSelectedDirectory } from '../redux/actions';
+import {
+    setCurrentChildren,
+    setSelectedDirectory,
+    setTempStudies,
+} from '../redux/actions';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -72,6 +76,7 @@ const CustomTreeView = ({ rootDirectory }) => {
     );
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const tmpStudies = useSelector((state) => state.tmpStudies);
 
     const dispatch = useDispatch();
     const intl = useIntl();
@@ -125,25 +130,29 @@ const CustomTreeView = ({ rootDirectory }) => {
         handleOpenMenu(e);
     }
 
-    const renderTree = (node) => (
-        <TreeItem
-            key={node.elementUuid}
-            nodeId={node.elementUuid}
-            label={
-                <div
-                    className={classes.treeItemLabel}
-                    onContextMenu={(e) => onContextMenu(e, node.elementUuid)}
-                >
-                    {node.elementName}
-                </div>
-            }
-            endIcon={<ChevronRightIcon />}
-        >
-            {Array.isArray(node.children)
-                ? node.children.map((node) => renderTree(node))
-                : null}
-        </TreeItem>
-    );
+    const renderTree = (node) => {
+        return (
+            <TreeItem
+                key={node.elementUuid}
+                nodeId={node.elementUuid}
+                label={
+                    <div
+                        className={classes.treeItemLabel}
+                        onContextMenu={(e) =>
+                            onContextMenu(e, node.elementUuid)
+                        }
+                    >
+                        {node.elementName}
+                    </div>
+                }
+                endIcon={<ChevronRightIcon />}
+            >
+                {Array.isArray(node.children)
+                    ? node.children.map((node) => renderTree(node))
+                    : null}
+            </TreeItem>
+        );
+    };
 
     const handleSelect = (nodeId, toggle) => {
         dispatch(setSelectedDirectory(nodeId));
@@ -196,9 +205,16 @@ const CustomTreeView = ({ rootDirectory }) => {
             accessRights: { private: study.studyPrivate },
             owner: study.userId,
         };
-        insertNewElement(selectedDirectory, element).then(() => {
-            handleSelect(selectedDirectory, false);
-        });
+        let tmpStudiesCopy = { ...tmpStudies };
+        if (tmpStudiesCopy[selectedDirectory] === undefined) {
+            tmpStudiesCopy[selectedDirectory] = [element];
+        } else {
+            tmpStudiesCopy[selectedDirectory] = [
+                ...tmpStudiesCopy[selectedDirectory],
+                element,
+            ];
+        }
+        dispatch(setTempStudies(tmpStudiesCopy));
     }
 
     return (
