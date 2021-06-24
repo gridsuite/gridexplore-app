@@ -49,7 +49,7 @@ import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import AppTopBar from './app-top-bar';
 import Grid from '@material-ui/core/Grid';
-import CustomTreeView from './custom-tree-view';
+import DirectoryTreeView from './directory-tree-view';
 import DirectoryContent from './directory-content';
 
 const noUserManager = { instance: null, error: null };
@@ -247,7 +247,7 @@ const App = () => {
                                 >
                                     {rootDirectories.map((rootDirectory) => (
                                         <div key={rootDirectory.elementUuid}>
-                                            <CustomTreeView
+                                            <DirectoryTreeView
                                                 rootDirectory={rootDirectory}
                                             />
                                             <hr />

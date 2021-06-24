@@ -23,9 +23,6 @@ const useStyles = makeStyles((theme) => ({
         color: theme.link.color,
         textDecoration: 'none',
     },
-    tablePaper: {
-        flexGrow: 1,
-    },
     cell: {
         display: 'flex',
         alignItems: 'center',

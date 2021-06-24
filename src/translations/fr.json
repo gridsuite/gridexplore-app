@@ -7,7 +7,7 @@
     "owner": "Propriétaire",
     "type": "Type",
     "private": "privé",
-    "public": "publique",
+    "public": "public",
     "emptyDir": "Dossier vide",
     "accessRights": "Droits d'accès",
     "creationInProgress": "création en cours..."

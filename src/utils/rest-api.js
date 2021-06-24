@@ -100,10 +100,10 @@ export function fetchConfigParameter(name) {
 
 export function fetchDirectoryContent(directoryUuid) {
     console.info("Fetching Folder content '%s'", directoryUuid);
-    const fetchParams =
+    const fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${directoryUuid}/content`;
-    return backendFetch(fetchParams).then((response) =>
+    return backendFetch(fetchDirectoryContentUrl).then((response) =>
         response.ok
             ? response.json()
             : response.text().then((text) => Promise.reject(text))
@@ -112,9 +112,9 @@ export function fetchDirectoryContent(directoryUuid) {
 
 export function fetchRootFolders() {
     console.info('Fetching Root Directories');
-    const fetchParams =
+    const fetchRootFoldersUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
-    return backendFetch(fetchParams).then((response) =>
+    return backendFetch(fetchRootFoldersUrl).then((response) =>
         response.ok
             ? response.json()
             : response.text().then((text) => Promise.reject(text))
@@ -142,8 +142,9 @@ export function updateConfigParameter(name, value) {
 
 export function fetchStudiesInfos(uuids) {
     console.info('Fetching studies metadata ... ');
-    const fetchParams = PREFIX_STUDY_SERVER_QUERIES + `/v1/studies/metadata`;
-    return backendFetch(fetchParams, {
+    const fetchStudiesInfosUrl =
+        PREFIX_STUDY_SERVER_QUERIES + `/v1/studies/metadata`;
+    return backendFetch(fetchStudiesInfosUrl, {
         method: 'GET',
         headers: {
             uuids: uuids,

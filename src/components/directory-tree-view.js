@@ -7,7 +7,6 @@
 
 import React, { useState } from 'react';
 
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -16,21 +15,10 @@ import { fetchDirectoryContent } from '../utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentChildren, setSelectedDirectory } from '../redux/actions';
 
-const useStyles = makeStyles((theme) => ({
-    paper: {
-        height: 140,
-        width: 100,
-    },
-    control: {
-        padding: theme.spacing(2),
-    },
-}));
-
-const CustomTreeView = ({ rootDirectory }) => {
+const DirectoryTreeView = ({ rootDirectory }) => {
     const [treeData, setTreeData] = useState(rootDirectory);
     const [expanded, setExpanded] = React.useState([]);
     const dispatch = useDispatch();
-    const classes = useStyles();
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
@@ -103,7 +91,6 @@ const CustomTreeView = ({ rootDirectory }) => {
     return (
         <>
             <TreeView
-                className={classes.root}
                 defaultCollapseIcon={<ExpandMoreIcon />}
                 defaultExpanded={['root']}
                 defaultExpandIcon={<ChevronRightIcon />}
@@ -117,4 +104,4 @@ const CustomTreeView = ({ rootDirectory }) => {
     );
 };
 
-export default CustomTreeView;
+export default DirectoryTreeView;
