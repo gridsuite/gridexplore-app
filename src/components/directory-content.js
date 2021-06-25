@@ -129,7 +129,7 @@ const DirectoryContent = () => {
                         childrenMetadata[elementUuid].name
                     )
                 ) : (
-                    <div>
+                    <div style={{ marginLeft: '10px' }}>
                         <FormattedMessage id="creationInProgress" />{' '}
                         <CircularProgress size={25} />
                     </div>
