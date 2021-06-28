@@ -29,20 +29,7 @@ import CreateStudyForm from './create-study-form';
 import { useIntl } from 'react-intl';
 import { elementType } from '../utils/elementType';
 
-const useStyles = makeStyles((theme) => ({
-    paper: {
-        height: 140,
-        width: 100,
-    },
-    control: {
-        padding: theme.spacing(2),
-    },
-    addButtonBox: {
-        textAlign: 'center',
-        borderStyle: 'dashed',
-        borderRadius: 1,
-        opacity: '0.3',
-    },
+const useStyles = makeStyles(() => ({
     treeItemLabel: {
         display: 'flex',
         alignItems: 'center',
@@ -65,7 +52,7 @@ const StyledMenu = withStyles({
     />
 ));
 
-const CustomTreeView = ({ rootDirectory }) => {
+const DirectoryTreeView = ({ rootDirectory }) => {
     const classes = useStyles();
 
     const [treeData, setTreeData] = useState(rootDirectory);
@@ -257,4 +244,4 @@ const CustomTreeView = ({ rootDirectory }) => {
     );
 };
 
-export default CustomTreeView;
+export default DirectoryTreeView;

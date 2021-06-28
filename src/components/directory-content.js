@@ -7,23 +7,25 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import VirtualizedTable from './util/virtualized-table';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useSnackbar } from 'notistack';
+
 import Chip from '@material-ui/core/Chip';
+import Tooltip from '@material-ui/core/Tooltip';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
-import { elementType } from '../utils/elementType';
 
-import Tooltip from '@material-ui/core/Tooltip';
+import VirtualizedTable from './util/virtualized-table';
+import { elementType } from '../utils/elementType';
 import {
     connectNotificationsWsUpdateStudies,
     fetchDirectoryContent,
     fetchStudiesInfos,
     insertNewElement,
 } from '../utils/rest-api';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { useSnackbar } from 'notistack';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { setCurrentChildren, setTempStudies } from '../redux/actions';
 
@@ -31,9 +33,6 @@ const useStyles = makeStyles((theme) => ({
     link: {
         color: theme.link.color,
         textDecoration: 'none',
-    },
-    tablePaper: {
-        flexGrow: 1,
     },
     cell: {
         display: 'flex',
@@ -48,8 +47,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DirectoryContent = () => {
-    const classes = useStyles();
-
     const [toggle, setToggle] = useState(false);
     const [childrenMetadata, setChildrenMetadata] = useState({});
 
@@ -67,11 +64,16 @@ const DirectoryContent = () => {
             ? [...tmpStudies[selectedDirectory]]
             : [];
 
+    const classes = useStyles();
+
     const { enqueueSnackbar } = useSnackbar();
-    const intlRef = useIntlRef();
-    const intl = useIntl();
-    const websocketExpectedCloseRef = useRef();
+
     const dispatch = useDispatch();
+
+    const intl = useIntl();
+    const intlRef = useIntlRef();
+
+    const websocketExpectedCloseRef = useRef();
     const currentChildrenRef = useRef([]);
     const selectedDirectoryRef = useRef(null);
     const tmpStudiesRef = useRef(null);
@@ -293,7 +295,7 @@ const DirectoryContent = () => {
 
     return (
         <>
-            {rows.length === 0 && (
+            {selectedDirectory !== null && rows.length === 0 && (
                 <div style={{ textAlign: 'center', marginTop: '100px' }}>
                     <FolderOpenRoundedIcon
                         style={{ width: '100px', height: '100px' }}
@@ -303,7 +305,7 @@ const DirectoryContent = () => {
                     </h1>
                 </div>
             )}
-            {rows.length > 0 && (
+            {selectedDirectory !== null && rows.length > 0 && (
                 <VirtualizedTable
                     onRowClick={(event) => {
                         if (
