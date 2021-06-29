@@ -7,7 +7,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import VirtualizedTable from './util/virtualized-table';
+import VirtualizedTable from './virtualized-table';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Chip from '@material-ui/core/Chip';
 import makeStyles from '@material-ui/core/styles/makeStyles';
