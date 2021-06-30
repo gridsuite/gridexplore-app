@@ -31,13 +31,12 @@ import {
 
 import { useRouteMatch } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 
 import {
     connectNotificationsWsUpdateConfig,
     fetchConfigParameter,
     fetchConfigParameters,
+    fetchRootFolders,
 } from '../utils/rest-api';
 import {
     APP_NAME,
@@ -49,6 +48,9 @@ import { getComputedLanguage } from '../utils/language';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import AppTopBar from './app-top-bar';
+import Grid from '@material-ui/core/Grid';
+import DirectoryTreeView from './directory-tree-view';
+import DirectoryContent from './directory-content';
 
 const noUserManager = { instance: null, error: null };
 
@@ -64,6 +66,7 @@ const App = () => {
     );
 
     const [userManager, setUserManager] = useState(noUserManager);
+    const [rootDirectories, setRootDirectories] = useState([]);
 
     const history = useHistory();
 
@@ -208,44 +211,80 @@ const App = () => {
         connectNotificationsUpdateConfig,
     ]);
 
+    useEffect(() => {
+        if (user != null) {
+            fetchRootFolders().then((data) => {
+                setRootDirectories(data);
+            });
+        }
+    }, [user]);
+
     return (
-        <>
+        <div
+            className="singlestretch-child"
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+            }}
+        >
             <AppTopBar user={user} userManager={userManager} />
-            {user !== null ? (
-                <Switch>
-                    <Route exact path="/">
-                        <Box mt={20}>
-                            <Typography
-                                variant="h3"
-                                color="textPrimary"
-                                align="center"
-                            >
-                                Connected
-                            </Typography>
-                        </Box>
-                    </Route>
-                    <Route exact path="/sign-in-callback">
-                        <Redirect to={getPreLoginPath() || '/'} />
-                    </Route>
-                    <Route exact path="/logout-callback">
-                        <h1>Error: logout failed; you are still logged in.</h1>
-                    </Route>
-                    <Route>
-                        <h1>
-                            <FormattedMessage id="PageNotFound" />
-                        </h1>
-                    </Route>
-                </Switch>
-            ) : (
-                <AuthenticationRouter
-                    userManager={userManager}
-                    signInCallbackError={signInCallbackError}
-                    dispatch={dispatch}
-                    history={history}
-                    location={location}
-                />
-            )}
-        </>
+            <div
+                style={{
+                    flexGrow: 1,
+                }}
+            >
+                {user !== null ? (
+                    <Switch>
+                        <Route exact path="/">
+                            <Grid container style={{ height: '100%' }}>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    sm={3}
+                                    style={{
+                                        borderRight:
+                                            '1px solid rgba(81, 81, 81, 1)',
+                                    }}
+                                >
+                                    {rootDirectories.map((rootDirectory) => (
+                                        <div key={rootDirectory.elementUuid}>
+                                            <DirectoryTreeView
+                                                rootDirectory={rootDirectory}
+                                            />
+                                            <hr />
+                                        </div>
+                                    ))}
+                                </Grid>
+                                <Grid item xs={12} sm={9}>
+                                    <DirectoryContent />
+                                </Grid>
+                            </Grid>
+                        </Route>
+                        <Route exact path="/sign-in-callback">
+                            <Redirect to={getPreLoginPath() || '/'} />
+                        </Route>
+                        <Route exact path="/logout-callback">
+                            <h1>
+                                Error: logout failed; you are still logged in.
+                            </h1>
+                        </Route>
+                        <Route>
+                            <h1>
+                                <FormattedMessage id="PageNotFound" />
+                            </h1>
+                        </Route>
+                    </Switch>
+                ) : (
+                    <AuthenticationRouter
+                        userManager={userManager}
+                        signInCallbackError={signInCallbackError}
+                        dispatch={dispatch}
+                        history={history}
+                        location={location}
+                    />
+                )}
+            </div>
+        </div>
     );
 };
 

@@ -12,6 +12,9 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 let PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
 let PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
+let PREFIX_DIRECTORY_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/directory';
+let PREFIX_STUDY_SERVER_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 
 function getToken() {
     const state = store.getState();
@@ -51,7 +54,6 @@ function backendFetch(url, init) {
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
     initCopy.headers.append('Authorization', 'Bearer ' + getToken());
-
     return fetch(url, initCopy);
 }
 
@@ -96,6 +98,29 @@ export function fetchConfigParameter(name) {
     );
 }
 
+export function fetchDirectoryContent(directoryUuid) {
+    console.info("Fetching Folder content '%s'", directoryUuid);
+    const fetchDirectoryContentUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${directoryUuid}/content`;
+    return backendFetch(fetchDirectoryContentUrl).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function fetchRootFolders() {
+    console.info('Fetching Root Directories');
+    const fetchRootFoldersUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
+    return backendFetch(fetchRootFoldersUrl).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function updateConfigParameter(name, value) {
     const appName = getAppName(name);
     console.info(
@@ -111,6 +136,22 @@ export function updateConfigParameter(name, value) {
     return backendFetch(updateParams, { method: 'put' }).then((response) =>
         response.ok
             ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function fetchStudiesInfos(uuids) {
+    console.info('Fetching studies metadata ... ');
+    const fetchStudiesInfosUrl =
+        PREFIX_STUDY_SERVER_QUERIES + `/v1/studies/metadata`;
+    return backendFetch(fetchStudiesInfosUrl, {
+        method: 'GET',
+        headers: {
+            uuids: uuids,
+        },
+    }).then((response) =>
+        response.ok
+            ? response.json()
             : response.text().then((text) => Promise.reject(text))
     );
 }

@@ -27,3 +27,30 @@ export function selectComputedLanguage(computedLanguage) {
         computedLanguage: computedLanguage,
     };
 }
+
+export const CURRENT_CHILDREN = 'CURRENT_CHILDREN';
+
+export function setCurrentChildren(currentChildren) {
+    return {
+        type: CURRENT_CHILDREN,
+        currentChildren: currentChildren,
+    };
+}
+
+export const SELECT_DIRECTORY = 'SELECT_DIRECTORY';
+
+export function setSelectedDirectory(selectedDirectory) {
+    return {
+        type: SELECT_DIRECTORY,
+        selectedDirectory: selectedDirectory,
+    };
+}
+
+export const SET_APPS_AND_URLS = 'SET_APPS_AND_URLS';
+
+export function setAppsAndUrls(appsAndUrls) {
+    return {
+        type: SET_APPS_AND_URLS,
+        appsAndUrls: appsAndUrls,
+    };
+}

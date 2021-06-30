@@ -1,5 +1,14 @@
 {
     "parameters": "Parameters",
     "paramsChangingError": "An error occured when changing the parameters",
-    "paramsRetrievingError": "An error occurred while retrieving the parameters"
+    "paramsRetrievingError": "An error occurred while retrieving the parameters",
+    "elementUuid": "Element Uuid",
+    "elementName": "Name",
+    "owner": "Owner",
+    "type": "Type",
+    "private": "private",
+    "public": "public",
+    "emptyDir": "Empty directory",
+    "accessRights": "Access rights",
+    "creationInProgress": "creation in progress..."
 }
