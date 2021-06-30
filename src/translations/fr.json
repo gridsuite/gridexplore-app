@@ -20,6 +20,7 @@
     "studyDescriptionProperty": "Description de l'étude : ",
     "caseName": "nom de la situation",
     "uploadCase": "télécharger la situation",
+    "uploadErrorMsg": "Veuillez télécharger la situation",
 
     "uploadMessage": " Aucun fichier sélectionné",
     "cancel": "ANNULER",

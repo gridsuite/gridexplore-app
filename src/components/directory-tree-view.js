@@ -192,15 +192,13 @@ const DirectoryTreeView = ({ rootDirectory }) => {
             accessRights: { private: study.studyPrivate },
             owner: study.userId,
         };
+        let value = {
+            element: element,
+            selectedDirectory: selectedDirectory,
+        };
         let tmpStudiesCopy = { ...tmpStudies };
-        if (tmpStudiesCopy[selectedDirectory] === undefined) {
-            tmpStudiesCopy[selectedDirectory] = [element];
-        } else {
-            tmpStudiesCopy[selectedDirectory] = [
-                ...tmpStudiesCopy[selectedDirectory],
-                element,
-            ];
-        }
+        tmpStudiesCopy[element.elementUuid] = value;
+        console.log('tmpStudiesCopy to be dispatched', tmpStudiesCopy);
         dispatch(setTempStudies(tmpStudiesCopy));
     }
 

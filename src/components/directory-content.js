@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSnackbar } from 'notistack';
@@ -47,22 +53,32 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DirectoryContent = () => {
-    const [toggle, setToggle] = useState(false);
     const [childrenMetadata, setChildrenMetadata] = useState({});
 
     const currentChildren = useSelector((state) => state.currentChildren);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const tmpStudies = useSelector((state) => state.tmpStudies);
+    const tmpStudies = useSelector((state) => state.tmpStudies); //TODO to refactor
 
-    let rows =
-        currentChildren !== null
-            ? tmpStudies[selectedDirectory] !== undefined
-                ? [...currentChildren, ...tmpStudies[selectedDirectory]]
-                : [...currentChildren]
-            : tmpStudies[selectedDirectory] !== undefined
-            ? [...tmpStudies[selectedDirectory]]
-            : [];
+    useEffect(() => console.log(tmpStudies, 'useFfect'), [tmpStudies]);
+
+    const currentTmpStudies = useMemo(() => {
+        let tmp = [];
+        for (const [key, value] of Object.entries(tmpStudies)) {
+            if (value.selectedDirectory === selectedDirectory) {
+                tmp.push(value.element);
+            }
+        }
+        return tmp;
+    }, [tmpStudies, selectedDirectory]);
+
+    console.log('currentTmpStudies', currentTmpStudies);
+
+    const getRows = () => {
+        return currentChildren !== null
+            ? [...currentChildren, ...currentTmpStudies]
+            : [...currentTmpStudies];
+    };
 
     const classes = useStyles();
 
@@ -77,7 +93,7 @@ const DirectoryContent = () => {
     const currentChildrenRef = useRef([]);
     const selectedDirectoryRef = useRef(null);
     const tmpStudiesRef = useRef(null);
-    currentChildrenRef.current = rows;
+    currentChildrenRef.current = getRows();
     selectedDirectoryRef.current = selectedDirectory;
     tmpStudiesRef.current = tmpStudies;
 
@@ -186,7 +202,7 @@ const DirectoryContent = () => {
                 setChildrenMetadata(metadata);
             });
         }
-    }, [currentChildren, toggle]);
+    }, [currentChildren]);
 
     const displayErrorIfExist = useCallback(
         (event) => {
@@ -214,17 +230,16 @@ const DirectoryContent = () => {
 
     const deleteTmpStudy = useCallback(
         (studyUuid) => {
+            console.log('deleting ... ', studyUuid);
             let tmpStudiesCopy = { ...tmpStudiesRef.current };
-            if (tmpStudiesCopy[selectedDirectoryRef.current] !== undefined) {
-                tmpStudiesCopy[
-                    selectedDirectoryRef.current
-                ] = tmpStudiesRef.current[selectedDirectoryRef.current].filter(
-                    (e) => e.elementUuid !== studyUuid
-                );
-                dispatch(setTempStudies(tmpStudiesCopy));
-            }
+            console.log(tmpStudiesCopy);
+            let filteredEntries = [...Object.entries(tmpStudiesRef.current)].filter(
+                ([key, value]) => key !== studyUuid
+            );
+            console.log('filteredEntries', filteredEntries);
+            dispatch(setTempStudies({...filteredEntries}));
         },
-        [selectedDirectoryRef, dispatch, tmpStudiesRef]
+        [dispatch, tmpStudiesRef]
     );
 
     const connectNotificationsUpdateStudies = useCallback(() => {
@@ -233,34 +248,31 @@ const DirectoryContent = () => {
         ws.onmessage = function (event) {
             const res = displayErrorIfExist(event);
             let eventData = JSON.parse(event.data);
-            const rowsUuids = [...currentChildrenRef.current].map(
-                (e) => e.elementUuid
-            );
             if (eventData.headers) {
                 const studyUuid = eventData.headers['studyUuid'];
+                console.log('Notification study:', studyUuid, res);
                 if (res === true) {
+                    // what if study is already inserted in the directory server?
+                    console.log('deleting temp study ...', tmpStudies);
                     deleteTmpStudy(studyUuid);
-                    return;
-                }
-                let tmpStudiesCopy = { ...tmpStudiesRef.current };
-                if (rowsUuids.includes(studyUuid)) {
+                    console.log('temp study deleted...', tmpStudies);
+                } else {
+                    let tmpStudiesCopy = { ...tmpStudiesRef.current };
+                    console.log(tmpStudiesRef.current);
+                    console.log('get tmp element', tmpStudiesCopy[studyUuid]);
                     if (
-                        tmpStudiesCopy[selectedDirectoryRef.current] !==
-                            undefined &&
-                        tmpStudiesCopy[selectedDirectoryRef.current].length > 0
+                        tmpStudiesRef.current !== undefined &&
+                        tmpStudiesCopy[studyUuid] !== undefined
                     ) {
                         insertNewElement(
-                            selectedDirectoryRef.current,
-                            ...tmpStudiesCopy[
-                                selectedDirectoryRef.current
-                            ].filter((e) => e.elementUuid === studyUuid)
+                            tmpStudiesCopy[studyUuid].selectedDirectory,
+                            tmpStudiesCopy[studyUuid].element
                         )
                             .then(() => {
                                 deleteTmpStudy(studyUuid);
                                 updateDirectoryChildren();
                             })
                             .catch((err) => console.debug(err));
-                        setToggle((prev) => !prev);
                     }
                 }
             }
@@ -295,7 +307,7 @@ const DirectoryContent = () => {
 
     return (
         <>
-            {selectedDirectory !== null && rows.length === 0 && (
+            {selectedDirectory !== null && getRows().length === 0 && (
                 <div style={{ textAlign: 'center', marginTop: '100px' }}>
                     <FolderOpenRoundedIcon
                         style={{ width: '100px', height: '100px' }}
@@ -305,7 +317,7 @@ const DirectoryContent = () => {
                     </h1>
                 </div>
             )}
-            {selectedDirectory !== null && rows.length > 0 && (
+            {selectedDirectory !== null && getRows().length > 0 && (
                 <VirtualizedTable
                     onRowClick={(event) => {
                         if (
@@ -319,7 +331,7 @@ const DirectoryContent = () => {
                             window.open(url, '_blank');
                         }
                     }}
-                    rows={rows}
+                    rows={getRows()}
                     columns={[
                         {
                             width: 100,

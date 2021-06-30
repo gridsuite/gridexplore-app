@@ -20,6 +20,7 @@
     "studyDescriptionProperty": "Study description: ",
     "caseName": "case name",
     "uploadCase": "Upload case",
+    "uploadErrorMsg": "Please upload the case file",
 
     "uploadMessage": " No file selected",
     "cancel": "CANCEL",
