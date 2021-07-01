@@ -177,12 +177,14 @@ export function createStudy(
     studyDescription,
     caseName,
     selectedFile,
-    isPrivateStudy
+    isPrivateStudy,
+    parentDirectoryUuid
 ) {
     console.info('Creating a new study...');
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('description', studyDescription);
     urlSearchParams.append('isPrivate', isPrivateStudy);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     if (caseExist) {
         const createStudyWithExistingCaseUrl =
@@ -213,24 +215,6 @@ export function createStudy(
             body: formData,
         });
     }
-}
-
-export function insertNewElement(parentUuid, element) {
-    console.info('inserting new element ...');
-    const fetchParams =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/` + parentUuid;
-    return backendFetch(fetchParams, {
-        method: 'put',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(element),
-    }).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
 }
 
 export function fetchCases() {

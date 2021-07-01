@@ -14,11 +14,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { fetchDirectoryContent } from '../utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    setCurrentChildren,
-    setSelectedDirectory,
-    setTempStudies,
-} from '../redux/actions';
+import { setCurrentChildren, setSelectedDirectory } from '../redux/actions';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -63,7 +59,6 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     );
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const tmpStudies = useSelector((state) => state.tmpStudies);
 
     const dispatch = useDispatch();
     const intl = useIntl();
@@ -184,24 +179,6 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         setExpanded([...expanded, nodeId]);
     };
 
-    function addStudyCreationSubmitted(study) {
-        let element = {
-            elementUuid: study.studyUuid,
-            elementName: study.studyName,
-            type: elementType.STUDY,
-            accessRights: { private: study.studyPrivate },
-            owner: study.userId,
-        };
-        let value = {
-            element: element,
-            selectedDirectory: selectedDirectory,
-        };
-        let tmpStudiesCopy = { ...tmpStudies };
-        tmpStudiesCopy[element.elementUuid] = value;
-        console.log('tmpStudiesCopy to be dispatched', tmpStudiesCopy);
-        dispatch(setTempStudies(tmpStudiesCopy));
-    }
-
     return (
         <>
             <TreeView
@@ -236,7 +213,6 @@ const DirectoryTreeView = ({ rootDirectory }) => {
             <CreateStudyForm
                 open={openAddNewStudyDialog}
                 setOpen={setOpenAddNewStudyDialog}
-                addStudyCreationSubmitted={addStudyCreationSubmitted}
             />
         </>
     );

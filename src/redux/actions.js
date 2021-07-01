@@ -84,9 +84,3 @@ export const SELECT_CASE = 'SELECT_CASE';
 export function selectCase(selectedCase) {
     return { type: SELECT_CASE, selectedCase: selectedCase };
 }
-
-export const SET_TMP_STUDIES = 'SET_TMP_STUDIES';
-
-export function setTempStudies(tmpStudies) {
-    return { type: SET_TMP_STUDIES, tmpStudies: tmpStudies };
-}

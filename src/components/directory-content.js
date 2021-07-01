@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSnackbar } from 'notistack';
@@ -30,10 +24,10 @@ import {
     connectNotificationsWsUpdateStudies,
     fetchDirectoryContent,
     fetchStudiesInfos,
-    insertNewElement,
 } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { setCurrentChildren, setTempStudies } from '../redux/actions';
+import { setCurrentChildren } from '../redux/actions';
+import {DEFAULT_CELL_PADDING} from "@gridsuite/commons-ui";
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -48,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
         flex: 1,
         height: '48px',
         cursor: 'initial',
-        borderBottom: '1px solid rgba(81, 81, 81, 1)',
+        padding: DEFAULT_CELL_PADDING,
     },
 }));
 
@@ -58,27 +52,6 @@ const DirectoryContent = () => {
     const currentChildren = useSelector((state) => state.currentChildren);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const tmpStudies = useSelector((state) => state.tmpStudies); //TODO to refactor
-
-    useEffect(() => console.log(tmpStudies, 'useFfect'), [tmpStudies]);
-
-    const currentTmpStudies = useMemo(() => {
-        let tmp = [];
-        for (const [key, value] of Object.entries(tmpStudies)) {
-            if (value.selectedDirectory === selectedDirectory) {
-                tmp.push(value.element);
-            }
-        }
-        return tmp;
-    }, [tmpStudies, selectedDirectory]);
-
-    console.log('currentTmpStudies', currentTmpStudies);
-
-    const getRows = () => {
-        return currentChildren !== null
-            ? [...currentChildren, ...currentTmpStudies]
-            : [...currentTmpStudies];
-    };
 
     const classes = useStyles();
 
@@ -92,10 +65,8 @@ const DirectoryContent = () => {
     const websocketExpectedCloseRef = useRef();
     const currentChildrenRef = useRef([]);
     const selectedDirectoryRef = useRef(null);
-    const tmpStudiesRef = useRef(null);
-    currentChildrenRef.current = getRows();
+    currentChildrenRef.current = currentChildren;
     selectedDirectoryRef.current = selectedDirectory;
-    tmpStudiesRef.current = tmpStudies;
 
     const abbreviationFromUserName = (name) => {
         const tab = name.split(' ').map((x) => x.charAt(0));
@@ -155,18 +126,18 @@ const DirectoryContent = () => {
         return (
             <div className={classes.cell}>
                 {objectType === elementType.STUDY && (
-                    <LibraryBooksOutlinedIcon style={{ margin: '10px' }} />
+                    <LibraryBooksOutlinedIcon/>
                 )}
-                {childrenMetadata[elementUuid] ? (
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', marginLeft: '10px' }}>
+                    {childrenMetadata[elementUuid] ? (
                         <div>{childrenMetadata[elementUuid].name}</div>
-                    </div>
-                ) : (
-                    <div>
-                        <FormattedMessage id="creationInProgress" />{' '}
+                    ) : (
+                        <>
+                        <FormattedMessage id="creationInProgress" />
                         <CircularProgress size={25} />
-                    </div>
-                )}
+                        </>
+                    )}
+                </div>
             </div>
         );
     }
@@ -228,20 +199,6 @@ const DirectoryContent = () => {
         [enqueueSnackbar, intlRef]
     );
 
-    const deleteTmpStudy = useCallback(
-        (studyUuid) => {
-            console.log('deleting ... ', studyUuid);
-            let tmpStudiesCopy = { ...tmpStudiesRef.current };
-            console.log(tmpStudiesCopy);
-            let filteredEntries = [...Object.entries(tmpStudiesRef.current)].filter(
-                ([key, value]) => key !== studyUuid
-            );
-            console.log('filteredEntries', filteredEntries);
-            dispatch(setTempStudies({...filteredEntries}));
-        },
-        [dispatch, tmpStudiesRef]
-    );
-
     const connectNotificationsUpdateStudies = useCallback(() => {
         const ws = connectNotificationsWsUpdateStudies();
 
@@ -250,31 +207,7 @@ const DirectoryContent = () => {
             let eventData = JSON.parse(event.data);
             if (eventData.headers) {
                 const studyUuid = eventData.headers['studyUuid'];
-                console.log('Notification study:', studyUuid, res);
-                if (res === true) {
-                    // what if study is already inserted in the directory server?
-                    console.log('deleting temp study ...', tmpStudies);
-                    deleteTmpStudy(studyUuid);
-                    console.log('temp study deleted...', tmpStudies);
-                } else {
-                    let tmpStudiesCopy = { ...tmpStudiesRef.current };
-                    console.log(tmpStudiesRef.current);
-                    console.log('get tmp element', tmpStudiesCopy[studyUuid]);
-                    if (
-                        tmpStudiesRef.current !== undefined &&
-                        tmpStudiesCopy[studyUuid] !== undefined
-                    ) {
-                        insertNewElement(
-                            tmpStudiesCopy[studyUuid].selectedDirectory,
-                            tmpStudiesCopy[studyUuid].element
-                        )
-                            .then(() => {
-                                deleteTmpStudy(studyUuid);
-                                updateDirectoryChildren();
-                            })
-                            .catch((err) => console.debug(err));
-                    }
-                }
+                updateDirectoryChildren();
             }
         };
         ws.onclose = function () {
@@ -286,14 +219,7 @@ const DirectoryContent = () => {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
-    }, [
-        currentChildrenRef,
-        displayErrorIfExist,
-        updateDirectoryChildren,
-        tmpStudiesRef,
-        selectedDirectoryRef,
-        deleteTmpStudy,
-    ]);
+    }, [displayErrorIfExist, updateDirectoryChildren]);
 
     useEffect(() => {
         const ws = connectNotificationsUpdateStudies();
@@ -307,59 +233,67 @@ const DirectoryContent = () => {
 
     return (
         <>
-            {selectedDirectory !== null && getRows().length === 0 && (
-                <div style={{ textAlign: 'center', marginTop: '100px' }}>
-                    <FolderOpenRoundedIcon
-                        style={{ width: '100px', height: '100px' }}
+            {selectedDirectory !== null &&
+                currentChildren !== null &&
+                currentChildren.length === 0 && (
+                    <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                        <FolderOpenRoundedIcon
+                            style={{ width: '100px', height: '100px' }}
+                        />
+                        <h1>
+                            <FormattedMessage id={'emptyDir'} />
+                        </h1>
+                    </div>
+                )}
+            {selectedDirectory !== null &&
+                currentChildren !== null &&
+                currentChildren.length > 0 && (
+                    <VirtualizedTable
+                        onRowClick={(event) => {
+                            if (
+                                childrenMetadata[event.rowData.elementUuid] !==
+                                undefined
+                            ) {
+                                let url = getLink(
+                                    event.rowData.elementUuid,
+                                    event.rowData.type
+                                );
+                                window.open(url, '_blank');
+                            }
+                        }}
+                        rows={currentChildren}
+                        columns={[
+                            {
+                                width: 100,
+                                label: intl.formatMessage({
+                                    id: 'elementName',
+                                }),
+                                dataKey: 'elementName',
+                                cellRenderer: nameCellRender,
+                            },
+                            {
+                                width: 100,
+                                label: intl.formatMessage({ id: 'type' }),
+                                dataKey: 'type',
+                                cellRenderer: typeCellRender,
+                            },
+                            {
+                                width: 50,
+                                label: intl.formatMessage({ id: 'owner' }),
+                                dataKey: 'owner',
+                                cellRenderer: accessOwnerCellRender,
+                            },
+                            {
+                                width: 50,
+                                label: intl.formatMessage({
+                                    id: 'accessRights',
+                                }),
+                                dataKey: 'accessRights',
+                                cellRenderer: accessRightsCellRender,
+                            },
+                        ]}
                     />
-                    <h1>
-                        <FormattedMessage id={'emptyDir'} />
-                    </h1>
-                </div>
-            )}
-            {selectedDirectory !== null && getRows().length > 0 && (
-                <VirtualizedTable
-                    onRowClick={(event) => {
-                        if (
-                            childrenMetadata[event.rowData.elementUuid] !==
-                            undefined
-                        ) {
-                            let url = getLink(
-                                event.rowData.elementUuid,
-                                event.rowData.type
-                            );
-                            window.open(url, '_blank');
-                        }
-                    }}
-                    rows={getRows()}
-                    columns={[
-                        {
-                            width: 100,
-                            label: intl.formatMessage({ id: 'elementName' }),
-                            dataKey: 'elementName',
-                            cellRenderer: nameCellRender,
-                        },
-                        {
-                            width: 100,
-                            label: intl.formatMessage({ id: 'type' }),
-                            dataKey: 'type',
-                            cellRenderer: typeCellRender,
-                        },
-                        {
-                            width: 50,
-                            label: intl.formatMessage({ id: 'owner' }),
-                            dataKey: 'owner',
-                            cellRenderer: accessOwnerCellRender,
-                        },
-                        {
-                            width: 50,
-                            label: intl.formatMessage({ id: 'accessRights' }),
-                            dataKey: 'accessRights',
-                            cellRenderer: accessRightsCellRender,
-                        },
-                    ]}
-                />
-            )}
+                )}
         </>
     );
 };

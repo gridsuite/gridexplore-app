@@ -27,7 +27,6 @@ import {
     REMOVE_SELECTED_CASE,
     SELECT_FILE,
     REMOVE_SELECTED_FILE,
-    SET_TMP_STUDIES,
 } from './actions';
 
 import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
@@ -48,7 +47,6 @@ const initialState = {
     cases: [],
     selectedCase: null,
     selectedFile: null,
-    tmpStudies: {},
     ...paramsInitialState,
 };
 
@@ -105,9 +103,5 @@ export const reducer = createReducer(initialState, {
 
     [REMOVE_SELECTED_FILE]: (state) => {
         state.selectedFile = null;
-    },
-
-    [SET_TMP_STUDIES]: (state, action) => {
-        state.tmpStudies = action.tmpStudies;
     },
 });
