@@ -27,7 +27,7 @@ import {
 } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { setCurrentChildren } from '../redux/actions';
-import {DEFAULT_CELL_PADDING} from "@gridsuite/commons-ui";
+import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -126,15 +126,21 @@ const DirectoryContent = () => {
         return (
             <div className={classes.cell}>
                 {objectType === elementType.STUDY && (
-                    <LibraryBooksOutlinedIcon/>
+                    <LibraryBooksOutlinedIcon />
                 )}
-                <div style={{ display: 'flex', alignItems: 'center', marginLeft: '10px' }}>
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginLeft: '10px',
+                    }}
+                >
                     {childrenMetadata[elementUuid] ? (
                         <div>{childrenMetadata[elementUuid].name}</div>
                     ) : (
                         <>
-                        <FormattedMessage id="creationInProgress" />
-                        <CircularProgress size={25} />
+                            <FormattedMessage id="creationInProgress" />
+                            <CircularProgress size={25} />
                         </>
                     )}
                 </div>
@@ -203,13 +209,10 @@ const DirectoryContent = () => {
         const ws = connectNotificationsWsUpdateStudies();
 
         ws.onmessage = function (event) {
-            const res = displayErrorIfExist(event);
-            let eventData = JSON.parse(event.data);
-            if (eventData.headers) {
-                const studyUuid = eventData.headers['studyUuid'];
-                updateDirectoryChildren();
-            }
+            displayErrorIfExist(event);
+            updateDirectoryChildren();
         };
+
         ws.onclose = function () {
             if (!websocketExpectedCloseRef.current) {
                 console.error('Unexpected Notification WebSocket closed');
