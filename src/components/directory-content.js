@@ -122,6 +122,7 @@ const DirectoryContent = () => {
 
     function nameCellRender(cellData) {
         const elementUuid = cellData.rowData['elementUuid'];
+        const elementName = cellData.rowData['elementName'];
         const objectType = cellData.rowData['type'];
         return (
             <div className={classes.cell}>
@@ -143,6 +144,7 @@ const DirectoryContent = () => {
                         <div>{childrenMetadata[elementUuid].name}</div>
                     ) : (
                         <>
+                            {elementName}{' '}
                             <FormattedMessage id="creationInProgress" />
                         </>
                     )}

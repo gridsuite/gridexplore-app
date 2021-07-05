@@ -26,7 +26,7 @@
     "cancel": "CANCEL",
     "create": "CREATE",
     "newStudy": "Add new study",
-    "creationInProgress": "creation in progress...",
-    "studyCreatingError": "An error occurred while creating the study : {studyName}",
+    "creationInProgress": "creation in progress",
+    "studyCreatingError": "An error occurred while creating the study: {studyName}",
     "studyNameAlreadyUsed": "This study name is already used"
 }
