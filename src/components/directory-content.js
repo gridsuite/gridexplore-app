@@ -125,9 +125,13 @@ const DirectoryContent = () => {
         const objectType = cellData.rowData['type'];
         return (
             <div className={classes.cell}>
-                {objectType === elementType.STUDY && (
-                    <LibraryBooksOutlinedIcon />
+                {!childrenMetadata[elementUuid] && (
+                    <CircularProgress size={25} />
                 )}
+                {childrenMetadata[elementUuid] &&
+                    objectType === elementType.STUDY && (
+                        <LibraryBooksOutlinedIcon />
+                    )}
                 <div
                     style={{
                         display: 'flex',
@@ -140,7 +144,6 @@ const DirectoryContent = () => {
                     ) : (
                         <>
                             <FormattedMessage id="creationInProgress" />
-                            <CircularProgress size={25} />
                         </>
                     )}
                 </div>
