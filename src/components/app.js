@@ -210,7 +210,6 @@ const App = () => {
         intlRef,
         connectNotificationsUpdateConfig,
     ]);
-
     useEffect(() => {
         if (user != null) {
             fetchRootFolders().then((data) => {
@@ -246,14 +245,23 @@ const App = () => {
                                             '1px solid rgba(81, 81, 81, 1)',
                                     }}
                                 >
-                                    {rootDirectories.map((rootDirectory) => (
-                                        <div key={rootDirectory.elementUuid}>
-                                            <DirectoryTreeView
-                                                rootDirectory={rootDirectory}
-                                            />
-                                            <hr />
-                                        </div>
-                                    ))}
+                                    <div style={{ marginTop: '20px' }}>
+                                        {rootDirectories.map(
+                                            (rootDirectory) => (
+                                                <div
+                                                    key={
+                                                        rootDirectory.elementUuid
+                                                    }
+                                                >
+                                                    <DirectoryTreeView
+                                                        rootDirectory={
+                                                            rootDirectory
+                                                        }
+                                                    />
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
                                 </Grid>
                                 <Grid item xs={12} sm={9}>
                                     <DirectoryContent />

@@ -14,7 +14,10 @@ let PREFIX_CONFIG_NOTIFICATION_WS =
 let PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 let PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
-let PREFIX_STUDY_SERVER_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
+const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
+const PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
+const PREFIX_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/notification';
 
 function getToken() {
     const state = store.getState();
@@ -110,6 +113,19 @@ export function fetchDirectoryContent(directoryUuid) {
     );
 }
 
+export function deleteElement(elementUuid) {
+    console.info("Deleting element %s'", elementUuid);
+    const fetchParams =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${elementUuid}`;
+    return backendFetch(fetchParams, {
+        method: 'delete',
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function fetchRootFolders() {
     console.info('Fetching Root Directories');
     const fetchRootFoldersUrl =
@@ -142,8 +158,7 @@ export function updateConfigParameter(name, value) {
 
 export function fetchStudiesInfos(uuids) {
     console.info('Fetching studies metadata ... ');
-    const fetchStudiesInfosUrl =
-        PREFIX_STUDY_SERVER_QUERIES + `/v1/studies/metadata`;
+    const fetchStudiesInfosUrl = PREFIX_STUDY_QUERIES + `/v1/studies/metadata`;
     return backendFetch(fetchStudiesInfosUrl, {
         method: 'GET',
         headers: {
@@ -154,4 +169,105 @@ export function fetchStudiesInfos(uuids) {
             ? response.json()
             : response.text().then((text) => Promise.reject(text))
     );
+}
+
+export function createStudy(
+    caseExist,
+    studyName,
+    studyDescription,
+    caseName,
+    selectedFile,
+    isPrivateStudy,
+    parentDirectoryUuid
+) {
+    console.info('Creating a new study...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('description', studyDescription);
+    urlSearchParams.append('isPrivate', isPrivateStudy);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    if (caseExist) {
+        const createStudyWithExistingCaseUrl =
+            PREFIX_STUDY_QUERIES +
+            '/v1/studies/' +
+            encodeURIComponent(studyName) +
+            '/cases/' +
+            encodeURIComponent(caseName) +
+            '?' +
+            urlSearchParams.toString();
+        console.debug(createStudyWithExistingCaseUrl);
+        return backendFetch(createStudyWithExistingCaseUrl, {
+            method: 'post',
+        });
+    } else {
+        const createStudyWithNewCaseUrl =
+            PREFIX_STUDY_QUERIES +
+            '/v1/studies/' +
+            encodeURIComponent(studyName) +
+            '?' +
+            urlSearchParams.toString();
+        const formData = new FormData();
+        formData.append('caseFile', selectedFile);
+        console.debug(createStudyWithNewCaseUrl);
+
+        return backendFetch(createStudyWithNewCaseUrl, {
+            method: 'post',
+            body: formData,
+        });
+    }
+}
+
+export function fetchCases() {
+    console.info('Fetching cases...');
+    const fetchCasesUrl = PREFIX_CASE_QUERIES + '/v1/cases';
+    console.debug(fetchCasesUrl);
+    return backendFetch(fetchCasesUrl).then((response) => response.json());
+}
+
+function getStudyUrlByStudyNameAndUserId(studyName, userId) {
+    return (
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName)
+    );
+}
+
+export function studyExists(studyName, userId) {
+    // current implementation prevent having two studies with the same name and the same user
+    // later we will prevent same studyName and userId in the same directory
+    const studyExistsUrl =
+        getStudyUrlByStudyNameAndUserId(studyName, userId) + '/exists';
+    console.debug(studyExistsUrl);
+    return backendFetch(studyExistsUrl, { method: 'get' }).then((response) => {
+        return response.json();
+    });
+}
+
+/**
+ * Function will be called to connect with notification websocket to update the studies list
+ * @returns {ReconnectingWebSocket}
+ */
+export function connectNotificationsWsUpdateStudies() {
+    const webSocketBaseUrl = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const webSocketUrl =
+        webSocketBaseUrl +
+        PREFIX_NOTIFICATION_WS +
+        '/notify?updateType=studies';
+
+    let webSocketUrlWithToken;
+    webSocketUrlWithToken = webSocketUrl + '&access_token=' + getToken();
+
+    const reconnectingWebSocket = new ReconnectingWebSocket(
+        webSocketUrlWithToken
+    );
+    reconnectingWebSocket.onopen = function (event) {
+        console.info(
+            'Connected Websocket update studies' + webSocketUrl + ' ...'
+        );
+    };
+    return reconnectingWebSocket;
 }

@@ -51,6 +51,7 @@ const lightTheme = createMuiTheme({
     row: {
         primary: '#E8E8E8',
         secondary: '#F4F4F4',
+        hover: '#8E9C9B',
     },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
 });
@@ -81,6 +82,7 @@ const darkTheme = createMuiTheme({
     row: {
         primary: '#272727',
         secondary: '#323232',
+        hover: '#545C5B',
     },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
 });

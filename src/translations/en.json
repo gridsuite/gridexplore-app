@@ -10,5 +10,23 @@
     "public": "public",
     "emptyDir": "Empty directory",
     "accessRights": "Access rights",
-    "creationInProgress": "creation in progress..."
+
+    "addNewStudy": "Add new study",
+    "addNewStudyDescription": "To add a new study, you should enter the following information:",
+    "caseExist": "Does the case already exist?",
+    "studyName": "study name",
+    "studyNameProperty": "Study name: ",
+    "studyDescription": "study description",
+    "studyDescriptionProperty": "Study description: ",
+    "caseName": "case name",
+    "uploadCase": "Upload case",
+    "uploadErrorMsg": "Please upload the case file",
+
+    "uploadMessage": " No file selected",
+    "cancel": "CANCEL",
+    "create": "CREATE",
+    "newStudy": "Add new study",
+    "creationInProgress": "creation in progress",
+    "studyCreatingError": "An error occurred while creating the study: {studyName}",
+    "studyNameAlreadyUsed": "This study name is already used"
 }

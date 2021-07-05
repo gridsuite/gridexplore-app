@@ -22,6 +22,11 @@ import {
     CURRENT_CHILDREN,
     SELECT_DIRECTORY,
     SET_APPS_AND_URLS,
+    LOAD_CASES_SUCCESS,
+    SELECT_CASE,
+    REMOVE_SELECTED_CASE,
+    SELECT_FILE,
+    REMOVE_SELECTED_FILE,
 } from './actions';
 
 import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
@@ -39,6 +44,9 @@ const initialState = {
     user: null,
     signInCallbackError: null,
     appsAndUrls: [],
+    cases: [],
+    selectedCase: null,
+    selectedFile: null,
     ...paramsInitialState,
 };
 
@@ -75,5 +83,25 @@ export const reducer = createReducer(initialState, {
 
     [SET_APPS_AND_URLS]: (state, action) => {
         state.appsAndUrls = action.appsAndUrls;
+    },
+
+    [LOAD_CASES_SUCCESS]: (state, action) => {
+        state.cases = action.cases;
+    },
+
+    [SELECT_CASE]: (state, action) => {
+        state.selectedCase = action.selectedCase;
+    },
+
+    [REMOVE_SELECTED_CASE]: (state) => {
+        state.selectedCase = null;
+    },
+
+    [SELECT_FILE]: (state, action) => {
+        state.selectedFile = action.selectedFile;
+    },
+
+    [REMOVE_SELECTED_FILE]: (state) => {
+        state.selectedFile = null;
     },
 });
