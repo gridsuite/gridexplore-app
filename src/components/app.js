@@ -97,6 +97,13 @@ const App = () => {
         [dispatch]
     );
 
+    //remove the default contextMenu
+    useEffect(() => {
+        document.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+        });
+    });
+
     const connectNotificationsUpdateConfig = useCallback(() => {
         const ws = connectNotificationsWsUpdateConfig();
 

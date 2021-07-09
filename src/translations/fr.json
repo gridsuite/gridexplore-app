@@ -9,10 +9,13 @@
     "private": "privé",
     "public": "public",
     "emptyDir": "Dossier vide",
-    "accessRights": "Droits d'accès",
 
     "addNewStudy": "Ajouter une nouvelle étude",
     "addNewStudyDescription": "Pour ajouter une étude, vous devez saisir les informations suivantes : ",
+    "renameStudy": "Renommer l'étude",
+    "renameStudyMsg": "Nouveau nom de l'étude : ",
+    "deleteStudy": "Supprimer l'étude",
+    "deleteStudyMsg": "Êtes-vous sûr de vouloir supprimer l'étude ?",
     "caseExist": "La situation existe-t-elle déjà ?",
     "studyName": "nom de l'étude",
     "studyNameProperty": "Nom de l'étude : ",
@@ -27,5 +30,19 @@
     "newStudy": "Ajouter une nouvelle étude",
     "creationInProgress": "création en cours...",
     "studyCreatingError": "Une erreur est survenue lors de la création de l'étude : {studyName}",
-    "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé"
+    "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé",
+
+    "delete": "Supprimer",
+    "rename": "Renommer",
+
+    "exportNetwork": "Exporter le réseau",
+    "export": "Exporter",
+    "format": "Format",
+    "exportFormat": "Format de l'export",
+    "exportStudyErrorMsg": "Le format de l'export n'est pas spécifié",
+
+    "accessRights": "Droits d'accès",
+    "modifyAccessRights": "Modifier les droits d'accès",
+    "modifyAccessRightsError": "Vous ne pouvez pas modifier les droits d'accès d'une étude qui ne vous appartient pas",
+    "edit": "Modifier"
 }

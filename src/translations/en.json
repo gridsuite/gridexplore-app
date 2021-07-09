@@ -9,10 +9,11 @@
     "private": "private",
     "public": "public",
     "emptyDir": "Empty directory",
-    "accessRights": "Access rights",
 
     "addNewStudy": "Add new study",
     "addNewStudyDescription": "To add a new study, you should enter the following information:",
+    "renameStudy": "Rename the study",
+    "deleteStudy": "Delete the study",
     "caseExist": "Does the case already exist?",
     "studyName": "study name",
     "studyNameProperty": "Study name: ",
@@ -27,5 +28,19 @@
     "newStudy": "Add new study",
     "creationInProgress": "creation in progress...",
     "studyCreatingError": "An error occurred while creating the study : {studyName}",
-    "studyNameAlreadyUsed": "This study name is already used"
+    "studyNameAlreadyUsed": "This study name is already used",
+
+    "rename": "Rename",
+    "delete": "Delete",
+
+    "exportNetwork": "Export the network",
+    "export": "Export",
+    "format": "Format",
+    "exportFormat": "Format of the export",
+    "exportStudyErrorMsg": "No export format specified",
+
+    "accessRights": "Access rights",
+    "modifyAccessRights": "Modify the access rights",
+    "modifyAccessRightsError": "You cannot modify the access rights of a study you don't own",
+    "edit": "Edit"
 }

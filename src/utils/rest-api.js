@@ -287,3 +287,93 @@ export function connectNotificationsWsUpdateStudies() {
     };
     return reconnectingWebSocket;
 }
+
+export function getAvailableExportFormats() {
+    console.info('get export formats');
+    const getExportFormatsUrl =
+        PREFIX_STUDY_QUERIES + '/v1/export-network-formats';
+    console.debug(getExportFormatsUrl);
+    return backendFetch(getExportFormatsUrl, {
+        method: 'get',
+    }).then((response) => response.json());
+}
+
+function getUrlWithToken(baseUrl) {
+    return baseUrl + '?access_token=' + getToken();
+}
+
+function getStudyUrl(studyUuid) {
+    return (
+        PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyUuid)
+    );
+}
+
+export function getExportUrl(studyUuid, exportFormat) {
+    const url = getStudyUrl(studyUuid) + '/export-network/' + exportFormat;
+    return getUrlWithToken(url);
+}
+
+export function renameStudy(studyUuid, newStudyName) {
+    console.info('Renaming study ' + studyUuid);
+    const renameStudiesUrl = getStudyUrl(studyUuid) + '/rename';
+
+    console.debug(renameStudiesUrl);
+    return backendFetch(renameStudiesUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ newStudyName: newStudyName }),
+    }).then((response) => {
+        if (response.status === 200 || response.status === 403) {
+            return response.json();
+        } else {
+            return response.text().then((text) => {
+                let json;
+                try {
+                    json = JSON.parse(text);
+                } catch {
+                    throw new Error(
+                        response.status +
+                        ' ' +
+                        response.statusText +
+                        ' : ' +
+                        text
+                    );
+                }
+                throw new Error(
+                    json.status + ' ' + json.error + ' : ' + json.message
+                );
+            });
+        }
+    });
+}
+
+export function deleteStudy(studyUuid) {
+    console.info('Deleting study ' + studyUuid + '...');
+    const deleteStudyUrl = getStudyUrl(studyUuid);
+    console.debug(deleteStudyUrl);
+    return backendFetch(deleteStudyUrl, {
+        method: 'delete',
+    });
+}
+
+export function changeStudyAccessRights(studyUuid, toPrivate) {
+    console.info('Change access rights of study ' + studyUuid);
+    let changeStudyAccessRightsUrl;
+    if (toPrivate === 'true') {
+        changeStudyAccessRightsUrl = getStudyUrl(studyUuid) + '/private';
+    } else {
+        changeStudyAccessRightsUrl = getStudyUrl(studyUuid) + '/public';
+    }
+
+    console.debug(changeStudyAccessRightsUrl);
+    return backendFetch(changeStudyAccessRightsUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
