@@ -116,7 +116,7 @@ export function fetchDirectoryContent(directoryUuid) {
 export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
     console.info("Inserting a new folder '%s'", directoryName);
     const fetchDirectoryContentUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories`;
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/` + parentUuid;
 
     return backendFetch(fetchDirectoryContentUrl, {
         method: 'POST',
@@ -125,10 +125,11 @@ export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            parentId: parentUuid,
-            directoryName: directoryName,
+            elementUuid: null,
+            elementName: directoryName,
+            type: 'DIRECTORY',
             accessRights: { private: isPrivate },
-            owner: owner,
+            owner: owner
         }),
     }).then((response) =>
         response.ok
@@ -150,17 +151,6 @@ export function fetchRootFolders() {
     console.info('Fetching Root Directories');
     const fetchRootFoldersUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
-    return backendFetch(fetchRootFoldersUrl).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
-}
-
-export function fetchFolderInfos(elementUuid) {
-    console.info('Fetching Folder infos %s ...', elementUuid);
-    const fetchRootFoldersUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${elementUuid}`;
     return backendFetch(fetchRootFoldersUrl).then((response) =>
         response.ok
             ? response.json()
