@@ -63,8 +63,6 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         false
     );
 
-    const { enqueueSnackbar } = useSnackbar();
-
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
     const selectedDirectoryRef = useRef(null);
@@ -75,10 +73,22 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     expandedRef.current = expanded;
     mapDataRef.current = mapData;
 
+    const { enqueueSnackbar } = useSnackbar();
+
     const dispatch = useDispatch();
 
     const intl = useIntl();
     const intlRef = useIntlRef();
+
+    useEffect(() => {
+        let rootDirectoryCopy = { ...rootDirectory };
+        rootDirectoryCopy.parentUuid = null;
+        rootDirectoryCopy.children = [];
+
+        let mapDataCopy = {};
+        mapDataCopy[rootDirectory.elementUuid] = rootDirectoryCopy;
+        setMapData(mapDataCopy);
+    }, [rootDirectory]);
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -125,7 +135,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     }
 
     const renderTree = (node) => {
-        if (node === undefined) {
+        if (!node) {
             return;
         }
         return (
@@ -258,20 +268,6 @@ const DirectoryTreeView = ({ rootDirectory }) => {
             ws.close();
         };
     }, [connectNotificationsUpdateStudies]);
-
-    useEffect(() => {
-        let rootDirectoryCopy = { ...rootDirectory };
-        rootDirectoryCopy.parentUuid = null;
-        rootDirectoryCopy.children = [];
-
-        let mapDataCopy = {};
-        mapDataCopy[rootDirectory.elementUuid] = rootDirectoryCopy;
-        setMapData(mapDataCopy);
-    }, [rootDirectory]);
-
-    useEffect(() => {
-        console.log('MAP-DATA:', mapData);
-    }, [mapData]);
 
     return (
         <>
