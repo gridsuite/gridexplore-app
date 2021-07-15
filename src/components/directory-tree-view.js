@@ -56,7 +56,7 @@ const StyledMenu = withStyles({
 const DirectoryTreeView = ({ rootDirectory }) => {
     const classes = useStyles();
 
-    const [treeData, setTreeData] = useState(rootDirectory);
+    const [mapData, setMapData] = useState({});
     const [expanded, setExpanded] = React.useState([]);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [openAddNewStudyDialog, setOpenAddNewStudyDialog] = React.useState(
@@ -68,12 +68,12 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
     const selectedDirectoryRef = useRef(null);
-    const treeDataRef = useRef(null);
+    const mapDataRef = useRef({});
     const expandedRef = useRef([]);
     const websocketExpectedCloseRef = useRef();
     selectedDirectoryRef.current = selectedDirectory;
-    treeDataRef.current = treeData;
     expandedRef.current = expanded;
+    mapDataRef.current = mapData;
 
     const dispatch = useDispatch();
 
@@ -94,35 +94,27 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         setOpenAddNewStudyDialog(true);
     };
 
-    const merge = (treeDataCopy, childrenToBeInserted) => {
-        const childrenUuids = treeDataCopy.children.map(
-            (child) => child.elementUuid
-        );
-        const mergedArray = treeDataCopy.children.concat(
-            childrenToBeInserted.filter(
-                (item) => childrenUuids.indexOf(item.elementUuid) < 0
-            )
-        );
-        treeDataCopy.children = mergedArray;
-    };
-
     const insertContent = useCallback(
-        (selected, treeDataCopy, childrenToBeInserted) => {
-            if (treeDataCopy.elementUuid === selected) {
-                if (treeDataCopy.children === undefined) {
-                    treeDataCopy.children = childrenToBeInserted;
-                } else {
-                    merge(treeDataCopy, childrenToBeInserted);
+        (selected, childrenToBeInserted) => {
+            let preparedChildrenToBeInserted = childrenToBeInserted.map(
+                (child) => {
+                    child.children = [];
+                    child.parentUuid = selected;
+                    return child;
                 }
-            } else {
-                if (treeDataCopy.children != null) {
-                    treeDataCopy.children.forEach((child) => {
-                        insertContent(selected, child, childrenToBeInserted);
-                    });
-                }
-            }
+            );
+
+            let mapDataCopy = { ...mapDataRef.current };
+
+            mapDataCopy[selected].children = preparedChildrenToBeInserted;
+
+            preparedChildrenToBeInserted.forEach((child) => {
+                mapDataCopy[child.elementUuid] = child;
+            });
+
+            setMapData(mapDataCopy);
         },
-        []
+        [mapDataRef]
     );
 
     function onContextMenu(e, nodeIds) {
@@ -133,6 +125,9 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     }
 
     const renderTree = (node) => {
+        if (node === undefined) {
+            return;
+        }
         return (
             <TreeItem
                 key={node.elementUuid}
@@ -149,8 +144,10 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                 }
                 endIcon={<ChevronRightIcon />}
             >
-                {Array.isArray(node.children)
-                    ? node.children.map((node) => renderTree(node))
+                {Array.isArray(mapData[node.elementUuid].children)
+                    ? mapData[node.elementUuid].children.map((node) =>
+                          renderTree(node)
+                      )
                     : null}
             </TreeItem>
         );
@@ -215,10 +212,8 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                         )
                     )
                 );
-                let treeDataCopy = { ...treeDataRef.current };
                 insertContent(
                     nodeId,
-                    treeDataCopy,
                     childrenToBeInserted.filter(
                         (child) => child.type === elementType.DIRECTORY
                     )
@@ -230,17 +225,9 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                         addElement(nodeId);
                     }
                 }
-                setTreeData(treeDataCopy);
             });
         },
-        [
-            dispatch,
-            treeDataRef,
-            addElement,
-            removeElement,
-            expandedRef,
-            insertContent,
-        ]
+        [dispatch, addElement, removeElement, expandedRef, insertContent]
     );
 
     const connectNotificationsUpdateStudies = useCallback(() => {
@@ -272,6 +259,20 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         };
     }, [connectNotificationsUpdateStudies]);
 
+    useEffect(() => {
+        let rootDirectoryCopy = { ...rootDirectory };
+        rootDirectoryCopy.parentUuid = null;
+        rootDirectoryCopy.children = [];
+
+        let mapDataCopy = {};
+        mapDataCopy[rootDirectory.elementUuid] = rootDirectoryCopy;
+        setMapData(mapDataCopy);
+    }, [rootDirectory]);
+
+    useEffect(() => {
+        console.log('MAP-DATA:', mapData);
+    }, [mapData]);
+
     return (
         <>
             <TreeView
@@ -283,7 +284,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                 expanded={expanded}
                 selected={selectedDirectory}
             >
-                {renderTree(treeData)}
+                {renderTree(mapData[rootDirectory.elementUuid])}
             </TreeView>
             <StyledMenu
                 id="case-menu"
