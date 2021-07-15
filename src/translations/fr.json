@@ -25,8 +25,19 @@
     "uploadMessage": " Aucun fichier sélectionné",
     "cancel": "ANNULER",
     "create": "CRÉER",
+    "delete": "SUPPRIMER",
     "newStudy": "Ajouter une nouvelle étude",
     "creationInProgress": "création en cours",
     "studyCreatingError": "Une erreur est survenue lors de la création de l'étude : {studyName}",
-    "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé"
+    "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé",
+
+    "createFolder": "Créer un dossier",
+    "createRootFolder": "Créer un dossier racine",
+    "deleteFolder": "Supprimer le dossier",
+    "insertNewDirectoryDialogMessage": "Veuillez insérer les informations suivantes svp!",
+    "insertNewDirectoryDialogTitle": "Créer un dossier",
+    "deleteDirectoryDialogMessage": "êtes vous sûr de vouloir supprimer le dossier ?",
+    "deleteDirectoryDialogTitle": "Supprimer le dossier",
+    "directoryNameLabel": "Nom du dossier",
+    "isPrivateLabel": "Dossier privé ?"
 }

@@ -113,12 +113,23 @@ export function fetchDirectoryContent(directoryUuid) {
     );
 }
 
-export function deleteElement(elementUuid) {
-    console.info("Deleting element %s'", elementUuid);
-    const fetchParams =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${elementUuid}`;
-    return backendFetch(fetchParams, {
-        method: 'delete',
+export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
+    console.info("Inserting a new folder '%s'", directoryName);
+    const fetchDirectoryContentUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories`;
+
+    return backendFetch(fetchDirectoryContentUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            parentId: parentUuid,
+            directoryName: directoryName,
+            accessRights: { private: isPrivate },
+            owner: owner,
+        }),
     }).then((response) =>
         response.ok
             ? response.json()
@@ -126,10 +137,30 @@ export function deleteElement(elementUuid) {
     );
 }
 
+export function deleteDirectory(elementUuid) {
+    console.info("Deleting element %s'", elementUuid);
+    const fetchParams =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${elementUuid}`;
+    return backendFetch(fetchParams, {
+        method: 'delete',
+    });
+}
+
 export function fetchRootFolders() {
     console.info('Fetching Root Directories');
     const fetchRootFoldersUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
+    return backendFetch(fetchRootFoldersUrl).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function fetchFolderInfos(elementUuid) {
+    console.info('Fetching Folder infos %s ...', elementUuid);
+    const fetchRootFoldersUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${elementUuid}`;
     return backendFetch(fetchRootFoldersUrl).then((response) =>
         response.ok
             ? response.json()
@@ -149,7 +180,7 @@ export function updateConfigParameter(name, value) {
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}?value=` +
         encodeURIComponent(value);
-    return backendFetch(updateParams, { method: 'put' }).then((response) =>
+    return backendFetch(updateParams, { method: 'PUT' }).then((response) =>
         response.ok
             ? response
             : response.text().then((text) => Promise.reject(text))
