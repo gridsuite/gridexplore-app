@@ -210,6 +210,7 @@ const App = () => {
         intlRef,
         connectNotificationsUpdateConfig,
     ]);
+
     useEffect(() => {
         if (user != null) {
             fetchRootFolders().then((data) => {

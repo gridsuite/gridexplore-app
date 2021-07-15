@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useSnackbar } from 'notistack';
 
 import Chip from '@material-ui/core/Chip';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -20,13 +19,7 @@ import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
 
 import VirtualizedTable from './util/virtualized-table';
 import { elementType } from '../utils/elementType';
-import {
-    connectNotificationsWsUpdateStudies,
-    fetchDirectoryContent,
-    fetchStudiesInfos,
-} from '../utils/rest-api';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { setCurrentChildren } from '../redux/actions';
+import { fetchStudiesInfos } from '../utils/rest-api';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
@@ -55,18 +48,7 @@ const DirectoryContent = () => {
 
     const classes = useStyles();
 
-    const { enqueueSnackbar } = useSnackbar();
-
-    const dispatch = useDispatch();
-
     const intl = useIntl();
-    const intlRef = useIntlRef();
-
-    const websocketExpectedCloseRef = useRef();
-    const currentChildrenRef = useRef([]);
-    const selectedDirectoryRef = useRef(null);
-    currentChildrenRef.current = currentChildren;
-    selectedDirectoryRef.current = selectedDirectory;
 
     const abbreviationFromUserName = (name) => {
         const tab = name.split(' ').map((x) => x.charAt(0));
@@ -153,20 +135,6 @@ const DirectoryContent = () => {
         );
     }
 
-    const updateDirectoryChildren = useCallback(() => {
-        fetchDirectoryContent(selectedDirectoryRef.current).then(
-            (childrenToBeInserted) => {
-                dispatch(
-                    setCurrentChildren(
-                        childrenToBeInserted.filter(
-                            (child) => child.type !== elementType.DIRECTORY
-                        )
-                    )
-                );
-            }
-        );
-    }, [dispatch, selectedDirectoryRef]);
-
     useEffect(() => {
         if (currentChildren !== null) {
             let uuids = [];
@@ -185,59 +153,6 @@ const DirectoryContent = () => {
             });
         }
     }, [currentChildren]);
-
-    const displayErrorIfExist = useCallback(
-        (event) => {
-            let eventData = JSON.parse(event.data);
-            if (eventData.headers) {
-                const error = eventData.headers['error'];
-                if (error) {
-                    const studyName = eventData.headers['studyName'];
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: error,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'studyCreatingError',
-                            headerMessageValues: { studyName: studyName },
-                            intlRef: intlRef,
-                        },
-                    });
-                    return true;
-                }
-            }
-            return false;
-        },
-        [enqueueSnackbar, intlRef]
-    );
-
-    const connectNotificationsUpdateStudies = useCallback(() => {
-        const ws = connectNotificationsWsUpdateStudies();
-
-        ws.onmessage = function (event) {
-            displayErrorIfExist(event);
-            updateDirectoryChildren();
-        };
-
-        ws.onclose = function () {
-            if (!websocketExpectedCloseRef.current) {
-                console.error('Unexpected Notification WebSocket closed');
-            }
-        };
-        ws.onerror = function (event) {
-            console.error('Unexpected Notification WebSocket error', event);
-        };
-        return ws;
-    }, [displayErrorIfExist, updateDirectoryChildren]);
-
-    useEffect(() => {
-        const ws = connectNotificationsUpdateStudies();
-        // Note: dispatch doesn't change
-
-        // cleanup at unmount event
-        return function () {
-            ws.close();
-        };
-    }, [connectNotificationsUpdateStudies]);
 
     return (
         <>
