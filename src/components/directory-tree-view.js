@@ -5,14 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { fetchDirectoryContent } from '../utils/rest-api';
+import {
+    connectNotificationsWsUpdateStudies,
+    fetchDirectoryContent,
+} from '../utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentChildren, setSelectedDirectory } from '../redux/actions';
 import Menu from '@material-ui/core/Menu';
@@ -24,6 +27,8 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import CreateStudyForm from './create-study-form';
 import { useIntl } from 'react-intl';
 import { elementType } from '../utils/elementType';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles(() => ({
     treeItemLabel: {
@@ -51,7 +56,7 @@ const StyledMenu = withStyles({
 const DirectoryTreeView = ({ rootDirectory }) => {
     const classes = useStyles();
 
-    const [treeData, setTreeData] = useState(rootDirectory);
+    const [mapData, setMapData] = useState({});
     const [expanded, setExpanded] = React.useState([]);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [openAddNewStudyDialog, setOpenAddNewStudyDialog] = React.useState(
@@ -60,8 +65,30 @@ const DirectoryTreeView = ({ rootDirectory }) => {
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
+    const selectedDirectoryRef = useRef(null);
+    const mapDataRef = useRef({});
+    const expandedRef = useRef([]);
+    const websocketExpectedCloseRef = useRef();
+    selectedDirectoryRef.current = selectedDirectory;
+    expandedRef.current = expanded;
+    mapDataRef.current = mapData;
+
+    const { enqueueSnackbar } = useSnackbar();
+
     const dispatch = useDispatch();
+
     const intl = useIntl();
+    const intlRef = useIntlRef();
+
+    useEffect(() => {
+        let rootDirectoryCopy = { ...rootDirectory };
+        rootDirectoryCopy.parentUuid = null;
+        rootDirectoryCopy.children = [];
+
+        let initialMapData = {};
+        initialMapData[rootDirectory.elementUuid] = rootDirectoryCopy;
+        setMapData(initialMapData);
+    }, [rootDirectory]);
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -72,47 +99,47 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         setAnchorEl(null);
     };
 
-    const handleOpenAddNewStudy = () => {
+    const handleOpenAddNewStudyDialog = () => {
         setAnchorEl(null);
         setOpenAddNewStudyDialog(true);
     };
 
-    const merge = (treeDataCopy, childrenToBeInserted) => {
-        const childrenUuids = treeDataCopy.children.map(
-            (child) => child.elementUuid
-        );
-        const mergedArray = treeDataCopy.children.concat(
-            childrenToBeInserted.filter(
-                (item) => childrenUuids.indexOf(item.elementUuid) < 0
-            )
-        );
-        treeDataCopy.children = mergedArray;
-    };
+    const insertContent = useCallback(
+        (selected, childrenToBeInserted) => {
+            let preparedChildrenToBeInserted = childrenToBeInserted.map(
+                (child) => {
+                    child.children = [];
+                    child.parentUuid = selected;
+                    return child;
+                }
+            );
 
-    const insertContent = (selected, treeDataCopy, childrenToBeInserted) => {
-        if (treeDataCopy.elementUuid === selected) {
-            if (treeDataCopy.children === undefined) {
-                treeDataCopy.children = childrenToBeInserted;
-            } else {
-                merge(treeDataCopy, childrenToBeInserted);
-            }
-        } else {
-            if (treeDataCopy.children != null) {
-                treeDataCopy.children.forEach((child) => {
-                    insertContent(selected, child, childrenToBeInserted);
-                });
-            }
-        }
-    };
+            let mapDataCopy = { ...mapDataRef.current };
+
+            mapDataCopy[selected].children = preparedChildrenToBeInserted;
+
+            preparedChildrenToBeInserted.forEach((child) => {
+                if (!mapDataCopy[child.elementUuid]) {
+                    mapDataCopy[child.elementUuid] = child;
+                }
+            });
+
+            setMapData(mapDataCopy);
+        },
+        [mapDataRef]
+    );
 
     function onContextMenu(e, nodeIds) {
-        e.stopPropagation();
         e.preventDefault();
         handleSelect(nodeIds, false);
         handleOpenMenu(e);
     }
 
     const renderTree = (node) => {
+        if (!node) {
+            return;
+        }
+
         return (
             <TreeItem
                 key={node.elementUuid}
@@ -129,8 +156,10 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                 }
                 endIcon={<ChevronRightIcon />}
             >
-                {Array.isArray(node.children)
-                    ? node.children.map((node) => renderTree(node))
+                {Array.isArray(mapData[node.elementUuid].children)
+                    ? mapData[node.elementUuid].children.map((node) =>
+                          renderTree(node)
+                      )
                     : null}
             </TreeItem>
         );
@@ -138,46 +167,109 @@ const DirectoryTreeView = ({ rootDirectory }) => {
 
     const handleSelect = (nodeId, toggle) => {
         dispatch(setSelectedDirectory(nodeId));
-        fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
-            dispatch(
-                setCurrentChildren(
-                    childrenToBeInserted.filter(
-                        (child) => child.type !== elementType.DIRECTORY
-                    )
-                )
-            );
-            let treeDataCopy = { ...treeData };
-            insertContent(
-                nodeId,
-                treeDataCopy,
-                childrenToBeInserted.filter(
-                    (child) => child.type === elementType.DIRECTORY
-                )
-            );
-            if (toggle) {
-                if (expanded.includes(nodeId)) {
-                    removeElement(nodeId);
-                } else {
-                    addElement(nodeId);
+        updateDirectoryChildren(nodeId, toggle);
+    };
+
+    const removeElement = useCallback(
+        (nodeId) => {
+            let expandedCopy = [...expandedRef.current];
+            for (let i = 0; i < expandedCopy.length; i++) {
+                if (expandedCopy[i] === nodeId) {
+                    expandedCopy.splice(i, 1);
                 }
             }
-            setTreeData(treeDataCopy);
-        });
-    };
+            setExpanded(expandedCopy);
+        },
+        [expandedRef]
+    );
 
-    const removeElement = (nodeId) => {
-        let expandedCopy = [...expanded];
-        for (let i = 0; i < expandedCopy.length; i++) {
-            if (expandedCopy[i] === nodeId) {
-                expandedCopy.splice(i, 1);
+    const addElement = useCallback(
+        (nodeId) => {
+            setExpanded([...expandedRef.current, nodeId]);
+        },
+        [expandedRef]
+    );
+
+    const displayErrorIfExist = useCallback(
+        (event) => {
+            let eventData = JSON.parse(event.data);
+            if (eventData.headers) {
+                const error = eventData.headers['error'];
+                if (error) {
+                    const studyName = eventData.headers['studyName'];
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: error,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'studyCreatingError',
+                            headerMessageValues: { studyName: studyName },
+                            intlRef: intlRef,
+                        },
+                    });
+                    return true;
+                }
             }
-        }
-        setExpanded(expandedCopy);
-    };
+            return false;
+        },
+        [enqueueSnackbar, intlRef]
+    );
 
-    const addElement = (nodeId) => {
-        setExpanded([...expanded, nodeId]);
-    };
+    const updateDirectoryChildren = useCallback(
+        (nodeId, toggle) => {
+            fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
+                dispatch(
+                    setCurrentChildren(
+                        childrenToBeInserted.filter(
+                            (child) => child.type !== elementType.DIRECTORY
+                        )
+                    )
+                );
+                insertContent(
+                    nodeId,
+                    childrenToBeInserted.filter(
+                        (child) => child.type === elementType.DIRECTORY
+                    )
+                );
+                if (toggle) {
+                    if (expandedRef.current.includes(nodeId)) {
+                        removeElement(nodeId);
+                    } else {
+                        addElement(nodeId);
+                    }
+                }
+            });
+        },
+        [dispatch, addElement, removeElement, expandedRef, insertContent]
+    );
+
+    const connectNotificationsUpdateStudies = useCallback(() => {
+        const ws = connectNotificationsWsUpdateStudies();
+
+        ws.onmessage = function (event) {
+            displayErrorIfExist(event);
+            updateDirectoryChildren(selectedDirectoryRef.current, false);
+        };
+
+        ws.onclose = function () {
+            if (!websocketExpectedCloseRef.current) {
+                console.error('Unexpected Notification WebSocket closed');
+            }
+        };
+        ws.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        return ws;
+    }, [displayErrorIfExist, updateDirectoryChildren]);
+
+    useEffect(() => {
+        const ws = connectNotificationsUpdateStudies();
+        // Note: dispatch doesn't change
+
+        // cleanup at unmount event
+        return function () {
+            ws.close();
+        };
+    }, [connectNotificationsUpdateStudies]);
 
     return (
         <>
@@ -190,7 +282,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                 expanded={expanded}
                 selected={selectedDirectory}
             >
-                {renderTree(treeData)}
+                {renderTree(mapData[rootDirectory.elementUuid])}
             </TreeView>
             <StyledMenu
                 id="case-menu"
@@ -199,7 +291,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                 open={Boolean(anchorEl)}
                 onClose={handleCloseMenu}
             >
-                <MenuItem onClick={handleOpenAddNewStudy}>
+                <MenuItem onClick={handleOpenAddNewStudyDialog}>
                     <ListItemIcon style={{ minWidth: '25px' }}>
                         <AddIcon fontSize="small" />
                     </ListItemIcon>

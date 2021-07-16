@@ -210,6 +210,7 @@ const App = () => {
         intlRef,
         connectNotificationsUpdateConfig,
     ]);
+
     useEffect(() => {
         if (user != null) {
             fetchRootFolders().then((data) => {
@@ -248,17 +249,14 @@ const App = () => {
                                     <div style={{ marginTop: '20px' }}>
                                         {rootDirectories.map(
                                             (rootDirectory) => (
-                                                <div
+                                                <DirectoryTreeView
                                                     key={
                                                         rootDirectory.elementUuid
                                                     }
-                                                >
-                                                    <DirectoryTreeView
-                                                        rootDirectory={
-                                                            rootDirectory
-                                                        }
-                                                    />
-                                                </div>
+                                                    rootDirectory={
+                                                        rootDirectory
+                                                    }
+                                                />
                                             )
                                         )}
                                     </div>
