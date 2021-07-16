@@ -263,10 +263,15 @@ const App = () => {
                                     </div>
                                 </Grid>
                                 <Grid item xs={12} sm={9}>
-                                    <div style={{ marginTop: '20px' }}>
+                                    <div
+                                        style={{
+                                            marginTop: '20px',
+                                            height: '100%',
+                                        }}
+                                    >
                                         <DirectoryBreadcrumbs />
+                                        <DirectoryContent />
                                     </div>
-                                    <DirectoryContent />
                                 </Grid>
                             </Grid>
                         </Route>
