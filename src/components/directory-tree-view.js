@@ -85,9 +85,9 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         rootDirectoryCopy.parentUuid = null;
         rootDirectoryCopy.children = [];
 
-        let mapDataCopy = {};
-        mapDataCopy[rootDirectory.elementUuid] = rootDirectoryCopy;
-        setMapData(mapDataCopy);
+        let initialMapData = {};
+        initialMapData[rootDirectory.elementUuid] = rootDirectoryCopy;
+        setMapData(initialMapData);
     }, [rootDirectory]);
 
     const handleOpenMenu = (event) => {
