@@ -16,7 +16,8 @@ import {
     deleteDirectory,
     fetchDirectoryContent,
     insertDirectory,
-    connectNotificationsWsUpdateStudies, insertRootDirectory
+    connectNotificationsWsUpdateStudies,
+    insertRootDirectory,
 } from '../utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentChildren, setSelectedDirectory } from '../redux/actions';
@@ -119,12 +120,12 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         setAnchorEl(null);
     };
 
-    const handleOpenAddNewStudy = () => {
+    const handleOpenAddNewStudyDialog = () => {
         setAnchorEl(null);
         setOpenAddNewStudyDialog(true);
     };
 
-    const handleCreateNewFolder = () => {
+    const handleOpenCreateNewDirectoryDialog = () => {
         setAnchorEl(null);
         setOpenCreateNewDirectoryDialog(true);
     };
@@ -155,17 +156,9 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     );
 
     function onContextMenu(e, nodeIds) {
-        e.stopPropagation();
         e.preventDefault();
         handleSelect(nodeIds, false);
         handleOpenMenu(e);
-    }
-
-    function onRootContextMenu(e) {
-        e.stopPropagation();
-        e.preventDefault();
-        handleOpenMenu(e);
-        console.log('root context menu');
     }
 
     const renderTree = (node) => {
@@ -213,11 +206,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     }
 
     function insertNewRootDirectory(directoryName, isPrivate) {
-        insertRootDirectory(
-            directoryName,
-            isPrivate,
-            userId
-        ).then(() => {
+        insertRootDirectory(directoryName, isPrivate, userId).then(() => {
             setOpenCreateRootDirectoryDialog(false);
             setAnchorEl(null);
             handleSelect(selectedDirectory, false);
@@ -342,7 +331,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     }, [connectNotificationsUpdateStudies]);
 
     return (
-        <div onContextMenu={onRootContextMenu}>
+        <div>
             <TreeView
                 className={classes.root}
                 defaultCollapseIcon={<ExpandMoreIcon />}
@@ -362,7 +351,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 open={Boolean(anchorEl)}
                 onClose={handleCloseMenu}
             >
-                <MenuItem onClick={handleOpenAddNewStudy}>
+                <MenuItem onClick={handleOpenAddNewStudyDialog}>
                     <ListItemIcon style={{ minWidth: '25px' }}>
                         <AddIcon fontSize="small" />
                     </ListItemIcon>
@@ -372,7 +361,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                         })}
                     />
                 </MenuItem>
-                <MenuItem onClick={handleCreateNewFolder}>
+                <MenuItem onClick={handleOpenCreateNewDirectoryDialog}>
                     <ListItemIcon style={{ minWidth: '25px' }}>
                         <CreateNewFolderIcon fontSize="small" />
                     </ListItemIcon>
@@ -392,7 +381,9 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                         })}
                     />
                 </MenuItem>
-                <MenuItem onClick={() => setOpenCreateRootDirectoryDialog(true)}>
+                <MenuItem
+                    onClick={() => setOpenCreateRootDirectoryDialog(true)}
+                >
                     <ListItemIcon style={{ minWidth: '25px' }}>
                         <FolderSpecialIcon fontSize="small" />
                     </ListItemIcon>
@@ -428,7 +419,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 onClick={insertNewRootDirectory}
                 onClose={() => setOpenCreateRootDirectoryDialog(false)}
                 title={intl.formatMessage({
-                    id: 'insertNewDirectoryDialogTitle',
+                    id: 'insertNewRootDirectoryDialogTitle',
                 })}
                 error={''}
             />

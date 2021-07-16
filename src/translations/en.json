@@ -36,6 +36,7 @@
     "deleteFolder": "Delete the folder",
     "insertNewDirectoryDialogMessage": "Please insert the following information! ",
     "insertNewDirectoryDialogTitle": "Create a folder",
+    "insertNewRootDirectoryDialogTitle": "Create a root folder",
     "deleteDirectoryDialogMessage": "Are you sure you want to delete the folder ?",
     "deleteDirectoryDialogTitle": "Delete the folder",
     "directoryNameLabel": "Folder Name",

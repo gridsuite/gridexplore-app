@@ -36,6 +36,7 @@
     "deleteFolder": "Supprimer le dossier",
     "insertNewDirectoryDialogMessage": "Veuillez insérer les informations suivantes svp!",
     "insertNewDirectoryDialogTitle": "Créer un dossier",
+    "insertNewRootDirectoryDialogTitle": "Créer un dossier racine",
     "deleteDirectoryDialogMessage": "êtes vous sûr de vouloir supprimer le dossier ?",
     "deleteDirectoryDialogTitle": "Supprimer le dossier",
     "directoryNameLabel": "Nom du dossier",

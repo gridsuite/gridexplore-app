@@ -215,7 +215,7 @@ const App = () => {
         fetchRootFolders().then((data) => {
             setRootDirectories(data);
         });
-    }
+    };
 
     useEffect(() => {
         if (user != null) {
@@ -260,7 +260,9 @@ const App = () => {
                                                     rootDirectory={
                                                         rootDirectory
                                                     }
-                                                    updateRootDirectories={updateRootDirectories}
+                                                    updateRootDirectories={
+                                                        updateRootDirectories
+                                                    }
                                                 />
                                             )
                                         )}
