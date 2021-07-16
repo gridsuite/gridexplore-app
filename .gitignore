@@ -13,3 +13,5 @@
 .env.test.local
 .env.production.local
 
+# jest
+/coverage
