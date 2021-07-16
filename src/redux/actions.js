@@ -46,6 +46,24 @@ export function setSelectedDirectory(selectedDirectory) {
     };
 }
 
+export const BREADCRUMB_DIRECTORY = 'BREADCRUMB_DIRECTORY';
+
+export function setBreadCrumbDirectory(breadCrumbDirectory) {
+    return {
+        type: BREADCRUMB_DIRECTORY,
+        breadCrumbDirectory: breadCrumbDirectory,
+    };
+}
+
+export const CURRENT_PATH = 'CURRENT_PATH';
+
+export function setCurrentPath(path) {
+    return {
+        type: CURRENT_PATH,
+        currentPath: path,
+    };
+}
+
 export const SET_APPS_AND_URLS = 'SET_APPS_AND_URLS';
 
 export function setAppsAndUrls(appsAndUrls) {

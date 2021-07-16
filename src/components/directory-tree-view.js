@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /**
  * Copyright (c) 2021, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -17,7 +18,12 @@ import {
     fetchDirectoryContent,
 } from '../utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCurrentChildren, setSelectedDirectory } from '../redux/actions';
+import {
+    setCurrentChildren,
+    setSelectedDirectory,
+    setBreadCrumbDirectory,
+    setCurrentPath,
+} from '../redux/actions';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -64,6 +70,9 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     );
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const breadCrumbDirectory = useSelector(
+        (state) => state.breadCrumbDirectory
+    );
 
     const selectedDirectoryRef = useRef(null);
     const mapDataRef = useRef({});
@@ -80,6 +89,8 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     const intl = useIntl();
     const intlRef = useIntlRef();
 
+    ///////////////////////////////////
+    // Component initialization
     useEffect(() => {
         let rootDirectoryCopy = { ...rootDirectory };
         rootDirectoryCopy.parentUuid = null;
@@ -89,6 +100,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         initialMapData[rootDirectory.elementUuid] = rootDirectoryCopy;
         setMapData(initialMapData);
     }, [rootDirectory]);
+    ///////////////////////////////////
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -104,26 +116,62 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         setOpenAddNewStudyDialog(true);
     };
 
+    ///////////////////////////////////
+    // Manage current path data
+    const buildPath = useCallback(
+        (nodeId, path) => {
+            let currentUuid = nodeId;
+            while (
+                currentUuid != null &&
+                mapDataRef.current[currentUuid] !== undefined
+            ) {
+                path.unshift({
+                    elementUuid: mapDataRef.current[currentUuid].elementUuid,
+                    elementName: mapDataRef.current[currentUuid].elementName,
+                });
+                currentUuid = mapDataRef.current[currentUuid].parentUuid;
+            }
+        },
+        [mapDataRef]
+    );
+
+    const updatePath = useCallback(
+        (nodeId) => {
+            let path = [];
+            buildPath(nodeId, path);
+            if (path != null) dispatch(setCurrentPath(path));
+        },
+        [buildPath, dispatch]
+    );
+    ///////////////////////////////////
+
+    const updatecurrentChildren = useCallback(
+        (children) => {
+            dispatch(
+                setCurrentChildren(
+                    children.filter(
+                        (child) => child.type !== elementType.DIRECTORY
+                    )
+                )
+            );
+        },
+        [dispatch]
+    );
+
     const insertContent = useCallback(
         (selected, childrenToBeInserted) => {
+            let mapDataCopy = { ...mapDataRef.current };
             let preparedChildrenToBeInserted = childrenToBeInserted.map(
                 (child) => {
                     child.children = [];
                     child.parentUuid = selected;
+                    if (!mapDataCopy[child.elementUuid]) {
+                        mapDataCopy[child.elementUuid] = child;
+                    }
                     return child;
                 }
             );
-
-            let mapDataCopy = { ...mapDataRef.current };
-
             mapDataCopy[selected].children = preparedChildrenToBeInserted;
-
-            preparedChildrenToBeInserted.forEach((child) => {
-                if (!mapDataCopy[child.elementUuid]) {
-                    mapDataCopy[child.elementUuid] = child;
-                }
-            });
-
             setMapData(mapDataCopy);
         },
         [mapDataRef]
@@ -135,6 +183,8 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         handleOpenMenu(e);
     }
 
+    ///////////////////////////////////
+    // Handle Rendering
     const renderTree = (node) => {
         if (!node) {
             return;
@@ -164,12 +214,21 @@ const DirectoryTreeView = ({ rootDirectory }) => {
             </TreeItem>
         );
     };
+    ///////////////////////////////////
 
-    const handleSelect = (nodeId, toggle) => {
-        dispatch(setSelectedDirectory(nodeId));
-        updateDirectoryChildren(nodeId, toggle);
-    };
 
+    const updateMapData = useCallback(
+        (nodeId, children) => {
+            insertContent(
+                nodeId,
+                children.filter((child) => child.type === elementType.DIRECTORY)
+            );
+        },
+        [insertContent]
+    );
+
+    ///////////////////////////////////
+    // Manage treeItem folding
     const removeElement = useCallback(
         (nodeId) => {
             let expandedCopy = [...expandedRef.current];
@@ -190,6 +249,20 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         [expandedRef]
     );
 
+    const updateToggle = useCallback(
+        (nodeId) => {
+            if (expandedRef.current.includes(nodeId)) {
+                removeElement(nodeId);
+            } else {
+                addElement(nodeId);
+            }
+        },
+        [addElement, removeElement, expandedRef]
+    );
+    ///////////////////////////////////
+
+    ///////////////////////////////////
+    // Manage Studies updating with Web Socket
     const displayErrorIfExist = useCallback(
         (event) => {
             let eventData = JSON.parse(event.data);
@@ -215,31 +288,15 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     );
 
     const updateDirectoryChildren = useCallback(
-        (nodeId, toggle) => {
+        (nodeId) => {
             fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
-                dispatch(
-                    setCurrentChildren(
-                        childrenToBeInserted.filter(
-                            (child) => child.type !== elementType.DIRECTORY
-                        )
-                    )
-                );
-                insertContent(
-                    nodeId,
-                    childrenToBeInserted.filter(
-                        (child) => child.type === elementType.DIRECTORY
-                    )
-                );
-                if (toggle) {
-                    if (expandedRef.current.includes(nodeId)) {
-                        removeElement(nodeId);
-                    } else {
-                        addElement(nodeId);
-                    }
-                }
+                // update directory Content
+                updatecurrentChildren(childrenToBeInserted);
+                // Update Tree Map data
+                updateMapData(nodeId, childrenToBeInserted);
             });
         },
-        [dispatch, addElement, removeElement, expandedRef, insertContent]
+        [updatecurrentChildren, updateMapData]
     );
 
     const connectNotificationsUpdateStudies = useCallback(() => {
@@ -270,6 +327,43 @@ const DirectoryTreeView = ({ rootDirectory }) => {
             ws.close();
         };
     }, [connectNotificationsUpdateStudies]);
+    ///////////////////////////////////
+
+    ///////////////////////////////////
+    // Handle User interactions
+    const handleSelect = useCallback(
+        (nodeId, toggle) => {
+            dispatch(setSelectedDirectory(nodeId));
+            // fetch content
+            updateDirectoryChildren(nodeId);
+            // update current directory path
+            updatePath(nodeId);
+            // }
+            if (toggle) {
+                // update fold status of item
+                updateToggle(nodeId);
+            }
+        },
+        [
+            dispatch,
+            updateDirectoryChildren,
+            updatePath,
+            updateToggle,
+        ]
+    );
+
+    ///////////////////////////////////
+    // Handle components synchronization
+    useEffect(() => {
+        // test if we handle this change in the good treeview by checking if breadCrumbDirectory is in this treeview
+        if (breadCrumbDirectory !== null && mapDataRef.current[breadCrumbDirectory] !== undefined) {
+            // // fetch content
+            handleSelect(breadCrumbDirectory, false);
+            dispatch(setBreadCrumbDirectory(null));
+        }
+    }, [breadCrumbDirectory, dispatch, handleSelect]);
+    
+    ///////////////////////////////////
 
     return (
         <>

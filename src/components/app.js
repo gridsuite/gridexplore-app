@@ -51,6 +51,7 @@ import AppTopBar from './app-top-bar';
 import Grid from '@material-ui/core/Grid';
 import DirectoryTreeView from './directory-tree-view';
 import DirectoryContent from './directory-content';
+import DirectoryBreadcrumbs from './directory-breadcrumbs';
 
 const noUserManager = { instance: null, error: null };
 
@@ -262,6 +263,9 @@ const App = () => {
                                     </div>
                                 </Grid>
                                 <Grid item xs={12} sm={9}>
+                                    <div style={{ marginTop: '20px' }}>
+                                        <DirectoryBreadcrumbs />
+                                    </div>
                                     <DirectoryContent />
                                 </Grid>
                             </Grid>
