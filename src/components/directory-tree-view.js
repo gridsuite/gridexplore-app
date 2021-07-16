@@ -15,9 +15,8 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import {
     deleteDirectory,
     fetchDirectoryContent,
-    fetchFolderInfos,
     insertDirectory,
-    connectNotificationsWsUpdateStudies,
+    connectNotificationsWsUpdateStudies, insertRootDirectory
 } from '../utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentChildren, setSelectedDirectory } from '../redux/actions';
@@ -26,8 +25,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import FolderSpecialIcon from '@material-ui/icons/FolderSpecial';
+import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import AddIcon from '@material-ui/icons/Add';
-import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import withStyles from '@material-ui/core/styles/withStyles';
 import CreateStudyForm from './create-study-form';
 import { useIntl } from 'react-intl';
@@ -60,7 +60,7 @@ const StyledMenu = withStyles({
     />
 ));
 
-const DirectoryTreeView = ({ rootDirectory }) => {
+const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     const classes = useStyles();
 
     const [mapData, setMapData] = useState({});
@@ -76,6 +76,10 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     const [
         openDeleteDirectoryDialog,
         setOpenDeleteDirectoryDialog,
+    ] = React.useState(false);
+    const [
+        openCreateRootDirectoryDialog,
+        setOpenCreateRootDirectoryDialog,
     ] = React.useState(false);
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -205,6 +209,20 @@ const DirectoryTreeView = ({ rootDirectory }) => {
             setAnchorEl(null);
             handleSelect(selectedDirectory, false);
             addElement(selectedDirectory);
+        });
+    }
+
+    function insertNewRootDirectory(directoryName, isPrivate) {
+        insertRootDirectory(
+            directoryName,
+            isPrivate,
+            userId
+        ).then(() => {
+            setOpenCreateRootDirectoryDialog(false);
+            setAnchorEl(null);
+            handleSelect(selectedDirectory, false);
+            addElement(selectedDirectory);
+            updateRootDirectories();
         });
     }
 
@@ -356,7 +374,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                 </MenuItem>
                 <MenuItem onClick={handleCreateNewFolder}>
                     <ListItemIcon style={{ minWidth: '25px' }}>
-                        <FolderOpenIcon fontSize="small" />
+                        <CreateNewFolderIcon fontSize="small" />
                     </ListItemIcon>
                     <ListItemText
                         primary={intl.formatMessage({
@@ -374,9 +392,9 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                         })}
                     />
                 </MenuItem>
-                <MenuItem onClick={() => setOpenDeleteDirectoryDialog(true)}>
+                <MenuItem onClick={() => setOpenCreateRootDirectoryDialog(true)}>
                     <ListItemIcon style={{ minWidth: '25px' }}>
-                        <DeleteOutlineIcon fontSize="small" />
+                        <FolderSpecialIcon fontSize="small" />
                     </ListItemIcon>
                     <ListItemText
                         primary={intl.formatMessage({
@@ -397,6 +415,18 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                 open={openCreateNewDirectoryDialog}
                 onClick={insertNewDirectory}
                 onClose={() => setOpenCreateNewDirectoryDialog(false)}
+                title={intl.formatMessage({
+                    id: 'insertNewDirectoryDialogTitle',
+                })}
+                error={''}
+            />
+            <InsertNewDirectoryDialog
+                message={intl.formatMessage({
+                    id: 'insertNewDirectoryDialogMessage',
+                })}
+                open={openCreateRootDirectoryDialog}
+                onClick={insertNewRootDirectory}
+                onClose={() => setOpenCreateRootDirectoryDialog(false)}
                 title={intl.formatMessage({
                     id: 'insertNewDirectoryDialogTitle',
                 })}

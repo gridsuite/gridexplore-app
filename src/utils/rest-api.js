@@ -129,7 +129,30 @@ export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
             elementName: directoryName,
             type: 'DIRECTORY',
             accessRights: { private: isPrivate },
-            owner: owner
+            owner: owner,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function insertRootDirectory(directoryName, isPrivate, owner) {
+    console.info("Inserting a new root folder '%s'", directoryName);
+    const insertRootDirectoryUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories/`;
+
+    return backendFetch(insertRootDirectoryUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            elementName: directoryName,
+            accessRights: { private: isPrivate },
+            owner: owner,
         }),
     }).then((response) =>
         response.ok

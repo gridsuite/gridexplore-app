@@ -211,11 +211,15 @@ const App = () => {
         connectNotificationsUpdateConfig,
     ]);
 
+    const updateRootDirectories = () => {
+        fetchRootFolders().then((data) => {
+            setRootDirectories(data);
+        });
+    }
+
     useEffect(() => {
         if (user != null) {
-            fetchRootFolders().then((data) => {
-                setRootDirectories(data);
-            });
+            updateRootDirectories();
         }
     }, [user]);
 
@@ -249,17 +253,15 @@ const App = () => {
                                     <div style={{ marginTop: '20px' }}>
                                         {rootDirectories.map(
                                             (rootDirectory) => (
-                                                <div
+                                                <DirectoryTreeView
                                                     key={
                                                         rootDirectory.elementUuid
                                                     }
-                                                >
-                                                    <DirectoryTreeView
-                                                        rootDirectory={
-                                                            rootDirectory
-                                                        }
-                                                    />
-                                                </div>
+                                                    rootDirectory={
+                                                        rootDirectory
+                                                    }
+                                                    updateRootDirectories={updateRootDirectories}
+                                                />
                                             )
                                         )}
                                     </div>
