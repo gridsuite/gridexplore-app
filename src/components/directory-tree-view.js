@@ -99,7 +99,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         setAnchorEl(null);
     };
 
-    const handleOpenAddNewStudy = () => {
+    const handleOpenAddNewStudyDialog = () => {
         setAnchorEl(null);
         setOpenAddNewStudyDialog(true);
     };
@@ -130,7 +130,6 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     );
 
     function onContextMenu(e, nodeIds) {
-        e.stopPropagation();
         e.preventDefault();
         handleSelect(nodeIds, false);
         handleOpenMenu(e);
@@ -292,7 +291,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                 open={Boolean(anchorEl)}
                 onClose={handleCloseMenu}
             >
-                <MenuItem onClick={handleOpenAddNewStudy}>
+                <MenuItem onClick={handleOpenAddNewStudyDialog}>
                     <ListItemIcon style={{ minWidth: '25px' }}>
                         <AddIcon fontSize="small" />
                     </ListItemIcon>
