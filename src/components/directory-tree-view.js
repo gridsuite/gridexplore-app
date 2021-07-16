@@ -101,9 +101,9 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         rootDirectoryCopy.parentUuid = null;
         rootDirectoryCopy.children = [];
 
-        let mapDataCopy = {};
-        mapDataCopy[rootDirectory.elementUuid] = rootDirectoryCopy;
-        setMapData(mapDataCopy);
+        let initialMapData = {};
+        initialMapData[rootDirectory.elementUuid] = rootDirectoryCopy;
+        setMapData(initialMapData);
     }, [rootDirectory]);
 
     const handleOpenMenu = (event) => {
@@ -140,7 +140,9 @@ const DirectoryTreeView = ({ rootDirectory }) => {
             mapDataCopy[selected].children = preparedChildrenToBeInserted;
 
             preparedChildrenToBeInserted.forEach((child) => {
-                mapDataCopy[child.elementUuid] = child;
+                if (!mapDataCopy[child.elementUuid]) {
+                    mapDataCopy[child.elementUuid] = child;
+                }
             });
 
             setMapData(mapDataCopy);
@@ -166,6 +168,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         if (!node) {
             return;
         }
+
         return (
             <TreeItem
                 key={node.elementUuid}
