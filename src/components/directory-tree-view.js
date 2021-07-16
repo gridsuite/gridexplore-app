@@ -119,7 +119,9 @@ const DirectoryTreeView = ({ rootDirectory }) => {
             mapDataCopy[selected].children = preparedChildrenToBeInserted;
 
             preparedChildrenToBeInserted.forEach((child) => {
-                mapDataCopy[child.elementUuid] = child;
+                if (!mapDataCopy[child.elementUuid]) {
+                    mapDataCopy[child.elementUuid] = child;
+                }
             });
 
             setMapData(mapDataCopy);
@@ -138,6 +140,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         if (!node) {
             return;
         }
+
         return (
             <TreeItem
                 key={node.elementUuid}
