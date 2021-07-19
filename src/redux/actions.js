@@ -46,15 +46,6 @@ export function setSelectedDirectory(selectedDirectory) {
     };
 }
 
-export const BREADCRUMB_DIRECTORY = 'BREADCRUMB_DIRECTORY';
-
-export function setBreadCrumbDirectory(breadCrumbDirectory) {
-    return {
-        type: BREADCRUMB_DIRECTORY,
-        breadCrumbDirectory: breadCrumbDirectory,
-    };
-}
-
 export const CURRENT_PATH = 'CURRENT_PATH';
 
 export function setCurrentPath(path) {

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { setBreadCrumbDirectory } from '../redux/actions';
+import { setSelectedDirectory } from '../redux/actions';
 
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
@@ -35,23 +35,20 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DirectoryBreadcrumbs = ({ rootDirectory }) => {
+const DirectoryBreadcrumbs = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const currentPath = useSelector((state) => state.currentPath);
 
-    ///////////////////////////////////
-    // Handle User interactions
+    /* Handle User interactions */
     const handleSelect = (event, nodeId) => {
         event.preventDefault();
-        dispatch(setBreadCrumbDirectory(nodeId));
+        dispatch(setSelectedDirectory(nodeId));
     };
-    ///////////////////////////////////
 
-    ///////////////////////////////////
-    // Handle Rendering
+    /* Handle Rendering */
     const renderBreadCrumbsLinks = (currentPath) => {
         if (
             selectedDirectory !== null &&
@@ -86,7 +83,6 @@ const DirectoryBreadcrumbs = ({ rootDirectory }) => {
             );
         }
     };
-    ///////////////////////////////////
 
     return (
         <Breadcrumbs maxItems={10} aria-label="breadcrumb">

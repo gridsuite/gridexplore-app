@@ -21,7 +21,6 @@ import {
     SELECT_LANGUAGE,
     CURRENT_CHILDREN,
     SELECT_DIRECTORY,
-    BREADCRUMB_DIRECTORY,
     CURRENT_PATH,
     SET_APPS_AND_URLS,
     LOAD_CASES_SUCCESS,
@@ -43,7 +42,6 @@ const initialState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     currentChildren: null,
     selectedDirectory: null,
-    breadCrumbDirectory: null,
     currentPath: [],
     user: null,
     signInCallbackError: null,
@@ -83,10 +81,6 @@ export const reducer = createReducer(initialState, {
 
     [SELECT_DIRECTORY]: (state, action) => {
         state.selectedDirectory = action.selectedDirectory;
-    },
-
-    [BREADCRUMB_DIRECTORY]: (state, action) => {
-        state.breadCrumbDirectory = action.breadCrumbDirectory;
     },
 
     [CURRENT_PATH]: (state, action) => {

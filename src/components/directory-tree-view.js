@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 /**
  * Copyright (c) 2021, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -21,7 +20,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     setCurrentChildren,
     setSelectedDirectory,
-    setBreadCrumbDirectory,
     setCurrentPath,
 } from '../redux/actions';
 import Menu from '@material-ui/core/Menu';
@@ -70,9 +68,6 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     );
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const breadCrumbDirectory = useSelector(
-        (state) => state.breadCrumbDirectory
-    );
 
     const selectedDirectoryRef = useRef(null);
     const mapDataRef = useRef({});
@@ -89,8 +84,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     const intl = useIntl();
     const intlRef = useIntlRef();
 
-    ///////////////////////////////////
-    // Component initialization
+    /* Component initialization */
     useEffect(() => {
         let rootDirectoryCopy = { ...rootDirectory };
         rootDirectoryCopy.parentUuid = null;
@@ -100,7 +94,6 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         initialMapData[rootDirectory.elementUuid] = rootDirectoryCopy;
         setMapData(initialMapData);
     }, [rootDirectory]);
-    ///////////////////////////////////
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -116,8 +109,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         setOpenAddNewStudyDialog(true);
     };
 
-    ///////////////////////////////////
-    // Manage current path data
+    /* Manage current path data */
     const buildPath = useCallback(
         (nodeId, path) => {
             let currentUuid = nodeId;
@@ -143,9 +135,9 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         },
         [buildPath, dispatch]
     );
-    ///////////////////////////////////
 
-    const updatecurrentChildren = useCallback(
+    /* Manage data */
+    const updateCurrentChildren = useCallback(
         (children) => {
             dispatch(
                 setCurrentChildren(
@@ -183,8 +175,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         handleOpenMenu(e);
     }
 
-    ///////////////////////////////////
-    // Handle Rendering
+    /* Handle Rendering */
     const renderTree = (node) => {
         if (!node) {
             return;
@@ -214,8 +205,6 @@ const DirectoryTreeView = ({ rootDirectory }) => {
             </TreeItem>
         );
     };
-    ///////////////////////////////////
-
 
     const updateMapData = useCallback(
         (nodeId, children) => {
@@ -227,8 +216,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         [insertContent]
     );
 
-    ///////////////////////////////////
-    // Manage treeItem folding
+    /* Manage treeItem folding */
     const removeElement = useCallback(
         (nodeId) => {
             let expandedCopy = [...expandedRef.current];
@@ -249,7 +237,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         [expandedRef]
     );
 
-    const updateToggle = useCallback(
+    const toggleDirectory = useCallback(
         (nodeId) => {
             if (expandedRef.current.includes(nodeId)) {
                 removeElement(nodeId);
@@ -259,10 +247,8 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         },
         [addElement, removeElement, expandedRef]
     );
-    ///////////////////////////////////
 
-    ///////////////////////////////////
-    // Manage Studies updating with Web Socket
+    /* Manage Studies updating with Web Socket */
     const displayErrorIfExist = useCallback(
         (event) => {
             let eventData = JSON.parse(event.data);
@@ -291,12 +277,22 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         (nodeId) => {
             fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
                 // update directory Content
-                updatecurrentChildren(childrenToBeInserted);
+                updateCurrentChildren(childrenToBeInserted);
                 // Update Tree Map data
                 updateMapData(nodeId, childrenToBeInserted);
             });
         },
-        [updatecurrentChildren, updateMapData]
+        [updateCurrentChildren, updateMapData]
+    );
+
+    const updateTree = useCallback(
+        (nodeId) => {
+            // fetch content
+            updateDirectoryChildren(nodeId);
+            // update current directory path
+            updatePath(nodeId);
+        },
+        [updateDirectoryChildren, updatePath]
     );
 
     const connectNotificationsUpdateStudies = useCallback(() => {
@@ -327,43 +323,31 @@ const DirectoryTreeView = ({ rootDirectory }) => {
             ws.close();
         };
     }, [connectNotificationsUpdateStudies]);
-    ///////////////////////////////////
 
-    ///////////////////////////////////
-    // Handle User interactions
+    /* Handle User interactions*/
     const handleSelect = useCallback(
         (nodeId, toggle) => {
             dispatch(setSelectedDirectory(nodeId));
-            // fetch content
-            updateDirectoryChildren(nodeId);
-            // update current directory path
-            updatePath(nodeId);
-            // }
+            // updateTree will be called by useEffect;
             if (toggle) {
                 // update fold status of item
-                updateToggle(nodeId);
+                toggleDirectory(nodeId);
             }
         },
-        [
-            dispatch,
-            updateDirectoryChildren,
-            updatePath,
-            updateToggle,
-        ]
+        [dispatch, toggleDirectory]
     );
 
-    ///////////////////////////////////
-    // Handle components synchronization
+    /* Handle components synchronization */
     useEffect(() => {
-        // test if we handle this change in the good treeview by checking if breadCrumbDirectory is in this treeview
-        if (breadCrumbDirectory !== null && mapDataRef.current[breadCrumbDirectory] !== undefined) {
-            // // fetch content
-            handleSelect(breadCrumbDirectory, false);
-            dispatch(setBreadCrumbDirectory(null));
+        // test if we handle this change in the good treeview by checking if selectedDirectory is in this treeview
+        if (
+            selectedDirectory !== null &&
+            mapDataRef.current[selectedDirectory] !== undefined
+        ) {
+            // fetch content
+            updateTree(selectedDirectory);
         }
-    }, [breadCrumbDirectory, dispatch, handleSelect]);
-    
-    ///////////////////////////////////
+    }, [selectedDirectory, updateTree]);
 
     return (
         <>
