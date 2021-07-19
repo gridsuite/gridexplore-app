@@ -21,13 +21,13 @@ import {
     SELECT_LANGUAGE,
     CURRENT_CHILDREN,
     SELECT_DIRECTORY,
+    CURRENT_PATH,
     SET_APPS_AND_URLS,
     LOAD_CASES_SUCCESS,
     SELECT_CASE,
     REMOVE_SELECTED_CASE,
     SELECT_FILE,
     REMOVE_SELECTED_FILE,
-    SET_TMP_STUDIES,
 } from './actions';
 
 import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
@@ -42,13 +42,13 @@ const initialState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     currentChildren: null,
     selectedDirectory: null,
+    currentPath: [],
     user: null,
     signInCallbackError: null,
     appsAndUrls: [],
     cases: [],
     selectedCase: null,
     selectedFile: null,
-    tmpStudies: {},
     ...paramsInitialState,
 };
 
@@ -83,6 +83,10 @@ export const reducer = createReducer(initialState, {
         state.selectedDirectory = action.selectedDirectory;
     },
 
+    [CURRENT_PATH]: (state, action) => {
+        state.currentPath = action.currentPath;
+    },
+
     [SET_APPS_AND_URLS]: (state, action) => {
         state.appsAndUrls = action.appsAndUrls;
     },
@@ -105,9 +109,5 @@ export const reducer = createReducer(initialState, {
 
     [REMOVE_SELECTED_FILE]: (state) => {
         state.selectedFile = null;
-    },
-
-    [SET_TMP_STUDIES]: (state, action) => {
-        state.tmpStudies = action.tmpStudies;
     },
 });

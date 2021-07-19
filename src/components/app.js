@@ -51,6 +51,7 @@ import AppTopBar from './app-top-bar';
 import Grid from '@material-ui/core/Grid';
 import DirectoryTreeView from './directory-tree-view';
 import DirectoryContent from './directory-content';
+import DirectoryBreadcrumbs from './directory-breadcrumbs';
 
 const noUserManager = { instance: null, error: null };
 
@@ -252,17 +253,31 @@ const App = () => {
                                             '1px solid rgba(81, 81, 81, 1)',
                                     }}
                                 >
-                                    {rootDirectories.map((rootDirectory) => (
-                                        <div key={rootDirectory.elementUuid}>
-                                            <DirectoryTreeView
-                                                rootDirectory={rootDirectory}
-                                            />
-                                            <hr />
-                                        </div>
-                                    ))}
+                                    <div style={{ marginTop: '20px' }}>
+                                        {rootDirectories.map(
+                                            (rootDirectory) => (
+                                                <DirectoryTreeView
+                                                    key={
+                                                        rootDirectory.elementUuid
+                                                    }
+                                                    rootDirectory={
+                                                        rootDirectory
+                                                    }
+                                                />
+                                            )
+                                        )}
+                                    </div>
                                 </Grid>
                                 <Grid item xs={12} sm={9}>
-                                    <DirectoryContent />
+                                    <div
+                                        style={{
+                                            marginTop: '20px',
+                                            height: '100%',
+                                        }}
+                                    >
+                                        <DirectoryBreadcrumbs />
+                                        <DirectoryContent />
+                                    </div>
                                 </Grid>
                             </Grid>
                         </Route>

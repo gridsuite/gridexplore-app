@@ -38,6 +38,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Menu from '@material-ui/core/Menu';
 import { AccessRightsDialog, DeleteDialog, ExportDialog, RenameDialog } from './util/dialogs';
+import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -52,14 +53,13 @@ const useStyles = makeStyles((theme) => ({
         flex: 1,
         height: '48px',
         cursor: 'initial',
-        borderBottom: '1px solid rgba(81, 81, 81, 1)',
+        padding: DEFAULT_CELL_PADDING,
     },
 }));
 
 const DirectoryContent = () => {
-    const [toggle, setToggle] = useState(false);
-    const [childrenMetadata, setChildrenMetadata] = useState({});
 
+    const [childrenMetadata, setChildrenMetadata] = useState({});
     const currentChildren = useSelector((state) => state.currentChildren);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -277,22 +277,33 @@ const DirectoryContent = () => {
 
     function nameCellRender(cellData) {
         const elementUuid = cellData.rowData['elementUuid'];
+        const elementName = cellData.rowData['elementName'];
         const objectType = cellData.rowData['type'];
         return (
             <div className={classes.cell}>
-                {objectType === elementType.STUDY && (
-                    <LibraryBooksOutlinedIcon style={{ margin: '10px' }} />
+                {!childrenMetadata[elementUuid] && (
+                    <CircularProgress size={25} />
                 )}
-                {childrenMetadata[elementUuid] ? (
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                {childrenMetadata[elementUuid] &&
+                    objectType === elementType.STUDY && (
+                        <LibraryBooksOutlinedIcon />
+                    )}
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginLeft: '10px',
+                    }}
+                >
+                    {childrenMetadata[elementUuid] ? (
                         <div>{childrenMetadata[elementUuid].name}</div>
-                    </div>
-                ) : (
-                    <div>
-                        <FormattedMessage id="creationInProgress" />{' '}
-                        <CircularProgress size={25} />
-                    </div>
-                )}
+                    ) : (
+                        <>
+                            {elementName}{' '}
+                            <FormattedMessage id="creationInProgress" />
+                        </>
+                    )}
+                </div>
             </div>
         );
     }
@@ -437,18 +448,21 @@ const DirectoryContent = () => {
 
     return (
         <>
-            {selectedDirectory !== null && rows.length === 0 && (
-                <div style={{ textAlign: 'center', marginTop: '100px' }}>
-                    <FolderOpenRoundedIcon
-                        style={{ width: '100px', height: '100px' }}
-                    />
-                    <h1>
-                        <FormattedMessage id={'emptyDir'} />
-                    </h1>
-                </div>
-            )}
-            {selectedDirectory !== null && rows.length > 0 && (
-                <>
+            {selectedDirectory !== null &&
+                currentChildren !== null &&
+                currentChildren.length === 0 && (
+                    <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                        <FolderOpenRoundedIcon
+                            style={{ width: '100px', height: '100px' }}
+                        />
+                        <h1>
+                            <FormattedMessage id={'emptyDir'} />
+                        </h1>
+                    </div>
+                )}
+            {selectedDirectory !== null &&
+                currentChildren !== null &&
+                currentChildren.length > 0 && (
                     <VirtualizedTable
                         onRowClick={(event) => {
                             if (
@@ -470,11 +484,13 @@ const DirectoryContent = () => {
                             }
                             setAnchorEl(event.event.currentTarget);
                         }}
-                        rows={rows}
+                        rows={currentChildren}
                         columns={[
                             {
                                 width: 100,
-                                label: intl.formatMessage({ id: 'elementName' }),
+                                label: intl.formatMessage({
+                                    id: 'elementName',
+                                }),
                                 dataKey: 'elementName',
                                 cellRenderer: nameCellRender,
                             },
@@ -492,12 +508,13 @@ const DirectoryContent = () => {
                             },
                             {
                                 width: 50,
-                                label: intl.formatMessage({ id: 'accessRights' }),
+                                label: intl.formatMessage({
+                                    id: 'accessRights',
+                                }),
                                 dataKey: 'accessRights',
                                 cellRenderer: accessRightsCellRender,
                             },
                         ]}
-                    />
                     <StyledMenu
                         id="row-menu"
                         anchorEl={anchorEl}
@@ -544,9 +561,10 @@ const DirectoryContent = () => {
                             </>
                         )}
                     </StyledMenu>
-                    </>
-            )}
-            <RenameDialog
+                    />
+                )}
+              
+              <RenameDialog
                 open={openRenameStudyDialog}
                 onClose={handleCloseRenameStudy}
                 onClick={handleClickRenameStudy}
