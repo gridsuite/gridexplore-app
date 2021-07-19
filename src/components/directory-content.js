@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useSnackbar } from 'notistack';
 
 import Chip from '@material-ui/core/Chip';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -20,14 +19,7 @@ import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
 
 import VirtualizedTable from './util/virtualized-table';
 import { elementType } from '../utils/elementType';
-import {
-    connectNotificationsWsUpdateStudies, deleteStudy,
-    fetchDirectoryContent,
-    fetchStudiesInfos,
-    insertNewElement, renameStudy
-} from '../utils/rest-api';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { setCurrentChildren, setTempStudies } from '../redux/actions';
+import { deleteStudy, fetchStudiesInfos, renameStudy } from '../utils/rest-api';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -37,7 +29,12 @@ import BuildIcon from '@material-ui/icons/Build';
 import ListItemText from '@material-ui/core/ListItemText';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Menu from '@material-ui/core/Menu';
-import { AccessRightsDialog, DeleteDialog, ExportDialog, RenameDialog } from './util/dialogs';
+import {
+    AccessRightsDialog,
+    DeleteDialog,
+    ExportDialog,
+    RenameDialog,
+} from './util/dialogs';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
@@ -58,48 +55,27 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DirectoryContent = () => {
-
     const [childrenMetadata, setChildrenMetadata] = useState({});
     const currentChildren = useSelector((state) => state.currentChildren);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const tmpStudies = useSelector((state) => state.tmpStudies);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [selectedStudy, setSelectedStudy] = React.useState('');
-    const [isSelectedStudyPrivate, setSelectedStudyPrivate] = React.useState(true);
-    const DonwnloadIframe = 'downloadIframe';
-
-    let rows =
-        currentChildren !== null
-            ? tmpStudies[selectedDirectory] !== undefined
-                ? [...currentChildren, ...tmpStudies[selectedDirectory]]
-                : [...currentChildren]
-            : tmpStudies[selectedDirectory] !== undefined
-            ? [...tmpStudies[selectedDirectory]]
-            : [];
+    const [isSelectedStudyPrivate, setSelectedStudyPrivate] = React.useState(
+        true
+    );
+    const DownloadIframe = 'downloadIframe';
 
     const classes = useStyles();
-
-    const { enqueueSnackbar } = useSnackbar();
-
-    const dispatch = useDispatch();
-
     const intl = useIntl();
-    const intlRef = useIntlRef();
-
-    const websocketExpectedCloseRef = useRef();
-    const currentChildrenRef = useRef([]);
-    const selectedDirectoryRef = useRef(null);
-    const tmpStudiesRef = useRef(null);
-    currentChildrenRef.current = rows;
-    selectedDirectoryRef.current = selectedDirectory;
-    tmpStudiesRef.current = tmpStudies;
 
     /**
      * Rename dialog: window status value for renaming
      */
-    const [openRenameStudyDialog, setOpenRenameStudyDialog] = React.useState(false);
+    const [openRenameStudyDialog, setOpenRenameStudyDialog] = React.useState(
+        false
+    );
     const [renameError, setRenameError] = React.useState('');
 
     const handleOpenRenameStudy = () => {
@@ -133,7 +109,9 @@ const DirectoryContent = () => {
     /**
      * Delete dialog: window status value for deletion
      */
-    const [openDeleteStudyDialog, setOpenDeleteStudyDialog] = React.useState(false);
+    const [openDeleteStudyDialog, setOpenDeleteStudyDialog] = React.useState(
+        false
+    );
     const [deleteError, setDeleteError] = React.useState('');
 
     const handleOpenDeleteStudy = () => {
@@ -161,7 +139,9 @@ const DirectoryContent = () => {
     /**
      * Export dialog: window status value for exporting a network
      */
-    const [openExportStudyDialog, setOpenExportStudyDialog] = React.useState(false);
+    const [openExportStudyDialog, setOpenExportStudyDialog] = React.useState(
+        false
+    );
 
     const handleOpenExportStudy = () => {
         setAnchorEl(null);
@@ -171,20 +151,21 @@ const DirectoryContent = () => {
     const handleCloseExportStudy = () => {
         setOpenExportStudyDialog(false);
         setSelectedStudy('');
-        setSelectedStudyPrivate(undefined)
+        setSelectedStudyPrivate(undefined);
     };
 
     const handleClickExportStudy = (url) => {
-        window.open(url, DonwnloadIframe);
+        window.open(url, DownloadIframe);
         handleCloseExportStudy();
     };
 
     /**
      * AccessRights dialog: window status value for updating access rights
      */
-    const [openStudyAccessRightsDialog, setOpenStudyAccessRightsDialog] = React.useState(
-        false
-    );
+    const [
+        openStudyAccessRightsDialog,
+        setOpenStudyAccessRightsDialog,
+    ] = React.useState(false);
 
     const handleOpenStudyAccessRights = () => {
         setAnchorEl(null);
@@ -194,13 +175,13 @@ const DirectoryContent = () => {
     const handleCloseStudyAccessRights = () => {
         setOpenStudyAccessRightsDialog(false);
         setSelectedStudy('');
-        setSelectedStudyPrivate(undefined)
+        setSelectedStudyPrivate(undefined);
     };
 
     const handleCloseRowMenu = () => {
         setAnchorEl(null);
         setSelectedStudy('');
-        setSelectedStudyPrivate(undefined)
+        setSelectedStudyPrivate(undefined);
     };
 
     const StyledMenu = withStyles({
@@ -308,20 +289,6 @@ const DirectoryContent = () => {
         );
     }
 
-    const updateDirectoryChildren = useCallback(() => {
-        fetchDirectoryContent(selectedDirectoryRef.current).then(
-            (childrenToBeInserted) => {
-                dispatch(
-                    setCurrentChildren(
-                        childrenToBeInserted.filter(
-                            (child) => child.type !== elementType.DIRECTORY
-                        )
-                    )
-                );
-            }
-        );
-    }, [dispatch, selectedDirectoryRef]);
-
     useEffect(() => {
         if (currentChildren !== null) {
             let uuids = [];
@@ -339,112 +306,7 @@ const DirectoryContent = () => {
                 setChildrenMetadata(metadata);
             });
         }
-    }, [currentChildren, toggle]);
-
-    const displayErrorIfExist = useCallback(
-        (event) => {
-            let eventData = JSON.parse(event.data);
-            if (eventData.headers) {
-                const error = eventData.headers['error'];
-                if (error) {
-                    const studyName = eventData.headers['studyName'];
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: error,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'studyCreatingError',
-                            headerMessageValues: { studyName: studyName },
-                            intlRef: intlRef,
-                        },
-                    });
-                    return true;
-                }
-            }
-            return false;
-        },
-        [enqueueSnackbar, intlRef]
-    );
-
-    const deleteTmpStudy = useCallback(
-        (studyUuid) => {
-            let tmpStudiesCopy = { ...tmpStudiesRef.current };
-            if (tmpStudiesCopy[selectedDirectoryRef.current] !== undefined) {
-                tmpStudiesCopy[
-                    selectedDirectoryRef.current
-                ] = tmpStudiesRef.current[selectedDirectoryRef.current].filter(
-                    (e) => e.elementUuid !== studyUuid
-                );
-                dispatch(setTempStudies(tmpStudiesCopy));
-            }
-        },
-        [selectedDirectoryRef, dispatch, tmpStudiesRef]
-    );
-
-    const connectNotificationsUpdateStudies = useCallback(() => {
-        const ws = connectNotificationsWsUpdateStudies();
-
-        ws.onmessage = function (event) {
-            const res = displayErrorIfExist(event);
-            let eventData = JSON.parse(event.data);
-            const rowsUuids = [...currentChildrenRef.current].map(
-                (e) => e.elementUuid
-            );
-            if (eventData.headers) {
-                const studyUuid = eventData.headers['studyUuid'];
-                if (res === true) {
-                    deleteTmpStudy(studyUuid);
-                    return;
-                }
-                let tmpStudiesCopy = { ...tmpStudiesRef.current };
-                if (rowsUuids.includes(studyUuid)) {
-                    if (
-                        tmpStudiesCopy[selectedDirectoryRef.current] !==
-                            undefined &&
-                        tmpStudiesCopy[selectedDirectoryRef.current].length > 0
-                    ) {
-                        insertNewElement(
-                            selectedDirectoryRef.current,
-                            ...tmpStudiesCopy[
-                                selectedDirectoryRef.current
-                            ].filter((e) => e.elementUuid === studyUuid)
-                        )
-                            .then(() => {
-                                deleteTmpStudy(studyUuid);
-                                updateDirectoryChildren();
-                            })
-                            .catch((err) => console.debug(err));
-                        setToggle((prev) => !prev);
-                    }
-                }
-            }
-        };
-        ws.onclose = function () {
-            if (!websocketExpectedCloseRef.current) {
-                console.error('Unexpected Notification WebSocket closed');
-            }
-        };
-        ws.onerror = function (event) {
-            console.error('Unexpected Notification WebSocket error', event);
-        };
-        return ws;
-    }, [
-        currentChildrenRef,
-        displayErrorIfExist,
-        updateDirectoryChildren,
-        tmpStudiesRef,
-        selectedDirectoryRef,
-        deleteTmpStudy,
-    ]);
-
-    useEffect(() => {
-        const ws = connectNotificationsUpdateStudies();
-        // Note: dispatch doesn't change
-
-        // cleanup at unmount event
-        return function () {
-            ws.close();
-        };
-    }, [connectNotificationsUpdateStudies]);
+    }, [currentChildren]);
 
     return (
         <>
@@ -463,108 +325,130 @@ const DirectoryContent = () => {
             {selectedDirectory !== null &&
                 currentChildren !== null &&
                 currentChildren.length > 0 && (
-                    <VirtualizedTable
-                        onRowClick={(event) => {
-                            if (
-                                childrenMetadata[event.rowData.elementUuid] !==
-                                undefined
-                            ) {
-                                let url = getLink(
-                                    event.rowData.elementUuid,
-                                    event.rowData.type
-                                );
-                                window.open(url, '_blank');
-                            }
-                        }}
-                        onRowRightClick={(event) => {
-                            console.log(event);
-                            if (event.rowData.type === "STUDY") {
-                                setSelectedStudy(event.rowData);
-                                setSelectedStudyPrivate(event.rowData.accessRights.private);
-                            }
-                            setAnchorEl(event.event.currentTarget);
-                        }}
-                        rows={currentChildren}
-                        columns={[
-                            {
-                                width: 100,
-                                label: intl.formatMessage({
-                                    id: 'elementName',
-                                }),
-                                dataKey: 'elementName',
-                                cellRenderer: nameCellRender,
-                            },
-                            {
-                                width: 100,
-                                label: intl.formatMessage({ id: 'type' }),
-                                dataKey: 'type',
-                                cellRenderer: typeCellRender,
-                            },
-                            {
-                                width: 50,
-                                label: intl.formatMessage({ id: 'owner' }),
-                                dataKey: 'owner',
-                                cellRenderer: accessOwnerCellRender,
-                            },
-                            {
-                                width: 50,
-                                label: intl.formatMessage({
-                                    id: 'accessRights',
-                                }),
-                                dataKey: 'accessRights',
-                                cellRenderer: accessRightsCellRender,
-                            },
-                        ]}
-                    <StyledMenu
-                        id="row-menu"
-                        anchorEl={anchorEl}
-                        keepMounted
-                        open={Boolean(anchorEl)}
-                        onClose={handleCloseRowMenu}
-                    >
-                        {selectedStudy !== '' && (
-                            <>
-                                <MenuItem onClick={handleOpenRenameStudy}>
-                                    <ListItemIcon style={{ minWidth: '25px' }}>
-                                        <EditIcon fontSize="small" />
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        primary={<FormattedMessage id="rename" />}
-                                    />
-                                </MenuItem>
-                                <MenuItem onClick={handleOpenDeleteStudy}>
-                                    <ListItemIcon style={{ minWidth: '25px' }}>
-                                        <DeleteIcon fontSize="small" />
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        primary={<FormattedMessage id="delete" />}
-                                    />
-                                </MenuItem>
-                                <MenuItem onClick={handleOpenExportStudy}>
-                                    <ListItemIcon style={{ minWidth: '25px' }}>
-                                        <GetAppIcon fontSize="small" />
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        primary={<FormattedMessage id="export" />}
-                                    />
-                                </MenuItem>
-                                <MenuItem onClick={handleOpenStudyAccessRights}>
-                                    <ListItemIcon style={{ minWidth: '25px' }}>
-                                        <BuildIcon fontSize="small" />
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        primary={
-                                            <FormattedMessage id="accessRights" />
-                                        }
-                                    />
-                                </MenuItem>
-                            </>
-                        )}
-                    </StyledMenu>
-                    />
+                    <>
+                        <VirtualizedTable
+                            onRowClick={(event) => {
+                                if (
+                                    childrenMetadata[
+                                        event.rowData.elementUuid
+                                    ] !== undefined
+                                ) {
+                                    let url = getLink(
+                                        event.rowData.elementUuid,
+                                        event.rowData.type
+                                    );
+                                    window.open(url, '_blank');
+                                }
+                            }}
+                            onRowRightClick={(event) => {
+                                console.log(event);
+                                if (event.rowData.type === 'STUDY') {
+                                    setSelectedStudy(event.rowData);
+                                    setSelectedStudyPrivate(
+                                        event.rowData.accessRights.private
+                                    );
+                                }
+                                setAnchorEl(event.event.currentTarget);
+                            }}
+                            rows={currentChildren}
+                            columns={[
+                                {
+                                    width: 100,
+                                    label: intl.formatMessage({
+                                        id: 'elementName',
+                                    }),
+                                    dataKey: 'elementName',
+                                    cellRenderer: nameCellRender,
+                                },
+                                {
+                                    width: 100,
+                                    label: intl.formatMessage({ id: 'type' }),
+                                    dataKey: 'type',
+                                    cellRenderer: typeCellRender,
+                                },
+                                {
+                                    width: 50,
+                                    label: intl.formatMessage({ id: 'owner' }),
+                                    dataKey: 'owner',
+                                    cellRenderer: accessOwnerCellRender,
+                                },
+                                {
+                                    width: 50,
+                                    label: intl.formatMessage({
+                                        id: 'accessRights',
+                                    }),
+                                    dataKey: 'accessRights',
+                                    cellRenderer: accessRightsCellRender,
+                                },
+                            ]}
+                        />
+                        <StyledMenu
+                            id="row-menu"
+                            anchorEl={anchorEl}
+                            keepMounted
+                            open={Boolean(anchorEl)}
+                            onClose={handleCloseRowMenu}
+                        >
+                            {selectedStudy !== '' && (
+                                <div>
+                                    <MenuItem onClick={handleOpenRenameStudy}>
+                                        <ListItemIcon
+                                            style={{ minWidth: '25px' }}
+                                        >
+                                            <EditIcon fontSize="small" />
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            primary={
+                                                <FormattedMessage id="rename" />
+                                            }
+                                        />
+                                    </MenuItem>
+                                    <MenuItem onClick={handleOpenDeleteStudy}>
+                                        <ListItemIcon
+                                            style={{ minWidth: '25px' }}
+                                        >
+                                            <DeleteIcon fontSize="small" />
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            primary={
+                                                <FormattedMessage id="delete" />
+                                            }
+                                        />
+                                    </MenuItem>
+                                    <MenuItem onClick={handleOpenExportStudy}>
+                                        <ListItemIcon
+                                            style={{ minWidth: '25px' }}
+                                        >
+                                            <GetAppIcon fontSize="small" />
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            primary={
+                                                <FormattedMessage id="export" />
+                                            }
+                                        />
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={handleOpenStudyAccessRights}
+                                    >
+                                        <ListItemIcon
+                                            style={{ minWidth: '25px' }}
+                                        >
+                                            <BuildIcon fontSize="small" />
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            primary={
+                                                <FormattedMessage id="accessRights" />
+                                            }
+                                        />
+                                    </MenuItem>
+                                </div>
+                            )}
+                        </StyledMenu>
+                        />
+                    </>
                 )}
-              
-              <RenameDialog
+
+            <RenameDialog
                 open={openRenameStudyDialog}
                 onClose={handleCloseRenameStudy}
                 onClick={handleClickRenameStudy}
@@ -596,9 +480,9 @@ const DirectoryContent = () => {
                 isPrivate={isSelectedStudyPrivate}
             />
             <iframe
-                id={DonwnloadIframe}
-                name={DonwnloadIframe}
-                title={DonwnloadIframe}
+                id={DownloadIframe}
+                name={DownloadIframe}
+                title={DownloadIframe}
                 style={{ display: 'none' }}
             />
         </>

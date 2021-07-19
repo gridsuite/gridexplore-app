@@ -21,7 +21,11 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { changeStudyAccessRights, getAvailableExportFormats, getExportUrl } from '../../utils/rest-api';
+import {
+    changeStudyAccessRights,
+    getAvailableExportFormats,
+    getExportUrl,
+} from '../../utils/rest-api';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
@@ -36,14 +40,14 @@ import RadioGroup from '@material-ui/core/RadioGroup';
  * @param {String} currentName Name before renaming
  */
 const RenameDialog = ({
-                          open,
-                          onClose,
-                          onClick,
-                          title,
-                          message,
-                          currentName,
-                          error,
-                      }) => {
+    open,
+    onClose,
+    onClick,
+    title,
+    message,
+    currentName,
+    error,
+}) => {
     const [newNameValue, setNewNameValue] = React.useState(currentName);
 
     useEffect(() => {
@@ -199,7 +203,6 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, title }) => {
         },
     }));
 
-
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
@@ -264,13 +267,13 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, title }) => {
                         }}
                     >
                         {availableFormats !== '' &&
-                        availableFormats.map(function (element) {
-                            return (
-                                <MenuItem key={element} value={element}>
-                                    {element}
-                                </MenuItem>
-                            );
-                        })}
+                            availableFormats.map(function (element) {
+                                return (
+                                    <MenuItem key={element} value={element}>
+                                        {element}
+                                    </MenuItem>
+                                );
+                            })}
                     </Select>
                 </FormControl>
                 {exportStudyErr !== '' && (
@@ -424,4 +427,4 @@ AccessRightsDialog.propTypes = {
     isPrivate: PropTypes.bool,
 };
 
-export {RenameDialog, DeleteDialog, ExportDialog, AccessRightsDialog};
+export { RenameDialog, DeleteDialog, ExportDialog, AccessRightsDialog };

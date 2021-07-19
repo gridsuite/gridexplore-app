@@ -45,23 +45,4 @@
     "modifyAccessRights": "Modifier les droits d'accès",
     "modifyAccessRightsError": "Vous ne pouvez pas modifier les droits d'accès d'une étude qui ne vous appartient pas",
     "edit": "Modifier"
-
-    "addNewStudy": "Ajouter une nouvelle étude",
-    "addNewStudyDescription": "Pour ajouter une étude, vous devez saisir les informations suivantes : ",
-    "caseExist": "La situation existe-t-elle déjà ?",
-    "studyName": "nom de l'étude",
-    "studyNameProperty": "Nom de l'étude : ",
-    "studyDescription": "description de l'étude",
-    "studyDescriptionProperty": "Description de l'étude : ",
-    "caseName": "nom de la situation",
-    "uploadCase": "télécharger la situation",
-    "uploadErrorMsg": "Veuillez télécharger la situation",
-
-    "uploadMessage": " Aucun fichier sélectionné",
-    "cancel": "ANNULER",
-    "create": "CRÉER",
-    "newStudy": "Ajouter une nouvelle étude",
-    "creationInProgress": "création en cours",
-    "studyCreatingError": "Une erreur est survenue lors de la création de l'étude : {studyName}",
-    "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé"
 }

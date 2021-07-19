@@ -68,10 +68,10 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     );
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const tmpStudies = useSelector((state) => state.tmpStudies);
 
     const dispatch = useDispatch();
     const intl = useIntl();
+    const intlRef = useIntlRef();
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -80,23 +80,6 @@ const DirectoryTreeView = ({ rootDirectory }) => {
 
     const handleCloseMenu = () => {
         setAnchorEl(null);
-    };
-
-    const handleOpenAddNewStudy = () => {
-        setAnchorEl(null);
-        setOpenAddNewStudyDialog(true);
-    };
-
-    const merge = (treeDataCopy, childrenToBeInserted) => {
-        const childrenUuids = treeDataCopy.children.map(
-            (child) => child.elementUuid
-        );
-        const mergedArray = treeDataCopy.children.concat(
-            childrenToBeInserted.filter(
-                (item) => childrenUuids.indexOf(item.elementUuid) < 0
-            )
-        );
-        treeDataCopy.children = mergedArray;
     };
 
     const selectedDirectoryRef = useRef(null);
@@ -109,11 +92,6 @@ const DirectoryTreeView = ({ rootDirectory }) => {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const dispatch = useDispatch();
-
-    const intl = useIntl();
-    const intlRef = useIntlRef();
-
     /* Component initialization */
     useEffect(() => {
         let rootDirectoryCopy = { ...rootDirectory };
@@ -124,15 +102,6 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         initialMapData[rootDirectory.elementUuid] = rootDirectoryCopy;
         setMapData(initialMapData);
     }, [rootDirectory]);
-
-    const handleOpenMenu = (event) => {
-        setAnchorEl(event.currentTarget);
-        event.stopPropagation();
-    };
-
-    const handleCloseMenu = () => {
-        setAnchorEl(null);
-    };
 
     const handleOpenAddNewStudyDialog = () => {
         setAnchorEl(null);

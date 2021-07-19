@@ -320,10 +320,10 @@ export function renameStudy(studyUuid, newStudyName) {
                 } catch {
                     throw new Error(
                         response.status +
-                        ' ' +
-                        response.statusText +
-                        ' : ' +
-                        text
+                            ' ' +
+                            response.statusText +
+                            ' : ' +
+                            text
                     );
                 }
                 throw new Error(
