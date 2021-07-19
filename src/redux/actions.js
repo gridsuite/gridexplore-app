@@ -46,6 +46,15 @@ export function setSelectedDirectory(selectedDirectory) {
     };
 }
 
+export const CURRENT_PATH = 'CURRENT_PATH';
+
+export function setCurrentPath(path) {
+    return {
+        type: CURRENT_PATH,
+        currentPath: path,
+    };
+}
+
 export const SET_APPS_AND_URLS = 'SET_APPS_AND_URLS';
 
 export function setAppsAndUrls(appsAndUrls) {
