@@ -18,6 +18,7 @@ import {
     insertDirectory,
     insertRootDirectory,
     deleteDirectory,
+    renameDirectory,
 } from '../utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -33,14 +34,16 @@ import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import FolderSpecialIcon from '@material-ui/icons/FolderSpecial';
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import AddIcon from '@material-ui/icons/Add';
+import CreateIcon from '@material-ui/icons/Create';
 import withStyles from '@material-ui/core/styles/withStyles';
 import CreateStudyForm from './create-study-form';
 import { useIntl } from 'react-intl';
 import { elementType } from '../utils/elementType';
-import { InsertNewDirectoryDialog } from './dialogs/CreateNewDirectoryDialog';
+import { CreateDirectoryDialog } from './dialogs/CreateDirectoryDialog';
 import { DeleteDirectoryDialog } from './dialogs/DeleteDirectoryDialog';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
+import { RenameDirectoryDialog } from './dialogs/RenameDialog';
 
 const useStyles = makeStyles(() => ({
     treeItemLabel: {
@@ -85,6 +88,10 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     const [
         openCreateRootDirectoryDialog,
         setOpenCreateRootDirectoryDialog,
+    ] = React.useState(false);
+    const [
+        openRenameDirectoryDialog,
+        setOpenRenameDirectoryDialog,
     ] = React.useState(false);
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -133,6 +140,10 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     const handleOpenCreateNewDirectoryDialog = () => {
         setAnchorEl(null);
         setOpenCreateNewDirectoryDialog(true);
+    };
+    const handleOpenRenameDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenRenameDirectoryDialog(true);
     };
     const handleOpenCreateRootDirectoryDialog = () => {
         setAnchorEl(null);
@@ -192,6 +203,10 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                     child.parentUuid = selected;
                     if (!mapDataCopy[child.elementUuid]) {
                         mapDataCopy[child.elementUuid] = child;
+                    } else {
+                        //update element name
+                        mapDataCopy[child.elementUuid].elementName =
+                            child.elementName;
                     }
                     return child;
                 }
@@ -248,8 +263,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
             userId
         ).then(() => {
             setOpenCreateNewDirectoryDialog(false);
-            setAnchorEl(null);
-            handleSelect(selectedDirectory, false);
+            updateTree(selectedDirectory);
             addElement(selectedDirectory);
         });
     }
@@ -257,9 +271,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     function insertNewRootDirectory(directoryName, isPrivate) {
         insertRootDirectory(directoryName, isPrivate, userId).then(() => {
             setOpenCreateRootDirectoryDialog(false);
-            setAnchorEl(null);
-            handleSelect(selectedDirectory, false);
-            addElement(selectedDirectory);
+            handleSelect(null, false);
             updateRootDirectories();
         });
     }
@@ -267,9 +279,22 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     function deleteSelectedDirectory() {
         deleteDirectory(selectedDirectory).then((r) => {
             setOpenDeleteDirectoryDialog(false);
-            setAnchorEl(null);
-            console.log(mapData[selectedDirectory].parentUuid);
-            handleSelect(mapData[selectedDirectory].parentUuid, false);
+            if (mapData[selectedDirectory].parentUuid !== null) {
+                handleSelect(mapData[selectedDirectory].parentUuid, false);
+            } else {
+                updateRootDirectories();
+            }
+        });
+    }
+
+    function renameSelectedDirectory(newName) {
+        renameDirectory(selectedDirectory, newName).then((r) => {
+            setOpenRenameDirectoryDialog(false);
+            if (mapData[selectedDirectory].parentUuid !== null) {
+                updateTree(mapData[selectedDirectory].parentUuid);
+            } else {
+                updateRootDirectories();
+            }
         });
     }
 
@@ -458,6 +483,16 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                         })}
                     />
                 </MenuItem>
+                <MenuItem onClick={handleOpenRenameDirectoryDialog}>
+                    <ListItemIcon style={{ minWidth: '25px' }}>
+                        <CreateIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={intl.formatMessage({
+                            id: 'renameFolder',
+                        })}
+                    />
+                </MenuItem>
                 <MenuItem onClick={handleOpenDeleteDirectoryDialog}>
                     <ListItemIcon style={{ minWidth: '25px' }}>
                         <DeleteOutlineIcon fontSize="small" />
@@ -485,10 +520,8 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 open={openAddNewStudyDialog}
                 setOpen={setOpenAddNewStudyDialog}
             />
-            <InsertNewDirectoryDialog
-                message={intl.formatMessage({
-                    id: 'insertNewDirectoryDialogMessage',
-                })}
+            <CreateDirectoryDialog
+                message={''}
                 open={openCreateNewDirectoryDialog}
                 onClick={insertNewDirectory}
                 onClose={() => setOpenCreateNewDirectoryDialog(false)}
@@ -497,15 +530,23 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 })}
                 error={''}
             />
-            <InsertNewDirectoryDialog
-                message={intl.formatMessage({
-                    id: 'insertNewDirectoryDialogMessage',
-                })}
+            <CreateDirectoryDialog
+                message={''}
                 open={openCreateRootDirectoryDialog}
                 onClick={insertNewRootDirectory}
                 onClose={() => setOpenCreateRootDirectoryDialog(false)}
                 title={intl.formatMessage({
                     id: 'insertNewRootDirectoryDialogTitle',
+                })}
+                error={''}
+            />
+            <RenameDirectoryDialog
+                message={''}
+                open={openRenameDirectoryDialog}
+                onClick={renameSelectedDirectory}
+                onClose={() => setOpenRenameDirectoryDialog(false)}
+                title={intl.formatMessage({
+                    id: 'renameDirectoryDialogTitle',
                 })}
                 error={''}
             />

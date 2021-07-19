@@ -26,6 +26,7 @@
     "cancel": "ANNULER",
     "create": "CRÉER",
     "delete": "SUPPRIMER",
+    "rename": "RENOMMER",
     "newStudy": "Ajouter une nouvelle étude",
     "creationInProgress": "création en cours",
     "studyCreatingError": "Une erreur est survenue lors de la création de l'étude : {studyName}",
@@ -34,11 +35,14 @@
     "createFolder": "Créer un dossier",
     "createRootFolder": "Créer un dossier racine",
     "deleteFolder": "Supprimer le dossier",
+    "renameFolder": "Renommer le dossier",
     "insertNewDirectoryDialogMessage": "Veuillez insérer les informations suivantes svp!",
     "insertNewDirectoryDialogTitle": "Créer un dossier",
     "insertNewRootDirectoryDialogTitle": "Créer un dossier racine",
     "deleteDirectoryDialogMessage": "êtes vous sûr de vouloir supprimer le dossier ?",
     "deleteDirectoryDialogTitle": "Supprimer le dossier",
+    "renameDirectoryDialogTitle": "Renommer le dossier",
     "directoryNameLabel": "Nom du dossier",
-    "isPrivateLabel": "Dossier privé ?"
+    "isPrivateLabel": "Dossier privé ?",
+    "directoryNewNameLabel": "Nouveau Nom"
 }

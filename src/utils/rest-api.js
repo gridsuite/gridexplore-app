@@ -115,10 +115,10 @@ export function fetchDirectoryContent(directoryUuid) {
 
 export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
     console.info("Inserting a new folder '%s'", directoryName);
-    const fetchDirectoryContentUrl =
+    const insertDirectoryUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/` + parentUuid;
 
-    return backendFetch(fetchDirectoryContentUrl, {
+    return backendFetch(insertDirectoryUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -170,6 +170,16 @@ export function deleteDirectory(elementUuid) {
     });
 }
 
+export function renameDirectory(elementUuid, newName) {
+    console.info("Deleting element %s'", elementUuid);
+    const renameDirectoryUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${elementUuid}/rename/${newName}`;
+    return backendFetch(renameDirectoryUrl, {
+        method: 'put',
+    });
+}
+
 export function fetchRootFolders() {
     console.info('Fetching Root Directories');
     const fetchRootFoldersUrl =
@@ -193,7 +203,7 @@ export function updateConfigParameter(name, value) {
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}?value=` +
         encodeURIComponent(value);
-    return backendFetch(updateParams, { method: 'PUT' }).then((response) =>
+    return backendFetch(updateParams, { method: 'put' }).then((response) =>
         response.ok
             ? response
             : response.text().then((text) => Promise.reject(text))

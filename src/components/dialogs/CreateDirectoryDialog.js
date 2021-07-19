@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
  * @param {String} title Title of the dialog
  * @param {String} message Message of the dialog
  */
-export const InsertNewDirectoryDialog = ({
+export const CreateDirectoryDialog = ({
     open,
     onClose,
     onClick,
@@ -132,7 +132,7 @@ export const InsertNewDirectoryDialog = ({
     );
 };
 
-InsertNewDirectoryDialog.propTypes = {
+CreateDirectoryDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
