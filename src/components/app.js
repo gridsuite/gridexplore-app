@@ -272,12 +272,17 @@ const App = () => {
                                 <Grid item xs={12} sm={9}>
                                     <div
                                         style={{
-                                            marginTop: '20px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
                                             height: '100%',
                                         }}
                                     >
-                                        <DirectoryBreadcrumbs />
-                                        <DirectoryContent />
+                                        <div style={{ marginTop: '20px' }}>
+                                            <DirectoryBreadcrumbs />
+                                        </div>
+                                        <div style={{ flexGrow: 1 }}>
+                                            <DirectoryContent />
+                                        </div>
                                     </div>
                                 </Grid>
                             </Grid>
