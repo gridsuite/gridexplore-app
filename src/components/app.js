@@ -214,7 +214,12 @@ const App = () => {
 
     const updateRootDirectories = () => {
         fetchRootFolders().then((data) => {
-            setRootDirectories(data);
+            let sortedData = [...data];
+            sortedData.sort(function (a, b) {
+                return a.elementName.localeCompare(b.elementName);
+            });
+            console.log(sortedData);
+            setRootDirectories(sortedData);
         });
     };
 
