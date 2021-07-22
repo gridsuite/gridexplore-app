@@ -21,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         boxSizing: 'border-box',
         flex: 1,
-        height: '48px',
         cursor: 'initial',
         fontWeight: 'bold',
     },

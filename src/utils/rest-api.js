@@ -266,7 +266,7 @@ export function connectNotificationsWsUpdateStudies() {
     );
     reconnectingWebSocket.onopen = function (event) {
         console.info(
-            'Connected Websocket update studies' + webSocketUrl + ' ...'
+            'Connected Websocket update studies ' + webSocketUrl + ' ...'
         );
     };
     return reconnectingWebSocket;

@@ -341,7 +341,6 @@ const DirectoryContent = () => {
                                 }
                             }}
                             onRowRightClick={(event) => {
-                                console.log(event);
                                 if (event.rowData.type === 'STUDY') {
                                     setSelectedStudy(event.rowData);
                                     setSelectedStudyPrivate(
@@ -444,7 +443,6 @@ const DirectoryContent = () => {
                                 </div>
                             )}
                         </StyledMenu>
-                        />
                     </>
                 )}
 

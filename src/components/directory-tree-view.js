@@ -294,12 +294,21 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         [updateDirectoryChildren, updatePath]
     );
 
+    const isConcerned = useCallback(() => {
+        return (
+            selectedDirectoryRef.current !== null &&
+            mapDataRef.current[selectedDirectoryRef.current] !== undefined
+        );
+    }, [selectedDirectoryRef, mapDataRef]);
+
     const connectNotificationsUpdateStudies = useCallback(() => {
         const ws = connectNotificationsWsUpdateStudies();
 
         ws.onmessage = function (event) {
-            displayErrorIfExist(event);
-            updateDirectoryChildren(selectedDirectoryRef.current, false);
+            if (isConcerned()) {
+                displayErrorIfExist(event);
+                updateDirectoryChildren(selectedDirectoryRef.current, false);
+            }
         };
 
         ws.onclose = function () {
@@ -311,7 +320,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
-    }, [displayErrorIfExist, updateDirectoryChildren]);
+    }, [displayErrorIfExist, updateDirectoryChildren, isConcerned]);
 
     useEffect(() => {
         const ws = connectNotificationsUpdateStudies();
@@ -339,14 +348,11 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     /* Handle components synchronization */
     useEffect(() => {
         // test if we handle this change in the good treeview by checking if selectedDirectory is in this treeview
-        if (
-            selectedDirectory !== null &&
-            mapDataRef.current[selectedDirectory] !== undefined
-        ) {
+        if (isConcerned()) {
             // fetch content
             updateTree(selectedDirectory);
         }
-    }, [selectedDirectory, updateTree]);
+    }, [selectedDirectory, updateTree, isConcerned]);
 
     return (
         <>
