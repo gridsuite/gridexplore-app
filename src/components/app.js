@@ -212,11 +212,20 @@ const App = () => {
         connectNotificationsUpdateConfig,
     ]);
 
+    const updateRootDirectories = () => {
+        fetchRootFolders().then((data) => {
+            let sortedData = [...data];
+            sortedData.sort(function (a, b) {
+                return a.elementName.localeCompare(b.elementName);
+            });
+            console.log(sortedData);
+            setRootDirectories(sortedData);
+        });
+    };
+
     useEffect(() => {
         if (user != null) {
-            fetchRootFolders().then((data) => {
-                setRootDirectories(data);
-            });
+            updateRootDirectories();
         }
     }, [user]);
 
