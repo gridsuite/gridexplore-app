@@ -218,7 +218,6 @@ const App = () => {
             sortedData.sort(function (a, b) {
                 return a.elementName.localeCompare(b.elementName);
             });
-            console.log(sortedData);
             setRootDirectories(sortedData);
         });
     };
