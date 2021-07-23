@@ -344,7 +344,12 @@ export function deleteStudy(studyUuid) {
 }
 
 export function changeStudyAccessRights(studyUuid, toPrivate) {
-    console.info('Change access rights of study ' + studyUuid);
+    console.info(
+        'Change access rights of study ' +
+            studyUuid +
+            ', toPrivate : ' +
+            toPrivate
+    );
     let changeStudyAccessRightsUrl;
     if (toPrivate === 'true') {
         changeStudyAccessRightsUrl = getStudyUrl(studyUuid) + '/private';

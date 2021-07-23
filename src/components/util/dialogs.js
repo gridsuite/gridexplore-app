@@ -334,6 +334,10 @@ const AccessRightsDialog = ({ open, onClose, studyUuid, title, isPrivate }) => {
         },
     }));
 
+    useEffect(() => {
+        setSelected(isPrivate !== undefined ? isPrivate.toString() : null);
+    }, [isPrivate]);
+
     const handleClick = () => {
         setLoading(true);
         changeStudyAccessRights(studyUuid, selected).then((response) => {
