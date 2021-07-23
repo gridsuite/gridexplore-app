@@ -29,12 +29,10 @@ import BuildIcon from '@material-ui/icons/Build';
 import ListItemText from '@material-ui/core/ListItemText';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Menu from '@material-ui/core/Menu';
-import {
-    AccessRightsDialog,
-    DeleteDialog,
-    ExportDialog,
-    RenameDialog,
-} from './util/dialogs';
+import ExportDialog from './export-dialog';
+import RenameDialog from './dialogs/rename-dialog';
+import DeleteDialog from './dialogs/delete-dialog';
+import AccessRightsDialog from './dialogs/access-rights-dialog';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
