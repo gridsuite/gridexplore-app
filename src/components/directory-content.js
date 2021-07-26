@@ -168,7 +168,12 @@ const DirectoryContent = () => {
             >
                 <Checkbox
                     color={'primary'}
-                    checked={selected.size === currentChildren.length}
+                    // set the color of checkbox (and check if not indeterminate)
+                    checked={selected.size > 0}
+                    indeterminate={
+                        selected.size !== 0 &&
+                        selected.size !== currentChildren.length
+                    }
                 />
             </div>
         );
