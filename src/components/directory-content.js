@@ -166,7 +166,10 @@ const DirectoryContent = () => {
                 }}
                 className={classes.checkboxes}
             >
-                <Checkbox color={'primary'} checked={selected.size === currentChildren.length} />
+                <Checkbox
+                    color={'primary'}
+                    checked={selected.size === currentChildren.length}
+                />
             </div>
         );
     }
@@ -181,7 +184,10 @@ const DirectoryContent = () => {
                 }}
                 className={classes.checkboxes}
             >
-                <Checkbox color={'primary'} checked={selected.has(elementUuid)} />
+                <Checkbox
+                    color={'primary'}
+                    checked={selected.has(elementUuid)}
+                />
             </div>
         );
     }
