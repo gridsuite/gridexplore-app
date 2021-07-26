@@ -21,6 +21,7 @@ import VirtualizedTable from './util/virtualized-table';
 import { elementType } from '../utils/elementType';
 import { fetchStudiesInfos } from '../utils/rest-api';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
+import { Checkbox } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -37,10 +38,15 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'initial',
         padding: DEFAULT_CELL_PADDING,
     },
+    checkboxes: {
+        width: '100%',
+        justifyContent: 'center',
+    },
 }));
 
 const DirectoryContent = () => {
     const [childrenMetadata, setChildrenMetadata] = useState({});
+    const [selected, setSelected] = useState(new Set());
 
     const currentChildren = useSelector((state) => state.currentChildren);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
@@ -135,6 +141,51 @@ const DirectoryContent = () => {
         );
     }
 
+    function toggleSelection(elementUuid) {
+        let newSelection = new Set(selected);
+        if (!newSelection.delete(elementUuid)) {
+            newSelection.add(elementUuid);
+        }
+        setSelected(newSelection);
+    }
+
+    function toggleSelectAll() {
+        if (selected.size === currentChildren.length) {
+            setSelected(new Set());
+        } else {
+            setSelected(new Set(currentChildren.map((c) => c.elementUuid)));
+        }
+    }
+
+    function selectionHeaderRenderer() {
+        return (
+            <div
+                onClick={(e) => {
+                    toggleSelectAll();
+                    e.stopPropagation();
+                }}
+                className={classes.checkboxes}
+            >
+                <Checkbox color={'primary'} checked={selected.size === currentChildren.length} />
+            </div>
+        );
+    }
+
+    function selectionRenderer(cellData) {
+        const elementUuid = cellData.rowData['elementUuid'];
+        return (
+            <div
+                onClick={(e) => {
+                    toggleSelection(elementUuid);
+                    e.stopPropagation();
+                }}
+                className={classes.checkboxes}
+            >
+                <Checkbox color={'primary'} checked={selected.has(elementUuid)} />
+            </div>
+        );
+    }
+
     useEffect(() => {
         if (currentChildren !== null) {
             let uuids = [];
@@ -152,6 +203,7 @@ const DirectoryContent = () => {
                 setChildrenMetadata(metadata);
             });
         }
+        setSelected(new Set());
     }, [currentChildren]);
 
     return (
@@ -186,6 +238,13 @@ const DirectoryContent = () => {
                         }}
                         rows={currentChildren}
                         columns={[
+                            {
+                                cellRenderer: selectionRenderer,
+                                dataKey: 'selected',
+                                label: '',
+                                headerRenderer: selectionHeaderRenderer,
+                                maxWidth: '60px',
+                            },
                             {
                                 width: 100,
                                 label: intl.formatMessage({
