@@ -98,9 +98,9 @@ const DirectoryBreadcrumbs = () => {
         ) {
             return (
                 <Typography className={classes.directory} color="textPrimary">
-                    {currentPath.length === 1 ? (
+                    {currentPath.length === 1 && (
                         <FolderOpenIcon className={classes.icon} />
-                    ) : null}
+                    )}
                     {currentPath[currentPath.length - 1].elementName}
                 </Typography>
             );
