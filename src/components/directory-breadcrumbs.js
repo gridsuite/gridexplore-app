@@ -6,31 +6,47 @@ import { setSelectedDirectory } from '../redux/actions';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import { emphasize, makeStyles } from '@material-ui/core/styles/';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 
 const useStyles = makeStyles((theme) => ({
     link: {
+        display: 'flex',
+        alignItems: 'center',
+        textAlign: 'center',
         color: theme.link.color,
-        textDecoration: 'none',
+
+        backgroundColor: theme.row.primary,
+        padding: theme.spacing(0.5, 2, 0.5),
+        borderRadius: '16px',
+
+        '&:hover, &:focus': {
+            backgroundColor: theme.row.hover,
+            textDecoration: 'none',
+        },
+        '&:active': {
+            backgroundColor: emphasize(theme.row.hover, 0.15),
+        },
     },
     directory: {
         display: 'flex',
         alignItems: 'center',
         textAlign: 'center',
-        boxSizing: 'border-box',
-        flex: 1,
-        cursor: 'initial',
         fontWeight: 'bold',
+
+        backgroundColor: theme.row.primary,
+        padding: theme.spacing(0.5, 2, 0.5),
+        borderRadius: '16px',
+
+        cursor: 'initial',
     },
     icon: {
         marginRight: theme.spacing(0.5),
-        display: 'flex',
-        alignItems: 'center',
-        textAlign: 'center',
         width: '18px',
         height: '18px',
+    },
+    breadcrumbs: {
+        marginLeft: theme.spacing(1),
     },
 }));
 
@@ -54,17 +70,23 @@ const DirectoryBreadcrumbs = () => {
             currentPath !== null &&
             currentPath.length > 1
         ) {
-            return currentPath.slice(0, currentPath.length - 1).map((dir) => (
-                <Link
-                    className={classes.link}
-                    key={dir.elementUuid}
-                    color="inherit"
-                    href="/"
-                    onClick={(event) => handleSelect(event, dir.elementUuid)}
-                >
-                    {dir.elementName}
-                </Link>
-            ));
+            return currentPath
+                .slice(0, currentPath.length - 1)
+                .map((dir, index) => (
+                    <Link
+                        className={classes.link}
+                        key={dir.elementUuid}
+                        href="/"
+                        onClick={(event) =>
+                            handleSelect(event, dir.elementUuid)
+                        }
+                    >
+                        {index === 0 ? (
+                            <FolderOpenIcon className={classes.icon} />
+                        ) : null}
+                        {dir.elementName}
+                    </Link>
+                ));
         }
     };
 
@@ -76,7 +98,9 @@ const DirectoryBreadcrumbs = () => {
         ) {
             return (
                 <Typography className={classes.directory} color="textPrimary">
-                    <FolderOpenIcon className={classes.icon} />
+                    {currentPath.length === 1 && (
+                        <FolderOpenIcon className={classes.icon} />
+                    )}
                     {currentPath[currentPath.length - 1].elementName}
                 </Typography>
             );
@@ -84,10 +108,7 @@ const DirectoryBreadcrumbs = () => {
     };
 
     return (
-        <Breadcrumbs maxItems={10} aria-label="breadcrumb">
-            {selectedDirectory !== null && (
-                <ArrowForwardIosIcon className={classes.icon} />
-            )}
+        <Breadcrumbs aria-label="breadcrumb" className={classes.breadcrumbs}>
             {renderBreadCrumbsLinks(currentPath)}
             {renderBreadCrumbsTypography(currentPath)}
         </Breadcrumbs>
