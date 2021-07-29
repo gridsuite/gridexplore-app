@@ -19,7 +19,7 @@ import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
 
 import VirtualizedTable from './util/virtualized-table';
 import { elementType } from '../utils/elementType';
-import { deleteStudy, fetchStudiesInfos, renameStudy } from '../utils/rest-api';
+import { deleteElement, deleteStudy, fetchStudiesInfos, renameStudy } from "../utils/rest-api";
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -125,7 +125,7 @@ const DirectoryContent = () => {
     };
 
     const handleClickDeleteStudy = () => {
-        deleteStudy(selectedStudy.elementUuid).then((response) => {
+        deleteElement(selectedStudy.elementUuid).then((response) => {
             if (!response.ok) {
                 setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
             } else {

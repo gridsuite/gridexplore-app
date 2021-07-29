@@ -119,11 +119,20 @@ export function deleteElement(elementUuid) {
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${elementUuid}`;
     return backendFetch(fetchParams, {
         method: 'delete',
-    }).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
+    });
+}
+export function updateAccessRights(elementUuid, isPrivate) {
+    console.info('Updating access rights for ' + elementUuid + ' to isPrivate = ' + isPrivate);
+    const updateAccessRightUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${elementUuid}/rights`;
+    return backendFetch(updateAccessRightUrl, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: isPrivate === "true",
+    });
 }
 
 export function fetchRootFolders() {
@@ -299,38 +308,12 @@ export function getExportUrl(studyUuid, exportFormat) {
 
 export function renameStudy(studyUuid, newStudyName) {
     console.info('Renaming study ' + studyUuid);
-    const renameStudiesUrl = getStudyUrl(studyUuid) + '/rename';
+    const renameStudiesUrl =
+      PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${studyUuid}/rename/${newStudyName}`;
 
     console.debug(renameStudiesUrl);
     return backendFetch(renameStudiesUrl, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ newStudyName: newStudyName }),
-    }).then((response) => {
-        if (response.status === 200 || response.status === 403) {
-            return response.json();
-        } else {
-            return response.text().then((text) => {
-                let json;
-                try {
-                    json = JSON.parse(text);
-                } catch {
-                    throw new Error(
-                        response.status +
-                            ' ' +
-                            response.statusText +
-                            ' : ' +
-                            text
-                    );
-                }
-                throw new Error(
-                    json.status + ' ' + json.error + ' : ' + json.message
-                );
-            });
-        }
+        method: 'PUT',
     });
 }
 

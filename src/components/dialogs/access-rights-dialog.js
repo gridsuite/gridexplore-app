@@ -6,7 +6,7 @@
  */
 import React, { useEffect } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { changeStudyAccessRights } from '../../utils/rest-api';
+import { changeStudyAccessRights, updateAccessRights } from "../../utils/rest-api";
 import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -50,7 +50,7 @@ const AccessRightsDialog = ({ open, onClose, studyUuid, title, isPrivate }) => {
 
     const handleClick = () => {
         setLoading(true);
-        changeStudyAccessRights(studyUuid, selected).then((response) => {
+        updateAccessRights(studyUuid, selected).then((response) => {
             if (!response.ok) {
                 setError(intl.formatMessage({ id: 'modifyAccessRightsError' }));
             } else {
