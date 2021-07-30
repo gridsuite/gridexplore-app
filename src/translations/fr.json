@@ -14,6 +14,8 @@
     "addNewStudyDescription": "Pour ajouter une étude, vous devez saisir les informations suivantes : ",
     "renameStudy": "Renommer l'étude",
     "renameStudyMsg": "Nouveau nom de l'étude : ",
+    "renameStudyNotAllowedError": "Vous ne pouvez pas renommer une étude dont vous n'êtes pas propriétaire",
+    "renameStudyNotFoundError": "L'étude n'a pas été trouvé",
     "deleteStudy": "Supprimer l'étude",
     "deleteStudyMsg": "Êtes-vous sûr de vouloir supprimer l'étude ?",
     "caseExist": "La situation existe-t-elle déjà ?",
@@ -43,6 +45,7 @@
 
     "accessRights": "Droits d'accès",
     "modifyAccessRights": "Modifier les droits d'accès",
-    "modifyAccessRightsError": "Vous ne pouvez pas modifier les droits d'accès d'une étude qui ne vous appartient pas",
+    "modifyAccessRightsNotAllowedError": "Vous ne pouvez pas modifier les droits d'accès d'une étude qui ne vous appartient pas",
+    "modifyAccessRightsNotFoundError": "L'étude n'a pas été trouvé",
     "edit": "Modifier"
 }

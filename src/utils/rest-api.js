@@ -122,16 +122,22 @@ export function deleteElement(elementUuid) {
     });
 }
 export function updateAccessRights(elementUuid, isPrivate) {
-    console.info('Updating access rights for ' + elementUuid + ' to isPrivate = ' + isPrivate);
+    console.info(
+        'Updating access rights for ' +
+            elementUuid +
+            ' to isPrivate = ' +
+            isPrivate
+    );
     const updateAccessRightUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${elementUuid}/rights`;
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${elementUuid}/rights`;
     return backendFetch(updateAccessRightUrl, {
         method: 'put',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: isPrivate === "true",
+        body: isPrivate === 'true',
     });
 }
 
@@ -309,7 +315,8 @@ export function getExportUrl(studyUuid, exportFormat) {
 export function renameStudy(studyUuid, newStudyName) {
     console.info('Renaming study ' + studyUuid);
     const renameStudiesUrl =
-      PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${studyUuid}/rename/${newStudyName}`;
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${studyUuid}/rename/${newStudyName}`;
 
     console.debug(renameStudiesUrl);
     return backendFetch(renameStudiesUrl, {

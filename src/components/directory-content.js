@@ -19,7 +19,12 @@ import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
 
 import VirtualizedTable from './util/virtualized-table';
 import { elementType } from '../utils/elementType';
-import { deleteElement, deleteStudy, fetchStudiesInfos, renameStudy } from "../utils/rest-api";
+import {
+    deleteElement,
+    deleteStudy,
+    fetchStudiesInfos,
+    renameStudy,
+} from '../utils/rest-api';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -91,9 +96,15 @@ const DirectoryContent = () => {
     const handleClickRenameStudy = (newStudyNameValue) => {
         renameStudy(selectedStudy.elementUuid, newStudyNameValue)
             .then((response) => {
-                if (response === 'NOT_ALLOWED') {
+                if (response.status === 403) {
+                    // == FORBIDDEN
                     setRenameError(
-                        intl.formatMessage({ id: 'renameStudyError' })
+                        intl.formatMessage({ id: 'renameStudyNotAllowedError' })
+                    );
+                } else if (response.status === 404) {
+                    // == NOT FOUND
+                    setRenameError(
+                        intl.formatMessage({ id: 'renameStudyNotFoundError' })
                     );
                 } else {
                     handleCloseRenameStudy();

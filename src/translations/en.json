@@ -13,6 +13,8 @@
     "addNewStudy": "Add new study",
     "addNewStudyDescription": "To add a new study, you should enter the following information:",
     "renameStudy": "Rename the study",
+    "renameStudyNotAllowedError": "Cannot rename the study if you are not the owner",
+    "renameStudyNotFoundError": "The study was not found",
     "deleteStudy": "Delete the study",
     "caseExist": "Does the case already exist?",
     "studyName": "study name",
@@ -41,7 +43,8 @@
 
     "accessRights": "Access rights",
     "modifyAccessRights": "Modify the access rights",
-    "modifyAccessRightsError": "You cannot modify the access rights of a study you don't own",
+    "modifyAccessRightsNotAllowedError": "You cannot modify the access rights of a study you don't own",
+    "modifyAccessRightsNotFoundError": "The study was not found",
     "edit": "Edit",
 
     "uploadErrorMsg": "Please upload the case file"
