@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import TreeItem from '@material-ui/lab/TreeItem';
@@ -13,8 +13,6 @@ import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import {
-    connectNotificationsWsUpdateStudies,
-    fetchDirectoryContent,
     insertDirectory,
     insertRootDirectory,
     deleteElement,
@@ -22,11 +20,7 @@ import {
     renameElement,
 } from '../utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    setCurrentChildren,
-    setSelectedDirectory,
-    setCurrentPath,
-} from '../redux/actions';
+import { setSelectedDirectory } from '../redux/actions';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -40,14 +34,10 @@ import CreateIcon from '@material-ui/icons/Create';
 import withStyles from '@material-ui/core/styles/withStyles';
 import CreateStudyForm from './create-study-form';
 import { useIntl } from 'react-intl';
-import { elementType } from '../utils/elementType';
 import { CreateDirectoryDialog } from './dialogs/create-directory-dialog';
 import { DeleteDirectoryDialog } from './dialogs/delete-directory-dialog';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { useSnackbar } from 'notistack';
 import RenameDialog from './dialogs/rename-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
-import { notificationType } from '../utils/notificationType';
 
 const useStyles = makeStyles(() => ({
     treeItemLabel: {
@@ -72,10 +62,11 @@ const StyledMenu = withStyles({
     />
 ));
 
-const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
+const DirectoryTreeView = ({ treeViewUID, mapData }) => {
     const classes = useStyles();
+    const dispatch = useDispatch();
+    const intl = useIntl();
 
-    const [mapData, setMapData] = useState({});
     const [expanded, setExpanded] = React.useState([]);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [openAddNewStudyDialog, setOpenAddNewStudyDialog] = React.useState(
@@ -105,37 +96,14 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
 
-    const selectedDirectoryRef = useRef(null);
     const mapDataRef = useRef({});
     const expandedRef = useRef([]);
-    const updateRootDirectoriesRef = useRef([]);
-    const websocketExpectedCloseRef = useRef();
+    const selectedDirectoryRef = useRef();
     selectedDirectoryRef.current = selectedDirectory;
     expandedRef.current = expanded;
     mapDataRef.current = mapData;
-    updateRootDirectoriesRef.current = updateRootDirectories;
-
-    const { enqueueSnackbar } = useSnackbar();
-
-    const dispatch = useDispatch();
-
-    const intl = useIntl();
-    const intlRef = useIntlRef();
 
     /* Component initialization */
-    useEffect(() => {
-        let preparedRootDirectory = { ...rootDirectory };
-        preparedRootDirectory.parentUuid = null;
-        preparedRootDirectory.children = mapDataRef.current[
-            rootDirectory.elementUuid
-        ]
-            ? mapDataRef.current[rootDirectory.elementUuid].children
-            : [];
-
-        let initialMapData = { ...mapDataRef.current };
-        initialMapData[rootDirectory.elementUuid] = preparedRootDirectory;
-        setMapData(initialMapData);
-    }, [rootDirectory, mapDataRef]);
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -176,70 +144,6 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         setOpenAccessRightsDirectoryDialog(true);
     };
 
-    /* Manage current path data */
-    const buildPath = useCallback(
-        (nodeId, path) => {
-            let currentUuid = nodeId;
-            while (
-                currentUuid != null &&
-                mapDataRef.current[currentUuid] !== undefined
-            ) {
-                path.unshift({
-                    elementUuid: mapDataRef.current[currentUuid].elementUuid,
-                    elementName: mapDataRef.current[currentUuid].elementName,
-                });
-                currentUuid = mapDataRef.current[currentUuid].parentUuid;
-            }
-        },
-        [mapDataRef]
-    );
-
-    const updatePath = useCallback(
-        (nodeId) => {
-            let path = [];
-            buildPath(nodeId, path);
-            if (path != null) dispatch(setCurrentPath(path));
-        },
-        [buildPath, dispatch]
-    );
-
-    /* Manage data */
-    const updateCurrentChildren = useCallback(
-        (children) => {
-            dispatch(
-                setCurrentChildren(
-                    children.filter(
-                        (child) => child.type !== elementType.DIRECTORY
-                    )
-                )
-            );
-        },
-        [dispatch]
-    );
-
-    const insertContent = useCallback(
-        (selected, childrenToBeInserted) => {
-            let mapDataCopy = { ...mapDataRef.current };
-            let preparedChildrenToBeInserted = childrenToBeInserted.map(
-                (child) => {
-                    child.children = [];
-                    child.parentUuid = selected;
-                    if (!mapDataCopy[child.elementUuid]) {
-                        mapDataCopy[child.elementUuid] = child;
-                    } else {
-                        //update element name
-                        mapDataCopy[child.elementUuid].elementName =
-                            child.elementName;
-                    }
-                    return child;
-                }
-            );
-            mapDataCopy[selected].children = preparedChildrenToBeInserted;
-            setMapData(mapDataCopy);
-        },
-        [mapDataRef]
-    );
-
     function onContextMenu(e, nodeIds) {
         e.preventDefault();
         handleSelect(nodeIds, false);
@@ -268,9 +172,9 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 }
                 endIcon={<ChevronRightIcon />}
             >
-                {Array.isArray(mapData[node.elementUuid].children)
-                    ? mapData[node.elementUuid].children.map((node) =>
-                          renderTree(node)
+                {Array.isArray(node.children)
+                    ? node.children.map((node) =>
+                          renderTree(mapDataRef.current[node.elementUuid])
                       )
                     : null}
             </TreeItem>
@@ -314,30 +218,6 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         });
     }
 
-    const updateMapData = useCallback(
-        (nodeId, children) => {
-            let newSubdirectories = children.filter(
-                (child) => child.type === elementType.DIRECTORY
-            );
-            insertContent(nodeId, newSubdirectories);
-            if (
-                selectedDirectoryRef.current !== null &&
-                mapDataRef.current[selectedDirectoryRef.current].parentUuid ===
-                    nodeId &&
-                newSubdirectories.filter(
-                    (e) => e.elementUuid === selectedDirectoryRef.current
-                ).length === 0
-            ) {
-                // if selected directory is deleted by another user we should select parent directory
-                setSelectedDirectory(nodeId);
-                updatePath(nodeId);
-            } else {
-                updatePath(selectedDirectoryRef.current);
-            }
-        },
-        [insertContent, selectedDirectoryRef, updatePath, mapDataRef]
-    );
-
     /* Manage treeItem folding */
     const removeElement = useCallback(
         (nodeId) => {
@@ -370,115 +250,6 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         [addElement, removeElement, expandedRef]
     );
 
-    /* Manage Studies updating with Web Socket */
-    const displayErrorIfExist = useCallback(
-        (error, studyName) => {
-            if (error) {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: error,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'studyCreatingError',
-                        headerMessageValues: { studyName: studyName },
-                        intlRef: intlRef,
-                    },
-                });
-            }
-        },
-        [enqueueSnackbar, intlRef]
-    );
-
-    const updateDirectoryChildren = useCallback(
-        (nodeId) => {
-            fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
-                // update directory Content
-                updateCurrentChildren(childrenToBeInserted);
-                // Update Tree Map data
-                updateMapData(nodeId, childrenToBeInserted);
-            });
-        },
-        [updateCurrentChildren, updateMapData]
-    );
-
-    const updateTree = useCallback(
-        (nodeId) => {
-            // fetch content
-            updateDirectoryChildren(nodeId);
-            // update current directory path
-            updatePath(nodeId);
-        },
-        [updateDirectoryChildren, updatePath]
-    );
-
-    const isConcerned = useCallback(() => {
-        return (
-            selectedDirectoryRef.current !== null &&
-            mapDataRef.current[selectedDirectoryRef.current] !== undefined
-        );
-    }, [selectedDirectoryRef, mapDataRef]);
-
-    const connectNotificationsUpdateStudies = useCallback(() => {
-        const ws = connectNotificationsWsUpdateStudies();
-
-        ws.onmessage = function (event) {
-            let eventData = JSON.parse(event.data);
-
-            if (eventData.headers) {
-                const notificationTypeHeader =
-                    eventData.headers['notificationType'];
-                const isRootDirectory = eventData.headers['isRootDirectory'];
-                const directoryUuid = eventData.headers['directoryUuid'];
-                const error = eventData.headers['error'];
-
-                if (isRootDirectory) {
-                    updateRootDirectoriesRef.current();
-                    if (
-                        notificationTypeHeader ===
-                        notificationType.DELETE_DIRECTORY
-                    ) {
-                        dispatch(setCurrentChildren(null));
-                        updatePath(null);
-                    }
-                    return;
-                }
-
-                if (directoryUuid) {
-                    if (mapDataRef.current[directoryUuid] !== undefined) {
-                        displayErrorIfExist(error);
-                        updateDirectoryChildren(directoryUuid, false);
-                    }
-                }
-            }
-        };
-
-        ws.onclose = function () {
-            if (!websocketExpectedCloseRef.current) {
-                console.error('Unexpected Notification WebSocket closed');
-            }
-        };
-
-        ws.onerror = function (event) {
-            console.error('Unexpected Notification WebSocket error', event);
-        };
-        return ws;
-    }, [
-        displayErrorIfExist,
-        updateDirectoryChildren,
-        updateRootDirectoriesRef,
-        mapDataRef,
-        dispatch,
-        updatePath,
-    ]);
-
-    useEffect(() => {
-        const ws = connectNotificationsUpdateStudies();
-        // Note: dispatch doesn't change
-        // cleanup at unmount event
-        return function () {
-            ws.close();
-        };
-    }, [connectNotificationsUpdateStudies]);
-
     /* Handle User interactions*/
     const handleSelect = useCallback(
         (nodeId, toggle) => {
@@ -492,15 +263,6 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         [dispatch, toggleDirectory]
     );
 
-    /* Handle components synchronization */
-    useEffect(() => {
-        // test if we handle this change in the good treeview by checking if selectedDirectory is in this treeview
-        if (isConcerned()) {
-            // fetch content
-            updateTree(selectedDirectory);
-        }
-    }, [selectedDirectory, updateTree, isConcerned]);
-
     return (
         <>
             <TreeView
@@ -512,7 +274,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 expanded={expanded}
                 selected={selectedDirectory}
             >
-                {renderTree(mapData[rootDirectory.elementUuid])}
+                {renderTree(mapDataRef.current[treeViewUID])}
             </TreeView>
 
             <StyledMenu

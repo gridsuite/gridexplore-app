@@ -36,7 +36,6 @@ import {
     connectNotificationsWsUpdateConfig,
     fetchConfigParameter,
     fetchConfigParameters,
-    fetchRootFolders,
 } from '../utils/rest-api';
 import {
     APP_NAME,
@@ -49,7 +48,7 @@ import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import AppTopBar from './app-top-bar';
 import Grid from '@material-ui/core/Grid';
-import DirectoryTreeView from './directory-tree-view';
+import TreeViewsContainer from './tree-views-container';
 import DirectoryContent from './directory-content';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
 
@@ -67,7 +66,6 @@ const App = () => {
     );
 
     const [userManager, setUserManager] = useState(noUserManager);
-    const [rootDirectories, setRootDirectories] = useState([]);
 
     const history = useHistory();
 
@@ -219,23 +217,6 @@ const App = () => {
         connectNotificationsUpdateConfig,
     ]);
 
-    const updateRootDirectories = () => {
-        fetchRootFolders().then((data) => {
-            let sortedData = [...data];
-            sortedData.sort(function (a, b) {
-                return a.elementName.localeCompare(b.elementName);
-            });
-
-            setRootDirectories(sortedData);
-        });
-    };
-
-    useEffect(() => {
-        if (user != null) {
-            updateRootDirectories();
-        }
-    }, [user]);
-
     return (
         <div
             className="singlestretch-child"
@@ -264,21 +245,7 @@ const App = () => {
                                     }}
                                 >
                                     <div style={{ marginTop: '20px' }}>
-                                        {rootDirectories.map(
-                                            (rootDirectory) => (
-                                                <DirectoryTreeView
-                                                    key={
-                                                        rootDirectory.elementUuid
-                                                    }
-                                                    rootDirectory={
-                                                        rootDirectory
-                                                    }
-                                                    updateRootDirectories={
-                                                        updateRootDirectories
-                                                    }
-                                                />
-                                            )
-                                        )}
+                                        <TreeViewsContainer />
                                     </div>
                                 </Grid>
                                 <Grid item xs={12} sm={9}>
