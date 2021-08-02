@@ -17,7 +17,7 @@ let PREFIX_DIRECTORY_SERVER_QUERIES =
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 const PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
 const PREFIX_NOTIFICATION_WS =
-    process.env.REACT_APP_WS_GATEWAY + '/notification';
+    process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
 
 function getToken() {
     const state = store.getState();
@@ -242,8 +242,8 @@ export function createStudy(
 
     if (caseExist) {
         const createStudyWithExistingCaseUrl =
-            PREFIX_STUDY_QUERIES +
-            '/v1/studies/' +
+            PREFIX_DIRECTORY_SERVER_QUERIES +
+            '/v1/directories/studies/' +
             encodeURIComponent(studyName) +
             '/cases/' +
             encodeURIComponent(caseName) +
@@ -255,8 +255,8 @@ export function createStudy(
         });
     } else {
         const createStudyWithNewCaseUrl =
-            PREFIX_STUDY_QUERIES +
-            '/v1/studies/' +
+            PREFIX_DIRECTORY_SERVER_QUERIES +
+            '/v1/directories/studies/' +
             encodeURIComponent(studyName) +
             '?' +
             urlSearchParams.toString();
@@ -310,7 +310,7 @@ export function connectNotificationsWsUpdateStudies() {
     const webSocketUrl =
         webSocketBaseUrl +
         PREFIX_NOTIFICATION_WS +
-        '/notify?updateType=studies';
+        '/notify?updateType=directories';
 
     let webSocketUrlWithToken;
     webSocketUrlWithToken = webSocketUrl + '&access_token=' + getToken();

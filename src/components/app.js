@@ -218,7 +218,7 @@ const App = () => {
             sortedData.sort(function (a, b) {
                 return a.elementName.localeCompare(b.elementName);
             });
-            console.log(sortedData);
+
             setRootDirectories(sortedData);
         });
     };
@@ -282,7 +282,12 @@ const App = () => {
                                             height: '100%',
                                         }}
                                     >
-                                        <div style={{ marginTop: '20px' }}>
+                                        <div
+                                            style={{
+                                                marginTop: '20px',
+                                                marginBottom: '5px',
+                                            }}
+                                        >
                                             <DirectoryBreadcrumbs />
                                         </div>
                                         <div style={{ flexGrow: 1 }}>
