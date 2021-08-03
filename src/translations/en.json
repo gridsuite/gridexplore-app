@@ -25,6 +25,7 @@
     "uploadMessage": " No file selected",
     "cancel": "CANCEL",
     "create": "CREATE",
+    "edit": "EDIT",
     "delete": "DELETE",
     "rename": "RENAME",
     "newStudy": "Add new study",
@@ -32,13 +33,13 @@
     "studyCreatingError": "An error occurred while creating the study: {studyName}",
     "studyNameAlreadyUsed": "This study name is already used",
 
-    "createFolder": "Create a folder",
+    "createFolder": "Create a sub-folder",
     "createRootFolder": "Create a root folder",
     "deleteFolder": "Delete the folder",
     "renameFolder": "Rename folder",
 
     "insertNewDirectoryDialogMessage": "Please insert the following information! ",
-    "insertNewDirectoryDialogTitle": "Create a folder",
+    "insertNewDirectoryDialogTitle": "Create a sub-folder",
     "insertNewRootDirectoryDialogTitle": "Create a root folder",
     "deleteDirectoryDialogMessage": "Are you sure you want to delete the folder ?",
     "deleteDirectoryDialogTitle": "Delete the folder",

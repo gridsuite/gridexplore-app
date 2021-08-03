@@ -19,6 +19,7 @@ import {
     insertRootDirectory,
     deleteDirectory,
     renameDirectory,
+    changeAccessRights,
 } from '../utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -33,17 +34,19 @@ import ListItemText from '@material-ui/core/ListItemText';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import FolderSpecialIcon from '@material-ui/icons/FolderSpecial';
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
+import BuildIcon from '@material-ui/icons/Build';
 import AddIcon from '@material-ui/icons/Add';
 import CreateIcon from '@material-ui/icons/Create';
 import withStyles from '@material-ui/core/styles/withStyles';
 import CreateStudyForm from './create-study-form';
 import { useIntl } from 'react-intl';
 import { elementType } from '../utils/elementType';
-import { CreateDirectoryDialog } from './dialogs/CreateDirectoryDialog';
-import { DeleteDirectoryDialog } from './dialogs/DeleteDirectoryDialog';
+import { CreateDirectoryDialog } from './dialogs/create-directory-dialog';
+import { DeleteDirectoryDialog } from './dialogs/delete-directory-dialog';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
-import { RenameDirectoryDialog } from './dialogs/RenameDialog';
+import RenameDialog from './dialogs/rename-dialog';
+import AccessRightsDialog from './dialogs/access-rights-dialog_';
 
 const useStyles = makeStyles(() => ({
     treeItemLabel: {
@@ -92,6 +95,10 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     const [
         openRenameDirectoryDialog,
         setOpenRenameDirectoryDialog,
+    ] = React.useState(false);
+    const [
+        openAccessRightsDirectoryDialog,
+        setOpenAccessRightsDirectoryDialog,
     ] = React.useState(false);
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -153,6 +160,12 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         setAnchorEl(null);
         setOpenDeleteDirectoryDialog(true);
     };
+
+    const handleOpenAccessRightsDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenAccessRightsDirectoryDialog(true);
+    };
+
     /* Manage current path data */
     const buildPath = useCallback(
         (nodeId, path) => {
@@ -262,6 +275,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
             isPrivate,
             userId
         ).then(() => {
+            // TODO should be done using notification system
             setOpenCreateNewDirectoryDialog(false);
             updateTree(selectedDirectory);
             addElement(selectedDirectory);
@@ -271,6 +285,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     function insertNewRootDirectory(directoryName, isPrivate) {
         insertRootDirectory(directoryName, isPrivate, userId).then(() => {
             setOpenCreateRootDirectoryDialog(false);
+            // TODO should be done using notification system
             handleSelect(null, false);
             updateRootDirectories();
         });
@@ -279,6 +294,19 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     function deleteSelectedDirectory() {
         deleteDirectory(selectedDirectory).then((r) => {
             setOpenDeleteDirectoryDialog(false);
+            // TODO should be done using notification system
+            if (mapData[selectedDirectory].parentUuid !== null) {
+                handleSelect(mapData[selectedDirectory].parentUuid, false);
+            } else {
+                updateRootDirectories();
+            }
+        });
+    }
+
+    function changeSelectedDirectoryAccessRights(isPrivate) {
+        changeAccessRights(selectedDirectory, isPrivate).then((r) => {
+            setOpenAccessRightsDirectoryDialog(false);
+            // TODO should be done using notification system
             if (mapData[selectedDirectory].parentUuid !== null) {
                 handleSelect(mapData[selectedDirectory].parentUuid, false);
             } else {
@@ -290,6 +318,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     function renameSelectedDirectory(newName) {
         renameDirectory(selectedDirectory, newName).then((r) => {
             setOpenRenameDirectoryDialog(false);
+            // TODO should be done using notification system
             if (mapData[selectedDirectory].parentUuid !== null) {
                 updateTree(mapData[selectedDirectory].parentUuid);
             } else {
@@ -342,25 +371,18 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
 
     /* Manage Studies updating with Web Socket */
     const displayErrorIfExist = useCallback(
-        (event) => {
-            let eventData = JSON.parse(event.data);
-            if (eventData.headers) {
-                const error = eventData.headers['error'];
-                if (error) {
-                    const studyName = eventData.headers['studyName'];
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: error,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'studyCreatingError',
-                            headerMessageValues: { studyName: studyName },
-                            intlRef: intlRef,
-                        },
-                    });
-                    return true;
-                }
+        (error, studyName) => {
+            if (error) {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: error,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'studyCreatingError',
+                        headerMessageValues: { studyName: studyName },
+                        intlRef: intlRef,
+                    },
+                });
             }
-            return false;
         },
         [enqueueSnackbar, intlRef]
     );
@@ -398,9 +420,35 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         const ws = connectNotificationsWsUpdateStudies();
 
         ws.onmessage = function (event) {
+            console.log('GOT A NOTIFICATION: ', event);
             if (isConcerned()) {
-                displayErrorIfExist(event);
-                updateDirectoryChildren(selectedDirectoryRef.current, false);
+                let eventData = JSON.parse(event.data);
+                if (eventData.headers) {
+                    const directoryUuid = eventData.headers['directoryUuid'];
+                    const isRootDirectory =
+                        eventData.headers['isRootDirectory'];
+                    const error = eventData.headers['error'];
+                    displayErrorIfExist(error);
+                    if (isRootDirectory) {
+                        console.log('update root directories');
+                        updateRootDirectories();
+                    }
+                    if (directoryUuid) {
+                        console.log(
+                            'should update directoryUuid:',
+                            directoryUuid
+                        );
+                        if (directoryUuid === selectedDirectoryRef.current) {
+                            console.log('Current Folder concerned!');
+                            updateDirectoryChildren(
+                                selectedDirectoryRef.current,
+                                false
+                            );
+                        } else {
+                            console.log('Current Folder NOT concerned!');
+                        }
+                    }
+                }
             }
         };
 
@@ -413,7 +461,12 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
-    }, [displayErrorIfExist, updateDirectoryChildren, isConcerned]);
+    }, [
+        displayErrorIfExist,
+        updateDirectoryChildren,
+        isConcerned,
+        updateRootDirectories,
+    ]);
 
     useEffect(() => {
         const ws = connectNotificationsUpdateStudies();
@@ -479,16 +532,8 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                         })}
                     />
                 </MenuItem>
-                <MenuItem onClick={handleOpenCreateNewDirectoryDialog}>
-                    <ListItemIcon style={{ minWidth: '25px' }}>
-                        <CreateNewFolderIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={intl.formatMessage({
-                            id: 'createFolder',
-                        })}
-                    />
-                </MenuItem>
+                <hr />
+
                 <MenuItem onClick={handleOpenRenameDirectoryDialog}>
                     <ListItemIcon style={{ minWidth: '25px' }}>
                         <CreateIcon fontSize="small" />
@@ -506,6 +551,27 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                     <ListItemText
                         primary={intl.formatMessage({
                             id: 'deleteFolder',
+                        })}
+                    />
+                </MenuItem>
+                <MenuItem onClick={handleOpenAccessRightsDirectoryDialog}>
+                    <ListItemIcon style={{ minWidth: '25px' }}>
+                        <BuildIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={intl.formatMessage({
+                            id: 'accessRights',
+                        })}
+                    />
+                </MenuItem>
+                <hr />
+                <MenuItem onClick={handleOpenCreateNewDirectoryDialog}>
+                    <ListItemIcon style={{ minWidth: '25px' }}>
+                        <CreateNewFolderIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={intl.formatMessage({
+                            id: 'createFolder',
                         })}
                     />
                 </MenuItem>
@@ -546,8 +612,13 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 })}
                 error={''}
             />
-            <RenameDirectoryDialog
+            <RenameDialog
                 message={''}
+                currentName={
+                    mapData[selectedDirectory]
+                        ? mapData[selectedDirectory].elementName
+                        : ''
+                }
                 open={openRenameDirectoryDialog}
                 onClick={renameSelectedDirectory}
                 onClose={() => setOpenRenameDirectoryDialog(false)}
@@ -565,6 +636,21 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 onClose={() => setOpenDeleteDirectoryDialog(false)}
                 title={intl.formatMessage({
                     id: 'deleteDirectoryDialogTitle',
+                })}
+                error={''}
+            />
+            <AccessRightsDialog
+                message={''}
+                isPrivate={
+                    mapData[selectedDirectory]
+                        ? mapData[selectedDirectory].accessRights.private
+                        : false
+                }
+                open={openAccessRightsDirectoryDialog}
+                onClick={changeSelectedDirectoryAccessRights}
+                onClose={() => setOpenAccessRightsDirectoryDialog(false)}
+                title={intl.formatMessage({
+                    id: 'accessRights',
                 })}
                 error={''}
             />

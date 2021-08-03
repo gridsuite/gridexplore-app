@@ -161,6 +161,24 @@ export function insertRootDirectory(directoryName, isPrivate, owner) {
     );
 }
 
+export function changeAccessRights(directoryUuid, accessRightsValue) {
+    console.info("Changing access rights for '%s'", directoryUuid);
+    const changeAccessRightsUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${directoryUuid}/rights`;
+
+    return backendFetch(changeAccessRightsUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            isPrivate: accessRightsValue,
+        }),
+    });
+}
+
 export function deleteDirectory(elementUuid) {
     console.info("Deleting element %s'", elementUuid);
     const fetchParams =
@@ -171,7 +189,7 @@ export function deleteDirectory(elementUuid) {
 }
 
 export function renameDirectory(elementUuid, newName) {
-    console.info("Deleting element %s'", elementUuid);
+    console.info("Renaming element %s'", elementUuid);
     const renameDirectoryUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${elementUuid}/rename/${newName}`;
