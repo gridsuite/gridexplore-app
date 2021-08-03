@@ -26,21 +26,22 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param {EventListener} onClick Event to submit the export
- * @param studyName the uuid of the study to export
+ * @param {String} studyUuid the uuid of the study to export
  * @param {String} title Title of the dialog
  */
+
+const useStyles = makeStyles(() => ({
+    formControl: {
+        minWidth: 300,
+    },
+}));
+
 const ExportDialog = ({ open, onClose, onClick, studyUuid, title }) => {
     const [availableFormats, setAvailableFormats] = React.useState('');
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [downloadUrl, setDownloadUrl] = React.useState('');
     const [exportStudyErr, setExportStudyErr] = React.useState('');
-
-    const useStyles = makeStyles(() => ({
-        formControl: {
-            minWidth: 300,
-        },
-    }));
 
     useEffect(() => {
         if (open) {

@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
  * @param {String} title Title of the dialog
  * @param {String} message Message of the dialog
  * @param {String} currentName Name before renaming
+ * @param {String} error Error message
  */
 const RenameDialog = ({
     open,
@@ -108,6 +109,7 @@ RenameDialog.propTypes = {
     onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     message: PropTypes.string.isRequired,
+    error: PropTypes.string.isRequired,
     currentName: PropTypes.string,
 };
 
