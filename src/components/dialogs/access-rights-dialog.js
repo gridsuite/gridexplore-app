@@ -6,8 +6,7 @@
  */
 import React, { useEffect } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { updateAccessRights } from '../../utils/rest-api';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -25,18 +24,24 @@ import PropTypes from 'prop-types';
  * Dialog to change the access rights
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param studyUuid the uuid of the study to export
+ * @param {EventListener} onClick Event to handle access rights changes
  * @param {String} title Title of the dialog
  * @param {String} isPrivate tells if the study is private or not
+ * @param {String} error error message if there is a fail
  */
-const AccessRightsDialog = ({ open, onClose, studyUuid, title, isPrivate }) => {
+const AccessRightsDialog = ({
+    open,
+    onClose,
+    onClick,
+    title,
+    isPrivate,
+    error,
+}) => {
     const [loading, setLoading] = React.useState(false);
 
     const [selected, setSelected] = React.useState(
         isPrivate !== undefined ? isPrivate.toString() : null
     );
-
-    const [error, setError] = React.useState('');
 
     const useStyles = makeStyles(() => ({
         formControl: {
@@ -50,36 +55,18 @@ const AccessRightsDialog = ({ open, onClose, studyUuid, title, isPrivate }) => {
 
     const handleClick = () => {
         setLoading(true);
-        updateAccessRights(studyUuid, selected).then((response) => {
-            if (response.status === 403) {
-                setError(
-                    intl.formatMessage({
-                        id: 'modifyAccessRightsNotAllowedError',
-                    })
-                );
-            } else if (response.status === 404) {
-                setError(
-                    intl.formatMessage({
-                        id: 'modifyAccessRightsNotFoundError',
-                    })
-                );
-            } else {
-                onClose();
-            }
-        });
+        onClick(selected);
         setLoading(false);
     };
 
     const handleClose = () => {
         onClose();
         setLoading(false);
-        setError('');
     };
 
     const handleExited = () => {
         onClose();
         setLoading(false);
-        setError('');
     };
 
     const handleChange = (event) => {
@@ -87,7 +74,6 @@ const AccessRightsDialog = ({ open, onClose, studyUuid, title, isPrivate }) => {
     };
 
     const classes = useStyles();
-    const intl = useIntl();
 
     return (
         <Dialog
@@ -146,9 +132,10 @@ const AccessRightsDialog = ({ open, onClose, studyUuid, title, isPrivate }) => {
 AccessRightsDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    studyUuid: PropTypes.string,
+    onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     isPrivate: PropTypes.bool,
+    error: PropTypes.string.isRequired,
 };
 
 export default AccessRightsDialog;

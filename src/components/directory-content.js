@@ -25,6 +25,7 @@ import {
     deleteElement,
     fetchStudiesInfos,
     renameStudy,
+    updateAccessRights,
 } from '../utils/rest-api';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -177,6 +178,8 @@ const DirectoryContent = () => {
         setOpenStudyAccessRightsDialog,
     ] = React.useState(false);
 
+    const [accessRightsError, setAccessRightsError] = React.useState('');
+
     const handleOpenStudyAccessRights = () => {
         setAnchorEl(null);
         setOpenStudyAccessRightsDialog(true);
@@ -186,12 +189,35 @@ const DirectoryContent = () => {
         setOpenStudyAccessRightsDialog(false);
         setSelectedStudy('');
         setSelectedStudyPrivate(undefined);
+        setAccessRightsError('');
     };
 
     const handleCloseRowMenu = () => {
         setAnchorEl(null);
         setSelectedStudy('');
         setSelectedStudyPrivate(undefined);
+    };
+
+    const handleClickStudyAccessRights = (selected) => {
+        updateAccessRights(selectedStudy.elementUuid, selected).then(
+            (response) => {
+                if (response.status === 403) {
+                    setAccessRightsError(
+                        intl.formatMessage({
+                            id: 'modifyAccessRightsNotAllowedError',
+                        })
+                    );
+                } else if (response.status === 404) {
+                    setAccessRightsError(
+                        intl.formatMessage({
+                            id: 'modifyAccessRightsNotFoundError',
+                        })
+                    );
+                } else {
+                    handleCloseStudyAccessRights();
+                }
+            }
+        );
     };
 
     const StyledMenu = withStyles({
@@ -482,9 +508,10 @@ const DirectoryContent = () => {
             <AccessRightsDialog
                 open={openStudyAccessRightsDialog}
                 onClose={handleCloseStudyAccessRights}
-                studyUuid={selectedStudy.elementUuid}
+                onClick={handleClickStudyAccessRights}
                 title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
                 isPrivate={isSelectedStudyPrivate}
+                error={accessRightsError}
             />
             <iframe
                 id={DownloadIframe}
