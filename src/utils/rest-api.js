@@ -119,11 +119,93 @@ export function deleteElement(elementUuid) {
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${elementUuid}`;
     return backendFetch(fetchParams, {
         method: 'delete',
-    }).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
+    });
+}
+
+export function updateAccessRights(elementUuid, isPrivate) {
+    console.info(
+        'Updating access rights for ' +
+            elementUuid +
+            ' to isPrivate = ' +
+            isPrivate
     );
+    const updateAccessRightUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${elementUuid}/rights`;
+    return backendFetch(updateAccessRightUrl, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: isPrivate === 'true',
+    });
+}
+
+export function getAvailableExportFormats() {
+    console.info('get export formats');
+    const getExportFormatsUrl =
+        PREFIX_STUDY_QUERIES + '/v1/export-network-formats';
+    console.debug(getExportFormatsUrl);
+    return backendFetch(getExportFormatsUrl, {
+        method: 'get',
+    }).then((response) => response.json());
+}
+
+function getUrlWithToken(baseUrl) {
+    return baseUrl + '?access_token=' + getToken();
+}
+
+function getStudyUrl(studyUuid) {
+    return (
+        PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyUuid)
+    );
+}
+
+export function getExportUrl(studyUuid, exportFormat) {
+    const url = getStudyUrl(studyUuid) + '/export-network/' + exportFormat;
+    return getUrlWithToken(url);
+}
+
+export function renameStudy(studyUuid, newStudyName) {
+    console.info('Renaming study ' + studyUuid);
+    const renameStudiesUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${studyUuid}/rename/${newStudyName}`;
+
+    console.debug(renameStudiesUrl);
+    return backendFetch(renameStudiesUrl, {
+        method: 'PUT',
+    });
+}
+
+export function deleteStudy(studyUuid) {
+    console.info('Deleting study ' + studyUuid + '...');
+    const deleteStudyUrl = getStudyUrl(studyUuid);
+    console.debug(deleteStudyUrl);
+    return backendFetch(deleteStudyUrl, {
+        method: 'delete',
+    });
+}
+
+export function changeStudyAccessRights(studyUuid, toPrivate) {
+    console.info(
+        'Change access rights of study ' +
+            studyUuid +
+            ', toPrivate : ' +
+            toPrivate
+    );
+    let changeStudyAccessRightsUrl;
+    if (toPrivate === 'true') {
+        changeStudyAccessRightsUrl = getStudyUrl(studyUuid) + '/private';
+    } else {
+        changeStudyAccessRightsUrl = getStudyUrl(studyUuid) + '/public';
+    }
+
+    console.debug(changeStudyAccessRightsUrl);
+    return backendFetch(changeStudyAccessRightsUrl, {
+        method: 'POST',
+    });
 }
 
 export function fetchRootFolders() {

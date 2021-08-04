@@ -308,7 +308,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         ws.onmessage = function (event) {
             if (isConcerned()) {
                 displayErrorIfExist(event);
-                updateDirectoryChildren(selectedDirectoryRef.current, false);
+                updateDirectoryChildren(selectedDirectoryRef.current);
             }
         };
 
