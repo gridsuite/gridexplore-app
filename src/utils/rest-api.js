@@ -173,9 +173,7 @@ export function changeAccessRights(directoryUuid, accessRightsValue) {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            isPrivate: accessRightsValue,
-        }),
+        body: accessRightsValue,
     });
 }
 

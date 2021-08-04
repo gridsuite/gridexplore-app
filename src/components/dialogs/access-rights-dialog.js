@@ -6,7 +6,7 @@
  */
 import React, { useEffect } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -27,13 +27,7 @@ import PropTypes from 'prop-types';
  * @param {String} title Title of the dialog
  * @param {String} isPrivate tells if the study is private or not
  */
-const AccessRightsDialog = ({
-    open,
-    onClose,
-    title,
-    isPrivate,
-    onClick,
-}) => {
+const AccessRightsDialog = ({ open, onClose, title, isPrivate, onClick }) => {
     const [loading, setLoading] = React.useState(false);
 
     const [selected, setSelected] = React.useState(
@@ -75,7 +69,6 @@ const AccessRightsDialog = ({
     };
 
     const classes = useStyles();
-    const intl = useIntl();
 
     return (
         <Dialog
@@ -133,7 +126,7 @@ const AccessRightsDialog = ({
 
 AccessRightsDialog.propTypes = {
     open: PropTypes.bool.isRequired,
-    onClick: PropTypes.bool.isRequired,
+    onClick: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     isPrivate: PropTypes.bool,

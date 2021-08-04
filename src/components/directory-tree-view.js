@@ -46,7 +46,7 @@ import { DeleteDirectoryDialog } from './dialogs/delete-directory-dialog';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import RenameDialog from './dialogs/rename-dialog';
-import AccessRightsDialog from './dialogs/access-rights-dialog_';
+import AccessRightsDialog from './dialogs/access-rights-dialog';
 
 const useStyles = makeStyles(() => ({
     treeItemLabel: {
@@ -107,10 +107,12 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     const selectedDirectoryRef = useRef(null);
     const mapDataRef = useRef({});
     const expandedRef = useRef([]);
+    const updateRootDirectoriesRef = useRef([]);
     const websocketExpectedCloseRef = useRef();
     selectedDirectoryRef.current = selectedDirectory;
     expandedRef.current = expanded;
     mapDataRef.current = mapData;
+    updateRootDirectoriesRef.current = updateRootDirectories;
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -121,14 +123,18 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
 
     /* Component initialization */
     useEffect(() => {
-        let rootDirectoryCopy = { ...rootDirectory };
-        rootDirectoryCopy.parentUuid = null;
-        rootDirectoryCopy.children = [];
+        let preparedRootDirectory = { ...rootDirectory };
+        preparedRootDirectory.parentUuid = null;
+        preparedRootDirectory.children = mapDataRef.current[
+            rootDirectory.elementUuid
+        ]
+            ? mapDataRef.current[rootDirectory.elementUuid].children
+            : [];
 
-        let initialMapData = {};
-        initialMapData[rootDirectory.elementUuid] = rootDirectoryCopy;
+        let initialMapData = { ...mapDataRef.current };
+        initialMapData[rootDirectory.elementUuid] = preparedRootDirectory;
         setMapData(initialMapData);
-    }, [rootDirectory]);
+    }, [rootDirectory, mapDataRef]);
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -148,14 +154,17 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         setAnchorEl(null);
         setOpenCreateNewDirectoryDialog(true);
     };
+
     const handleOpenRenameDirectoryDialog = () => {
         setAnchorEl(null);
         setOpenRenameDirectoryDialog(true);
     };
+
     const handleOpenCreateRootDirectoryDialog = () => {
         setAnchorEl(null);
         setOpenCreateRootDirectoryDialog(true);
     };
+
     const handleOpenDeleteDirectoryDialog = () => {
         setAnchorEl(null);
         setOpenDeleteDirectoryDialog(true);
@@ -277,8 +286,8 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         ).then(() => {
             // TODO should be done using notification system
             setOpenCreateNewDirectoryDialog(false);
-            updateTree(selectedDirectory);
-            addElement(selectedDirectory);
+            //updateTree(selectedDirectory);
+            //addElement(selectedDirectory);
         });
     }
 
@@ -286,8 +295,8 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         insertRootDirectory(directoryName, isPrivate, userId).then(() => {
             setOpenCreateRootDirectoryDialog(false);
             // TODO should be done using notification system
-            handleSelect(null, false);
-            updateRootDirectories();
+            //handleSelect(null, false);
+            //updateRootDirectories();
         });
     }
 
@@ -295,35 +304,24 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         deleteDirectory(selectedDirectory).then((r) => {
             setOpenDeleteDirectoryDialog(false);
             // TODO should be done using notification system
-            if (mapData[selectedDirectory].parentUuid !== null) {
+            // TODO delete from mapData ?
+            /*if (mapData[selectedDirectory].parentUuid !== null) {
                 handleSelect(mapData[selectedDirectory].parentUuid, false);
             } else {
                 updateRootDirectories();
-            }
+            }*/
         });
     }
 
     function changeSelectedDirectoryAccessRights(isPrivate) {
         changeAccessRights(selectedDirectory, isPrivate).then((r) => {
             setOpenAccessRightsDirectoryDialog(false);
-            // TODO should be done using notification system
-            if (mapData[selectedDirectory].parentUuid !== null) {
-                handleSelect(mapData[selectedDirectory].parentUuid, false);
-            } else {
-                updateRootDirectories();
-            }
         });
     }
 
     function renameSelectedDirectory(newName) {
         renameDirectory(selectedDirectory, newName).then((r) => {
             setOpenRenameDirectoryDialog(false);
-            // TODO should be done using notification system
-            if (mapData[selectedDirectory].parentUuid !== null) {
-                updateTree(mapData[selectedDirectory].parentUuid);
-            } else {
-                updateRootDirectories();
-            }
         });
     }
 
@@ -428,11 +426,15 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                     const isRootDirectory =
                         eventData.headers['isRootDirectory'];
                     const error = eventData.headers['error'];
+
                     displayErrorIfExist(error);
+
                     if (isRootDirectory) {
                         console.log('update root directories');
-                        updateRootDirectories();
+                        updateRootDirectoriesRef.current();
+                        return;
                     }
+
                     if (directoryUuid) {
                         console.log(
                             'should update directoryUuid:',
@@ -444,8 +446,23 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                                 selectedDirectoryRef.current,
                                 false
                             );
-                        } else {
-                            console.log('Current Folder NOT concerned!');
+                            // open folder in case of INSERT notification
+                            addElement(directoryUuid);
+                        } else if (
+                            mapDataRef.current[selectedDirectoryRef.current]
+                                .parentUuid !== null &&
+                            (directoryUuid ===
+                                mapDataRef.current[selectedDirectoryRef.current]
+                                    .parentUuid) !==
+                                null
+                        ) {
+                            // update parent in case of DELETE notification
+                            console.log('Parent Folder concerned!');
+                            updateDirectoryChildren(
+                                mapDataRef.current[selectedDirectoryRef.current]
+                                    .parentUuid,
+                                false
+                            );
                         }
                     }
                 }
@@ -457,6 +474,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 console.error('Unexpected Notification WebSocket closed');
             }
         };
+
         ws.onerror = function (event) {
             console.error('Unexpected Notification WebSocket error', event);
         };
@@ -465,13 +483,14 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         displayErrorIfExist,
         updateDirectoryChildren,
         isConcerned,
-        updateRootDirectories,
+        updateRootDirectoriesRef,
+        addElement,
+        mapDataRef,
     ]);
 
     useEffect(() => {
         const ws = connectNotificationsUpdateStudies();
         // Note: dispatch doesn't change
-
         // cleanup at unmount event
         return function () {
             ws.close();
