@@ -58,6 +58,26 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const StyledMenu = withStyles({
+    paper: {
+        border: '1px solid #d3d4d5',
+    },
+})((props) => (
+    <Menu
+        elevation={0}
+        getContentAnchorEl={null}
+        anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+        }}
+        transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+        }}
+        {...props}
+    />
+));
+
 const DirectoryContent = () => {
     const [childrenMetadata, setChildrenMetadata] = useState({});
 
@@ -219,26 +239,6 @@ const DirectoryContent = () => {
             }
         );
     };
-
-    const StyledMenu = withStyles({
-        paper: {
-            border: '1px solid #d3d4d5',
-        },
-    })((props) => (
-        <Menu
-            elevation={0}
-            getContentAnchorEl={null}
-            anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-            }}
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-            }}
-            {...props}
-        />
-    ));
 
     const abbreviationFromUserName = (name) => {
         const tab = name.split(' ').map((x) => x.charAt(0));
@@ -438,15 +438,17 @@ const DirectoryContent = () => {
                                             }
                                         />
                                     </MenuItem>
-                                    <MenuItem onClick={handleOpenDeleteStudy}>
+                                    <MenuItem
+                                        onClick={handleOpenStudyAccessRights}
+                                    >
                                         <ListItemIcon
                                             style={{ minWidth: '25px' }}
                                         >
-                                            <DeleteIcon fontSize="small" />
+                                            <BuildIcon fontSize="small" />
                                         </ListItemIcon>
                                         <ListItemText
                                             primary={
-                                                <FormattedMessage id="delete" />
+                                                <FormattedMessage id="accessRights" />
                                             }
                                         />
                                     </MenuItem>
@@ -462,17 +464,15 @@ const DirectoryContent = () => {
                                             }
                                         />
                                     </MenuItem>
-                                    <MenuItem
-                                        onClick={handleOpenStudyAccessRights}
-                                    >
+                                    <MenuItem onClick={handleOpenDeleteStudy}>
                                         <ListItemIcon
                                             style={{ minWidth: '25px' }}
                                         >
-                                            <BuildIcon fontSize="small" />
+                                            <DeleteIcon fontSize="small" />
                                         </ListItemIcon>
                                         <ListItemText
                                             primary={
-                                                <FormattedMessage id="accessRights" />
+                                                <FormattedMessage id="delete" />
                                             }
                                         />
                                     </MenuItem>

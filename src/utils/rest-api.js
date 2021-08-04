@@ -205,10 +205,6 @@ export function changeStudyAccessRights(studyUuid, toPrivate) {
     console.debug(changeStudyAccessRightsUrl);
     return backendFetch(changeStudyAccessRightsUrl, {
         method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
     });
 }
 
