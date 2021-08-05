@@ -98,7 +98,10 @@ const DirectoryContent = () => {
         return (
             <div className={classes.cell}>
                 <Tooltip title={owner} placement="right">
-                    <Chip className={classes.chip} label={abbreviationFromUserName(owner)} />
+                    <Chip
+                        className={classes.chip}
+                        label={abbreviationFromUserName(owner)}
+                    />
                 </Tooltip>
             </div>
         );
