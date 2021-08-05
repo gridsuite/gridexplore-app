@@ -17,7 +17,7 @@
     "renameStudyNotAllowedError": "Cannot rename the study if you are not the owner",
     "renameStudyNotFoundError": "The study was not found",
     "deleteStudy": "Delete the study",
-    "deleteStudyMsg": "Are you sure ?",
+    "deleteStudyMsg": "Are you sure?",
     "caseExist": "Does the case already exist?",
     "studyName": "study name",
     "studyNameProperty": "Study name: ",
@@ -46,11 +46,12 @@
     "insertNewDirectoryDialogMessage": "Please insert the following information! ",
     "insertNewDirectoryDialogTitle": "Create a sub-folder",
     "insertNewRootDirectoryDialogTitle": "Create a root folder",
-    "deleteDirectoryDialogMessage": "Are you sure you want to delete the folder ?",
+    "deleteDirectoryDialogMessage": "Are you sure you want to delete the folder?",
     "deleteDirectoryDialogTitle": "Delete the folder",
     "renameDirectoryDialogTitle": "Rename folder",
     "directoryNameLabel": "Folder Name",
-    "isPrivateLabel": "Private folder ?",
+    "isPrivateLabel": "Private folder?",
+
     "directoryNewNameLabel": "New Name",
 
     "exportNetwork": "Export the network",
