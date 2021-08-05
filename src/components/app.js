@@ -75,6 +75,13 @@ const App = () => {
 
     const location = useLocation();
 
+    //remove the default contextMenu
+    useEffect(() => {
+        document.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+        });
+    });
+
     const updateParams = useCallback(
         (params) => {
             console.debug('received UI parameters : ', params);
