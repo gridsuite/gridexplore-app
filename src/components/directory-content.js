@@ -39,6 +39,17 @@ const useStyles = makeStyles((theme) => ({
     chip: {
         cursor: 'pointer',
     },
+    icon: {
+        display: 'flex',
+
+        marginRight: theme.spacing(1),
+        width: '18px',
+        height: '18px',
+    },
+    circularRoot: {
+        display: 'flex',
+        marginRight: theme.spacing(1),
+    },
 }));
 
 const DirectoryContent = () => {
@@ -106,7 +117,6 @@ const DirectoryContent = () => {
             </div>
         );
     }
-
     function nameCellRender(cellData) {
         const elementUuid = cellData.rowData['elementUuid'];
         const elementName = cellData.rowData['elementName'];
@@ -114,28 +124,24 @@ const DirectoryContent = () => {
         return (
             <div className={classes.cell}>
                 {!childrenMetadata[elementUuid] && (
-                    <CircularProgress size={25} />
+                    <CircularProgress
+                        size={18}
+                        className={classes.circularRoot}
+                    />
                 )}
                 {childrenMetadata[elementUuid] &&
                     objectType === elementType.STUDY && (
-                        <LibraryBooksOutlinedIcon />
+                        <LibraryBooksOutlinedIcon className={classes.icon} />
                     )}
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        marginLeft: '10px',
-                    }}
-                >
-                    {childrenMetadata[elementUuid] ? (
-                        <div>{childrenMetadata[elementUuid].name}</div>
-                    ) : (
-                        <>
-                            {elementName}{' '}
-                            <FormattedMessage id="creationInProgress" />
-                        </>
-                    )}
-                </div>
+
+                {childrenMetadata[elementUuid] ? (
+                    <div>{childrenMetadata[elementUuid].name}</div>
+                ) : (
+                    <>
+                        {elementName}{' '}
+                        <FormattedMessage id="creationInProgress" />
+                    </>
+                )}
             </div>
         );
     }

@@ -288,7 +288,6 @@ const App = () => {
                                         <div
                                             style={{
                                                 marginTop: '20px',
-                                                marginBottom: '5px',
                                             }}
                                         >
                                             <DirectoryBreadcrumbs />

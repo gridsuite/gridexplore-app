@@ -37,6 +37,37 @@ import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
+    treeViewRoot: {
+        padding: theme.spacing(1),
+        display: 'flex',
+        alignItems: 'center',
+    },
+    treeItemRoot: {
+        '&:focus > $treeItemContent $treeItemLabel': {
+            borderRadius: theme.spacing(2),
+            backgroundColor: theme.row.primary,
+        },
+        '&:hover > $treeItemContent $treeItemLabel:hover': {
+            borderRadius: theme.spacing(2),
+            backgroundColor: theme.row.primary,
+        },
+        '&$treeItemSelected > $treeItemContent $treeItemLabel:hover, &$treeItemSelected > $treeItemContent $treeItemLabel, &$treeItemSelected:focus > $treeItemContent $treeItemLabel': {
+            borderRadius: theme.spacing(2),
+            backgroundColor: theme.row.hover,
+            fontWeight: 'bold',
+        },
+    },
+    treeItemSelected: {}, // keep this!
+    treeItemContent: {
+        paddingRight: theme.spacing(1),
+        paddingLeft: theme.spacing(1),
+    },
+    treeItemLabel: {
+        paddingRight: theme.spacing(1),
+        paddingLeft: theme.spacing(1),
+        fontWeight: 'inherit',
+        color: 'inherit',
+    },
     treeItemLabelRoot: {
         display: 'flex',
         alignItems: 'center',
@@ -212,6 +243,12 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                     </div>
                 }
                 endIcon={<ChevronRightIcon className={classes.icon} />}
+                classes={{
+                    root: classes.treeItemRoot,
+                    content: classes.treeItemContent,
+                    selected: classes.treeItemSelected,
+                    label: classes.treeItemLabel,
+                }}
             >
                 {Array.isArray(mapData[node.elementUuid].children)
                     ? mapData[node.elementUuid].children.map((node) =>
