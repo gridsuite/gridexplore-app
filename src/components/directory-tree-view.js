@@ -319,7 +319,6 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
             let newSubdirectories = children.filter(
                 (child) => child.type === elementType.DIRECTORY
             );
-            console.log('newSubdirectories', newSubdirectories);
             insertContent(nodeId, newSubdirectories);
             if (
                 selectedDirectoryRef.current !== null &&
@@ -422,7 +421,6 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         const ws = connectNotificationsWsUpdateStudies();
 
         ws.onmessage = function (event) {
-            console.debug('GOT A NOTIFICATION: ', event);
             let eventData = JSON.parse(event.data);
 
             if (eventData.headers) {
@@ -433,7 +431,6 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 const error = eventData.headers['error'];
 
                 if (isRootDirectory) {
-                    console.log('update root directories');
                     updateRootDirectoriesRef.current();
                     if (
                         notificationTypeHeader ===
@@ -448,10 +445,6 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 if (directoryUuid) {
                     if (mapDataRef.current[directoryUuid] !== undefined) {
                         displayErrorIfExist(error);
-                        console.log(
-                            'should update directoryUuid:',
-                            directoryUuid
-                        );
                         updateDirectoryChildren(directoryUuid, false);
                     }
                 }
