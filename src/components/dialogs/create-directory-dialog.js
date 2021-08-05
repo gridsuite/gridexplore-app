@@ -16,9 +16,12 @@ import React, { useEffect } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
-import { Checkbox } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import FormControl from '@material-ui/core/FormControl';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Radio from '@material-ui/core/Radio';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -75,7 +78,7 @@ export const CreateDirectoryDialog = ({
     };
 
     const handleChange = (event) => {
-        setIsPrivate(event.target.checked);
+        setIsPrivate(event.target.value);
     };
 
     return (
@@ -104,17 +107,27 @@ export const CreateDirectoryDialog = ({
                     </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.root}>
-                    <Grid item xs={9}>
-                        <InputLabel>
-                            <FormattedMessage id="isPrivateLabel" />
-                        </InputLabel>
-                    </Grid>
-                    <Grid item xs={3}>
-                        <Checkbox
-                            checked={isPrivate}
-                            onChange={handleChange}
-                            inputProps={{ 'aria-label': 'secondary checkbox' }}
-                        />
+                    <Grid item xs={12}>
+                        <FormControl className={classes.formControl}>
+                            <RadioGroup
+                                aria-label=""
+                                name="DirectoryAccessRights"
+                                value={isPrivate + ''}
+                                onChange={handleChange}
+                                row
+                            >
+                                <FormControlLabel
+                                    value="false"
+                                    control={<Radio />}
+                                    label=<FormattedMessage id="public" />
+                                />
+                                <FormControlLabel
+                                    value="true"
+                                    control={<Radio />}
+                                    label=<FormattedMessage id="private" />
+                                />
+                            </RadioGroup>
+                        </FormControl>
                     </Grid>
                 </Grid>
                 <br />

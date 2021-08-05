@@ -113,6 +113,35 @@ export function fetchDirectoryContent(directoryUuid) {
     );
 }
 
+export function deleteElement(elementUuid) {
+    console.info("Deleting element %s'", elementUuid);
+    const fetchParams =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${elementUuid}`;
+    return backendFetch(fetchParams, {
+        method: 'delete',
+    });
+}
+
+export function updateAccessRights(elementUuid, isPrivate) {
+    console.info(
+        'Updating access rights for ' +
+            elementUuid +
+            ' to isPrivate = ' +
+            isPrivate
+    );
+    const updateAccessRightUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${elementUuid}/rights`;
+    return backendFetch(updateAccessRightUrl, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: isPrivate === 'true',
+    });
+}
+
 export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
     console.info("Inserting a new folder '%s'", directoryName);
     const insertDirectoryUrl =
@@ -161,38 +190,49 @@ export function insertRootDirectory(directoryName, isPrivate, owner) {
     );
 }
 
-export function changeAccessRights(directoryUuid, accessRightsValue) {
-    console.info("Changing access rights for '%s'", directoryUuid);
-    const changeAccessRightsUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/rights`;
+export function getAvailableExportFormats() {
+    console.info('get export formats');
+    const getExportFormatsUrl =
+        PREFIX_STUDY_QUERIES + '/v1/export-network-formats';
+    console.debug(getExportFormatsUrl);
+    return backendFetch(getExportFormatsUrl, {
+        method: 'get',
+    }).then((response) => response.json());
+}
 
-    return backendFetch(changeAccessRightsUrl, {
+function getUrlWithToken(baseUrl) {
+    return baseUrl + '?access_token=' + getToken();
+}
+
+function getStudyUrl(studyUuid) {
+    return (
+        PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyUuid)
+    );
+}
+
+export function getExportUrl(studyUuid, exportFormat) {
+    const url = getStudyUrl(studyUuid) + '/export-network/' + exportFormat;
+    return getUrlWithToken(url);
+}
+
+export function renameElement(studyUuid, newStudyName) {
+    console.info('Renaming study ' + studyUuid);
+    const renameElementUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${studyUuid}/rename/${newStudyName}`;
+
+    console.debug(renameElementUrl);
+    return backendFetch(renameElementUrl, {
         method: 'PUT',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: accessRightsValue,
     });
 }
 
-export function deleteDirectory(elementUuid) {
-    console.info("Deleting element %s'", elementUuid);
-    const fetchParams =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${elementUuid}`;
-    return backendFetch(fetchParams, {
+export function deleteStudy(studyUuid) {
+    console.info('Deleting study ' + studyUuid + '...');
+    const deleteStudyUrl = getStudyUrl(studyUuid);
+    console.debug(deleteStudyUrl);
+    return backendFetch(deleteStudyUrl, {
         method: 'delete',
-    });
-}
-
-export function renameDirectory(elementUuid, newName) {
-    console.info("Renaming element %s'", elementUuid);
-    const renameDirectoryUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${elementUuid}/rename/${newName}`;
-    return backendFetch(renameDirectoryUrl, {
-        method: 'put',
     });
 }
 

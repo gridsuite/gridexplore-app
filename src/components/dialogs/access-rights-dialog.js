@@ -24,17 +24,24 @@ import PropTypes from 'prop-types';
  * Dialog to change the access rights
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
+ * @param {EventListener} onClick Event to handle access rights changes
  * @param {String} title Title of the dialog
  * @param {String} isPrivate tells if the study is private or not
+ * @param {String} error error message if there is a fail
  */
-const AccessRightsDialog = ({ open, onClose, title, isPrivate, onClick }) => {
+const AccessRightsDialog = ({
+    open,
+    onClose,
+    onClick,
+    title,
+    isPrivate,
+    error,
+}) => {
     const [loading, setLoading] = React.useState(false);
 
     const [selected, setSelected] = React.useState(
         isPrivate !== undefined ? isPrivate.toString() : null
     );
-
-    const [error, setError] = React.useState('');
 
     const useStyles = makeStyles(() => ({
         formControl: {
@@ -55,13 +62,11 @@ const AccessRightsDialog = ({ open, onClose, title, isPrivate, onClick }) => {
     const handleClose = () => {
         onClose();
         setLoading(false);
-        setError('');
     };
 
     const handleExited = () => {
         onClose();
         setLoading(false);
-        setError('');
     };
 
     const handleChange = (event) => {
@@ -126,10 +131,11 @@ const AccessRightsDialog = ({ open, onClose, title, isPrivate, onClick }) => {
 
 AccessRightsDialog.propTypes = {
     open: PropTypes.bool.isRequired,
-    onClick: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     isPrivate: PropTypes.bool,
+    error: PropTypes.string.isRequired,
 };
 
 export default AccessRightsDialog;

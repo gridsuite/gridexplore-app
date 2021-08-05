@@ -9,10 +9,15 @@
     "private": "private",
     "public": "public",
     "emptyDir": "Empty directory",
-    "accessRights": "Access rights",
 
     "addNewStudy": "Add new study",
     "addNewStudyDescription": "To add a new study, you should enter the following information:",
+    "renameStudy": "Rename the study",
+    "renameStudyMsg": "Study new name: ",
+    "renameStudyNotAllowedError": "Cannot rename the study if you are not the owner",
+    "renameStudyNotFoundError": "The study was not found",
+    "deleteStudy": "Delete the study",
+    "deleteStudyMsg": "Are you sure ?",
     "caseExist": "Does the case already exist?",
     "studyName": "study name",
     "studyNameProperty": "Study name: ",
@@ -25,13 +30,13 @@
     "uploadMessage": " No file selected",
     "cancel": "CANCEL",
     "create": "CREATE",
-    "edit": "EDIT",
-    "delete": "DELETE",
-    "rename": "RENAME",
     "newStudy": "Add new study",
     "creationInProgress": "creation in progress",
     "studyCreatingError": "An error occurred while creating the study: {studyName}",
     "studyNameAlreadyUsed": "This study name is already used",
+
+    "rename": "Rename",
+    "delete": "Delete",
 
     "createFolder": "Create a sub-folder",
     "createRootFolder": "Create a root folder",
@@ -46,5 +51,17 @@
     "renameDirectoryDialogTitle": "Rename folder",
     "directoryNameLabel": "Folder Name",
     "isPrivateLabel": "Private folder ?",
-    "directoryNewNameLabel": "New Name"
+    "directoryNewNameLabel": "New Name",
+
+    "exportNetwork": "Export the network",
+    "export": "Export",
+    "format": "Format",
+    "exportFormat": "Format of the export",
+    "exportStudyErrorMsg": "No export format specified",
+
+    "accessRights": "Access rights",
+    "modifyAccessRights": "Modify the access rights",
+    "modifyAccessRightsNotAllowedError": "You cannot modify the access rights of a study you don't own",
+    "modifyAccessRightsNotFoundError": "The study was not found",
+    "edit": "Edit"
 }

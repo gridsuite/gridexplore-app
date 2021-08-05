@@ -17,9 +17,9 @@ import {
     fetchDirectoryContent,
     insertDirectory,
     insertRootDirectory,
-    deleteDirectory,
-    renameDirectory,
-    changeAccessRights,
+    deleteElement,
+    updateAccessRights,
+    renameElement,
 } from '../utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -47,6 +47,7 @@ import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import RenameDialog from './dialogs/rename-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
+import { notificationType } from '../utils/notificationType';
 
 const useStyles = makeStyles(() => ({
     treeItemLabel: {
@@ -284,55 +285,58 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
             isPrivate,
             userId
         ).then(() => {
-            // TODO should be done using notification system
             setOpenCreateNewDirectoryDialog(false);
-            //updateTree(selectedDirectory);
-            //addElement(selectedDirectory);
         });
     }
 
     function insertNewRootDirectory(directoryName, isPrivate) {
         insertRootDirectory(directoryName, isPrivate, userId).then(() => {
             setOpenCreateRootDirectoryDialog(false);
-            // TODO should be done using notification system
-            //handleSelect(null, false);
-            //updateRootDirectories();
         });
     }
 
     function deleteSelectedDirectory() {
-        deleteDirectory(selectedDirectory).then((r) => {
+        deleteElement(selectedDirectory).then((r) => {
             setOpenDeleteDirectoryDialog(false);
-            // TODO should be done using notification system
-            // TODO delete from mapData ?
-            /*if (mapData[selectedDirectory].parentUuid !== null) {
-                handleSelect(mapData[selectedDirectory].parentUuid, false);
-            } else {
-                updateRootDirectories();
-            }*/
+            handleSelect(mapData[selectedDirectory].parentUuid, false);
         });
     }
 
     function changeSelectedDirectoryAccessRights(isPrivate) {
-        changeAccessRights(selectedDirectory, isPrivate).then((r) => {
+        updateAccessRights(selectedDirectory, isPrivate).then((r) => {
             setOpenAccessRightsDirectoryDialog(false);
         });
     }
 
     function renameSelectedDirectory(newName) {
-        renameDirectory(selectedDirectory, newName).then((r) => {
+        renameElement(selectedDirectory, newName).then((r) => {
             setOpenRenameDirectoryDialog(false);
         });
     }
 
     const updateMapData = useCallback(
         (nodeId, children) => {
-            insertContent(
-                nodeId,
-                children.filter((child) => child.type === elementType.DIRECTORY)
+            let newSubdirectories = children.filter(
+                (child) => child.type === elementType.DIRECTORY
             );
+            console.log('newSubdirectories', newSubdirectories);
+            insertContent(nodeId, newSubdirectories);
+            if (
+                selectedDirectoryRef.current !== null &&
+                mapDataRef.current[selectedDirectoryRef.current].parentUuid ===
+                    nodeId &&
+                newSubdirectories.filter(
+                    (e) => e.elementUuid === selectedDirectoryRef.current
+                ).length === 0
+            ) {
+                // if selected directory is deleted by another user we should select parent directory
+                setSelectedDirectory(nodeId);
+                updatePath(nodeId);
+            } else {
+                updatePath(selectedDirectoryRef.current);
+            }
         },
-        [insertContent]
+        [insertContent, selectedDirectoryRef, updatePath, mapDataRef]
     );
 
     /* Manage treeItem folding */
@@ -418,52 +422,37 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         const ws = connectNotificationsWsUpdateStudies();
 
         ws.onmessage = function (event) {
-            console.log('GOT A NOTIFICATION: ', event);
-            if (isConcerned()) {
-                let eventData = JSON.parse(event.data);
-                if (eventData.headers) {
-                    const directoryUuid = eventData.headers['directoryUuid'];
-                    const isRootDirectory =
-                        eventData.headers['isRootDirectory'];
-                    const error = eventData.headers['error'];
+            console.debug('GOT A NOTIFICATION: ', event);
+            let eventData = JSON.parse(event.data);
 
-                    displayErrorIfExist(error);
+            if (eventData.headers) {
+                const notificationTypeHeader =
+                    eventData.headers['notificationType'];
+                const isRootDirectory = eventData.headers['isRootDirectory'];
+                const directoryUuid = eventData.headers['directoryUuid'];
+                const error = eventData.headers['error'];
 
-                    if (isRootDirectory) {
-                        console.log('update root directories');
-                        updateRootDirectoriesRef.current();
-                        return;
+                if (isRootDirectory) {
+                    console.log('update root directories');
+                    updateRootDirectoriesRef.current();
+                    if (
+                        notificationTypeHeader ===
+                        notificationType.DELETE_DIRECTORY
+                    ) {
+                        dispatch(setCurrentChildren(null));
+                        updatePath(null);
                     }
+                    return;
+                }
 
-                    if (directoryUuid) {
+                if (directoryUuid) {
+                    if (mapDataRef.current[directoryUuid] !== undefined) {
+                        displayErrorIfExist(error);
                         console.log(
                             'should update directoryUuid:',
                             directoryUuid
                         );
-                        if (directoryUuid === selectedDirectoryRef.current) {
-                            console.log('Current Folder concerned!');
-                            updateDirectoryChildren(
-                                selectedDirectoryRef.current,
-                                false
-                            );
-                            // open folder in case of INSERT notification
-                            addElement(directoryUuid);
-                        } else if (
-                            mapDataRef.current[selectedDirectoryRef.current]
-                                .parentUuid !== null &&
-                            (directoryUuid ===
-                                mapDataRef.current[selectedDirectoryRef.current]
-                                    .parentUuid) !==
-                                null
-                        ) {
-                            // update parent in case of DELETE notification
-                            console.log('Parent Folder concerned!');
-                            updateDirectoryChildren(
-                                mapDataRef.current[selectedDirectoryRef.current]
-                                    .parentUuid,
-                                false
-                            );
-                        }
+                        updateDirectoryChildren(directoryUuid, false);
                     }
                 }
             }
@@ -482,10 +471,10 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     }, [
         displayErrorIfExist,
         updateDirectoryChildren,
-        isConcerned,
         updateRootDirectoriesRef,
-        addElement,
         mapDataRef,
+        dispatch,
+        updatePath,
     ]);
 
     useEffect(() => {
@@ -661,7 +650,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
             <AccessRightsDialog
                 message={''}
                 isPrivate={
-                    mapData[selectedDirectory]
+                    mapData[selectedDirectory] !== undefined
                         ? mapData[selectedDirectory].accessRights.private
                         : false
                 }
