@@ -142,6 +142,54 @@ export function updateAccessRights(elementUuid, isPrivate) {
     });
 }
 
+export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
+    console.info("Inserting a new folder '%s'", directoryName);
+    const insertDirectoryUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/` + parentUuid;
+
+    return backendFetch(insertDirectoryUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            elementUuid: null,
+            elementName: directoryName,
+            type: 'DIRECTORY',
+            accessRights: { private: isPrivate },
+            owner: owner,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function insertRootDirectory(directoryName, isPrivate, owner) {
+    console.info("Inserting a new root folder '%s'", directoryName);
+    const insertRootDirectoryUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories/`;
+
+    return backendFetch(insertRootDirectoryUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            elementName: directoryName,
+            accessRights: { private: isPrivate },
+            owner: owner,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function getAvailableExportFormats() {
     console.info('get export formats');
     const getExportFormatsUrl =
@@ -167,14 +215,14 @@ export function getExportUrl(studyUuid, exportFormat) {
     return getUrlWithToken(url);
 }
 
-export function renameStudy(studyUuid, newStudyName) {
+export function renameElement(studyUuid, newStudyName) {
     console.info('Renaming study ' + studyUuid);
-    const renameStudiesUrl =
+    const renameElementUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${studyUuid}/rename/${newStudyName}`;
 
-    console.debug(renameStudiesUrl);
-    return backendFetch(renameStudiesUrl, {
+    console.debug(renameElementUrl);
+    return backendFetch(renameElementUrl, {
         method: 'PUT',
     });
 }
@@ -185,26 +233,6 @@ export function deleteStudy(studyUuid) {
     console.debug(deleteStudyUrl);
     return backendFetch(deleteStudyUrl, {
         method: 'delete',
-    });
-}
-
-export function changeStudyAccessRights(studyUuid, toPrivate) {
-    console.info(
-        'Change access rights of study ' +
-            studyUuid +
-            ', toPrivate : ' +
-            toPrivate
-    );
-    let changeStudyAccessRightsUrl;
-    if (toPrivate === 'true') {
-        changeStudyAccessRightsUrl = getStudyUrl(studyUuid) + '/private';
-    } else {
-        changeStudyAccessRightsUrl = getStudyUrl(studyUuid) + '/public';
-    }
-
-    console.debug(changeStudyAccessRightsUrl);
-    return backendFetch(changeStudyAccessRightsUrl, {
-        method: 'POST',
     });
 }
 

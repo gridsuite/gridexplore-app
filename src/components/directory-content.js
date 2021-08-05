@@ -24,7 +24,7 @@ import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
 import {
     deleteElement,
     fetchStudiesInfos,
-    renameStudy,
+    renameElement,
     updateAccessRights,
 } from '../utils/rest-api';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -116,7 +116,7 @@ const DirectoryContent = () => {
     };
 
     const handleClickRenameStudy = (newStudyNameValue) => {
-        renameStudy(selectedStudy.elementUuid, newStudyNameValue)
+        renameElement(selectedStudy.elementUuid, newStudyNameValue)
             .then((response) => {
                 if (response.status === 403) {
                     // == FORBIDDEN

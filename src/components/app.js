@@ -225,6 +225,7 @@ const App = () => {
             sortedData.sort(function (a, b) {
                 return a.elementName.localeCompare(b.elementName);
             });
+
             setRootDirectories(sortedData);
         });
     };
@@ -271,6 +272,9 @@ const App = () => {
                                                     }
                                                     rootDirectory={
                                                         rootDirectory
+                                                    }
+                                                    updateRootDirectories={
+                                                        updateRootDirectories
                                                     }
                                                 />
                                             )

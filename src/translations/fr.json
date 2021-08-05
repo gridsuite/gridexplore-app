@@ -30,6 +30,7 @@
     "uploadMessage": " Aucun fichier sélectionné",
     "cancel": "ANNULER",
     "create": "CRÉER",
+
     "newStudy": "Ajouter une nouvelle étude",
     "creationInProgress": "création en cours",
     "studyCreatingError": "Une erreur est survenue lors de la création de l'étude : {studyName}",
@@ -37,6 +38,20 @@
 
     "delete": "Supprimer",
     "rename": "Renommer",
+
+    "createFolder": "Créer un  sous dossier",
+    "createRootFolder": "Créer un dossier racine",
+    "deleteFolder": "Supprimer le dossier",
+    "renameFolder": "Renommer le dossier",
+    "insertNewDirectoryDialogMessage": "Veuillez insérer les informations suivantes svp!",
+    "insertNewDirectoryDialogTitle": "Créer un sous dossier",
+    "insertNewRootDirectoryDialogTitle": "Créer un dossier racine",
+    "deleteDirectoryDialogMessage": "êtes vous sûr de vouloir supprimer le dossier ?",
+    "deleteDirectoryDialogTitle": "Supprimer le dossier",
+    "renameDirectoryDialogTitle": "Renommer le dossier",
+    "directoryNameLabel": "Nom du dossier",
+    "isPrivateLabel": "Dossier privé ?",
+    "directoryNewNameLabel": "Nouveau Nom",
 
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
