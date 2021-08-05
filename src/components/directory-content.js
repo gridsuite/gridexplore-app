@@ -34,8 +34,10 @@ const useStyles = makeStyles((theme) => ({
         boxSizing: 'border-box',
         flex: 1,
         height: '48px',
-        cursor: 'initial',
         padding: DEFAULT_CELL_PADDING,
+    },
+    chip: {
+        cursor: 'pointer',
     },
 }));
 
@@ -96,7 +98,7 @@ const DirectoryContent = () => {
         return (
             <div className={classes.cell}>
                 <Tooltip title={owner} placement="right">
-                    <Chip label={abbreviationFromUserName(owner)} />
+                    <Chip className={classes.chip} label={abbreviationFromUserName(owner)} />
                 </Tooltip>
             </div>
         );
