@@ -59,14 +59,11 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
     },
     icon: {
-        display: 'flex',
-
         marginRight: theme.spacing(1),
         width: '18px',
         height: '18px',
     },
     circularRoot: {
-        display: 'flex',
         marginRight: theme.spacing(1),
     },
 }));

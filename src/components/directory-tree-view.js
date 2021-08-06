@@ -621,7 +621,6 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 defaultCollapseIcon={
                     <ExpandMoreIcon className={classes.icon} />
                 }
-                defaultExpanded={['root']}
                 defaultExpandIcon={
                     <ChevronRightIcon className={classes.icon} />
                 }
