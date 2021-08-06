@@ -18,7 +18,7 @@
     "renameStudyNotFoundError": "L'étude n'a pas été trouvé",
     "deleteStudy": "Supprimer l'étude",
     "deleteStudyMsg": "Êtes-vous sûr de vouloir supprimer l'étude ?",
-    "deleteStudyError" : "Vous n'êtes pas le propriétaire de l'étude",
+    "deleteStudyError": "Vous n'êtes pas le propriétaire de l'étude",
     "caseExist": "La situation existe-t-elle déjà ?",
     "studyName": "nom de l'étude",
     "studyNameProperty": "Nom de l'étude : ",
@@ -64,5 +64,7 @@
     "modifyAccessRights": "Modifier les droits d'accès",
     "modifyAccessRightsNotAllowedError": "Vous ne pouvez pas modifier les droits d'accès d'une étude qui ne vous appartient pas",
     "modifyAccessRightsNotFoundError": "L'étude n'a pas été trouvé",
+    "modifyDirectoryAccessRightsError": "Le dossier ne vous appartient pas",
+    "deleteDirectoryError": "Vous ne pouvez pas supprimer un dossier qui ne vous appartient pas",
     "edit": "Modifier"
 }

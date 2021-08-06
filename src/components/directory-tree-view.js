@@ -42,12 +42,12 @@ import CreateStudyForm from './create-study-form';
 import { useIntl } from 'react-intl';
 import { elementType } from '../utils/elementType';
 import { CreateDirectoryDialog } from './dialogs/create-directory-dialog';
-import { DeleteDirectoryDialog } from './dialogs/delete-directory-dialog';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import RenameDialog from './dialogs/rename-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
 import { notificationType } from '../utils/notificationType';
+import DeleteDialog from './dialogs/delete-dialog';
 
 const useStyles = makeStyles(() => ({
     treeItemLabel: {
@@ -101,6 +101,10 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         openAccessRightsDirectoryDialog,
         setOpenAccessRightsDirectoryDialog,
     ] = React.useState(false);
+
+    const [accessRightsError, setAccessRightsError] = React.useState('');
+
+    const [deleteError, setDeleteError] = React.useState('');
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
@@ -174,6 +178,18 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     const handleOpenAccessRightsDirectoryDialog = () => {
         setAnchorEl(null);
         setOpenAccessRightsDirectoryDialog(true);
+    };
+
+    const handleCloseAccessRightsDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenAccessRightsDirectoryDialog(false);
+        setAccessRightsError('');
+    };
+
+    const handleCloseDeleteDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenDeleteDirectoryDialog(false);
+        setDeleteError('');
     };
 
     /* Manage current path data */
@@ -297,14 +313,30 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
 
     function deleteSelectedDirectory() {
         deleteElement(selectedDirectory).then((r) => {
-            setOpenDeleteDirectoryDialog(false);
-            handleSelect(mapData[selectedDirectory].parentUuid, false);
+            if (r.ok) {
+                handleCloseDeleteDirectoryDialog();
+                handleSelect(mapData[selectedDirectory].parentUuid, false);
+            }
+            if (r.status === 403) {
+                setDeleteError(
+                    intl.formatMessage({ id: 'deleteDirectoryError' })
+                );
+            }
         });
     }
 
     function changeSelectedDirectoryAccessRights(isPrivate) {
         updateAccessRights(selectedDirectory, isPrivate).then((r) => {
-            setOpenAccessRightsDirectoryDialog(false);
+            if (r.status === 403) {
+                setAccessRightsError(
+                    intl.formatMessage({
+                        id: 'modifyDirectoryAccessRightsError',
+                    })
+                );
+            }
+            if (r.ok) {
+                setOpenAccessRightsDirectoryDialog(false);
+            }
         });
     }
 
@@ -628,17 +660,17 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 })}
                 error={''}
             />
-            <DeleteDirectoryDialog
+            <DeleteDialog
                 message={intl.formatMessage({
                     id: 'deleteDirectoryDialogMessage',
                 })}
                 open={openDeleteDirectoryDialog}
                 onClick={deleteSelectedDirectory}
-                onClose={() => setOpenDeleteDirectoryDialog(false)}
+                onClose={handleCloseDeleteDirectoryDialog}
                 title={intl.formatMessage({
                     id: 'deleteDirectoryDialogTitle',
                 })}
-                error={''}
+                error={deleteError}
             />
             <AccessRightsDialog
                 message={''}
@@ -649,11 +681,11 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 }
                 open={openAccessRightsDirectoryDialog}
                 onClick={changeSelectedDirectoryAccessRights}
-                onClose={() => setOpenAccessRightsDirectoryDialog(false)}
+                onClose={handleCloseAccessRightsDirectoryDialog}
                 title={intl.formatMessage({
                     id: 'accessRights',
                 })}
-                error={''}
+                error={accessRightsError}
             />
         </>
     );

@@ -18,7 +18,7 @@
     "renameStudyNotFoundError": "The study was not found",
     "deleteStudy": "Delete the study",
     "deleteStudyMsg": "Are you sure?",
-    "deleteStudyError" : "You are not the owner of this study",
+    "deleteStudyError": "You are not the owner of this study",
     "caseExist": "Does the case already exist?",
     "studyName": "study name",
     "studyNameProperty": "Study name: ",
@@ -65,5 +65,7 @@
     "modifyAccessRights": "Modify the access rights",
     "modifyAccessRightsNotAllowedError": "You cannot modify the access rights of a study you don't own",
     "modifyAccessRightsNotFoundError": "The study was not found",
+    "modifyDirectoryAccessRightsError": "You are not the owner of the directory",
+    "deleteDirectoryError": "You cannot delete a directory you don't own",
     "edit": "Edit"
 }
