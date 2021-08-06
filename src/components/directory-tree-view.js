@@ -440,7 +440,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         (nodeId) => {
             fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
                 // update directory Content only if it's the one opened
-                if (nodeId === selectedDirectoryRef) {
+                if (nodeId === selectedDirectoryRef.current) {
                     updateCurrentChildren(childrenToBeInserted);
                 }
                 // Update Tree Map data
