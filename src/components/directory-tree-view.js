@@ -38,9 +38,7 @@ import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     treeViewRoot: {
-        padding: theme.spacing(1),
-        display: 'flex',
-        alignItems: 'center',
+        padding: theme.spacing(0.5),
     },
     treeItemRoot: {
         '&:focus > $treeItemContent $treeItemLabel': {
@@ -63,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: theme.spacing(1),
     },
     treeItemLabel: {
+        overflow: 'hidden',
         paddingRight: theme.spacing(1),
         paddingLeft: theme.spacing(1),
         fontWeight: 'inherit',
@@ -234,7 +233,10 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                             onContextMenu(e, node.elementUuid)
                         }
                     >
-                        <Typography className={classes.treeItemLabelText}>
+                        <Typography
+                            noWrap
+                            className={classes.treeItemLabelText}
+                        >
                             {node.elementName}
                         </Typography>
                         {node.accessRights.private ? (
