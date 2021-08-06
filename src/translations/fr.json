@@ -66,5 +66,6 @@
     "modifyAccessRightsNotFoundError": "L'étude n'a pas été trouvé",
     "modifyDirectoryAccessRightsError": "Le dossier ne vous appartient pas",
     "deleteDirectoryError": "Vous ne pouvez pas supprimer un dossier qui ne vous appartient pas",
+    "renameDirectoryError": "Vous ne pouvez pas renommer un dossier qui ne vous appartient pas",
     "edit": "Modifier"
 }

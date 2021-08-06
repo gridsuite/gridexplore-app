@@ -103,8 +103,8 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     ] = React.useState(false);
 
     const [accessRightsError, setAccessRightsError] = React.useState('');
-
     const [deleteError, setDeleteError] = React.useState('');
+    const [renameError, setRenameError] = React.useState('');
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
@@ -163,6 +163,12 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     const handleOpenRenameDirectoryDialog = () => {
         setAnchorEl(null);
         setOpenRenameDirectoryDialog(true);
+    };
+
+    const handleCloseRenameDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenRenameDirectoryDialog(false);
+        setRenameError('');
     };
 
     const handleOpenCreateRootDirectoryDialog = () => {
@@ -342,7 +348,16 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
 
     function renameSelectedDirectory(newName) {
         renameElement(selectedDirectory, newName).then((r) => {
-            setOpenRenameDirectoryDialog(false);
+            if (r.status === 403) {
+                setRenameError(
+                    intl.formatMessage({
+                        id: 'renameDirectoryError',
+                    })
+                );
+            }
+            if (r.ok) {
+                handleCloseRenameDirectoryDialog();
+            }
         });
     }
 
@@ -353,7 +368,8 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
             );
             insertContent(nodeId, newSubdirectories);
             if (
-                selectedDirectoryRef.current !== null && mapDataRef.current[selectedDirectoryRef.current] &&
+                selectedDirectoryRef.current !== null &&
+                mapDataRef.current[selectedDirectoryRef.current] &&
                 mapDataRef.current[selectedDirectoryRef.current].parentUuid ===
                     nodeId &&
                 newSubdirectories.filter(
@@ -424,7 +440,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         (nodeId) => {
             fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
                 // update directory Content only if it's the one opened
-                if (nodeId === selectedDirectory) {
+                if (nodeId === selectedDirectoryRef) {
                     updateCurrentChildren(childrenToBeInserted);
                 }
                 // Update Tree Map data
@@ -579,16 +595,6 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                         })}
                     />
                 </MenuItem>
-                <MenuItem onClick={handleOpenDeleteDirectoryDialog}>
-                    <ListItemIcon style={{ minWidth: '25px' }}>
-                        <DeleteOutlineIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={intl.formatMessage({
-                            id: 'deleteFolder',
-                        })}
-                    />
-                </MenuItem>
                 <MenuItem onClick={handleOpenAccessRightsDirectoryDialog}>
                     <ListItemIcon style={{ minWidth: '25px' }}>
                         <BuildIcon fontSize="small" />
@@ -596,6 +602,16 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                     <ListItemText
                         primary={intl.formatMessage({
                             id: 'accessRights',
+                        })}
+                    />
+                </MenuItem>
+                <MenuItem onClick={handleOpenDeleteDirectoryDialog}>
+                    <ListItemIcon style={{ minWidth: '25px' }}>
+                        <DeleteOutlineIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={intl.formatMessage({
+                            id: 'deleteFolder',
                         })}
                     />
                 </MenuItem>
@@ -656,11 +672,11 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                 }
                 open={openRenameDirectoryDialog}
                 onClick={renameSelectedDirectory}
-                onClose={() => setOpenRenameDirectoryDialog(false)}
+                onClose={handleCloseRenameDirectoryDialog}
                 title={intl.formatMessage({
                     id: 'renameDirectoryDialogTitle',
                 })}
-                error={''}
+                error={renameError}
             />
             <DeleteDialog
                 message={intl.formatMessage({

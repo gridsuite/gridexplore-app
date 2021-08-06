@@ -67,5 +67,6 @@
     "modifyAccessRightsNotFoundError": "The study was not found",
     "modifyDirectoryAccessRightsError": "You are not the owner of the directory",
     "deleteDirectoryError": "You cannot delete a directory you don't own",
+    "renameDirectoryError": "You cannot rename a directory you don't own",
     "edit": "Edit"
 }
