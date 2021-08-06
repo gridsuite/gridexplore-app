@@ -459,31 +459,27 @@ const DirectoryContent = () => {
                                             }
                                         />
                                     </MenuItem>
-                                    <MenuItem onClick={handleOpenExportStudy}>
-                                        <ListItemIcon
-                                            style={{ minWidth: '25px' }}
-                                        >
-                                            <GetAppIcon fontSize="small" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={
-                                                <FormattedMessage id="export" />
-                                            }
-                                        />
-                                    </MenuItem>
-                                    <MenuItem onClick={handleOpenDeleteStudy}>
-                                        <ListItemIcon
-                                            style={{ minWidth: '25px' }}
-                                        >
-                                            <DeleteIcon fontSize="small" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={
-                                                <FormattedMessage id="delete" />
-                                            }
-                                        />
-                                    </MenuItem>
                                 </div>
+                            )}
+                            <MenuItem onClick={handleOpenExportStudy}>
+                                <ListItemIcon style={{ minWidth: '25px' }}>
+                                    <GetAppIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={<FormattedMessage id="export" />}
+                                />
+                            </MenuItem>
+                            {selectedStudy !== null && isAllowed() && (
+                                <MenuItem onClick={handleOpenDeleteStudy}>
+                                    <ListItemIcon style={{ minWidth: '25px' }}>
+                                        <DeleteIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={
+                                            <FormattedMessage id="delete" />
+                                        }
+                                    />
+                                </MenuItem>
                             )}
                         </StyledMenu>
                     </>
