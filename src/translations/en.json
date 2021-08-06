@@ -18,6 +18,7 @@
     "renameStudyNotFoundError": "The study was not found",
     "deleteStudy": "Delete the study",
     "deleteStudyMsg": "Are you sure?",
+    "deleteStudyError" : "You are not the owner of this study",
     "caseExist": "Does the case already exist?",
     "studyName": "study name",
     "studyNameProperty": "Study name: ",
