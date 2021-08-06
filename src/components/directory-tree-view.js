@@ -551,6 +551,14 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         }
     }, [selectedDirectory, updateTree, isConcerned]);
 
+    const isAllowed = () => {
+        return (
+            selectedDirectory &&
+            mapData[selectedDirectory] &&
+            mapData[selectedDirectory].owner === userId
+        );
+    };
+
     return (
         <>
             <TreeView
@@ -584,38 +592,43 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                     />
                 </MenuItem>
                 <hr />
-
-                <MenuItem onClick={handleOpenRenameDirectoryDialog}>
-                    <ListItemIcon style={{ minWidth: '25px' }}>
-                        <CreateIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={intl.formatMessage({
-                            id: 'renameFolder',
-                        })}
-                    />
-                </MenuItem>
-                <MenuItem onClick={handleOpenAccessRightsDirectoryDialog}>
-                    <ListItemIcon style={{ minWidth: '25px' }}>
-                        <BuildIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={intl.formatMessage({
-                            id: 'accessRights',
-                        })}
-                    />
-                </MenuItem>
-                <MenuItem onClick={handleOpenDeleteDirectoryDialog}>
-                    <ListItemIcon style={{ minWidth: '25px' }}>
-                        <DeleteOutlineIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={intl.formatMessage({
-                            id: 'deleteFolder',
-                        })}
-                    />
-                </MenuItem>
-                <hr />
+                {isAllowed() && (
+                    <div>
+                        <MenuItem onClick={handleOpenRenameDirectoryDialog}>
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <CreateIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'renameFolder',
+                                })}
+                            />
+                        </MenuItem>
+                        <MenuItem
+                            onClick={handleOpenAccessRightsDirectoryDialog}
+                        >
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <BuildIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'accessRights',
+                                })}
+                            />
+                        </MenuItem>
+                        <MenuItem onClick={handleOpenDeleteDirectoryDialog}>
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <DeleteOutlineIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'deleteFolder',
+                                })}
+                            />
+                        </MenuItem>
+                        <hr />
+                    </div>
+                )}
                 <MenuItem onClick={handleOpenCreateNewDirectoryDialog}>
                     <ListItemIcon style={{ minWidth: '25px' }}>
                         <CreateNewFolderIcon fontSize="small" />
