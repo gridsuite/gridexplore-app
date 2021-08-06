@@ -84,9 +84,10 @@ const DirectoryContent = () => {
     const currentChildren = useSelector((state) => state.currentChildren);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const userId = useSelector((state) => state.user.profile.sub);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [selectedStudy, setSelectedStudy] = React.useState('');
+    const [selectedStudy, setSelectedStudy] = React.useState(null);
     const [isSelectedStudyPrivate, setSelectedStudyPrivate] = React.useState(
         true
     );
@@ -344,6 +345,10 @@ const DirectoryContent = () => {
         }
     }, [currentChildren]);
 
+    const isAllowed = () => {
+        return selectedStudy && selectedStudy.owner === userId;
+    };
+
     return (
         <>
             {selectedDirectory !== null &&
@@ -424,34 +429,42 @@ const DirectoryContent = () => {
                             open={Boolean(anchorEl)}
                             onClose={handleCloseRowMenu}
                         >
-                            {selectedStudy !== '' && (
+                            {selectedStudy && (
                                 <div>
-                                    <MenuItem onClick={handleOpenRenameStudy}>
-                                        <ListItemIcon
-                                            style={{ minWidth: '25px' }}
-                                        >
-                                            <EditIcon fontSize="small" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={
-                                                <FormattedMessage id="rename" />
-                                            }
-                                        />
-                                    </MenuItem>
-                                    <MenuItem
-                                        onClick={handleOpenStudyAccessRights}
-                                    >
-                                        <ListItemIcon
-                                            style={{ minWidth: '25px' }}
-                                        >
-                                            <BuildIcon fontSize="small" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={
-                                                <FormattedMessage id="accessRights" />
-                                            }
-                                        />
-                                    </MenuItem>
+                                    {isAllowed() && (
+                                        <div>
+                                            <MenuItem
+                                                onClick={handleOpenRenameStudy}
+                                            >
+                                                <ListItemIcon
+                                                    style={{ minWidth: '25px' }}
+                                                >
+                                                    <EditIcon fontSize="small" />
+                                                </ListItemIcon>
+                                                <ListItemText
+                                                    primary={
+                                                        <FormattedMessage id="rename" />
+                                                    }
+                                                />
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={
+                                                    handleOpenStudyAccessRights
+                                                }
+                                            >
+                                                <ListItemIcon
+                                                    style={{ minWidth: '25px' }}
+                                                >
+                                                    <BuildIcon fontSize="small" />
+                                                </ListItemIcon>
+                                                <ListItemText
+                                                    primary={
+                                                        <FormattedMessage id="accessRights" />
+                                                    }
+                                                />
+                                            </MenuItem>
+                                        </div>
+                                    )}
                                     <MenuItem onClick={handleOpenExportStudy}>
                                         <ListItemIcon
                                             style={{ minWidth: '25px' }}
@@ -464,18 +477,22 @@ const DirectoryContent = () => {
                                             }
                                         />
                                     </MenuItem>
-                                    <MenuItem onClick={handleOpenDeleteStudy}>
-                                        <ListItemIcon
-                                            style={{ minWidth: '25px' }}
+                                    {isAllowed() && (
+                                        <MenuItem
+                                            onClick={handleOpenDeleteStudy}
                                         >
-                                            <DeleteIcon fontSize="small" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={
-                                                <FormattedMessage id="delete" />
-                                            }
-                                        />
-                                    </MenuItem>
+                                            <ListItemIcon
+                                                style={{ minWidth: '25px' }}
+                                            >
+                                                <DeleteIcon fontSize="small" />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                                primary={
+                                                    <FormattedMessage id="delete" />
+                                                }
+                                            />
+                                        </MenuItem>
+                                    )}
                                 </div>
                             )}
                         </StyledMenu>
@@ -487,7 +504,7 @@ const DirectoryContent = () => {
                 onClick={handleClickRenameStudy}
                 title={useIntl().formatMessage({ id: 'renameStudy' })}
                 message={useIntl().formatMessage({ id: 'renameStudyMsg' })}
-                currentName={selectedStudy.elementName}
+                currentName={selectedStudy ? selectedStudy.elementName : ''}
                 error={renameError}
             />
             <DeleteDialog
@@ -502,7 +519,7 @@ const DirectoryContent = () => {
                 open={openExportStudyDialog}
                 onClose={handleCloseExportStudy}
                 onClick={handleClickExportStudy}
-                studyUuid={selectedStudy.elementUuid}
+                studyUuid={selectedStudy ? selectedStudy.elementUuid : ''}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
             />
             <AccessRightsDialog
