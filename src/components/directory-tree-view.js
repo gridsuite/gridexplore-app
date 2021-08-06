@@ -353,7 +353,7 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
             );
             insertContent(nodeId, newSubdirectories);
             if (
-                selectedDirectoryRef.current !== null &&
+                selectedDirectoryRef.current !== null && mapDataRef.current[selectedDirectoryRef.current] &&
                 mapDataRef.current[selectedDirectoryRef.current].parentUuid ===
                     nodeId &&
                 newSubdirectories.filter(
@@ -423,8 +423,10 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     const updateDirectoryChildren = useCallback(
         (nodeId) => {
             fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
-                // update directory Content
-                updateCurrentChildren(childrenToBeInserted);
+                // update directory Content only if it's the one opened
+                if (nodeId === selectedDirectory) {
+                    updateCurrentChildren(childrenToBeInserted);
+                }
                 // Update Tree Map data
                 updateMapData(nodeId, childrenToBeInserted);
             });
