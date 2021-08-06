@@ -347,9 +347,7 @@ const DirectoryContent = () => {
 
     const isAllowed = () => {
         return (
-            selectedDirectory &&
-            selectedStudy &&
-            selectedStudy.owner === userId
+            selectedDirectory && selectedStudy && selectedStudy.owner === userId
         );
     };
 
