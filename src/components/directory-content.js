@@ -19,8 +19,27 @@ import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
 
 import VirtualizedTable from './util/virtualized-table';
 import { elementType } from '../utils/elementType';
-import { fetchStudiesInfos } from '../utils/rest-api';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
+
+import {
+    deleteElement,
+    fetchStudiesInfos,
+    renameElement,
+    updateAccessRights,
+} from '../utils/rest-api';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import BuildIcon from '@material-ui/icons/Build';
+import ListItemText from '@material-ui/core/ListItemText';
+import withStyles from '@material-ui/core/styles/withStyles';
+import Menu from '@material-ui/core/Menu';
+import ExportDialog from './export-dialog';
+import RenameDialog from './dialogs/rename-dialog';
+import DeleteDialog from './dialogs/delete-dialog';
+import AccessRightsDialog from './dialogs/access-rights-dialog';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -52,16 +71,188 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const StyledMenu = withStyles({
+    paper: {
+        border: '1px solid #d3d4d5',
+    },
+})((props) => (
+    <Menu
+        elevation={0}
+        getContentAnchorEl={null}
+        anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+        }}
+        transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+        }}
+        {...props}
+    />
+));
+
 const DirectoryContent = () => {
     const [childrenMetadata, setChildrenMetadata] = useState({});
 
     const currentChildren = useSelector((state) => state.currentChildren);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const userId = useSelector((state) => state.user.profile.sub);
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [selectedStudy, setSelectedStudy] = React.useState(null);
+    const [isSelectedStudyPrivate, setSelectedStudyPrivate] = React.useState(
+        true
+    );
+    const DownloadIframe = 'downloadIframe';
 
     const classes = useStyles();
-
     const intl = useIntl();
+
+    /**
+     * Rename dialog: window status value for renaming
+     */
+    const [openRenameStudyDialog, setOpenRenameStudyDialog] = React.useState(
+        false
+    );
+    const [renameError, setRenameError] = React.useState('');
+
+    const handleOpenRenameStudy = () => {
+        setAnchorEl(null);
+        setOpenRenameStudyDialog(true);
+    };
+
+    const handleCloseRenameStudy = () => {
+        setOpenRenameStudyDialog(false);
+        setRenameError('');
+        setSelectedStudy('');
+        setSelectedStudyPrivate(undefined);
+    };
+
+    const handleClickRenameStudy = (newStudyNameValue) => {
+        renameElement(selectedStudy.elementUuid, newStudyNameValue)
+            .then((response) => {
+                if (response.status === 403) {
+                    // == FORBIDDEN
+                    setRenameError(
+                        intl.formatMessage({ id: 'renameStudyNotAllowedError' })
+                    );
+                } else if (response.status === 404) {
+                    // == NOT FOUND
+                    setRenameError(
+                        intl.formatMessage({ id: 'renameStudyNotFoundError' })
+                    );
+                } else {
+                    handleCloseRenameStudy();
+                }
+            })
+            .catch((e) => {
+                setRenameError(e.message || e);
+            });
+    };
+
+    /**
+     * Delete dialog: window status value for deletion
+     */
+    const [openDeleteStudyDialog, setOpenDeleteStudyDialog] = React.useState(
+        false
+    );
+    const [deleteError, setDeleteError] = React.useState('');
+
+    const handleOpenDeleteStudy = () => {
+        setAnchorEl(null);
+        setOpenDeleteStudyDialog(true);
+    };
+
+    const handleCloseDeleteStudy = () => {
+        setOpenDeleteStudyDialog(false);
+        setDeleteError('');
+        setSelectedStudy('');
+        setSelectedStudyPrivate(undefined);
+    };
+
+    const handleClickDeleteStudy = () => {
+        deleteElement(selectedStudy.elementUuid).then((response) => {
+            if (!response.ok) {
+                setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
+            } else {
+                handleCloseDeleteStudy();
+            }
+        });
+    };
+
+    /**
+     * Export dialog: window status value for exporting a network
+     */
+    const [openExportStudyDialog, setOpenExportStudyDialog] = React.useState(
+        false
+    );
+
+    const handleOpenExportStudy = () => {
+        setAnchorEl(null);
+        setOpenExportStudyDialog(true);
+    };
+
+    const handleCloseExportStudy = () => {
+        setOpenExportStudyDialog(false);
+        setSelectedStudy('');
+        setSelectedStudyPrivate(undefined);
+    };
+
+    const handleClickExportStudy = (url) => {
+        window.open(url, DownloadIframe);
+        handleCloseExportStudy();
+    };
+
+    /**
+     * AccessRights dialog: window status value for updating access rights
+     */
+    const [
+        openStudyAccessRightsDialog,
+        setOpenStudyAccessRightsDialog,
+    ] = React.useState(false);
+
+    const [accessRightsError, setAccessRightsError] = React.useState('');
+
+    const handleOpenStudyAccessRights = () => {
+        setAnchorEl(null);
+        setOpenStudyAccessRightsDialog(true);
+    };
+
+    const handleCloseStudyAccessRights = () => {
+        setOpenStudyAccessRightsDialog(false);
+        setSelectedStudy('');
+        setSelectedStudyPrivate(undefined);
+        setAccessRightsError('');
+    };
+
+    const handleCloseRowMenu = () => {
+        setAnchorEl(null);
+        setSelectedStudy('');
+        setSelectedStudyPrivate(undefined);
+    };
+
+    const handleClickStudyAccessRights = (selected) => {
+        updateAccessRights(selectedStudy.elementUuid, selected).then(
+            (response) => {
+                if (response.status === 403) {
+                    setAccessRightsError(
+                        intl.formatMessage({
+                            id: 'modifyAccessRightsNotAllowedError',
+                        })
+                    );
+                } else if (response.status === 404) {
+                    setAccessRightsError(
+                        intl.formatMessage({
+                            id: 'modifyAccessRightsNotFoundError',
+                        })
+                    );
+                } else {
+                    handleCloseStudyAccessRights();
+                }
+            }
+        );
+    };
 
     const abbreviationFromUserName = (name) => {
         const tab = name.split(' ').map((x) => x.charAt(0));
@@ -165,6 +356,10 @@ const DirectoryContent = () => {
         }
     }, [currentChildren]);
 
+    const isAllowed = () => {
+        return selectedStudy && selectedStudy.owner === userId;
+    };
+
     return (
         <>
             {selectedDirectory !== null &&
@@ -182,52 +377,176 @@ const DirectoryContent = () => {
             {selectedDirectory !== null &&
                 currentChildren !== null &&
                 currentChildren.length > 0 && (
-                    <VirtualizedTable
-                        onRowClick={(event) => {
-                            if (
-                                childrenMetadata[event.rowData.elementUuid] !==
-                                undefined
-                            ) {
-                                let url = getLink(
-                                    event.rowData.elementUuid,
-                                    event.rowData.type
-                                );
-                                window.open(url, '_blank');
-                            }
-                        }}
-                        rows={currentChildren}
-                        columns={[
-                            {
-                                width: 100,
-                                label: intl.formatMessage({
-                                    id: 'elementName',
-                                }),
-                                dataKey: 'elementName',
-                                cellRenderer: nameCellRender,
-                            },
-                            {
-                                width: 100,
-                                label: intl.formatMessage({ id: 'type' }),
-                                dataKey: 'type',
-                                cellRenderer: typeCellRender,
-                            },
-                            {
-                                width: 50,
-                                label: intl.formatMessage({ id: 'owner' }),
-                                dataKey: 'owner',
-                                cellRenderer: accessOwnerCellRender,
-                            },
-                            {
-                                width: 50,
-                                label: intl.formatMessage({
-                                    id: 'accessRights',
-                                }),
-                                dataKey: 'accessRights',
-                                cellRenderer: accessRightsCellRender,
-                            },
-                        ]}
-                    />
+                    <>
+                        <VirtualizedTable
+                            onRowRightClick={(event) => {
+                                if (event.rowData.type === 'STUDY') {
+                                    setSelectedStudy(event.rowData);
+                                    setSelectedStudyPrivate(
+                                        event.rowData.accessRights.private
+                                    );
+                                }
+                                setAnchorEl(event.event.currentTarget);
+                            }}
+                            onRowClick={(event) => {
+                                if (
+                                    childrenMetadata[
+                                        event.rowData.elementUuid
+                                    ] !== undefined
+                                ) {
+                                    let url = getLink(
+                                        event.rowData.elementUuid,
+                                        event.rowData.type
+                                    );
+                                    window.open(url, '_blank');
+                                }
+                            }}
+                            rows={currentChildren}
+                            columns={[
+                                {
+                                    width: 100,
+                                    label: intl.formatMessage({
+                                        id: 'elementName',
+                                    }),
+                                    dataKey: 'elementName',
+                                    cellRenderer: nameCellRender,
+                                },
+                                {
+                                    width: 100,
+                                    label: intl.formatMessage({ id: 'type' }),
+                                    dataKey: 'type',
+                                    cellRenderer: typeCellRender,
+                                },
+                                {
+                                    width: 50,
+                                    label: intl.formatMessage({ id: 'owner' }),
+                                    dataKey: 'owner',
+                                    cellRenderer: accessOwnerCellRender,
+                                },
+                                {
+                                    width: 50,
+                                    label: intl.formatMessage({
+                                        id: 'accessRights',
+                                    }),
+                                    dataKey: 'accessRights',
+                                    cellRenderer: accessRightsCellRender,
+                                },
+                            ]}
+                        />
+                        <StyledMenu
+                            id="row-menu"
+                            anchorEl={anchorEl}
+                            keepMounted
+                            open={Boolean(anchorEl)}
+                            onClose={handleCloseRowMenu}
+                        >
+                            {selectedStudy && (
+                                <div>
+                                    {isAllowed() && (
+                                        <div>
+                                            <MenuItem
+                                                onClick={handleOpenRenameStudy}
+                                            >
+                                                <ListItemIcon
+                                                    style={{ minWidth: '25px' }}
+                                                >
+                                                    <EditIcon fontSize="small" />
+                                                </ListItemIcon>
+                                                <ListItemText
+                                                    primary={
+                                                        <FormattedMessage id="rename" />
+                                                    }
+                                                />
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={
+                                                    handleOpenStudyAccessRights
+                                                }
+                                            >
+                                                <ListItemIcon
+                                                    style={{ minWidth: '25px' }}
+                                                >
+                                                    <BuildIcon fontSize="small" />
+                                                </ListItemIcon>
+                                                <ListItemText
+                                                    primary={
+                                                        <FormattedMessage id="accessRights" />
+                                                    }
+                                                />
+                                            </MenuItem>
+                                        </div>
+                                    )}
+                                    <MenuItem onClick={handleOpenExportStudy}>
+                                        <ListItemIcon
+                                            style={{ minWidth: '25px' }}
+                                        >
+                                            <GetAppIcon fontSize="small" />
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            primary={
+                                                <FormattedMessage id="export" />
+                                            }
+                                        />
+                                    </MenuItem>
+                                    {isAllowed() && (
+                                        <MenuItem
+                                            onClick={handleOpenDeleteStudy}
+                                        >
+                                            <ListItemIcon
+                                                style={{ minWidth: '25px' }}
+                                            >
+                                                <DeleteIcon fontSize="small" />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                                primary={
+                                                    <FormattedMessage id="delete" />
+                                                }
+                                            />
+                                        </MenuItem>
+                                    )}
+                                </div>
+                            )}
+                        </StyledMenu>
+                    </>
                 )}
+            <RenameDialog
+                open={openRenameStudyDialog}
+                onClose={handleCloseRenameStudy}
+                onClick={handleClickRenameStudy}
+                title={useIntl().formatMessage({ id: 'renameStudy' })}
+                message={useIntl().formatMessage({ id: 'renameStudyMsg' })}
+                currentName={selectedStudy ? selectedStudy.elementName : ''}
+                error={renameError}
+            />
+            <DeleteDialog
+                open={openDeleteStudyDialog}
+                onClose={handleCloseDeleteStudy}
+                onClick={handleClickDeleteStudy}
+                title={useIntl().formatMessage({ id: 'deleteStudy' })}
+                message={useIntl().formatMessage({ id: 'deleteStudyMsg' })}
+                error={deleteError}
+            />
+            <ExportDialog
+                open={openExportStudyDialog}
+                onClose={handleCloseExportStudy}
+                onClick={handleClickExportStudy}
+                studyUuid={selectedStudy ? selectedStudy.elementUuid : ''}
+                title={useIntl().formatMessage({ id: 'exportNetwork' })}
+            />
+            <AccessRightsDialog
+                open={openStudyAccessRightsDialog}
+                onClose={handleCloseStudyAccessRights}
+                onClick={handleClickStudyAccessRights}
+                title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
+                isPrivate={isSelectedStudyPrivate}
+                error={accessRightsError}
+            />
+            <iframe
+                id={DownloadIframe}
+                name={DownloadIframe}
+                title={DownloadIframe}
+                style={{ display: 'none' }}
+            />
         </>
     );
 };

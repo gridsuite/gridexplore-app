@@ -1,0 +1,5 @@
+export const notificationType = {
+    DELETE_DIRECTORY: 'DELETE_DIRECTORY',
+    ADD_DIRECTORY: 'ADD_DIRECTORY',
+    UPDATE_DIRECTORY: 'UPDATE_DIRECTORY',
+};

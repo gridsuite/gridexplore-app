@@ -18,6 +18,11 @@ import Typography from '@material-ui/core/Typography';
 import {
     connectNotificationsWsUpdateStudies,
     fetchDirectoryContent,
+    insertDirectory,
+    insertRootDirectory,
+    deleteElement,
+    updateAccessRights,
+    renameElement,
 } from '../utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -29,12 +34,22 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import FolderSpecialIcon from '@material-ui/icons/FolderSpecial';
+import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
+import BuildIcon from '@material-ui/icons/Build';
 import AddIcon from '@material-ui/icons/Add';
+import CreateIcon from '@material-ui/icons/Create';
 import CreateStudyForm from './create-study-form';
 import { useIntl } from 'react-intl';
 import { elementType } from '../utils/elementType';
+import { CreateDirectoryDialog } from './dialogs/create-directory-dialog';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
+import RenameDialog from './dialogs/rename-dialog';
+import AccessRightsDialog from './dialogs/access-rights-dialog';
+import { notificationType } from '../utils/notificationType';
+import DeleteDialog from './dialogs/delete-dialog';
 
 const useStyles = makeStyles((theme) => ({
     treeViewRoot: {
@@ -99,7 +114,7 @@ const StyledMenu = withStyles({
     />
 ));
 
-const DirectoryTreeView = ({ rootDirectory }) => {
+const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     const classes = useStyles();
 
     const [mapData, setMapData] = useState({});
@@ -108,16 +123,43 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     const [openAddNewStudyDialog, setOpenAddNewStudyDialog] = React.useState(
         false
     );
+    const [
+        openCreateNewDirectoryDialog,
+        setOpenCreateNewDirectoryDialog,
+    ] = React.useState(false);
+    const [
+        openDeleteDirectoryDialog,
+        setOpenDeleteDirectoryDialog,
+    ] = React.useState(false);
+    const [
+        openCreateRootDirectoryDialog,
+        setOpenCreateRootDirectoryDialog,
+    ] = React.useState(false);
+    const [
+        openRenameDirectoryDialog,
+        setOpenRenameDirectoryDialog,
+    ] = React.useState(false);
+    const [
+        openAccessRightsDirectoryDialog,
+        setOpenAccessRightsDirectoryDialog,
+    ] = React.useState(false);
+
+    const [accessRightsError, setAccessRightsError] = React.useState('');
+    const [deleteError, setDeleteError] = React.useState('');
+    const [renameError, setRenameError] = React.useState('');
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const userId = useSelector((state) => state.user.profile.sub);
 
     const selectedDirectoryRef = useRef(null);
     const mapDataRef = useRef({});
     const expandedRef = useRef([]);
+    const updateRootDirectoriesRef = useRef([]);
     const websocketExpectedCloseRef = useRef();
     selectedDirectoryRef.current = selectedDirectory;
     expandedRef.current = expanded;
     mapDataRef.current = mapData;
+    updateRootDirectoriesRef.current = updateRootDirectories;
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -128,14 +170,18 @@ const DirectoryTreeView = ({ rootDirectory }) => {
 
     /* Component initialization */
     useEffect(() => {
-        let rootDirectoryCopy = { ...rootDirectory };
-        rootDirectoryCopy.parentUuid = null;
-        rootDirectoryCopy.children = [];
+        let preparedRootDirectory = { ...rootDirectory };
+        preparedRootDirectory.parentUuid = null;
+        preparedRootDirectory.children = mapDataRef.current[
+            rootDirectory.elementUuid
+        ]
+            ? mapDataRef.current[rootDirectory.elementUuid].children
+            : [];
 
-        let initialMapData = {};
-        initialMapData[rootDirectory.elementUuid] = rootDirectoryCopy;
+        let initialMapData = { ...mapDataRef.current };
+        initialMapData[rootDirectory.elementUuid] = preparedRootDirectory;
         setMapData(initialMapData);
-    }, [rootDirectory]);
+    }, [rootDirectory, mapDataRef]);
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -149,6 +195,49 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     const handleOpenAddNewStudyDialog = () => {
         setAnchorEl(null);
         setOpenAddNewStudyDialog(true);
+    };
+
+    const handleOpenCreateNewDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenCreateNewDirectoryDialog(true);
+    };
+
+    const handleOpenRenameDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenRenameDirectoryDialog(true);
+    };
+
+    const handleCloseRenameDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenRenameDirectoryDialog(false);
+        setRenameError('');
+    };
+
+    const handleOpenCreateRootDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenCreateRootDirectoryDialog(true);
+    };
+
+    const handleOpenDeleteDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenDeleteDirectoryDialog(true);
+    };
+
+    const handleOpenAccessRightsDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenAccessRightsDirectoryDialog(true);
+    };
+
+    const handleCloseAccessRightsDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenAccessRightsDirectoryDialog(false);
+        setAccessRightsError('');
+    };
+
+    const handleCloseDeleteDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenDeleteDirectoryDialog(false);
+        setDeleteError('');
     };
 
     /* Manage current path data */
@@ -201,6 +290,10 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                     child.parentUuid = selected;
                     if (!mapDataCopy[child.elementUuid]) {
                         mapDataCopy[child.elementUuid] = child;
+                    } else {
+                        //update element name
+                        mapDataCopy[child.elementUuid].elementName =
+                            child.elementName;
                     }
                     return child;
                 }
@@ -261,14 +354,91 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         );
     };
 
+    /* Handle Dialogs actions */
+    function insertNewDirectory(directoryName, isPrivate) {
+        insertDirectory(
+            directoryName,
+            selectedDirectory,
+            isPrivate,
+            userId
+        ).then(() => {
+            setOpenCreateNewDirectoryDialog(false);
+        });
+    }
+
+    function insertNewRootDirectory(directoryName, isPrivate) {
+        insertRootDirectory(directoryName, isPrivate, userId).then(() => {
+            setOpenCreateRootDirectoryDialog(false);
+        });
+    }
+
+    function deleteSelectedDirectory() {
+        deleteElement(selectedDirectory).then((r) => {
+            if (r.ok) {
+                handleCloseDeleteDirectoryDialog();
+                handleSelect(mapData[selectedDirectory].parentUuid, false);
+            }
+            if (r.status === 403) {
+                setDeleteError(
+                    intl.formatMessage({ id: 'deleteDirectoryError' })
+                );
+            }
+        });
+    }
+
+    function changeSelectedDirectoryAccessRights(isPrivate) {
+        updateAccessRights(selectedDirectory, isPrivate).then((r) => {
+            if (r.status === 403) {
+                setAccessRightsError(
+                    intl.formatMessage({
+                        id: 'modifyDirectoryAccessRightsError',
+                    })
+                );
+            }
+            if (r.ok) {
+                setOpenAccessRightsDirectoryDialog(false);
+            }
+        });
+    }
+
+    function renameSelectedDirectory(newName) {
+        renameElement(selectedDirectory, newName).then((r) => {
+            if (r.status === 403) {
+                setRenameError(
+                    intl.formatMessage({
+                        id: 'renameDirectoryError',
+                    })
+                );
+            }
+            if (r.ok) {
+                handleCloseRenameDirectoryDialog();
+            }
+        });
+    }
+
     const updateMapData = useCallback(
         (nodeId, children) => {
-            insertContent(
-                nodeId,
-                children.filter((child) => child.type === elementType.DIRECTORY)
+            let newSubdirectories = children.filter(
+                (child) => child.type === elementType.DIRECTORY
             );
+            insertContent(nodeId, newSubdirectories);
+            if (
+                selectedDirectoryRef.current !== null &&
+                mapDataRef.current[selectedDirectoryRef.current] &&
+                mapDataRef.current[selectedDirectoryRef.current].parentUuid ===
+                    nodeId &&
+                newSubdirectories.filter(
+                    (e) => e.elementUuid === selectedDirectoryRef.current
+                ).length === 0
+            ) {
+                // if selected directory is deleted by another user we should select parent directory
+                setSelectedDirectory(nodeId);
+                updatePath(nodeId);
+            } else {
+                updatePath(selectedDirectoryRef.current);
+            }
         },
-        [insertContent]
+        [insertContent, selectedDirectoryRef, updatePath, mapDataRef]
     );
 
     /* Manage treeItem folding */
@@ -305,25 +475,18 @@ const DirectoryTreeView = ({ rootDirectory }) => {
 
     /* Manage Studies updating with Web Socket */
     const displayErrorIfExist = useCallback(
-        (event) => {
-            let eventData = JSON.parse(event.data);
-            if (eventData.headers) {
-                const error = eventData.headers['error'];
-                if (error) {
-                    const studyName = eventData.headers['studyName'];
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: error,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'studyCreatingError',
-                            headerMessageValues: { studyName: studyName },
-                            intlRef: intlRef,
-                        },
-                    });
-                    return true;
-                }
+        (error, studyName) => {
+            if (error) {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: error,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'studyCreatingError',
+                        headerMessageValues: { studyName: studyName },
+                        intlRef: intlRef,
+                    },
+                });
             }
-            return false;
         },
         [enqueueSnackbar, intlRef]
     );
@@ -331,8 +494,10 @@ const DirectoryTreeView = ({ rootDirectory }) => {
     const updateDirectoryChildren = useCallback(
         (nodeId) => {
             fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
-                // update directory Content
-                updateCurrentChildren(childrenToBeInserted);
+                // update directory Content only if it's the one opened
+                if (nodeId === selectedDirectoryRef.current) {
+                    updateCurrentChildren(childrenToBeInserted);
+                }
                 // Update Tree Map data
                 updateMapData(nodeId, childrenToBeInserted);
             });
@@ -361,9 +526,33 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         const ws = connectNotificationsWsUpdateStudies();
 
         ws.onmessage = function (event) {
-            if (isConcerned()) {
-                displayErrorIfExist(event);
-                updateDirectoryChildren(selectedDirectoryRef.current, false);
+            let eventData = JSON.parse(event.data);
+
+            if (eventData.headers) {
+                const notificationTypeHeader =
+                    eventData.headers['notificationType'];
+                const isRootDirectory = eventData.headers['isRootDirectory'];
+                const directoryUuid = eventData.headers['directoryUuid'];
+                const error = eventData.headers['error'];
+
+                if (isRootDirectory) {
+                    updateRootDirectoriesRef.current();
+                    if (
+                        notificationTypeHeader ===
+                        notificationType.DELETE_DIRECTORY
+                    ) {
+                        dispatch(setCurrentChildren(null));
+                        updatePath(null);
+                    }
+                    return;
+                }
+
+                if (directoryUuid) {
+                    if (mapDataRef.current[directoryUuid] !== undefined) {
+                        displayErrorIfExist(error);
+                        updateDirectoryChildren(directoryUuid, false);
+                    }
+                }
             }
         };
 
@@ -372,16 +561,23 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                 console.error('Unexpected Notification WebSocket closed');
             }
         };
+
         ws.onerror = function (event) {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
-    }, [displayErrorIfExist, updateDirectoryChildren, isConcerned]);
+    }, [
+        displayErrorIfExist,
+        updateDirectoryChildren,
+        updateRootDirectoriesRef,
+        mapDataRef,
+        dispatch,
+        updatePath,
+    ]);
 
     useEffect(() => {
         const ws = connectNotificationsUpdateStudies();
         // Note: dispatch doesn't change
-
         // cleanup at unmount event
         return function () {
             ws.close();
@@ -410,6 +606,14 @@ const DirectoryTreeView = ({ rootDirectory }) => {
         }
     }, [selectedDirectory, updateTree, isConcerned]);
 
+    const isAllowed = () => {
+        return (
+            selectedDirectory &&
+            mapData[selectedDirectory] &&
+            mapData[selectedDirectory].owner === userId
+        );
+    };
+
     return (
         <>
             <TreeView
@@ -427,6 +631,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
             >
                 {renderTree(mapData[rootDirectory.elementUuid])}
             </TreeView>
+
             <StyledMenu
                 id="case-menu"
                 anchorEl={anchorEl}
@@ -434,6 +639,7 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                 open={Boolean(anchorEl)}
                 onClose={handleCloseMenu}
             >
+                {/* Directories Menu */}
                 <MenuItem onClick={handleOpenAddNewStudyDialog}>
                     <ListItemIcon style={{ minWidth: '25px' }}>
                         <AddIcon fontSize="small" />
@@ -444,10 +650,132 @@ const DirectoryTreeView = ({ rootDirectory }) => {
                         })}
                     />
                 </MenuItem>
+                <hr />
+                {isAllowed() && (
+                    <div>
+                        <MenuItem onClick={handleOpenRenameDirectoryDialog}>
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <CreateIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'renameFolder',
+                                })}
+                            />
+                        </MenuItem>
+                        <MenuItem
+                            onClick={handleOpenAccessRightsDirectoryDialog}
+                        >
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <BuildIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'accessRights',
+                                })}
+                            />
+                        </MenuItem>
+                        <MenuItem onClick={handleOpenDeleteDirectoryDialog}>
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <DeleteOutlineIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'deleteFolder',
+                                })}
+                            />
+                        </MenuItem>
+                        <hr />
+                    </div>
+                )}
+                <MenuItem onClick={handleOpenCreateNewDirectoryDialog}>
+                    <ListItemIcon style={{ minWidth: '25px' }}>
+                        <CreateNewFolderIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={intl.formatMessage({
+                            id: 'createFolder',
+                        })}
+                    />
+                </MenuItem>
+                <MenuItem onClick={handleOpenCreateRootDirectoryDialog}>
+                    <ListItemIcon style={{ minWidth: '25px' }}>
+                        <FolderSpecialIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={intl.formatMessage({
+                            id: 'createRootFolder',
+                        })}
+                    />
+                </MenuItem>
             </StyledMenu>
+
+            {/** Dialogs **/}
             <CreateStudyForm
                 open={openAddNewStudyDialog}
                 setOpen={setOpenAddNewStudyDialog}
+            />
+            <CreateDirectoryDialog
+                message={''}
+                open={openCreateNewDirectoryDialog}
+                onClick={insertNewDirectory}
+                onClose={() => setOpenCreateNewDirectoryDialog(false)}
+                title={intl.formatMessage({
+                    id: 'insertNewDirectoryDialogTitle',
+                })}
+                error={''}
+            />
+            <CreateDirectoryDialog
+                message={''}
+                open={openCreateRootDirectoryDialog}
+                onClick={insertNewRootDirectory}
+                onClose={() => setOpenCreateRootDirectoryDialog(false)}
+                title={intl.formatMessage({
+                    id: 'insertNewRootDirectoryDialogTitle',
+                })}
+                error={''}
+            />
+            <RenameDialog
+                message={''}
+                currentName={
+                    mapData[selectedDirectory]
+                        ? mapData[selectedDirectory].elementName
+                        : ''
+                }
+                open={openRenameDirectoryDialog}
+                onClick={renameSelectedDirectory}
+                onClose={handleCloseRenameDirectoryDialog}
+                title={intl.formatMessage({
+                    id: 'renameDirectoryDialogTitle',
+                })}
+                error={renameError}
+            />
+            <DeleteDialog
+                message={intl.formatMessage({
+                    id: 'deleteDirectoryDialogMessage',
+                })}
+                open={openDeleteDirectoryDialog}
+                onClick={deleteSelectedDirectory}
+                onClose={handleCloseDeleteDirectoryDialog}
+                title={intl.formatMessage({
+                    id: 'deleteDirectoryDialogTitle',
+                })}
+                error={deleteError}
+            />
+            <AccessRightsDialog
+                message={''}
+                isPrivate={
+                    mapData[selectedDirectory] !== undefined
+                        ? mapData[selectedDirectory].accessRights.private
+                        : false
+                }
+                open={openAccessRightsDirectoryDialog}
+                onClick={changeSelectedDirectoryAccessRights}
+                onClose={handleCloseAccessRightsDirectoryDialog}
+                title={intl.formatMessage({
+                    id: 'accessRights',
+                })}
+                error={accessRightsError}
             />
         </>
     );

@@ -105,6 +105,13 @@ const App = () => {
         [dispatch]
     );
 
+    //remove the default contextMenu
+    useEffect(() => {
+        document.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+        });
+    });
+
     const connectNotificationsUpdateConfig = useCallback(() => {
         const ws = connectNotificationsWsUpdateConfig();
 
@@ -225,6 +232,7 @@ const App = () => {
             sortedData.sort(function (a, b) {
                 return a.elementName.localeCompare(b.elementName);
             });
+
             setRootDirectories(sortedData);
         });
     };
@@ -267,6 +275,9 @@ const App = () => {
                                         <DirectoryTreeView
                                             key={rootDirectory.elementUuid}
                                             rootDirectory={rootDirectory}
+                                            updateRootDirectories={
+                                                updateRootDirectories
+                                            }
                                         />
                                     ))}
                                 </Grid>

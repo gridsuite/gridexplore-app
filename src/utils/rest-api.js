@@ -119,11 +119,121 @@ export function deleteElement(elementUuid) {
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${elementUuid}`;
     return backendFetch(fetchParams, {
         method: 'delete',
+    });
+}
+
+export function updateAccessRights(elementUuid, isPrivate) {
+    console.info(
+        'Updating access rights for ' +
+            elementUuid +
+            ' to isPrivate = ' +
+            isPrivate
+    );
+    const updateAccessRightUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${elementUuid}/rights`;
+    return backendFetch(updateAccessRightUrl, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: isPrivate === 'true',
+    });
+}
+
+export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
+    console.info("Inserting a new folder '%s'", directoryName);
+    const insertDirectoryUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/` + parentUuid;
+
+    return backendFetch(insertDirectoryUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            elementUuid: null,
+            elementName: directoryName,
+            type: 'DIRECTORY',
+            accessRights: { private: isPrivate },
+            owner: owner,
+        }),
     }).then((response) =>
         response.ok
             ? response.json()
             : response.text().then((text) => Promise.reject(text))
     );
+}
+
+export function insertRootDirectory(directoryName, isPrivate, owner) {
+    console.info("Inserting a new root folder '%s'", directoryName);
+    const insertRootDirectoryUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories/`;
+
+    return backendFetch(insertRootDirectoryUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            elementName: directoryName,
+            accessRights: { private: isPrivate },
+            owner: owner,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function getAvailableExportFormats() {
+    console.info('get export formats');
+    const getExportFormatsUrl =
+        PREFIX_STUDY_QUERIES + '/v1/export-network-formats';
+    console.debug(getExportFormatsUrl);
+    return backendFetch(getExportFormatsUrl, {
+        method: 'get',
+    }).then((response) => response.json());
+}
+
+function getUrlWithToken(baseUrl) {
+    return baseUrl + '?access_token=' + getToken();
+}
+
+function getStudyUrl(studyUuid) {
+    return (
+        PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyUuid)
+    );
+}
+
+export function getExportUrl(studyUuid, exportFormat) {
+    const url = getStudyUrl(studyUuid) + '/export-network/' + exportFormat;
+    return getUrlWithToken(url);
+}
+
+export function renameElement(studyUuid, newStudyName) {
+    console.info('Renaming study ' + studyUuid);
+    const renameElementUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${studyUuid}/rename/${newStudyName}`;
+
+    console.debug(renameElementUrl);
+    return backendFetch(renameElementUrl, {
+        method: 'PUT',
+    });
+}
+
+export function deleteStudy(studyUuid) {
+    console.info('Deleting study ' + studyUuid + '...');
+    const deleteStudyUrl = getStudyUrl(studyUuid);
+    console.debug(deleteStudyUrl);
+    return backendFetch(deleteStudyUrl, {
+        method: 'delete',
+    });
 }
 
 export function fetchRootFolders() {
