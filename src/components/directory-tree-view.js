@@ -144,7 +144,7 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
 
     const mapDataRef = useRef({});
     const expandedRef = useRef([]);
-    const selectedDirectoryRef = useRef();
+    const selectedDirectoryRef = useRef(null);
     selectedDirectoryRef.current = selectedDirectory;
     expandedRef.current = expanded;
     mapDataRef.current = mapData;
@@ -250,8 +250,8 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
                 }}
             >
                 {Array.isArray(node.children)
-                    ? node.children.map((node) =>
-                          renderTree(mapDataRef.current[node.elementUuid])
+                    ? node.children.map((child) =>
+                          renderTree(mapDataRef.current[child.elementUuid])
                       )
                     : null}
             </TreeItem>
