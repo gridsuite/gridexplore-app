@@ -7,11 +7,14 @@
 
 import React, { useCallback, useRef } from 'react';
 
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import LockIcon from '@material-ui/icons/Lock';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import Typography from '@material-ui/core/Typography';
+
 import {
     insertDirectory,
     insertRootDirectory,
@@ -31,18 +34,57 @@ import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import BuildIcon from '@material-ui/icons/Build';
 import AddIcon from '@material-ui/icons/Add';
 import CreateIcon from '@material-ui/icons/Create';
-import withStyles from '@material-ui/core/styles/withStyles';
 import CreateStudyForm from './create-study-form';
 import { useIntl } from 'react-intl';
 import { CreateDirectoryDialog } from './dialogs/create-directory-dialog';
-import { DeleteDirectoryDialog } from './dialogs/delete-directory-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
+import DeleteDialog from './dialogs/delete-dialog';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
+    treeViewRoot: {
+        padding: theme.spacing(0.5),
+    },
+    treeItemRoot: {
+        '&:focus > $treeItemContent $treeItemLabel': {
+            borderRadius: theme.spacing(2),
+            backgroundColor: theme.row.primary,
+        },
+        '&:hover > $treeItemContent $treeItemLabel:hover': {
+            borderRadius: theme.spacing(2),
+            backgroundColor: theme.row.primary,
+        },
+        '&$treeItemSelected > $treeItemContent $treeItemLabel:hover, &$treeItemSelected > $treeItemContent $treeItemLabel, &$treeItemSelected:focus > $treeItemContent $treeItemLabel': {
+            borderRadius: theme.spacing(2),
+            backgroundColor: theme.row.hover,
+            fontWeight: 'bold',
+        },
+    },
+    treeItemSelected: {}, // keep this!
+    treeItemContent: {
+        paddingRight: theme.spacing(1),
+        paddingLeft: theme.spacing(1),
+    },
     treeItemLabel: {
+        overflow: 'hidden',
+        paddingRight: theme.spacing(1),
+        paddingLeft: theme.spacing(1),
+        fontWeight: 'inherit',
+        color: 'inherit',
+    },
+    treeItemLabelRoot: {
         display: 'flex',
         alignItems: 'center',
+        padding: theme.spacing(0.5, 0),
+    },
+    treeItemLabelText: {
+        fontWeight: 'inherit',
+        flexGrow: 1,
+    },
+    icon: {
+        marginRight: theme.spacing(1),
+        width: '18px',
+        height: '18px',
     },
 }));
 
@@ -93,6 +135,10 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
         setOpenAccessRightsDirectoryDialog,
     ] = React.useState(false);
 
+    const [accessRightsError, setAccessRightsError] = React.useState('');
+    const [deleteError, setDeleteError] = React.useState('');
+    const [renameError, setRenameError] = React.useState('');
+
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
 
@@ -129,6 +175,12 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
         setOpenRenameDirectoryDialog(true);
     };
 
+    const handleCloseRenameDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenRenameDirectoryDialog(false);
+        setRenameError('');
+    };
+
     const handleOpenCreateRootDirectoryDialog = () => {
         setAnchorEl(null);
         setOpenCreateRootDirectoryDialog(true);
@@ -144,6 +196,18 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
         setOpenAccessRightsDirectoryDialog(true);
     };
 
+    const handleCloseAccessRightsDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenAccessRightsDirectoryDialog(false);
+        setAccessRightsError('');
+    };
+
+    const handleCloseDeleteDirectoryDialog = () => {
+        setAnchorEl(null);
+        setOpenDeleteDirectoryDialog(false);
+        setDeleteError('');
+    };
+
     function onContextMenu(e, nodeIds) {
         e.preventDefault();
         handleSelect(nodeIds, false);
@@ -155,22 +219,35 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
         if (!node) {
             return;
         }
-
         return (
             <TreeItem
                 key={node.elementUuid}
                 nodeId={node.elementUuid}
                 label={
                     <div
-                        className={classes.treeItemLabel}
+                        className={classes.treeItemLabelRoot}
                         onContextMenu={(e) =>
                             onContextMenu(e, node.elementUuid)
                         }
                     >
-                        {node.elementName}
+                        <Typography
+                            noWrap
+                            className={classes.treeItemLabelText}
+                        >
+                            {node.elementName}
+                        </Typography>
+                        {node.accessRights.private ? (
+                            <LockIcon className={classes.icon} />
+                        ) : null}
                     </div>
                 }
-                endIcon={<ChevronRightIcon />}
+                endIcon={<ChevronRightIcon className={classes.icon} />}
+                classes={{
+                    root: classes.treeItemRoot,
+                    content: classes.treeItemContent,
+                    selected: classes.treeItemSelected,
+                    label: classes.treeItemLabel,
+                }}
             >
                 {Array.isArray(node.children)
                     ? node.children.map((node) =>
@@ -201,20 +278,45 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
 
     function deleteSelectedDirectory() {
         deleteElement(selectedDirectory).then((r) => {
-            setOpenDeleteDirectoryDialog(false);
-            handleSelect(mapData[selectedDirectory].parentUuid, false);
+            if (r.ok) {
+                handleCloseDeleteDirectoryDialog();
+                handleSelect(mapData[selectedDirectory].parentUuid, false);
+            }
+            if (r.status === 403) {
+                setDeleteError(
+                    intl.formatMessage({ id: 'deleteDirectoryError' })
+                );
+            }
         });
     }
 
     function changeSelectedDirectoryAccessRights(isPrivate) {
         updateAccessRights(selectedDirectory, isPrivate).then((r) => {
-            setOpenAccessRightsDirectoryDialog(false);
+            if (r.status === 403) {
+                setAccessRightsError(
+                    intl.formatMessage({
+                        id: 'modifyDirectoryAccessRightsError',
+                    })
+                );
+            }
+            if (r.ok) {
+                setOpenAccessRightsDirectoryDialog(false);
+            }
         });
     }
 
     function renameSelectedDirectory(newName) {
         renameElement(selectedDirectory, newName).then((r) => {
-            setOpenRenameDirectoryDialog(false);
+            if (r.status === 403) {
+                setRenameError(
+                    intl.formatMessage({
+                        id: 'renameDirectoryError',
+                    })
+                );
+            }
+            if (r.ok) {
+                handleCloseRenameDirectoryDialog();
+            }
         });
     }
 
@@ -263,13 +365,24 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
         [dispatch, toggleDirectory]
     );
 
+    const isAllowed = () => {
+        return (
+            selectedDirectory &&
+            mapData[selectedDirectory] &&
+            mapData[selectedDirectory].owner === userId
+        );
+    };
+
     return (
         <>
             <TreeView
-                className={classes.root}
-                defaultCollapseIcon={<ExpandMoreIcon />}
-                defaultExpanded={['root']}
-                defaultExpandIcon={<ChevronRightIcon />}
+                className={classes.treeViewRoot}
+                defaultCollapseIcon={
+                    <ExpandMoreIcon className={classes.icon} />
+                }
+                defaultExpandIcon={
+                    <ChevronRightIcon className={classes.icon} />
+                }
                 onNodeSelect={(event, nodeId) => handleSelect(nodeId, true)}
                 expanded={expanded}
                 selected={selectedDirectory}
@@ -296,38 +409,43 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
                     />
                 </MenuItem>
                 <hr />
-
-                <MenuItem onClick={handleOpenRenameDirectoryDialog}>
-                    <ListItemIcon style={{ minWidth: '25px' }}>
-                        <CreateIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={intl.formatMessage({
-                            id: 'renameFolder',
-                        })}
-                    />
-                </MenuItem>
-                <MenuItem onClick={handleOpenDeleteDirectoryDialog}>
-                    <ListItemIcon style={{ minWidth: '25px' }}>
-                        <DeleteOutlineIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={intl.formatMessage({
-                            id: 'deleteFolder',
-                        })}
-                    />
-                </MenuItem>
-                <MenuItem onClick={handleOpenAccessRightsDirectoryDialog}>
-                    <ListItemIcon style={{ minWidth: '25px' }}>
-                        <BuildIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={intl.formatMessage({
-                            id: 'accessRights',
-                        })}
-                    />
-                </MenuItem>
-                <hr />
+                {isAllowed() && (
+                    <div>
+                        <MenuItem onClick={handleOpenRenameDirectoryDialog}>
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <CreateIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'renameFolder',
+                                })}
+                            />
+                        </MenuItem>
+                        <MenuItem
+                            onClick={handleOpenAccessRightsDirectoryDialog}
+                        >
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <BuildIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'accessRights',
+                                })}
+                            />
+                        </MenuItem>
+                        <MenuItem onClick={handleOpenDeleteDirectoryDialog}>
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <DeleteOutlineIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'deleteFolder',
+                                })}
+                            />
+                        </MenuItem>
+                        <hr />
+                    </div>
+                )}
                 <MenuItem onClick={handleOpenCreateNewDirectoryDialog}>
                     <ListItemIcon style={{ minWidth: '25px' }}>
                         <CreateNewFolderIcon fontSize="small" />
@@ -384,23 +502,23 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
                 }
                 open={openRenameDirectoryDialog}
                 onClick={renameSelectedDirectory}
-                onClose={() => setOpenRenameDirectoryDialog(false)}
+                onClose={handleCloseRenameDirectoryDialog}
                 title={intl.formatMessage({
                     id: 'renameDirectoryDialogTitle',
                 })}
-                error={''}
+                error={renameError}
             />
-            <DeleteDirectoryDialog
+            <DeleteDialog
                 message={intl.formatMessage({
                     id: 'deleteDirectoryDialogMessage',
                 })}
                 open={openDeleteDirectoryDialog}
                 onClick={deleteSelectedDirectory}
-                onClose={() => setOpenDeleteDirectoryDialog(false)}
+                onClose={handleCloseDeleteDirectoryDialog}
                 title={intl.formatMessage({
                     id: 'deleteDirectoryDialogTitle',
                 })}
-                error={''}
+                error={deleteError}
             />
             <AccessRightsDialog
                 message={''}
@@ -411,11 +529,11 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
                 }
                 open={openAccessRightsDirectoryDialog}
                 onClick={changeSelectedDirectoryAccessRights}
-                onClose={() => setOpenAccessRightsDirectoryDialog(false)}
+                onClose={handleCloseAccessRightsDirectoryDialog}
                 title={intl.formatMessage({
                     id: 'accessRights',
                 })}
-                error={''}
+                error={accessRightsError}
             />
         </>
     );

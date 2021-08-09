@@ -242,11 +242,10 @@ const App = () => {
                                     style={{
                                         borderRight:
                                             '1px solid rgba(81, 81, 81, 1)',
+                                        marginTop: '20px',
                                     }}
                                 >
-                                    <div style={{ marginTop: '20px' }}>
-                                        <TreeViewsContainer />
-                                    </div>
+                                    <TreeViewsContainer />
                                 </Grid>
                                 <Grid item xs={12} sm={9}>
                                     <div
@@ -259,7 +258,6 @@ const App = () => {
                                         <div
                                             style={{
                                                 marginTop: '20px',
-                                                marginBottom: '5px',
                                             }}
                                         >
                                             <DirectoryBreadcrumbs />
