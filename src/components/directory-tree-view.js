@@ -54,7 +54,6 @@ import { notificationType } from '../utils/notificationType';
 import DeleteDialog from './dialogs/delete-dialog';
 import { FormattedMessage } from 'react-intl';
 
-
 const useStyles = makeStyles((theme) => ({
     treeViewRoot: {
         padding: theme.spacing(0.5),
