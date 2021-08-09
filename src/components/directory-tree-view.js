@@ -14,6 +14,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LockIcon from '@material-ui/icons/Lock';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
+import Zoom from '@material-ui/core/Zoom';
 
 import {
     connectNotificationsWsUpdateStudies,
@@ -50,6 +52,8 @@ import RenameDialog from './dialogs/rename-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
 import { notificationType } from '../utils/notificationType';
 import DeleteDialog from './dialogs/delete-dialog';
+import { FormattedMessage } from 'react-intl';
+
 
 const useStyles = makeStyles((theme) => ({
     treeViewRoot: {
@@ -326,14 +330,33 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
                             onContextMenu(e, node.elementUuid)
                         }
                     >
-                        <Typography
-                            noWrap
-                            className={classes.treeItemLabelText}
+                        <Tooltip
+                            TransitionComponent={Zoom}
+                            disableFocusListener
+                            disableTouchListener
+                            enterDelay={1000}
+                            title={node.elementName}
+                            placement="bottom-end"
                         >
-                            {node.elementName}
-                        </Typography>
+                            <Typography
+                                noWrap
+                                className={classes.treeItemLabelText}
+                            >
+                                {node.elementName}
+                            </Typography>
+                        </Tooltip>
                         {node.accessRights.private ? (
-                            <LockIcon className={classes.icon} />
+                            <Tooltip
+                                TransitionComponent={Zoom}
+                                disableFocusListener
+                                disableTouchListener
+                                enterDelay={1000}
+                                title={<FormattedMessage id="private" />}
+                                placement="right"
+                                arrow
+                            >
+                                <LockIcon className={classes.icon} />
+                            </Tooltip>
                         ) : null}
                     </div>
                 }
