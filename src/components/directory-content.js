@@ -326,7 +326,7 @@ const DirectoryContent = () => {
                     <div>{childrenMetadata[elementUuid].name}</div>
                 ) : (
                     <>
-                        {elementName}{' '}
+                        {elementName + ' '}
                         <FormattedMessage id="creationInProgress" />
                     </>
                 )}
