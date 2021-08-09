@@ -7,11 +7,14 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import LockIcon from '@material-ui/icons/Lock';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import Typography from '@material-ui/core/Typography';
+
 import {
     connectNotificationsWsUpdateStudies,
     fetchDirectoryContent,
@@ -37,7 +40,6 @@ import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import BuildIcon from '@material-ui/icons/Build';
 import AddIcon from '@material-ui/icons/Add';
 import CreateIcon from '@material-ui/icons/Create';
-import withStyles from '@material-ui/core/styles/withStyles';
 import CreateStudyForm from './create-study-form';
 import { useIntl } from 'react-intl';
 import { elementType } from '../utils/elementType';
@@ -49,10 +51,50 @@ import AccessRightsDialog from './dialogs/access-rights-dialog';
 import { notificationType } from '../utils/notificationType';
 import DeleteDialog from './dialogs/delete-dialog';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
+    treeViewRoot: {
+        padding: theme.spacing(0.5),
+    },
+    treeItemRoot: {
+        '&:focus > $treeItemContent $treeItemLabel': {
+            borderRadius: theme.spacing(2),
+            backgroundColor: theme.row.primary,
+        },
+        '&:hover > $treeItemContent $treeItemLabel:hover': {
+            borderRadius: theme.spacing(2),
+            backgroundColor: theme.row.primary,
+        },
+        '&$treeItemSelected > $treeItemContent $treeItemLabel:hover, &$treeItemSelected > $treeItemContent $treeItemLabel, &$treeItemSelected:focus > $treeItemContent $treeItemLabel': {
+            borderRadius: theme.spacing(2),
+            backgroundColor: theme.row.hover,
+            fontWeight: 'bold',
+        },
+    },
+    treeItemSelected: {}, // keep this!
+    treeItemContent: {
+        paddingRight: theme.spacing(1),
+        paddingLeft: theme.spacing(1),
+    },
     treeItemLabel: {
+        overflow: 'hidden',
+        paddingRight: theme.spacing(1),
+        paddingLeft: theme.spacing(1),
+        fontWeight: 'inherit',
+        color: 'inherit',
+    },
+    treeItemLabelRoot: {
         display: 'flex',
         alignItems: 'center',
+        padding: theme.spacing(0.5, 0),
+    },
+    treeItemLabelText: {
+        fontWeight: 'inherit',
+        flexGrow: 1,
+    },
+    icon: {
+        marginRight: theme.spacing(1),
+        width: '18px',
+        height: '18px',
     },
 }));
 
@@ -273,22 +315,35 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
         if (!node) {
             return;
         }
-
         return (
             <TreeItem
                 key={node.elementUuid}
                 nodeId={node.elementUuid}
                 label={
                     <div
-                        className={classes.treeItemLabel}
+                        className={classes.treeItemLabelRoot}
                         onContextMenu={(e) =>
                             onContextMenu(e, node.elementUuid)
                         }
                     >
-                        {node.elementName}
+                        <Typography
+                            noWrap
+                            className={classes.treeItemLabelText}
+                        >
+                            {node.elementName}
+                        </Typography>
+                        {node.accessRights.private ? (
+                            <LockIcon className={classes.icon} />
+                        ) : null}
                     </div>
                 }
-                endIcon={<ChevronRightIcon />}
+                endIcon={<ChevronRightIcon className={classes.icon} />}
+                classes={{
+                    root: classes.treeItemRoot,
+                    content: classes.treeItemContent,
+                    selected: classes.treeItemSelected,
+                    label: classes.treeItemLabel,
+                }}
             >
                 {Array.isArray(mapData[node.elementUuid].children)
                     ? mapData[node.elementUuid].children.map((node) =>
@@ -562,10 +617,13 @@ const DirectoryTreeView = ({ rootDirectory, updateRootDirectories }) => {
     return (
         <>
             <TreeView
-                className={classes.root}
-                defaultCollapseIcon={<ExpandMoreIcon />}
-                defaultExpanded={['root']}
-                defaultExpandIcon={<ChevronRightIcon />}
+                className={classes.treeViewRoot}
+                defaultCollapseIcon={
+                    <ExpandMoreIcon className={classes.icon} />
+                }
+                defaultExpandIcon={
+                    <ChevronRightIcon className={classes.icon} />
+                }
                 onNodeSelect={(event, nodeId) => handleSelect(nodeId, true)}
                 expanded={expanded}
                 selected={selectedDirectory}

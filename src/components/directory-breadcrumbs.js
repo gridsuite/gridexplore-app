@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
         backgroundColor: theme.row.primary,
         padding: theme.spacing(0.5, 2, 0.5),
-        borderRadius: '16px',
+        borderRadius: theme.spacing(2),
 
         '&:hover, &:focus': {
             backgroundColor: theme.row.hover,
@@ -34,18 +34,19 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         fontWeight: 'bold',
 
-        backgroundColor: theme.row.primary,
+        backgroundColor: theme.row.hover,
         padding: theme.spacing(0.5, 2, 0.5),
-        borderRadius: '16px',
+        borderRadius: theme.spacing(2),
 
         cursor: 'initial',
     },
     icon: {
-        marginRight: theme.spacing(0.5),
+        marginRight: theme.spacing(1),
         width: '18px',
         height: '18px',
     },
     breadcrumbs: {
+        padding: theme.spacing(0.5, 0, 0.5),
         marginLeft: theme.spacing(1),
     },
 }));
