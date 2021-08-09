@@ -98,6 +98,13 @@ const App = () => {
         [dispatch]
     );
 
+    //remove the default contextMenu
+    useEffect(() => {
+        document.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+        });
+    });
+
     const connectNotificationsUpdateConfig = useCallback(() => {
         const ws = connectNotificationsWsUpdateConfig();
 
@@ -218,6 +225,7 @@ const App = () => {
             sortedData.sort(function (a, b) {
                 return a.elementName.localeCompare(b.elementName);
             });
+
             setRootDirectories(sortedData);
         });
     };
@@ -253,22 +261,18 @@ const App = () => {
                                     style={{
                                         borderRight:
                                             '1px solid rgba(81, 81, 81, 1)',
+                                        marginTop: '20px',
                                     }}
                                 >
-                                    <div style={{ marginTop: '20px' }}>
-                                        {rootDirectories.map(
-                                            (rootDirectory) => (
-                                                <DirectoryTreeView
-                                                    key={
-                                                        rootDirectory.elementUuid
-                                                    }
-                                                    rootDirectory={
-                                                        rootDirectory
-                                                    }
-                                                />
-                                            )
-                                        )}
-                                    </div>
+                                    {rootDirectories.map((rootDirectory) => (
+                                        <DirectoryTreeView
+                                            key={rootDirectory.elementUuid}
+                                            rootDirectory={rootDirectory}
+                                            updateRootDirectories={
+                                                updateRootDirectories
+                                            }
+                                        />
+                                    ))}
                                 </Grid>
                                 <Grid item xs={12} sm={9}>
                                     <div
@@ -278,7 +282,11 @@ const App = () => {
                                             height: '100%',
                                         }}
                                     >
-                                        <div style={{ marginTop: '20px' }}>
+                                        <div
+                                            style={{
+                                                marginTop: '20px',
+                                            }}
+                                        >
                                             <DirectoryBreadcrumbs />
                                         </div>
                                         <div style={{ flexGrow: 1 }}>

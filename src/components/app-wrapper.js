@@ -46,7 +46,7 @@ const lightTheme = createMuiTheme({
         fill: '#212121',
     },
     link: {
-        color: 'blue',
+        color: 'black',
     },
     row: {
         primary: '#E8E8E8',
