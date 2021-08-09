@@ -465,41 +465,42 @@ const DirectoryContent = () => {
                             columns={[
                                 {
                                     cellRenderer: selectionRenderer,
-                                dataKey: 'selected',
-                                label: '',
-                                headerRenderer: selectionHeaderRenderer,
-                                maxWidth: '60px',
-                            },
-                            {
-                                width: 100,
-                                label: intl.formatMessage({
-                                    id: 'elementName',
-                                }),
-                                dataKey: 'elementName',
-                                cellRenderer: nameCellRender,
-                            },
-                            {
-                                width: 100,
-                                label: intl.formatMessage({ id: 'type' }),
-                                dataKey: 'type',
-                                cellRenderer: typeCellRender,
-                            },
-                            {
-                                width: 50,
-                                label: intl.formatMessage({ id: 'owner' }),
-                                dataKey: 'owner',
-                                cellRenderer: accessOwnerCellRender,
-                            },
-                            {
-                                width: 50,
-                                label: intl.formatMessage({
-                                    id: 'accessRights',
-                                }),
-                                dataKey: 'accessRights',
-                                cellRenderer: accessRightsCellRender,
-                            },
-                        ]}
-                    /><StyledMenu
+                                    dataKey: 'selected',
+                                    label: '',
+                                    headerRenderer: selectionHeaderRenderer,
+                                    maxWidth: '60px',
+                                },
+                                {
+                                    width: 100,
+                                    label: intl.formatMessage({
+                                        id: 'elementName',
+                                    }),
+                                    dataKey: 'elementName',
+                                    cellRenderer: nameCellRender,
+                                },
+                                {
+                                    width: 100,
+                                    label: intl.formatMessage({ id: 'type' }),
+                                    dataKey: 'type',
+                                    cellRenderer: typeCellRender,
+                                },
+                                {
+                                    width: 50,
+                                    label: intl.formatMessage({ id: 'owner' }),
+                                    dataKey: 'owner',
+                                    cellRenderer: accessOwnerCellRender,
+                                },
+                                {
+                                    width: 50,
+                                    label: intl.formatMessage({
+                                        id: 'accessRights',
+                                    }),
+                                    dataKey: 'accessRights',
+                                    cellRenderer: accessRightsCellRender,
+                                },
+                            ]}
+                        />
+                        <StyledMenu
                             id="row-menu"
                             anchorEl={anchorEl}
                             keepMounted
