@@ -240,6 +240,9 @@ const App = () => {
                                     xs={12}
                                     sm={3}
                                     style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        height: '100%',
                                         borderRight:
                                             '1px solid rgba(81, 81, 81, 1)',
                                         marginTop: '20px',
