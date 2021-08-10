@@ -126,7 +126,11 @@ const TreeViewsContainer = () => {
                     return child;
                 }
             );
-            mapDataCopy[selected].children = preparedChildrenToBeInserted;
+            mapDataCopy[selected].children = preparedChildrenToBeInserted.sort(
+                function (a, b) {
+                    return a.elementName.localeCompare(b.elementName);
+                }
+            );
             setMapData(mapDataCopy);
         },
         [mapDataRef]

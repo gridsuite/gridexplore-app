@@ -248,13 +248,9 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
                 }}
             >
                 {Array.isArray(node.children)
-                    ? node.children
-                          .sort(function (a, b) {
-                              return a.elementName.localeCompare(b.elementName);
-                          })
-                          .map((child) =>
-                              renderTree(mapDataRef.current[child.elementUuid])
-                          )
+                    ? node.children.map((child) =>
+                          renderTree(mapDataRef.current[child.elementUuid])
+                      )
                     : null}
             </TreeItem>
         );
