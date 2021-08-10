@@ -161,9 +161,11 @@ const TreeViewsContainer = () => {
         (children) => {
             dispatch(
                 setCurrentChildren(
-                    children.filter(
-                        (child) => child.type !== elementType.DIRECTORY
-                    )
+                    children
+                        .filter((child) => child.type !== elementType.DIRECTORY)
+                        .sort(function (a, b) {
+                            return a.elementName.localeCompare(b.elementName);
+                        })
                 )
             );
         },

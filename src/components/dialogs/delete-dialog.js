@@ -36,7 +36,7 @@ const DeleteDialog = ({ open, onClose, onClick, title, message, error }) => {
 
     const handleKeyPressed = (event) => {
         if (open && event.key === 'Enter') {
-            handleClick();
+            handleClose();
         }
     };
 
