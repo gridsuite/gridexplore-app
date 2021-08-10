@@ -137,15 +137,6 @@ const TreeViewsContainer = () => {
                 mouseX: e.clientX + 16,
                 mouseY: e.clientY - 4,
             });
-            console.log(
-                'onContextMenu',
-                nodeId,
-                'x:',
-                e.clientX,
-                ' y:',
-                e.clientY
-            );
-            // e.preventDefault();
             /* open Contextual Menu in empty space */
             if (!nodeId) {
                 setShowCreateStudyMenuItem(false);
