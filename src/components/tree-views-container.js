@@ -126,7 +126,11 @@ const TreeViewsContainer = () => {
                     return child;
                 }
             );
-            mapDataCopy[selected].children = preparedChildrenToBeInserted;
+            mapDataCopy[selected].children = preparedChildrenToBeInserted.sort(
+                function (a, b) {
+                    return a.elementName.localeCompare(b.elementName);
+                }
+            );
             setMapData(mapDataCopy);
         },
         [mapDataRef]
@@ -161,9 +165,11 @@ const TreeViewsContainer = () => {
         (children) => {
             dispatch(
                 setCurrentChildren(
-                    children.filter(
-                        (child) => child.type !== elementType.DIRECTORY
-                    )
+                    children
+                        .filter((child) => child.type !== elementType.DIRECTORY)
+                        .sort(function (a, b) {
+                            return a.elementName.localeCompare(b.elementName);
+                        })
                 )
             );
         },
