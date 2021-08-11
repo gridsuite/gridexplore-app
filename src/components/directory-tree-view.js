@@ -153,7 +153,6 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
-        event.stopPropagation();
     };
 
     const handleCloseMenu = () => {
@@ -209,7 +208,6 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
     };
 
     function onContextMenu(e, nodeIds) {
-        e.preventDefault();
         handleSelect(nodeIds, false);
         handleOpenMenu(e);
     }

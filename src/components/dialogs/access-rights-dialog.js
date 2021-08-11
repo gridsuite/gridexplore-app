@@ -29,6 +29,13 @@ import PropTypes from 'prop-types';
  * @param {String} isPrivate tells if the study is private or not
  * @param {String} error error message if there is a fail
  */
+
+const useStyles = makeStyles(() => ({
+    formControl: {
+        minWidth: 300,
+    },
+}));
+
 const AccessRightsDialog = ({
     open,
     onClose,
@@ -37,21 +44,12 @@ const AccessRightsDialog = ({
     isPrivate,
     error,
 }) => {
-    const [loading, setLoading] = React.useState(false);
+    const classes = useStyles();
 
+    const [loading, setLoading] = React.useState(false);
     const [selected, setSelected] = React.useState(
         isPrivate !== undefined ? isPrivate.toString() : null
     );
-
-    const useStyles = makeStyles(() => ({
-        formControl: {
-            minWidth: 300,
-        },
-    }));
-
-    useEffect(() => {
-        setSelected(isPrivate !== undefined ? isPrivate.toString() : null);
-    }, [isPrivate]);
 
     const handleClick = () => {
         setLoading(true);
@@ -73,13 +71,22 @@ const AccessRightsDialog = ({
         setSelected(event.target.value);
     };
 
-    const classes = useStyles();
+    const handleKeyPressed = (event) => {
+        if (open && event.key === 'Enter') {
+            handleClick();
+        }
+    };
+
+    useEffect(() => {
+        setSelected(isPrivate !== undefined ? isPrivate.toString() : null);
+    }, [isPrivate]);
 
     return (
         <Dialog
             open={open}
             onClose={handleClose}
             onExited={handleExited}
+            onKeyPress={handleKeyPressed}
             aria-labelledby="dialog-title-accessRights"
         >
             <DialogTitle>{title}</DialogTitle>

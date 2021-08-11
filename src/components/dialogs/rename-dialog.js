@@ -37,10 +37,6 @@ const RenameDialog = ({
 }) => {
     const [newNameValue, setNewNameValue] = React.useState(currentName);
 
-    useEffect(() => {
-        setNewNameValue(currentName || '');
-    }, [currentName]);
-
     const updateNameValue = (event) => {
         setNewNameValue(event.target.value);
     };
@@ -69,6 +65,10 @@ const RenameDialog = ({
             handleClick();
         }
     };
+
+    useEffect(() => {
+        setNewNameValue(currentName || '');
+    }, [currentName]);
 
     return (
         <Dialog
