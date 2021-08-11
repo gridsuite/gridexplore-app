@@ -34,6 +34,7 @@ import { notificationType } from '../utils/notificationType';
 
 import { withStyles } from '@material-ui/core/styles';
 
+import * as constants from '../utils/UIconstants';
 // Menu
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -134,8 +135,8 @@ const TreeViewsContainer = () => {
     const onContextMenu = useCallback(
         (e, nodeId) => {
             setMousePosition({
-                mouseX: e.clientX + 16,
-                mouseY: e.clientY - 4,
+                mouseX: e.clientX + constants.HORIZONTAL_SHIFT,
+                mouseY: e.clientY + constants.VERTICAL_SHIFT,
             });
             /* open Contextual Menu in empty space */
             if (!nodeId) {
@@ -146,9 +147,9 @@ const TreeViewsContainer = () => {
                 setShowCreateNewDirectoryMenuItem(true);
             }
 
-            if (nodeId !== selectedDirectoryRef.current) {
+            // if (nodeId !== selectedDirectoryRef.current) {
                 dispatch(setSelectedDirectory(nodeId));
-            }
+            // }
 
             handleOpenMenu(e);
         },
