@@ -245,15 +245,7 @@ const App = () => {
                                         marginTop: '20px',
                                     }}
                                 >
-                                    <div
-                                        style={{
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            height: '100%',
-                                        }}
-                                    >
-                                        <TreeViewsContainer />
-                                    </div>
+                                    <TreeViewsContainer />
                                 </Grid>
                                 <Grid item xs={12} sm={9}>
                                     <div

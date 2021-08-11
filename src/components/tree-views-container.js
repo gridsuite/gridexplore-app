@@ -526,7 +526,9 @@ const TreeViewsContainer = () => {
         <>
             <div
                 style={{
-                    flexGrow: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%',
                 }}
                 onContextMenu={(e) => onContextMenu(e, null)}
             >
