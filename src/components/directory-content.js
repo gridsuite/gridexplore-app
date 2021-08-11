@@ -17,7 +17,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
 
-import VirtualizedTable from './util/virtualized-table';
+import VirtualizedTable from './virtualized-table';
 import { elementType } from '../utils/elementType';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
 
@@ -429,6 +429,7 @@ const DirectoryContent = () => {
                                     cellRenderer: accessRightsCellRender,
                                 },
                             ]}
+                            sortable={true}
                         />
                         <StyledMenu
                             id="row-menu"
