@@ -47,7 +47,7 @@ const TreeViewsContainer = () => {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    /* RootDirectories initialization */
+    /* RootDirectories management */
     const updateRootDirectories = useCallback(() => {
         fetchRootFolders().then((data) => {
             let sortedData = [...data];
