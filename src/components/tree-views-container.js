@@ -32,7 +32,7 @@ const TreeViewsContainer = () => {
     const dispatch = useDispatch();
 
     const [rootDirectories, setRootDirectories] = useState([]);
-    const [mapData, setMapData] = useState();
+    const [mapData, setMapData] = useState({});
 
     const user = useSelector((state) => state.user);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -47,14 +47,24 @@ const TreeViewsContainer = () => {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    /* RootDirectories managment */
+    /* RootDirectories initialization */
     const updateRootDirectories = useCallback(() => {
+        console.log('updateRootDirectories');
         fetchRootFolders().then((data) => {
             let sortedData = [...data];
             sortedData.sort(function (a, b) {
                 return a.elementName.localeCompare(b.elementName);
             });
-            setRootDirectories(sortedData);
+
+            setRootDirectories(
+                sortedData.map((rootDir) => {
+                    return {
+                        children: [],
+                        parentUuid: null,
+                        ...rootDir,
+                    };
+                })
+            );
         });
     }, []);
 
@@ -86,28 +96,33 @@ const TreeViewsContainer = () => {
         (nodeId) => {
             let path = [];
             buildPath(nodeId, path);
+            //console.log(mapDataRef.current[selectedDirectoryRef.current].elementName)
+            console.log(path);
             if (path != null) dispatch(setCurrentPath(path));
         },
         [buildPath, dispatch]
     );
 
-    /* Mapdata management*/
+    /* MapData management*/
     useEffect(() => {
-        if (rootDirectories) {
-            if (rootDirectories.length > 0) {
-                let initialMapData = {};
-                rootDirectories.forEach((rootDirectory) => {
-                    let rootDirectoryCopy = { ...rootDirectory };
-                    rootDirectoryCopy.parentUuid = null;
-                    rootDirectoryCopy.children = [];
-                    initialMapData[
-                        rootDirectory.elementUuid
-                    ] = rootDirectoryCopy;
-                });
-                setMapData(initialMapData);
-            }
+        if (rootDirectories && rootDirectories.length > 0) {
+            let mapDataCopy = { ...mapDataRef.current };
+            rootDirectories.forEach((rootDirectory) => {
+                let rootDirectoryCopy = { ...rootDirectory };
+                rootDirectoryCopy.children = mapDataRef.current[
+                    rootDirectoryCopy.elementUuid
+                ]
+                    ? mapDataRef.current[rootDirectoryCopy.elementUuid].children
+                    : [];
+                mapDataCopy[rootDirectory.elementUuid] = rootDirectoryCopy;
+            });
+            setMapData(mapDataCopy);
         }
     }, [rootDirectories]);
+
+    useEffect(() => {
+        updatePath(selectedDirectoryRef.current);
+    }, [mapData, updatePath]);
 
     const insertContent = useCallback(
         (selected, childrenToBeInserted) => {
@@ -234,7 +249,8 @@ const TreeViewsContainer = () => {
                     updateRootDirectories();
                     if (
                         notificationTypeHeader ===
-                        notificationType.DELETE_DIRECTORY
+                            notificationType.DELETE_DIRECTORY &&
+                        selectedDirectoryRef.current === directoryUuid
                     ) {
                         dispatch(setCurrentChildren(null));
                         updatePath(null);
