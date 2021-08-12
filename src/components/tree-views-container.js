@@ -71,7 +71,7 @@ const TreeViewsContainer = () => {
     const dispatch = useDispatch();
 
     const [rootDirectories, setRootDirectories] = useState([]);
-    const [mapData, setMapData] = useState();
+    const [mapData, setMapData] = useState({});
 
     const user = useSelector((state) => state.user);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -550,7 +550,7 @@ const TreeViewsContainer = () => {
                             </ListItemIcon>
                             <ListItemText
                                 primary={intl.formatMessage({
-                                    id: 'newStudy',
+                                    id: 'createNewStudy',
                                 })}
                             />
                         </MenuItem>

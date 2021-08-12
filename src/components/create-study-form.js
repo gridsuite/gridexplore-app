@@ -313,11 +313,11 @@ export const CreateStudyForm = (props) => {
                 onKeyPress={handleKeyPressed}
             >
                 <DialogTitle id="form-dialog-title">
-                    <FormattedMessage id="addNewStudy" />
+                    <FormattedMessage id="createNewStudy" />
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        <FormattedMessage id="addNewStudyDescription" />
+                        <FormattedMessage id="createNewStudyDescription" />
                     </DialogContentText>
                     <FormControlLabel
                         control={
