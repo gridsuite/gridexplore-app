@@ -123,7 +123,7 @@ const TreeViewsContainer = () => {
     );
 
     const [showMenuFromEmptyZone, setShowMenuFromEmptyZone] = React.useState(
-        true
+        false
     );
 
     /* User interactions */
