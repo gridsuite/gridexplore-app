@@ -122,36 +122,25 @@ const TreeViewsContainer = () => {
         initialMousePosition
     );
 
-    const [
-        showCreateStudyMenuItem,
-        setShowCreateStudyMenuItem,
-    ] = React.useState(true);
-    const [
-        showCreateNewDirectoryMenuItem,
-        setShowCreateNewDirectoryMenuItem,
-    ] = React.useState(true);
+    const [showMenuFromEmptyZone, setShowMenuFromEmptyZone] = React.useState(
+        true
+    );
 
     /* User interactions */
-    const onContextMenu = useCallback(
-        (e, nodeId) => {
-            setMousePosition({
-                mouseX: e.clientX + constants.HORIZONTAL_SHIFT,
-                mouseY: e.clientY + constants.VERTICAL_SHIFT,
-            });
-            /* open Contextual Menu in empty space */
-            if (!nodeId) {
-                setShowCreateStudyMenuItem(false);
-                setShowCreateNewDirectoryMenuItem(false);
-            } /* open Contextual Menu in a TreeViewItem */ else {
-                setShowCreateStudyMenuItem(true);
-                setShowCreateNewDirectoryMenuItem(true);
-                dispatch(setSelectedDirectory(nodeId));
-            }
+    const onContextMenu = useCallback((e, nodeId) => {
+        setMousePosition({
+            mouseX: e.clientX + constants.HORIZONTAL_SHIFT,
+            mouseY: e.clientY + constants.VERTICAL_SHIFT,
+        });
+        /* open Contextual Menu in empty zone */
+        if (!nodeId) {
+            setShowMenuFromEmptyZone(true);
+        } /* open Contextual Menu in a TreeViewItem */ else {
+            setShowMenuFromEmptyZone(false);
+        }
 
-            handleOpenMenu(e);
-        },
-        [dispatch]
-    );
+        handleOpenMenu(e);
+    }, []);
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -558,67 +547,73 @@ const TreeViewsContainer = () => {
                 }
             >
                 {/* Directories Menu */}
-                {showCreateStudyMenuItem && (
-                    <MenuItem onClick={handleOpenAddNewStudyDialog}>
-                        <ListItemIcon style={{ minWidth: '25px' }}>
-                            <AddIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText
-                            primary={intl.formatMessage({
-                                id: 'newStudy',
-                            })}
-                        />
-                    </MenuItem>
-                )}
-                {showCreateStudyMenuItem && <hr />}
-                {isAllowed() && (
+                {!showMenuFromEmptyZone && (
                     <div>
-                        <MenuItem onClick={handleOpenRenameDirectoryDialog}>
+                        <MenuItem onClick={handleOpenAddNewStudyDialog}>
                             <ListItemIcon style={{ minWidth: '25px' }}>
-                                <CreateIcon fontSize="small" />
+                                <AddIcon fontSize="small" />
                             </ListItemIcon>
                             <ListItemText
                                 primary={intl.formatMessage({
-                                    id: 'renameFolder',
-                                })}
-                            />
-                        </MenuItem>
-                        <MenuItem
-                            onClick={handleOpenAccessRightsDirectoryDialog}
-                        >
-                            <ListItemIcon style={{ minWidth: '25px' }}>
-                                <BuildIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={intl.formatMessage({
-                                    id: 'accessRights',
-                                })}
-                            />
-                        </MenuItem>
-                        <MenuItem onClick={handleOpenDeleteDirectoryDialog}>
-                            <ListItemIcon style={{ minWidth: '25px' }}>
-                                <DeleteOutlineIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={intl.formatMessage({
-                                    id: 'deleteFolder',
+                                    id: 'newStudy',
                                 })}
                             />
                         </MenuItem>
                         <hr />
+                        {isAllowed() && (
+                            <div>
+                                <MenuItem
+                                    onClick={handleOpenRenameDirectoryDialog}
+                                >
+                                    <ListItemIcon style={{ minWidth: '25px' }}>
+                                        <CreateIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={intl.formatMessage({
+                                            id: 'renameFolder',
+                                        })}
+                                    />
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={
+                                        handleOpenAccessRightsDirectoryDialog
+                                    }
+                                >
+                                    <ListItemIcon style={{ minWidth: '25px' }}>
+                                        <BuildIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={intl.formatMessage({
+                                            id: 'accessRights',
+                                        })}
+                                    />
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={handleOpenDeleteDirectoryDialog}
+                                >
+                                    <ListItemIcon style={{ minWidth: '25px' }}>
+                                        <DeleteOutlineIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={intl.formatMessage({
+                                            id: 'deleteFolder',
+                                        })}
+                                    />
+                                </MenuItem>
+                                <hr />
+                            </div>
+                        )}
+                        <MenuItem onClick={handleOpenCreateNewDirectoryDialog}>
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <CreateNewFolderIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'createFolder',
+                                })}
+                            />
+                        </MenuItem>
                     </div>
-                )}
-                {showCreateNewDirectoryMenuItem && (
-                    <MenuItem onClick={handleOpenCreateNewDirectoryDialog}>
-                        <ListItemIcon style={{ minWidth: '25px' }}>
-                            <CreateNewFolderIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText
-                            primary={intl.formatMessage({
-                                id: 'createFolder',
-                            })}
-                        />
-                    </MenuItem>
                 )}
                 <MenuItem onClick={handleOpenCreateRootDirectoryDialog}>
                     <ListItemIcon style={{ minWidth: '25px' }}>

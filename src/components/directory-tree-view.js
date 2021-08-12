@@ -93,9 +93,10 @@ const DirectoryTreeView = ({ treeViewUID, mapData, onContextMenu }) => {
                 label={
                     <div
                         className={classes.treeItemLabelRoot}
-                        onContextMenu={(e) =>
-                            onContextMenu(e, node.elementUuid)
-                        }
+                        onContextMenu={(e) => {
+                            handleSelect(node.elementUuid, false);
+                            onContextMenu(e, node.elementUuid);
+                        }}
                     >
                         <Typography
                             noWrap
