@@ -145,9 +145,8 @@ const TreeViewsContainer = () => {
             } /* open Contextual Menu in a TreeViewItem */ else {
                 setShowCreateStudyMenuItem(true);
                 setShowCreateNewDirectoryMenuItem(true);
+                dispatch(setSelectedDirectory(nodeId));
             }
-
-            if (nodeId) dispatch(setSelectedDirectory(nodeId));
 
             handleOpenMenu(e);
         },
