@@ -54,7 +54,6 @@ const TreeViewsContainer = () => {
             sortedData.sort(function (a, b) {
                 return a.elementName.localeCompare(b.elementName);
             });
-
             setRootDirectories(
                 sortedData.map((rootDir) => {
                     return {
@@ -67,6 +66,7 @@ const TreeViewsContainer = () => {
         });
     }, []);
 
+    /* rootDirectories initialization */
     useEffect(() => {
         if (user != null) {
             updateRootDirectories();
@@ -74,30 +74,23 @@ const TreeViewsContainer = () => {
     }, [user, updateRootDirectories]);
 
     /* Manage current path data */
-    const buildPath = useCallback(
-        (nodeId, path) => {
+    const updatePath = useCallback(
+        (nodeId) => {
+            let path = [];
             let currentUuid = nodeId;
             while (
                 currentUuid != null &&
                 mapDataRef.current[currentUuid] !== undefined
-            ) {
+                ) {
                 path.unshift({
                     elementUuid: mapDataRef.current[currentUuid].elementUuid,
                     elementName: mapDataRef.current[currentUuid].elementName,
                 });
                 currentUuid = mapDataRef.current[currentUuid].parentUuid;
             }
-        },
-        [mapDataRef]
-    );
-
-    const updatePath = useCallback(
-        (nodeId) => {
-            let path = [];
-            buildPath(nodeId, path);
             dispatch(setCurrentPath(path));
         },
-        [buildPath, dispatch]
+        [dispatch]
     );
 
     /* MapData management*/
@@ -122,12 +115,12 @@ const TreeViewsContainer = () => {
     }, [mapData, updatePath]);
 
     const insertContent = useCallback(
-        (selected, childrenToBeInserted) => {
+        (nodeId, childrenToBeInserted) => {
             let mapDataCopy = { ...mapDataRef.current };
             let preparedChildrenToBeInserted = childrenToBeInserted.map(
                 (child) => {
                     child.children = [];
-                    child.parentUuid = selected;
+                    child.parentUuid = nodeId;
                     if (!mapDataCopy[child.elementUuid]) {
                         mapDataCopy[child.elementUuid] = child;
                     } else {
@@ -138,7 +131,7 @@ const TreeViewsContainer = () => {
                     return child;
                 }
             );
-            mapDataCopy[selected].children = preparedChildrenToBeInserted.sort(
+            mapDataCopy[nodeId].children = preparedChildrenToBeInserted.sort(
                 function (a, b) {
                     return a.elementName.localeCompare(b.elementName);
                 }
@@ -205,16 +198,6 @@ const TreeViewsContainer = () => {
             });
         },
         [updateMapData]
-    );
-
-    const updateTree = useCallback(
-        (nodeId) => {
-            // fetch content
-            updateDirectoryTreeAndContent(nodeId);
-            // update current directory path
-            updatePath(nodeId);
-        },
-        [updateDirectoryTreeAndContent, updatePath]
     );
 
     /* Manage Studies updating with Web Socket */
@@ -298,8 +281,8 @@ const TreeViewsContainer = () => {
     /* Handle components synchronization */
     useEffect(() => {
         console.debug('useEffect over selectedDirectory', selectedDirectory);
-        if (selectedDirectory) updateTree(selectedDirectory);
-    }, [selectedDirectory, updateTree]);
+        if (selectedDirectory) updateDirectoryTreeAndContent(selectedDirectory);
+    }, [selectedDirectory, updateDirectoryTreeAndContent]);
 
     return (
         <>
