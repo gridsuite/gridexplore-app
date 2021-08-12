@@ -263,17 +263,26 @@ const TreeViewsContainer = () => {
         });
     }
 
-    /* RootDirectories managment */
+    /* RootDirectories management */
     const updateRootDirectories = useCallback(() => {
         fetchRootFolders().then((data) => {
             let sortedData = [...data];
             sortedData.sort(function (a, b) {
                 return a.elementName.localeCompare(b.elementName);
             });
-            setRootDirectories(sortedData);
+            setRootDirectories(
+                sortedData.map((rootDir) => {
+                    return {
+                        children: [],
+                        parentUuid: null,
+                        ...rootDir,
+                    };
+                })
+            );
         });
     }, []);
 
+    /* rootDirectories initialization */
     useEffect(() => {
         if (user != null) {
             updateRootDirectories();
@@ -281,8 +290,9 @@ const TreeViewsContainer = () => {
     }, [user, updateRootDirectories]);
 
     /* Manage current path data */
-    const buildPath = useCallback(
-        (nodeId, path) => {
+    const updatePath = useCallback(
+        (nodeId) => {
+            let path = [];
             let currentUuid = nodeId;
             while (
                 currentUuid != null &&
@@ -294,44 +304,39 @@ const TreeViewsContainer = () => {
                 });
                 currentUuid = mapDataRef.current[currentUuid].parentUuid;
             }
+            dispatch(setCurrentPath(path));
         },
-        [mapDataRef]
+        [dispatch]
     );
 
-    const updatePath = useCallback(
-        (nodeId) => {
-            let path = [];
-            buildPath(nodeId, path);
-            if (path != null) dispatch(setCurrentPath(path));
-        },
-        [buildPath, dispatch]
-    );
-
-    /* Mapdata management*/
+    /* MapData management*/
     useEffect(() => {
-        if (rootDirectories) {
-            if (rootDirectories.length > 0) {
-                let initialMapData = {};
-                rootDirectories.forEach((rootDirectory) => {
-                    let rootDirectoryCopy = { ...rootDirectory };
-                    rootDirectoryCopy.parentUuid = null;
-                    rootDirectoryCopy.children = [];
-                    initialMapData[
-                        rootDirectory.elementUuid
-                    ] = rootDirectoryCopy;
-                });
-                setMapData(initialMapData);
-            }
+        if (rootDirectories && rootDirectories.length > 0) {
+            let mapDataCopy = { ...mapDataRef.current };
+            rootDirectories.forEach((rootDirectory) => {
+                let rootDirectoryCopy = { ...rootDirectory };
+                rootDirectoryCopy.children = mapDataRef.current[
+                    rootDirectoryCopy.elementUuid
+                ]
+                    ? mapDataRef.current[rootDirectoryCopy.elementUuid].children
+                    : [];
+                mapDataCopy[rootDirectory.elementUuid] = rootDirectoryCopy;
+            });
+            setMapData(mapDataCopy);
         }
     }, [rootDirectories]);
 
+    useEffect(() => {
+        updatePath(selectedDirectoryRef.current);
+    }, [mapData, updatePath]);
+
     const insertContent = useCallback(
-        (selected, childrenToBeInserted) => {
+        (nodeId, childrenToBeInserted) => {
             let mapDataCopy = { ...mapDataRef.current };
             let preparedChildrenToBeInserted = childrenToBeInserted.map(
                 (child) => {
                     child.children = [];
-                    child.parentUuid = selected;
+                    child.parentUuid = nodeId;
                     if (!mapDataCopy[child.elementUuid]) {
                         mapDataCopy[child.elementUuid] = child;
                     } else {
@@ -342,7 +347,7 @@ const TreeViewsContainer = () => {
                     return child;
                 }
             );
-            mapDataCopy[selected].children = preparedChildrenToBeInserted.sort(
+            mapDataCopy[nodeId].children = preparedChildrenToBeInserted.sort(
                 function (a, b) {
                     return a.elementName.localeCompare(b.elementName);
                 }
@@ -367,13 +372,10 @@ const TreeViewsContainer = () => {
                 ).length === 0
             ) {
                 // if selected directory is deleted by another user we should select parent directory
-                setSelectedDirectory(nodeId);
-                updatePath(nodeId);
-            } else {
-                updatePath(selectedDirectoryRef.current);
+                dispatch(setSelectedDirectory(nodeId));
             }
         },
-        [insertContent, selectedDirectoryRef, updatePath, mapDataRef]
+        [insertContent, selectedDirectoryRef, mapDataRef, dispatch]
     );
 
     /* currentChildren management */
@@ -392,7 +394,7 @@ const TreeViewsContainer = () => {
         [dispatch]
     );
 
-    const updateDirectoryChildren = useCallback(
+    const updateDirectoryTreeAndContent = useCallback(
         (nodeId) => {
             fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
                 // update directory Content
@@ -404,14 +406,14 @@ const TreeViewsContainer = () => {
         [updateCurrentChildren, updateMapData]
     );
 
-    const updateTree = useCallback(
+    const updateDirectoryTree = useCallback(
         (nodeId) => {
-            // fetch content
-            updateDirectoryChildren(nodeId);
-            // update current directory path
-            updatePath(nodeId);
+            fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
+                // Update Tree Map data
+                updateMapData(nodeId, childrenToBeInserted);
+            });
         },
-        [updateDirectoryChildren, updatePath]
+        [updateMapData]
     );
 
     /* Manage Studies updating with Web Socket */
@@ -434,11 +436,9 @@ const TreeViewsContainer = () => {
 
     const connectNotificationsUpdateStudies = useCallback(() => {
         const ws = connectNotificationsWsUpdateStudies();
-
         ws.onmessage = function (event) {
             console.debug('Received Update Studies notification', event);
             let eventData = JSON.parse(event.data);
-
             if (eventData.headers) {
                 const notificationTypeHeader =
                     eventData.headers['notificationType'];
@@ -446,44 +446,39 @@ const TreeViewsContainer = () => {
                 const directoryUuid = eventData.headers['directoryUuid'];
                 const error = eventData.headers['error'];
 
+                displayErrorIfExist(error);
+
                 if (isRootDirectory) {
                     updateRootDirectories();
                     if (
                         notificationTypeHeader ===
-                        notificationType.DELETE_DIRECTORY
+                            notificationType.DELETE_DIRECTORY &&
+                        selectedDirectoryRef.current === directoryUuid
                     ) {
-                        dispatch(setCurrentChildren(null));
-                        updatePath(null);
+                        dispatch(setSelectedDirectory(null));
                     }
                     return;
                 }
 
                 if (directoryUuid) {
-                    if (mapDataRef.current[directoryUuid] !== undefined) {
-                        displayErrorIfExist(error);
-                        updateDirectoryChildren(directoryUuid, false);
-                    }
+                    updateDirectoryTree(directoryUuid);
                 }
             }
         };
-
         ws.onclose = function () {
             if (!websocketExpectedCloseRef.current) {
                 console.error('Unexpected Notification WebSocket closed');
             }
         };
-
         ws.onerror = function (event) {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
     }, [
         displayErrorIfExist,
-        updateDirectoryChildren,
+        updateDirectoryTree,
         updateRootDirectories,
-        mapDataRef,
         dispatch,
-        updatePath,
     ]);
 
     useEffect(() => {
@@ -498,8 +493,8 @@ const TreeViewsContainer = () => {
     /* Handle components synchronization */
     useEffect(() => {
         console.debug('useEffect over selectedDirectory', selectedDirectory);
-        if (selectedDirectory) updateTree(selectedDirectory);
-    }, [selectedDirectory, updateTree]);
+        if (selectedDirectory) updateDirectoryTreeAndContent(selectedDirectory);
+    }, [selectedDirectory, updateDirectoryTreeAndContent]);
 
     const isAllowed = () => {
         return (
