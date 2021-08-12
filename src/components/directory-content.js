@@ -468,7 +468,7 @@ const DirectoryContent = () => {
                                     dataKey: 'selected',
                                     label: '',
                                     headerRenderer: selectionHeaderRenderer,
-                                    maxWidth: '60px',
+                                    maxWidth: 60,
                                 },
                                 {
                                     width: 100,
