@@ -349,10 +349,10 @@ const DirectoryContent = () => {
     }
 
     function toggleSelectAll() {
-        if (selected.size === currentChildren.length) {
-            setSelected(new Set());
-        } else {
+        if (selected.size === 0) {
             setSelected(new Set(currentChildren.map((c) => c.elementUuid)));
+        } else {
+            setSelected(new Set());
         }
     }
 
