@@ -20,6 +20,7 @@ import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
 import VirtualizedTable from './virtualized-table';
 import { elementType } from '../utils/elementType';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
+import { Checkbox } from '@material-ui/core';
 
 import {
     deleteElement,
@@ -66,6 +67,10 @@ const useStyles = makeStyles((theme) => ({
     circularRoot: {
         marginRight: theme.spacing(1),
     },
+    checkboxes: {
+        width: '100%',
+        justifyContent: 'center',
+    },
 }));
 
 const StyledMenu = withStyles({
@@ -90,6 +95,7 @@ const StyledMenu = withStyles({
 
 const DirectoryContent = () => {
     const [childrenMetadata, setChildrenMetadata] = useState({});
+    const [selected, setSelected] = useState(new Set());
 
     const currentChildren = useSelector((state) => state.currentChildren);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
@@ -334,6 +340,62 @@ const DirectoryContent = () => {
         );
     }
 
+    function toggleSelection(elementUuid) {
+        let newSelection = new Set(selected);
+        if (!newSelection.delete(elementUuid)) {
+            newSelection.add(elementUuid);
+        }
+        setSelected(newSelection);
+    }
+
+    function toggleSelectAll() {
+        if (selected.size === 0) {
+            setSelected(new Set(currentChildren.map((c) => c.elementUuid)));
+        } else {
+            setSelected(new Set());
+        }
+    }
+
+    function selectionHeaderRenderer() {
+        return (
+            <div
+                onClick={(e) => {
+                    toggleSelectAll();
+                    e.stopPropagation();
+                }}
+                className={classes.checkboxes}
+            >
+                <Checkbox
+                    color={'primary'}
+                    // set the color of checkbox (and check if not indeterminate)
+                    checked={selected.size > 0}
+                    indeterminate={
+                        selected.size !== 0 &&
+                        selected.size !== currentChildren.length
+                    }
+                />
+            </div>
+        );
+    }
+
+    function selectionRenderer(cellData) {
+        const elementUuid = cellData.rowData['elementUuid'];
+        return (
+            <div
+                onClick={(e) => {
+                    toggleSelection(elementUuid);
+                    e.stopPropagation();
+                }}
+                className={classes.checkboxes}
+            >
+                <Checkbox
+                    color={'primary'}
+                    checked={selected.has(elementUuid)}
+                />
+            </div>
+        );
+    }
+
     useEffect(() => {
         if (currentChildren !== null) {
             let uuids = [];
@@ -351,6 +413,7 @@ const DirectoryContent = () => {
                 setChildrenMetadata(metadata);
             });
         }
+        setSelected(new Set());
     }, [currentChildren]);
 
     const isAllowed = () => {
@@ -400,6 +463,13 @@ const DirectoryContent = () => {
                             }}
                             rows={currentChildren}
                             columns={[
+                                {
+                                    cellRenderer: selectionRenderer,
+                                    dataKey: 'selected',
+                                    label: '',
+                                    headerRenderer: selectionHeaderRenderer,
+                                    maxWidth: 60,
+                                },
                                 {
                                     width: 100,
                                     label: intl.formatMessage({
