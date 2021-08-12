@@ -147,9 +147,7 @@ const TreeViewsContainer = () => {
                 setShowCreateNewDirectoryMenuItem(true);
             }
 
-            // if (nodeId !== selectedDirectoryRef.current) {
-                dispatch(setSelectedDirectory(nodeId));
-            // }
+            if (nodeId) dispatch(setSelectedDirectory(nodeId));
 
             handleOpenMenu(e);
         },
