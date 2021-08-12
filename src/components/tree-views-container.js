@@ -81,7 +81,7 @@ const TreeViewsContainer = () => {
             while (
                 currentUuid != null &&
                 mapDataRef.current[currentUuid] !== undefined
-                ) {
+            ) {
                 path.unshift({
                     elementUuid: mapDataRef.current[currentUuid].elementUuid,
                     elementName: mapDataRef.current[currentUuid].elementName,
