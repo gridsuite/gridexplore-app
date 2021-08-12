@@ -95,7 +95,7 @@ const TreeViewsContainer = () => {
         (nodeId) => {
             let path = [];
             buildPath(nodeId, path);
-            if (path != null) dispatch(setCurrentPath(path));
+            dispatch(setCurrentPath(path));
         },
         [buildPath, dispatch]
     );
@@ -163,13 +163,10 @@ const TreeViewsContainer = () => {
                 ).length === 0
             ) {
                 // if selected directory is deleted by another user we should select parent directory
-                setSelectedDirectory(nodeId);
-                updatePath(nodeId);
-            } else {
-                updatePath(selectedDirectoryRef.current);
+                dispatch(setSelectedDirectory(nodeId));
             }
         },
-        [insertContent, selectedDirectoryRef, updatePath, mapDataRef]
+        [insertContent, selectedDirectoryRef, mapDataRef, dispatch]
     );
 
     /* currentChildren management */
@@ -188,7 +185,7 @@ const TreeViewsContainer = () => {
         [dispatch]
     );
 
-    const updateDirectoryChildren = useCallback(
+    const updateDirectoryTreeAndContent = useCallback(
         (nodeId) => {
             fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
                 // update directory Content
@@ -200,14 +197,24 @@ const TreeViewsContainer = () => {
         [updateCurrentChildren, updateMapData]
     );
 
+    const updateDirectoryTree = useCallback(
+        (nodeId) => {
+            fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
+                // Update Tree Map data
+                updateMapData(nodeId, childrenToBeInserted);
+            });
+        },
+        [updateMapData]
+    );
+
     const updateTree = useCallback(
         (nodeId) => {
             // fetch content
-            updateDirectoryChildren(nodeId);
+            updateDirectoryTreeAndContent(nodeId);
             // update current directory path
             updatePath(nodeId);
         },
-        [updateDirectoryChildren, updatePath]
+        [updateDirectoryTreeAndContent, updatePath]
     );
 
     /* Manage Studies updating with Web Socket */
@@ -242,6 +249,8 @@ const TreeViewsContainer = () => {
                 const directoryUuid = eventData.headers['directoryUuid'];
                 const error = eventData.headers['error'];
 
+                displayErrorIfExist(error);
+
                 if (isRootDirectory) {
                     updateRootDirectories();
                     if (
@@ -249,17 +258,13 @@ const TreeViewsContainer = () => {
                             notificationType.DELETE_DIRECTORY &&
                         selectedDirectoryRef.current === directoryUuid
                     ) {
-                        dispatch(setCurrentChildren(null));
-                        updatePath(null);
+                        dispatch(setSelectedDirectory(null));
                     }
                     return;
                 }
 
                 if (directoryUuid) {
-                    if (mapDataRef.current[directoryUuid] !== undefined) {
-                        displayErrorIfExist(error);
-                        updateDirectoryChildren(directoryUuid, false);
-                    }
+                    updateDirectoryTree(directoryUuid);
                 }
             }
         };
@@ -276,11 +281,9 @@ const TreeViewsContainer = () => {
         return ws;
     }, [
         displayErrorIfExist,
-        updateDirectoryChildren,
+        updateDirectoryTree,
         updateRootDirectories,
-        mapDataRef,
         dispatch,
-        updatePath,
     ]);
 
     useEffect(() => {
