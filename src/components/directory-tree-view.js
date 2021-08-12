@@ -402,7 +402,7 @@ const DirectoryTreeView = ({ treeViewUID, mapData }) => {
                     </ListItemIcon>
                     <ListItemText
                         primary={intl.formatMessage({
-                            id: 'newStudy',
+                            id: 'createNewStudy',
                         })}
                     />
                 </MenuItem>

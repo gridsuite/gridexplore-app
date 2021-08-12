@@ -49,7 +49,6 @@ const TreeViewsContainer = () => {
 
     /* RootDirectories initialization */
     const updateRootDirectories = useCallback(() => {
-        console.log('updateRootDirectories');
         fetchRootFolders().then((data) => {
             let sortedData = [...data];
             sortedData.sort(function (a, b) {
@@ -96,8 +95,6 @@ const TreeViewsContainer = () => {
         (nodeId) => {
             let path = [];
             buildPath(nodeId, path);
-            //console.log(mapDataRef.current[selectedDirectoryRef.current].elementName)
-            console.log(path);
             if (path != null) dispatch(setCurrentPath(path));
         },
         [buildPath, dispatch]
