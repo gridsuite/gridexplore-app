@@ -52,12 +52,9 @@ export const CreateDirectoryDialog = ({
     error,
 }) => {
     const classes = useStyles();
+
     const [elementName, setElementName] = React.useState('');
     const [isPrivate, setIsPrivate] = React.useState(true);
-
-    useEffect(() => {
-        setElementName('');
-    }, [open]);
 
     const handleClose = () => {
         onClose();
@@ -67,12 +64,6 @@ export const CreateDirectoryDialog = ({
         onClick(elementName, isPrivate);
     };
 
-    const handleKeyPressed = (event) => {
-        if (open && event.key === 'Enter') {
-            handleClose();
-        }
-    };
-
     const updateElementName = (event) => {
         setElementName(event.target.value);
     };
@@ -80,6 +71,16 @@ export const CreateDirectoryDialog = ({
     const handleChange = (event) => {
         setIsPrivate(event.target.value);
     };
+
+    const handleKeyPressed = (event) => {
+        if (open && event.key === 'Enter') {
+            handleClick();
+        }
+    };
+
+    useEffect(() => {
+        setElementName('');
+    }, [open]);
 
     return (
         <Dialog
@@ -134,10 +135,10 @@ export const CreateDirectoryDialog = ({
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} variant="outlined">
+                <Button onClick={handleClose} variant="text">
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleClick} variant="text">
+                <Button onClick={handleClick} variant="outlined">
                     <FormattedMessage id="create" />
                 </Button>
             </DialogActions>
@@ -151,4 +152,5 @@ CreateDirectoryDialog.propTypes = {
     onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     message: PropTypes.string.isRequired,
+    error: PropTypes.string.isRequired,
 };
