@@ -9,6 +9,8 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import * as constants from '../utils/UIconstants';
+
 import Chip from '@material-ui/core/Chip';
 import Tooltip from '@material-ui/core/Tooltip';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -443,8 +445,12 @@ const DirectoryContent = () => {
                                     );
                                 }
                                 setMousePosition({
-                                    mouseX: event.event.clientX + 16,
-                                    mouseY: event.event.clientY - 4,
+                                    mouseX:
+                                        event.event.clientX +
+                                        constants.HORIZONTAL_SHIFT,
+                                    mouseY:
+                                        event.event.clientY +
+                                        constants.VERTICAL_SHIFT,
                                 });
                                 setAnchorEl(event.event.currentTarget);
                             }}
