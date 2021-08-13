@@ -247,7 +247,11 @@ const TreeViewsContainer = () => {
                 }
 
                 if (directoryUuid) {
-                    updateDirectoryTree(directoryUuid);
+                    if (directoryUuid === selectedDirectoryRef.current) {
+                        updateDirectoryTreeAndContent(directoryUuid);
+                    } else {
+                        updateDirectoryTree(directoryUuid);
+                    }
                 }
             }
         };
@@ -264,6 +268,7 @@ const TreeViewsContainer = () => {
         return ws;
     }, [
         displayErrorIfExist,
+        updateDirectoryTreeAndContent,
         updateDirectoryTree,
         updateRootDirectories,
         dispatch,
