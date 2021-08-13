@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DirectoryTreeView = ({ treeViewUID, mapData, onContextMenu }) => {
+const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -79,7 +79,11 @@ const DirectoryTreeView = ({ treeViewUID, mapData, onContextMenu }) => {
     expandedRef.current = expanded;
     mapDataRef.current = mapData;
 
-    /* Component initialization */
+    /* User interaction */
+    function handleContextMenuClick(event, nodeId) {
+        handleSelect(nodeId, false);
+        onContextMenu(event, nodeId);
+    }
 
     /* Handle Rendering */
     const renderTree = (node) => {
@@ -93,10 +97,9 @@ const DirectoryTreeView = ({ treeViewUID, mapData, onContextMenu }) => {
                 label={
                     <div
                         className={classes.treeItemLabelRoot}
-                        onContextMenu={(e) => {
-                            handleSelect(node.elementUuid, false);
-                            onContextMenu(e, node.elementUuid);
-                        }}
+                        onContextMenu={(e) =>
+                            handleContextMenuClick(e, node.elementUuid)
+                        }
                     >
                         <Typography
                             noWrap
@@ -185,7 +188,7 @@ const DirectoryTreeView = ({ treeViewUID, mapData, onContextMenu }) => {
                 expanded={expanded}
                 selected={selectedDirectory}
             >
-                {renderTree(mapDataRef.current[treeViewUID])}
+                {renderTree(mapDataRef.current[treeViewUuid])}
             </TreeView>
         </>
     );

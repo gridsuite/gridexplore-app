@@ -523,7 +523,7 @@ const TreeViewsContainer = () => {
                     rootDirectories.map((rootDirectory) => (
                         <DirectoryTreeView
                             key={rootDirectory.elementUuid}
-                            treeViewUID={rootDirectory.elementUuid}
+                            treeViewUuid={rootDirectory.elementUuid}
                             mapData={mapDataRef.current}
                             onContextMenu={onContextMenu}
                         />
