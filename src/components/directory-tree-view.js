@@ -110,6 +110,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
                             disableFocusListener
                             disableTouchListener
                             enterDelay={1000}
+                            enterNextDelay={1000}
                             title={node.elementName}
                             placement="bottom-end"
                         >
@@ -126,6 +127,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
                                 disableFocusListener
                                 disableTouchListener
                                 enterDelay={1000}
+                                enterNextDelay={1000}
                                 title={<FormattedMessage id="private" />}
                                 placement="right"
                                 arrow
