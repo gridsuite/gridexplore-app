@@ -9,6 +9,8 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import * as constants from '../utils/UIconstants';
+
 import Chip from '@material-ui/core/Chip';
 import Tooltip from '@material-ui/core/Tooltip';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -17,9 +19,10 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
 
-import VirtualizedTable from './util/virtualized-table';
+import VirtualizedTable from './virtualized-table';
 import { elementType } from '../utils/elementType';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
+import { Checkbox } from '@material-ui/core';
 
 import {
     deleteElement,
@@ -66,30 +69,26 @@ const useStyles = makeStyles((theme) => ({
     circularRoot: {
         marginRight: theme.spacing(1),
     },
+    checkboxes: {
+        width: '100%',
+        justifyContent: 'center',
+    },
 }));
 
 const StyledMenu = withStyles({
     paper: {
         border: '1px solid #d3d4d5',
     },
-})((props) => (
-    <Menu
-        elevation={0}
-        getContentAnchorEl={null}
-        anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-        }}
-        transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-        }}
-        {...props}
-    />
-));
+})((props) => <Menu elevation={0} getContentAnchorEl={null} {...props} />);
+
+const initialMousePosition = {
+    mouseX: null,
+    mouseY: null,
+};
 
 const DirectoryContent = () => {
     const [childrenMetadata, setChildrenMetadata] = useState({});
+    const [selected, setSelected] = useState(new Set());
 
     const currentChildren = useSelector((state) => state.currentChildren);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
@@ -105,6 +104,11 @@ const DirectoryContent = () => {
 
     const classes = useStyles();
     const intl = useIntl();
+
+    /* Menu states */
+    const [mousePosition, setMousePosition] = React.useState(
+        initialMousePosition
+    );
 
     /**
      * Rename dialog: window status value for renaming
@@ -334,6 +338,62 @@ const DirectoryContent = () => {
         );
     }
 
+    function toggleSelection(elementUuid) {
+        let newSelection = new Set(selected);
+        if (!newSelection.delete(elementUuid)) {
+            newSelection.add(elementUuid);
+        }
+        setSelected(newSelection);
+    }
+
+    function toggleSelectAll() {
+        if (selected.size === 0) {
+            setSelected(new Set(currentChildren.map((c) => c.elementUuid)));
+        } else {
+            setSelected(new Set());
+        }
+    }
+
+    function selectionHeaderRenderer() {
+        return (
+            <div
+                onClick={(e) => {
+                    toggleSelectAll();
+                    e.stopPropagation();
+                }}
+                className={classes.checkboxes}
+            >
+                <Checkbox
+                    color={'primary'}
+                    // set the color of checkbox (and check if not indeterminate)
+                    checked={selected.size > 0}
+                    indeterminate={
+                        selected.size !== 0 &&
+                        selected.size !== currentChildren.length
+                    }
+                />
+            </div>
+        );
+    }
+
+    function selectionRenderer(cellData) {
+        const elementUuid = cellData.rowData['elementUuid'];
+        return (
+            <div
+                onClick={(e) => {
+                    toggleSelection(elementUuid);
+                    e.stopPropagation();
+                }}
+                className={classes.checkboxes}
+            >
+                <Checkbox
+                    color={'primary'}
+                    checked={selected.has(elementUuid)}
+                />
+            </div>
+        );
+    }
+
     useEffect(() => {
         if (currentChildren !== null) {
             let uuids = [];
@@ -351,6 +411,7 @@ const DirectoryContent = () => {
                 setChildrenMetadata(metadata);
             });
         }
+        setSelected(new Set());
     }, [currentChildren]);
 
     const isAllowed = () => {
@@ -383,6 +444,14 @@ const DirectoryContent = () => {
                                         event.rowData.accessRights.private
                                     );
                                 }
+                                setMousePosition({
+                                    mouseX:
+                                        event.event.clientX +
+                                        constants.HORIZONTAL_SHIFT,
+                                    mouseY:
+                                        event.event.clientY +
+                                        constants.VERTICAL_SHIFT,
+                                });
                                 setAnchorEl(event.event.currentTarget);
                             }}
                             onRowClick={(event) => {
@@ -401,6 +470,13 @@ const DirectoryContent = () => {
                             rows={currentChildren}
                             columns={[
                                 {
+                                    cellRenderer: selectionRenderer,
+                                    dataKey: 'selected',
+                                    label: '',
+                                    headerRenderer: selectionHeaderRenderer,
+                                    maxWidth: 60,
+                                },
+                                {
                                     width: 100,
                                     label: intl.formatMessage({
                                         id: 'elementName',
@@ -410,13 +486,17 @@ const DirectoryContent = () => {
                                 },
                                 {
                                     width: 100,
-                                    label: intl.formatMessage({ id: 'type' }),
+                                    label: intl.formatMessage({
+                                        id: 'type',
+                                    }),
                                     dataKey: 'type',
                                     cellRenderer: typeCellRender,
                                 },
                                 {
                                     width: 50,
-                                    label: intl.formatMessage({ id: 'owner' }),
+                                    label: intl.formatMessage({
+                                        id: 'owner',
+                                    }),
                                     dataKey: 'owner',
                                     cellRenderer: accessOwnerCellRender,
                                 },
@@ -429,6 +509,7 @@ const DirectoryContent = () => {
                                     cellRenderer: accessRightsCellRender,
                                 },
                             ]}
+                            sortable={true}
                         />
                         <StyledMenu
                             id="row-menu"
@@ -436,6 +517,16 @@ const DirectoryContent = () => {
                             keepMounted
                             open={Boolean(anchorEl)}
                             onClose={handleCloseRowMenu}
+                            anchorReference="anchorPosition"
+                            anchorPosition={
+                                mousePosition.mouseY !== null &&
+                                mousePosition.mouseX !== null
+                                    ? {
+                                          top: mousePosition.mouseY,
+                                          left: mousePosition.mouseX,
+                                      }
+                                    : undefined
+                            }
                         >
                             {selectedStudy && (
                                 <div>
@@ -445,7 +536,9 @@ const DirectoryContent = () => {
                                                 onClick={handleOpenRenameStudy}
                                             >
                                                 <ListItemIcon
-                                                    style={{ minWidth: '25px' }}
+                                                    style={{
+                                                        minWidth: '25px',
+                                                    }}
                                                 >
                                                     <EditIcon fontSize="small" />
                                                 </ListItemIcon>
@@ -461,7 +554,9 @@ const DirectoryContent = () => {
                                                 }
                                             >
                                                 <ListItemIcon
-                                                    style={{ minWidth: '25px' }}
+                                                    style={{
+                                                        minWidth: '25px',
+                                                    }}
                                                 >
                                                     <BuildIcon fontSize="small" />
                                                 </ListItemIcon>

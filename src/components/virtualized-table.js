@@ -25,13 +25,16 @@ const styles = (theme) => ({
             paddingRight:
                 theme.direction === 'rtl' ? '0 !important' : undefined,
         },
+        '& .ReactVirtualized__Table__Grid': {
+            outline: 'none',
+        },
     },
     tableRow: {
         cursor: 'pointer',
     },
     tableRowHover: {
         '&:hover': {
-            backgroundColor: theme.palette.grey[200],
+            backgroundColor: theme.row.hover,
         },
     },
     tableCell: {
