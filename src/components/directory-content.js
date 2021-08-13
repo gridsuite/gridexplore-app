@@ -9,6 +9,8 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import * as constants from '../utils/UIconstants';
+
 import Chip from '@material-ui/core/Chip';
 import Tooltip from '@material-ui/core/Tooltip';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -77,21 +79,12 @@ const StyledMenu = withStyles({
     paper: {
         border: '1px solid #d3d4d5',
     },
-})((props) => (
-    <Menu
-        elevation={0}
-        getContentAnchorEl={null}
-        anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-        }}
-        transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-        }}
-        {...props}
-    />
-));
+})((props) => <Menu elevation={0} getContentAnchorEl={null} {...props} />);
+
+const initialMousePosition = {
+    mouseX: null,
+    mouseY: null,
+};
 
 const DirectoryContent = () => {
     const [childrenMetadata, setChildrenMetadata] = useState({});
@@ -111,6 +104,11 @@ const DirectoryContent = () => {
 
     const classes = useStyles();
     const intl = useIntl();
+
+    /* Menu states */
+    const [mousePosition, setMousePosition] = React.useState(
+        initialMousePosition
+    );
 
     /**
      * Rename dialog: window status value for renaming
@@ -446,6 +444,14 @@ const DirectoryContent = () => {
                                         event.rowData.accessRights.private
                                     );
                                 }
+                                setMousePosition({
+                                    mouseX:
+                                        event.event.clientX +
+                                        constants.HORIZONTAL_SHIFT,
+                                    mouseY:
+                                        event.event.clientY +
+                                        constants.VERTICAL_SHIFT,
+                                });
                                 setAnchorEl(event.event.currentTarget);
                             }}
                             onRowClick={(event) => {
@@ -480,13 +486,17 @@ const DirectoryContent = () => {
                                 },
                                 {
                                     width: 100,
-                                    label: intl.formatMessage({ id: 'type' }),
+                                    label: intl.formatMessage({
+                                        id: 'type',
+                                    }),
                                     dataKey: 'type',
                                     cellRenderer: typeCellRender,
                                 },
                                 {
                                     width: 50,
-                                    label: intl.formatMessage({ id: 'owner' }),
+                                    label: intl.formatMessage({
+                                        id: 'owner',
+                                    }),
                                     dataKey: 'owner',
                                     cellRenderer: accessOwnerCellRender,
                                 },
@@ -507,6 +517,16 @@ const DirectoryContent = () => {
                             keepMounted
                             open={Boolean(anchorEl)}
                             onClose={handleCloseRowMenu}
+                            anchorReference="anchorPosition"
+                            anchorPosition={
+                                mousePosition.mouseY !== null &&
+                                mousePosition.mouseX !== null
+                                    ? {
+                                          top: mousePosition.mouseY,
+                                          left: mousePosition.mouseX,
+                                      }
+                                    : undefined
+                            }
                         >
                             {selectedStudy && (
                                 <div>
@@ -516,7 +536,9 @@ const DirectoryContent = () => {
                                                 onClick={handleOpenRenameStudy}
                                             >
                                                 <ListItemIcon
-                                                    style={{ minWidth: '25px' }}
+                                                    style={{
+                                                        minWidth: '25px',
+                                                    }}
                                                 >
                                                     <EditIcon fontSize="small" />
                                                 </ListItemIcon>
@@ -532,7 +554,9 @@ const DirectoryContent = () => {
                                                 }
                                             >
                                                 <ListItemIcon
-                                                    style={{ minWidth: '25px' }}
+                                                    style={{
+                                                        minWidth: '25px',
+                                                    }}
                                                 >
                                                     <BuildIcon fontSize="small" />
                                                 </ListItemIcon>
