@@ -186,6 +186,16 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
         [addElement, removeElement, expandedRef]
     );
 
+    const openDirectory = useCallback(
+        (nodeId) => {
+            dispatch(setSelectedDirectory(nodeId));
+            if (!expandedRef.current.includes(nodeId)) {
+                addElement(nodeId);
+            }
+        },
+        [addElement, expandedRef, dispatch]
+    );
+
     /* Handle User interactions*/
     const handleSelect = useCallback(
         (nodeId, toggle) => {
@@ -209,7 +219,18 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
                 defaultExpandIcon={
                     <ChevronRightIcon className={classes.icon} />
                 }
-                onNodeSelect={(event, nodeId) => handleSelect(nodeId, true)}
+                onNodeSelect={(event, nodeId) => {
+                    //we clicked on the icon (we consider the little space between the icon and the label as if it it the icon)
+                    if (
+                        event.target.tagName.toLowerCase() === 'svg' ||
+                        event.target.tagName.toLowerCase() === 'div'
+                    ) {
+                        toggleDirectory(nodeId, true);
+                    } else {
+                        //we clicked on the label
+                        openDirectory(nodeId, true);
+                    }
+                }}
                 expanded={expanded}
                 selected={selectedDirectory}
             >
