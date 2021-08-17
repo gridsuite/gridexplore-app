@@ -464,20 +464,12 @@ const DirectoryContent = () => {
     };
 
     const allowsDelete = (mayChange = false) => {
-        let children = getSelectedChildren(mayChange);
-        if (!children || children.length === 0) return false;
-
-        let firstNotOwn = children.find((child) => child.owner !== userId);
-        return firstNotOwn === undefined;
+        return hasSelectedAndAllAreOwned(mayChange);
     };
 
     const allowsRename = (mayChange = false) => {
         let children = getSelectedChildren(mayChange);
         return children.length === 1 && children[0].elementUuid === userId;
-    };
-
-    const allowsExport = () => {
-        return isAllowed();
     };
 
     const allowsPublishability = () => {
