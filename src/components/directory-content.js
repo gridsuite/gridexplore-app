@@ -23,6 +23,7 @@ import VirtualizedTable from './virtualized-table';
 import { elementType } from '../utils/elementType';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
 import { Checkbox } from '@material-ui/core';
+import { Toolbar } from '@material-ui/core';
 
 import {
     deleteElement,
@@ -43,6 +44,7 @@ import ExportDialog from './export-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
+import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -88,7 +90,7 @@ const initialMousePosition = {
 
 const DirectoryContent = () => {
     const [childrenMetadata, setChildrenMetadata] = useState({});
-    const [selected, setSelected] = useState(new Set());
+    const [selectedUuids, setSelectedUuids] = useState(new Set());
 
     const currentChildren = useSelector((state) => state.currentChildren);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
@@ -96,10 +98,8 @@ const DirectoryContent = () => {
     const userId = useSelector((state) => state.user.profile.sub);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [selectedStudy, setSelectedStudy] = React.useState(null);
-    const [isSelectedStudyPrivate, setSelectedStudyPrivate] = React.useState(
-        true
-    );
+    const [contextualStudy, setContextualStudy] = React.useState(null);
+
     const DownloadIframe = 'downloadIframe';
 
     const classes = useStyles();
@@ -126,12 +126,10 @@ const DirectoryContent = () => {
     const handleCloseRenameStudy = () => {
         setOpenRenameStudyDialog(false);
         setRenameError('');
-        setSelectedStudy('');
-        setSelectedStudyPrivate(undefined);
     };
 
     const handleClickRenameStudy = (newStudyNameValue) => {
-        renameElement(selectedStudy.elementUuid, newStudyNameValue)
+        renameElement(contextualStudy.elementUuid, newStudyNameValue)
             .then((response) => {
                 if (response.status === 403) {
                     // == FORBIDDEN
@@ -168,18 +166,23 @@ const DirectoryContent = () => {
     const handleCloseDeleteStudy = () => {
         setOpenDeleteStudyDialog(false);
         setDeleteError('');
-        setSelectedStudy('');
-        setSelectedStudyPrivate(undefined);
+        setContextualStudy('');
     };
 
     const handleClickDeleteStudy = () => {
-        deleteElement(selectedStudy.elementUuid).then((response) => {
-            if (!response.ok) {
-                setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
-            } else {
-                handleCloseDeleteStudy();
-            }
-        });
+        let selectChildren = getSelectedChildren(false);
+        let msgs = [];
+        for (let child of selectChildren) {
+            deleteElement(child.elementUuid).then((response) => {
+                if (!response.ok)
+                    msgs.push(intl.formatMessage({ id: 'deleteStudyError' }));
+            });
+        }
+
+        if (msgs.length === 0)
+            handleCloseDeleteStudy();
+        else
+            setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
     };
 
     /**
@@ -190,14 +193,11 @@ const DirectoryContent = () => {
     );
 
     const handleOpenExportStudy = () => {
-        setAnchorEl(null);
         setOpenExportStudyDialog(true);
     };
 
     const handleCloseExportStudy = () => {
         setOpenExportStudyDialog(false);
-        setSelectedStudy('');
-        setSelectedStudyPrivate(undefined);
     };
 
     const handleClickExportStudy = (url) => {
@@ -216,25 +216,21 @@ const DirectoryContent = () => {
     const [accessRightsError, setAccessRightsError] = React.useState('');
 
     const handleOpenStudyAccessRights = () => {
-        setAnchorEl(null);
         setOpenStudyAccessRightsDialog(true);
     };
 
     const handleCloseStudyAccessRights = () => {
         setOpenStudyAccessRightsDialog(false);
-        setSelectedStudy('');
-        setSelectedStudyPrivate(undefined);
         setAccessRightsError('');
     };
 
     const handleCloseRowMenu = () => {
         setAnchorEl(null);
-        setSelectedStudy('');
-        setSelectedStudyPrivate(undefined);
+        setContextualStudy('');
     };
 
     const handleClickStudyAccessRights = (selected) => {
-        updateAccessRights(selectedStudy.elementUuid, selected).then(
+        updateAccessRights(contextualStudy.elementUuid, selected).then(
             (response) => {
                 if (response.status === 403) {
                     setAccessRightsError(
@@ -339,18 +335,19 @@ const DirectoryContent = () => {
     }
 
     function toggleSelection(elementUuid) {
-        let newSelection = new Set(selected);
+        let newSelection = new Set(selectedUuids);
         if (!newSelection.delete(elementUuid)) {
             newSelection.add(elementUuid);
         }
-        setSelected(newSelection);
+        setSelectedUuids(newSelection);
     }
 
     function toggleSelectAll() {
-        if (selected.size === 0) {
-            setSelected(new Set(currentChildren.map((c) => c.elementUuid)));
+        if (selectedUuids.size !== 0) {
+            setSelectedUuids(new Set());
         } else {
-            setSelected(new Set());
+            let newSel = new Set(currentChildren.map((c) => c.elementUuid));
+            setSelectedUuids(newSel);
         }
     }
 
@@ -366,10 +363,10 @@ const DirectoryContent = () => {
                 <Checkbox
                     color={'primary'}
                     // set the color of checkbox (and check if not indeterminate)
-                    checked={selected.size > 0}
+                    checked={selectedUuids.size > 0}
                     indeterminate={
-                        selected.size !== 0 &&
-                        selected.size !== currentChildren.length
+                        selectedUuids.size !== 0 &&
+                        selectedUuids.size !== currentChildren.length
                     }
                 />
             </div>
@@ -388,7 +385,7 @@ const DirectoryContent = () => {
             >
                 <Checkbox
                     color={'primary'}
-                    checked={selected.has(elementUuid)}
+                    checked={selectedUuids.has(elementUuid)}
                 />
             </div>
         );
@@ -411,15 +408,102 @@ const DirectoryContent = () => {
                 setChildrenMetadata(metadata);
             });
         }
-        setSelected(new Set());
+        setSelectedUuids(new Set());
     }, [currentChildren]);
 
-    const isAllowed = () => {
-        return selectedStudy && selectedStudy.owner === userId;
+    const contextualMixPolicies = {
+        BIG: 'GoogleMicrosoft', // if !selectedUuis.has(selected.Uuid) deselects selectedUuids
+        ZIMBRA: 'Zimbra', // if !selectedUuis.has(selected.Uuid) just use contextualStudy
+        ALL: 'All', // union of contextualStudy.Uuid and selectedUuids (actually implemented)
     };
+    var contextualMixPolicy = contextualMixPolicies.ALL;
+
+    const getSelectedChildren = (mayChange= false) => {
+        let acc = [];
+        let contextualUuid = null;
+        if (contextualStudy) {
+            contextualUuid = contextualStudy.elementUuid;
+            acc.push(contextualStudy);
+        }
+
+        if (selectedUuids && currentChildren) {
+            if (contextualMixPolicy === contextualMixPolicies.ALL
+                || contextualUuid === null
+                || selectedUuids.has(contextualUuid)) {
+                acc = acc.concat(currentChildren.filter((child) => selectedUuids.has(child.elementUuid)));
+            } else if (contextualMixPolicy === contextualMixPolicies.BIG) {
+                setSelectedUuids(null);
+            }
+        }
+        return acc;
+    };
+
+    const hasSelectedAndAllAreOwned = (mayChange = false) => {
+        return undefined === getSelectedChildren(mayChange).find((child) => child.owner !== userId);
+    };
+
+    const isAllowed = () => {
+        if (contextualStudy) return contextualStudy.owner === userId;
+        if (!selectedUuids) return false;
+        let children = getSelectedChildren();
+        let soFar = true;
+        for (let i = children.size - 1; i >= 0; i--) {
+            soFar = children[i].owner === userId;
+        }
+        return soFar;
+    };
+
+    const allowsDelete = (mayChange = false ) => {
+        let children = getSelectedChildren(mayChange);
+        if (!children || children.length === 0)
+            return false;
+
+        let firstNotOwn = children.find((child) => child.owner !== userId);
+        return firstNotOwn === undefined;
+    };
+
+    const allowsRename = (mayChange = false) => {
+        let children = getSelectedChildren(mayChange);
+        return children.length === 1 && children[0].elementUuid === userId;
+    };
+
+    const allowsExport = () => {
+        return isAllowed();
+    };
+
+    const allowsPublishability = () => {
+        return isAllowed();
+    };
+
+    function makeMenuItem(utMsg, cb) {
+        return <>
+            <MenuItem onClick={cb}>
+                <ListItemIcon
+                    style={{
+                        minWidth: '25px'
+                    }}
+                >
+                    <EditIcon fontSize='small' />
+                </ListItemIcon>
+                <ListItemText
+                    primary={
+                        <FormattedMessage id={utMsg} />
+                    }
+                />
+            </MenuItem>
+        </>;
+    }
 
     return (
         <>
+            <Toolbar>
+                {allowsDelete(false) && (
+                    <IconButton onClick={() => handleClickDeleteStudy()}>
+                        <DeleteIcon />
+                    </IconButton>
+                )
+                }
+            </Toolbar>
             {selectedDirectory !== null &&
                 currentChildren !== null &&
                 currentChildren.length === 0 && (
@@ -439,10 +523,7 @@ const DirectoryContent = () => {
                         <VirtualizedTable
                             onRowRightClick={(event) => {
                                 if (event.rowData.type === 'STUDY') {
-                                    setSelectedStudy(event.rowData);
-                                    setSelectedStudyPrivate(
-                                        event.rowData.accessRights.private
-                                    );
+                                    setContextualStudy(event.rowData);
                                 }
                                 setMousePosition({
                                     mouseX:
@@ -528,74 +609,13 @@ const DirectoryContent = () => {
                                     : undefined
                             }
                         >
-                            {selectedStudy && (
+                            {
+                                contextualStudy && (
                                 <div>
-                                    {isAllowed() && (
-                                        <div>
-                                            <MenuItem
-                                                onClick={handleOpenRenameStudy}
-                                            >
-                                                <ListItemIcon
-                                                    style={{
-                                                        minWidth: '25px',
-                                                    }}
-                                                >
-                                                    <EditIcon fontSize="small" />
-                                                </ListItemIcon>
-                                                <ListItemText
-                                                    primary={
-                                                        <FormattedMessage id="rename" />
-                                                    }
-                                                />
-                                            </MenuItem>
-                                            <MenuItem
-                                                onClick={
-                                                    handleOpenStudyAccessRights
-                                                }
-                                            >
-                                                <ListItemIcon
-                                                    style={{
-                                                        minWidth: '25px',
-                                                    }}
-                                                >
-                                                    <BuildIcon fontSize="small" />
-                                                </ListItemIcon>
-                                                <ListItemText
-                                                    primary={
-                                                        <FormattedMessage id="accessRights" />
-                                                    }
-                                                />
-                                            </MenuItem>
-                                        </div>
-                                    )}
-                                    <MenuItem onClick={handleOpenExportStudy}>
-                                        <ListItemIcon
-                                            style={{ minWidth: '25px' }}
-                                        >
-                                            <GetAppIcon fontSize="small" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={
-                                                <FormattedMessage id="export" />
-                                            }
-                                        />
-                                    </MenuItem>
-                                    {isAllowed() && (
-                                        <MenuItem
-                                            onClick={handleOpenDeleteStudy}
-                                        >
-                                            <ListItemIcon
-                                                style={{ minWidth: '25px' }}
-                                            >
-                                                <DeleteIcon fontSize="small" />
-                                            </ListItemIcon>
-                                            <ListItemText
-                                                primary={
-                                                    <FormattedMessage id="delete" />
-                                                }
-                                            />
-                                        </MenuItem>
-                                    )}
+                                    {allowsRename() && (<>{makeMenuItem("rename", handleOpenRenameStudy)}</>)}
+                                    {allowsPublishability() && (<>{makeMenuItem("accessRights", handleOpenStudyAccessRights)}</>)}
+                                    {makeMenuItem("export", handleOpenExportStudy)}
+                                    {allowsDelete() && (<>{makeMenuItem("delete", handleOpenDeleteStudy)}</>)}
                                 </div>
                             )}
                         </StyledMenu>
@@ -607,7 +627,7 @@ const DirectoryContent = () => {
                 onClick={handleClickRenameStudy}
                 title={useIntl().formatMessage({ id: 'renameStudy' })}
                 message={useIntl().formatMessage({ id: 'renameStudyMsg' })}
-                currentName={selectedStudy ? selectedStudy.elementName : ''}
+                currentName={contextualStudy ? contextualStudy.elementName : ''}
                 error={renameError}
             />
             <DeleteDialog
@@ -622,7 +642,7 @@ const DirectoryContent = () => {
                 open={openExportStudyDialog}
                 onClose={handleCloseExportStudy}
                 onClick={handleClickExportStudy}
-                studyUuid={selectedStudy ? selectedStudy.elementUuid : ''}
+                studyUuid={contextualStudy ? contextualStudy.elementUuid : ''}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
             />
             <AccessRightsDialog
@@ -630,7 +650,8 @@ const DirectoryContent = () => {
                 onClose={handleCloseStudyAccessRights}
                 onClick={handleClickStudyAccessRights}
                 title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
-                isPrivate={isSelectedStudyPrivate}
+                //isPrivate={isSelectedStudyPrivate}
+                isPrivate={() => true}
                 error={accessRightsError}
             />
             <iframe
