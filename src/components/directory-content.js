@@ -447,11 +447,10 @@ const DirectoryContent = () => {
     };
 
     const hasSelectedAndAllAreOwned = (mayChange = false) => {
+        let selectedChildren = getSelectedChildren(mayChange);
         return (
-            undefined ===
-            getSelectedChildren(mayChange).find(
-                (child) => child.owner !== userId
-            )
+            selectedChildren &&
+            undefined === selectedChildren.find((c) => c.owner !== userId)
         );
     };
 
