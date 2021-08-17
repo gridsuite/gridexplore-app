@@ -31,20 +31,21 @@ import {
     renameElement,
     updateAccessRights,
 } from '../utils/rest-api';
+
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import BuildIcon from '@material-ui/icons/Build';
 import ListItemText from '@material-ui/core/ListItemText';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Menu from '@material-ui/core/Menu';
+
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import IconButton from '@material-ui/core/IconButton';
+
 import ExportDialog from './export-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
-import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -179,10 +180,8 @@ const DirectoryContent = () => {
             });
         }
 
-        if (msgs.length === 0)
-            handleCloseDeleteStudy();
-        else
-            setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
+        if (msgs.length === 0) handleCloseDeleteStudy();
+        else setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
     };
 
     /**
@@ -418,7 +417,7 @@ const DirectoryContent = () => {
     };
     var contextualMixPolicy = contextualMixPolicies.ALL;
 
-    const getSelectedChildren = (mayChange= false) => {
+    const getSelectedChildren = (mayChange = false) => {
         let acc = [];
         let contextualUuid = null;
         if (contextualStudy) {
@@ -427,10 +426,16 @@ const DirectoryContent = () => {
         }
 
         if (selectedUuids && currentChildren) {
-            if (contextualMixPolicy === contextualMixPolicies.ALL
-                || contextualUuid === null
-                || selectedUuids.has(contextualUuid)) {
-                acc = acc.concat(currentChildren.filter((child) => selectedUuids.has(child.elementUuid)));
+            if (
+                contextualMixPolicy === contextualMixPolicies.ALL ||
+                contextualUuid === null ||
+                selectedUuids.has(contextualUuid)
+            ) {
+                acc = acc.concat(
+                    currentChildren.filter((child) =>
+                        selectedUuids.has(child.elementUuid)
+                    )
+                );
             } else if (contextualMixPolicy === contextualMixPolicies.BIG) {
                 setSelectedUuids(null);
             }
@@ -439,7 +444,12 @@ const DirectoryContent = () => {
     };
 
     const hasSelectedAndAllAreOwned = (mayChange = false) => {
-        return undefined === getSelectedChildren(mayChange).find((child) => child.owner !== userId);
+        return (
+            undefined ===
+            getSelectedChildren(mayChange).find(
+                (child) => child.owner !== userId
+            )
+        );
     };
 
     const isAllowed = () => {
@@ -453,10 +463,9 @@ const DirectoryContent = () => {
         return soFar;
     };
 
-    const allowsDelete = (mayChange = false ) => {
+    const allowsDelete = (mayChange = false) => {
         let children = getSelectedChildren(mayChange);
-        if (!children || children.length === 0)
-            return false;
+        if (!children || children.length === 0) return false;
 
         let firstNotOwn = children.find((child) => child.owner !== userId);
         return firstNotOwn === undefined;
@@ -476,22 +485,20 @@ const DirectoryContent = () => {
     };
 
     function makeMenuItem(utMsg, cb) {
-        return <>
-            <MenuItem onClick={cb}>
-                <ListItemIcon
-                    style={{
-                        minWidth: '25px'
-                    }}
-                >
-                    <EditIcon fontSize='small' />
-                </ListItemIcon>
-                <ListItemText
-                    primary={
-                        <FormattedMessage id={utMsg} />
-                    }
-                />
-            </MenuItem>
-        </>;
+        return (
+            <>
+                <MenuItem onClick={cb}>
+                    <ListItemIcon
+                        style={{
+                            minWidth: '25px',
+                        }}
+                    >
+                        <EditIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText primary={<FormattedMessage id={utMsg} />} />
+                </MenuItem>
+            </>
+        );
     }
 
     return (
@@ -501,8 +508,7 @@ const DirectoryContent = () => {
                     <IconButton onClick={() => handleClickDeleteStudy()}>
                         <DeleteIcon />
                     </IconButton>
-                )
-                }
+                )}
             </Toolbar>
             {selectedDirectory !== null &&
                 currentChildren !== null &&
@@ -609,13 +615,36 @@ const DirectoryContent = () => {
                                     : undefined
                             }
                         >
-                            {
-                                contextualStudy && (
+                            {contextualStudy && (
                                 <div>
-                                    {allowsRename() && (<>{makeMenuItem("rename", handleOpenRenameStudy)}</>)}
-                                    {allowsPublishability() && (<>{makeMenuItem("accessRights", handleOpenStudyAccessRights)}</>)}
-                                    {makeMenuItem("export", handleOpenExportStudy)}
-                                    {allowsDelete() && (<>{makeMenuItem("delete", handleOpenDeleteStudy)}</>)}
+                                    {allowsRename() && (
+                                        <>
+                                            {makeMenuItem(
+                                                'rename',
+                                                handleOpenRenameStudy
+                                            )}
+                                        </>
+                                    )}
+                                    {allowsPublishability() && (
+                                        <>
+                                            {makeMenuItem(
+                                                'accessRights',
+                                                handleOpenStudyAccessRights
+                                            )}
+                                        </>
+                                    )}
+                                    {makeMenuItem(
+                                        'export',
+                                        handleOpenExportStudy
+                                    )}
+                                    {allowsDelete() && (
+                                        <>
+                                            {makeMenuItem(
+                                                'delete',
+                                                handleOpenDeleteStudy
+                                            )}
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </StyledMenu>
