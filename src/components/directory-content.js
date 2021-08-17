@@ -411,11 +411,11 @@ const DirectoryContent = () => {
     }, [currentChildren]);
 
     const contextualMixPolicies = {
-        BIG: 'GoogleMicrosoft', // if !selectedUuis.has(selected.Uuid) deselects selectedUuids
-        ZIMBRA: 'Zimbra', // if !selectedUuis.has(selected.Uuid) just use contextualStudy
+        BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
+        ZIMBRA: 'Zimbra', // if !selectedUuids.has(selected.Uuid) just use contextualStudy
         ALL: 'All', // union of contextualStudy.Uuid and selectedUuids (actually implemented)
     };
-    var contextualMixPolicy = contextualMixPolicies.ALL;
+    let contextualMixPolicy = contextualMixPolicies.ALL;
 
     const getSelectedChildren = (mayChange = false) => {
         let acc = [];
@@ -436,7 +436,10 @@ const DirectoryContent = () => {
                         selectedUuids.has(child.elementUuid)
                     )
                 );
-            } else if (contextualMixPolicy === contextualMixPolicies.BIG) {
+            } else if (
+                mayChange &&
+                contextualMixPolicy === contextualMixPolicies.BIG
+            ) {
                 setSelectedUuids(null);
             }
         }
