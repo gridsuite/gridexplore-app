@@ -304,6 +304,7 @@ const DirectoryContent = () => {
             </div>
         );
     }
+
     function nameCellRender(cellData) {
         const elementUuid = cellData.rowData['elementUuid'];
         const elementName = cellData.rowData['elementName'];
@@ -342,11 +343,12 @@ const DirectoryContent = () => {
     }
 
     function toggleSelectAll() {
-        if (selectedUuids.size !== 0) {
-            setSelectedUuids(new Set());
+        if (selectedUuids.size === 0) {
+            setSelectedUuids(
+                new Set(currentChildren.map((c) => c.elementUuid))
+            );
         } else {
-            let newSel = new Set(currentChildren.map((c) => c.elementUuid));
-            setSelectedUuids(newSel);
+            setSelectedUuids(new Set());
         }
     }
 
@@ -450,6 +452,7 @@ const DirectoryContent = () => {
         let selectedChildren = getSelectedChildren(mayChange);
         return (
             selectedChildren &&
+            selectedChildren.length > 0 &&
             undefined === selectedChildren.find((c) => c.owner !== userId)
         );
     };
@@ -471,7 +474,7 @@ const DirectoryContent = () => {
 
     const allowsRename = (mayChange = false) => {
         let children = getSelectedChildren(mayChange);
-        return children.length === 1 && children[0].elementUuid === userId;
+        return children.length === 1 && children[0].owner === userId;
     };
 
     const allowsPublishability = () => {
@@ -497,153 +500,164 @@ const DirectoryContent = () => {
 
     return (
         <>
-            <Toolbar>
-                {allowsDelete(false) && (
-                    <IconButton onClick={() => handleClickDeleteStudy()}>
-                        <DeleteIcon />
-                    </IconButton>
-                )}
-            </Toolbar>
-            {selectedDirectory !== null &&
-                currentChildren !== null &&
-                currentChildren.length === 0 && (
-                    <div style={{ textAlign: 'center', marginTop: '100px' }}>
-                        <FolderOpenRoundedIcon
-                            style={{ width: '100px', height: '100px' }}
-                        />
-                        <h1>
-                            <FormattedMessage id={'emptyDir'} />
-                        </h1>
-                    </div>
-                )}
-            {selectedDirectory !== null &&
-                currentChildren !== null &&
-                currentChildren.length > 0 && (
-                    <>
-                        <VirtualizedTable
-                            onRowRightClick={(event) => {
-                                if (event.rowData.type === 'STUDY') {
-                                    setContextualStudy(event.rowData);
-                                }
-                                setMousePosition({
-                                    mouseX:
-                                        event.event.clientX +
-                                        constants.HORIZONTAL_SHIFT,
-                                    mouseY:
-                                        event.event.clientY +
-                                        constants.VERTICAL_SHIFT,
-                                });
-                                setAnchorEl(event.event.currentTarget);
-                            }}
-                            onRowClick={(event) => {
-                                if (
-                                    childrenMetadata[
-                                        event.rowData.elementUuid
-                                    ] !== undefined
-                                ) {
-                                    let url = getLink(
-                                        event.rowData.elementUuid,
-                                        event.rowData.type
-                                    );
-                                    window.open(url, '_blank');
-                                }
-                            }}
-                            rows={currentChildren}
-                            columns={[
-                                {
-                                    cellRenderer: selectionRenderer,
-                                    dataKey: 'selected',
-                                    label: '',
-                                    headerRenderer: selectionHeaderRenderer,
-                                    maxWidth: 60,
-                                },
-                                {
-                                    width: 100,
-                                    label: intl.formatMessage({
-                                        id: 'elementName',
-                                    }),
-                                    dataKey: 'elementName',
-                                    cellRenderer: nameCellRender,
-                                },
-                                {
-                                    width: 100,
-                                    label: intl.formatMessage({
-                                        id: 'type',
-                                    }),
-                                    dataKey: 'type',
-                                    cellRenderer: typeCellRender,
-                                },
-                                {
-                                    width: 50,
-                                    label: intl.formatMessage({
-                                        id: 'owner',
-                                    }),
-                                    dataKey: 'owner',
-                                    cellRenderer: accessOwnerCellRender,
-                                },
-                                {
-                                    width: 50,
-                                    label: intl.formatMessage({
-                                        id: 'accessRights',
-                                    }),
-                                    dataKey: 'accessRights',
-                                    cellRenderer: accessRightsCellRender,
-                                },
-                            ]}
-                            sortable={true}
-                        />
-                        <StyledMenu
-                            id="row-menu"
-                            anchorEl={anchorEl}
-                            keepMounted
-                            open={Boolean(anchorEl)}
-                            onClose={handleCloseRowMenu}
-                            anchorReference="anchorPosition"
-                            anchorPosition={
-                                mousePosition.mouseY !== null &&
-                                mousePosition.mouseX !== null
-                                    ? {
-                                          top: mousePosition.mouseY,
-                                          left: mousePosition.mouseX,
-                                      }
-                                    : undefined
-                            }
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%',
+                }}
+            >
+                {selectedDirectory !== null &&
+                    currentChildren !== null &&
+                    currentChildren.length === 0 && (
+                        <div
+                            style={{ textAlign: 'center', marginTop: '100px' }}
                         >
-                            {contextualStudy && (
-                                <div>
-                                    {allowsRename() && (
-                                        <>
-                                            {makeMenuItem(
-                                                'rename',
-                                                handleOpenRenameStudy
-                                            )}
-                                        </>
-                                    )}
-                                    {allowsPublishability() && (
-                                        <>
-                                            {makeMenuItem(
-                                                'accessRights',
-                                                handleOpenStudyAccessRights
-                                            )}
-                                        </>
-                                    )}
+                            <FolderOpenRoundedIcon
+                                style={{ width: '100px', height: '100px' }}
+                            />
+                            <h1>
+                                <FormattedMessage id={'emptyDir'} />
+                            </h1>
+                        </div>
+                    )}
+                <Toolbar>
+                    {allowsDelete(false) && (
+                        <IconButton
+                            className={classes.icon}
+                            onClick={() => handleClickDeleteStudy()}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    )}
+                </Toolbar>
+                {selectedDirectory !== null &&
+                    currentChildren !== null &&
+                    currentChildren.length > 0 && (
+                        <>
+                            <VirtualizedTable
+                                style={{ flexGrow: 1 }}
+                                onRowRightClick={(event) => {
+                                    if (event.rowData.type === 'STUDY') {
+                                        setContextualStudy(event.rowData);
+                                    }
+                                    setMousePosition({
+                                        mouseX:
+                                            event.event.clientX +
+                                            constants.HORIZONTAL_SHIFT,
+                                        mouseY:
+                                            event.event.clientY +
+                                            constants.VERTICAL_SHIFT,
+                                    });
+                                    setAnchorEl(event.event.currentTarget);
+                                }}
+                                onRowClick={(event) => {
+                                    if (
+                                        childrenMetadata[
+                                            event.rowData.elementUuid
+                                        ] !== undefined
+                                    ) {
+                                        let url = getLink(
+                                            event.rowData.elementUuid,
+                                            event.rowData.type
+                                        );
+                                        window.open(url, '_blank');
+                                    }
+                                }}
+                                rows={currentChildren}
+                                columns={[
+                                    {
+                                        cellRenderer: selectionRenderer,
+                                        dataKey: 'selected',
+                                        label: '',
+                                        headerRenderer: selectionHeaderRenderer,
+                                        maxWidth: 60,
+                                    },
+                                    {
+                                        width: 100,
+                                        label: intl.formatMessage({
+                                            id: 'elementName',
+                                        }),
+                                        dataKey: 'elementName',
+                                        cellRenderer: nameCellRender,
+                                    },
+                                    {
+                                        width: 100,
+                                        label: intl.formatMessage({
+                                            id: 'type',
+                                        }),
+                                        dataKey: 'type',
+                                        cellRenderer: typeCellRender,
+                                    },
+                                    {
+                                        width: 50,
+                                        label: intl.formatMessage({
+                                            id: 'owner',
+                                        }),
+                                        dataKey: 'owner',
+                                        cellRenderer: accessOwnerCellRender,
+                                    },
+                                    {
+                                        width: 50,
+                                        label: intl.formatMessage({
+                                            id: 'accessRights',
+                                        }),
+                                        dataKey: 'accessRights',
+                                        cellRenderer: accessRightsCellRender,
+                                    },
+                                ]}
+                                sortable={true}
+                            />
+                        </>
+                    )}
+                <StyledMenu
+                    id="row-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleCloseRowMenu}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                        mousePosition.mouseY !== null &&
+                        mousePosition.mouseX !== null
+                            ? {
+                                  top: mousePosition.mouseY,
+                                  left: mousePosition.mouseX,
+                              }
+                            : undefined
+                    }
+                >
+                    {contextualStudy && (
+                        <div>
+                            {allowsRename() && (
+                                <>
                                     {makeMenuItem(
-                                        'export',
-                                        handleOpenExportStudy
+                                        'rename',
+                                        handleOpenRenameStudy
                                     )}
-                                    {allowsDelete() && (
-                                        <>
-                                            {makeMenuItem(
-                                                'delete',
-                                                handleOpenDeleteStudy
-                                            )}
-                                        </>
-                                    )}
-                                </div>
+                                </>
                             )}
-                        </StyledMenu>
-                    </>
-                )}
+                            {allowsPublishability() && (
+                                <>
+                                    {makeMenuItem(
+                                        'accessRights',
+                                        handleOpenStudyAccessRights
+                                    )}
+                                </>
+                            )}
+                            {makeMenuItem('export', handleOpenExportStudy)}
+                            {allowsDelete() && (
+                                <>
+                                    {makeMenuItem(
+                                        'delete',
+                                        handleOpenDeleteStudy
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    )}
+                </StyledMenu>
+            </div>
             <RenameDialog
                 open={openRenameStudyDialog}
                 onClose={handleCloseRenameStudy}
