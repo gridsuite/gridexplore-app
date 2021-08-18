@@ -436,169 +436,186 @@ const DirectoryContent = () => {
                 currentChildren !== null &&
                 currentChildren.length > 0 && (
                     <>
-                        <VirtualizedTable
-                            onRowRightClick={(event) => {
-                                if (event.rowData.type === 'STUDY') {
-                                    setSelectedStudy(event.rowData);
-                                    setSelectedStudyPrivate(
-                                        event.rowData.accessRights.private
-                                    );
-                                }
-                                setMousePosition({
-                                    mouseX:
-                                        event.event.clientX +
-                                        constants.HORIZONTAL_SHIFT,
-                                    mouseY:
-                                        event.event.clientY +
-                                        constants.VERTICAL_SHIFT,
-                                });
-                                setAnchorEl(event.event.currentTarget);
+                        <div
+                            style={{
+                                height: '100%',
                             }}
-                            onRowClick={(event) => {
+                            onMouseDownCapture={(e) => {
                                 if (
-                                    childrenMetadata[
-                                        event.rowData.elementUuid
-                                    ] !== undefined
-                                ) {
-                                    let url = getLink(
-                                        event.rowData.elementUuid,
-                                        event.rowData.type
-                                    );
-                                    window.open(url, '_blank');
-                                }
+                                    e.button ===
+                                    constants.MOUSE_EVENT_RIGHT_BUTTON
+                                )
+                                    handleCloseRowMenu();
                             }}
-                            rows={currentChildren}
-                            columns={[
-                                {
-                                    cellRenderer: selectionRenderer,
-                                    dataKey: 'selected',
-                                    label: '',
-                                    headerRenderer: selectionHeaderRenderer,
-                                    maxWidth: 60,
-                                },
-                                {
-                                    width: 100,
-                                    label: intl.formatMessage({
-                                        id: 'elementName',
-                                    }),
-                                    dataKey: 'elementName',
-                                    cellRenderer: nameCellRender,
-                                },
-                                {
-                                    width: 100,
-                                    label: intl.formatMessage({
-                                        id: 'type',
-                                    }),
-                                    dataKey: 'type',
-                                    cellRenderer: typeCellRender,
-                                },
-                                {
-                                    width: 50,
-                                    label: intl.formatMessage({
-                                        id: 'owner',
-                                    }),
-                                    dataKey: 'owner',
-                                    cellRenderer: accessOwnerCellRender,
-                                },
-                                {
-                                    width: 50,
-                                    label: intl.formatMessage({
-                                        id: 'accessRights',
-                                    }),
-                                    dataKey: 'accessRights',
-                                    cellRenderer: accessRightsCellRender,
-                                },
-                            ]}
-                            sortable={true}
-                        />
-                        <StyledMenu
-                            id="row-menu"
-                            anchorEl={anchorEl}
-                            keepMounted
-                            open={Boolean(anchorEl)}
-                            onClose={handleCloseRowMenu}
-                            anchorReference="anchorPosition"
-                            anchorPosition={
-                                mousePosition.mouseY !== null &&
-                                mousePosition.mouseX !== null
-                                    ? {
-                                          top: mousePosition.mouseY,
-                                          left: mousePosition.mouseX,
-                                      }
-                                    : undefined
-                            }
                         >
-                            {selectedStudy && (
-                                <div>
-                                    {isAllowed() && (
-                                        <div>
-                                            <MenuItem
-                                                onClick={handleOpenRenameStudy}
-                                            >
-                                                <ListItemIcon
-                                                    style={{
-                                                        minWidth: '25px',
-                                                    }}
-                                                >
-                                                    <EditIcon fontSize="small" />
-                                                </ListItemIcon>
-                                                <ListItemText
-                                                    primary={
-                                                        <FormattedMessage id="rename" />
+                            <VirtualizedTable
+                                onRowRightClick={(event) => {
+                                    if (event.rowData.type === 'STUDY') {
+                                        setSelectedStudy(event.rowData);
+                                        setSelectedStudyPrivate(
+                                            event.rowData.accessRights.private
+                                        );
+                                    }
+                                    setMousePosition({
+                                        mouseX:
+                                            event.event.clientX +
+                                            constants.HORIZONTAL_SHIFT,
+                                        mouseY:
+                                            event.event.clientY +
+                                            constants.VERTICAL_SHIFT,
+                                    });
+                                    setAnchorEl(event.event.currentTarget);
+                                }}
+                                onRowClick={(event) => {
+                                    if (
+                                        childrenMetadata[
+                                            event.rowData.elementUuid
+                                        ] !== undefined
+                                    ) {
+                                        let url = getLink(
+                                            event.rowData.elementUuid,
+                                            event.rowData.type
+                                        );
+                                        window.open(url, '_blank');
+                                    }
+                                }}
+                                rows={currentChildren}
+                                columns={[
+                                    {
+                                        cellRenderer: selectionRenderer,
+                                        dataKey: 'selected',
+                                        label: '',
+                                        headerRenderer: selectionHeaderRenderer,
+                                        maxWidth: 60,
+                                    },
+                                    {
+                                        width: 100,
+                                        label: intl.formatMessage({
+                                            id: 'elementName',
+                                        }),
+                                        dataKey: 'elementName',
+                                        cellRenderer: nameCellRender,
+                                    },
+                                    {
+                                        width: 100,
+                                        label: intl.formatMessage({
+                                            id: 'type',
+                                        }),
+                                        dataKey: 'type',
+                                        cellRenderer: typeCellRender,
+                                    },
+                                    {
+                                        width: 50,
+                                        label: intl.formatMessage({
+                                            id: 'owner',
+                                        }),
+                                        dataKey: 'owner',
+                                        cellRenderer: accessOwnerCellRender,
+                                    },
+                                    {
+                                        width: 50,
+                                        label: intl.formatMessage({
+                                            id: 'accessRights',
+                                        }),
+                                        dataKey: 'accessRights',
+                                        cellRenderer: accessRightsCellRender,
+                                    },
+                                ]}
+                                sortable={true}
+                            />
+                            <StyledMenu
+                                id="row-menu"
+                                anchorEl={anchorEl}
+                                keepMounted
+                                open={Boolean(anchorEl)}
+                                onClose={handleCloseRowMenu}
+                                anchorReference="anchorPosition"
+                                anchorPosition={
+                                    mousePosition.mouseY !== null &&
+                                    mousePosition.mouseX !== null
+                                        ? {
+                                              top: mousePosition.mouseY,
+                                              left: mousePosition.mouseX,
+                                          }
+                                        : undefined
+                                }
+                            >
+                                {selectedStudy && (
+                                    <div>
+                                        {isAllowed() && (
+                                            <div>
+                                                <MenuItem
+                                                    onClick={
+                                                        handleOpenRenameStudy
                                                     }
-                                                />
-                                            </MenuItem>
-                                            <MenuItem
-                                                onClick={
-                                                    handleOpenStudyAccessRights
-                                                }
-                                            >
-                                                <ListItemIcon
-                                                    style={{
-                                                        minWidth: '25px',
-                                                    }}
                                                 >
-                                                    <BuildIcon fontSize="small" />
-                                                </ListItemIcon>
-                                                <ListItemText
-                                                    primary={
-                                                        <FormattedMessage id="accessRights" />
+                                                    <ListItemIcon
+                                                        style={{
+                                                            minWidth: '25px',
+                                                        }}
+                                                    >
+                                                        <EditIcon fontSize="small" />
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                        primary={
+                                                            <FormattedMessage id="rename" />
+                                                        }
+                                                    />
+                                                </MenuItem>
+                                                <MenuItem
+                                                    onClick={
+                                                        handleOpenStudyAccessRights
                                                     }
-                                                />
-                                            </MenuItem>
-                                        </div>
-                                    )}
-                                    <MenuItem onClick={handleOpenExportStudy}>
-                                        <ListItemIcon
-                                            style={{ minWidth: '25px' }}
-                                        >
-                                            <GetAppIcon fontSize="small" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={
-                                                <FormattedMessage id="export" />
-                                            }
-                                        />
-                                    </MenuItem>
-                                    {isAllowed() && (
+                                                >
+                                                    <ListItemIcon
+                                                        style={{
+                                                            minWidth: '25px',
+                                                        }}
+                                                    >
+                                                        <BuildIcon fontSize="small" />
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                        primary={
+                                                            <FormattedMessage id="accessRights" />
+                                                        }
+                                                    />
+                                                </MenuItem>
+                                            </div>
+                                        )}
                                         <MenuItem
-                                            onClick={handleOpenDeleteStudy}
+                                            onClick={handleOpenExportStudy}
                                         >
                                             <ListItemIcon
                                                 style={{ minWidth: '25px' }}
                                             >
-                                                <DeleteIcon fontSize="small" />
+                                                <GetAppIcon fontSize="small" />
                                             </ListItemIcon>
                                             <ListItemText
                                                 primary={
-                                                    <FormattedMessage id="delete" />
+                                                    <FormattedMessage id="export" />
                                                 }
                                             />
                                         </MenuItem>
-                                    )}
-                                </div>
-                            )}
-                        </StyledMenu>
+                                        {isAllowed() && (
+                                            <MenuItem
+                                                onClick={handleOpenDeleteStudy}
+                                            >
+                                                <ListItemIcon
+                                                    style={{ minWidth: '25px' }}
+                                                >
+                                                    <DeleteIcon fontSize="small" />
+                                                </ListItemIcon>
+                                                <ListItemText
+                                                    primary={
+                                                        <FormattedMessage id="delete" />
+                                                    }
+                                                />
+                                            </MenuItem>
+                                        )}
+                                    </div>
+                                )}
+                            </StyledMenu>
+                        </div>
                     </>
                 )}
             <RenameDialog
