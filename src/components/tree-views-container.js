@@ -142,6 +142,8 @@ const TreeViewsContainer = () => {
         handleOpenMenu(e);
     }, []);
 
+    //const onDirectoryUpdate =
+
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
         event.stopPropagation();
@@ -526,6 +528,7 @@ const TreeViewsContainer = () => {
                             treeViewUuid={rootDirectory.elementUuid}
                             mapData={mapDataRef.current}
                             onContextMenu={onContextMenu}
+                            onDirectoryUpdate={updateDirectoryTree}
                         />
                     ))}
             </div>

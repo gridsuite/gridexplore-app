@@ -69,7 +69,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
+const DirectoryTreeView = ({
+    treeViewUuid,
+    mapData,
+    onContextMenu,
+    onDirectoryUpdate,
+}) => {
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -85,8 +90,22 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
 
     /* User interaction */
     function handleContextMenuClick(event, nodeId) {
-        handleSelect(nodeId, false);
+        handleLabelClick(nodeId, false);
         onContextMenu(event, nodeId);
+    }
+
+    function handleLabelClick(nodeId, toggle) {
+        dispatch(setSelectedDirectory(nodeId));
+        // updateTree will be called by useEffect;
+        if (toggle) {
+            // update fold status of item
+            toggleDirectory(nodeId);
+        }
+    }
+
+    function handleIconClick(nodeId) {
+        onDirectoryUpdate(nodeId);
+        toggleDirectory(nodeId);
     }
 
     /* Handle Rendering */
@@ -99,10 +118,13 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
                 key={node.elementUuid}
                 nodeId={node.elementUuid}
                 onIconClick={() => {
-                    toggleDirectory(node.elementUuid);
+                    handleIconClick(node.elementUuid);
                 }}
                 onLabelClick={() => {
-                    openDirectory(node.elementUuid);
+                    handleLabelClick(
+                        node.elementUuid,
+                        !expandedRef.current.includes(node.elementUuid)
+                    );
                 }}
                 label={
                     <div
@@ -190,29 +212,6 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
             }
         },
         [addElement, removeElement, expandedRef]
-    );
-
-    const openDirectory = useCallback(
-        (nodeId) => {
-            dispatch(setSelectedDirectory(nodeId));
-            if (!expandedRef.current.includes(nodeId)) {
-                addElement(nodeId);
-            }
-        },
-        [addElement, expandedRef, dispatch]
-    );
-
-    /* Handle User interactions*/
-    const handleSelect = useCallback(
-        (nodeId, toggle) => {
-            dispatch(setSelectedDirectory(nodeId));
-            // updateTree will be called by useEffect;
-            if (toggle) {
-                // update fold status of item
-                toggleDirectory(nodeId);
-            }
-        },
-        [dispatch, toggleDirectory]
     );
 
     return (
