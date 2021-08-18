@@ -343,6 +343,10 @@ const TreeViewsContainer = () => {
                         //update element name
                         mapDataCopy[child.elementUuid].elementName =
                             child.elementName;
+
+                        //update element access rights
+                        mapDataCopy[child.elementUuid].accessRights =
+                            child.accessRights;
                     }
                     return child;
                 }
