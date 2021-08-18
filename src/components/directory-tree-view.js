@@ -98,6 +98,12 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
             <TreeItem
                 key={node.elementUuid}
                 nodeId={node.elementUuid}
+                onIconClick={() => {
+                    toggleDirectory(node.elementUuid);
+                }}
+                onLabelClick={() => {
+                    openDirectory(node.elementUuid);
+                }}
                 label={
                     <div
                         className={classes.treeItemLabelRoot}
@@ -219,18 +225,6 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
                 defaultExpandIcon={
                     <ChevronRightIcon className={classes.icon} />
                 }
-                onNodeSelect={(event, nodeId) => {
-                    //we clicked on the icon (we consider the little space between the icon and the label as if it it the icon)
-                    if (
-                        event.target.tagName.toLowerCase() === 'svg' ||
-                        event.target.tagName.toLowerCase() === 'div'
-                    ) {
-                        toggleDirectory(nodeId, true);
-                    } else {
-                        //we clicked on the label
-                        openDirectory(nodeId, true);
-                    }
-                }}
                 expanded={expanded}
                 selected={selectedDirectory}
             >
