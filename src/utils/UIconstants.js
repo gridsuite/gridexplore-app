@@ -7,3 +7,4 @@
 
 export const HORIZONTAL_SHIFT = 16;
 export const VERTICAL_SHIFT = -4;
+export const MOUSE_EVENT_RIGHT_BUTTON = 2;
