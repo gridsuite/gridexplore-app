@@ -142,8 +142,6 @@ const TreeViewsContainer = () => {
         handleOpenMenu(e);
     }, []);
 
-    //const onDirectoryUpdate =
-
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
         event.stopPropagation();
