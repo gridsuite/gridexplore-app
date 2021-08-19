@@ -69,7 +69,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
+const DirectoryTreeView = ({
+    treeViewUuid,
+    mapData,
+    onContextMenu,
+    onDirectoryUpdate,
+}) => {
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -85,8 +90,24 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
 
     /* User interaction */
     function handleContextMenuClick(event, nodeId) {
-        handleSelect(nodeId, false);
+        handleLabelClick(nodeId, false);
         onContextMenu(event, nodeId);
+    }
+
+    function handleLabelClick(nodeId, toggle) {
+        dispatch(setSelectedDirectory(nodeId));
+        // updateTree will be called by useEffect;
+        if (toggle) {
+            // update fold status of item
+            toggleDirectory(nodeId);
+        }
+    }
+
+    function handleIconClick(nodeId) {
+        if (!expandedRef.current.includes(nodeId)) {
+            onDirectoryUpdate(nodeId);
+        }
+        toggleDirectory(nodeId);
     }
 
     /* Handle Rendering */
@@ -98,6 +119,15 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
             <TreeItem
                 key={node.elementUuid}
                 nodeId={node.elementUuid}
+                onIconClick={() => {
+                    handleIconClick(node.elementUuid);
+                }}
+                onLabelClick={() => {
+                    handleLabelClick(
+                        node.elementUuid,
+                        !expandedRef.current.includes(node.elementUuid)
+                    );
+                }}
                 label={
                     <div
                         className={classes.treeItemLabelRoot}
@@ -186,19 +216,6 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
         [addElement, removeElement, expandedRef]
     );
 
-    /* Handle User interactions*/
-    const handleSelect = useCallback(
-        (nodeId, toggle) => {
-            dispatch(setSelectedDirectory(nodeId));
-            // updateTree will be called by useEffect;
-            if (toggle) {
-                // update fold status of item
-                toggleDirectory(nodeId);
-            }
-        },
-        [dispatch, toggleDirectory]
-    );
-
     return (
         <>
             <TreeView
@@ -209,7 +226,6 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu }) => {
                 defaultExpandIcon={
                     <ChevronRightIcon className={classes.icon} />
                 }
-                onNodeSelect={(event, nodeId) => handleSelect(nodeId, true)}
                 expanded={expanded}
                 selected={selectedDirectory}
             >
