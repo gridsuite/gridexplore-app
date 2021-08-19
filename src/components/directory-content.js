@@ -192,6 +192,7 @@ const DirectoryContent = () => {
     );
 
     const handleOpenExportStudy = () => {
+        setAnchorEl(null);
         setOpenExportStudyDialog(true);
     };
 
@@ -215,6 +216,7 @@ const DirectoryContent = () => {
     const [accessRightsError, setAccessRightsError] = React.useState('');
 
     const handleOpenStudyAccessRights = () => {
+        setAnchorEl(null);
         setOpenStudyAccessRightsDialog(true);
     };
 
