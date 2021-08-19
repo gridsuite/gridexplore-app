@@ -19,6 +19,7 @@
     "deleteStudy": "Supprimer l'étude",
     "deleteStudyMsg": "Êtes-vous sûr de vouloir supprimer l'étude ?",
     "deleteStudyError": "Vous n'êtes pas le propriétaire de l'étude",
+    "deleteStudiesFailure" : "Problème à la destruction d' étude(s). Pas détruit(s) : {problematic}",
     "caseExist": "La situation existe-t-elle déjà ?",
     "studyName": "nom de l'étude",
     "studyNameProperty": "Nom de l'étude : ",

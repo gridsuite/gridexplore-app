@@ -171,17 +171,29 @@ const DirectoryContent = () => {
     };
 
     const handleClickDeleteStudy = () => {
-        let selectChildren = getSelectedChildren(false);
-        let msgs = [];
-        for (let child of selectChildren) {
+        let selectedChildren = getSelectedChildren(false);
+        let notDeleted = [];
+        let doneChildren = [];
+        for (let child of selectedChildren) {
             deleteElement(child.elementUuid).then((response) => {
-                if (!response.ok)
-                    msgs.push(intl.formatMessage({ id: 'deleteStudyError' }));
+                doneChildren.push(child);
+                if (!response.ok) {
+                    notDeleted.push(child.elementName);
+                }
+
+                if (doneChildren.length === selectedChildren.length) {
+                    if (notDeleted.length === 0) handleCloseDeleteStudy();
+                    else {
+                        let msg = intl.formatMessage(
+                            { id: 'deleteStudiesFailure' },
+                            { problematic: notDeleted.join(' ') }
+                        );
+                        console.warn(msg);
+                        setDeleteError(msg);
+                    }
+                }
             });
         }
-
-        if (msgs.length === 0) handleCloseDeleteStudy();
-        else setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
     };
 
     /**
@@ -423,17 +435,17 @@ const DirectoryContent = () => {
 
     const getSelectedChildren = (mayChange = false) => {
         let acc = [];
-        let contextualUuid = null;
+        let ctxtUuid = contextualStudy ? contextualStudy.elementUuid : null;
         if (contextualStudy) {
-            contextualUuid = contextualStudy.elementUuid;
+            // ctxtUuid = contextualStudy.elementUuid;
             acc.push(contextualStudy);
         }
 
         if (selectedUuids && currentChildren) {
             if (
                 contextualMixPolicy === contextualMixPolicies.ALL ||
-                contextualUuid === null ||
-                selectedUuids.has(contextualUuid)
+                ctxtUuid === null ||
+                selectedUuids.has(ctxtUuid)
             ) {
                 acc = acc.concat(
                     currentChildren.filter((child) =>
@@ -447,7 +459,7 @@ const DirectoryContent = () => {
                 setSelectedUuids(null);
             }
         }
-        return acc;
+        return [...new Set(acc)];
     };
 
     const hasSelectedAndAllAreOwned = (mayChange = false) => {
@@ -524,7 +536,7 @@ const DirectoryContent = () => {
                         </div>
                     )}
                 <Toolbar>
-                    {allowsDelete(false) && (
+                    {allowsDelete(false) && selectedUuids.size > 0 && (
                         <IconButton
                             className={classes.icon}
                             onClick={() => handleClickDeleteStudy()}
@@ -648,7 +660,7 @@ const DirectoryContent = () => {
                                 </>
                             )}
                             {makeMenuItem('export', handleOpenExportStudy)}
-                            {allowsDelete() && (
+                            {allowsDelete(true) && (
                                 <>
                                     {makeMenuItem(
                                         'delete',
