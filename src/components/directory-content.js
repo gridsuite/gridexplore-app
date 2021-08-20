@@ -186,7 +186,11 @@ const DirectoryContent = () => {
                     else {
                         let msg = intl.formatMessage(
                             { id: 'deleteStudiesFailure' },
-                            { problematic: notDeleted.join(' ') }
+                            {
+                                pbn: notDeleted.length,
+                                stn: selectedChildren.length,
+                                problematic: notDeleted.join(' '),
+                            }
                         );
                         console.warn(msg);
                         setDeleteError(msg);

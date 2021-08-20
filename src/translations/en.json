@@ -19,7 +19,7 @@
     "deleteStudy": "Delete the study",
     "deleteStudyMsg": "Are you sure?",
     "deleteStudyError": "You are not the owner of this study",
-    "deleteStudiesFailure" : "Problem encountered while deleting studies. Not deleted : {problematic}",
+    "deleteStudiesFailure" : "Problem encountered while deleting {stn, plural, one {a study} other {studies}}. Not deleted : {problematic}",
     "caseExist": "Does the case already exist?",
     "studyName": "study name",
     "studyNameProperty": "Study name: ",
