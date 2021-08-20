@@ -28,6 +28,7 @@ import {
     REMOVE_SELECTED_CASE,
     SELECT_FILE,
     REMOVE_SELECTED_FILE,
+    SELECT_DIRECTORY_CONTEXTUAL_MENU,
 } from './actions';
 
 import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
@@ -42,6 +43,7 @@ const initialState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     currentChildren: null,
     selectedDirectory: null,
+    selectedDirectoryByContextualMenu: null,
     currentPath: [],
     user: null,
     signInCallbackError: null,
@@ -81,6 +83,11 @@ export const reducer = createReducer(initialState, {
 
     [SELECT_DIRECTORY]: (state, action) => {
         state.selectedDirectory = action.selectedDirectory;
+    },
+
+    [SELECT_DIRECTORY_CONTEXTUAL_MENU]: (state, action) => {
+        state.selectedDirectoryByContextualMenu =
+            action.selectedDirectoryByContextualMenu;
     },
 
     [CURRENT_PATH]: (state, action) => {

@@ -20,7 +20,10 @@ import Zoom from '@material-ui/core/Zoom';
 import { FormattedMessage } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDirectory } from '../redux/actions';
+import {
+    setSelectedDirectory,
+    setSelectedDirectoryByContextualMenu,
+} from '../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     treeViewRoot: {
@@ -90,7 +93,7 @@ const DirectoryTreeView = ({
 
     /* User interaction */
     function handleContextMenuClick(event, nodeId) {
-        handleLabelClick(nodeId, false);
+        dispatch(setSelectedDirectoryByContextualMenu(nodeId));
         onContextMenu(event, nodeId);
     }
 

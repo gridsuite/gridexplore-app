@@ -12,6 +12,7 @@ import {
     setCurrentChildren,
     setSelectedDirectory,
     setCurrentPath,
+    setSelectedDirectoryByContextualMenu,
 } from '../redux/actions';
 
 import {
@@ -75,6 +76,9 @@ const TreeViewsContainer = () => {
 
     const user = useSelector((state) => state.user);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const selectedDirectoryByContextualMenu = useSelector(
+        (state) => state.selectedDirectoryByContextualMenu
+    );
     const userId = useSelector((state) => state.user.profile.sub);
 
     const mapDataRef = useRef({});
@@ -138,7 +142,6 @@ const TreeViewsContainer = () => {
         } /* open Contextual Menu in a TreeViewItem */ else {
             setShowMenuFromEmptyZone(false);
         }
-
         handleOpenMenu(e);
     }, []);
 
@@ -149,6 +152,7 @@ const TreeViewsContainer = () => {
 
     const handleCloseMenu = () => {
         setAnchorEl(null);
+        setSelectedDirectoryByContextualMenu(null);
     };
 
     const handleOpenAddNewStudyDialog = () => {
@@ -203,7 +207,7 @@ const TreeViewsContainer = () => {
     function insertNewDirectory(directoryName, isPrivate) {
         insertDirectory(
             directoryName,
-            selectedDirectory,
+            selectedDirectoryByContextualMenu,
             isPrivate,
             userId
         ).then(() => {
@@ -218,11 +222,13 @@ const TreeViewsContainer = () => {
     }
 
     function deleteSelectedDirectory() {
-        deleteElement(selectedDirectory).then((r) => {
+        deleteElement(selectedDirectoryByContextualMenu).then((r) => {
             if (r.ok) {
                 handleCloseDeleteDirectoryDialog();
                 dispatch(
-                    setSelectedDirectory(mapData[selectedDirectory].parentUuid)
+                    setSelectedDirectory(
+                        mapData[selectedDirectoryByContextualMenu].parentUuid
+                    )
                 );
             }
             if (r.status === 403) {
@@ -234,22 +240,24 @@ const TreeViewsContainer = () => {
     }
 
     function changeSelectedDirectoryAccessRights(isPrivate) {
-        updateAccessRights(selectedDirectory, isPrivate).then((r) => {
-            if (r.status === 403) {
-                setAccessRightsError(
-                    intl.formatMessage({
-                        id: 'modifyDirectoryAccessRightsError',
-                    })
-                );
+        updateAccessRights(selectedDirectoryByContextualMenu, isPrivate).then(
+            (r) => {
+                if (r.status === 403) {
+                    setAccessRightsError(
+                        intl.formatMessage({
+                            id: 'modifyDirectoryAccessRightsError',
+                        })
+                    );
+                }
+                if (r.ok) {
+                    setOpenAccessRightsDirectoryDialog(false);
+                }
             }
-            if (r.ok) {
-                setOpenAccessRightsDirectoryDialog(false);
-            }
-        });
+        );
     }
 
     function renameSelectedDirectory(newName) {
-        renameElement(selectedDirectory, newName).then((r) => {
+        renameElement(selectedDirectoryByContextualMenu, newName).then((r) => {
             if (r.status === 403) {
                 setRenameError(
                     intl.formatMessage({
@@ -683,8 +691,10 @@ const TreeViewsContainer = () => {
             <RenameDialog
                 message={''}
                 currentName={
-                    mapDataRef.current && mapDataRef.current[selectedDirectory]
-                        ? mapDataRef.current[selectedDirectory].elementName
+                    mapDataRef.current &&
+                    mapDataRef.current[selectedDirectoryByContextualMenu]
+                        ? mapDataRef.current[selectedDirectoryByContextualMenu]
+                              .elementName
                         : ''
                 }
                 open={openRenameDirectoryDialog}
@@ -711,9 +721,10 @@ const TreeViewsContainer = () => {
                 message={''}
                 isPrivate={
                     mapDataRef.current &&
-                    mapDataRef.current[selectedDirectory] !== undefined
-                        ? mapDataRef.current[selectedDirectory].accessRights
-                              .private
+                    mapDataRef.current[selectedDirectoryByContextualMenu] !==
+                        undefined
+                        ? mapDataRef.current[selectedDirectoryByContextualMenu]
+                              .accessRights.private
                         : false
                 }
                 open={openAccessRightsDirectoryDialog}

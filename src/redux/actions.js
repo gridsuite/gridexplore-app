@@ -46,6 +46,18 @@ export function setSelectedDirectory(selectedDirectory) {
     };
 }
 
+export const SELECT_DIRECTORY_CONTEXTUAL_MENU =
+    'SELECT_DIRECTORY_CONTEXTUAL_MENU';
+
+export function setSelectedDirectoryByContextualMenu(
+    selectedDirectoryByContextualMenu
+) {
+    return {
+        type: SELECT_DIRECTORY_CONTEXTUAL_MENU,
+        selectedDirectoryByContextualMenu: selectedDirectoryByContextualMenu,
+    };
+}
+
 export const CURRENT_PATH = 'CURRENT_PATH';
 
 export function setCurrentPath(path) {
