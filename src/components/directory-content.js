@@ -543,7 +543,7 @@ const DirectoryContent = () => {
                     {allowsDelete(false) && selectedUuids.size > 0 && (
                         <IconButton
                             className={classes.icon}
-                            onClick={() => handleClickDeleteStudy()}
+                            onClick={() => handleOpenDeleteStudy()}
                         >
                             <DeleteIcon />
                         </IconButton>
@@ -689,8 +689,13 @@ const DirectoryContent = () => {
                 open={openDeleteStudyDialog}
                 onClose={handleCloseDeleteStudy}
                 onClick={handleClickDeleteStudy}
-                title={useIntl().formatMessage({ id: 'deleteStudy' })}
-                message={useIntl().formatMessage({ id: 'deleteStudyMsg' })}
+                title={useIntl().formatMessage(
+                    { id: 'deleteStudy' },
+                    { stn: getSelectedChildren().length }
+                )}
+                message={useIntl().formatMessage({
+                    id: 'genericConfirmQuestion',
+                })}
                 error={deleteError}
             />
             <ExportDialog
