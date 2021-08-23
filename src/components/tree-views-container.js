@@ -131,20 +131,28 @@ const TreeViewsContainer = () => {
     );
 
     /* User interactions */
-    const onContextMenu = useCallback((e, nodeId, DOMFocusedDirectory) => {
-        setDOMFocusedDirectory(DOMFocusedDirectory);
-        setMousePosition({
-            mouseX: e.clientX + constants.HORIZONTAL_SHIFT,
-            mouseY: e.clientY + constants.VERTICAL_SHIFT,
-        });
-        /* open Contextual Menu in empty zone */
-        if (!nodeId) {
-            setShowMenuFromEmptyZone(true);
-        } /* open Contextual Menu in a TreeViewItem */ else {
-            setShowMenuFromEmptyZone(false);
-        }
-        handleOpenMenu(e);
-    }, []);
+    const onContextMenu = useCallback(
+        (event, nodeId) => {
+            //to keep the focused style (that is normally lost when opening a contextual menu)
+            event.currentTarget.parentNode.classList.add('focused');
+            setDOMFocusedDirectory(event.currentTarget.parentNode);
+
+            dispatch(setActiveDirectory(nodeId));
+
+            setMousePosition({
+                mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
+                mouseY: event.clientY + constants.VERTICAL_SHIFT,
+            });
+            /* open Contextual Menu in empty zone */
+            if (!nodeId) {
+                setShowMenuFromEmptyZone(true);
+            } /* open Contextual Menu in a TreeViewItem */ else {
+                setShowMenuFromEmptyZone(false);
+            }
+            handleOpenMenu(event);
+        },
+        [dispatch]
+    );
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
