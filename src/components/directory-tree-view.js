@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import TreeItem from '@material-ui/lab/TreeItem';
@@ -80,6 +80,7 @@ const DirectoryTreeView = ({
 
     const [expanded, setExpanded] = React.useState([]);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const currentPath = useSelector((state) => state.currentPath);
 
     const mapDataRef = useRef({});
     const expandedRef = useRef([]);
@@ -95,7 +96,6 @@ const DirectoryTreeView = ({
 
     function handleLabelClick(nodeId, toggle) {
         dispatch(setSelectedDirectory(nodeId));
-        // updateTree will be called by useEffect;
         if (toggle) {
             // update fold status of item
             toggleDirectory(nodeId);
@@ -108,6 +108,39 @@ const DirectoryTreeView = ({
         }
         toggleDirectory(nodeId);
     }
+
+    function findPathNodeInTree(root, nodeUuid) {
+        if (!root) return undefined;
+        if (root.elementUuid === nodeUuid) return [root];
+
+        if (root.children) {
+            let mayMany = root.children
+                .map((child) => {
+                    return findPathNodeInTree(child, nodeUuid);
+                })
+                .filter((r) => r !== undefined);
+            if (mayMany === undefined || mayMany.length === 0) return undefined;
+            else return [root, ...mayMany[0]];
+        } else {
+            if (Object.entries(root) !== undefined) {
+                for (const [, v] of Object.entries(root)) {
+                    let ret = findPathNodeInTree(v, nodeUuid);
+                    if (ret !== undefined) return ret;
+                }
+                return undefined;
+            } else return undefined;
+        }
+    }
+
+    useEffect(() => {
+        let path = findPathNodeInTree(mapDataRef.current, selectedDirectory);
+        if (path !== undefined) {
+            path.forEach((child, i, arr) => {
+                if (!expandedRef.current.includes(child.elementUuid))
+                    toggleDirectory(child.elementUuid);
+            });
+        }
+    }, [selectedDirectory, currentPath]);
 
     /* Handle Rendering */
     const renderTree = (node) => {

@@ -220,8 +220,9 @@ const TreeViewsContainer = () => {
     /* Handle Dialogs actions */
     function insertNewDirectory(directoryName, isPrivate) {
         insertDirectory(directoryName, activeDirectory, isPrivate, userId).then(
-            () => {
+            (newDir) => {
                 setOpenCreateNewDirectoryDialog(false);
+                dispatch(setSelectedDirectory(newDir.elementUuid));
             }
         );
     }
