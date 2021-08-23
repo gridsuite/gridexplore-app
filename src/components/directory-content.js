@@ -100,7 +100,7 @@ const DirectoryContent = () => {
     const userId = useSelector((state) => state.user.profile.sub);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [contextualStudy, setContextualStudy] = React.useState(null);
+    const [activeStudy, setActiveStudy] = React.useState(null);
 
     const DownloadIframe = 'downloadIframe';
 
@@ -128,10 +128,11 @@ const DirectoryContent = () => {
     const handleCloseRenameStudy = () => {
         setOpenRenameStudyDialog(false);
         setRenameError('');
+        setActiveStudy('');
     };
 
     const handleClickRenameStudy = (newStudyNameValue) => {
-        renameElement(contextualStudy.elementUuid, newStudyNameValue)
+        renameElement(activeStudy.elementUuid, newStudyNameValue)
             .then((response) => {
                 if (response.status === 403) {
                     // == FORBIDDEN
@@ -168,7 +169,7 @@ const DirectoryContent = () => {
     const handleCloseDeleteStudy = () => {
         setOpenDeleteStudyDialog(false);
         setDeleteError('');
-        setContextualStudy('');
+        setActiveStudy('');
     };
 
     const handleClickDeleteStudy = () => {
@@ -215,6 +216,7 @@ const DirectoryContent = () => {
 
     const handleCloseExportStudy = () => {
         setOpenExportStudyDialog(false);
+        setActiveStudy('');
     };
 
     const handleClickExportStudy = (url) => {
@@ -240,15 +242,16 @@ const DirectoryContent = () => {
     const handleCloseStudyAccessRights = () => {
         setOpenStudyAccessRightsDialog(false);
         setAccessRightsError('');
+        setActiveStudy('');
     };
 
     const handleCloseRowMenu = () => {
         setAnchorEl(null);
-        setContextualStudy('');
+        setActiveStudy('');
     };
 
     const handleClickStudyAccessRights = (selected) => {
-        updateAccessRights(contextualStudy.elementUuid, selected).then(
+        updateAccessRights(activeStudy.elementUuid, selected).then(
             (response) => {
                 if (response.status === 403) {
                     setAccessRightsError(
@@ -433,17 +436,16 @@ const DirectoryContent = () => {
 
     const contextualMixPolicies = {
         BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
-        ZIMBRA: 'Zimbra', // if !selectedUuids.has(selected.Uuid) just use contextualStudy
-        ALL: 'All', // union of contextualStudy.Uuid and selectedUuids (actually implemented)
+        ZIMBRA: 'Zimbra', // if !selectedUuids.has(selected.Uuid) just use activeStudy
+        ALL: 'All', // union of activeStudy.Uuid and selectedUuids (actually implemented)
     };
     let contextualMixPolicy = contextualMixPolicies.ALL;
 
     const getSelectedChildren = (mayChange = false) => {
         let acc = [];
-        let ctxtUuid = contextualStudy ? contextualStudy.elementUuid : null;
-        if (contextualStudy) {
-            // ctxtUuid = contextualStudy.elementUuid;
-            acc.push(contextualStudy);
+        let ctxtUuid = activeStudy ? activeStudy.elementUuid : null;
+        if (activeStudy) {
+            acc.push(activeStudy);
         }
 
         if (selectedUuids && currentChildren) {
@@ -477,7 +479,7 @@ const DirectoryContent = () => {
     };
 
     const isAllowed = () => {
-        if (contextualStudy) return contextualStudy.owner === userId;
+        if (activeStudy) return activeStudy.owner === userId;
         if (!selectedUuids) return false;
         let children = getSelectedChildren();
         let soFar = true;
@@ -572,7 +574,7 @@ const DirectoryContent = () => {
                                 style={{ flexGrow: 1 }}
                                 onRowRightClick={(event) => {
                                     if (event.rowData.type === 'STUDY') {
-                                        setContextualStudy(event.rowData);
+                                        setActiveStudy(event.rowData);
                                     }
                                     setMousePosition({
                                         mouseX:
@@ -660,7 +662,7 @@ const DirectoryContent = () => {
                             : undefined
                     }
                 >
-                    {contextualStudy && (
+                    {activeStudy && (
                         <div>
                             {allowsRename() && (
                                 <>
@@ -698,7 +700,7 @@ const DirectoryContent = () => {
                 onClick={handleClickRenameStudy}
                 title={useIntl().formatMessage({ id: 'renameStudy' })}
                 message={useIntl().formatMessage({ id: 'renameStudyMsg' })}
-                currentName={contextualStudy ? contextualStudy.elementName : ''}
+                currentName={activeStudy ? activeStudy.elementName : ''}
                 error={renameError}
             />
             <DeleteDialog
@@ -718,7 +720,7 @@ const DirectoryContent = () => {
                 open={openExportStudyDialog}
                 onClose={handleCloseExportStudy}
                 onClick={handleClickExportStudy}
-                studyUuid={contextualStudy ? contextualStudy.elementUuid : ''}
+                studyUuid={activeStudy ? activeStudy.elementUuid : ''}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
             />
             <AccessRightsDialog
