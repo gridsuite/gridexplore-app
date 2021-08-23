@@ -516,6 +516,16 @@ const DirectoryContent = () => {
         );
     }
 
+    const areSelectedStudiesAllPrivate = () => {
+        let sel = getSelectedChildren();
+        if (!sel || sel.length === 0) return undefined;
+        let priv = sel.filter((child) => child.accessRights.private);
+        if (!priv || priv.length === 0) return false;
+        if (priv.length === sel.length) return true;
+
+        return undefined;
+    };
+
     return (
         <>
             <div
@@ -711,7 +721,7 @@ const DirectoryContent = () => {
                 onClick={handleClickStudyAccessRights}
                 title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
                 //isPrivate={isSelectedStudyPrivate}
-                isPrivate={() => true}
+                isPrivate={areSelectedStudiesAllPrivate()}
                 error={accessRightsError}
             />
             <iframe
