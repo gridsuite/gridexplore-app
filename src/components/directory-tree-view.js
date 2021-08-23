@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0.5),
     },
     treeItemRoot: {
-        '&:focus > $treeItemContent $treeItemLabel': {
+        '&:focus > $treeItemContent $treeItemLabel, .focused': {
             borderRadius: theme.spacing(2),
             backgroundColor: theme.row.primary,
         },
@@ -91,7 +91,9 @@ const DirectoryTreeView = ({
     /* User interaction */
     function handleContextMenuClick(event, nodeId) {
         dispatch(setActiveDirectory(nodeId));
-        onContextMenu(event, nodeId);
+        //to keep the focused style (that is normally lost when opening a contextual menu)
+        event.currentTarget.parentNode.classList.add('focused');
+        onContextMenu(event, nodeId, event.currentTarget.parentNode);
     }
 
     function handleLabelClick(nodeId, toggle) {

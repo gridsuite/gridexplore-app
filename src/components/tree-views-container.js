@@ -85,6 +85,8 @@ const TreeViewsContainer = () => {
     const selectedDirectoryRef = useRef({});
     selectedDirectoryRef.current = selectedDirectory;
 
+    const [DOMFocusedDirectory, setDOMFocusedDirectory] = useState(null);
+
     const websocketExpectedCloseRef = useRef();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -129,7 +131,8 @@ const TreeViewsContainer = () => {
     );
 
     /* User interactions */
-    const onContextMenu = useCallback((e, nodeId) => {
+    const onContextMenu = useCallback((e, nodeId, DOMFocusedDirectory) => {
+        setDOMFocusedDirectory(DOMFocusedDirectory);
         setMousePosition({
             mouseX: e.clientX + constants.HORIZONTAL_SHIFT,
             mouseY: e.clientY + constants.VERTICAL_SHIFT,
@@ -150,6 +153,11 @@ const TreeViewsContainer = () => {
 
     const handleCloseMenu = () => {
         setAnchorEl(null);
+        //so it removes the style that we added ourselves
+        if (DOMFocusedDirectory !== null) {
+            DOMFocusedDirectory.classList.remove('focused');
+            setDOMFocusedDirectory(null);
+        }
         dispatch(setActiveDirectory(null));
     };
 
