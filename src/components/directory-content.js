@@ -23,6 +23,7 @@ import VirtualizedTable from './virtualized-table';
 import { elementType } from '../utils/elementType';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
 import { Checkbox } from '@material-ui/core';
+import { Toolbar } from '@material-ui/core';
 
 import {
     deleteElement,
@@ -30,15 +31,18 @@ import {
     renameElement,
     updateAccessRights,
 } from '../utils/rest-api';
+
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import BuildIcon from '@material-ui/icons/Build';
 import ListItemText from '@material-ui/core/ListItemText';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Menu from '@material-ui/core/Menu';
+
+import BuildIcon from '@material-ui/icons/Build';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import IconButton from '@material-ui/core/IconButton';
+
 import ExportDialog from './export-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
@@ -88,7 +92,7 @@ const initialMousePosition = {
 
 const DirectoryContent = () => {
     const [childrenMetadata, setChildrenMetadata] = useState({});
-    const [selected, setSelected] = useState(new Set());
+    const [selectedUuids, setSelectedUuids] = useState(new Set());
 
     const currentChildren = useSelector((state) => state.currentChildren);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
@@ -96,10 +100,8 @@ const DirectoryContent = () => {
     const userId = useSelector((state) => state.user.profile.sub);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [selectedStudy, setSelectedStudy] = React.useState(null);
-    const [isSelectedStudyPrivate, setSelectedStudyPrivate] = React.useState(
-        true
-    );
+    const [activeStudy, setActiveStudy] = React.useState(null);
+
     const DownloadIframe = 'downloadIframe';
 
     const classes = useStyles();
@@ -126,12 +128,11 @@ const DirectoryContent = () => {
     const handleCloseRenameStudy = () => {
         setOpenRenameStudyDialog(false);
         setRenameError('');
-        setSelectedStudy('');
-        setSelectedStudyPrivate(undefined);
+        setActiveStudy('');
     };
 
     const handleClickRenameStudy = (newStudyNameValue) => {
-        renameElement(selectedStudy.elementUuid, newStudyNameValue)
+        renameElement(activeStudy.elementUuid, newStudyNameValue)
             .then((response) => {
                 if (response.status === 403) {
                     // == FORBIDDEN
@@ -168,18 +169,37 @@ const DirectoryContent = () => {
     const handleCloseDeleteStudy = () => {
         setOpenDeleteStudyDialog(false);
         setDeleteError('');
-        setSelectedStudy('');
-        setSelectedStudyPrivate(undefined);
+        setActiveStudy('');
     };
 
     const handleClickDeleteStudy = () => {
-        deleteElement(selectedStudy.elementUuid).then((response) => {
-            if (!response.ok) {
-                setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
-            } else {
-                handleCloseDeleteStudy();
-            }
-        });
+        let selectedChildren = getSelectedChildren(false);
+        let notDeleted = [];
+        let doneChildren = [];
+        for (let child of selectedChildren) {
+            deleteElement(child.elementUuid).then((response) => {
+                doneChildren.push(child);
+                if (!response.ok) {
+                    notDeleted.push(child.elementName);
+                }
+
+                if (doneChildren.length === selectedChildren.length) {
+                    if (notDeleted.length === 0) handleCloseDeleteStudy();
+                    else {
+                        let msg = intl.formatMessage(
+                            { id: 'deleteStudiesFailure' },
+                            {
+                                pbn: notDeleted.length,
+                                stn: selectedChildren.length,
+                                problematic: notDeleted.join(' '),
+                            }
+                        );
+                        console.warn(msg);
+                        setDeleteError(msg);
+                    }
+                }
+            });
+        }
     };
 
     /**
@@ -196,8 +216,7 @@ const DirectoryContent = () => {
 
     const handleCloseExportStudy = () => {
         setOpenExportStudyDialog(false);
-        setSelectedStudy('');
-        setSelectedStudyPrivate(undefined);
+        setActiveStudy('');
     };
 
     const handleClickExportStudy = (url) => {
@@ -222,19 +241,17 @@ const DirectoryContent = () => {
 
     const handleCloseStudyAccessRights = () => {
         setOpenStudyAccessRightsDialog(false);
-        setSelectedStudy('');
-        setSelectedStudyPrivate(undefined);
         setAccessRightsError('');
+        setActiveStudy('');
     };
 
     const handleCloseRowMenu = () => {
         setAnchorEl(null);
-        setSelectedStudy('');
-        setSelectedStudyPrivate(undefined);
+        setActiveStudy('');
     };
 
     const handleClickStudyAccessRights = (selected) => {
-        updateAccessRights(selectedStudy.elementUuid, selected).then(
+        updateAccessRights(activeStudy.elementUuid, selected).then(
             (response) => {
                 if (response.status === 403) {
                     setAccessRightsError(
@@ -309,6 +326,7 @@ const DirectoryContent = () => {
             </div>
         );
     }
+
     function nameCellRender(cellData) {
         const elementUuid = cellData.rowData['elementUuid'];
         const elementName = cellData.rowData['elementName'];
@@ -339,18 +357,20 @@ const DirectoryContent = () => {
     }
 
     function toggleSelection(elementUuid) {
-        let newSelection = new Set(selected);
+        let newSelection = new Set(selectedUuids);
         if (!newSelection.delete(elementUuid)) {
             newSelection.add(elementUuid);
         }
-        setSelected(newSelection);
+        setSelectedUuids(newSelection);
     }
 
     function toggleSelectAll() {
-        if (selected.size === 0) {
-            setSelected(new Set(currentChildren.map((c) => c.elementUuid)));
+        if (selectedUuids.size === 0) {
+            setSelectedUuids(
+                new Set(currentChildren.map((c) => c.elementUuid))
+            );
         } else {
-            setSelected(new Set());
+            setSelectedUuids(new Set());
         }
     }
 
@@ -366,10 +386,10 @@ const DirectoryContent = () => {
                 <Checkbox
                     color={'primary'}
                     // set the color of checkbox (and check if not indeterminate)
-                    checked={selected.size > 0}
+                    checked={selectedUuids.size > 0}
                     indeterminate={
-                        selected.size !== 0 &&
-                        selected.size !== currentChildren.length
+                        selectedUuids.size !== 0 &&
+                        selectedUuids.size !== currentChildren.length
                     }
                 />
             </div>
@@ -388,7 +408,7 @@ const DirectoryContent = () => {
             >
                 <Checkbox
                     color={'primary'}
-                    checked={selected.has(elementUuid)}
+                    checked={selectedUuids.has(elementUuid)}
                 />
             </div>
         );
@@ -411,50 +431,150 @@ const DirectoryContent = () => {
                 setChildrenMetadata(metadata);
             });
         }
-        setSelected(new Set());
+        setSelectedUuids(new Set());
     }, [currentChildren]);
 
+    const contextualMixPolicies = {
+        BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
+        ZIMBRA: 'Zimbra', // if !selectedUuids.has(selected.Uuid) just use activeStudy
+        ALL: 'All', // union of activeStudy.Uuid and selectedUuids (actually implemented)
+    };
+    let contextualMixPolicy = contextualMixPolicies.ALL;
+
+    const getSelectedChildren = (mayChange = false) => {
+        let acc = [];
+        let ctxtUuid = activeStudy ? activeStudy.elementUuid : null;
+        if (activeStudy) {
+            acc.push(activeStudy);
+        }
+
+        if (selectedUuids && currentChildren) {
+            if (
+                contextualMixPolicy === contextualMixPolicies.ALL ||
+                ctxtUuid === null ||
+                selectedUuids.has(ctxtUuid)
+            ) {
+                acc = acc.concat(
+                    currentChildren.filter((child) =>
+                        selectedUuids.has(child.elementUuid)
+                    )
+                );
+            } else if (
+                mayChange &&
+                contextualMixPolicy === contextualMixPolicies.BIG
+            ) {
+                setSelectedUuids(null);
+            }
+        }
+        return [...new Set(acc)];
+    };
+
+    const hasSelectedAndAllAreOwned = (mayChange = false) => {
+        let selectedChildren = getSelectedChildren(mayChange);
+        return (
+            selectedChildren &&
+            selectedChildren.length > 0 &&
+            undefined === selectedChildren.find((c) => c.owner !== userId)
+        );
+    };
+
     const isAllowed = () => {
-        return selectedStudy && selectedStudy.owner === userId;
+        if (activeStudy) return activeStudy.owner === userId;
+        if (!selectedUuids) return false;
+        let children = getSelectedChildren();
+        let soFar = true;
+        for (let i = children.size - 1; i >= 0; i--) {
+            soFar = children[i].owner === userId;
+        }
+        return soFar;
+    };
+
+    const allowsDelete = (mayChange = false) => {
+        return hasSelectedAndAllAreOwned(mayChange);
+    };
+
+    const allowsRename = (mayChange = false) => {
+        let children = getSelectedChildren(mayChange);
+        return children.length === 1 && children[0].owner === userId;
+    };
+
+    const allowsPublishability = () => {
+        return isAllowed();
+    };
+
+    function makeMenuItem(utMsg, cb, ico = <EditIcon fontSize="small" />) {
+        return (
+            <>
+                <MenuItem onClick={cb}>
+                    <ListItemIcon
+                        style={{
+                            minWidth: '25px',
+                        }}
+                    >
+                        {ico}
+                    </ListItemIcon>
+                    <ListItemText primary={<FormattedMessage id={utMsg} />} />
+                </MenuItem>
+            </>
+        );
+    }
+
+    const areSelectedStudiesAllPrivate = () => {
+        let sel = getSelectedChildren();
+        if (!sel || sel.length === 0) return undefined;
+        let priv = sel.filter((child) => child.accessRights.private);
+        if (!priv || priv.length === 0) return false;
+        if (priv.length === sel.length) return true;
+
+        return undefined;
     };
 
     return (
         <>
-            {selectedDirectory !== null &&
-                currentChildren !== null &&
-                currentChildren.length === 0 && (
-                    <div style={{ textAlign: 'center', marginTop: '100px' }}>
-                        <FolderOpenRoundedIcon
-                            style={{ width: '100px', height: '100px' }}
-                        />
-                        <h1>
-                            <FormattedMessage id={'emptyDir'} />
-                        </h1>
-                    </div>
-                )}
-            {selectedDirectory !== null &&
-                currentChildren !== null &&
-                currentChildren.length > 0 && (
-                    <>
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%',
+                }}
+                onMouseDownCapture={(e) => {
+                    if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON)
+                        handleCloseRowMenu();
+                }}
+            >
+                {selectedDirectory !== null &&
+                    currentChildren !== null &&
+                    currentChildren.length === 0 && (
                         <div
-                            style={{
-                                height: '100%',
-                            }}
-                            onMouseDownCapture={(e) => {
-                                if (
-                                    e.button ===
-                                    constants.MOUSE_EVENT_RIGHT_BUTTON
-                                )
-                                    handleCloseRowMenu();
-                            }}
+                            style={{ textAlign: 'center', marginTop: '100px' }}
                         >
+                            <FolderOpenRoundedIcon
+                                style={{ width: '100px', height: '100px' }}
+                            />
+                            <h1>
+                                <FormattedMessage id={'emptyDir'} />
+                            </h1>
+                        </div>
+                    )}
+                <Toolbar>
+                    {allowsDelete(false) && selectedUuids.size > 0 && (
+                        <IconButton
+                            className={classes.icon}
+                            onClick={() => handleOpenDeleteStudy()}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    )}
+                </Toolbar>
+                {selectedDirectory !== null &&
+                    currentChildren !== null &&
+                    currentChildren.length > 0 && (
+                        <>
                             <VirtualizedTable
+                                style={{ flexGrow: 1 }}
                                 onRowRightClick={(event) => {
                                     if (event.rowData.type === 'STUDY') {
-                                        setSelectedStudy(event.rowData);
-                                        setSelectedStudyPrivate(
-                                            event.rowData.accessRights.private
-                                        );
+                                        setActiveStudy(event.rowData);
                                     }
                                     setMousePosition({
                                         mouseX:
@@ -523,123 +643,84 @@ const DirectoryContent = () => {
                                 ]}
                                 sortable={true}
                             />
-                            <StyledMenu
-                                id="row-menu"
-                                anchorEl={anchorEl}
-                                keepMounted
-                                open={Boolean(anchorEl)}
-                                onClose={handleCloseRowMenu}
-                                anchorReference="anchorPosition"
-                                anchorPosition={
-                                    mousePosition.mouseY !== null &&
-                                    mousePosition.mouseX !== null
-                                        ? {
-                                              top: mousePosition.mouseY,
-                                              left: mousePosition.mouseX,
-                                          }
-                                        : undefined
-                                }
-                            >
-                                {selectedStudy && (
-                                    <div>
-                                        {isAllowed() && (
-                                            <div>
-                                                <MenuItem
-                                                    onClick={
-                                                        handleOpenRenameStudy
-                                                    }
-                                                >
-                                                    <ListItemIcon
-                                                        style={{
-                                                            minWidth: '25px',
-                                                        }}
-                                                    >
-                                                        <EditIcon fontSize="small" />
-                                                    </ListItemIcon>
-                                                    <ListItemText
-                                                        primary={
-                                                            <FormattedMessage id="rename" />
-                                                        }
-                                                    />
-                                                </MenuItem>
-                                                <MenuItem
-                                                    onClick={
-                                                        handleOpenStudyAccessRights
-                                                    }
-                                                >
-                                                    <ListItemIcon
-                                                        style={{
-                                                            minWidth: '25px',
-                                                        }}
-                                                    >
-                                                        <BuildIcon fontSize="small" />
-                                                    </ListItemIcon>
-                                                    <ListItemText
-                                                        primary={
-                                                            <FormattedMessage id="accessRights" />
-                                                        }
-                                                    />
-                                                </MenuItem>
-                                            </div>
-                                        )}
-                                        <MenuItem
-                                            onClick={handleOpenExportStudy}
-                                        >
-                                            <ListItemIcon
-                                                style={{ minWidth: '25px' }}
-                                            >
-                                                <GetAppIcon fontSize="small" />
-                                            </ListItemIcon>
-                                            <ListItemText
-                                                primary={
-                                                    <FormattedMessage id="export" />
-                                                }
-                                            />
-                                        </MenuItem>
-                                        {isAllowed() && (
-                                            <MenuItem
-                                                onClick={handleOpenDeleteStudy}
-                                            >
-                                                <ListItemIcon
-                                                    style={{ minWidth: '25px' }}
-                                                >
-                                                    <DeleteIcon fontSize="small" />
-                                                </ListItemIcon>
-                                                <ListItemText
-                                                    primary={
-                                                        <FormattedMessage id="delete" />
-                                                    }
-                                                />
-                                            </MenuItem>
-                                        )}
-                                    </div>
-                                )}
-                            </StyledMenu>
+                        </>
+                    )}
+                <StyledMenu
+                    id="row-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleCloseRowMenu}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                        mousePosition.mouseY !== null &&
+                        mousePosition.mouseX !== null
+                            ? {
+                                  top: mousePosition.mouseY,
+                                  left: mousePosition.mouseX,
+                              }
+                            : undefined
+                    }
+                >
+                    {activeStudy && (
+                        <div>
+                            {allowsRename() && (
+                                <>
+                                    {makeMenuItem(
+                                        'rename',
+                                        handleOpenRenameStudy
+                                    )}
+                                </>
+                            )}
+                            {allowsPublishability() && (
+                                <>
+                                    {makeMenuItem(
+                                        'accessRights',
+                                        handleOpenStudyAccessRights,
+                                        <BuildIcon fontSize="small" />
+                                    )}
+                                </>
+                            )}
+                            {makeMenuItem('export', handleOpenExportStudy)}
+                            {allowsDelete(true) && (
+                                <>
+                                    {makeMenuItem(
+                                        'delete',
+                                        handleOpenDeleteStudy
+                                    )}
+                                </>
+                            )}
                         </div>
-                    </>
-                )}
+                    )}
+                </StyledMenu>
+            </div>
             <RenameDialog
                 open={openRenameStudyDialog}
                 onClose={handleCloseRenameStudy}
                 onClick={handleClickRenameStudy}
                 title={useIntl().formatMessage({ id: 'renameStudy' })}
                 message={useIntl().formatMessage({ id: 'renameStudyMsg' })}
-                currentName={selectedStudy ? selectedStudy.elementName : ''}
+                currentName={activeStudy ? activeStudy.elementName : ''}
                 error={renameError}
             />
             <DeleteDialog
                 open={openDeleteStudyDialog}
                 onClose={handleCloseDeleteStudy}
                 onClick={handleClickDeleteStudy}
-                title={useIntl().formatMessage({ id: 'deleteStudy' })}
-                message={useIntl().formatMessage({ id: 'deleteStudyMsg' })}
+                title={useIntl().formatMessage(
+                    { id: 'deleteStudy' },
+                    { stn: getSelectedChildren().length }
+                )}
+                message={useIntl().formatMessage({
+                    id: 'genericConfirmQuestion',
+                })}
                 error={deleteError}
             />
             <ExportDialog
                 open={openExportStudyDialog}
                 onClose={handleCloseExportStudy}
                 onClick={handleClickExportStudy}
-                studyUuid={selectedStudy ? selectedStudy.elementUuid : ''}
+                studyUuid={activeStudy ? activeStudy.elementUuid : ''}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
             />
             <AccessRightsDialog
@@ -647,7 +728,7 @@ const DirectoryContent = () => {
                 onClose={handleCloseStudyAccessRights}
                 onClick={handleClickStudyAccessRights}
                 title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
-                isPrivate={isSelectedStudyPrivate}
+                isPrivate={areSelectedStudiesAllPrivate()}
                 error={accessRightsError}
             />
             <iframe
