@@ -46,15 +46,12 @@ export function setSelectedDirectory(selectedDirectory) {
     };
 }
 
-export const SELECT_DIRECTORY_CONTEXTUAL_MENU =
-    'SELECT_DIRECTORY_CONTEXTUAL_MENU';
+export const ACTIVE_DIRECTORY = 'ACTIVE_DIRECTORY';
 
-export function setSelectedDirectoryByContextualMenu(
-    selectedDirectoryByContextualMenu
-) {
+export function setActiveDirectory(activeDirectory) {
     return {
-        type: SELECT_DIRECTORY_CONTEXTUAL_MENU,
-        selectedDirectoryByContextualMenu: selectedDirectoryByContextualMenu,
+        type: ACTIVE_DIRECTORY,
+        activeDirectory: activeDirectory,
     };
 }
 
