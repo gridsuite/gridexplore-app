@@ -28,6 +28,7 @@ import {
     REMOVE_SELECTED_CASE,
     SELECT_FILE,
     REMOVE_SELECTED_FILE,
+    ACTIVE_DIRECTORY,
 } from './actions';
 
 import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
@@ -42,6 +43,7 @@ const initialState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     currentChildren: null,
     selectedDirectory: null,
+    activeDirectory: null,
     currentPath: [],
     user: null,
     signInCallbackError: null,
@@ -81,6 +83,10 @@ export const reducer = createReducer(initialState, {
 
     [SELECT_DIRECTORY]: (state, action) => {
         state.selectedDirectory = action.selectedDirectory;
+    },
+
+    [ACTIVE_DIRECTORY]: (state, action) => {
+        state.activeDirectory = action.activeDirectory;
     },
 
     [CURRENT_PATH]: (state, action) => {

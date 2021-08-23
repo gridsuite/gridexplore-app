@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0.5),
     },
     treeItemRoot: {
-        '&:focus > $treeItemContent $treeItemLabel': {
+        '&:focus > $treeItemContent $treeItemLabel, .focused': {
             borderRadius: theme.spacing(2),
             backgroundColor: theme.row.primary,
         },
@@ -90,7 +90,6 @@ const DirectoryTreeView = ({
 
     /* User interaction */
     function handleContextMenuClick(event, nodeId) {
-        handleLabelClick(nodeId, false);
         onContextMenu(event, nodeId);
     }
 

@@ -12,6 +12,7 @@ import {
     setCurrentChildren,
     setSelectedDirectory,
     setCurrentPath,
+    setActiveDirectory,
 } from '../redux/actions';
 
 import {
@@ -75,6 +76,7 @@ const TreeViewsContainer = () => {
 
     const user = useSelector((state) => state.user);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const activeDirectory = useSelector((state) => state.activeDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
 
     const mapDataRef = useRef({});
@@ -82,6 +84,8 @@ const TreeViewsContainer = () => {
 
     const selectedDirectoryRef = useRef({});
     selectedDirectoryRef.current = selectedDirectory;
+
+    const [DOMFocusedDirectory, setDOMFocusedDirectory] = useState(null);
 
     const websocketExpectedCloseRef = useRef();
 
@@ -127,20 +131,28 @@ const TreeViewsContainer = () => {
     );
 
     /* User interactions */
-    const onContextMenu = useCallback((e, nodeId) => {
-        setMousePosition({
-            mouseX: e.clientX + constants.HORIZONTAL_SHIFT,
-            mouseY: e.clientY + constants.VERTICAL_SHIFT,
-        });
-        /* open Contextual Menu in empty zone */
-        if (!nodeId) {
-            setShowMenuFromEmptyZone(true);
-        } /* open Contextual Menu in a TreeViewItem */ else {
-            setShowMenuFromEmptyZone(false);
-        }
+    const onContextMenu = useCallback(
+        (event, nodeId) => {
+            //to keep the focused style (that is normally lost when opening a contextual menu)
+            event.currentTarget.parentNode.classList.add('focused');
+            setDOMFocusedDirectory(event.currentTarget.parentNode);
 
-        handleOpenMenu(e);
-    }, []);
+            dispatch(setActiveDirectory(nodeId));
+
+            setMousePosition({
+                mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
+                mouseY: event.clientY + constants.VERTICAL_SHIFT,
+            });
+            /* open Contextual Menu in empty zone */
+            if (!nodeId) {
+                setShowMenuFromEmptyZone(true);
+            } /* open Contextual Menu in a TreeViewItem */ else {
+                setShowMenuFromEmptyZone(false);
+            }
+            handleOpenMenu(event);
+        },
+        [dispatch]
+    );
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -149,6 +161,12 @@ const TreeViewsContainer = () => {
 
     const handleCloseMenu = () => {
         setAnchorEl(null);
+        //so it removes the style that we added ourselves
+        if (DOMFocusedDirectory !== null) {
+            DOMFocusedDirectory.classList.remove('focused');
+            setDOMFocusedDirectory(null);
+        }
+        dispatch(setActiveDirectory(null));
     };
 
     const handleOpenAddNewStudyDialog = () => {
@@ -201,14 +219,11 @@ const TreeViewsContainer = () => {
 
     /* Handle Dialogs actions */
     function insertNewDirectory(directoryName, isPrivate) {
-        insertDirectory(
-            directoryName,
-            selectedDirectory,
-            isPrivate,
-            userId
-        ).then(() => {
-            setOpenCreateNewDirectoryDialog(false);
-        });
+        insertDirectory(directoryName, activeDirectory, isPrivate, userId).then(
+            () => {
+                setOpenCreateNewDirectoryDialog(false);
+            }
+        );
     }
 
     function insertNewRootDirectory(directoryName, isPrivate) {
@@ -218,11 +233,11 @@ const TreeViewsContainer = () => {
     }
 
     function deleteSelectedDirectory() {
-        deleteElement(selectedDirectory).then((r) => {
+        deleteElement(activeDirectory).then((r) => {
             if (r.ok) {
                 handleCloseDeleteDirectoryDialog();
                 dispatch(
-                    setSelectedDirectory(mapData[selectedDirectory].parentUuid)
+                    setSelectedDirectory(mapData[activeDirectory].parentUuid)
                 );
             }
             if (r.status === 403) {
@@ -234,7 +249,7 @@ const TreeViewsContainer = () => {
     }
 
     function changeSelectedDirectoryAccessRights(isPrivate) {
-        updateAccessRights(selectedDirectory, isPrivate).then((r) => {
+        updateAccessRights(activeDirectory, isPrivate).then((r) => {
             if (r.status === 403) {
                 setAccessRightsError(
                     intl.formatMessage({
@@ -249,7 +264,7 @@ const TreeViewsContainer = () => {
     }
 
     function renameSelectedDirectory(newName) {
-        renameElement(selectedDirectory, newName).then((r) => {
+        renameElement(activeDirectory, newName).then((r) => {
             if (r.status === 403) {
                 setRenameError(
                     intl.formatMessage({
@@ -683,8 +698,8 @@ const TreeViewsContainer = () => {
             <RenameDialog
                 message={''}
                 currentName={
-                    mapDataRef.current && mapDataRef.current[selectedDirectory]
-                        ? mapDataRef.current[selectedDirectory].elementName
+                    mapDataRef.current && mapDataRef.current[activeDirectory]
+                        ? mapDataRef.current[activeDirectory].elementName
                         : ''
                 }
                 open={openRenameDirectoryDialog}
@@ -711,8 +726,8 @@ const TreeViewsContainer = () => {
                 message={''}
                 isPrivate={
                     mapDataRef.current &&
-                    mapDataRef.current[selectedDirectory] !== undefined
-                        ? mapDataRef.current[selectedDirectory].accessRights
+                    mapDataRef.current[activeDirectory] !== undefined
+                        ? mapDataRef.current[activeDirectory].accessRights
                               .private
                         : false
                 }

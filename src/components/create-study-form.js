@@ -173,7 +173,7 @@ export const CreateStudyForm = (props) => {
 
     const selectedFile = useSelector((state) => state.selectedFile);
     const caseName = useSelector((state) => state.selectedCase);
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const activeDirectory = useSelector((state) => state.activeDirectory);
 
     const handleCloseDialog = () => {
         props.setOpen(false);
@@ -272,7 +272,7 @@ export const CreateStudyForm = (props) => {
             caseName,
             selectedFile,
             isPrivateStudy,
-            selectedDirectory
+            activeDirectory
         ).then((res) => {
             setCreateStudyErr('');
             setStudyName('');

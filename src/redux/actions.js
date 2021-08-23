@@ -46,6 +46,15 @@ export function setSelectedDirectory(selectedDirectory) {
     };
 }
 
+export const ACTIVE_DIRECTORY = 'ACTIVE_DIRECTORY';
+
+export function setActiveDirectory(activeDirectory) {
+    return {
+        type: ACTIVE_DIRECTORY,
+        activeDirectory: activeDirectory,
+    };
+}
+
 export const CURRENT_PATH = 'CURRENT_PATH';
 
 export function setCurrentPath(path) {
