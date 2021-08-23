@@ -728,7 +728,6 @@ const DirectoryContent = () => {
                 onClose={handleCloseStudyAccessRights}
                 onClick={handleClickStudyAccessRights}
                 title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
-                //isPrivate={isSelectedStudyPrivate}
                 isPrivate={areSelectedStudiesAllPrivate()}
                 error={accessRightsError}
             />
