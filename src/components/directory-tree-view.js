@@ -69,6 +69,29 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function findPathNodeInTree(root, nodeUuid) {
+    if (!root) return undefined;
+    if (root.elementUuid === nodeUuid) return [root];
+
+    if (root.children) {
+        let mayMany = root.children
+            .map((child) => {
+                return findPathNodeInTree(child, nodeUuid);
+            })
+            .filter((r) => r !== undefined);
+        if (mayMany === undefined || mayMany.length === 0) return undefined;
+        else return [root, ...mayMany[0]];
+    } else {
+        if (Object.entries(root) !== undefined) {
+            for (const [, v] of Object.entries(root)) {
+                let ret = findPathNodeInTree(v, nodeUuid);
+                if (ret !== undefined) return ret;
+            }
+            return undefined;
+        } else return undefined;
+    }
+}
+
 const DirectoryTreeView = ({
     treeViewUuid,
     mapData,
@@ -88,6 +111,38 @@ const DirectoryTreeView = ({
     selectedDirectoryRef.current = selectedDirectory;
     expandedRef.current = expanded;
     mapDataRef.current = mapData;
+
+    /* Manage treeItem folding */
+    const removeElement = useCallback(
+        (nodeId) => {
+            let expandedCopy = [...expandedRef.current];
+            for (let i = 0; i < expandedCopy.length; i++) {
+                if (expandedCopy[i] === nodeId) {
+                    expandedCopy.splice(i, 1);
+                }
+            }
+            setExpanded(expandedCopy);
+        },
+        [expandedRef]
+    );
+
+    const addElement = useCallback(
+        (nodeId) => {
+            setExpanded([...expandedRef.current, nodeId]);
+        },
+        [expandedRef]
+    );
+
+    const toggleDirectory = useCallback(
+        (nodeId) => {
+            if (expandedRef.current.includes(nodeId)) {
+                removeElement(nodeId);
+            } else {
+                addElement(nodeId);
+            }
+        },
+        [addElement, removeElement, expandedRef]
+    );
 
     /* User interaction */
     function handleContextMenuClick(event, nodeId) {
@@ -109,29 +164,6 @@ const DirectoryTreeView = ({
         toggleDirectory(nodeId);
     }
 
-    function findPathNodeInTree(root, nodeUuid) {
-        if (!root) return undefined;
-        if (root.elementUuid === nodeUuid) return [root];
-
-        if (root.children) {
-            let mayMany = root.children
-                .map((child) => {
-                    return findPathNodeInTree(child, nodeUuid);
-                })
-                .filter((r) => r !== undefined);
-            if (mayMany === undefined || mayMany.length === 0) return undefined;
-            else return [root, ...mayMany[0]];
-        } else {
-            if (Object.entries(root) !== undefined) {
-                for (const [, v] of Object.entries(root)) {
-                    let ret = findPathNodeInTree(v, nodeUuid);
-                    if (ret !== undefined) return ret;
-                }
-                return undefined;
-            } else return undefined;
-        }
-    }
-
     useEffect(() => {
         let path = findPathNodeInTree(mapDataRef.current, selectedDirectory);
         if (path !== undefined) {
@@ -140,7 +172,7 @@ const DirectoryTreeView = ({
                     toggleDirectory(child.elementUuid);
             });
         }
-    }, [selectedDirectory, currentPath]);
+    }, [selectedDirectory, currentPath, toggleDirectory]);
 
     /* Handle Rendering */
     const renderTree = (node) => {
@@ -215,38 +247,6 @@ const DirectoryTreeView = ({
             </TreeItem>
         );
     };
-
-    /* Manage treeItem folding */
-    const removeElement = useCallback(
-        (nodeId) => {
-            let expandedCopy = [...expandedRef.current];
-            for (let i = 0; i < expandedCopy.length; i++) {
-                if (expandedCopy[i] === nodeId) {
-                    expandedCopy.splice(i, 1);
-                }
-            }
-            setExpanded(expandedCopy);
-        },
-        [expandedRef]
-    );
-
-    const addElement = useCallback(
-        (nodeId) => {
-            setExpanded([...expandedRef.current, nodeId]);
-        },
-        [expandedRef]
-    );
-
-    const toggleDirectory = useCallback(
-        (nodeId) => {
-            if (expandedRef.current.includes(nodeId)) {
-                removeElement(nodeId);
-            } else {
-                addElement(nodeId);
-            }
-        },
-        [addElement, removeElement, expandedRef]
-    );
 
     return (
         <>
