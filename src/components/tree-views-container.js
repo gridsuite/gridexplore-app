@@ -524,9 +524,9 @@ const TreeViewsContainer = () => {
 
     const isAllowed = () => {
         return (
-            selectedDirectory &&
-            mapData[selectedDirectory] &&
-            mapData[selectedDirectory].owner === userId
+            activeDirectory &&
+            mapData[activeDirectory] &&
+            mapData[activeDirectory].owner === userId
         );
     };
 
