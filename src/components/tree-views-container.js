@@ -228,8 +228,9 @@ const TreeViewsContainer = () => {
     }
 
     function insertNewRootDirectory(directoryName, isPrivate) {
-        insertRootDirectory(directoryName, isPrivate, userId).then(() => {
+        insertRootDirectory(directoryName, isPrivate, userId).then((newDir) => {
             setOpenCreateRootDirectoryDialog(false);
+            dispatch(setSelectedDirectory(newDir.elementUuid));
         });
     }
 
