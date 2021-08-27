@@ -143,8 +143,10 @@ const DirectoryTreeView = ({
     }
 
     useEffect(() => {
+        if (currentPath.length === 0) return;
+        if (currentPath[0].elementUuid !== treeViewUuid) return;
         ensureInOutExpansion(currentPath.map((n) => n.elementUuid));
-    }, [currentPath, ensureInOutExpansion]);
+    }, [currentPath, ensureInOutExpansion, treeViewUuid]);
 
     /* Handle Rendering */
     const renderTree = (node) => {
