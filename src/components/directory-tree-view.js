@@ -69,29 +69,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function findPathNodeInTree(root, nodeUuid) {
-    if (!root) return undefined;
-    if (root.elementUuid === nodeUuid) return [root];
-
-    if (root.children) {
-        let mayMany = root.children
-            .map((child) => {
-                return findPathNodeInTree(child, nodeUuid);
-            })
-            .filter((r) => r !== undefined);
-        if (mayMany === undefined || mayMany.length === 0) return undefined;
-        else return [root, ...mayMany[0]];
-    } else {
-        if (Object.entries(root) !== undefined) {
-            for (const [, v] of Object.entries(root)) {
-                let ret = findPathNodeInTree(v, nodeUuid);
-                if (ret !== undefined) return ret;
-            }
-            return undefined;
-        } else return undefined;
-    }
-}
-
 const DirectoryTreeView = ({
     treeViewUuid,
     mapData,
@@ -112,36 +89,37 @@ const DirectoryTreeView = ({
     expandedRef.current = expanded;
     mapDataRef.current = mapData;
 
-    /* Manage treeItem folding */
-    const removeElement = useCallback(
-        (nodeId) => {
-            let expandedCopy = [...expandedRef.current];
-            for (let i = 0; i < expandedCopy.length; i++) {
-                if (expandedCopy[i] === nodeId) {
-                    expandedCopy.splice(i, 1);
-                }
+    const ensureInOutExpansion = useCallback(
+        (inIds, outIds = []) => {
+            let prevAsSet = new Set(expandedRef.current);
+            // if on both side : no-op
+            let inIdsSet = new Set(
+                inIds.filter((id) => !outIds.includes(id) && !prevAsSet.has(id))
+            );
+            let outIdsSet = new Set(
+                outIds.filter((id) => !inIds.includes(id) && prevAsSet.has(id))
+            );
+
+            if (inIdsSet.size > 0 || outIdsSet.size > 0) {
+                let purged = [...prevAsSet].filter((id) => !outIdsSet.has(id));
+                let grown = purged.concat(...inIdsSet);
+                setExpanded(grown);
             }
-            setExpanded(expandedCopy);
         },
         [expandedRef]
     );
 
-    const addElement = useCallback(
-        (nodeId) => {
-            setExpanded([...expandedRef.current, nodeId]);
+    const toggleDirectories = useCallback(
+        (ids) => {
+            let ins = [];
+            let outs = [];
+            ids.forEach((id) => {
+                if (!expandedRef.current.includes(id)) ins.push(id);
+                else outs.push(id);
+            });
+            ensureInOutExpansion(ins, outs);
         },
-        [expandedRef]
-    );
-
-    const toggleDirectory = useCallback(
-        (nodeId) => {
-            if (expandedRef.current.includes(nodeId)) {
-                removeElement(nodeId);
-            } else {
-                addElement(nodeId);
-            }
-        },
-        [addElement, removeElement, expandedRef]
+        [expandedRef, ensureInOutExpansion]
     );
 
     /* User interaction */
@@ -153,7 +131,7 @@ const DirectoryTreeView = ({
         dispatch(setSelectedDirectory(nodeId));
         if (toggle) {
             // update fold status of item
-            toggleDirectory(nodeId);
+            toggleDirectories([nodeId]);
         }
     }
 
@@ -161,18 +139,12 @@ const DirectoryTreeView = ({
         if (!expandedRef.current.includes(nodeId)) {
             onDirectoryUpdate(nodeId);
         }
-        toggleDirectory(nodeId);
+        toggleDirectories([nodeId]);
     }
 
     useEffect(() => {
-        let path = findPathNodeInTree(mapDataRef.current, selectedDirectory);
-        if (path !== undefined) {
-            path.forEach((child, i, arr) => {
-                if (!expandedRef.current.includes(child.elementUuid))
-                    toggleDirectory(child.elementUuid);
-            });
-        }
-    }, [selectedDirectory, currentPath, toggleDirectory]);
+        ensureInOutExpansion(currentPath.map((n) => n.elementUuid));
+    }, [currentPath, ensureInOutExpansion]);
 
     /* Handle Rendering */
     const renderTree = (node) => {
