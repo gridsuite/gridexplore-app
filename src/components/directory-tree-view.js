@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import TreeItem from '@material-ui/lab/TreeItem';
@@ -80,6 +80,7 @@ const DirectoryTreeView = ({
 
     const [expanded, setExpanded] = React.useState([]);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const currentPath = useSelector((state) => state.currentPath);
 
     const mapDataRef = useRef({});
     const expandedRef = useRef([]);
@@ -88,6 +89,39 @@ const DirectoryTreeView = ({
     expandedRef.current = expanded;
     mapDataRef.current = mapData;
 
+    const ensureInOutExpansion = useCallback(
+        (inIds, outIds = []) => {
+            let prevAsSet = new Set(expandedRef.current);
+            // if on both side : no-op
+            let inIdsSet = new Set(
+                inIds.filter((id) => !outIds.includes(id) && !prevAsSet.has(id))
+            );
+            let outIdsSet = new Set(
+                outIds.filter((id) => !inIds.includes(id) && prevAsSet.has(id))
+            );
+
+            if (inIdsSet.size > 0 || outIdsSet.size > 0) {
+                let purged = [...prevAsSet].filter((id) => !outIdsSet.has(id));
+                let grown = purged.concat(...inIdsSet);
+                setExpanded(grown);
+            }
+        },
+        [expandedRef]
+    );
+
+    const toggleDirectories = useCallback(
+        (ids) => {
+            let ins = [];
+            let outs = [];
+            ids.forEach((id) => {
+                if (!expandedRef.current.includes(id)) ins.push(id);
+                else outs.push(id);
+            });
+            ensureInOutExpansion(ins, outs);
+        },
+        [expandedRef, ensureInOutExpansion]
+    );
+
     /* User interaction */
     function handleContextMenuClick(event, nodeId) {
         onContextMenu(event, nodeId);
@@ -95,10 +129,9 @@ const DirectoryTreeView = ({
 
     function handleLabelClick(nodeId, toggle) {
         dispatch(setSelectedDirectory(nodeId));
-        // updateTree will be called by useEffect;
         if (toggle) {
             // update fold status of item
-            toggleDirectory(nodeId);
+            toggleDirectories([nodeId]);
         }
     }
 
@@ -106,8 +139,14 @@ const DirectoryTreeView = ({
         if (!expandedRef.current.includes(nodeId)) {
             onDirectoryUpdate(nodeId);
         }
-        toggleDirectory(nodeId);
+        toggleDirectories([nodeId]);
     }
+
+    useEffect(() => {
+        if (currentPath.length === 0) return;
+        if (currentPath[0].elementUuid !== treeViewUuid) return;
+        ensureInOutExpansion(currentPath.map((n) => n.elementUuid));
+    }, [currentPath, ensureInOutExpansion, treeViewUuid]);
 
     /* Handle Rendering */
     const renderTree = (node) => {
@@ -182,38 +221,6 @@ const DirectoryTreeView = ({
             </TreeItem>
         );
     };
-
-    /* Manage treeItem folding */
-    const removeElement = useCallback(
-        (nodeId) => {
-            let expandedCopy = [...expandedRef.current];
-            for (let i = 0; i < expandedCopy.length; i++) {
-                if (expandedCopy[i] === nodeId) {
-                    expandedCopy.splice(i, 1);
-                }
-            }
-            setExpanded(expandedCopy);
-        },
-        [expandedRef]
-    );
-
-    const addElement = useCallback(
-        (nodeId) => {
-            setExpanded([...expandedRef.current, nodeId]);
-        },
-        [expandedRef]
-    );
-
-    const toggleDirectory = useCallback(
-        (nodeId) => {
-            if (expandedRef.current.includes(nodeId)) {
-                removeElement(nodeId);
-            } else {
-                addElement(nodeId);
-            }
-        },
-        [addElement, removeElement, expandedRef]
-    );
 
     return (
         <>
