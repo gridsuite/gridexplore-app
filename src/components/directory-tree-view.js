@@ -205,7 +205,11 @@ const DirectoryTreeView = ({
                         ) : null}
                     </div>
                 }
-                endIcon={<ChevronRightIcon className={classes.icon} />}
+                endIcon={
+                    node.subdirectoriesCount > 0 ? (
+                        <ChevronRightIcon className={classes.icon} />
+                    ) : null
+                }
                 classes={{
                     root: classes.treeItemRoot,
                     content: classes.treeItemContent,
