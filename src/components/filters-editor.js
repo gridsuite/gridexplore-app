@@ -49,11 +49,6 @@ const BootstrapInput = withStyles(() => ({
     },
 }))(InputBase);
 
-// need english countries to save the country list
-export const en_countries = require('localized-countries')(
-    require('localized-countries/data/en')
-);
-
 const CustomTextField = withStyles(() => ({
     root: {
         width: '263px',
@@ -77,7 +72,9 @@ const FiltersEditor = ({ filters, onChange }) => {
         );
     } catch (error) {
         // fallback to english if no localised list found
-        countriesList = en_countries;
+        countriesList = require('localized-countries')(
+            require('localized-countries/data/en')
+        );
     }
     const intl = useIntl();
 
