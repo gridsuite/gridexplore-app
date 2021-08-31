@@ -41,7 +41,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import DeleteIcon from '@material-ui/icons/Delete';
 import FolderSpecialIcon from '@material-ui/icons/FolderSpecial';
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import BuildIcon from '@material-ui/icons/Build';
@@ -634,7 +634,7 @@ const TreeViewsContainer = () => {
                                         <ListItemIcon
                                             style={{ minWidth: '25px' }}
                                         >
-                                            <DeleteOutlineIcon fontSize="small" />
+                                            <DeleteIcon fontSize="small" />
                                         </ListItemIcon>
                                         <ListItemText
                                             primary={intl.formatMessage({
