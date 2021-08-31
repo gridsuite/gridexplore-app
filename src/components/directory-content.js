@@ -927,6 +927,7 @@ const DirectoryContent = () => {
                 open={openFiltersContingencyCopyToScriptDialog}
                 onClose={handleCloseFiltersContingencyCopyToScript}
                 onError={handleError}
+                currentName={activeElement ? activeElement.elementName : ''}
                 title={useIntl().formatMessage({ id: 'copyToScriptList' })}
             />
             <iframe
