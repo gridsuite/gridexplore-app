@@ -167,7 +167,7 @@ const DirectoryTreeView = ({
                     </div>
                 }
                 endIcon={
-                    node.subdirectoriesNumber > 0 ? (
+                    node.subdirectoriesCount > 0 ? (
                         <ChevronRightIcon className={classes.icon} />
                     ) : null
                 }
