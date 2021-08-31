@@ -13,7 +13,6 @@ import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LockIcon from '@material-ui/icons/Lock';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-// import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
@@ -115,8 +114,6 @@ const DirectoryTreeView = ({
         if (!node) {
             return;
         }
-        console.info('node = ', node);
-        console.info('Children = ', node.children);
         return (
             <TreeItem
                 key={node.elementUuid}
@@ -172,7 +169,7 @@ const DirectoryTreeView = ({
                 endIcon={
                     node.subdirectoriesNumber > 0 ? (
                         <ChevronRightIcon className={classes.icon} />
-                    ) : null /*<FiberManualRecordIcon className={classes.icon} />*/
+                    ) : null
                 }
                 classes={{
                     root: classes.treeItemRoot,
