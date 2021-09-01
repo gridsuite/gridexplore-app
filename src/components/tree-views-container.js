@@ -41,7 +41,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import DeleteIcon from '@material-ui/icons/Delete';
 import FolderSpecialIcon from '@material-ui/icons/FolderSpecial';
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import BuildIcon from '@material-ui/icons/Build';
@@ -230,15 +230,17 @@ const TreeViewsContainer = () => {
     /* Handle Dialogs actions */
     function insertNewDirectory(directoryName, isPrivate) {
         insertDirectory(directoryName, activeDirectory, isPrivate, userId).then(
-            () => {
+            (newDir) => {
                 setOpenCreateNewDirectoryDialog(false);
+                dispatch(setSelectedDirectory(newDir.elementUuid));
             }
         );
     }
 
     function insertNewRootDirectory(directoryName, isPrivate) {
-        insertRootDirectory(directoryName, isPrivate, userId).then(() => {
+        insertRootDirectory(directoryName, isPrivate, userId).then((newDir) => {
             setOpenCreateRootDirectoryDialog(false);
+            dispatch(setSelectedDirectory(newDir.elementUuid));
         });
     }
 
@@ -532,9 +534,9 @@ const TreeViewsContainer = () => {
 
     const isAllowed = () => {
         return (
-            selectedDirectory &&
-            mapData[selectedDirectory] &&
-            mapData[selectedDirectory].owner === userId
+            activeDirectory &&
+            mapData[activeDirectory] &&
+            mapData[activeDirectory].owner === userId
         );
     };
 
@@ -654,7 +656,7 @@ const TreeViewsContainer = () => {
                                         <ListItemIcon
                                             style={{ minWidth: '25px' }}
                                         >
-                                            <DeleteOutlineIcon fontSize="small" />
+                                            <DeleteIcon fontSize="small" />
                                         </ListItemIcon>
                                         <ListItemText
                                             primary={intl.formatMessage({

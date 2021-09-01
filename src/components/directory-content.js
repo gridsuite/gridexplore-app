@@ -44,6 +44,7 @@ import Menu from '@material-ui/core/Menu';
 import BuildIcon from '@material-ui/icons/Build';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import IconButton from '@material-ui/core/IconButton';
 import DescriptionIcon from '@material-ui/icons/Description';
 import PanToolIcon from '@material-ui/icons/PanTool';
@@ -834,15 +835,17 @@ const DirectoryContent = () => {
                                 <>
                                     {makeMenuItem(
                                         'export',
-                                        handleOpenExportStudy
-                                    )}{' '}
+                                        handleOpenExportStudy,
+                                        <GetAppIcon fontSize="small" />
+                                    )}
                                 </>
                             )}
                             {allowsDelete(true) && (
                                 <>
                                     {makeMenuItem(
                                         'delete',
-                                        handleOpenDeleteElement
+                                        handleOpenDeleteElement,
+                                        <DeleteIcon fontSize="small" />
                                     )}
                                 </>
                             )}
