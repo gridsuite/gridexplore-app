@@ -299,7 +299,7 @@ const DirectoryContent = () => {
     const [
         currentFiltersContingencyListId,
         setCurrentFiltersContingencyListId,
-    ] = React.useState(null);
+    ] = React.useState('');
     const handleCloseFiltersContingency = () => {
         setOpenFiltersContingencyDialog(false);
         setActiveElement('');
@@ -342,7 +342,7 @@ const DirectoryContent = () => {
     const [
         currentScriptContingencyListId,
         setCurrentScriptContingencyListId,
-    ] = React.useState(null);
+    ] = React.useState('');
     const handleCloseScriptContingency = () => {
         setOpenScriptContingencyDialog(false);
         setActiveElement('');
