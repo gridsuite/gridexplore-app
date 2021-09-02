@@ -50,6 +50,7 @@ import CreateIcon from '@material-ui/icons/Create';
 
 // Dialogs
 import CreateStudyForm from './create-study-form';
+import CreateContingencyListForm from './create-contingency-list-form';
 import { CreateDirectoryDialog } from './dialogs/create-directory-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
@@ -96,6 +97,10 @@ const TreeViewsContainer = () => {
     const [openAddNewStudyDialog, setOpenAddNewStudyDialog] = React.useState(
         false
     );
+    const [
+        openAddNewContingencyListDialog,
+        setOpenAddNewContingencyListDialog,
+    ] = React.useState(false);
     const [
         openCreateNewDirectoryDialog,
         setOpenCreateNewDirectoryDialog,
@@ -172,6 +177,11 @@ const TreeViewsContainer = () => {
     const handleOpenAddNewStudyDialog = () => {
         setAnchorEl(null);
         setOpenAddNewStudyDialog(true);
+    };
+
+    const handleOpenAddNewContingencyListDialog = () => {
+        setAnchorEl(null);
+        setOpenAddNewContingencyListDialog(true);
     };
 
     const handleOpenCreateNewDirectoryDialog = () => {
@@ -591,6 +601,18 @@ const TreeViewsContainer = () => {
                                     })}
                                 />
                             </MenuItem>
+                            <MenuItem
+                                onClick={handleOpenAddNewContingencyListDialog}
+                            >
+                                <ListItemIcon style={{ minWidth: '25px' }}>
+                                    <AddIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={intl.formatMessage({
+                                        id: 'createNewContingencyList',
+                                    })}
+                                />
+                            </MenuItem>
                             <hr />
                             {isAllowed() && (
                                 <div>
@@ -676,6 +698,10 @@ const TreeViewsContainer = () => {
             <CreateStudyForm
                 open={openAddNewStudyDialog}
                 setOpen={setOpenAddNewStudyDialog}
+            />
+            <CreateContingencyListForm
+                open={openAddNewContingencyListDialog}
+                setOpen={setOpenAddNewContingencyListDialog}
             />
             <CreateDirectoryDialog
                 message={''}

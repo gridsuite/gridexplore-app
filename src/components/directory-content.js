@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -18,6 +18,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 
 import VirtualizedTable from './virtualized-table';
 import { elementType } from '../utils/elementType';
@@ -27,6 +29,7 @@ import { Toolbar } from '@material-ui/core';
 
 import {
     deleteElement,
+    fetchContingencyListsInfos,
     fetchStudiesInfos,
     renameElement,
     updateAccessRights,
@@ -43,11 +46,18 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import IconButton from '@material-ui/core/IconButton';
+import DescriptionIcon from '@material-ui/icons/Description';
+import PanToolIcon from '@material-ui/icons/PanTool';
 
 import ExportDialog from './export-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
+import FiltersContingencyDialog from './dialogs/filters-contingency-dialog';
+import ScriptContingencyDialog from './dialogs/script-contingency-dialog';
+import ContingencyReplaceWithScriptDialog from './dialogs/contingency-replace-with-script-dialog';
+import ContingencyCopyToScriptDialog from './dialogs/contingency-copy-to-script-dialog';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -92,6 +102,8 @@ const initialMousePosition = {
 };
 
 const DirectoryContent = () => {
+    const { enqueueSnackbar } = useSnackbar();
+
     const [childrenMetadata, setChildrenMetadata] = useState({});
     const [selectedUuids, setSelectedUuids] = useState(new Set());
 
@@ -101,7 +113,7 @@ const DirectoryContent = () => {
     const userId = useSelector((state) => state.user.profile.sub);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [activeStudy, setActiveStudy] = React.useState(null);
+    const [activeElement, setActiveElement] = React.useState(null);
 
     const DownloadIframe = 'downloadIframe';
 
@@ -116,37 +128,40 @@ const DirectoryContent = () => {
     /**
      * Rename dialog: window status value for renaming
      */
-    const [openRenameStudyDialog, setOpenRenameStudyDialog] = React.useState(
-        false
-    );
+    const [
+        openRenameElementDialog,
+        setOpenRenameElementDialog,
+    ] = React.useState(false);
     const [renameError, setRenameError] = React.useState('');
 
-    const handleOpenRenameStudy = () => {
+    const handleOpenRenameElement = () => {
         setAnchorEl(null);
-        setOpenRenameStudyDialog(true);
+        setOpenRenameElementDialog(true);
     };
 
-    const handleCloseRenameStudy = () => {
-        setOpenRenameStudyDialog(false);
+    const handleCloseRenameElement = () => {
+        setOpenRenameElementDialog(false);
         setRenameError('');
-        setActiveStudy('');
+        setActiveElement('');
     };
 
-    const handleClickRenameStudy = (newStudyNameValue) => {
-        renameElement(activeStudy.elementUuid, newStudyNameValue)
+    const handleClickRenameElement = (newElementNameValue) => {
+        renameElement(activeElement.elementUuid, newElementNameValue)
             .then((response) => {
                 if (response.status === 403) {
                     // == FORBIDDEN
                     setRenameError(
-                        intl.formatMessage({ id: 'renameStudyNotAllowedError' })
+                        intl.formatMessage({
+                            id: 'renameElementNotAllowedError',
+                        })
                     );
                 } else if (response.status === 404) {
                     // == NOT FOUND
                     setRenameError(
-                        intl.formatMessage({ id: 'renameStudyNotFoundError' })
+                        intl.formatMessage({ id: 'renameElementNotFoundError' })
                     );
                 } else {
-                    handleCloseRenameStudy();
+                    handleCloseRenameElement();
                 }
             })
             .catch((e) => {
@@ -157,23 +172,24 @@ const DirectoryContent = () => {
     /**
      * Delete dialog: window status value for deletion
      */
-    const [openDeleteStudyDialog, setOpenDeleteStudyDialog] = React.useState(
-        false
-    );
+    const [
+        openDeleteElementDialog,
+        setOpenDeleteElementDialog,
+    ] = React.useState(false);
     const [deleteError, setDeleteError] = React.useState('');
 
-    const handleOpenDeleteStudy = () => {
+    const handleOpenDeleteElement = () => {
         setAnchorEl(null);
-        setOpenDeleteStudyDialog(true);
+        setOpenDeleteElementDialog(true);
     };
 
-    const handleCloseDeleteStudy = () => {
-        setOpenDeleteStudyDialog(false);
+    const handleCloseDeleteElement = () => {
+        setOpenDeleteElementDialog(false);
         setDeleteError('');
-        setActiveStudy('');
+        setActiveElement('');
     };
 
-    const handleClickDeleteStudy = () => {
+    const handleClickDeleteElement = () => {
         let selectedChildren = getSelectedChildren(false);
         let notDeleted = [];
         let doneChildren = [];
@@ -185,10 +201,10 @@ const DirectoryContent = () => {
                 }
 
                 if (doneChildren.length === selectedChildren.length) {
-                    if (notDeleted.length === 0) handleCloseDeleteStudy();
+                    if (notDeleted.length === 0) handleCloseDeleteElement();
                     else {
                         let msg = intl.formatMessage(
-                            { id: 'deleteStudiesFailure' },
+                            { id: 'deleteElementsFailure' },
                             {
                                 pbn: notDeleted.length,
                                 stn: selectedChildren.length,
@@ -217,7 +233,7 @@ const DirectoryContent = () => {
 
     const handleCloseExportStudy = () => {
         setOpenExportStudyDialog(false);
-        setActiveStudy('');
+        setActiveElement('');
     };
 
     const handleClickExportStudy = (url) => {
@@ -229,30 +245,30 @@ const DirectoryContent = () => {
      * AccessRights dialog: window status value for updating access rights
      */
     const [
-        openStudyAccessRightsDialog,
-        setOpenStudyAccessRightsDialog,
+        openElementAccessRightsDialog,
+        setOpenElementAccessRightsDialog,
     ] = React.useState(false);
 
     const [accessRightsError, setAccessRightsError] = React.useState('');
 
-    const handleOpenStudyAccessRights = () => {
+    const handleOpenElementAccessRights = () => {
         setAnchorEl(null);
-        setOpenStudyAccessRightsDialog(true);
+        setOpenElementAccessRightsDialog(true);
     };
 
-    const handleCloseStudyAccessRights = () => {
-        setOpenStudyAccessRightsDialog(false);
+    const handleCloseElementAccessRights = () => {
+        setOpenElementAccessRightsDialog(false);
         setAccessRightsError('');
-        setActiveStudy('');
+        setActiveElement('');
     };
 
     const handleCloseRowMenu = () => {
         setAnchorEl(null);
-        setActiveStudy('');
+        setActiveElement('');
     };
 
-    const handleClickStudyAccessRights = (selected) => {
-        updateAccessRights(activeStudy.elementUuid, selected).then(
+    const handleClickElementAccessRights = (selected) => {
+        updateAccessRights(activeElement.elementUuid, selected).then(
             (response) => {
                 if (response.status === 403) {
                     setAccessRightsError(
@@ -267,10 +283,69 @@ const DirectoryContent = () => {
                         })
                     );
                 } else {
-                    handleCloseStudyAccessRights();
+                    handleCloseElementAccessRights();
                 }
             }
         );
+    };
+
+    /**
+     * Filters contingency list dialog: window status value for editing a filters contingency list
+     */
+    const [
+        openFiltersContingencyDialog,
+        setOpenFiltersContingencyDialog,
+    ] = React.useState(false);
+    const [
+        currentFiltersContingencyListId,
+        setCurrentFiltersContingencyListId,
+    ] = React.useState('');
+    const handleCloseFiltersContingency = () => {
+        setOpenFiltersContingencyDialog(false);
+        setActiveElement('');
+    };
+
+    const [
+        openFiltersContingencyReplaceWithScriptDialog,
+        setOpenFiltersContingencyReplaceWithScriptDialog,
+    ] = React.useState(false);
+    const handleCloseFiltersContingencyReplaceWithScript = () => {
+        setOpenFiltersContingencyReplaceWithScriptDialog(false);
+        setActiveElement('');
+    };
+
+    const [
+        openFiltersContingencyCopyToScriptDialog,
+        setOpenFiltersContingencyCopyToScriptDialog,
+    ] = React.useState(false);
+    const handleCloseFiltersContingencyCopyToScript = () => {
+        setOpenFiltersContingencyCopyToScriptDialog(false);
+        setActiveElement('');
+    };
+
+    const handleContingencyCopyToScript = () => {
+        setAnchorEl(null);
+        setOpenFiltersContingencyCopyToScriptDialog(true);
+    };
+    const handleContingencyReplaceWithScript = () => {
+        setAnchorEl(null);
+        setOpenFiltersContingencyReplaceWithScriptDialog(true);
+    };
+
+    /**
+     * Script contingency list dialog: window status value for editing a script contingency list
+     */
+    const [
+        openScriptContingencyDialog,
+        setOpenScriptContingencyDialog,
+    ] = React.useState(false);
+    const [
+        currentScriptContingencyListId,
+        setCurrentScriptContingencyListId,
+    ] = React.useState('');
+    const handleCloseScriptContingency = () => {
+        setOpenScriptContingencyDialog(false);
+        setActiveElement('');
     };
 
     const abbreviationFromUserName = (name) => {
@@ -281,6 +356,15 @@ const DirectoryContent = () => {
             return tab[0] + tab[tab.length - 1];
         }
     };
+
+    const handleError = useCallback(
+        (message) => {
+            enqueueSnackbar(message, {
+                variant: 'error',
+            });
+        },
+        [enqueueSnackbar]
+    );
 
     function accessRightsCellRender(cellData) {
         const isPrivate = cellData.rowData[cellData.dataKey].private;
@@ -328,25 +412,33 @@ const DirectoryContent = () => {
         );
     }
 
+    function getElementIcon(objectType) {
+        if (objectType === elementType.STUDY) {
+            return <LibraryBooksOutlinedIcon className={classes.icon} />;
+        } else if (objectType === elementType.SCRIPT_CONTINGENCY_LIST) {
+            return <DescriptionIcon className={classes.icon} />;
+        } else if (objectType === elementType.FILTERS_CONTINGENCY_LIST) {
+            return <PanToolIcon className={classes.icon} />;
+        }
+    }
+
     function nameCellRender(cellData) {
         const elementUuid = cellData.rowData['elementUuid'];
         const elementName = cellData.rowData['elementName'];
         const objectType = cellData.rowData['type'];
         return (
             <div className={classes.cell}>
-                {!childrenMetadata[elementUuid] && (
-                    <CircularProgress
-                        size={18}
-                        className={classes.circularRoot}
-                    />
-                )}
-                {childrenMetadata[elementUuid] &&
+                {!childrenMetadata[elementUuid] &&
                     objectType === elementType.STUDY && (
-                        <LibraryBooksOutlinedIcon className={classes.icon} />
+                        <CircularProgress
+                            size={18}
+                            className={classes.circularRoot}
+                        />
                     )}
-
-                {childrenMetadata[elementUuid] ? (
-                    <div>{childrenMetadata[elementUuid].name}</div>
+                {childrenMetadata[elementUuid] && getElementIcon(objectType)}
+                {childrenMetadata[elementUuid] ||
+                objectType !== elementType.STUDY ? (
+                    <div>{elementName}</div>
                 ) : (
                     <>
                         {elementName + ' '}
@@ -417,36 +509,55 @@ const DirectoryContent = () => {
 
     useEffect(() => {
         if (currentChildren !== null) {
-            let uuids = [];
+            let studyUuids = [];
+            let contingencyListsUuids = [];
+
             currentChildren
-                .filter((e) => e.type === elementType.STUDY)
-                .map((e) => uuids.push(e.elementUuid));
-            fetchStudiesInfos(uuids).then((res) => {
-                let metadata = {};
-                res.map((e) => {
+                .filter((e) => e.type !== elementType.DIRECTORY)
+                .forEach((e) => {
+                    if (e.type === elementType.STUDY)
+                        studyUuids.push(e.elementUuid);
+                    else if (
+                        (e.type === elementType.SCRIPT_CONTINGENCY_LIST ||
+                            e.type === elementType.FILTERS_CONTINGENCY_LIST) &&
+                        (e.owner === userId || !e.accessRights.private)
+                    )
+                        contingencyListsUuids.push(e.elementUuid);
+                });
+            let metadata = {};
+            fetchStudiesInfos(studyUuids).then((res) => {
+                res.forEach((e) => {
                     metadata[e.studyUuid] = {
                         name: e.studyName,
                     };
+                });
+            });
+            fetchContingencyListsInfos(contingencyListsUuids).then((res) => {
+                res.map((e) => {
+                    metadata[e.id] = {
+                        name: e.name,
+                    };
                     return e;
                 });
-                setChildrenMetadata(metadata);
             });
+
+            setChildrenMetadata(metadata);
         }
         setSelectedUuids(new Set());
-    }, [currentChildren]);
+    }, [currentChildren, userId]);
 
     const contextualMixPolicies = {
         BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
-        ZIMBRA: 'Zimbra', // if !selectedUuids.has(selected.Uuid) just use activeStudy
-        ALL: 'All', // union of activeStudy.Uuid and selectedUuids (actually implemented)
+        ZIMBRA: 'Zimbra', // if !selectedUuids.has(selected.Uuid) just use activeElement
+        ALL: 'All', // union of activeElement.Uuid and selectedUuids (actually implemented)
     };
     let contextualMixPolicy = contextualMixPolicies.ALL;
 
     const getSelectedChildren = (mayChange = false) => {
         let acc = [];
-        let ctxtUuid = activeStudy ? activeStudy.elementUuid : null;
-        if (activeStudy) {
-            acc.push(activeStudy);
+        let ctxtUuid = activeElement ? activeElement.elementUuid : null;
+        if (activeElement) {
+            acc.push(activeElement);
         }
 
         if (selectedUuids && currentChildren) {
@@ -480,7 +591,7 @@ const DirectoryContent = () => {
     };
 
     const isAllowed = () => {
-        if (activeStudy) return activeStudy.owner === userId;
+        if (activeElement) return activeElement.owner === userId;
         if (!selectedUuids) return false;
         let children = getSelectedChildren();
         let soFar = true;
@@ -503,6 +614,19 @@ const DirectoryContent = () => {
         return isAllowed();
     };
 
+    const allowsExport = () => {
+        let children = getSelectedChildren();
+        return children.length === 1 && children[0].type === elementType.STUDY;
+    };
+
+    const allowsToScript = () => {
+        let children = getSelectedChildren();
+        return (
+            children.length === 1 &&
+            children[0].type === elementType.FILTERS_CONTINGENCY_LIST
+        );
+    };
+
     function makeMenuItem(utMsg, cb, ico = <EditIcon fontSize="small" />) {
         return (
             <>
@@ -520,7 +644,7 @@ const DirectoryContent = () => {
         );
     }
 
-    const areSelectedStudiesAllPrivate = () => {
+    const areSelectedElementsAllPrivate = () => {
         let sel = getSelectedChildren();
         if (!sel || sel.length === 0) return undefined;
         let priv = sel.filter((child) => child.accessRights.private);
@@ -561,7 +685,7 @@ const DirectoryContent = () => {
                     {allowsDelete(false) && selectedUuids.size > 0 && (
                         <IconButton
                             className={classes.icon}
-                            onClick={() => handleOpenDeleteStudy()}
+                            onClick={() => handleOpenDeleteElement()}
                         >
                             <DeleteIcon />
                         </IconButton>
@@ -574,8 +698,8 @@ const DirectoryContent = () => {
                             <VirtualizedTable
                                 style={{ flexGrow: 1 }}
                                 onRowRightClick={(event) => {
-                                    if (event.rowData.type === 'STUDY') {
-                                        setActiveStudy(event.rowData);
+                                    if (event.rowData.type !== 'DIRECTORY') {
+                                        setActiveElement(event.rowData);
                                     }
                                     setMousePosition({
                                         mouseX:
@@ -593,11 +717,36 @@ const DirectoryContent = () => {
                                             event.rowData.elementUuid
                                         ] !== undefined
                                     ) {
-                                        let url = getLink(
-                                            event.rowData.elementUuid,
-                                            event.rowData.type
-                                        );
-                                        window.open(url, '_blank');
+                                        if (
+                                            event.rowData.type ===
+                                            elementType.STUDY
+                                        ) {
+                                            let url = getLink(
+                                                event.rowData.elementUuid,
+                                                event.rowData.type
+                                            );
+                                            window.open(url, '_blank');
+                                        } else if (
+                                            event.rowData.type ===
+                                            elementType.FILTERS_CONTINGENCY_LIST
+                                        ) {
+                                            setCurrentFiltersContingencyListId(
+                                                event.rowData.elementUuid
+                                            );
+                                            setOpenFiltersContingencyDialog(
+                                                true
+                                            );
+                                        } else if (
+                                            event.rowData.type ===
+                                            elementType.SCRIPT_CONTINGENCY_LIST
+                                        ) {
+                                            setCurrentScriptContingencyListId(
+                                                event.rowData.elementUuid
+                                            );
+                                            setOpenScriptContingencyDialog(
+                                                true
+                                            );
+                                        }
                                     }
                                 }}
                                 rows={currentChildren}
@@ -663,13 +812,13 @@ const DirectoryContent = () => {
                             : undefined
                     }
                 >
-                    {activeStudy && (
+                    {activeElement && (
                         <div>
                             {allowsRename() && (
                                 <>
                                     {makeMenuItem(
                                         'rename',
-                                        handleOpenRenameStudy
+                                        handleOpenRenameElement
                                     )}
                                 </>
                             )}
@@ -677,22 +826,40 @@ const DirectoryContent = () => {
                                 <>
                                     {makeMenuItem(
                                         'accessRights',
-                                        handleOpenStudyAccessRights,
+                                        handleOpenElementAccessRights,
                                         <BuildIcon fontSize="small" />
                                     )}
                                 </>
                             )}
-                            {makeMenuItem(
-                                'export',
-                                handleOpenExportStudy,
-                                <GetAppIcon fontSize="small" />
+                            {allowsExport() && (
+                                <>
+                                    {makeMenuItem(
+                                        'export',
+                                        handleOpenExportStudy,
+                                        <GetAppIcon fontSize="small" />
+                                    )}
+                                </>
                             )}
                             {allowsDelete(true) && (
                                 <>
                                     {makeMenuItem(
                                         'delete',
-                                        handleOpenDeleteStudy,
+                                        handleOpenDeleteElement,
                                         <DeleteIcon fontSize="small" />
+                                    )}
+                                </>
+                            )}
+                            {allowsToScript() && (
+                                <>
+                                    {makeMenuItem(
+                                        'copyToScript',
+                                        handleContingencyCopyToScript,
+                                        <FileCopyIcon fontSize="small" />
+                                    )}
+                                    {makeMenuItem(
+                                        'replaceWithScript',
+                                        handleContingencyReplaceWithScript,
+                                        <InsertDriveFileIcon fontSize="small" />
                                     )}
                                 </>
                             )}
@@ -701,20 +868,20 @@ const DirectoryContent = () => {
                 </StyledMenu>
             </div>
             <RenameDialog
-                open={openRenameStudyDialog}
-                onClose={handleCloseRenameStudy}
-                onClick={handleClickRenameStudy}
-                title={useIntl().formatMessage({ id: 'renameStudy' })}
-                message={useIntl().formatMessage({ id: 'renameStudyMsg' })}
-                currentName={activeStudy ? activeStudy.elementName : ''}
+                open={openRenameElementDialog}
+                onClose={handleCloseRenameElement}
+                onClick={handleClickRenameElement}
+                title={useIntl().formatMessage({ id: 'renameElement' })}
+                message={useIntl().formatMessage({ id: 'renameElementMsg' })}
+                currentName={activeElement ? activeElement.elementName : ''}
                 error={renameError}
             />
             <DeleteDialog
-                open={openDeleteStudyDialog}
-                onClose={handleCloseDeleteStudy}
-                onClick={handleClickDeleteStudy}
+                open={openDeleteElementDialog}
+                onClose={handleCloseDeleteElement}
+                onClick={handleClickDeleteElement}
                 title={useIntl().formatMessage(
-                    { id: 'deleteStudy' },
+                    { id: 'deleteElement' },
                     { stn: getSelectedChildren().length }
                 )}
                 message={useIntl().formatMessage({
@@ -726,16 +893,45 @@ const DirectoryContent = () => {
                 open={openExportStudyDialog}
                 onClose={handleCloseExportStudy}
                 onClick={handleClickExportStudy}
-                studyUuid={activeStudy ? activeStudy.elementUuid : ''}
+                studyUuid={activeElement ? activeElement.elementUuid : ''}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
             />
             <AccessRightsDialog
-                open={openStudyAccessRightsDialog}
-                onClose={handleCloseStudyAccessRights}
-                onClick={handleClickStudyAccessRights}
+                open={openElementAccessRightsDialog}
+                onClose={handleCloseElementAccessRights}
+                onClick={handleClickElementAccessRights}
                 title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
-                isPrivate={areSelectedStudiesAllPrivate()}
+                isPrivate={areSelectedElementsAllPrivate()}
                 error={accessRightsError}
+            />
+            <FiltersContingencyDialog
+                listId={currentFiltersContingencyListId}
+                open={openFiltersContingencyDialog}
+                onClose={handleCloseFiltersContingency}
+                onError={handleError}
+                title={useIntl().formatMessage({ id: 'editContingencyList' })}
+            />
+            <ScriptContingencyDialog
+                listId={currentScriptContingencyListId}
+                open={openScriptContingencyDialog}
+                onClose={handleCloseScriptContingency}
+                onError={handleError}
+                title={useIntl().formatMessage({ id: 'editContingencyList' })}
+            />
+            <ContingencyReplaceWithScriptDialog
+                listId={activeElement ? activeElement.elementUuid : ''}
+                open={openFiltersContingencyReplaceWithScriptDialog}
+                onClose={handleCloseFiltersContingencyReplaceWithScript}
+                onError={handleError}
+                title={useIntl().formatMessage({ id: 'replaceList' })}
+            />
+            <ContingencyCopyToScriptDialog
+                listId={activeElement ? activeElement.elementUuid : ''}
+                open={openFiltersContingencyCopyToScriptDialog}
+                onClose={handleCloseFiltersContingencyCopyToScript}
+                onError={handleError}
+                currentName={activeElement ? activeElement.elementName : ''}
+                title={useIntl().formatMessage({ id: 'copyToScriptList' })}
             />
             <iframe
                 id={DownloadIframe}

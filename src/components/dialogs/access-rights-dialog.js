@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  * @param {EventListener} onClose Event to close the dialog
  * @param {EventListener} onClick Event to handle access rights changes
  * @param {String} title Title of the dialog
- * @param {String} isPrivate tells if the study is private or not
+ * @param {String} isPrivate tells if the element is private or not
  * @param {String} error error message if there is a fail
  */
 
@@ -94,7 +94,7 @@ const AccessRightsDialog = ({
                 <FormControl className={classes.formControl}>
                     <RadioGroup
                         aria-label=""
-                        name="studyAccessRights"
+                        name="elementAccessRights"
                         value={selected}
                         onChange={handleChange}
                         row
