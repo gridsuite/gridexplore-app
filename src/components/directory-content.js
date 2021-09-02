@@ -525,24 +525,31 @@ const DirectoryContent = () => {
                         contingencyListsUuids.push(e.elementUuid);
                 });
             let metadata = {};
-            fetchStudiesInfos(studyUuids).then((res) => {
-                res.forEach((e) => {
-                    metadata[e.studyUuid] = {
-                        name: e.studyName,
-                    };
-                });
-            });
-            fetchContingencyListsInfos(contingencyListsUuids).then((res) => {
-                res.map((e) => {
-                    metadata[e.id] = {
-                        name: e.name,
-                    };
-                    return e;
-                });
-            });
+            fetchStudiesInfos(studyUuids)
+                .then((res) => {
+                    res.map((e) => {
+                        metadata[e.studyUuid] = {
+                            name: e.studyName,
+                        };
+                        return e;
+                    });
+                })
+                .then(
+                    fetchContingencyListsInfos(contingencyListsUuids).then(
+                        (res) => {
+                            res.map((e) => {
+                                metadata[e.id] = {
+                                    name: e.name,
+                                };
+                                return e;
+                            });
 
-            setChildrenMetadata(metadata);
+                            setChildrenMetadata(metadata);
+                        }
+                    )
+                );
         }
+
         setSelectedUuids(new Set());
     }, [currentChildren, userId]);
 
