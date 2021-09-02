@@ -71,7 +71,7 @@ const ScriptContingencyDialog = ({ listId, open, onClose, onError, title }) => {
     };
 
     const handleClose = () => {
-        onClose();
+        handleCancel();
     };
 
     const handleCancel = () => {

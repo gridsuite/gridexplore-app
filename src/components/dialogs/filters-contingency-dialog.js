@@ -31,13 +31,13 @@ const emptyFiltersContingency = {
 };
 
 const useStyles = makeStyles(() => ({
-    dialog: {
-        width: '800px',
-        height: '600px',
+    dialogPaper: {
+        minWidth: '600px',
+        minHeight: '450px',
         margin: 'auto',
     },
     filtersEditor: {
-        width: '800px',
+        minWidth: '570px',
         margin: 'auto',
     },
 }));
@@ -69,7 +69,7 @@ const FiltersContingencyDialog = ({
     const [description, setDescription] = useState('');
 
     const handleClose = () => {
-        onClose();
+        handleCancel();
     };
 
     const handleCancel = () => {
@@ -146,7 +146,7 @@ const FiltersContingencyDialog = ({
 
     return (
         <Dialog
-            className={classes.dialog}
+            classes={{ paper: classes.dialogPaper }}
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-filters-contingency-edit"
