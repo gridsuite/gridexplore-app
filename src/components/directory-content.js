@@ -298,8 +298,15 @@ const DirectoryContent = () => {
     function getLink(elementUuid, objectType) {
         let href = '#';
         if (appsAndUrls !== null) {
-            if (objectType === elementType.STUDY) {
-                href = appsAndUrls[1].url + '/studies/' + elementUuid;
+            let mayTs = appsAndUrls.filter(
+                (t) =>
+                    0 ===
+                    t.name.localeCompare(objectType, undefined, {
+                        sensitivity: 'base',
+                    })
+            );
+            if (mayTs.length > 0) {
+                href = mayTs[0].url + '/studies/' + elementUuid;
             }
         }
         return href;
