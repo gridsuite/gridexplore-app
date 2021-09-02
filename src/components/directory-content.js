@@ -436,9 +436,8 @@ const DirectoryContent = () => {
                         />
                     )}
                 {childrenMetadata[elementUuid] && getElementIcon(objectType)}
-                {childrenMetadata[elementUuid] ||
-                objectType !== elementType.STUDY ? (
-                    <div>{elementName}</div>
+                {childrenMetadata[elementUuid] ? (
+                    <div>{childrenMetadata[elementUuid].name}</div>
                 ) : (
                     <>
                         {elementName + ' '}
@@ -526,31 +525,29 @@ const DirectoryContent = () => {
             let metadata = {};
             fetchStudiesInfos(studyUuids)
                 .then((res) => {
-                    res.map((e) => {
+                    res.forEach((e) => {
                         metadata[e.studyUuid] = {
                             name: e.studyName,
                         };
-                        return e;
                     });
                 })
-                .then(
+                .then(() => {
                     fetchContingencyListsInfos(contingencyListsUuids).then(
                         (res) => {
-                            res.map((e) => {
+                            res.forEach((e) => {
                                 metadata[e.id] = {
                                     name: e.name,
                                 };
-                                return e;
                             });
 
                             setChildrenMetadata(metadata);
                         }
-                    )
-                );
+                    );
+                });
         }
 
         setSelectedUuids(new Set());
-    }, [currentChildren, userId]);
+    }, [currentChildren]);
 
     const contextualMixPolicies = {
         BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
