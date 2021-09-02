@@ -518,9 +518,8 @@ const DirectoryContent = () => {
                     if (e.type === elementType.STUDY)
                         studyUuids.push(e.elementUuid);
                     else if (
-                        (e.type === elementType.SCRIPT_CONTINGENCY_LIST ||
-                            e.type === elementType.FILTERS_CONTINGENCY_LIST) &&
-                        (e.owner === userId || !e.accessRights.private)
+                        e.type === elementType.SCRIPT_CONTINGENCY_LIST ||
+                        e.type === elementType.FILTERS_CONTINGENCY_LIST
                     )
                         contingencyListsUuids.push(e.elementUuid);
                 });
@@ -626,11 +625,20 @@ const DirectoryContent = () => {
         return children.length === 1 && children[0].type === elementType.STUDY;
     };
 
-    const allowsToScript = () => {
+    const allowsCopyToScript = () => {
         let children = getSelectedChildren();
         return (
             children.length === 1 &&
             children[0].type === elementType.FILTERS_CONTINGENCY_LIST
+        );
+    };
+
+    const allowsReplaceWithScript = () => {
+        let children = getSelectedChildren();
+        return (
+            children.length === 1 &&
+            children[0].type === elementType.FILTERS_CONTINGENCY_LIST &&
+            children[0].owner === userId
         );
     };
 
@@ -856,13 +864,17 @@ const DirectoryContent = () => {
                                     )}
                                 </>
                             )}
-                            {allowsToScript() && (
+                            {allowsCopyToScript() && (
                                 <>
                                     {makeMenuItem(
                                         'copyToScript',
                                         handleContingencyCopyToScript,
                                         <FileCopyIcon fontSize="small" />
                                     )}
+                                </>
+                            )}
+                            {allowsReplaceWithScript() && (
+                                <>
                                     {makeMenuItem(
                                         'replaceWithScript',
                                         handleContingencyReplaceWithScript,
