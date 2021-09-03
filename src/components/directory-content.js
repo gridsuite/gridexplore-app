@@ -436,9 +436,8 @@ const DirectoryContent = () => {
                         />
                     )}
                 {childrenMetadata[elementUuid] && getElementIcon(objectType)}
-                {childrenMetadata[elementUuid] ||
-                objectType !== elementType.STUDY ? (
-                    <div>{elementName}</div>
+                {childrenMetadata[elementUuid] ? (
+                    <div>{childrenMetadata[elementUuid].name}</div>
                 ) : (
                     <>
                         {elementName + ' '}
@@ -518,33 +517,37 @@ const DirectoryContent = () => {
                     if (e.type === elementType.STUDY)
                         studyUuids.push(e.elementUuid);
                     else if (
-                        (e.type === elementType.SCRIPT_CONTINGENCY_LIST ||
-                            e.type === elementType.FILTERS_CONTINGENCY_LIST) &&
-                        (e.owner === userId || !e.accessRights.private)
+                        e.type === elementType.SCRIPT_CONTINGENCY_LIST ||
+                        e.type === elementType.FILTERS_CONTINGENCY_LIST
                     )
                         contingencyListsUuids.push(e.elementUuid);
                 });
             let metadata = {};
-            fetchStudiesInfos(studyUuids).then((res) => {
-                res.forEach((e) => {
-                    metadata[e.studyUuid] = {
-                        name: e.studyName,
-                    };
-                });
-            });
-            fetchContingencyListsInfos(contingencyListsUuids).then((res) => {
-                res.map((e) => {
-                    metadata[e.id] = {
-                        name: e.name,
-                    };
-                    return e;
-                });
-            });
+            fetchStudiesInfos(studyUuids)
+                .then((res) => {
+                    res.forEach((e) => {
+                        metadata[e.studyUuid] = {
+                            name: e.studyName,
+                        };
+                    });
+                })
+                .then(() => {
+                    fetchContingencyListsInfos(contingencyListsUuids).then(
+                        (res) => {
+                            res.forEach((e) => {
+                                metadata[e.id] = {
+                                    name: e.name,
+                                };
+                            });
 
-            setChildrenMetadata(metadata);
+                            setChildrenMetadata(metadata);
+                        }
+                    );
+                });
         }
+
         setSelectedUuids(new Set());
-    }, [currentChildren, userId]);
+    }, [currentChildren]);
 
     const contextualMixPolicies = {
         BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
@@ -619,11 +622,20 @@ const DirectoryContent = () => {
         return children.length === 1 && children[0].type === elementType.STUDY;
     };
 
-    const allowsToScript = () => {
+    const allowsCopyToScript = () => {
         let children = getSelectedChildren();
         return (
             children.length === 1 &&
             children[0].type === elementType.FILTERS_CONTINGENCY_LIST
+        );
+    };
+
+    const allowsReplaceWithScript = () => {
+        let children = getSelectedChildren();
+        return (
+            children.length === 1 &&
+            children[0].type === elementType.FILTERS_CONTINGENCY_LIST &&
+            children[0].owner === userId
         );
     };
 
@@ -849,13 +861,17 @@ const DirectoryContent = () => {
                                     )}
                                 </>
                             )}
-                            {allowsToScript() && (
+                            {allowsCopyToScript() && (
                                 <>
                                     {makeMenuItem(
                                         'copyToScript',
                                         handleContingencyCopyToScript,
                                         <FileCopyIcon fontSize="small" />
                                     )}
+                                </>
+                            )}
+                            {allowsReplaceWithScript() && (
+                                <>
                                     {makeMenuItem(
                                         'replaceWithScript',
                                         handleContingencyReplaceWithScript,
