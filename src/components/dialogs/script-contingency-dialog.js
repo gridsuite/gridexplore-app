@@ -154,11 +154,7 @@ const ScriptContingencyDialog = ({ listId, open, onClose, onError, title }) => {
                 </div>
             </DialogContent>
             <DialogActions>
-                <Button
-                    disabled={btnSaveListDisabled}
-                    onClick={handleCancel}
-                    variant="text"
-                >
+                <Button onClick={handleCancel} variant="text">
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button
