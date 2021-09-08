@@ -35,11 +35,12 @@ const useStyles = makeStyles((theme) => ({
             borderRadius: theme.spacing(2),
             backgroundColor: theme.row.primary,
         },
-        '&$treeItemSelected > $treeItemContent $treeItemLabel:hover, &$treeItemSelected > $treeItemContent $treeItemLabel, &$treeItemSelected:focus > $treeItemContent $treeItemLabel': {
-            borderRadius: theme.spacing(2),
-            backgroundColor: theme.row.hover,
-            fontWeight: 'bold',
-        },
+        '&$treeItemSelected > $treeItemContent $treeItemLabel:hover, &$treeItemSelected > $treeItemContent $treeItemLabel, &$treeItemSelected:focus > $treeItemContent $treeItemLabel':
+            {
+                borderRadius: theme.spacing(2),
+                backgroundColor: theme.row.hover,
+                fontWeight: 'bold',
+            },
     },
     treeItemSelected: {}, // keep this!
     treeItemContent: {

@@ -98,9 +98,13 @@ const App = () => {
 
     //remove the default contextMenu
     useEffect(() => {
-        document.addEventListener('contextmenu', (event) => {
-            event.preventDefault();
-        });
+        document.addEventListener(
+            'contextmenu',
+            (event) => {
+                event.preventDefault();
+            },
+            { capture: true }
+        );
     });
 
     const connectNotificationsUpdateConfig = useCallback(() => {

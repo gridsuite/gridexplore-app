@@ -73,8 +73,8 @@
     "edit": "Modifier",
 
     "createNewContingencyList": "Créer une nouvelle liste de contingences",
-    "createNewContingencyListDescription" : "Pour créer une liste de contingences, vous devez saisir les informations suivantes : ",
-    "elementNameErrorMsg" : "Le nom de l'élément n'est pas renseigné",
+    "createNewContingencyListDescription": "Pour créer une liste de contingences, vous devez saisir les informations suivantes : ",
+    "elementNameErrorMsg": "Le nom de l'élément n'est pas renseigné",
     "contingencyListName": "nom de la liste de contingences",
     "contingencyListDescription": "description de la liste de contingences",
     "SCRIPT": "Script",
