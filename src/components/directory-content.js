@@ -109,7 +109,6 @@ const DirectoryContent = () => {
 
     const currentChildren = useSelector((state) => state.currentChildren);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -508,6 +507,7 @@ const DirectoryContent = () => {
                     )
                         contingencyListsUuids.push(e.elementUuid);
                 });
+
             let metadata = {};
             fetchStudiesInfos(studyUuids)
                 .then((res) => {
@@ -665,20 +665,16 @@ const DirectoryContent = () => {
                         handleCloseRowMenu();
                 }}
             >
-                {selectedDirectory !== null &&
-                    currentChildren !== null &&
-                    currentChildren.length === 0 && (
-                        <div
-                            style={{ textAlign: 'center', marginTop: '100px' }}
-                        >
-                            <FolderOpenRoundedIcon
-                                style={{ width: '100px', height: '100px' }}
-                            />
-                            <h1>
-                                <FormattedMessage id={'emptyDir'} />
-                            </h1>
-                        </div>
-                    )}
+                {currentChildren !== null && currentChildren.length === 0 && (
+                    <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                        <FolderOpenRoundedIcon
+                            style={{ width: '100px', height: '100px' }}
+                        />
+                        <h1>
+                            <FormattedMessage id={'emptyDir'} />
+                        </h1>
+                    </div>
+                )}
                 <Toolbar>
                     {allowsDelete(false) && selectedUuids.size > 0 && (
                         <IconButton
@@ -689,110 +685,103 @@ const DirectoryContent = () => {
                         </IconButton>
                     )}
                 </Toolbar>
-                {selectedDirectory !== null &&
-                    currentChildren !== null &&
-                    currentChildren.length > 0 && (
-                        <>
-                            <VirtualizedTable
-                                style={{ flexGrow: 1 }}
-                                onRowRightClick={(event) => {
-                                    if (event.rowData.type !== 'DIRECTORY') {
-                                        setActiveElement(event.rowData);
-                                    }
-                                    setMousePosition({
-                                        mouseX:
-                                            event.event.clientX +
-                                            constants.HORIZONTAL_SHIFT,
-                                        mouseY:
-                                            event.event.clientY +
-                                            constants.VERTICAL_SHIFT,
-                                    });
-                                    setAnchorEl(event.event.currentTarget);
-                                }}
-                                onRowClick={(event) => {
+                {currentChildren !== null && currentChildren.length > 0 && (
+                    <>
+                        <VirtualizedTable
+                            style={{ flexGrow: 1 }}
+                            onRowRightClick={(event) => {
+                                if (event.rowData.type !== 'DIRECTORY') {
+                                    setActiveElement(event.rowData);
+                                }
+                                setMousePosition({
+                                    mouseX:
+                                        event.event.clientX +
+                                        constants.HORIZONTAL_SHIFT,
+                                    mouseY:
+                                        event.event.clientY +
+                                        constants.VERTICAL_SHIFT,
+                                });
+                                setAnchorEl(event.event.currentTarget);
+                            }}
+                            onRowClick={(event) => {
+                                if (
+                                    childrenMetadata[
+                                        event.rowData.elementUuid
+                                    ] !== undefined
+                                ) {
                                     if (
-                                        childrenMetadata[
-                                            event.rowData.elementUuid
-                                        ] !== undefined
+                                        event.rowData.type === elementType.STUDY
                                     ) {
-                                        if (
-                                            event.rowData.type ===
-                                            elementType.STUDY
-                                        ) {
-                                            let url = getLink(
-                                                event.rowData.elementUuid,
-                                                event.rowData.type
-                                            );
-                                            window.open(url, '_blank');
-                                        } else if (
-                                            event.rowData.type ===
-                                            elementType.FILTERS_CONTINGENCY_LIST
-                                        ) {
-                                            setCurrentFiltersContingencyListId(
-                                                event.rowData.elementUuid
-                                            );
-                                            setOpenFiltersContingencyDialog(
-                                                true
-                                            );
-                                        } else if (
-                                            event.rowData.type ===
-                                            elementType.SCRIPT_CONTINGENCY_LIST
-                                        ) {
-                                            setCurrentScriptContingencyListId(
-                                                event.rowData.elementUuid
-                                            );
-                                            setOpenScriptContingencyDialog(
-                                                true
-                                            );
-                                        }
+                                        let url = getLink(
+                                            event.rowData.elementUuid,
+                                            event.rowData.type
+                                        );
+                                        window.open(url, '_blank');
+                                    } else if (
+                                        event.rowData.type ===
+                                        elementType.FILTERS_CONTINGENCY_LIST
+                                    ) {
+                                        setCurrentFiltersContingencyListId(
+                                            event.rowData.elementUuid
+                                        );
+                                        setOpenFiltersContingencyDialog(true);
+                                    } else if (
+                                        event.rowData.type ===
+                                        elementType.SCRIPT_CONTINGENCY_LIST
+                                    ) {
+                                        setCurrentScriptContingencyListId(
+                                            event.rowData.elementUuid
+                                        );
+                                        setOpenScriptContingencyDialog(true);
                                     }
-                                }}
-                                rows={currentChildren}
-                                columns={[
-                                    {
-                                        cellRenderer: selectionRenderer,
-                                        dataKey: 'selected',
-                                        label: '',
-                                        headerRenderer: selectionHeaderRenderer,
-                                        maxWidth: 60,
-                                    },
-                                    {
-                                        width: 100,
-                                        label: intl.formatMessage({
-                                            id: 'elementName',
-                                        }),
-                                        dataKey: 'elementName',
-                                        cellRenderer: nameCellRender,
-                                    },
-                                    {
-                                        width: 100,
-                                        label: intl.formatMessage({
-                                            id: 'type',
-                                        }),
-                                        dataKey: 'type',
-                                        cellRenderer: typeCellRender,
-                                    },
-                                    {
-                                        width: 50,
-                                        label: intl.formatMessage({
-                                            id: 'owner',
-                                        }),
-                                        dataKey: 'owner',
-                                        cellRenderer: accessOwnerCellRender,
-                                    },
-                                    {
-                                        width: 50,
-                                        label: intl.formatMessage({
-                                            id: 'accessRights',
-                                        }),
-                                        dataKey: 'accessRights',
-                                        cellRenderer: accessRightsCellRender,
-                                    },
-                                ]}
-                                sortable={true}
-                            />
-                        </>
-                    )}
+                                }
+                            }}
+                            rows={currentChildren}
+                            columns={[
+                                {
+                                    cellRenderer: selectionRenderer,
+                                    dataKey: 'selected',
+                                    label: '',
+                                    headerRenderer: selectionHeaderRenderer,
+                                    maxWidth: 60,
+                                },
+                                {
+                                    width: 100,
+                                    label: intl.formatMessage({
+                                        id: 'elementName',
+                                    }),
+                                    dataKey: 'elementName',
+                                    cellRenderer: nameCellRender,
+                                },
+                                {
+                                    width: 100,
+                                    label: intl.formatMessage({
+                                        id: 'type',
+                                    }),
+                                    dataKey: 'type',
+                                    cellRenderer: typeCellRender,
+                                },
+                                {
+                                    width: 50,
+                                    label: intl.formatMessage({
+                                        id: 'owner',
+                                    }),
+                                    dataKey: 'owner',
+                                    cellRenderer: accessOwnerCellRender,
+                                },
+                                {
+                                    width: 50,
+                                    label: intl.formatMessage({
+                                        id: 'accessRights',
+                                    }),
+                                    dataKey: 'accessRights',
+                                    cellRenderer: accessRightsCellRender,
+                                },
+                            ]}
+                            sortable={true}
+                        />
+                    </>
+                )}
                 <StyledMenu
                     id="row-menu"
                     anchorEl={anchorEl}

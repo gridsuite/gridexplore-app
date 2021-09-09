@@ -8,7 +8,7 @@
 import React from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDirectory } from '../redux/actions';
+import { setCurrentPath } from '../redux/actions';
 
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
@@ -62,22 +62,24 @@ const DirectoryBreadcrumbs = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const currentPath = useSelector((state) => state.currentPath);
 
     /* Handle User interactions */
     const handleSelect = (event, nodeId) => {
         event.preventDefault();
-        dispatch(setSelectedDirectory(nodeId));
+        let path = [];
+        if (currentPath) {
+            for (const i in currentPath) {
+                path.push(currentPath[i]);
+                if (nodeId === currentPath[i].elementUuid) break;
+            }
+        }
+        dispatch(setCurrentPath(path));
     };
 
     /* Handle Rendering */
     const renderBreadCrumbsLinks = (currentPath) => {
-        if (
-            selectedDirectory !== null &&
-            currentPath !== null &&
-            currentPath.length > 1
-        ) {
+        if (currentPath !== null && currentPath.length > 1) {
             return currentPath
                 .slice(0, currentPath.length - 1)
                 .map((dir, index) => (
@@ -99,11 +101,7 @@ const DirectoryBreadcrumbs = () => {
     };
 
     const renderBreadCrumbsTypography = (currentPath) => {
-        if (
-            selectedDirectory !== null &&
-            currentPath !== null &&
-            currentPath.length > 0
-        ) {
+        if (currentPath !== null && currentPath.length > 0) {
             return (
                 <Typography className={classes.directory} color="textPrimary">
                     {currentPath.length === 1 && (
