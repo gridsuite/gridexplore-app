@@ -59,9 +59,8 @@ const FiltersContingencyDialog = ({
 }) => {
     const classes = useStyles();
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
-    const [currentFiltersContingency, setCurrentFiltersContingency] = useState(
-        null
-    );
+    const [currentFiltersContingency, setCurrentFiltersContingency] =
+        useState(null);
     const [newFiltersContingency, setNewFiltersContingency] = useState(
         emptyFiltersContingency
     );

@@ -75,8 +75,8 @@
     "edit": "Edit",
 
     "createNewContingencyList": "Create new contingency list",
-    "createNewContingencyListDescription" : "To create a new contingency list, you should enter the following information:",
-    "elementNameErrorMsg" : "The element name is not provided",
+    "createNewContingencyListDescription": "To create a new contingency list, you should enter the following information:",
+    "elementNameErrorMsg": "The element name is not provided",
     "contingencyListName": "Name of contingency list",
     "contingencyListDescription": "Contingency list description",
     "SCRIPT": "Script",

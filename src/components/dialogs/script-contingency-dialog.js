@@ -53,9 +53,8 @@ const ScriptContingencyDialog = ({ listId, open, onClose, onError, title }) => {
     const selectedTheme = useSelector((state) => state.theme);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const [aceEditorContent, setAceEditorContent] = useState('');
-    const [currentScriptContingency, setCurrentScriptContingency] = useState(
-        null
-    );
+    const [currentScriptContingency, setCurrentScriptContingency] =
+        useState(null);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
 
