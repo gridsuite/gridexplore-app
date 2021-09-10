@@ -13,7 +13,6 @@ import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { replaceFiltersWithScriptContingencyList } from '../../utils/rest-api';
 import { useSelector } from 'react-redux';
 
 /**
@@ -21,13 +20,15 @@ import { useSelector } from 'react-redux';
  * @param listId id of list to edit
  * @param open Is the dialog open ?
  * @param onClose Event to close the dialog
+ * @param onClick Function to call to perform rename
  * @param onError handle errors
  * @param title Title of the dialog
  */
-const ContingencyReplaceWithScriptDialog = ({
+const ReplaceWithScriptDialog = ({
     listId,
     open,
     onClose,
+    onClick,
     onError,
     title,
 }) => {
@@ -38,7 +39,7 @@ const ContingencyReplaceWithScriptDialog = ({
     };
 
     const handleClick = () => {
-        replaceFiltersWithScriptContingencyList(listId, selectedDirectory)
+        onClick(listId, selectedDirectory)
             .then((response) => {})
             .catch((error) => {
                 onError(error.message);
@@ -73,12 +74,13 @@ const ContingencyReplaceWithScriptDialog = ({
     );
 };
 
-ContingencyReplaceWithScriptDialog.propTypes = {
+ReplaceWithScriptDialog.propTypes = {
     listId: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
     onError: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
 };
 
-export default ContingencyReplaceWithScriptDialog;
+export default ReplaceWithScriptDialog;

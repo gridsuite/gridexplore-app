@@ -29,6 +29,7 @@ import {
     SELECT_FILE,
     REMOVE_SELECTED_FILE,
     ACTIVE_DIRECTORY,
+    UPDATE_FILTER_LIST,
 } from './actions';
 
 import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
@@ -51,6 +52,7 @@ const initialState = {
     cases: [],
     selectedCase: null,
     selectedFile: null,
+    filterList: null,
     ...paramsInitialState,
 };
 
@@ -115,5 +117,9 @@ export const reducer = createReducer(initialState, {
 
     [REMOVE_SELECTED_FILE]: (state) => {
         state.selectedFile = null;
+    },
+
+    [UPDATE_FILTER_LIST]: (state, action) => {
+        state.filterList = action.filterList;
     },
 });

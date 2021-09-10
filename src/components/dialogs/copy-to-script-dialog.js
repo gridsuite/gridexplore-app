@@ -14,7 +14,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import { newScriptFromFiltersContingencyList } from '../../utils/rest-api';
 import { useSelector } from 'react-redux';
 
 /**
@@ -22,14 +21,16 @@ import { useSelector } from 'react-redux';
  * @param listId id of list to edit
  * @param open Is the dialog open ?
  * @param onClose Event to close the dialog
+ * @param onClick Function to call to perform copy
  * @param onError handle errors
  * @param currentName Name before renaming
  * @param title Title of the dialog
  */
-const ContingencyCopyToScriptDialog = ({
+const CopyToScriptDialog = ({
     listId,
     open,
     onClose,
+    onClick,
     onError,
     currentName,
     title,
@@ -40,13 +41,8 @@ const ContingencyCopyToScriptDialog = ({
     const updateNameValue = (event) => {
         setNewNameValue(event.target.value);
     };
-
     const handleClick = () => {
-        newScriptFromFiltersContingencyList(
-            listId,
-            newNameValue,
-            selectedDirectory
-        )
+        onClick(listId, newNameValue, selectedDirectory)
             .then((response) => {})
             .catch((error) => {
                 onError(error.message);
@@ -106,13 +102,14 @@ const ContingencyCopyToScriptDialog = ({
     );
 };
 
-ContingencyCopyToScriptDialog.propTypes = {
+CopyToScriptDialog.propTypes = {
     listId: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
     onError: PropTypes.func.isRequired,
     currentName: PropTypes.string,
     title: PropTypes.string.isRequired,
 };
 
-export default ContingencyCopyToScriptDialog;
+export default CopyToScriptDialog;
