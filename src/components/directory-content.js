@@ -129,17 +129,14 @@ const DirectoryContent = () => {
     const intl = useIntl();
 
     /* Menu states */
-    const [mousePosition, setMousePosition] = React.useState(
-        initialMousePosition
-    );
+    const [mousePosition, setMousePosition] =
+        React.useState(initialMousePosition);
 
     /**
      * Rename dialog: window status value for renaming
      */
-    const [
-        openRenameElementDialog,
-        setOpenRenameElementDialog,
-    ] = React.useState(false);
+    const [openRenameElementDialog, setOpenRenameElementDialog] =
+        React.useState(false);
     const [renameError, setRenameError] = React.useState('');
 
     const handleOpenRenameElement = () => {
@@ -180,10 +177,8 @@ const DirectoryContent = () => {
     /**
      * Delete dialog: window status value for deletion
      */
-    const [
-        openDeleteElementDialog,
-        setOpenDeleteElementDialog,
-    ] = React.useState(false);
+    const [openDeleteElementDialog, setOpenDeleteElementDialog] =
+        React.useState(false);
     const [deleteError, setDeleteError] = React.useState('');
 
     const handleOpenDeleteElement = () => {
@@ -230,9 +225,8 @@ const DirectoryContent = () => {
     /**
      * Export dialog: window status value for exporting a network
      */
-    const [openExportStudyDialog, setOpenExportStudyDialog] = React.useState(
-        false
-    );
+    const [openExportStudyDialog, setOpenExportStudyDialog] =
+        React.useState(false);
 
     const handleOpenExportStudy = () => {
         setAnchorEl(null);
@@ -252,10 +246,8 @@ const DirectoryContent = () => {
     /**
      * AccessRights dialog: window status value for updating access rights
      */
-    const [
-        openElementAccessRightsDialog,
-        setOpenElementAccessRightsDialog,
-    ] = React.useState(false);
+    const [openElementAccessRightsDialog, setOpenElementAccessRightsDialog] =
+        React.useState(false);
 
     const [accessRightsError, setAccessRightsError] = React.useState('');
 
@@ -300,10 +292,8 @@ const DirectoryContent = () => {
     /**
      * Filters contingency list dialog: window status value for editing a filters contingency list
      */
-    const [
-        openFiltersContingencyDialog,
-        setOpenFiltersContingencyDialog,
-    ] = React.useState(false);
+    const [openFiltersContingencyDialog, setOpenFiltersContingencyDialog] =
+        React.useState(false);
     const [
         currentFiltersContingencyListId,
         setCurrentFiltersContingencyListId,
@@ -334,10 +324,8 @@ const DirectoryContent = () => {
     /**
      * Filters dialog: window status value to edit filters
      */
-    const [
-        openGenericFilterDialog,
-        setOpenGenericFilterDialog,
-    ] = React.useState(false);
+    const [openGenericFilterDialog, setOpenGenericFilterDialog] =
+        React.useState(false);
     const handleCloseGenericFilterDialog = () => {
         setOpenGenericFilterDialog(false);
         setCurrentFilterId(null);
@@ -349,10 +337,8 @@ const DirectoryContent = () => {
     /**
      * Filters script dialog: window status value to edit filters script
      */
-    const [
-        openFiltersCopyToScriptDialog,
-        setOpenFiltersCopyToScriptDialog,
-    ] = React.useState(false);
+    const [openFiltersCopyToScriptDialog, setOpenFiltersCopyToScriptDialog] =
+        React.useState(false);
     const handleCloseFiltersCopyToScript = () => {
         setOpenFiltersCopyToScriptDialog(false);
         setActiveElement('');
@@ -388,14 +374,10 @@ const DirectoryContent = () => {
     /**
      * Script contingency list dialog: window status value for editing a script contingency list
      */
-    const [
-        openScriptContingencyDialog,
-        setOpenScriptContingencyDialog,
-    ] = React.useState(false);
-    const [
-        currentScriptContingencyListId,
-        setCurrentScriptContingencyListId,
-    ] = React.useState('');
+    const [openScriptContingencyDialog, setOpenScriptContingencyDialog] =
+        React.useState(false);
+    const [currentScriptContingencyListId, setCurrentScriptContingencyListId] =
+        React.useState('');
     const handleCloseScriptContingency = () => {
         setOpenScriptContingencyDialog(false);
         setActiveElement('');

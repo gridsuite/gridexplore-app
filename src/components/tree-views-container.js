@@ -100,29 +100,20 @@ const TreeViewsContainer = () => {
 
     /* Dialogs states */
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [openAddNewStudyDialog, setOpenAddNewStudyDialog] = React.useState(
-        false
-    );
+    const [openAddNewStudyDialog, setOpenAddNewStudyDialog] =
+        React.useState(false);
     const [
         openAddNewContingencyListDialog,
         setOpenAddNewContingencyListDialog,
     ] = React.useState(false);
-    const [
-        openCreateNewDirectoryDialog,
-        setOpenCreateNewDirectoryDialog,
-    ] = React.useState(false);
-    const [
-        openDeleteDirectoryDialog,
-        setOpenDeleteDirectoryDialog,
-    ] = React.useState(false);
-    const [
-        openCreateRootDirectoryDialog,
-        setOpenCreateRootDirectoryDialog,
-    ] = React.useState(false);
-    const [
-        openRenameDirectoryDialog,
-        setOpenRenameDirectoryDialog,
-    ] = React.useState(false);
+    const [openCreateNewDirectoryDialog, setOpenCreateNewDirectoryDialog] =
+        React.useState(false);
+    const [openDeleteDirectoryDialog, setOpenDeleteDirectoryDialog] =
+        React.useState(false);
+    const [openCreateRootDirectoryDialog, setOpenCreateRootDirectoryDialog] =
+        React.useState(false);
+    const [openRenameDirectoryDialog, setOpenRenameDirectoryDialog] =
+        React.useState(false);
     const [
         openAccessRightsDirectoryDialog,
         setOpenAccessRightsDirectoryDialog,
@@ -134,13 +125,11 @@ const TreeViewsContainer = () => {
     const [renameError, setRenameError] = React.useState('');
 
     /* Menu states */
-    const [mousePosition, setMousePosition] = React.useState(
-        initialMousePosition
-    );
+    const [mousePosition, setMousePosition] =
+        React.useState(initialMousePosition);
 
-    const [showMenuFromEmptyZone, setShowMenuFromEmptyZone] = React.useState(
-        false
-    );
+    const [showMenuFromEmptyZone, setShowMenuFromEmptyZone] =
+        React.useState(false);
 
     /* User interactions */
     const onContextMenu = useCallback(

@@ -10,7 +10,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import Grid from '@material-ui/core/Grid';
 import { Chip, InputAdornment, MenuItem, Select } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
-import { en_countries } from './filter-editor';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { PARAM_LANGUAGE } from '../utils/config-params';
 import { useParameterState } from './parameters';
@@ -39,7 +38,9 @@ export const CountriesSelection = ({ initialValue, onChange, disabled }) => {
             );
         } catch (error) {
             // fallback to english if no localised list found
-            return en_countries;
+            return require('localized-countries')(
+                require('localized-countries/data/en')
+            );
         }
     }, [languageLocal]);
 
