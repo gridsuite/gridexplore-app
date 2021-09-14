@@ -654,7 +654,6 @@ const DirectoryContent = () => {
     };
 
     function buildFilesToDeleteGrid(files) {
-        console.info('files=>', files);
         return files.length > 1 ? (
             <Grid>
                 <Grid item>

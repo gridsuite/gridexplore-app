@@ -69,7 +69,7 @@ DeleteDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
-    message: PropTypes.object,
+    message: PropTypes.object.isRequired,
     error: PropTypes.string.isRequired,
 };
 
