@@ -654,6 +654,7 @@ const DirectoryContent = () => {
     };
 
     function buildFilesToDeleteGrid(files) {
+        console.info('files=>', files);
         return files.length > 1 ? (
             <Grid>
                 <Grid item>
@@ -685,26 +686,25 @@ const DirectoryContent = () => {
                 )}
             </Grid>
         ) : (
-            files.length === 1 && (
-                <Grid>
-                    <Grid item>
-                        <span>
-                            {intl.formatMessage(
-                                {
-                                    id: 'deleteItemDialogMessage',
-                                },
-                                {
-                                    elementName: (
-                                        <span style={{ fontWeight: 'bold' }}>
-                                            {files[0].elementName}
-                                        </span>
-                                    ),
-                                }
-                            )}
-                        </span>
-                    </Grid>
+            <Grid>
+                <Grid item>
+                    <span>
+                        {intl.formatMessage(
+                            {
+                                id: 'deleteItemDialogMessage',
+                            },
+                            {
+                                elementName: (
+                                    <span style={{ fontWeight: 'bold' }}>
+                                        {files.length === 1 &&
+                                            files[0].elementName}
+                                    </span>
+                                ),
+                            }
+                        )}
+                    </span>
                 </Grid>
-            )
+            </Grid>
         );
     }
 

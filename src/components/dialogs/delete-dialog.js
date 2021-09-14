@@ -39,8 +39,6 @@ const DeleteDialog = ({ open, onClose, onClick, title, message, error }) => {
             handleClose();
         }
     };
-    console.info('title =>', title);
-    console.info('message =>', message);
 
     return (
         <Dialog
@@ -71,7 +69,7 @@ DeleteDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
-    message: PropTypes.any,
+    message: PropTypes.object,
     error: PropTypes.string.isRequired,
 };
 
