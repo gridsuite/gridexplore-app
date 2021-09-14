@@ -68,6 +68,8 @@ const initialMousePosition = {
 };
 
 const TreeViewsContainer = () => {
+    console.log('TreeViewsContainer func start');
+
     const intl = useIntl();
     const intlRef = useIntlRef();
     const dispatch = useDispatch();

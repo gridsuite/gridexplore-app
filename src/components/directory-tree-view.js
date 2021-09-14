@@ -76,6 +76,8 @@ const DirectoryTreeView = ({
     onContextMenu,
     onDirectoryUpdate,
 }) => {
+    console.log('DirectoryTreeView func start %s', treeViewUuid);
+
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -144,6 +146,7 @@ const DirectoryTreeView = ({
     }
 
     useEffect(() => {
+        console.debug('useEffect over DTV.currentPath ' + treeViewUuid);
         if (currentPath.length === 0) return;
         if (currentPath[0].elementUuid !== treeViewUuid) return;
         ensureInOutExpansion(currentPath.map((n) => n.elementUuid));
@@ -153,6 +156,13 @@ const DirectoryTreeView = ({
     const renderTree = (node) => {
         if (!node) {
             return;
+        } else {
+            console.log(
+                'render TV %s %s %s',
+                node.elementName,
+                node.elementUuid,
+                treeViewUuid
+            );
         }
         return (
             <TreeItem
