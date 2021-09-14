@@ -653,23 +653,28 @@ const DirectoryContent = () => {
         return undefined;
     };
 
-    function buildFilesToDeleteList(files, additionalItemLabel) {
-        if (files.length < 2) return;
+    function buildFilesToDeleteGrid(files) {
         return (
-            <Grid>
-                {files.slice(0, 10).map((file) => (
-                    <Grid item>
-                        <span> {file.elementName} </span>
-                    </Grid>
-                ))}
-                {files.length > 10 && (
-                    <Grid item>
-                        <span>
-                            {'... ' + (files.length - 10) + additionalItemLabel}
-                        </span>
-                    </Grid>
-                )}
-            </Grid>
+            files.length > 1 && (
+                <Grid>
+                    {files.slice(0, 10).map((file) => (
+                        <Grid item>
+                            <span> {file.elementName} </span>
+                        </Grid>
+                    ))}
+                    {files.length > 10 && (
+                        <Grid item>
+                            <span>
+                                {'... ' +
+                                    (files.length - 10) +
+                                    intl.formatMessage({
+                                        id: 'additionalItems',
+                                    })}
+                            </span>
+                        </Grid>
+                    )}
+                </Grid>
+            )
         );
     }
 
@@ -918,10 +923,7 @@ const DirectoryContent = () => {
                                   ),
                     }
                 )}
-                message={buildFilesToDeleteList(
-                    getSelectedChildren(),
-                    intl.formatMessage({ id: 'additionalItems' })
-                )}
+                message={buildFilesToDeleteGrid(getSelectedChildren())}
                 error={deleteError}
             />
             <ExportDialog
