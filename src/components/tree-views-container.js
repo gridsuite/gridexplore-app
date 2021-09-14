@@ -730,18 +730,22 @@ const TreeViewsContainer = () => {
                 error={renameError}
             />
             <DeleteDialog
-                message={intl.formatMessage(
-                    {
-                        id: 'deleteDirectoryDialogMessage',
-                    },
-                    {
-                        directoryName: (
-                            <span style={{ fontWeight: 'bold' }}>
-                                {getTargetDirectory()}
-                            </span>
-                        ),
-                    }
-                )}
+                message={
+                    <span>
+                        {intl.formatMessage(
+                            {
+                                id: 'deleteDirectoryDialogMessage',
+                            },
+                            {
+                                directoryName: (
+                                    <span style={{ fontWeight: 'bold' }}>
+                                        {getTargetDirectory()}
+                                    </span>
+                                ),
+                            }
+                        )}
+                    </span>
+                }
                 open={openDeleteDirectoryDialog}
                 onClick={deleteSelectedDirectory}
                 onClose={handleCloseDeleteDirectoryDialog}

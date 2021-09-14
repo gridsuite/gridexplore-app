@@ -654,25 +654,55 @@ const DirectoryContent = () => {
     };
 
     function buildFilesToDeleteGrid(files) {
-        return (
-            files.length > 1 && (
+        return files.length > 1 ? (
+            <Grid>
+                <Grid item>
+                    <span>
+                        {intl.formatMessage(
+                            {
+                                id: 'deleteMultipleItemsDialogMessage',
+                            },
+                            { itemsCount: files.length }
+                        )}
+                    </span>
+                </Grid>
+                {files.slice(0, 10).map((file) => (
+                    <Grid item>
+                        <span> {file.elementName} </span>
+                    </Grid>
+                ))}
+                {files.length > 10 && (
+                    <Grid item>
+                        <span>
+                            {intl.formatMessage(
+                                {
+                                    id: 'additionalItems',
+                                },
+                                { itemsCount: files.length - 10 }
+                            )}
+                        </span>
+                    </Grid>
+                )}
+            </Grid>
+        ) : (
+            files.length === 1 && (
                 <Grid>
-                    {files.slice(0, 10).map((file) => (
-                        <Grid item>
-                            <span> {file.elementName} </span>
-                        </Grid>
-                    ))}
-                    {files.length > 10 && (
-                        <Grid item>
-                            <span>
-                                {'... ' +
-                                    (files.length - 10) +
-                                    intl.formatMessage({
-                                        id: 'additionalItems',
-                                    })}
-                            </span>
-                        </Grid>
-                    )}
+                    <Grid item>
+                        <span>
+                            {intl.formatMessage(
+                                {
+                                    id: 'deleteItemDialogMessage',
+                                },
+                                {
+                                    elementName: (
+                                        <span style={{ fontWeight: 'bold' }}>
+                                            {files[0].elementName}
+                                        </span>
+                                    ),
+                                }
+                            )}
+                        </span>
+                    </Grid>
                 </Grid>
             )
         );
@@ -908,21 +938,20 @@ const DirectoryContent = () => {
                 open={openDeleteElementDialog}
                 onClose={handleCloseDeleteElement}
                 onClick={handleClickDeleteElement}
-                title={intl.formatMessage(
-                    { id: 'deleteConfirmQuestion' },
-                    {
-                        content:
-                            getSelectedChildren().length === 1
-                                ? getSelectedChildren()[0].elementName
-                                : intl.formatMessage(
-                                      { id: 'followingItems' },
-                                      {
-                                          itemsCount:
-                                              getSelectedChildren().length,
-                                      }
-                                  ),
-                    }
-                )}
+                title={
+                    getSelectedChildren().length === 1
+                        ? intl.formatMessage(
+                              { id: 'deleteItemDialogTitle' },
+                              {
+                                  elementName:
+                                      getSelectedChildren()[0].elementName,
+                              }
+                          )
+                        : intl.formatMessage(
+                              { id: 'deleteMultipleItemsDialogTitle' },
+                              { itemsCount: getSelectedChildren().length }
+                          )
+                }
                 message={buildFilesToDeleteGrid(getSelectedChildren())}
                 error={deleteError}
             />
