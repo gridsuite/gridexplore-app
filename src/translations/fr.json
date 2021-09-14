@@ -16,7 +16,6 @@
     "renameElementMsg": "Nouveau nom de l'élément : ",
     "renameElementNotAllowedError": "Vous ne pouvez pas renommer un élément dont vous n'êtes pas propriétaire",
     "renameElementNotFoundError": "L'élément n'a pas été trouvé",
-    "deleteElement": "Supprimer {stn, plural, one {l'élément} other {les {stn} éléments}}",
     "deleteConfirmQuestion": "Êtes-vous sûr(e) de vouloir supprimer {content} ?",
     "followingItems": "les {itemsCount} éléments suivants",
     "additionalItems": " éléments supplémentaires non affichés",
