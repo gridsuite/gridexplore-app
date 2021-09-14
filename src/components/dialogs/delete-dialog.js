@@ -21,7 +21,7 @@ import React from 'react';
  * @param {EventListener} onClose Event to close the dialog
  * @param {EventListener} onClick Event to submit the deletion
  * @param {String} title Title of the dialog
- * @param {String} message Message of the dialog
+ * @param {Object} message Message of the dialog
  * @param {String} error Error message
  */
 const DeleteDialog = ({ open, onClose, onClick, title, message, error }) => {
@@ -69,7 +69,7 @@ DeleteDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
-    message: PropTypes.string.isRequired,
+    message: PropTypes.object.isRequired,
     error: PropTypes.string.isRequired,
 };
 

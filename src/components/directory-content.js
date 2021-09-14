@@ -58,6 +58,7 @@ import ScriptContingencyDialog from './dialogs/script-contingency-dialog';
 import ContingencyReplaceWithScriptDialog from './dialogs/contingency-replace-with-script-dialog';
 import ContingencyCopyToScriptDialog from './dialogs/contingency-copy-to-script-dialog';
 import { useSnackbar } from 'notistack';
+import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -652,6 +653,26 @@ const DirectoryContent = () => {
         return undefined;
     };
 
+    function buildFilesToDeleteList(files, additionalItemLabel) {
+        if (files.length < 2) return;
+        return (
+            <Grid>
+                {files.slice(0, 10).map((file) => (
+                    <Grid item>
+                        <span> {file.elementName} </span>
+                    </Grid>
+                ))}
+                {files.length > 10 && (
+                    <Grid item>
+                        <span>
+                            {'... ' + (files.length - 10) + additionalItemLabel}
+                        </span>
+                    </Grid>
+                )}
+            </Grid>
+        );
+    }
+
     return (
         <>
             <div
@@ -882,13 +903,25 @@ const DirectoryContent = () => {
                 open={openDeleteElementDialog}
                 onClose={handleCloseDeleteElement}
                 onClick={handleClickDeleteElement}
-                title={useIntl().formatMessage(
-                    { id: 'deleteElement' },
-                    { stn: getSelectedChildren().length }
+                title={intl.formatMessage(
+                    { id: 'deleteConfirmQuestion' },
+                    {
+                        content:
+                            getSelectedChildren().length === 1
+                                ? getSelectedChildren()[0].elementName
+                                : intl.formatMessage(
+                                      { id: 'followingItems' },
+                                      {
+                                          itemsCount:
+                                              getSelectedChildren().length,
+                                      }
+                                  ),
+                    }
                 )}
-                message={useIntl().formatMessage({
-                    id: 'genericConfirmQuestion',
-                })}
+                message={buildFilesToDeleteList(
+                    getSelectedChildren(),
+                    intl.formatMessage({ id: 'additionalItems' })
+                )}
                 error={deleteError}
             />
             <ExportDialog
