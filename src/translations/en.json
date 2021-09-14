@@ -16,7 +16,6 @@
     "renameElementMsg": "Element new name: ",
     "renameElementNotAllowedError": "Cannot rename the element if you are not the owner",
     "renameElementNotFoundError": "The element was not found",
-    "deleteElements": "Delete {stn, plural, one {element} other {{stn} elements}}",
     "deleteConfirmQuestion": "Are you sure you want to delete {content} ?",
     "followingItems": "the following {itemsCount} items",
     "additionalItems": " additional items not shown",
