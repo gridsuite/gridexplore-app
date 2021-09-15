@@ -578,7 +578,7 @@ const TreeViewsContainer = () => {
                     }
                 >
                     {/* Directories Menu */}
-                    {!showMenuFromEmptyZone && (
+                    {anchorEl && !showMenuFromEmptyZone && (
                         <div>
                             <MenuItem onClick={handleOpenAddNewStudyDialog}>
                                 <ListItemIcon style={{ minWidth: '25px' }}>
@@ -670,16 +670,18 @@ const TreeViewsContainer = () => {
                             </MenuItem>
                         </div>
                     )}
-                    <MenuItem onClick={handleOpenCreateRootDirectoryDialog}>
-                        <ListItemIcon style={{ minWidth: '25px' }}>
-                            <FolderSpecialIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText
-                            primary={intl.formatMessage({
-                                id: 'createRootFolder',
-                            })}
-                        />
-                    </MenuItem>
+                    {anchorEl && (
+                        <MenuItem onClick={handleOpenCreateRootDirectoryDialog}>
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <FolderSpecialIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'createRootFolder',
+                                })}
+                            />
+                        </MenuItem>
+                    )}
                 </StyledMenu>
             </div>
 
