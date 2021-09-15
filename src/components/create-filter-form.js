@@ -19,7 +19,6 @@ import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
@@ -80,24 +79,19 @@ const DialogContainer = withStyles(() => ({
     },
 }))(Dialog);
 
-const PopupWithInput = ({
+const CreateFilterDialog = ({
     open,
-    existingList,
     onClose,
     inputLabelText,
     title,
     customTextValidationBtn,
     customTextCancelBtn,
-    handleSaveNewList,
-    handleRenameExistList,
-    handleCopyToScriptList,
-    selectedListName,
-    newList,
     action,
 }) => {
     const [disableBtnSave, setDisableBtnSave] = useState(true);
     const [newNameList, setNewListName] = useState(false);
     const [newListType, setNewListType] = useState('SCRIPT');
+    const [filterPrivacy, setFilterPrivacy] = React.useState('public');
 
     /**
      * on change input popup check if name already exist
@@ -114,21 +108,21 @@ const PopupWithInput = ({
 
     const handleSave = () => {
         if (action) {
-            action({ name: newNameList, type: newListType });
+            action({
+                name: newNameList,
+                type: newListType,
+                isPrivate: filterPrivacy === 'private',
+            });
             onClose();
-        } else if (newList) {
-            handleSaveNewList(newNameList, newListType, true);
-        } else {
-            if (handleRenameExistList) {
-                handleRenameExistList(newNameList);
-            } else if (handleCopyToScriptList) {
-                handleCopyToScriptList(newNameList);
-            }
         }
     };
 
     const handleClose = () => {
         onClose();
+    };
+
+    const handleChangeFilterPrivacy = (event) => {
+        setFilterPrivacy(event.target.value);
     };
 
     return (
@@ -139,41 +133,49 @@ const PopupWithInput = ({
                     <Grid item xs={12} sm={8}>
                         <TextField
                             style={{ width: '100%' }}
-                            defaultValue={newList ? '' : selectedListName}
+                            defaultValue={''}
                             onChange={(event) =>
                                 onChangeInputName(event.target.value)
                             }
                             label={inputLabelText}
                         />
+                        <RadioGroup
+                            aria-label="type"
+                            name="filterType"
+                            value={newListType}
+                            onChange={(e) => setNewListType(e.target.value)}
+                            row
+                        >
+                            <FormControlLabel
+                                value="SCRIPT"
+                                control={<Radio />}
+                                label={<FormattedMessage id="SCRIPT" />}
+                            />
+                            <FormControlLabel
+                                value="FILTERS"
+                                control={<Radio />}
+                                label={<FormattedMessage id="FILTERS" />}
+                            />
+                        </RadioGroup>
+                        <RadioGroup
+                            aria-label="privacy"
+                            name="filterPrivacy"
+                            value={filterPrivacy}
+                            onChange={handleChangeFilterPrivacy}
+                            row
+                        >
+                            <FormControlLabel
+                                value="public"
+                                control={<Radio />}
+                                label=<FormattedMessage id="public" />
+                            />
+                            <FormControlLabel
+                                value="private"
+                                control={<Radio />}
+                                label=<FormattedMessage id="private" />
+                            />
+                        </RadioGroup>
                     </Grid>
-                    {newList && (
-                        <Grid item xs={12} sm={4}>
-                            <FormControl component="fieldset">
-                                <RadioGroup
-                                    aria-label="gender"
-                                    name="gender1"
-                                    value={newListType}
-                                    onChange={(e) =>
-                                        setNewListType(e.target.value)
-                                    }
-                                    style={{ paddingLeft: '10px' }}
-                                >
-                                    <FormControlLabel
-                                        value="SCRIPT"
-                                        control={<Radio />}
-                                        label={<FormattedMessage id="SCRIPT" />}
-                                    />
-                                    <FormControlLabel
-                                        value="FILTERS"
-                                        control={<Radio />}
-                                        label={
-                                            <FormattedMessage id="FILTERS" />
-                                        }
-                                    />
-                                </RadioGroup>
-                            </FormControl>
-                        </Grid>
-                    )}
                 </Grid>
             </CustomDialogContent>
             <CustomDialogActions>
@@ -193,18 +195,13 @@ const PopupWithInput = ({
     );
 };
 
-PopupWithInput.propTypes = {
+CreateFilterDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     inputLabelText: PropTypes.object.isRequired,
     title: PropTypes.object.isRequired,
     customTextValidationBtn: PropTypes.object.isRequired,
     customTextCancelBtn: PropTypes.object.isRequired,
-    handleSaveNewList: PropTypes.func,
-    handleRenameExistList: PropTypes.func,
-    handleCopyToScriptList: PropTypes.func,
-    selectedListName: PropTypes.string,
-    newList: PropTypes.bool.isRequired,
 };
 
 const PopupInfo = ({
@@ -256,4 +253,4 @@ PopupInfo.propTypes = {
     handleBtnCancel: PropTypes.func.isRequired,
 };
 
-export { PopupInfo, PopupWithInput };
+export { CreateFilterDialog };

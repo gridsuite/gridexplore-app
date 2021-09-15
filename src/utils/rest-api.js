@@ -551,10 +551,17 @@ export function connectNotificationsWsUpdateStudies() {
  * Create Filter
  * @returns {Promise<Response>}
  */
-export function createFilter(newFilter, parentDirectoryUuid) {
-    console.log(newFilter);
+export function createFilter(
+    newFilter,
+    name,
+    type,
+    isPrivate,
+    parentDirectoryUuid
+) {
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('isPrivate', true); //FIXME add in popup privacy choice
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('type', type);
+    urlSearchParams.append('isPrivate', isPrivate);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     return backendFetch(
         PREFIX_DIRECTORY_SERVER_QUERIES +

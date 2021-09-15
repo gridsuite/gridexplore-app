@@ -56,7 +56,7 @@ import { CreateDirectoryDialog } from './dialogs/create-directory-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
-import { PopupWithInput } from './popup';
+import { CreateFilterDialog } from './create-filter-form';
 import { ScriptTypes } from '../utils/script-types';
 
 const StyledMenu = withStyles({
@@ -83,7 +83,6 @@ const TreeViewsContainer = () => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
 
-    const filterList = useSelector((state) => state.filterList);
     const currentEdit = useRef(null);
 
     const mapDataRef = useRef({});
@@ -541,13 +540,20 @@ const TreeViewsContainer = () => {
         );
     };
 
-    const newFilter = (name, type) => {
+    const newFilter = (name, type, isPrivate) => {
+        const filterType = type === ScriptTypes.SCRIPT ? type : 'LINE';
         currentEdit.current = {
             name: name,
-            type: type === ScriptTypes.SCRIPT ? type : 'LINE',
+            type: filterType,
             transient: true,
         };
-        createFilter(currentEdit.current, activeDirectory).then();
+        createFilter(
+            currentEdit.current,
+            name,
+            type,
+            isPrivate,
+            activeDirectory
+        ).then();
     };
 
     return (
@@ -787,16 +793,16 @@ const TreeViewsContainer = () => {
                 })}
                 error={accessRightsError}
             />
-            <PopupWithInput
+            <CreateFilterDialog
                 open={openPopupNewList}
                 onClose={() => setOpenPopupNewList(false)}
                 title={<FormattedMessage id="createNewFilter" />}
                 inputLabelText={<FormattedMessage id="FilterName" />}
                 customTextValidationBtn={<FormattedMessage id="create" />}
                 customTextCancelBtn={<FormattedMessage id="cancel" />}
-                existingList={filterList}
-                action={({ name, type }) => newFilter(name, type)}
-                newList={true}
+                action={({ name, type, isPrivate }) =>
+                    newFilter(name, type, isPrivate)
+                }
             />
         </>
     );
