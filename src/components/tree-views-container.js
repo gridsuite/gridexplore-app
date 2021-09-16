@@ -243,7 +243,7 @@ const TreeViewsContainer = () => {
         if (underDirUuid)
             insertDirectory(dirName, underDirUuid, isPrivate, userId).then(
                 whenDirCreated
-        );
+            );
         else
             insertRootDirectory(dirName, isPrivate, userId).then(
                 whenDirCreated
@@ -517,13 +517,13 @@ const TreeViewsContainer = () => {
                         nodeStore.byRootIdToNode &&
                         Object.entries(nodeStore.byRootIdToNode).map(
                             ([k, v]) => (
-                            <DirectoryTreeView
+                                <DirectoryTreeView
                                     key={k}
                                     treeViewUuid={k}
                                     mapData={v}
-                                onContextMenu={onContextMenu}
-                                onDirectoryUpdate={updateDirectoryTree}
-                            />
+                                    onContextMenu={onContextMenu}
+                                    onDirectoryUpdate={updateDirectoryTree}
+                                />
                             )
                         )}
                 </div>
