@@ -105,6 +105,8 @@ const DirectoryContent = () => {
     const { enqueueSnackbar } = useSnackbar();
 
     const [childrenMetadata, setChildrenMetadata] = useState({});
+    const [isMetadataLoading, setIsMetadataLoading] = useState(false);
+
     const [selectedUuids, setSelectedUuids] = useState(new Set());
 
     const currentChildren = useSelector((state) => state.currentChildren);
@@ -422,12 +424,13 @@ const DirectoryContent = () => {
         }
     }
 
-    function nameCellRender(cellData) {
+    const nameCellRender = (cellData) => {
         const elementUuid = cellData.rowData['elementUuid'];
         const elementName = cellData.rowData['elementName'];
         const objectType = cellData.rowData['type'];
         return (
             <div className={classes.cell}>
+                {/*  Icon */}
                 {!childrenMetadata[elementUuid] &&
                     objectType === elementType.STUDY && (
                         <CircularProgress
@@ -436,7 +439,8 @@ const DirectoryContent = () => {
                         />
                     )}
                 {childrenMetadata[elementUuid] && getElementIcon(objectType)}
-                {childrenMetadata[elementUuid] ? (
+                {/* Name */}
+                {isMetadataLoading ? null : childrenMetadata[elementUuid] ? (
                     <div>{childrenMetadata[elementUuid].name}</div>
                 ) : (
                     <>
@@ -446,7 +450,7 @@ const DirectoryContent = () => {
                 )}
             </div>
         );
-    }
+    };
 
     function toggleSelection(elementUuid) {
         let newSelection = new Set(selectedUuids);
@@ -507,6 +511,7 @@ const DirectoryContent = () => {
     }
 
     useEffect(() => {
+        setIsMetadataLoading(true);
         if (currentChildren !== null) {
             let studyUuids = [];
             let contingencyListsUuids = [];
@@ -541,6 +546,7 @@ const DirectoryContent = () => {
                             });
 
                             setChildrenMetadata(metadata);
+                            setIsMetadataLoading(false);
                         }
                     );
                 });
