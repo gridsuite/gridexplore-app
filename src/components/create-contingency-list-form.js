@@ -32,17 +32,12 @@ export const CreateContingencyListForm = (props) => {
     );
 
     const [contingencyListName, setContingencyListName] = React.useState('');
-    const [
-        contingencyListDescription,
-        setContingencyListDescription,
-    ] = React.useState('');
-    const [contingencyListPrivacy, setContingencyListPrivacy] = React.useState(
-        'private'
-    );
-    const [
-        createContingencyListErr,
-        setCreateContingencyListErr,
-    ] = React.useState('');
+    const [contingencyListDescription, setContingencyListDescription] =
+        React.useState('');
+    const [contingencyListPrivacy, setContingencyListPrivacy] =
+        React.useState('private');
+    const [createContingencyListErr, setCreateContingencyListErr] =
+        React.useState('');
 
     const intl = useIntl();
 

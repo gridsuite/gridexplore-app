@@ -26,9 +26,8 @@ const AppTopBar = ({ user, userManager }) => {
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
-    const [languageLocal, handleChangeLanguage] = useParameterState(
-        PARAM_LANGUAGE
-    );
+    const [languageLocal, handleChangeLanguage] =
+        useParameterState(PARAM_LANGUAGE);
 
     const [showParameters, setShowParameters] = useState(false);
 

@@ -15,7 +15,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import App from './app';
 import { store } from '../redux/store';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { SnackbarProvider } from '@gridsuite/commons-ui';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
@@ -39,7 +39,7 @@ it('renders', async () => {
             <IntlProvider locale="en">
                 <BrowserRouter>
                     <Provider store={store}>
-                        <ThemeProvider theme={createMuiTheme({})}>
+                        <ThemeProvider theme={createTheme({})}>
                             <SnackbarProvider hideIconVariant={false}>
                                 <CssBaseline />
                                 <App />
