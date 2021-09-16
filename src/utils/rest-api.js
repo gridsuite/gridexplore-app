@@ -634,7 +634,7 @@ export function replaceFiltersWithScript(id, parentDirectoryUuid) {
  * Save new script from filters
  * @returns {Promise<Response>}
  */
-export function newScriptFromFilters(id, newName, parentDirectoryUuid) {
+export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     const url =

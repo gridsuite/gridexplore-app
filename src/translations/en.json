@@ -104,7 +104,7 @@
     "newNameList": "New list name",
     "copyToScript": "Copy to script",
     "replaceWithScript": "Replace with script",
-    "createNewFilter": "Créer un nouveau filtre",
+    "createNewFilter": "Create a new filter",
     "substationName": "Substation name",
     "Generators": "Generators",
     "Lines": "Lines",
@@ -125,5 +125,5 @@
     "Min": "Min",
     "Max": "Max",
 
-    "FilterName": "Nom"
+    "FilterName": "Name"
 }

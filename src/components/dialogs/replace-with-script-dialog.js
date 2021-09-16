@@ -16,22 +16,15 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 /**
- * Dialog to replace a filters contingency list with a script contingency list
- * @param listId id of list to edit
+ * Dialog to replace a filters contingency list with a script contingency list or a filter with a script
+ * @param id id of list or filter to replace
  * @param open Is the dialog open ?
  * @param onClose Event to close the dialog
  * @param onClick Function to call to perform rename
  * @param onError handle errors
  * @param title Title of the dialog
  */
-const ReplaceWithScriptDialog = ({
-    listId,
-    open,
-    onClose,
-    onClick,
-    onError,
-    title,
-}) => {
+const ReplaceWithScriptDialog = ({ id, open, onClose, onClick, title }) => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
     const handleClose = () => {
@@ -39,12 +32,7 @@ const ReplaceWithScriptDialog = ({
     };
 
     const handleClick = () => {
-        onClick(listId, selectedDirectory)
-            .then((response) => {})
-            .catch((error) => {
-                onError(error.message);
-            });
-        onClose();
+        onClick(id, selectedDirectory);
     };
 
     return (
@@ -75,11 +63,10 @@ const ReplaceWithScriptDialog = ({
 };
 
 ReplaceWithScriptDialog.propTypes = {
-    listId: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
-    onError: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
 };
 

@@ -17,21 +17,19 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
 /**
- * Dialog to copy a filters contingency list to a script contingency list
- * @param listId id of list to edit
+ * Dialog to copy a filters contingency list to a script contingency list or a filter to a script
+ * @param id id of list or filter to edit
  * @param open Is the dialog open ?
  * @param onClose Event to close the dialog
  * @param onClick Function to call to perform copy
- * @param onError handle errors
  * @param currentName Name before renaming
  * @param title Title of the dialog
  */
 const CopyToScriptDialog = ({
-    listId,
+    id,
     open,
     onClose,
     onClick,
-    onError,
     currentName,
     title,
 }) => {
@@ -42,12 +40,7 @@ const CopyToScriptDialog = ({
         setNewNameValue(event.target.value);
     };
     const handleClick = () => {
-        onClick(listId, newNameValue, selectedDirectory)
-            .then((response) => {})
-            .catch((error) => {
-                onError(error.message);
-            });
-        onClose();
+        onClick(id, newNameValue, selectedDirectory);
     };
 
     const handleClose = () => {
@@ -103,11 +96,10 @@ const CopyToScriptDialog = ({
 };
 
 CopyToScriptDialog.propTypes = {
-    listId: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
-    onError: PropTypes.func.isRequired,
     currentName: PropTypes.string,
     title: PropTypes.string.isRequired,
 };

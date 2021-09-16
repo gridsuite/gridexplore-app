@@ -32,7 +32,7 @@ import {
     fetchContingencyListsInfos,
     fetchFiltersInfos,
     fetchStudiesInfos,
-    newScriptFromFilters,
+    newScriptFromFilter,
     newScriptFromFiltersContingencyList,
     renameElement,
     replaceFiltersWithScript,
@@ -267,6 +267,34 @@ const DirectoryContent = () => {
         setActiveElement('');
     };
 
+    const handleRowClick = (event) => {
+        if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
+            if (event.rowData.type === elementType.STUDY) {
+                let url = getLink(
+                    event.rowData.elementUuid,
+                    event.rowData.type
+                );
+                window.open(url, '_blank');
+            } else if (
+                event.rowData.type === elementType.FILTERS_CONTINGENCY_LIST
+            ) {
+                setCurrentFiltersContingencyListId(event.rowData.elementUuid);
+                setOpenFiltersContingencyDialog(true);
+            } else if (
+                event.rowData.type === elementType.SCRIPT_CONTINGENCY_LIST
+            ) {
+                setCurrentScriptContingencyListId(event.rowData.elementUuid);
+                setOpenScriptContingencyDialog(true);
+            } else if (event.rowData.type === elementType.SCRIPT) {
+                setCurrentScriptId(event.rowData.elementUuid);
+                setOpenScriptDialog(true);
+            } else if (event.rowData.type === elementType.FILTER) {
+                setCurrentFilterId(event.rowData.elementUuid);
+                setOpenGenericFilterDialog(true);
+            }
+        }
+    };
+
     const handleClickElementAccessRights = (selected) => {
         updateAccessRights(activeElement.elementUuid, selected).then(
             (response) => {
@@ -353,19 +381,49 @@ const DirectoryContent = () => {
         setActiveElement('');
     };
 
+    const handleClickFiltersReplaceWithScript = (id) => {
+        replaceFiltersWithScript(id, selectedDirectory)
+            .then()
+            .catch((error) => handleError(error.message));
+        handleCloseFiltersReplaceWithScript();
+    };
+
     const handleContingencyCopyToScript = () => {
         setAnchorEl(null);
         setOpenFiltersContingencyCopyToScriptDialog(true);
     };
+
+    const handleClickContingencyCopyToScript = (id, newNameValue) => {
+        newScriptFromFiltersContingencyList(id, newNameValue, selectedDirectory)
+            .then()
+            .catch((error) => handleError(error.message));
+        handleCloseFiltersContingencyCopyToScript();
+    };
+
     const handleContingencyReplaceWithScript = () => {
         setAnchorEl(null);
         setOpenFiltersContingencyReplaceWithScriptDialog(true);
+    };
+
+    const handleClickFiltersContingencyReplaceWithScript = (id) => {
+        replaceFiltersWithScriptContingencyList(id, selectedDirectory)
+            .then()
+            .catch((error) => handleError(error.message));
+        handleCloseFiltersContingencyReplaceWithScript();
     };
 
     const handleFilterCopyToScript = () => {
         setAnchorEl(null);
         setOpenFiltersCopyToScriptDialog(true);
     };
+
+    const handleClickFilterCopyToScript = (id, newNameValue) => {
+        newScriptFromFilter(id, newNameValue, selectedDirectory)
+            .then()
+            .catch((error) => handleError(error.message));
+        handleCloseFiltersCopyToScript();
+    };
+
     const handleFilterReplaceWithScript = () => {
         setAnchorEl(null);
         setOpenFiltersReplaceWithScriptDialog(true);
@@ -588,27 +646,26 @@ const DirectoryContent = () => {
                     });
                 })
                 .then(() => {
-                    fetchContingencyListsInfos(contingencyListsUuids).then(
-                        (res) => {
+                    fetchContingencyListsInfos(contingencyListsUuids)
+                        .then((res) => {
                             res.forEach((e) => {
                                 metadata[e.id] = {
                                     name: e.name,
                                 };
                             });
-                        }
-                    );
-                })
-                .then(() => {
-                    fetchFiltersInfos(filtersUuids).then((res) => {
-                        res.map((e) => {
-                            metadata[e.id] = {
-                                name: e.name,
-                                filterType: e.type,
-                            };
-                            return e;
+                        })
+                        .then(() => {
+                            fetchFiltersInfos(filtersUuids).then((res) => {
+                                res.map((e) => {
+                                    metadata[e.id] = {
+                                        name: e.name,
+                                        filterType: e.type,
+                                    };
+                                    return e;
+                                });
+                                setChildrenMetadata(metadata);
+                            });
                         });
-                        setChildrenMetadata(metadata);
-                    });
                 });
         }
         setSelectedUuids(new Set());
@@ -802,60 +859,7 @@ const DirectoryContent = () => {
                                     });
                                     setAnchorEl(event.event.currentTarget);
                                 }}
-                                onRowClick={(event) => {
-                                    if (
-                                        childrenMetadata[
-                                            event.rowData.elementUuid
-                                        ] !== undefined
-                                    ) {
-                                        if (
-                                            event.rowData.type ===
-                                            elementType.STUDY
-                                        ) {
-                                            let url = getLink(
-                                                event.rowData.elementUuid,
-                                                event.rowData.type
-                                            );
-                                            window.open(url, '_blank');
-                                        } else if (
-                                            event.rowData.type ===
-                                            elementType.FILTERS_CONTINGENCY_LIST
-                                        ) {
-                                            setCurrentFiltersContingencyListId(
-                                                event.rowData.elementUuid
-                                            );
-                                            setOpenFiltersContingencyDialog(
-                                                true
-                                            );
-                                        } else if (
-                                            event.rowData.type ===
-                                            elementType.SCRIPT_CONTINGENCY_LIST
-                                        ) {
-                                            setCurrentScriptContingencyListId(
-                                                event.rowData.elementUuid
-                                            );
-                                            setOpenScriptContingencyDialog(
-                                                true
-                                            );
-                                        } else if (
-                                            event.rowData.type ===
-                                            elementType.SCRIPT
-                                        ) {
-                                            setCurrentScriptId(
-                                                event.rowData.elementUuid
-                                            );
-                                            setOpenScriptDialog(true);
-                                        } else if (
-                                            event.rowData.type ===
-                                            elementType.FILTER
-                                        ) {
-                                            setCurrentFilterId(
-                                                event.rowData.elementUuid
-                                            );
-                                            setOpenGenericFilterDialog(true);
-                                        }
-                                    }
-                                }}
+                                onRowClick={handleRowClick}
                                 rows={currentChildren}
                                 columns={[
                                     {
@@ -1057,36 +1061,33 @@ const DirectoryContent = () => {
                 type={elementType.SCRIPT}
             />
             <ReplaceWithScriptDialog
-                listId={activeElement ? activeElement.elementUuid : ''}
+                id={activeElement ? activeElement.elementUuid : ''}
                 open={openFiltersContingencyReplaceWithScriptDialog}
                 onClose={handleCloseFiltersContingencyReplaceWithScript}
-                onClick={replaceFiltersWithScriptContingencyList}
+                onClick={handleClickFiltersContingencyReplaceWithScript}
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'replaceList' })}
             />
             <CopyToScriptDialog
-                listId={activeElement ? activeElement.elementUuid : ''}
+                id={activeElement ? activeElement.elementUuid : ''}
                 open={openFiltersContingencyCopyToScriptDialog}
                 onClose={handleCloseFiltersContingencyCopyToScript}
-                onClick={newScriptFromFiltersContingencyList}
-                onError={handleError}
+                onClick={handleClickContingencyCopyToScript}
                 currentName={activeElement ? activeElement.elementName : ''}
                 title={useIntl().formatMessage({ id: 'copyToScriptList' })}
             />
             <ReplaceWithScriptDialog
-                listId={activeElement ? activeElement.elementUuid : ''}
+                id={activeElement ? activeElement.elementUuid : ''}
                 open={openFiltersReplaceWithScriptDialog}
                 onClose={handleCloseFiltersReplaceWithScript}
-                onClick={replaceFiltersWithScript}
-                onError={handleError}
+                onClick={handleClickFiltersReplaceWithScript}
                 title={useIntl().formatMessage({ id: 'replaceList' })}
             />
             <CopyToScriptDialog
-                listId={activeElement ? activeElement.elementUuid : ''}
+                id={activeElement ? activeElement.elementUuid : ''}
                 open={openFiltersCopyToScriptDialog}
                 onClose={handleCloseFiltersCopyToScript}
-                onClick={newScriptFromFilters}
-                onError={handleError}
+                onClick={handleClickFilterCopyToScript}
                 currentName={activeElement ? activeElement.elementName : ''}
                 title={useIntl().formatMessage({ id: 'copyToScriptList' })}
             />
