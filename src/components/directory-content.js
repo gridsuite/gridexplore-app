@@ -521,18 +521,22 @@ const DirectoryContent = () => {
                             name: e.studyName,
                         };
                     });
+                    return res;
                 })
-                .then(() => {
-                    fetchContingencyListsInfos(contingencyListsUuids)
-                        .then((res) => {
-                            res.forEach((e) => {
-                                metadata[e.id] = {
-                                    name: e.name,
-                                };
-                            });
-                            setChildrenMetadata(metadata);
-                        })
-                        .finally(() => setIsMetadataLoading(false));
+                .then((res) => {
+                    return fetchContingencyListsInfos(
+                        contingencyListsUuids
+                    ).then((res) => {
+                        res.forEach((e) => {
+                            metadata[e.id] = {
+                                name: e.name,
+                            };
+                        });
+                    });
+                })
+                .finally((res) => {
+                    setChildrenMetadata(metadata);
+                    setIsMetadataLoading(false);
                 });
         }
 
