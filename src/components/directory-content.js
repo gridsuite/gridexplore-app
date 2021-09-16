@@ -523,18 +523,16 @@ const DirectoryContent = () => {
                     });
                 })
                 .then(() => {
-                    fetchContingencyListsInfos(contingencyListsUuids).then(
-                        (res) => {
+                    fetchContingencyListsInfos(contingencyListsUuids)
+                        .then((res) => {
                             res.forEach((e) => {
                                 metadata[e.id] = {
                                     name: e.name,
                                 };
                             });
-
                             setChildrenMetadata(metadata);
-                            setIsMetadataLoading(false);
-                        }
-                    );
+                        })
+                        .finally(() => setIsMetadataLoading(false));
                 });
         }
 
