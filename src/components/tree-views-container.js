@@ -160,7 +160,6 @@ const TreeViewsContainer = () => {
             DOMFocusedDirectory.classList.remove('focused');
             setDOMFocusedDirectory(null);
         }
-        dispatch(setActiveDirectory(null));
     };
 
     const handleOpenAddNewStudyDialog = () => {
@@ -240,6 +239,7 @@ const TreeViewsContainer = () => {
                 dispatch(
                     setSelectedDirectory(mapData[activeDirectory].parentUuid)
                 );
+                dispatch(setActiveDirectory(null));
             }
             if (r.status === 403) {
                 setDeleteError(
@@ -585,7 +585,7 @@ const TreeViewsContainer = () => {
                 >
                     {/* Directories Menu */}
                     {!showMenuFromEmptyZone && (
-                        <div>
+                        <>
                             <MenuItem onClick={handleOpenAddNewStudyDialog}>
                                 <ListItemIcon style={{ minWidth: '25px' }}>
                                     <AddIcon fontSize="small" />
@@ -610,7 +610,7 @@ const TreeViewsContainer = () => {
                             </MenuItem>
                             <hr />
                             {isAllowed() && (
-                                <div>
+                                <>
                                     <MenuItem
                                         onClick={
                                             handleOpenRenameDirectoryDialog
@@ -660,7 +660,7 @@ const TreeViewsContainer = () => {
                                         />
                                     </MenuItem>
                                     <hr />
-                                </div>
+                                </>
                             )}
                             <MenuItem
                                 onClick={handleOpenCreateNewDirectoryDialog}
@@ -674,7 +674,7 @@ const TreeViewsContainer = () => {
                                     })}
                                 />
                             </MenuItem>
-                        </div>
+                        </>
                     )}
                     <MenuItem onClick={handleOpenCreateRootDirectoryDialog}>
                         <ListItemIcon style={{ minWidth: '25px' }}>
