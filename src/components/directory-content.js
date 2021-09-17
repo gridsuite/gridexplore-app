@@ -139,7 +139,6 @@ const DirectoryContent = () => {
     const handleCloseRenameElement = () => {
         setOpenRenameElementDialog(false);
         setRenameError('');
-        setActiveElement('');
     };
 
     const handleClickRenameElement = (newElementNameValue) => {
@@ -181,7 +180,7 @@ const DirectoryContent = () => {
     const handleCloseDeleteElement = () => {
         setOpenDeleteElementDialog(false);
         setDeleteError('');
-        setActiveElement('');
+        //setActiveElement('');
     };
 
     const handleClickDeleteElement = () => {
