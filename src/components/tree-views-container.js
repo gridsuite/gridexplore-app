@@ -578,98 +578,91 @@ const TreeViewsContainer = () => {
                     }
                 >
                     {/* Directories Menu */}
-                    {!showMenuFromEmptyZone && (
-                        <>
-                            <MenuItem onClick={handleOpenAddNewStudyDialog}>
-                                <ListItemIcon style={{ minWidth: '25px' }}>
-                                    <AddIcon fontSize="small" />
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={intl.formatMessage({
-                                        id: 'createNewStudy',
-                                    })}
-                                />
-                            </MenuItem>
-                            <MenuItem
-                                onClick={handleOpenAddNewContingencyListDialog}
-                            >
-                                <ListItemIcon style={{ minWidth: '25px' }}>
-                                    <AddIcon fontSize="small" />
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={intl.formatMessage({
-                                        id: 'createNewContingencyList',
-                                    })}
-                                />
-                            </MenuItem>
-                            <hr />
-                            {isAllowed() && (
-                                <>
-                                    <MenuItem
-                                        onClick={
-                                            handleOpenRenameDirectoryDialog
-                                        }
-                                    >
-                                        <ListItemIcon
-                                            style={{ minWidth: '25px' }}
-                                        >
-                                            <CreateIcon fontSize="small" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={intl.formatMessage({
-                                                id: 'renameFolder',
-                                            })}
-                                        />
-                                    </MenuItem>
-                                    <MenuItem
-                                        onClick={
-                                            handleOpenAccessRightsDirectoryDialog
-                                        }
-                                    >
-                                        <ListItemIcon
-                                            style={{ minWidth: '25px' }}
-                                        >
-                                            <BuildIcon fontSize="small" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={intl.formatMessage({
-                                                id: 'accessRights',
-                                            })}
-                                        />
-                                    </MenuItem>
-                                    <MenuItem
-                                        onClick={
-                                            handleOpenDeleteDirectoryDialog
-                                        }
-                                    >
-                                        <ListItemIcon
-                                            style={{ minWidth: '25px' }}
-                                        >
-                                            <DeleteIcon fontSize="small" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={intl.formatMessage({
-                                                id: 'deleteFolder',
-                                            })}
-                                        />
-                                    </MenuItem>
-                                    <hr />
-                                </>
-                            )}
-                            <MenuItem
-                                onClick={handleOpenCreateNewDirectoryDialog}
-                            >
-                                <ListItemIcon style={{ minWidth: '25px' }}>
-                                    <CreateNewFolderIcon fontSize="small" />
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={intl.formatMessage({
-                                        id: 'createFolder',
-                                    })}
-                                />
-                            </MenuItem>
-                        </>
-                    )}
+                    {!showMenuFromEmptyZone && [
+                        <MenuItem onClick={handleOpenAddNewStudyDialog}>
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <AddIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'createNewStudy',
+                                })}
+                            />
+                        </MenuItem>,
+                        <MenuItem
+                            onClick={handleOpenAddNewContingencyListDialog}
+                        >
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <AddIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'createNewContingencyList',
+                                })}
+                            />
+                        </MenuItem>,
+                        <hr />,
+                        ...(!isAllowed()
+                            ? []
+                            : [
+                                  <MenuItem
+                                      onClick={handleOpenRenameDirectoryDialog}
+                                  >
+                                      <ListItemIcon
+                                          style={{ minWidth: '25px' }}
+                                      >
+                                          <CreateIcon fontSize="small" />
+                                      </ListItemIcon>
+                                      <ListItemText
+                                          primary={intl.formatMessage({
+                                              id: 'renameFolder',
+                                          })}
+                                      />
+                                  </MenuItem>,
+
+                                  <MenuItem
+                                      onClick={
+                                          handleOpenAccessRightsDirectoryDialog
+                                      }
+                                  >
+                                      <ListItemIcon
+                                          style={{ minWidth: '25px' }}
+                                      >
+                                          <BuildIcon fontSize="small" />
+                                      </ListItemIcon>
+                                      <ListItemText
+                                          primary={intl.formatMessage({
+                                              id: 'accessRights',
+                                          })}
+                                      />
+                                  </MenuItem>,
+                                  <MenuItem
+                                      onClick={handleOpenDeleteDirectoryDialog}
+                                  >
+                                      <ListItemIcon
+                                          style={{ minWidth: '25px' }}
+                                      >
+                                          <DeleteIcon fontSize="small" />
+                                      </ListItemIcon>
+                                      <ListItemText
+                                          primary={intl.formatMessage({
+                                              id: 'deleteFolder',
+                                          })}
+                                      />
+                                  </MenuItem>,
+                                  <hr />,
+                              ]),
+                        <MenuItem onClick={handleOpenCreateNewDirectoryDialog}>
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <CreateNewFolderIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'createFolder',
+                                })}
+                            />
+                        </MenuItem>,
+                    ]}
                     <MenuItem onClick={handleOpenCreateRootDirectoryDialog}>
                         <ListItemIcon style={{ minWidth: '25px' }}>
                             <FolderSpecialIcon fontSize="small" />
