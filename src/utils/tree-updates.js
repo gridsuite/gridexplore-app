@@ -238,7 +238,12 @@ function recursUpdate(prevNode, parentId, serverChildren, deletes) {
     }
 }
 
-function updatedNodeStore(nodeStore, parentId, serverChildren, deletes = true) {
+export function updatedNodeStore(
+    nodeStore,
+    parentId,
+    serverChildren,
+    deletes = true
+) {
     let { silentRoot: prevSilentRoot, byRootIdToNode: prevByRootIdToNode } =
         nodeStore;
     let recRet = recursUpdate(
@@ -287,6 +292,20 @@ function updatedNodeStore(nodeStore, parentId, serverChildren, deletes = true) {
     };
 
     return ret;
+}
+
+export function makePathFromTip(nodeId, nodeMap) {
+    if (!nodeMap) return undefined;
+    let path = [];
+    let node = nodeMap[nodeId];
+    while (node && node.elementUuid) {
+        path.unshift({
+            elementUuid: node.elementUuid,
+            elementName: node.elementName,
+        });
+        node = nodeMap[node.parentUuid];
+    }
+    return path;
 }
 
 export default updatedNodeStore;

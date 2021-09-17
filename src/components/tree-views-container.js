@@ -26,7 +26,7 @@ import {
 } from '../utils/rest-api';
 
 import DirectoryTreeView from './directory-tree-view';
-import updatedNodeStore from '../utils/tree-updates';
+import { updatedNodeStore, makePathFromTip } from '../utils/tree-updates';
 
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
@@ -390,21 +390,6 @@ const TreeViewsContainer = () => {
         },
         [enqueueSnackbar, intlRef]
     );
-
-    function makePathFromTip(nodeId, nodeMap) {
-        let path = [];
-        if (nodeMap) {
-            let node = nodeMap[nodeId];
-            while (node && node.elementUuid) {
-                path.unshift({
-                    elementUuid: node.elementUuid,
-                    elementName: node.elementName,
-                });
-                node = nodeMap[node.parentUuid];
-            }
-        }
-        return path;
-    }
 
     const setSelectedDirectory = useCallback(
         (nodeId, mayMap) => {

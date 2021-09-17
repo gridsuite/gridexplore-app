@@ -22,6 +22,8 @@ import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentPath } from '../redux/actions';
 
+import { makePathFromTip } from '../utils/tree-updates';
+
 const useStyles = makeStyles((theme) => ({
     treeViewRoot: {
         padding: theme.spacing(0.5),
@@ -83,20 +85,6 @@ function isCurrentPathEquiv(mapData, prevCurrPath, currPath) {
     let dirUuidFromCurr = selectedDirUuidFromCurrentPath(currPath, mapData);
     let dirUuidFromPrev = selectedDirUuidFromCurrentPath(prevCurrPath, mapData);
     return dirUuidFromCurr === dirUuidFromPrev;
-}
-
-function makePathFromTip(nodeId, nodeMap) {
-    if (!nodeMap) return undefined;
-    let path = [];
-    let node = nodeMap[nodeId];
-    while (node && node.elementUuid) {
-        path.unshift({
-            elementUuid: node.elementUuid,
-            elementName: node.elementName,
-        });
-        node = nodeMap[node.parentUuid];
-    }
-    return path;
 }
 
 const DirectoryTreeView = ({
