@@ -578,6 +578,9 @@ const TreeViewsContainer = () => {
                     }
                 >
                     {/* Directories Menu */}
+                    // It is required here to build an array with the JSX items we want to insert depending on isAllowed()
+                    // Building an array fixes this material UI warning :
+                    // warning: Material-UI: The Menu component doesn't accept a Fragment as a child. Consider providing an array instead.
                     {!showMenuFromEmptyZone && [
                         <MenuItem onClick={handleOpenAddNewStudyDialog}>
                             <ListItemIcon style={{ minWidth: '25px' }}>
@@ -602,6 +605,7 @@ const TreeViewsContainer = () => {
                             />
                         </MenuItem>,
                         <hr />,
+                        //We concatenate an array with specific MenuItems if isAllowed()=>true and [] if not
                         ...(!isAllowed()
                             ? []
                             : [
