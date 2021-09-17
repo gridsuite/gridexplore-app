@@ -11,20 +11,30 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import Alert from '@material-ui/lab/Alert';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import React from 'react';
+import Grid from '@material-ui/core/Grid';
 
 /**
  * Dialog to delete an element
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param {EventListener} onClick Event to submit the deletion
- * @param {String} title Title of the dialog
- * @param {Object} message Message of the dialog
+ * @param {Array} items Items for deletion confirmation
  * @param {String} error Error message
  */
-const DeleteDialog = ({ open, onClose, onClick, title, message, error }) => {
+const DeleteDialog = ({
+    open,
+    onClose,
+    onClick,
+    items,
+    multipleDeleteFormatMessageId,
+    simpleDeleteFormatMessageId,
+    error,
+}) => {
+    const intl = useIntl();
+
     const handleClose = () => {
         onClose();
     };
@@ -40,6 +50,81 @@ const DeleteDialog = ({ open, onClose, onClick, title, message, error }) => {
         }
     };
 
+    const buildTitle = (items) => {
+        return items.length === 1
+            ? intl.formatMessage(
+                  { id: 'deleteItemDialogTitle' },
+                  {
+                      itemName: items[0].elementName,
+                  }
+              )
+            : intl.formatMessage(
+                  { id: 'deleteMultipleItemsDialogTitle' },
+                  { itemsCount: items.length }
+              );
+    };
+
+    const buildItemsToDeleteGrid = (
+        items,
+        multipleDeleteFormatMessageId,
+        simpleDeleteFormatMessageId
+    ) => {
+        return (
+            items &&
+            (items.length > 1 ? (
+                <Grid>
+                    <Grid item>
+                        <span>
+                            {intl.formatMessage(
+                                {
+                                    id: multipleDeleteFormatMessageId,
+                                },
+                                { itemsCount: items.length }
+                            )}
+                        </span>
+                    </Grid>
+                    {items.slice(0, 10).map((file) => (
+                        <Grid item>
+                            <span> {file.elementName} </span>
+                        </Grid>
+                    ))}
+                    {items.length > 10 && (
+                        <Grid item>
+                            <span>
+                                {intl.formatMessage(
+                                    {
+                                        id: 'additionalItems',
+                                    },
+                                    { itemsCount: items.length - 10 }
+                                )}
+                            </span>
+                        </Grid>
+                    )}
+                </Grid>
+            ) : (
+                <Grid>
+                    <Grid item>
+                        <span>
+                            {intl.formatMessage(
+                                {
+                                    id: simpleDeleteFormatMessageId,
+                                },
+                                {
+                                    itemName: (
+                                        <span style={{ fontWeight: 'bold' }}>
+                                            {items.length === 1 &&
+                                                items[0].elementName}
+                                        </span>
+                                    ),
+                                }
+                            )}
+                        </span>
+                    </Grid>
+                </Grid>
+            ))
+        );
+    };
+
     return (
         <Dialog
             open={open}
@@ -47,9 +132,15 @@ const DeleteDialog = ({ open, onClose, onClick, title, message, error }) => {
             aria-labelledby="dialog-title-delete"
             onKeyPress={handleKeyPressed}
         >
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle>{buildTitle(items)}</DialogTitle>
             <DialogContent>
-                <DialogContentText>{message}</DialogContentText>
+                <DialogContentText>
+                    {buildItemsToDeleteGrid(
+                        items,
+                        multipleDeleteFormatMessageId,
+                        simpleDeleteFormatMessageId
+                    )}
+                </DialogContentText>
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
@@ -68,8 +159,9 @@ DeleteDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
-    title: PropTypes.string.isRequired,
-    message: PropTypes.object.isRequired,
+    items: PropTypes.array.isRequired,
+    multipleDeleteFormatMessageId: PropTypes.string.isRequired,
+    simpleDeleteFormatMessageId: PropTypes.string.isRequired,
     error: PropTypes.string.isRequired,
 };
 

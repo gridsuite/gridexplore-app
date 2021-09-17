@@ -529,9 +529,9 @@ const TreeViewsContainer = () => {
         );
     };
 
-    const getTargetDirectory = () => {
+    const getActiveDirectory = () => {
         return mapDataRef.current && mapDataRef.current[activeDirectory]
-            ? mapDataRef.current[activeDirectory].elementName
+            ? mapDataRef.current[activeDirectory]
             : '';
     };
 
@@ -720,7 +720,7 @@ const TreeViewsContainer = () => {
             />
             <RenameDialog
                 message={''}
-                currentName={getTargetDirectory()}
+                currentName={getActiveDirectory().elementName}
                 open={openRenameDirectoryDialog}
                 onClick={renameSelectedDirectory}
                 onClose={handleCloseRenameDirectoryDialog}
@@ -730,33 +730,14 @@ const TreeViewsContainer = () => {
                 error={renameError}
             />
             <DeleteDialog
-                message={
-                    <span>
-                        {intl.formatMessage(
-                            {
-                                id: 'deleteDirectoryDialogMessage',
-                            },
-                            {
-                                directoryName: (
-                                    <span style={{ fontWeight: 'bold' }}>
-                                        {getTargetDirectory()}
-                                    </span>
-                                ),
-                            }
-                        )}
-                    </span>
+                items={[getActiveDirectory()]}
+                multipleDeleteFormatMessageId={
+                    'deleteMultipleDirectoriesDialogMessage'
                 }
+                simpleDeleteFormatMessageId={'deleteDirectoryDialogMessage'}
                 open={openDeleteDirectoryDialog}
                 onClick={deleteSelectedDirectory}
                 onClose={handleCloseDeleteDirectoryDialog}
-                title={intl.formatMessage(
-                    {
-                        id: 'deleteDirectoryDialogTitle',
-                    },
-                    {
-                        directoryName: getTargetDirectory(),
-                    }
-                )}
                 error={deleteError}
             />
             <AccessRightsDialog

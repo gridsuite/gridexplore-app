@@ -58,7 +58,6 @@ import ScriptContingencyDialog from './dialogs/script-contingency-dialog';
 import ContingencyReplaceWithScriptDialog from './dialogs/contingency-replace-with-script-dialog';
 import ContingencyCopyToScriptDialog from './dialogs/contingency-copy-to-script-dialog';
 import { useSnackbar } from 'notistack';
-import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -653,60 +652,6 @@ const DirectoryContent = () => {
         return undefined;
     };
 
-    function buildFilesToDeleteGrid(files) {
-        return files.length > 1 ? (
-            <Grid>
-                <Grid item>
-                    <span>
-                        {intl.formatMessage(
-                            {
-                                id: 'deleteMultipleItemsDialogMessage',
-                            },
-                            { itemsCount: files.length }
-                        )}
-                    </span>
-                </Grid>
-                {files.slice(0, 10).map((file) => (
-                    <Grid item>
-                        <span> {file.elementName} </span>
-                    </Grid>
-                ))}
-                {files.length > 10 && (
-                    <Grid item>
-                        <span>
-                            {intl.formatMessage(
-                                {
-                                    id: 'additionalItems',
-                                },
-                                { itemsCount: files.length - 10 }
-                            )}
-                        </span>
-                    </Grid>
-                )}
-            </Grid>
-        ) : (
-            <Grid>
-                <Grid item>
-                    <span>
-                        {intl.formatMessage(
-                            {
-                                id: 'deleteItemDialogMessage',
-                            },
-                            {
-                                elementName: (
-                                    <span style={{ fontWeight: 'bold' }}>
-                                        {files.length === 1 &&
-                                            files[0].elementName}
-                                    </span>
-                                ),
-                            }
-                        )}
-                    </span>
-                </Grid>
-            </Grid>
-        );
-    }
-
     return (
         <>
             <div
@@ -937,21 +882,11 @@ const DirectoryContent = () => {
                 open={openDeleteElementDialog}
                 onClose={handleCloseDeleteElement}
                 onClick={handleClickDeleteElement}
-                title={
-                    getSelectedChildren().length === 1
-                        ? intl.formatMessage(
-                              { id: 'deleteItemDialogTitle' },
-                              {
-                                  elementName:
-                                      getSelectedChildren()[0].elementName,
-                              }
-                          )
-                        : intl.formatMessage(
-                              { id: 'deleteMultipleItemsDialogTitle' },
-                              { itemsCount: getSelectedChildren().length }
-                          )
+                items={getSelectedChildren()}
+                multipleDeleteFormatMessageId={
+                    'deleteMultipleItemsDialogMessage'
                 }
-                message={buildFilesToDeleteGrid(getSelectedChildren())}
+                simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
                 error={deleteError}
             />
             <ExportDialog
