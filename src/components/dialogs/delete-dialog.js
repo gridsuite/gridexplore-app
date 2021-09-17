@@ -22,6 +22,8 @@ import Grid from '@material-ui/core/Grid';
  * @param {EventListener} onClose Event to close the dialog
  * @param {EventListener} onClick Event to submit the deletion
  * @param {Array} items Items for deletion confirmation
+ * @param {String} multipleDeleteFormatMessageId Format message id for multiple delete
+ * @param {String} simpleDeleteFormatMessageId Format message id for simple delete
  * @param {String} error Error message
  */
 const DeleteDialog = ({

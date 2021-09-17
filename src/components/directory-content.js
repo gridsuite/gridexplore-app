@@ -180,7 +180,6 @@ const DirectoryContent = () => {
     const handleCloseDeleteElement = () => {
         setOpenDeleteElementDialog(false);
         setDeleteError('');
-        //setActiveElement('');
     };
 
     const handleClickDeleteElement = () => {
@@ -195,8 +194,10 @@ const DirectoryContent = () => {
                 }
 
                 if (doneChildren.length === selectedChildren.length) {
-                    if (notDeleted.length === 0) handleCloseDeleteElement();
-                    else {
+                    if (notDeleted.length === 0) {
+                        handleCloseDeleteElement();
+                        setActiveElement('');
+                    } else {
                         let msg = intl.formatMessage(
                             { id: 'deleteElementsFailure' },
                             {
