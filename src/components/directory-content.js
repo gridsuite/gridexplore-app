@@ -514,30 +514,27 @@ const DirectoryContent = () => {
                         contingencyListsUuids.push(e.elementUuid);
                 });
             let metadata = {};
-            fetchStudiesInfos(studyUuids)
-                .then((res) => {
+            Promise.all([
+                fetchStudiesInfos(studyUuids).then((res) => {
                     res.forEach((e) => {
                         metadata[e.studyUuid] = {
                             name: e.studyName,
                         };
                     });
-                    return res;
-                })
-                .then((res) => {
-                    return fetchContingencyListsInfos(
-                        contingencyListsUuids
-                    ).then((res) => {
+                }),
+                fetchContingencyListsInfos(contingencyListsUuids).then(
+                    (res) => {
                         res.forEach((e) => {
                             metadata[e.id] = {
                                 name: e.name,
                             };
                         });
-                    });
-                })
-                .finally((res) => {
-                    setChildrenMetadata(metadata);
-                    setIsMetadataLoading(false);
-                });
+                    }
+                ),
+            ]).finally(() => {
+                setChildrenMetadata(metadata);
+                setIsMetadataLoading(false);
+            });
         }
 
         setSelectedUuids(new Set());
