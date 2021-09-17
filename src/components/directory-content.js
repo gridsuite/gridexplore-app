@@ -141,7 +141,6 @@ const DirectoryContent = () => {
     const handleCloseRenameElement = () => {
         setOpenRenameElementDialog(false);
         setRenameError('');
-        setActiveElement('');
     };
 
     const handleClickRenameElement = (newElementNameValue) => {
@@ -183,7 +182,6 @@ const DirectoryContent = () => {
     const handleCloseDeleteElement = () => {
         setOpenDeleteElementDialog(false);
         setDeleteError('');
-        setActiveElement('');
     };
 
     const handleClickDeleteElement = () => {
@@ -198,8 +196,10 @@ const DirectoryContent = () => {
                 }
 
                 if (doneChildren.length === selectedChildren.length) {
-                    if (notDeleted.length === 0) handleCloseDeleteElement();
-                    else {
+                    if (notDeleted.length === 0) {
+                        handleCloseDeleteElement();
+                        setActiveElement('');
+                    } else {
                         let msg = intl.formatMessage(
                             { id: 'deleteElementsFailure' },
                             {
@@ -887,13 +887,11 @@ const DirectoryContent = () => {
                 open={openDeleteElementDialog}
                 onClose={handleCloseDeleteElement}
                 onClick={handleClickDeleteElement}
-                title={useIntl().formatMessage(
-                    { id: 'deleteElement' },
-                    { stn: getSelectedChildren().length }
-                )}
-                message={useIntl().formatMessage({
-                    id: 'genericConfirmQuestion',
-                })}
+                items={getSelectedChildren()}
+                multipleDeleteFormatMessageId={
+                    'deleteMultipleItemsDialogMessage'
+                }
+                simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
                 error={deleteError}
             />
             <ExportDialog
