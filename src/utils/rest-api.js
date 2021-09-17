@@ -595,13 +595,15 @@ export function getFilterById(id) {
 }
 
 export function fetchFiltersInfos(uuids) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('ids', uuids);
+
     console.info('Fetching filters metadata ... ');
     const fetchFiltersInfosUrl = PREFIX_FILTERS_QUERIES + `/metadata`;
     return backendFetch(fetchFiltersInfosUrl, {
-        method: 'GET',
-        headers: {
-            ids: uuids,
-        },
+        method: 'POST',
+        body: JSON.stringify(uuids),
+        headers: { 'Content-Type': 'application/json' },
     }).then((response) =>
         response.ok
             ? response.json()
