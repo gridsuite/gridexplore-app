@@ -21,9 +21,12 @@ import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     getContingencyList,
+    getFilterById,
+    saveFilter,
     saveScriptContingencyList,
 } from '../../utils/rest-api';
 import { ScriptTypes } from '../../utils/script-types';
+import { elementType } from '../../utils/elementType';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -42,19 +45,19 @@ const useStyles = makeStyles(() => ({
 
 /**
  * Dialog to edit a script contingency list
- * @param listId id of list to edit
+ * @param id id of list to edit
  * @param open Is the dialog open ?
  * @param onClose Event to close the dialog
  * @param onError handle errors
  * @param title Title of the dialog
+ * @param type Contingencies or filter
  */
-const ScriptContingencyDialog = ({ listId, open, onClose, onError, title }) => {
+const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
     const classes = useStyles();
     const selectedTheme = useSelector((state) => state.theme);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const [aceEditorContent, setAceEditorContent] = useState('');
-    const [currentScriptContingency, setCurrentScriptContingency] =
-        useState(null);
+    const [currentScript, setCurrentScript] = useState(null);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
 
@@ -74,61 +77,91 @@ const ScriptContingencyDialog = ({ listId, open, onClose, onError, title }) => {
     };
 
     const handleCancel = () => {
-        setAceEditorContent(currentScriptContingency.script);
+        setAceEditorContent(currentScript.script);
         setBtnSaveListDisabled(true);
         onClose();
     };
 
     const handleClick = () => {
-        let newScriptContingencyList = {
-            id: listId,
-            name: name,
-            description: description,
-            script: aceEditorContent,
-        };
-        saveScriptContingencyList(newScriptContingencyList)
-            .then((response) => {})
-            .catch((error) => {
-                onError(error.message);
-            });
+        let newScript;
+        if (type === elementType.SCRIPT_CONTINGENCY_LIST) {
+            newScript = {
+                id: id,
+                name: name,
+                description: description,
+                script: aceEditorContent,
+            };
+            saveScriptContingencyList(newScript)
+                .then((response) => {})
+                .catch((error) => {
+                    onError(error.message);
+                });
+        } else {
+            newScript = {
+                id: id,
+                name: name,
+                description: description,
+                script: aceEditorContent,
+                type: elementType.SCRIPT,
+            };
+            saveFilter(newScript)
+                .then((unused) => {})
+                .catch((error) => {
+                    onError(error.message);
+                });
+        }
         onClose();
-        setCurrentScriptContingency(newScriptContingencyList);
+        setCurrentScript(newScript);
     };
 
     const onChangeAceEditor = (newScript) => {
         setAceEditorContent(newScript);
-        if (
-            currentScriptContingency !== null &&
-            newScript !== currentScriptContingency.script
-        ) {
+        if (currentScript !== null && newScript !== currentScript.script) {
             setBtnSaveListDisabled(false);
         } else {
             setBtnSaveListDisabled(true);
         }
     };
 
-    const getCurrentContingencyList = useCallback(
+    const getCurrentScript = useCallback(
         (currentItemId) => {
-            getContingencyList(ScriptTypes.SCRIPT, currentItemId)
-                .then((data) => {
-                    if (data) {
-                        setCurrentScriptContingency(data);
-                        setAceEditorContent(data.script);
-                        setName(data.name);
-                        setDescription(data.description);
-                    }
-                })
-                .catch((error) => {
-                    onError(error.message);
-                });
+            if (type === elementType.SCRIPT_CONTINGENCY_LIST) {
+                getContingencyList(ScriptTypes.SCRIPT, currentItemId)
+                    .then((data) => {
+                        if (data) {
+                            setCurrentScript(data);
+                            setAceEditorContent(data.script);
+                            setName(data.name);
+                            setDescription(data.description);
+                        }
+                    })
+                    .catch((error) => {
+                        onError(error.message);
+                    });
+            } else if (type === elementType.SCRIPT) {
+                getFilterById(currentItemId)
+                    .then((data) => {
+                        if (data) {
+                            setCurrentScript(data);
+                            setAceEditorContent(
+                                data.script === null ? '' : data.script
+                            );
+                            setName(data.name);
+                            setDescription(data.description);
+                        }
+                    })
+                    .catch((error) => {
+                        onError(error.message);
+                    });
+            }
         },
-        [onError]
+        [onError, type]
     );
 
     useEffect(() => {
         // get contingency list
-        getCurrentContingencyList(listId);
-    }, [listId, getCurrentContingencyList]);
+        getCurrentScript(id);
+    }, [id, getCurrentScript]);
 
     return (
         <Dialog
@@ -168,12 +201,13 @@ const ScriptContingencyDialog = ({ listId, open, onClose, onError, title }) => {
     );
 };
 
-ScriptContingencyDialog.propTypes = {
-    listId: PropTypes.string.isRequired,
+ScriptDialog.propTypes = {
+    id: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onError: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
 };
 
-export default ScriptContingencyDialog;
+export default ScriptDialog;

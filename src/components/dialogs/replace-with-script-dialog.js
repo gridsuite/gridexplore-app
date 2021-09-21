@@ -13,24 +13,18 @@ import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { replaceFiltersWithScriptContingencyList } from '../../utils/rest-api';
 import { useSelector } from 'react-redux';
 
 /**
- * Dialog to replace a filters contingency list with a script contingency list
- * @param listId id of list to edit
+ * Dialog to replace a filters contingency list with a script contingency list or a filter with a script
+ * @param id id of list or filter to replace
  * @param open Is the dialog open ?
  * @param onClose Event to close the dialog
+ * @param onClick Function to call to perform rename
  * @param onError handle errors
  * @param title Title of the dialog
  */
-const ContingencyReplaceWithScriptDialog = ({
-    listId,
-    open,
-    onClose,
-    onError,
-    title,
-}) => {
+const ReplaceWithScriptDialog = ({ id, open, onClose, onClick, title }) => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
     const handleClose = () => {
@@ -38,12 +32,7 @@ const ContingencyReplaceWithScriptDialog = ({
     };
 
     const handleClick = () => {
-        replaceFiltersWithScriptContingencyList(listId, selectedDirectory)
-            .then((response) => {})
-            .catch((error) => {
-                onError(error.message);
-            });
-        onClose();
+        onClick(id, selectedDirectory);
     };
 
     return (
@@ -73,12 +62,12 @@ const ContingencyReplaceWithScriptDialog = ({
     );
 };
 
-ContingencyReplaceWithScriptDialog.propTypes = {
-    listId: PropTypes.string.isRequired,
+ReplaceWithScriptDialog.propTypes = {
+    id: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    onError: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
 };
 
-export default ContingencyReplaceWithScriptDialog;
+export default ReplaceWithScriptDialog;

@@ -21,6 +21,8 @@ const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';
 const PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
 const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
+const PREFIX_FILTERS_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/filter/v1/filters';
 
 function getToken() {
     const state = store.getState();
@@ -543,4 +545,121 @@ export function connectNotificationsWsUpdateStudies() {
         );
     };
     return reconnectingWebSocket;
+}
+
+/**
+ * Create Filter
+ * @returns {Promise<Response>}
+ */
+export function createFilter(
+    newFilter,
+    name,
+    type,
+    isPrivate,
+    parentDirectoryUuid
+) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('type', type);
+    urlSearchParams.append('isPrivate', isPrivate);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    return backendFetch(
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+            '/v1/directories/filters?' +
+            urlSearchParams.toString(),
+        {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newFilter),
+        }
+    );
+}
+
+/**
+ * Get all filters (name & type)
+ * @returns {Promise<Response>}
+ */
+export function getFilters() {
+    return backendFetch(PREFIX_FILTERS_QUERIES)
+        .then((response) => response.json())
+        .then((res) => res.sort((a, b) => a.name.localeCompare(b.name)));
+}
+
+/**
+ * Get filter by id
+ * @returns {Promise<Response>}
+ */
+export function getFilterById(id) {
+    const url = PREFIX_FILTERS_QUERIES + '/' + id;
+    return backendFetch(url).then((response) => response.json());
+}
+
+export function fetchFiltersInfos(uuids) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('ids', uuids);
+
+    console.info('Fetching filters metadata ... ');
+    const fetchFiltersInfosUrl = PREFIX_FILTERS_QUERIES + `/metadata`;
+    return backendFetch(fetchFiltersInfosUrl, {
+        method: 'POST',
+        body: JSON.stringify(uuids),
+        headers: { 'Content-Type': 'application/json' },
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+/**
+ * Replace filter with script filter
+ * @returns {Promise<Response>}
+ */
+export function replaceFiltersWithScript(id, parentDirectoryUuid) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const url =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/directories/filters/' +
+        encodeURIComponent(id) +
+        '/replace-with-script' +
+        '?' +
+        urlSearchParams.toString();
+
+    return backendFetch(url, {
+        method: 'post',
+    });
+}
+
+/**
+ * Save new script from filters
+ * @returns {Promise<Response>}
+ */
+export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    const url =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/directories/filters/' +
+        encodeURIComponent(id) +
+        '/new-script/' +
+        encodeURIComponent(newName) +
+        '?' +
+        urlSearchParams.toString();
+
+    return backendFetch(url, {
+        method: 'post',
+    });
+}
+
+/**
+ * Save Filter
+ */
+export function saveFilter(filter) {
+    return backendFetch(PREFIX_FILTERS_QUERIES + '/' + filter.id, {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(filter),
+    });
 }
