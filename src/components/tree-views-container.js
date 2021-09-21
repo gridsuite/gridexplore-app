@@ -478,6 +478,14 @@ const TreeViewsContainer = () => {
         return dirNode && dirNode.owner === userId;
     };
 
+    const getActiveDirectory = () => {
+        return nodeStore &&
+            nodeStore.allIdToNode &&
+            nodeStore.allIdToNode[activeDirectory]
+            ? nodeStore.allIdToNode[activeDirectory].elementName
+            : '';
+    };
+
     return (
         <>
             <div
@@ -666,13 +674,7 @@ const TreeViewsContainer = () => {
             />
             <RenameDialog
                 message={''}
-                currentName={
-                    nodeStore &&
-                    nodeStore.allIdToNode &&
-                    nodeStore.allIdToNode[activeDirectory]
-                        ? nodeStore.allIdToNode[activeDirectory].elementName
-                        : ''
-                }
+                currentName={getActiveDirectory().elementName}
                 open={openRenameDirectoryDialog}
                 onClick={renameSelectedDirectory}
                 onClose={handleCloseRenameDirectoryDialog}
@@ -682,15 +684,14 @@ const TreeViewsContainer = () => {
                 error={renameError}
             />
             <DeleteDialog
-                message={intl.formatMessage({
-                    id: 'deleteDirectoryDialogMessage',
-                })}
+                items={[getActiveDirectory()]}
+                multipleDeleteFormatMessageId={
+                    'deleteMultipleDirectoriesDialogMessage'
+                }
+                simpleDeleteFormatMessageId={'deleteDirectoryDialogMessage'}
                 open={openDeleteDirectoryDialog}
                 onClick={deleteSelectedDirectory}
                 onClose={handleCloseDeleteDirectoryDialog}
-                title={intl.formatMessage({
-                    id: 'deleteDirectoryDialogTitle',
-                })}
                 error={deleteError}
             />
             <AccessRightsDialog

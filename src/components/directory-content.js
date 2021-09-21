@@ -105,6 +105,8 @@ const DirectoryContent = () => {
     const { enqueueSnackbar } = useSnackbar();
 
     const [childrenMetadata, setChildrenMetadata] = useState({});
+    const [isMetadataLoading, setIsMetadataLoading] = useState(false);
+
     const [selectedUuids, setSelectedUuids] = useState(new Set());
 
     const currentChildren = useSelector((state) => state.currentChildren);
@@ -138,7 +140,6 @@ const DirectoryContent = () => {
     const handleCloseRenameElement = () => {
         setOpenRenameElementDialog(false);
         setRenameError('');
-        setActiveElement('');
     };
 
     const handleClickRenameElement = (newElementNameValue) => {
@@ -180,7 +181,6 @@ const DirectoryContent = () => {
     const handleCloseDeleteElement = () => {
         setOpenDeleteElementDialog(false);
         setDeleteError('');
-        setActiveElement('');
     };
 
     const handleClickDeleteElement = () => {
@@ -195,8 +195,10 @@ const DirectoryContent = () => {
                 }
 
                 if (doneChildren.length === selectedChildren.length) {
-                    if (notDeleted.length === 0) handleCloseDeleteElement();
-                    else {
+                    if (notDeleted.length === 0) {
+                        handleCloseDeleteElement();
+                        setActiveElement('');
+                    } else {
                         let msg = intl.formatMessage(
                             { id: 'deleteElementsFailure' },
                             {
@@ -407,12 +409,13 @@ const DirectoryContent = () => {
         }
     }
 
-    function nameCellRender(cellData) {
+    const nameCellRender = (cellData) => {
         const elementUuid = cellData.rowData['elementUuid'];
         const elementName = cellData.rowData['elementName'];
         const objectType = cellData.rowData['type'];
         return (
             <div className={classes.cell}>
+                {/*  Icon */}
                 {!childrenMetadata[elementUuid] &&
                     objectType === elementType.STUDY && (
                         <CircularProgress
@@ -421,7 +424,8 @@ const DirectoryContent = () => {
                         />
                     )}
                 {childrenMetadata[elementUuid] && getElementIcon(objectType)}
-                {childrenMetadata[elementUuid] ? (
+                {/* Name */}
+                {isMetadataLoading ? null : childrenMetadata[elementUuid] ? (
                     <div>{childrenMetadata[elementUuid].name}</div>
                 ) : (
                     <>
@@ -431,7 +435,7 @@ const DirectoryContent = () => {
                 )}
             </div>
         );
-    }
+    };
 
     function toggleSelection(elementUuid) {
         let newSelection = new Set(selectedUuids);
@@ -492,6 +496,7 @@ const DirectoryContent = () => {
     }
 
     useEffect(() => {
+        setIsMetadataLoading(true);
         if (currentChildren !== null) {
             let studyUuids = [];
             let contingencyListsUuids = [];
@@ -509,27 +514,27 @@ const DirectoryContent = () => {
                 });
 
             let metadata = {};
-            fetchStudiesInfos(studyUuids)
-                .then((res) => {
+            Promise.all([
+                fetchStudiesInfos(studyUuids).then((res) => {
                     res.forEach((e) => {
                         metadata[e.studyUuid] = {
                             name: e.studyName,
                         };
                     });
-                })
-                .then(() => {
-                    fetchContingencyListsInfos(contingencyListsUuids).then(
-                        (res) => {
-                            res.forEach((e) => {
-                                metadata[e.id] = {
-                                    name: e.name,
-                                };
-                            });
-
-                            setChildrenMetadata(metadata);
-                        }
-                    );
-                });
+                }),
+                fetchContingencyListsInfos(contingencyListsUuids).then(
+                    (res) => {
+                        res.forEach((e) => {
+                            metadata[e.id] = {
+                                name: e.name,
+                            };
+                        });
+                    }
+                ),
+            ]).finally(() => {
+                setChildrenMetadata(metadata);
+                setIsMetadataLoading(false);
+            });
         }
 
         setSelectedUuids(new Set());
@@ -871,13 +876,11 @@ const DirectoryContent = () => {
                 open={openDeleteElementDialog}
                 onClose={handleCloseDeleteElement}
                 onClick={handleClickDeleteElement}
-                title={useIntl().formatMessage(
-                    { id: 'deleteElement' },
-                    { stn: getSelectedChildren().length }
-                )}
-                message={useIntl().formatMessage({
-                    id: 'genericConfirmQuestion',
-                })}
+                items={getSelectedChildren()}
+                multipleDeleteFormatMessageId={
+                    'deleteMultipleItemsDialogMessage'
+                }
+                simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
                 error={deleteError}
             />
             <ExportDialog
