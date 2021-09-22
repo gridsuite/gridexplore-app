@@ -30,14 +30,21 @@ import { Toolbar } from '@material-ui/core';
 import {
     deleteElement,
     fetchContingencyListsInfos,
+    fetchFiltersInfos,
     fetchStudiesInfos,
+    newScriptFromFilter,
+    newScriptFromFiltersContingencyList,
     renameElement,
+    replaceFiltersWithScript,
+    replaceFiltersWithScriptContingencyList,
     updateAccessRights,
 } from '../utils/rest-api';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import FilterIcon from '@material-ui/icons/Filter';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Menu from '@material-ui/core/Menu';
 
@@ -54,10 +61,11 @@ import RenameDialog from './dialogs/rename-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
 import FiltersContingencyDialog from './dialogs/filters-contingency-dialog';
-import ScriptContingencyDialog from './dialogs/script-contingency-dialog';
-import ContingencyReplaceWithScriptDialog from './dialogs/contingency-replace-with-script-dialog';
-import ContingencyCopyToScriptDialog from './dialogs/contingency-copy-to-script-dialog';
+import ScriptDialog from './dialogs/script-dialog';
+import ReplaceWithScriptDialog from './dialogs/replace-with-script-dialog';
+import CopyToScriptDialog from './dialogs/copy-to-script-dialog';
 import { useSnackbar } from 'notistack';
+import GenericFilterDialog from './generic-filter';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -110,6 +118,12 @@ const DirectoryContent = () => {
     const [selectedUuids, setSelectedUuids] = useState(new Set());
 
     const currentChildren = useSelector((state) => state.currentChildren);
+    const selectedDirectory = useSelector((state) => {
+        return !state.currentPath || state.currentPath.length === 0
+            ? null
+            : state.currentPath[state.currentPath.length - 1].elementUuid;
+    });
+
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const userId = useSelector((state) => state.user.profile.sub);
 
@@ -260,6 +274,34 @@ const DirectoryContent = () => {
         setActiveElement('');
     };
 
+    const handleRowClick = (event) => {
+        if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
+            if (event.rowData.type === elementType.STUDY) {
+                let url = getLink(
+                    event.rowData.elementUuid,
+                    event.rowData.type
+                );
+                window.open(url, '_blank');
+            } else if (
+                event.rowData.type === elementType.FILTERS_CONTINGENCY_LIST
+            ) {
+                setCurrentFiltersContingencyListId(event.rowData.elementUuid);
+                setOpenFiltersContingencyDialog(true);
+            } else if (
+                event.rowData.type === elementType.SCRIPT_CONTINGENCY_LIST
+            ) {
+                setCurrentScriptContingencyListId(event.rowData.elementUuid);
+                setOpenScriptContingencyDialog(true);
+            } else if (event.rowData.type === elementType.SCRIPT) {
+                setCurrentScriptId(event.rowData.elementUuid);
+                setOpenScriptDialog(true);
+            } else if (event.rowData.type === elementType.FILTER) {
+                setCurrentFilterId(event.rowData.elementUuid);
+                setOpenGenericFilterDialog(true);
+            }
+        }
+    };
+
     const handleClickElementAccessRights = (selected) => {
         updateAccessRights(activeElement.elementUuid, selected).then(
             (response) => {
@@ -314,13 +356,84 @@ const DirectoryContent = () => {
         setActiveElement('');
     };
 
+    /**
+     * Filters dialog: window status value to edit filters
+     */
+    const [openGenericFilterDialog, setOpenGenericFilterDialog] =
+        React.useState(false);
+    const handleCloseGenericFilterDialog = () => {
+        setOpenGenericFilterDialog(false);
+        setCurrentFilterId(null);
+        setActiveElement('');
+    };
+
+    const [currentFilterId, setCurrentFilterId] = React.useState(null);
+
+    /**
+     * Filters script dialog: window status value to edit filters script
+     */
+    const [openFiltersCopyToScriptDialog, setOpenFiltersCopyToScriptDialog] =
+        React.useState(false);
+    const handleCloseFiltersCopyToScript = () => {
+        setOpenFiltersCopyToScriptDialog(false);
+        setActiveElement('');
+    };
+
+    const [
+        openFiltersReplaceWithScriptDialog,
+        setOpenFiltersReplaceWithScriptDialog,
+    ] = React.useState(false);
+    const handleCloseFiltersReplaceWithScript = () => {
+        setOpenFiltersReplaceWithScriptDialog(false);
+        setActiveElement('');
+    };
+
+    const handleClickFiltersReplaceWithScript = (id) => {
+        replaceFiltersWithScript(id, selectedDirectory)
+            .then()
+            .catch((error) => handleError(error.message));
+        handleCloseFiltersReplaceWithScript();
+    };
+
     const handleContingencyCopyToScript = () => {
         setAnchorEl(null);
         setOpenFiltersContingencyCopyToScriptDialog(true);
     };
+
+    const handleClickContingencyCopyToScript = (id, newNameValue) => {
+        newScriptFromFiltersContingencyList(id, newNameValue, selectedDirectory)
+            .then()
+            .catch((error) => handleError(error.message));
+        handleCloseFiltersContingencyCopyToScript();
+    };
+
     const handleContingencyReplaceWithScript = () => {
         setAnchorEl(null);
         setOpenFiltersContingencyReplaceWithScriptDialog(true);
+    };
+
+    const handleClickFiltersContingencyReplaceWithScript = (id) => {
+        replaceFiltersWithScriptContingencyList(id, selectedDirectory)
+            .then()
+            .catch((error) => handleError(error.message));
+        handleCloseFiltersContingencyReplaceWithScript();
+    };
+
+    const handleFilterCopyToScript = () => {
+        setAnchorEl(null);
+        setOpenFiltersCopyToScriptDialog(true);
+    };
+
+    const handleClickFilterCopyToScript = (id, newNameValue) => {
+        newScriptFromFilter(id, newNameValue, selectedDirectory)
+            .then()
+            .catch((error) => handleError(error.message));
+        handleCloseFiltersCopyToScript();
+    };
+
+    const handleFilterReplaceWithScript = () => {
+        setAnchorEl(null);
+        setOpenFiltersReplaceWithScriptDialog(true);
     };
 
     /**
@@ -332,6 +445,16 @@ const DirectoryContent = () => {
         React.useState('');
     const handleCloseScriptContingency = () => {
         setOpenScriptContingencyDialog(false);
+        setActiveElement('');
+    };
+
+    /**
+     * Filter script dialog: window status value for editing a filter script
+     */
+    const [openScriptDialog, setOpenScriptDialog] = React.useState(false);
+    const [currentScriptId, setCurrentScriptId] = React.useState('');
+    const handleCloseScriptDialog = () => {
+        setOpenScriptDialog(false);
         setActiveElement('');
     };
 
@@ -406,6 +529,10 @@ const DirectoryContent = () => {
             return <DescriptionIcon className={classes.icon} />;
         } else if (objectType === elementType.FILTERS_CONTINGENCY_LIST) {
             return <PanToolIcon className={classes.icon} />;
+        } else if (objectType === elementType.FILTER) {
+            return <FilterListIcon className={classes.icon} />;
+        } else if (objectType === elementType.SCRIPT) {
+            return <FilterIcon className={classes.icon} />;
         }
     }
 
@@ -500,6 +627,7 @@ const DirectoryContent = () => {
         if (currentChildren !== null) {
             let studyUuids = [];
             let contingencyListsUuids = [];
+            let filtersUuids = [];
 
             currentChildren
                 .filter((e) => e.type !== elementType.DIRECTORY)
@@ -509,8 +637,14 @@ const DirectoryContent = () => {
                     else if (
                         e.type === elementType.SCRIPT_CONTINGENCY_LIST ||
                         e.type === elementType.FILTERS_CONTINGENCY_LIST
-                    )
+                    ) {
                         contingencyListsUuids.push(e.elementUuid);
+                    } else if (
+                        e.type === elementType.FILTER ||
+                        e.type === elementType.SCRIPT
+                    ) {
+                        filtersUuids.push(e.elementUuid);
+                    }
                 });
 
             let metadata = {};
@@ -531,12 +665,19 @@ const DirectoryContent = () => {
                         });
                     }
                 ),
+                fetchFiltersInfos(filtersUuids).then((res) => {
+                    res.forEach((e) => {
+                        metadata[e.id] = {
+                            name: e.name,
+                            filterType: e.type,
+                        };
+                    });
+                }),
             ]).finally(() => {
                 setChildrenMetadata(metadata);
                 setIsMetadataLoading(false);
             });
         }
-
         setSelectedUuids(new Set());
     }, [currentChildren]);
 
@@ -613,7 +754,7 @@ const DirectoryContent = () => {
         return children.length === 1 && children[0].type === elementType.STUDY;
     };
 
-    const allowsCopyToScript = () => {
+    const allowsCopyContingencyToScript = () => {
         let children = getSelectedChildren();
         return (
             children.length === 1 &&
@@ -621,11 +762,25 @@ const DirectoryContent = () => {
         );
     };
 
-    const allowsReplaceWithScript = () => {
+    const allowsReplaceContingencyWithScript = () => {
         let children = getSelectedChildren();
         return (
             children.length === 1 &&
             children[0].type === elementType.FILTERS_CONTINGENCY_LIST &&
+            children[0].owner === userId
+        );
+    };
+
+    const allowsCopyFilterToScript = () => {
+        let children = getSelectedChildren();
+        return children.length === 1 && children[0].type === elementType.FILTER;
+    };
+
+    const allowsReplaceFilterWithScript = () => {
+        let children = getSelectedChildren();
+        return (
+            children.length === 1 &&
+            children[0].type === elementType.FILTER &&
             children[0].owner === userId
         );
     };
@@ -708,39 +863,7 @@ const DirectoryContent = () => {
                                 });
                                 setAnchorEl(event.event.currentTarget);
                             }}
-                            onRowClick={(event) => {
-                                if (
-                                    childrenMetadata[
-                                        event.rowData.elementUuid
-                                    ] !== undefined
-                                ) {
-                                    if (
-                                        event.rowData.type === elementType.STUDY
-                                    ) {
-                                        let url = getLink(
-                                            event.rowData.elementUuid,
-                                            event.rowData.type
-                                        );
-                                        window.open(url, '_blank');
-                                    } else if (
-                                        event.rowData.type ===
-                                        elementType.FILTERS_CONTINGENCY_LIST
-                                    ) {
-                                        setCurrentFiltersContingencyListId(
-                                            event.rowData.elementUuid
-                                        );
-                                        setOpenFiltersContingencyDialog(true);
-                                    } else if (
-                                        event.rowData.type ===
-                                        elementType.SCRIPT_CONTINGENCY_LIST
-                                    ) {
-                                        setCurrentScriptContingencyListId(
-                                            event.rowData.elementUuid
-                                        );
-                                        setOpenScriptContingencyDialog(true);
-                                    }
-                                }
-                            }}
+                            onRowClick={handleRowClick}
                             rows={currentChildren}
                             columns={[
                                 {
@@ -841,7 +964,7 @@ const DirectoryContent = () => {
                                     )}
                                 </>
                             )}
-                            {allowsCopyToScript() && (
+                            {allowsCopyContingencyToScript() && (
                                 <>
                                     {makeMenuItem(
                                         'copyToScript',
@@ -850,11 +973,29 @@ const DirectoryContent = () => {
                                     )}
                                 </>
                             )}
-                            {allowsReplaceWithScript() && (
+                            {allowsReplaceContingencyWithScript() && (
                                 <>
                                     {makeMenuItem(
                                         'replaceWithScript',
                                         handleContingencyReplaceWithScript,
+                                        <InsertDriveFileIcon fontSize="small" />
+                                    )}
+                                </>
+                            )}
+                            {allowsCopyFilterToScript() && (
+                                <>
+                                    {makeMenuItem(
+                                        'copyToScript',
+                                        handleFilterCopyToScript,
+                                        <FileCopyIcon fontSize="small" />
+                                    )}
+                                </>
+                            )}
+                            {allowsReplaceFilterWithScript() && (
+                                <>
+                                    {makeMenuItem(
+                                        'replaceWithScript',
+                                        handleFilterReplaceWithScript,
                                         <InsertDriveFileIcon fontSize="small" />
                                     )}
                                 </>
@@ -905,27 +1046,59 @@ const DirectoryContent = () => {
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'editContingencyList' })}
             />
-            <ScriptContingencyDialog
-                listId={currentScriptContingencyListId}
+            <ScriptDialog
+                id={currentScriptContingencyListId}
                 open={openScriptContingencyDialog}
                 onClose={handleCloseScriptContingency}
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'editContingencyList' })}
+                type={elementType.SCRIPT_CONTINGENCY_LIST}
             />
-            <ContingencyReplaceWithScriptDialog
-                listId={activeElement ? activeElement.elementUuid : ''}
+            <ScriptDialog
+                id={currentScriptId}
+                open={openScriptDialog}
+                onClose={handleCloseScriptDialog}
+                onError={handleError}
+                title={useIntl().formatMessage({ id: 'editFilterScript' })}
+                type={elementType.SCRIPT}
+            />
+            <ReplaceWithScriptDialog
+                id={activeElement ? activeElement.elementUuid : ''}
                 open={openFiltersContingencyReplaceWithScriptDialog}
                 onClose={handleCloseFiltersContingencyReplaceWithScript}
+                onClick={handleClickFiltersContingencyReplaceWithScript}
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'replaceList' })}
             />
-            <ContingencyCopyToScriptDialog
-                listId={activeElement ? activeElement.elementUuid : ''}
+            <CopyToScriptDialog
+                id={activeElement ? activeElement.elementUuid : ''}
                 open={openFiltersContingencyCopyToScriptDialog}
                 onClose={handleCloseFiltersContingencyCopyToScript}
-                onError={handleError}
+                onClick={handleClickContingencyCopyToScript}
                 currentName={activeElement ? activeElement.elementName : ''}
                 title={useIntl().formatMessage({ id: 'copyToScriptList' })}
+            />
+            <ReplaceWithScriptDialog
+                id={activeElement ? activeElement.elementUuid : ''}
+                open={openFiltersReplaceWithScriptDialog}
+                onClose={handleCloseFiltersReplaceWithScript}
+                onClick={handleClickFiltersReplaceWithScript}
+                title={useIntl().formatMessage({ id: 'replaceList' })}
+            />
+            <CopyToScriptDialog
+                id={activeElement ? activeElement.elementUuid : ''}
+                open={openFiltersCopyToScriptDialog}
+                onClose={handleCloseFiltersCopyToScript}
+                onClick={handleClickFilterCopyToScript}
+                currentName={activeElement ? activeElement.elementName : ''}
+                title={useIntl().formatMessage({ id: 'copyToScriptList' })}
+            />
+            <GenericFilterDialog
+                id={currentFilterId}
+                open={openGenericFilterDialog}
+                onClose={handleCloseGenericFilterDialog}
+                onError={handleError}
+                title={useIntl().formatMessage({ id: 'editFilter' })}
             />
             <iframe
                 id={DownloadIframe}

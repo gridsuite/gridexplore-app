@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useIntl } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     setActiveDirectory,
@@ -23,6 +23,7 @@ import {
     insertRootDirectory,
     renameElement,
     updateAccessRights,
+    createFilter,
 } from '../utils/rest-api';
 
 import DirectoryTreeView from './directory-tree-view';
@@ -55,6 +56,8 @@ import { CreateDirectoryDialog } from './dialogs/create-directory-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
+import { CreateFilterDialog } from './create-filter-form';
+import { ScriptTypes } from '../utils/script-types';
 
 const StyledMenu = withStyles({
     paper: {
@@ -82,6 +85,8 @@ const TreeViewsContainer = () => {
     });
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
+
+    const currentEdit = useRef(null);
 
     const selectedDirectoryRef = useRef({});
     selectedDirectoryRef.current = selectedDirectory;
@@ -112,6 +117,7 @@ const TreeViewsContainer = () => {
         openAccessRightsDirectoryDialog,
         setOpenAccessRightsDirectoryDialog,
     ] = React.useState(false);
+    const [openPopupNewList, setOpenPopupNewList] = useState(false);
 
     const [accessRightsError, setAccessRightsError] = React.useState('');
     const [deleteError, setDeleteError] = React.useState('');
@@ -213,6 +219,11 @@ const TreeViewsContainer = () => {
         setAnchorEl(null);
         setOpenDeleteDirectoryDialog(false);
         setDeleteError('');
+    };
+
+    const handleOpenAddNewFilter = () => {
+        setAnchorEl(null);
+        setOpenPopupNewList(true);
     };
 
     /* Handle Dialogs actions */
@@ -478,6 +489,22 @@ const TreeViewsContainer = () => {
         return dirNode && dirNode.owner === userId;
     };
 
+    const newFilter = (name, type, isPrivate) => {
+        const filterType = type === ScriptTypes.SCRIPT ? type : 'LINE';
+        currentEdit.current = {
+            name: name,
+            type: filterType,
+            transient: true,
+        };
+        createFilter(
+            currentEdit.current,
+            name,
+            type,
+            isPrivate,
+            activeDirectory
+        ).then();
+    };
+
     const getActiveDirectory = () => {
         return nodeStore &&
             nodeStore.allIdToNode &&
@@ -559,6 +586,16 @@ const TreeViewsContainer = () => {
                                 <ListItemText
                                     primary={intl.formatMessage({
                                         id: 'createNewContingencyList',
+                                    })}
+                                />
+                            </MenuItem>
+                            <MenuItem onClick={handleOpenAddNewFilter}>
+                                <ListItemIcon style={{ minWidth: '25px' }}>
+                                    <AddIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={intl.formatMessage({
+                                        id: 'createNewFilter',
                                     })}
                                 />
                             </MenuItem>
@@ -709,6 +746,17 @@ const TreeViewsContainer = () => {
                     id: 'accessRights',
                 })}
                 error={accessRightsError}
+            />
+            <CreateFilterDialog
+                open={openPopupNewList}
+                onClose={() => setOpenPopupNewList(false)}
+                title={<FormattedMessage id="createNewFilter" />}
+                inputLabelText={<FormattedMessage id="FilterName" />}
+                customTextValidationBtn={<FormattedMessage id="create" />}
+                customTextCancelBtn={<FormattedMessage id="cancel" />}
+                action={({ name, type, isPrivate }) =>
+                    newFilter(name, type, isPrivate)
+                }
             />
         </>
     );

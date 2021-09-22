@@ -86,6 +86,8 @@
     "SCRIPT": "Script",
     "FILTERS": "Filtres",
     "editContingencyList": "Editer la liste de contingences",
+    "editFilterScript": "Editer le script de filtre",
+    "editFilter": "Editer le filtre",
 
     "LINE": "LIGNE",
     "TWO_WINDINGS_TRANSFORMER": "TRANSFO 2E",
@@ -105,5 +107,27 @@
     "copyToScriptList": "Copier vers script",
     "newNameList": "Nouveau nom de la liste",
     "copyToScript": "Copier dans un script",
-    "replaceWithScript": "Remplacer par un script"
+    "replaceWithScript": "Remplacer par un script",
+    "createNewFilter": "Créer un nouveau filtre",
+    "substationName": "Nom Site",
+    "Generators": "Groupes",
+    "Lines": "Lignes",
+    "TwoWindingsTransformers": "Transfos à 2 enroulements",
+    "ThreeWindingsTransformers": "Transfos à 3 enroulements",
+    "Loads": "Consommations",
+    "Batteries": "Batteries",
+    "ShuntCompensators": "Moyens de compensation",
+    "StaticVarCompensators": "CSPR",
+    "DanglingLines": "Lignes frontières",
+    "LccConverterStations": "Stations de conversion LCC",
+    "VscConverterStations": "Stations de conversion VSC",
+    "HvdcLines": "Lignes HVDC",
+    "BusBarSections": "Sections de barre",
+    "range": "intervalle",
+    "approx": "approximation",
+    "equality": "egalité",
+    "Min": "Min",
+    "Max": "Max",
+
+    "FilterName": "Nom"
 }
