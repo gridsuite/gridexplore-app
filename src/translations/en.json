@@ -88,6 +88,8 @@
     "SCRIPT": "Script",
     "FILTERS": "Filters",
     "editContingencyList": "Edit contingency list",
+    "editFilterScript": "Edit filter script",
+    "editFilter": "Edit filter",
 
     "LINE": "LINE",
     "TWO_WINDINGS_TRANSFORMER": "2W TRANSFORMER",
@@ -107,5 +109,27 @@
     "copyToScriptList": "Copy to script",
     "newNameList": "New list name",
     "copyToScript": "Copy to script",
-    "replaceWithScript": "Replace with script"
+    "replaceWithScript": "Replace with script",
+    "createNewFilter": "Create a new filter",
+    "substationName": "Substation name",
+    "Generators": "Generators",
+    "Lines": "Lines",
+    "TwoWindingsTransformers": "Two windings transformers",
+    "ThreeWindingsTransformers": "Three windings transformers",
+    "Loads": "Loads",
+    "Batteries": "Batteries",
+    "ShuntCompensators": "Shunt compensators",
+    "StaticVarCompensators": "Static var compensators",
+    "DanglingLines": "Dangling lines",
+    "LccConverterStations": "LCC converter stations",
+    "VscConverterStations": "VSC converter stations",
+    "HvdcLines": "HVDC Lines",
+    "BusBarSections": "Busbar sections",
+    "range": "range",
+    "approx": "approximation",
+    "equality": "equality",
+    "Min": "Min",
+    "Max": "Max",
+
+    "FilterName": "Name"
 }
