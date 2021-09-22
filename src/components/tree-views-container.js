@@ -590,7 +590,10 @@ const TreeViewsContainer = () => {
                     `warning: Material-UI: The Menu component doesn't accept a Fragment as
                     a child. Consider providing an array instead.'*/}
                     {!showMenuFromEmptyZone && [
-                        <MenuItem onClick={handleOpenAddNewStudyDialog}>
+                        <MenuItem
+                            onClick={handleOpenAddNewStudyDialog}
+                            key={'createNewStudy'}
+                        >
                             <ListItemIcon style={{ minWidth: '25px' }}>
                                 <AddIcon fontSize="small" />
                             </ListItemIcon>
@@ -602,6 +605,7 @@ const TreeViewsContainer = () => {
                         </MenuItem>,
                         <MenuItem
                             onClick={handleOpenAddNewContingencyListDialog}
+                            key={'createNewContingencyList'}
                         >
                             <ListItemIcon style={{ minWidth: '25px' }}>
                                 <AddIcon fontSize="small" />
@@ -612,10 +616,13 @@ const TreeViewsContainer = () => {
                                 })}
                             />
                         </MenuItem>,
-                        <hr />,
+                        <hr key={'hr'} />,
                         /* A sub array is pushed as an element of the MenuItems array initiated above if isAllowed()=>true. The JSX spec allow to give the elements as an array with inner arrays of elements. */
                         isAllowed() && [
-                            <MenuItem onClick={handleOpenRenameDirectoryDialog}>
+                            <MenuItem
+                                onClick={handleOpenRenameDirectoryDialog}
+                                key={'renameFolder'}
+                            >
                                 <ListItemIcon style={{ minWidth: '25px' }}>
                                     <CreateIcon fontSize="small" />
                                 </ListItemIcon>
@@ -628,6 +635,7 @@ const TreeViewsContainer = () => {
 
                             <MenuItem
                                 onClick={handleOpenAccessRightsDirectoryDialog}
+                                key={'accessRights'}
                             >
                                 <ListItemIcon style={{ minWidth: '25px' }}>
                                     <BuildIcon fontSize="small" />
@@ -638,7 +646,10 @@ const TreeViewsContainer = () => {
                                     })}
                                 />
                             </MenuItem>,
-                            <MenuItem onClick={handleOpenDeleteDirectoryDialog}>
+                            <MenuItem
+                                onClick={handleOpenDeleteDirectoryDialog}
+                                key={'deleteFolder'}
+                            >
                                 <ListItemIcon style={{ minWidth: '25px' }}>
                                     <DeleteIcon fontSize="small" />
                                 </ListItemIcon>
@@ -650,7 +661,10 @@ const TreeViewsContainer = () => {
                             </MenuItem>,
                             <hr />,
                         ],
-                        <MenuItem onClick={handleOpenCreateNewDirectoryDialog}>
+                        <MenuItem
+                            onClick={handleOpenCreateNewDirectoryDialog}
+                            key={'createFolder'}
+                        >
                             <ListItemIcon style={{ minWidth: '25px' }}>
                                 <CreateNewFolderIcon fontSize="small" />
                             </ListItemIcon>
@@ -661,7 +675,10 @@ const TreeViewsContainer = () => {
                             />
                         </MenuItem>,
                     ]}
-                    <MenuItem onClick={handleOpenCreateRootDirectoryDialog}>
+                    <MenuItem
+                        onClick={handleOpenCreateRootDirectoryDialog}
+                        key={'createRootFolder'}
+                    >
                         <ListItemIcon style={{ minWidth: '25px' }}>
                             <FolderSpecialIcon fontSize="small" />
                         </ListItemIcon>

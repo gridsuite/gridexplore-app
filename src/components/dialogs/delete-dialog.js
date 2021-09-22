@@ -86,7 +86,7 @@ const DeleteDialog = ({
                         </span>
                     </Grid>
                     {items.slice(0, 10).map((file) => (
-                        <Grid item>
+                        <Grid item key={file.elementUuid}>
                             <span> {file.elementName} </span>
                         </Grid>
                     ))}
