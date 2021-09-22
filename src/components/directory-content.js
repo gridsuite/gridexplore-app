@@ -206,7 +206,7 @@ const DirectoryContent = () => {
                 if (doneChildren.length === selectedChildren.length) {
                     if (notDeleted.length === 0) {
                         handleCloseDeleteElement();
-                        setActiveElement('');
+                        setActiveElement(null);
                     } else {
                         let msg = intl.formatMessage(
                             { id: 'deleteElementsFailure' },
@@ -237,7 +237,7 @@ const DirectoryContent = () => {
 
     const handleCloseExportStudy = () => {
         setOpenExportStudyDialog(false);
-        setActiveElement('');
+        setActiveElement(null);
     };
 
     const handleClickExportStudy = (url) => {
@@ -261,12 +261,12 @@ const DirectoryContent = () => {
     const handleCloseElementAccessRights = () => {
         setOpenElementAccessRightsDialog(false);
         setAccessRightsError('');
-        setActiveElement('');
+        setActiveElement(null);
     };
 
     const handleCloseRowMenu = () => {
         setAnchorEl(null);
-        setActiveElement('');
+        setActiveElement(null);
     };
 
     const handleRowClick = (event) => {
@@ -330,7 +330,7 @@ const DirectoryContent = () => {
     ] = React.useState('');
     const handleCloseFiltersContingency = () => {
         setOpenFiltersContingencyDialog(false);
-        setActiveElement('');
+        setActiveElement(null);
     };
 
     const [
@@ -339,7 +339,7 @@ const DirectoryContent = () => {
     ] = React.useState(false);
     const handleCloseFiltersContingencyReplaceWithScript = () => {
         setOpenFiltersContingencyReplaceWithScriptDialog(false);
-        setActiveElement('');
+        setActiveElement(null);
     };
 
     const [
@@ -348,7 +348,7 @@ const DirectoryContent = () => {
     ] = React.useState(false);
     const handleCloseFiltersContingencyCopyToScript = () => {
         setOpenFiltersContingencyCopyToScriptDialog(false);
-        setActiveElement('');
+        setActiveElement(null);
     };
 
     /**
@@ -440,7 +440,7 @@ const DirectoryContent = () => {
         React.useState('');
     const handleCloseScriptContingency = () => {
         setOpenScriptContingencyDialog(false);
-        setActiveElement('');
+        setActiveElement(null);
     };
 
     /**
@@ -582,6 +582,7 @@ const DirectoryContent = () => {
             <div
                 onClick={(e) => {
                     toggleSelectAll();
+                    setActiveElement(null);
                     e.stopPropagation();
                 }}
                 className={classes.checkboxes}
@@ -605,6 +606,7 @@ const DirectoryContent = () => {
             <div
                 onClick={(e) => {
                     toggleSelection(elementUuid);
+                    setActiveElement(cellData.rowData);
                     e.stopPropagation();
                 }}
                 className={classes.checkboxes}
