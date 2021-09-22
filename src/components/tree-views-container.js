@@ -611,109 +611,114 @@ const TreeViewsContainer = () => {
                     }
                 >
                     {/* Directories Menu */}
-                    {!showMenuFromEmptyZone && (
-                        <>
-                            <MenuItem onClick={handleOpenAddNewStudyDialog}>
-                                <ListItemIcon style={{ minWidth: '25px' }}>
-                                    <AddIcon fontSize="small" />
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={intl.formatMessage({
-                                        id: 'createNewStudy',
-                                    })}
-                                />
-                            </MenuItem>
+                    {/*It is required here to build an array with the JSX items
+                    we want to insert depending on isAllowed(). Building an
+                    array fixes this material UI warning :
+                    `warning: Material-UI: The Menu component doesn't accept a Fragment as
+                    a child. Consider providing an array instead.'*/}
+                    {!showMenuFromEmptyZone && [
+                        <MenuItem
+                            onClick={handleOpenAddNewStudyDialog}
+                            key={'createNewStudy'}
+                        >
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <AddIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'createNewStudy',
+                                })}
+                            />
+                        </MenuItem>,
+                        <MenuItem
+                            onClick={handleOpenAddNewContingencyListDialog}
+                            key={'createNewContingencyList'}
+                        >
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <AddIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'createNewContingencyList',
+                                })}
+                            />
+                        </MenuItem>,
+                        <MenuItem
+                            onClick={handleOpenAddNewFilter}
+                            key={'createNewFilter'}
+                        >
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <AddIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'createNewFilter',
+                                })}
+                            />
+                        </MenuItem>,
+                        <hr key={'hr'} />,
+                        /* A sub array is pushed as an element of the MenuItems array initiated above if isAllowed()=>true. The JSX spec allow to give the elements as an array with inner arrays of elements. */
+                        isAllowed() && [
                             <MenuItem
-                                onClick={handleOpenAddNewContingencyListDialog}
+                                onClick={handleOpenRenameDirectoryDialog}
+                                key={'renameFolder'}
                             >
                                 <ListItemIcon style={{ minWidth: '25px' }}>
-                                    <AddIcon fontSize="small" />
+                                    <CreateIcon fontSize="small" />
                                 </ListItemIcon>
                                 <ListItemText
                                     primary={intl.formatMessage({
-                                        id: 'createNewContingencyList',
+                                        id: 'renameFolder',
                                     })}
                                 />
-                            </MenuItem>
-                            <MenuItem onClick={handleOpenAddNewFilter}>
-                                <ListItemIcon style={{ minWidth: '25px' }}>
-                                    <AddIcon fontSize="small" />
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={intl.formatMessage({
-                                        id: 'createNewFilter',
-                                    })}
-                                />
-                            </MenuItem>
-                            <hr />
-                            {isAllowed() && (
-                                <>
-                                    <MenuItem
-                                        onClick={
-                                            handleOpenRenameDirectoryDialog
-                                        }
-                                    >
-                                        <ListItemIcon
-                                            style={{ minWidth: '25px' }}
-                                        >
-                                            <CreateIcon fontSize="small" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={intl.formatMessage({
-                                                id: 'renameFolder',
-                                            })}
-                                        />
-                                    </MenuItem>
-                                    <MenuItem
-                                        onClick={
-                                            handleOpenAccessRightsDirectoryDialog
-                                        }
-                                    >
-                                        <ListItemIcon
-                                            style={{ minWidth: '25px' }}
-                                        >
-                                            <BuildIcon fontSize="small" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={intl.formatMessage({
-                                                id: 'accessRights',
-                                            })}
-                                        />
-                                    </MenuItem>
-                                    <MenuItem
-                                        onClick={
-                                            handleOpenDeleteDirectoryDialog
-                                        }
-                                    >
-                                        <ListItemIcon
-                                            style={{ minWidth: '25px' }}
-                                        >
-                                            <DeleteIcon fontSize="small" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={intl.formatMessage({
-                                                id: 'deleteFolder',
-                                            })}
-                                        />
-                                    </MenuItem>
-                                    <hr />
-                                </>
-                            )}
+                            </MenuItem>,
+
                             <MenuItem
-                                onClick={handleOpenCreateNewDirectoryDialog}
+                                onClick={handleOpenAccessRightsDirectoryDialog}
+                                key={'accessRights'}
                             >
                                 <ListItemIcon style={{ minWidth: '25px' }}>
-                                    <CreateNewFolderIcon fontSize="small" />
+                                    <BuildIcon fontSize="small" />
                                 </ListItemIcon>
                                 <ListItemText
                                     primary={intl.formatMessage({
-                                        id: 'createFolder',
+                                        id: 'accessRights',
                                     })}
                                 />
-                            </MenuItem>
-                        </>
-                    )}
-                    <MenuItem onClick={handleOpenCreateRootDirectoryDialog}>
+                            </MenuItem>,
+                            <MenuItem
+                                onClick={handleOpenDeleteDirectoryDialog}
+                                key={'deleteFolder'}
+                            >
+                                <ListItemIcon style={{ minWidth: '25px' }}>
+                                    <DeleteIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={intl.formatMessage({
+                                        id: 'deleteFolder',
+                                    })}
+                                />
+                            </MenuItem>,
+                            <hr />,
+                        ],
+                        <MenuItem
+                            onClick={handleOpenCreateNewDirectoryDialog}
+                            key={'createFolder'}
+                        >
+                            <ListItemIcon style={{ minWidth: '25px' }}>
+                                <CreateNewFolderIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={intl.formatMessage({
+                                    id: 'createFolder',
+                                })}
+                            />
+                        </MenuItem>,
+                    ]}
+                    <MenuItem
+                        onClick={handleOpenCreateRootDirectoryDialog}
+                        key={'createRootFolder'}
+                    >
                         <ListItemIcon style={{ minWidth: '25px' }}>
                             <FolderSpecialIcon fontSize="small" />
                         </ListItemIcon>
