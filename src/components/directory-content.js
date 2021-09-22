@@ -606,7 +606,11 @@ const DirectoryContent = () => {
             <div
                 onClick={(e) => {
                     toggleSelection(elementUuid);
-                    setActiveElement(cellData.rowData);
+                    if (selectedUuids.has(elementUuid)) {
+                        setActiveElement(null);
+                    } else {
+                        setActiveElement(cellData.rowData);
+                    }
                     e.stopPropagation();
                 }}
                 className={classes.checkboxes}
