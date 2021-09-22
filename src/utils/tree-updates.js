@@ -275,7 +275,7 @@ export function updatedNodeStore(
         });
         let canUsePrev = true;
         if (prevByRootIdToNode === undefined) canUsePrev = false;
-        else if (update && update[0] === root) canUsePrev = false;
+        else if (update && update[1] === root) canUsePrev = false;
         else if (!prevByRootIdToNode[root.elementUuid]) canUsePrev = false;
 
         if (!canUsePrev) {
