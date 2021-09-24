@@ -9,25 +9,25 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    setActiveDirectory,
     setCurrentChildren,
+    setSelectedDirectory,
     setCurrentPath,
+    setActiveDirectory,
 } from '../redux/actions';
 
 import {
-    connectNotificationsWsUpdateStudies,
-    deleteElement,
     fetchDirectoryContent,
     fetchRootFolders,
+    connectNotificationsWsUpdateStudies,
     insertDirectory,
     insertRootDirectory,
-    renameElement,
+    deleteElement,
     updateAccessRights,
+    renameElement,
     createFilter,
 } from '../utils/rest-api';
 
 import DirectoryTreeView from './directory-tree-view';
-import { updatedNodeStore, makePathFromTip } from '../utils/tree-updates';
 
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
@@ -75,18 +75,18 @@ const TreeViewsContainer = () => {
     const intlRef = useIntlRef();
     const dispatch = useDispatch();
 
-    const [nodeStore, setNodeStore] = useState({});
+    const [rootDirectories, setRootDirectories] = useState([]);
+    const [mapData, setMapData] = useState({});
 
     const user = useSelector((state) => state.user);
-    const selectedDirectory = useSelector((state) => {
-        return !state.currentPath || state.currentPath.length === 0
-            ? null
-            : state.currentPath[state.currentPath.length - 1].elementUuid;
-    });
+    const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
 
     const currentEdit = useRef(null);
+
+    const mapDataRef = useRef({});
+    mapDataRef.current = mapData;
 
     const selectedDirectoryRef = useRef({});
     selectedDirectoryRef.current = selectedDirectory;
@@ -227,54 +227,29 @@ const TreeViewsContainer = () => {
     };
 
     /* Handle Dialogs actions */
-
-    function createDirectoryUnder(dirName, underDirUuid, isPrivate) {
-        function whenDirCreated(newDir) {
-            let nextNodeStore = updatedNodeStore(
-                nodeStore,
-                underDirUuid,
-                [newDir],
-                false
-            );
-            if (nextNodeStore) {
-                let incredPath = makePathFromTip(
-                    newDir.elementUuid,
-                    nextNodeStore.allIdToNode
-                );
-                dispatch(setCurrentPath(incredPath));
-                setNodeStore(nextNodeStore);
-            }
-
-            if (underDirUuid) setOpenCreateNewDirectoryDialog(false);
-            else setOpenCreateRootDirectoryDialog(false);
-
-            setSelectedDirectory(newDir.elementUuid, nextNodeStore.allIdToNode);
-        }
-
-        if (underDirUuid)
-            insertDirectory(dirName, underDirUuid, isPrivate, userId).then(
-                whenDirCreated
-            );
-        else
-            insertRootDirectory(dirName, isPrivate, userId).then(
-                whenDirCreated
-            );
-    }
-
     function insertNewDirectory(directoryName, isPrivate) {
-        createDirectoryUnder(directoryName, activeDirectory, isPrivate, userId);
+        insertDirectory(directoryName, activeDirectory, isPrivate, userId).then(
+            (newDir) => {
+                setOpenCreateNewDirectoryDialog(false);
+                dispatch(setSelectedDirectory(newDir.elementUuid));
+            }
+        );
     }
 
     function insertNewRootDirectory(directoryName, isPrivate) {
-        createDirectoryUnder(directoryName, null, isPrivate, userId);
+        insertRootDirectory(directoryName, isPrivate, userId).then((newDir) => {
+            setOpenCreateRootDirectoryDialog(false);
+            dispatch(setSelectedDirectory(newDir.elementUuid));
+        });
     }
 
     function deleteSelectedDirectory() {
         deleteElement(activeDirectory).then((r) => {
             if (r.ok) {
                 handleCloseDeleteDirectoryDialog();
-                let parent = nodeStore.allIdToNode[activeDirectory].parentUuid;
-                setSelectedDirectory(parent);
+                dispatch(
+                    setSelectedDirectory(mapData[activeDirectory].parentUuid)
+                );
                 dispatch(setActiveDirectory(null));
             }
             if (r.status === 403) {
@@ -316,24 +291,123 @@ const TreeViewsContainer = () => {
     }
 
     /* RootDirectories management */
-    /* rootDirectories initialization */
-
     const updateRootDirectories = useCallback(() => {
         fetchRootFolders().then((data) => {
             let sortedData = [...data];
             sortedData.sort(function (a, b) {
                 return a.elementName.localeCompare(b.elementName);
             });
-
-            let nextNodeStore = updatedNodeStore(nodeStore, null, sortedData);
-            if (nextNodeStore) setNodeStore(nextNodeStore);
+            setRootDirectories(
+                sortedData.map((rootDir) => {
+                    return {
+                        children: [],
+                        parentUuid: null,
+                        ...rootDir,
+                    };
+                })
+            );
         });
-    }, [nodeStore]);
+    }, []);
+
+    /* rootDirectories initialization */
     useEffect(() => {
         if (user != null) {
             updateRootDirectories();
         }
     }, [user, updateRootDirectories]);
+
+    /* Manage current path data */
+    const updatePath = useCallback(
+        (nodeId) => {
+            let path = [];
+            let currentUuid = nodeId;
+            while (
+                currentUuid != null &&
+                mapDataRef.current[currentUuid] !== undefined
+            ) {
+                path.unshift({
+                    elementUuid: mapDataRef.current[currentUuid].elementUuid,
+                    elementName: mapDataRef.current[currentUuid].elementName,
+                });
+                currentUuid = mapDataRef.current[currentUuid].parentUuid;
+            }
+            dispatch(setCurrentPath(path));
+        },
+        [dispatch]
+    );
+
+    /* MapData management*/
+    useEffect(() => {
+        if (rootDirectories && rootDirectories.length > 0) {
+            let mapDataCopy = { ...mapDataRef.current };
+            rootDirectories.forEach((rootDirectory) => {
+                let rootDirectoryCopy = { ...rootDirectory };
+                rootDirectoryCopy.children = mapDataRef.current[
+                    rootDirectoryCopy.elementUuid
+                ]
+                    ? mapDataRef.current[rootDirectoryCopy.elementUuid].children
+                    : [];
+                mapDataCopy[rootDirectory.elementUuid] = rootDirectoryCopy;
+            });
+            setMapData(mapDataCopy);
+        }
+    }, [rootDirectories]);
+
+    useEffect(() => {
+        updatePath(selectedDirectoryRef.current);
+    }, [mapData, updatePath]);
+
+    const insertContent = useCallback(
+        (nodeId, childrenToBeInserted) => {
+            let mapDataCopy = { ...mapDataRef.current };
+            let preparedChildrenToBeInserted = childrenToBeInserted.map(
+                (child) => {
+                    child.children = [];
+                    child.parentUuid = nodeId;
+                    if (!mapDataCopy[child.elementUuid]) {
+                        mapDataCopy[child.elementUuid] = child;
+                    } else {
+                        //update element name
+                        mapDataCopy[child.elementUuid].elementName =
+                            child.elementName;
+
+                        //update element access rights
+                        mapDataCopy[child.elementUuid].accessRights =
+                            child.accessRights;
+                    }
+                    return child;
+                }
+            );
+            mapDataCopy[nodeId].children = preparedChildrenToBeInserted.sort(
+                function (a, b) {
+                    return a.elementName.localeCompare(b.elementName);
+                }
+            );
+            setMapData(mapDataCopy);
+        },
+        [mapDataRef]
+    );
+
+    const updateMapData = useCallback(
+        (nodeId, children) => {
+            let newSubdirectories = children.filter(
+                (child) => child.type === elementType.DIRECTORY
+            );
+            insertContent(nodeId, newSubdirectories);
+            if (
+                selectedDirectoryRef.current !== null &&
+                mapDataRef.current[selectedDirectoryRef.current].parentUuid ===
+                    nodeId &&
+                newSubdirectories.filter(
+                    (e) => e.elementUuid === selectedDirectoryRef.current
+                ).length === 0
+            ) {
+                // if selected directory is deleted by another user we should select parent directory
+                dispatch(setSelectedDirectory(nodeId));
+            }
+        },
+        [insertContent, selectedDirectoryRef, mapDataRef, dispatch]
+    );
 
     /* currentChildren management */
     const updateCurrentChildren = useCallback(
@@ -352,36 +426,25 @@ const TreeViewsContainer = () => {
     );
 
     const updateDirectoryTreeAndContent = useCallback(
-        (nodeId, mayThen) => {
+        (nodeId) => {
             fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
-                let nextNodeStore = updatedNodeStore(
-                    nodeStore,
-                    nodeId,
-                    childrenToBeInserted
-                );
-                if (nextNodeStore) setNodeStore(nextNodeStore);
-
-                if (mayThen) mayThen();
+                // update directory Content
                 updateCurrentChildren(childrenToBeInserted);
+                // Update Tree Map data
+                updateMapData(nodeId, childrenToBeInserted);
             });
         },
-        [updateCurrentChildren, nodeStore]
+        [updateCurrentChildren, updateMapData]
     );
 
     const updateDirectoryTree = useCallback(
-        (nodeId, mayThen) => {
+        (nodeId) => {
             fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
-                let nextNodeStore = updatedNodeStore(
-                    nodeStore,
-                    nodeId,
-                    childrenToBeInserted
-                );
-                if (nextNodeStore) setNodeStore(nextNodeStore);
-
-                if (mayThen) mayThen();
+                // Update Tree Map data
+                updateMapData(nodeId, childrenToBeInserted);
             });
         },
-        [nodeStore]
+        [updateMapData]
     );
 
     /* Manage Studies updating with Web Socket */
@@ -402,23 +465,10 @@ const TreeViewsContainer = () => {
         [enqueueSnackbar, intlRef]
     );
 
-    const setSelectedDirectory = useCallback(
-        (nodeId, mayMap) => {
-            dispatch(
-                setCurrentPath(
-                    makePathFromTip(
-                        nodeId,
-                        mayMap ? mayMap : nodeStore.allIdToNode
-                    )
-                )
-            );
-        },
-        [nodeStore, dispatch]
-    );
-
     const connectNotificationsUpdateStudies = useCallback(() => {
         const ws = connectNotificationsWsUpdateStudies();
         ws.onmessage = function (event) {
+            console.debug('Received Update Studies notification', event);
             let eventData = JSON.parse(event.data);
             if (eventData.headers) {
                 const notificationTypeHeader =
@@ -436,7 +486,7 @@ const TreeViewsContainer = () => {
                             notificationType.DELETE_DIRECTORY &&
                         selectedDirectoryRef.current === directoryUuid
                     ) {
-                        setSelectedDirectory(null);
+                        dispatch(setSelectedDirectory(null));
                     }
                     return;
                 }
@@ -464,7 +514,7 @@ const TreeViewsContainer = () => {
         updateDirectoryTreeAndContent,
         updateDirectoryTree,
         updateRootDirectories,
-        setSelectedDirectory,
+        dispatch,
     ]);
 
     useEffect(() => {
@@ -478,15 +528,16 @@ const TreeViewsContainer = () => {
 
     /* Handle components synchronization */
     useEffect(() => {
-        if (selectedDirectory) {
-            updateDirectoryTreeAndContent(selectedDirectory);
-        }
+        console.debug('useEffect over selectedDirectory', selectedDirectory);
+        if (selectedDirectory) updateDirectoryTreeAndContent(selectedDirectory);
     }, [selectedDirectory, updateDirectoryTreeAndContent]);
 
     const isAllowed = () => {
-        if (!activeDirectory || !nodeStore) return false;
-        let dirNode = nodeStore.allIdToNode[activeDirectory];
-        return dirNode && dirNode.owner === userId;
+        return (
+            activeDirectory &&
+            mapData[activeDirectory] &&
+            mapData[activeDirectory].owner === userId
+        );
     };
 
     const newFilter = (name, type, isPrivate) => {
@@ -506,10 +557,8 @@ const TreeViewsContainer = () => {
     };
 
     const getActiveDirectory = () => {
-        return nodeStore &&
-            nodeStore.allIdToNode &&
-            nodeStore.allIdToNode[activeDirectory]
-            ? nodeStore.allIdToNode[activeDirectory].elementName
+        return mapDataRef.current && mapDataRef.current[activeDirectory]
+            ? mapDataRef.current[activeDirectory]
             : '';
     };
 
@@ -533,19 +582,16 @@ const TreeViewsContainer = () => {
                     }}
                     onContextMenu={(e) => onContextMenu(e, null)}
                 >
-                    {nodeStore &&
-                        nodeStore.byRootIdToNode &&
-                        Object.entries(nodeStore.byRootIdToNode).map(
-                            ([k, v]) => (
-                                <DirectoryTreeView
-                                    key={k}
-                                    treeViewUuid={k}
-                                    mapData={v}
-                                    onContextMenu={onContextMenu}
-                                    onDirectoryUpdate={updateDirectoryTree}
-                                />
-                            )
-                        )}
+                    {mapDataRef.current &&
+                        rootDirectories.map((rootDirectory) => (
+                            <DirectoryTreeView
+                                key={rootDirectory.elementUuid}
+                                treeViewUuid={rootDirectory.elementUuid}
+                                mapData={mapDataRef.current}
+                                onContextMenu={onContextMenu}
+                                onDirectoryUpdate={updateDirectoryTree}
+                            />
+                        ))}
                 </div>
                 <StyledMenu
                     id="case-menu"
@@ -739,10 +785,11 @@ const TreeViewsContainer = () => {
             <AccessRightsDialog
                 message={''}
                 isPrivate={
-                    nodeStore &&
-                    nodeStore.allIdToNode &&
-                    nodeStore.allIdToNode[activeDirectory] &&
-                    nodeStore.allIdToNode[activeDirectory].accessRights.private
+                    mapDataRef.current &&
+                    mapDataRef.current[activeDirectory] !== undefined
+                        ? mapDataRef.current[activeDirectory].accessRights
+                              .private
+                        : false
                 }
                 open={openAccessRightsDirectoryDialog}
                 onClick={changeSelectedDirectoryAccessRights}

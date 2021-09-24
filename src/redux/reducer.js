@@ -20,6 +20,7 @@ import {
     SELECT_THEME,
     SELECT_LANGUAGE,
     CURRENT_CHILDREN,
+    SELECT_DIRECTORY,
     CURRENT_PATH,
     SET_APPS_AND_URLS,
     LOAD_CASES_SUCCESS,
@@ -41,6 +42,7 @@ const paramsInitialState = {
 const initialState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     currentChildren: null,
+    selectedDirectory: null,
     activeDirectory: null,
     currentPath: [],
     user: null,
@@ -77,6 +79,10 @@ export const reducer = createReducer(initialState, {
 
     [CURRENT_CHILDREN]: (state, action) => {
         state.currentChildren = action.currentChildren;
+    },
+
+    [SELECT_DIRECTORY]: (state, action) => {
+        state.selectedDirectory = action.selectedDirectory;
     },
 
     [ACTIVE_DIRECTORY]: (state, action) => {

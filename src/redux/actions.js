@@ -37,6 +37,15 @@ export function setCurrentChildren(currentChildren) {
     };
 }
 
+export const SELECT_DIRECTORY = 'SELECT_DIRECTORY';
+
+export function setSelectedDirectory(selectedDirectory) {
+    return {
+        type: SELECT_DIRECTORY,
+        selectedDirectory: selectedDirectory,
+    };
+}
+
 export const ACTIVE_DIRECTORY = 'ACTIVE_DIRECTORY';
 
 export function setActiveDirectory(activeDirectory) {
