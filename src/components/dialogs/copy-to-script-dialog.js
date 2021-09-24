@@ -14,6 +14,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
 /**
  * Dialog to copy a filters contingency list to a script contingency list or a filter to a script
@@ -33,11 +34,13 @@ const CopyToScriptDialog = ({
     title,
 }) => {
     const [newNameValue, setNewNameValue] = React.useState(currentName);
+    const selectedDirectory = useSelector((state) => state.selectedDirectory);
+
     const updateNameValue = (event) => {
         setNewNameValue(event.target.value);
     };
     const handleClick = () => {
-        onClick(id, newNameValue);
+        onClick(id, newNameValue, selectedDirectory);
     };
 
     const handleClose = () => {
