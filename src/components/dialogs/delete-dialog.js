@@ -7,7 +7,6 @@
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import Alert from '@material-ui/lab/Alert';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
@@ -86,7 +85,7 @@ const DeleteDialog = ({
                         </span>
                     </Grid>
                     {items.slice(0, 10).map((file) => (
-                        <Grid item>
+                        <Grid item key={file.elementUuid}>
                             <span> {file.elementName} </span>
                         </Grid>
                     ))}
@@ -136,13 +135,11 @@ const DeleteDialog = ({
         >
             <DialogTitle>{buildTitle(items)}</DialogTitle>
             <DialogContent>
-                <DialogContentText>
-                    {buildItemsToDeleteGrid(
-                        items,
-                        multipleDeleteFormatMessageId,
-                        simpleDeleteFormatMessageId
-                    )}
-                </DialogContentText>
+                {buildItemsToDeleteGrid(
+                    items,
+                    multipleDeleteFormatMessageId,
+                    simpleDeleteFormatMessageId
+                )}
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
