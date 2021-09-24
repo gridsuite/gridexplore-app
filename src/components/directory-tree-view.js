@@ -20,7 +20,9 @@ import Zoom from '@material-ui/core/Zoom';
 import { FormattedMessage } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDirectory } from '../redux/actions';
+import { setCurrentPath } from '../redux/actions';
+
+import { makePathFromTip } from '../utils/tree-updates';
 
 const useStyles = makeStyles((theme) => ({
     treeViewRoot: {
@@ -70,29 +72,41 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function selectedDirUuidFromCurrentPath(currentPath, mapData) {
+    if (!currentPath || currentPath.length === 0) return null;
+    let tip = currentPath[currentPath.length - 1];
+    let tipUuid = tip.elementUuid;
+    if (!mapData[tipUuid]) return null;
+    return tipUuid;
+}
+
+function isCurrentPathEquiv(mapData, prevCurrPath, currPath) {
+    if (!prevCurrPath) return false;
+    let dirUuidFromCurr = selectedDirUuidFromCurrentPath(currPath, mapData);
+    let dirUuidFromPrev = selectedDirUuidFromCurrentPath(prevCurrPath, mapData);
+    return dirUuidFromCurr === dirUuidFromPrev;
+}
+
 const DirectoryTreeView = ({
     treeViewUuid,
     mapData,
     onContextMenu,
     onDirectoryUpdate,
 }) => {
+    const treeViewUuidRef = useRef(treeViewUuid);
     const classes = useStyles();
     const dispatch = useDispatch();
 
     const [expanded, setExpanded] = React.useState([]);
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const currentPath = useSelector((state) => state.currentPath);
-
-    const mapDataRef = useRef({});
-    const expandedRef = useRef([]);
-    const selectedDirectoryRef = useRef(null);
-    selectedDirectoryRef.current = selectedDirectory;
-    expandedRef.current = expanded;
-    mapDataRef.current = mapData;
+    const prevPath = useRef(null);
+    const currentPath = useSelector(
+        (state) => state.currentPath,
+        (p, n) => isCurrentPathEquiv(mapData, p, n)
+    );
 
     const ensureInOutExpansion = useCallback(
         (inIds, outIds = []) => {
-            let prevAsSet = new Set(expandedRef.current);
+            let prevAsSet = new Set(expanded);
             // if on both side : no-op
             let inIdsSet = new Set(
                 inIds.filter((id) => !outIds.includes(id) && !prevAsSet.has(id))
@@ -107,20 +121,7 @@ const DirectoryTreeView = ({
                 setExpanded(grown);
             }
         },
-        [expandedRef]
-    );
-
-    const toggleDirectories = useCallback(
-        (ids) => {
-            let ins = [];
-            let outs = [];
-            ids.forEach((id) => {
-                if (!expandedRef.current.includes(id)) ins.push(id);
-                else outs.push(id);
-            });
-            ensureInOutExpansion(ins, outs);
-        },
-        [expandedRef, ensureInOutExpansion]
+        [expanded]
     );
 
     /* User interaction */
@@ -128,23 +129,33 @@ const DirectoryTreeView = ({
         onContextMenu(event, nodeId);
     }
 
-    function handleLabelClick(nodeId, toggle) {
-        dispatch(setSelectedDirectory(nodeId));
-        if (toggle) {
-            // update fold status of item
-            toggleDirectories([nodeId]);
-        }
+    function handleLabelClick(nodeId) {
+        dispatch(setCurrentPath(makePathFromTip(nodeId, mapData)));
     }
 
     function handleIconClick(nodeId) {
-        if (!expandedRef.current.includes(nodeId)) {
-            onDirectoryUpdate(nodeId);
+        if (expanded.includes(nodeId)) {
+            ensureInOutExpansion([], [nodeId]);
+        } else {
+            onDirectoryUpdate(nodeId, () => {
+                ensureInOutExpansion([nodeId], []);
+            });
         }
-        toggleDirectories([nodeId]);
     }
 
     useEffect(() => {
         if (currentPath.length === 0) return;
+
+        let lastPath = prevPath.current;
+        if (lastPath && lastPath.length === currentPath.length) {
+            let i = 0;
+            for (; i < lastPath.length; i++) {
+                if (lastPath[i] !== currentPath[i]) break;
+            }
+            if (i === lastPath.length) return;
+        }
+        prevPath.current = currentPath;
+
         if (currentPath[0].elementUuid !== treeViewUuid) return;
         ensureInOutExpansion(currentPath.map((n) => n.elementUuid));
     }, [currentPath, ensureInOutExpansion, treeViewUuid]);
@@ -162,10 +173,7 @@ const DirectoryTreeView = ({
                     handleIconClick(node.elementUuid);
                 }}
                 onLabelClick={() => {
-                    handleLabelClick(
-                        node.elementUuid,
-                        !expandedRef.current.includes(node.elementUuid)
-                    );
+                    handleLabelClick(node.elementUuid);
                 }}
                 label={
                     <div
@@ -219,9 +227,7 @@ const DirectoryTreeView = ({
                 }}
             >
                 {Array.isArray(node.children)
-                    ? node.children.map((child) =>
-                          renderTree(mapDataRef.current[child.elementUuid])
-                      )
+                    ? node.children.map((child) => renderTree(child))
                     : null}
             </TreeItem>
         );
@@ -238,9 +244,9 @@ const DirectoryTreeView = ({
                     <ChevronRightIcon className={classes.icon} />
                 }
                 expanded={expanded}
-                selected={selectedDirectory}
+                selected={selectedDirUuidFromCurrentPath(currentPath, mapData)}
             >
-                {renderTree(mapDataRef.current[treeViewUuid])}
+                {renderTree(mapData[treeViewUuidRef.current])}
             </TreeView>
         </>
     );
