@@ -276,7 +276,14 @@ const DirectoryContent = () => {
                     event.rowData.elementUuid,
                     event.rowData.type
                 );
-                window.open(url, '_blank');
+                url
+                    ? window.open(url, '_blank')
+                    : handleError(
+                          intl.formatMessage(
+                              { id: 'getAppLinkError' },
+                              { type: event.rowData.type }
+                          )
+                      );
             } else if (
                 event.rowData.type === elementType.FILTERS_CONTINGENCY_LIST
             ) {
@@ -485,18 +492,19 @@ const DirectoryContent = () => {
     }
 
     function getLink(elementUuid, objectType) {
-        let href = '#';
+        let href;
         if (appsAndUrls !== null) {
-            let mayTs = appsAndUrls.filter(
-                (t) =>
-                    0 ===
-                    t.name.localeCompare(objectType, undefined, {
-                        sensitivity: 'base',
-                    })
-            );
-            if (mayTs.length > 0) {
-                href = mayTs[0].url + '/studies/' + elementUuid;
-            }
+            appsAndUrls.find((app) => {
+                if (!app.resources) return false;
+                return app.resources.find((res) => {
+                    if (res.types.includes(objectType)) {
+                        href =
+                            app.url +
+                            res.path.replace('{elementUuid}', elementUuid);
+                    }
+                    return href;
+                });
+            });
         }
         return href;
     }
