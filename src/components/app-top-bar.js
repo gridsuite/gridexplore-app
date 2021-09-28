@@ -51,7 +51,7 @@ const AppTopBar = ({ user, userManager }) => {
         <>
             <TopBar
                 appName={APP_NAME}
-                appColor="#33AFED"
+                appColor="#3DABE2"
                 appLogo={
                     theme === LIGHT_THEME ? (
                         <GridExploreLogoLight />
