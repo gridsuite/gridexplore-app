@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const elementType = {
-    DIRECTORY: 'DIRECTORY',
-    STUDY: 'STUDY',
-    FILTER: 'FILTER',
+export const ScriptTypes = {
+    FILTERS: 'FILTERS',
     SCRIPT: 'SCRIPT',
-    SCRIPT_CONTINGENCY_LIST: 'SCRIPT_CONTINGENCY_LIST',
-    FILTERS_CONTINGENCY_LIST: 'FILTERS_CONTINGENCY_LIST',
 };

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -18,6 +18,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 
 import VirtualizedTable from './virtualized-table';
 import { elementType } from '../utils/elementType';
@@ -27,14 +29,22 @@ import { Toolbar } from '@material-ui/core';
 
 import {
     deleteElement,
+    fetchContingencyListsInfos,
+    fetchFiltersInfos,
     fetchStudiesInfos,
+    newScriptFromFilter,
+    newScriptFromFiltersContingencyList,
     renameElement,
+    replaceFiltersWithScript,
+    replaceFiltersWithScriptContingencyList,
     updateAccessRights,
 } from '../utils/rest-api';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import FilterIcon from '@material-ui/icons/Filter';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Menu from '@material-ui/core/Menu';
 
@@ -43,11 +53,19 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import IconButton from '@material-ui/core/IconButton';
+import DescriptionIcon from '@material-ui/icons/Description';
+import PanToolIcon from '@material-ui/icons/PanTool';
 
 import ExportDialog from './export-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
+import FiltersContingencyDialog from './dialogs/filters-contingency-dialog';
+import ScriptDialog from './dialogs/script-dialog';
+import ReplaceWithScriptDialog from './dialogs/replace-with-script-dialog';
+import CopyToScriptDialog from './dialogs/copy-to-script-dialog';
+import { useSnackbar } from 'notistack';
+import GenericFilterDialog from './generic-filter';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -92,7 +110,11 @@ const initialMousePosition = {
 };
 
 const DirectoryContent = () => {
+    const { enqueueSnackbar } = useSnackbar();
+
     const [childrenMetadata, setChildrenMetadata] = useState({});
+    const [isMetadataLoading, setIsMetadataLoading] = useState(false);
+
     const [selectedUuids, setSelectedUuids] = useState(new Set());
 
     const currentChildren = useSelector((state) => state.currentChildren);
@@ -101,7 +123,7 @@ const DirectoryContent = () => {
     const userId = useSelector((state) => state.user.profile.sub);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [activeStudy, setActiveStudy] = React.useState(null);
+    const [activeElement, setActiveElement] = React.useState(null);
 
     const DownloadIframe = 'downloadIframe';
 
@@ -109,44 +131,43 @@ const DirectoryContent = () => {
     const intl = useIntl();
 
     /* Menu states */
-    const [mousePosition, setMousePosition] = React.useState(
-        initialMousePosition
-    );
+    const [mousePosition, setMousePosition] =
+        React.useState(initialMousePosition);
 
     /**
      * Rename dialog: window status value for renaming
      */
-    const [openRenameStudyDialog, setOpenRenameStudyDialog] = React.useState(
-        false
-    );
+    const [openRenameElementDialog, setOpenRenameElementDialog] =
+        React.useState(false);
     const [renameError, setRenameError] = React.useState('');
 
-    const handleOpenRenameStudy = () => {
+    const handleOpenRenameElement = () => {
         setAnchorEl(null);
-        setOpenRenameStudyDialog(true);
+        setOpenRenameElementDialog(true);
     };
 
-    const handleCloseRenameStudy = () => {
-        setOpenRenameStudyDialog(false);
+    const handleCloseRenameElement = () => {
+        setOpenRenameElementDialog(false);
         setRenameError('');
-        setActiveStudy('');
     };
 
-    const handleClickRenameStudy = (newStudyNameValue) => {
-        renameElement(activeStudy.elementUuid, newStudyNameValue)
+    const handleClickRenameElement = (newElementNameValue) => {
+        renameElement(activeElement.elementUuid, newElementNameValue)
             .then((response) => {
                 if (response.status === 403) {
                     // == FORBIDDEN
                     setRenameError(
-                        intl.formatMessage({ id: 'renameStudyNotAllowedError' })
+                        intl.formatMessage({
+                            id: 'renameElementNotAllowedError',
+                        })
                     );
                 } else if (response.status === 404) {
                     // == NOT FOUND
                     setRenameError(
-                        intl.formatMessage({ id: 'renameStudyNotFoundError' })
+                        intl.formatMessage({ id: 'renameElementNotFoundError' })
                     );
                 } else {
-                    handleCloseRenameStudy();
+                    handleCloseRenameElement();
                 }
             })
             .catch((e) => {
@@ -157,23 +178,21 @@ const DirectoryContent = () => {
     /**
      * Delete dialog: window status value for deletion
      */
-    const [openDeleteStudyDialog, setOpenDeleteStudyDialog] = React.useState(
-        false
-    );
+    const [openDeleteElementDialog, setOpenDeleteElementDialog] =
+        React.useState(false);
     const [deleteError, setDeleteError] = React.useState('');
 
-    const handleOpenDeleteStudy = () => {
+    const handleOpenDeleteElement = () => {
         setAnchorEl(null);
-        setOpenDeleteStudyDialog(true);
+        setOpenDeleteElementDialog(true);
     };
 
-    const handleCloseDeleteStudy = () => {
-        setOpenDeleteStudyDialog(false);
+    const handleCloseDeleteElement = () => {
+        setOpenDeleteElementDialog(false);
         setDeleteError('');
-        setActiveStudy('');
     };
 
-    const handleClickDeleteStudy = () => {
+    const handleClickDeleteElement = () => {
         let selectedChildren = getSelectedChildren(false);
         let notDeleted = [];
         let doneChildren = [];
@@ -185,10 +204,12 @@ const DirectoryContent = () => {
                 }
 
                 if (doneChildren.length === selectedChildren.length) {
-                    if (notDeleted.length === 0) handleCloseDeleteStudy();
-                    else {
+                    if (notDeleted.length === 0) {
+                        handleCloseDeleteElement();
+                        setActiveElement(null);
+                    } else {
                         let msg = intl.formatMessage(
-                            { id: 'deleteStudiesFailure' },
+                            { id: 'deleteElementsFailure' },
                             {
                                 pbn: notDeleted.length,
                                 stn: selectedChildren.length,
@@ -206,9 +227,8 @@ const DirectoryContent = () => {
     /**
      * Export dialog: window status value for exporting a network
      */
-    const [openExportStudyDialog, setOpenExportStudyDialog] = React.useState(
-        false
-    );
+    const [openExportStudyDialog, setOpenExportStudyDialog] =
+        React.useState(false);
 
     const handleOpenExportStudy = () => {
         setAnchorEl(null);
@@ -217,7 +237,7 @@ const DirectoryContent = () => {
 
     const handleCloseExportStudy = () => {
         setOpenExportStudyDialog(false);
-        setActiveStudy('');
+        setActiveElement(null);
     };
 
     const handleClickExportStudy = (url) => {
@@ -228,31 +248,57 @@ const DirectoryContent = () => {
     /**
      * AccessRights dialog: window status value for updating access rights
      */
-    const [
-        openStudyAccessRightsDialog,
-        setOpenStudyAccessRightsDialog,
-    ] = React.useState(false);
+    const [openElementAccessRightsDialog, setOpenElementAccessRightsDialog] =
+        React.useState(false);
 
     const [accessRightsError, setAccessRightsError] = React.useState('');
 
-    const handleOpenStudyAccessRights = () => {
+    const handleOpenElementAccessRights = () => {
         setAnchorEl(null);
-        setOpenStudyAccessRightsDialog(true);
+        setOpenElementAccessRightsDialog(true);
     };
 
-    const handleCloseStudyAccessRights = () => {
-        setOpenStudyAccessRightsDialog(false);
+    const handleCloseElementAccessRights = () => {
+        setOpenElementAccessRightsDialog(false);
         setAccessRightsError('');
-        setActiveStudy('');
+        setActiveElement(null);
     };
 
     const handleCloseRowMenu = () => {
         setAnchorEl(null);
-        setActiveStudy('');
+        setActiveElement(null);
     };
 
-    const handleClickStudyAccessRights = (selected) => {
-        updateAccessRights(activeStudy.elementUuid, selected).then(
+    const handleRowClick = (event) => {
+        if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
+            if (event.rowData.type === elementType.STUDY) {
+                let url = getLink(
+                    event.rowData.elementUuid,
+                    event.rowData.type
+                );
+                window.open(url, '_blank');
+            } else if (
+                event.rowData.type === elementType.FILTERS_CONTINGENCY_LIST
+            ) {
+                setCurrentFiltersContingencyListId(event.rowData.elementUuid);
+                setOpenFiltersContingencyDialog(true);
+            } else if (
+                event.rowData.type === elementType.SCRIPT_CONTINGENCY_LIST
+            ) {
+                setCurrentScriptContingencyListId(event.rowData.elementUuid);
+                setOpenScriptContingencyDialog(true);
+            } else if (event.rowData.type === elementType.SCRIPT) {
+                setCurrentScriptId(event.rowData.elementUuid);
+                setOpenScriptDialog(true);
+            } else if (event.rowData.type === elementType.FILTER) {
+                setCurrentFilterId(event.rowData.elementUuid);
+                setOpenGenericFilterDialog(true);
+            }
+        }
+    };
+
+    const handleClickElementAccessRights = (selected) => {
+        updateAccessRights(activeElement.elementUuid, selected).then(
             (response) => {
                 if (response.status === 403) {
                     setAccessRightsError(
@@ -267,10 +313,144 @@ const DirectoryContent = () => {
                         })
                     );
                 } else {
-                    handleCloseStudyAccessRights();
+                    handleCloseElementAccessRights();
                 }
             }
         );
+    };
+
+    /**
+     * Filters contingency list dialog: window status value for editing a filters contingency list
+     */
+    const [openFiltersContingencyDialog, setOpenFiltersContingencyDialog] =
+        React.useState(false);
+    const [
+        currentFiltersContingencyListId,
+        setCurrentFiltersContingencyListId,
+    ] = React.useState('');
+    const handleCloseFiltersContingency = () => {
+        setOpenFiltersContingencyDialog(false);
+        setActiveElement(null);
+    };
+
+    const [
+        openFiltersContingencyReplaceWithScriptDialog,
+        setOpenFiltersContingencyReplaceWithScriptDialog,
+    ] = React.useState(false);
+    const handleCloseFiltersContingencyReplaceWithScript = () => {
+        setOpenFiltersContingencyReplaceWithScriptDialog(false);
+        setActiveElement(null);
+    };
+
+    const [
+        openFiltersContingencyCopyToScriptDialog,
+        setOpenFiltersContingencyCopyToScriptDialog,
+    ] = React.useState(false);
+    const handleCloseFiltersContingencyCopyToScript = () => {
+        setOpenFiltersContingencyCopyToScriptDialog(false);
+        setActiveElement(null);
+    };
+
+    /**
+     * Filters dialog: window status value to edit filters
+     */
+    const [openGenericFilterDialog, setOpenGenericFilterDialog] =
+        React.useState(false);
+    const handleCloseGenericFilterDialog = () => {
+        setOpenGenericFilterDialog(false);
+        setCurrentFilterId(null);
+        setActiveElement('');
+    };
+
+    const [currentFilterId, setCurrentFilterId] = React.useState(null);
+
+    /**
+     * Filters script dialog: window status value to edit filters script
+     */
+    const [openFiltersCopyToScriptDialog, setOpenFiltersCopyToScriptDialog] =
+        React.useState(false);
+    const handleCloseFiltersCopyToScript = () => {
+        setOpenFiltersCopyToScriptDialog(false);
+        setActiveElement('');
+    };
+
+    const [
+        openFiltersReplaceWithScriptDialog,
+        setOpenFiltersReplaceWithScriptDialog,
+    ] = React.useState(false);
+    const handleCloseFiltersReplaceWithScript = () => {
+        setOpenFiltersReplaceWithScriptDialog(false);
+        setActiveElement('');
+    };
+
+    const handleClickFiltersReplaceWithScript = (id) => {
+        replaceFiltersWithScript(id, selectedDirectory)
+            .then()
+            .catch((error) => handleError(error.message));
+        handleCloseFiltersReplaceWithScript();
+    };
+
+    const handleContingencyCopyToScript = () => {
+        setAnchorEl(null);
+        setOpenFiltersContingencyCopyToScriptDialog(true);
+    };
+
+    const handleClickContingencyCopyToScript = (id, newNameValue) => {
+        newScriptFromFiltersContingencyList(id, newNameValue, selectedDirectory)
+            .then()
+            .catch((error) => handleError(error.message));
+        handleCloseFiltersContingencyCopyToScript();
+    };
+
+    const handleContingencyReplaceWithScript = () => {
+        setAnchorEl(null);
+        setOpenFiltersContingencyReplaceWithScriptDialog(true);
+    };
+
+    const handleClickFiltersContingencyReplaceWithScript = (id) => {
+        replaceFiltersWithScriptContingencyList(id, selectedDirectory)
+            .then()
+            .catch((error) => handleError(error.message));
+        handleCloseFiltersContingencyReplaceWithScript();
+    };
+
+    const handleFilterCopyToScript = () => {
+        setAnchorEl(null);
+        setOpenFiltersCopyToScriptDialog(true);
+    };
+
+    const handleClickFilterCopyToScript = (id, newNameValue) => {
+        newScriptFromFilter(id, newNameValue, selectedDirectory)
+            .then()
+            .catch((error) => handleError(error.message));
+        handleCloseFiltersCopyToScript();
+    };
+
+    const handleFilterReplaceWithScript = () => {
+        setAnchorEl(null);
+        setOpenFiltersReplaceWithScriptDialog(true);
+    };
+
+    /**
+     * Script contingency list dialog: window status value for editing a script contingency list
+     */
+    const [openScriptContingencyDialog, setOpenScriptContingencyDialog] =
+        React.useState(false);
+    const [currentScriptContingencyListId, setCurrentScriptContingencyListId] =
+        React.useState('');
+    const handleCloseScriptContingency = () => {
+        setOpenScriptContingencyDialog(false);
+        setActiveElement(null);
+    };
+
+    /**
+     * Filter script dialog: window status value for editing a filter script
+     */
+    const [openScriptDialog, setOpenScriptDialog] = React.useState(false);
+    const [currentScriptId, setCurrentScriptId] = React.useState('');
+    const handleCloseScriptDialog = () => {
+        setOpenScriptDialog(false);
+        setActiveElement('');
     };
 
     const abbreviationFromUserName = (name) => {
@@ -281,6 +461,15 @@ const DirectoryContent = () => {
             return tab[0] + tab[tab.length - 1];
         }
     };
+
+    const handleError = useCallback(
+        (message) => {
+            enqueueSnackbar(message, {
+                variant: 'error',
+            });
+        },
+        [enqueueSnackbar]
+    );
 
     function accessRightsCellRender(cellData) {
         const isPrivate = cellData.rowData[cellData.dataKey].private;
@@ -335,24 +524,37 @@ const DirectoryContent = () => {
         );
     }
 
-    function nameCellRender(cellData) {
+    function getElementIcon(objectType) {
+        if (objectType === elementType.STUDY) {
+            return <LibraryBooksOutlinedIcon className={classes.icon} />;
+        } else if (objectType === elementType.SCRIPT_CONTINGENCY_LIST) {
+            return <DescriptionIcon className={classes.icon} />;
+        } else if (objectType === elementType.FILTERS_CONTINGENCY_LIST) {
+            return <PanToolIcon className={classes.icon} />;
+        } else if (objectType === elementType.FILTER) {
+            return <FilterListIcon className={classes.icon} />;
+        } else if (objectType === elementType.SCRIPT) {
+            return <FilterIcon className={classes.icon} />;
+        }
+    }
+
+    const nameCellRender = (cellData) => {
         const elementUuid = cellData.rowData['elementUuid'];
         const elementName = cellData.rowData['elementName'];
         const objectType = cellData.rowData['type'];
         return (
             <div className={classes.cell}>
-                {!childrenMetadata[elementUuid] && (
-                    <CircularProgress
-                        size={18}
-                        className={classes.circularRoot}
-                    />
-                )}
-                {childrenMetadata[elementUuid] &&
+                {/*  Icon */}
+                {!childrenMetadata[elementUuid] &&
                     objectType === elementType.STUDY && (
-                        <LibraryBooksOutlinedIcon className={classes.icon} />
+                        <CircularProgress
+                            size={18}
+                            className={classes.circularRoot}
+                        />
                     )}
-
-                {childrenMetadata[elementUuid] ? (
+                {childrenMetadata[elementUuid] && getElementIcon(objectType)}
+                {/* Name */}
+                {isMetadataLoading ? null : childrenMetadata[elementUuid] ? (
                     <div>{childrenMetadata[elementUuid].name}</div>
                 ) : (
                     <>
@@ -362,7 +564,7 @@ const DirectoryContent = () => {
                 )}
             </div>
         );
-    }
+    };
 
     function toggleSelection(elementUuid) {
         let newSelection = new Set(selectedUuids);
@@ -387,6 +589,7 @@ const DirectoryContent = () => {
             <div
                 onClick={(e) => {
                     toggleSelectAll();
+                    setActiveElement(null);
                     e.stopPropagation();
                 }}
                 className={classes.checkboxes}
@@ -410,6 +613,11 @@ const DirectoryContent = () => {
             <div
                 onClick={(e) => {
                     toggleSelection(elementUuid);
+                    if (selectedUuids.has(elementUuid)) {
+                        setActiveElement(null);
+                    } else {
+                        setActiveElement(cellData.rowData);
+                    }
                     e.stopPropagation();
                 }}
                 className={classes.checkboxes}
@@ -423,20 +631,58 @@ const DirectoryContent = () => {
     }
 
     useEffect(() => {
+        setIsMetadataLoading(true);
         if (currentChildren !== null) {
-            let uuids = [];
+            let studyUuids = [];
+            let contingencyListsUuids = [];
+            let filtersUuids = [];
+
             currentChildren
-                .filter((e) => e.type === elementType.STUDY)
-                .map((e) => uuids.push(e.elementUuid));
-            fetchStudiesInfos(uuids).then((res) => {
-                let metadata = {};
-                res.map((e) => {
-                    metadata[e.studyUuid] = {
-                        name: e.studyName,
-                    };
-                    return e;
+                .filter((e) => e.type !== elementType.DIRECTORY)
+                .forEach((e) => {
+                    if (e.type === elementType.STUDY)
+                        studyUuids.push(e.elementUuid);
+                    else if (
+                        e.type === elementType.SCRIPT_CONTINGENCY_LIST ||
+                        e.type === elementType.FILTERS_CONTINGENCY_LIST
+                    ) {
+                        contingencyListsUuids.push(e.elementUuid);
+                    } else if (
+                        e.type === elementType.FILTER ||
+                        e.type === elementType.SCRIPT
+                    ) {
+                        filtersUuids.push(e.elementUuid);
+                    }
                 });
+            let metadata = {};
+            Promise.all([
+                fetchStudiesInfos(studyUuids).then((res) => {
+                    res.forEach((e) => {
+                        metadata[e.studyUuid] = {
+                            name: e.studyName,
+                        };
+                    });
+                }),
+                fetchContingencyListsInfos(contingencyListsUuids).then(
+                    (res) => {
+                        res.forEach((e) => {
+                            metadata[e.id] = {
+                                name: e.name,
+                            };
+                        });
+                    }
+                ),
+                fetchFiltersInfos(filtersUuids).then((res) => {
+                    res.forEach((e) => {
+                        metadata[e.id] = {
+                            name: e.name,
+                            filterType: e.type,
+                        };
+                    });
+                }),
+            ]).finally(() => {
                 setChildrenMetadata(metadata);
+                setIsMetadataLoading(false);
             });
         }
         setSelectedUuids(new Set());
@@ -444,16 +690,16 @@ const DirectoryContent = () => {
 
     const contextualMixPolicies = {
         BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
-        ZIMBRA: 'Zimbra', // if !selectedUuids.has(selected.Uuid) just use activeStudy
-        ALL: 'All', // union of activeStudy.Uuid and selectedUuids (actually implemented)
+        ZIMBRA: 'Zimbra', // if !selectedUuids.has(selected.Uuid) just use activeElement
+        ALL: 'All', // union of activeElement.Uuid and selectedUuids (actually implemented)
     };
     let contextualMixPolicy = contextualMixPolicies.ALL;
 
     const getSelectedChildren = (mayChange = false) => {
         let acc = [];
-        let ctxtUuid = activeStudy ? activeStudy.elementUuid : null;
-        if (activeStudy) {
-            acc.push(activeStudy);
+        let ctxtUuid = activeElement ? activeElement.elementUuid : null;
+        if (activeElement) {
+            acc.push(activeElement);
         }
 
         if (selectedUuids && currentChildren) {
@@ -487,7 +733,7 @@ const DirectoryContent = () => {
     };
 
     const isAllowed = () => {
-        if (activeStudy) return activeStudy.owner === userId;
+        if (activeElement) return activeElement.owner === userId;
         if (!selectedUuids) return false;
         let children = getSelectedChildren();
         let soFar = true;
@@ -510,6 +756,42 @@ const DirectoryContent = () => {
         return isAllowed();
     };
 
+    const allowsExport = () => {
+        let children = getSelectedChildren();
+        return children.length === 1 && children[0].type === elementType.STUDY;
+    };
+
+    const allowsCopyContingencyToScript = () => {
+        let children = getSelectedChildren();
+        return (
+            children.length === 1 &&
+            children[0].type === elementType.FILTERS_CONTINGENCY_LIST
+        );
+    };
+
+    const allowsReplaceContingencyWithScript = () => {
+        let children = getSelectedChildren();
+        return (
+            children.length === 1 &&
+            children[0].type === elementType.FILTERS_CONTINGENCY_LIST &&
+            children[0].owner === userId
+        );
+    };
+
+    const allowsCopyFilterToScript = () => {
+        let children = getSelectedChildren();
+        return children.length === 1 && children[0].type === elementType.FILTER;
+    };
+
+    const allowsReplaceFilterWithScript = () => {
+        let children = getSelectedChildren();
+        return (
+            children.length === 1 &&
+            children[0].type === elementType.FILTER &&
+            children[0].owner === userId
+        );
+    };
+
     function makeMenuItem(utMsg, cb, ico = <EditIcon fontSize="small" />) {
         return (
             <>
@@ -527,7 +809,7 @@ const DirectoryContent = () => {
         );
     }
 
-    const areSelectedStudiesAllPrivate = () => {
+    const areSelectedElementsAllPrivate = () => {
         let sel = getSelectedChildren();
         if (!sel || sel.length === 0) return undefined;
         let priv = sel.filter((child) => child.accessRights.private);
@@ -568,7 +850,7 @@ const DirectoryContent = () => {
                     {allowsDelete(false) && selectedUuids.size > 0 && (
                         <IconButton
                             className={classes.icon}
-                            onClick={() => handleOpenDeleteStudy()}
+                            onClick={() => handleOpenDeleteElement()}
                         >
                             <DeleteIcon />
                         </IconButton>
@@ -581,8 +863,8 @@ const DirectoryContent = () => {
                             <VirtualizedTable
                                 style={{ flexGrow: 1 }}
                                 onRowRightClick={(event) => {
-                                    if (event.rowData.type === 'STUDY') {
-                                        setActiveStudy(event.rowData);
+                                    if (event.rowData.type !== 'DIRECTORY') {
+                                        setActiveElement(event.rowData);
                                     }
                                     setMousePosition({
                                         mouseX:
@@ -594,19 +876,7 @@ const DirectoryContent = () => {
                                     });
                                     setAnchorEl(event.event.currentTarget);
                                 }}
-                                onRowClick={(event) => {
-                                    if (
-                                        childrenMetadata[
-                                            event.rowData.elementUuid
-                                        ] !== undefined
-                                    ) {
-                                        let url = getLink(
-                                            event.rowData.elementUuid,
-                                            event.rowData.type
-                                        );
-                                        window.open(url, '_blank');
-                                    }
-                                }}
+                                onRowClick={handleRowClick}
                                 rows={currentChildren}
                                 columns={[
                                     {
@@ -670,13 +940,13 @@ const DirectoryContent = () => {
                             : undefined
                     }
                 >
-                    {activeStudy && (
+                    {activeElement && (
                         <div>
                             {allowsRename() && (
                                 <>
                                     {makeMenuItem(
                                         'rename',
-                                        handleOpenRenameStudy
+                                        handleOpenRenameElement
                                     )}
                                 </>
                             )}
@@ -684,22 +954,62 @@ const DirectoryContent = () => {
                                 <>
                                     {makeMenuItem(
                                         'accessRights',
-                                        handleOpenStudyAccessRights,
+                                        handleOpenElementAccessRights,
                                         <BuildIcon fontSize="small" />
                                     )}
                                 </>
                             )}
-                            {makeMenuItem(
-                                'export',
-                                handleOpenExportStudy,
-                                <GetAppIcon fontSize="small" />
+                            {allowsExport() && (
+                                <>
+                                    {makeMenuItem(
+                                        'export',
+                                        handleOpenExportStudy,
+                                        <GetAppIcon fontSize="small" />
+                                    )}
+                                </>
                             )}
                             {allowsDelete(true) && (
                                 <>
                                     {makeMenuItem(
                                         'delete',
-                                        handleOpenDeleteStudy,
+                                        handleOpenDeleteElement,
                                         <DeleteIcon fontSize="small" />
+                                    )}
+                                </>
+                            )}
+                            {allowsCopyContingencyToScript() && (
+                                <>
+                                    {makeMenuItem(
+                                        'copyToScript',
+                                        handleContingencyCopyToScript,
+                                        <FileCopyIcon fontSize="small" />
+                                    )}
+                                </>
+                            )}
+                            {allowsReplaceContingencyWithScript() && (
+                                <>
+                                    {makeMenuItem(
+                                        'replaceWithScript',
+                                        handleContingencyReplaceWithScript,
+                                        <InsertDriveFileIcon fontSize="small" />
+                                    )}
+                                </>
+                            )}
+                            {allowsCopyFilterToScript() && (
+                                <>
+                                    {makeMenuItem(
+                                        'copyToScript',
+                                        handleFilterCopyToScript,
+                                        <FileCopyIcon fontSize="small" />
+                                    )}
+                                </>
+                            )}
+                            {allowsReplaceFilterWithScript() && (
+                                <>
+                                    {makeMenuItem(
+                                        'replaceWithScript',
+                                        handleFilterReplaceWithScript,
+                                        <InsertDriveFileIcon fontSize="small" />
                                     )}
                                 </>
                             )}
@@ -708,41 +1018,100 @@ const DirectoryContent = () => {
                 </StyledMenu>
             </div>
             <RenameDialog
-                open={openRenameStudyDialog}
-                onClose={handleCloseRenameStudy}
-                onClick={handleClickRenameStudy}
-                title={useIntl().formatMessage({ id: 'renameStudy' })}
-                message={useIntl().formatMessage({ id: 'renameStudyMsg' })}
-                currentName={activeStudy ? activeStudy.elementName : ''}
+                open={openRenameElementDialog}
+                onClose={handleCloseRenameElement}
+                onClick={handleClickRenameElement}
+                title={useIntl().formatMessage({ id: 'renameElement' })}
+                message={useIntl().formatMessage({ id: 'renameElementMsg' })}
+                currentName={activeElement ? activeElement.elementName : ''}
                 error={renameError}
             />
             <DeleteDialog
-                open={openDeleteStudyDialog}
-                onClose={handleCloseDeleteStudy}
-                onClick={handleClickDeleteStudy}
-                title={useIntl().formatMessage(
-                    { id: 'deleteStudy' },
-                    { stn: getSelectedChildren().length }
-                )}
-                message={useIntl().formatMessage({
-                    id: 'genericConfirmQuestion',
-                })}
+                open={openDeleteElementDialog}
+                onClose={handleCloseDeleteElement}
+                onClick={handleClickDeleteElement}
+                items={getSelectedChildren()}
+                multipleDeleteFormatMessageId={
+                    'deleteMultipleItemsDialogMessage'
+                }
+                simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
                 error={deleteError}
             />
             <ExportDialog
                 open={openExportStudyDialog}
                 onClose={handleCloseExportStudy}
                 onClick={handleClickExportStudy}
-                studyUuid={activeStudy ? activeStudy.elementUuid : ''}
+                studyUuid={activeElement ? activeElement.elementUuid : ''}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
             />
             <AccessRightsDialog
-                open={openStudyAccessRightsDialog}
-                onClose={handleCloseStudyAccessRights}
-                onClick={handleClickStudyAccessRights}
+                open={openElementAccessRightsDialog}
+                onClose={handleCloseElementAccessRights}
+                onClick={handleClickElementAccessRights}
                 title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
-                isPrivate={areSelectedStudiesAllPrivate()}
+                isPrivate={areSelectedElementsAllPrivate()}
                 error={accessRightsError}
+            />
+            <FiltersContingencyDialog
+                listId={currentFiltersContingencyListId}
+                open={openFiltersContingencyDialog}
+                onClose={handleCloseFiltersContingency}
+                onError={handleError}
+                title={useIntl().formatMessage({ id: 'editContingencyList' })}
+            />
+            <ScriptDialog
+                id={currentScriptContingencyListId}
+                open={openScriptContingencyDialog}
+                onClose={handleCloseScriptContingency}
+                onError={handleError}
+                title={useIntl().formatMessage({ id: 'editContingencyList' })}
+                type={elementType.SCRIPT_CONTINGENCY_LIST}
+            />
+            <ScriptDialog
+                id={currentScriptId}
+                open={openScriptDialog}
+                onClose={handleCloseScriptDialog}
+                onError={handleError}
+                title={useIntl().formatMessage({ id: 'editFilterScript' })}
+                type={elementType.SCRIPT}
+            />
+            <ReplaceWithScriptDialog
+                id={activeElement ? activeElement.elementUuid : ''}
+                open={openFiltersContingencyReplaceWithScriptDialog}
+                onClose={handleCloseFiltersContingencyReplaceWithScript}
+                onClick={handleClickFiltersContingencyReplaceWithScript}
+                onError={handleError}
+                title={useIntl().formatMessage({ id: 'replaceList' })}
+            />
+            <CopyToScriptDialog
+                id={activeElement ? activeElement.elementUuid : ''}
+                open={openFiltersContingencyCopyToScriptDialog}
+                onClose={handleCloseFiltersContingencyCopyToScript}
+                onClick={handleClickContingencyCopyToScript}
+                currentName={activeElement ? activeElement.elementName : ''}
+                title={useIntl().formatMessage({ id: 'copyToScriptList' })}
+            />
+            <ReplaceWithScriptDialog
+                id={activeElement ? activeElement.elementUuid : ''}
+                open={openFiltersReplaceWithScriptDialog}
+                onClose={handleCloseFiltersReplaceWithScript}
+                onClick={handleClickFiltersReplaceWithScript}
+                title={useIntl().formatMessage({ id: 'replaceList' })}
+            />
+            <CopyToScriptDialog
+                id={activeElement ? activeElement.elementUuid : ''}
+                open={openFiltersCopyToScriptDialog}
+                onClose={handleCloseFiltersCopyToScript}
+                onClick={handleClickFilterCopyToScript}
+                currentName={activeElement ? activeElement.elementName : ''}
+                title={useIntl().formatMessage({ id: 'copyToScriptList' })}
+            />
+            <GenericFilterDialog
+                id={currentFilterId}
+                open={openGenericFilterDialog}
+                onClose={handleCloseGenericFilterDialog}
+                onError={handleError}
+                title={useIntl().formatMessage({ id: 'editFilter' })}
             />
             <iframe
                 id={DownloadIframe}

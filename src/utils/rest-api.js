@@ -8,6 +8,8 @@
 import { APP_NAME, getAppName } from './config-params';
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
+import { ScriptTypes } from './script-types';
+import { EquipmentTypes } from './equipment-types';
 
 let PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
@@ -15,9 +17,12 @@ let PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 let PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
+const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';
 const PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
 const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
+const PREFIX_FILTERS_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/filter/v1/filters';
 
 function getToken() {
     const state = store.getState();
@@ -281,6 +286,22 @@ export function fetchStudiesInfos(uuids) {
     );
 }
 
+export function fetchContingencyListsInfos(uuids) {
+    console.info('Fetching contingency lists metadata ... ');
+    const fetchContingencyListsInfosUrl =
+        PREFIX_ACTIONS_QUERIES + `/v1/contingency-lists/metadata`;
+    return backendFetch(fetchContingencyListsInfosUrl, {
+        method: 'GET',
+        headers: {
+            ids: uuids,
+        },
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function createStudy(
     caseExist,
     studyName,
@@ -355,6 +376,150 @@ export function studyExists(studyName, userId) {
     });
 }
 
+export function createContingencyList(
+    contingencyListType,
+    contingencyListName,
+    contingencyListDescription,
+    isPrivateContingencyList,
+    parentDirectoryUuid
+) {
+    console.info('Creating a new contingency list...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('isPrivate', isPrivateContingencyList);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const typeUriParam =
+        contingencyListType === ScriptTypes.SCRIPT
+            ? 'script-contingency-lists'
+            : 'filters-contingency-lists';
+
+    const createContingencyListUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/directories/' +
+        typeUriParam +
+        '/' +
+        encodeURIComponent(contingencyListName) +
+        '?' +
+        urlSearchParams.toString();
+    console.debug(createContingencyListUrl);
+
+    let body = {
+        name: contingencyListName,
+        description: contingencyListDescription,
+    };
+    if (contingencyListType === ScriptTypes.FILTERS) {
+        body.equipmentType = EquipmentTypes.LINE;
+        body.nominalVoltage = -1;
+        body.nominalVoltageOperator = '=';
+        body.equipmentID = '*';
+        body.equipmentName = '*';
+    }
+    return backendFetch(createContingencyListUrl, {
+        method: 'post',
+        body: JSON.stringify(body),
+    });
+}
+
+/**
+ * Get contingency list by type and id
+ * @returns {Promise<Response>}
+ */
+export function getContingencyList(type, id) {
+    let url = PREFIX_ACTIONS_QUERIES;
+    if (type === 'SCRIPT') {
+        url += '/v1/script-contingency-lists/';
+    } else {
+        url += '/v1/filters-contingency-lists/';
+    }
+    url += id;
+
+    return backendFetch(url).then((response) => response.json());
+}
+
+/**
+ * Add new Filter contingency list
+ * @returns {Promise<Response>}
+ */
+export function saveFiltersContingencyList(filter) {
+    const { nominalVoltage, ...rest } = filter;
+    const url =
+        PREFIX_ACTIONS_QUERIES + '/v1/filters-contingency-lists/' + filter.id;
+    return backendFetch(url, {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            ...rest,
+            nominalVoltage: nominalVoltage === '' ? -1 : nominalVoltage,
+        }),
+    });
+}
+
+/**
+ * Add new contingency list
+ * @returns {Promise<Response>}
+ */
+export function saveScriptContingencyList(scriptContingencyList) {
+    const url =
+        PREFIX_ACTIONS_QUERIES +
+        '/v1/script-contingency-lists/' +
+        scriptContingencyList.id;
+    return backendFetch(url, {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(scriptContingencyList),
+    });
+}
+
+/**
+ * Replace filter with script filter
+ * @returns {Promise<Response>}
+ */
+export function replaceFiltersWithScriptContingencyList(
+    id,
+    parentDirectoryUuid
+) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const url =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/directories/filters-contingency-lists/' +
+        encodeURIComponent(id) +
+        '/replace-with-script' +
+        '?' +
+        urlSearchParams.toString();
+
+    return backendFetch(url, {
+        method: 'post',
+    });
+}
+
+/**
+ * Save new script contingency list from filters contingency list
+ * @returns {Promise<Response>}
+ */
+export function newScriptFromFiltersContingencyList(
+    id,
+    newName,
+    parentDirectoryUuid
+) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const url =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/directories/filters-contingency-lists/' +
+        encodeURIComponent(id) +
+        '/new-script/' +
+        encodeURIComponent(newName) +
+        '?' +
+        urlSearchParams.toString();
+
+    return backendFetch(url, {
+        method: 'post',
+    });
+}
+
 /**
  * Function will be called to connect with notification websocket to update the studies list
  * @returns {ReconnectingWebSocket}
@@ -380,4 +545,121 @@ export function connectNotificationsWsUpdateStudies() {
         );
     };
     return reconnectingWebSocket;
+}
+
+/**
+ * Create Filter
+ * @returns {Promise<Response>}
+ */
+export function createFilter(
+    newFilter,
+    name,
+    type,
+    isPrivate,
+    parentDirectoryUuid
+) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('type', type);
+    urlSearchParams.append('isPrivate', isPrivate);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    return backendFetch(
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+            '/v1/directories/filters?' +
+            urlSearchParams.toString(),
+        {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newFilter),
+        }
+    );
+}
+
+/**
+ * Get all filters (name & type)
+ * @returns {Promise<Response>}
+ */
+export function getFilters() {
+    return backendFetch(PREFIX_FILTERS_QUERIES)
+        .then((response) => response.json())
+        .then((res) => res.sort((a, b) => a.name.localeCompare(b.name)));
+}
+
+/**
+ * Get filter by id
+ * @returns {Promise<Response>}
+ */
+export function getFilterById(id) {
+    const url = PREFIX_FILTERS_QUERIES + '/' + id;
+    return backendFetch(url).then((response) => response.json());
+}
+
+export function fetchFiltersInfos(uuids) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('ids', uuids);
+
+    console.info('Fetching filters metadata ... ');
+    const fetchFiltersInfosUrl = PREFIX_FILTERS_QUERIES + `/metadata`;
+    return backendFetch(fetchFiltersInfosUrl, {
+        method: 'POST',
+        body: JSON.stringify(uuids),
+        headers: { 'Content-Type': 'application/json' },
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+/**
+ * Replace filter with script filter
+ * @returns {Promise<Response>}
+ */
+export function replaceFiltersWithScript(id, parentDirectoryUuid) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const url =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/directories/filters/' +
+        encodeURIComponent(id) +
+        '/replace-with-script' +
+        '?' +
+        urlSearchParams.toString();
+
+    return backendFetch(url, {
+        method: 'post',
+    });
+}
+
+/**
+ * Save new script from filters
+ * @returns {Promise<Response>}
+ */
+export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    const url =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/directories/filters/' +
+        encodeURIComponent(id) +
+        '/new-script/' +
+        encodeURIComponent(newName) +
+        '?' +
+        urlSearchParams.toString();
+
+    return backendFetch(url, {
+        method: 'post',
+    });
+}
+
+/**
+ * Save Filter
+ */
+export function saveFilter(filter) {
+    return backendFetch(PREFIX_FILTERS_QUERIES + '/' + filter.id, {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(filter),
+    });
 }
