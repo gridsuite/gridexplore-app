@@ -276,7 +276,14 @@ const DirectoryContent = () => {
                     event.rowData.elementUuid,
                     event.rowData.type
                 );
-                window.open(url, '_blank');
+                url
+                    ? window.open(url, '_blank')
+                    : handleError(
+                          intl.formatMessage(
+                              { id: 'getAppLinkError' },
+                              { type: event.rowData.type }
+                          )
+                      );
             } else if (
                 event.rowData.type === elementType.FILTERS_CONTINGENCY_LIST
             ) {
@@ -485,11 +492,19 @@ const DirectoryContent = () => {
     }
 
     function getLink(elementUuid, objectType) {
-        let href = '#';
+        let href;
         if (appsAndUrls !== null) {
-            if (objectType === elementType.STUDY) {
-                href = appsAndUrls[1].url + '/studies/' + elementUuid;
-            }
+            appsAndUrls.find((app) => {
+                if (!app.resources) return false;
+                return app.resources.find((res) => {
+                    if (res.types.includes(objectType)) {
+                        href =
+                            app.url +
+                            res.path.replace('{elementUuid}', elementUuid);
+                    }
+                    return href;
+                });
+            });
         }
         return href;
     }
