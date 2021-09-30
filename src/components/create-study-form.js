@@ -263,7 +263,6 @@ export const CreateStudyForm = (props) => {
 
         let isPrivateStudy = studyPrivacy === 'private';
 
-        props.setOpen(false);
         createStudy(
             caseExist,
             studyName,
@@ -273,12 +272,13 @@ export const CreateStudyForm = (props) => {
             isPrivateStudy,
             activeDirectory
         ).then((res) => {
-            setCreateStudyErr('');
-            setStudyName('');
-            setStudyDescription('');
-            dispatch(removeSelectedFile());
-
-            if (!res.ok) {
+            if (res.ok) {
+                props.setOpen(false);
+                setCreateStudyErr('');
+                setStudyName('');
+                setStudyDescription('');
+                dispatch(removeSelectedFile());
+            } else {
                 console.debug('Error when creating the study');
                 if (res.status === 409) {
                     setCreateStudyErr(
@@ -290,7 +290,7 @@ export const CreateStudyForm = (props) => {
                             setCreateStudyErr(data.message);
                         })
                         .catch((error) => {
-                            setCreateStudyErr(error);
+                            setCreateStudyErr(error.message);
                         });
                 }
             }
