@@ -734,11 +734,11 @@ const TreeViewsContainer = () => {
             {/** Dialogs **/}
             <CreateStudyForm
                 open={openAddNewStudyDialog}
-                setOpen={setOpenAddNewStudyDialog}
+                onClose={() => setOpenAddNewStudyDialog(false)}
             />
             <CreateContingencyListForm
                 open={openAddNewContingencyListDialog}
-                setOpen={setOpenAddNewContingencyListDialog}
+                onClose={() => setOpenAddNewContingencyListDialog(false)}
             />
             <CreateDirectoryDialog
                 message={''}

@@ -38,6 +38,7 @@ import {
 import { store } from '../redux/store';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -149,7 +150,12 @@ const UploadCase = () => {
     );
 };
 
-export const CreateStudyForm = (props) => {
+/**
+ * Dialog to create a study
+ * @param {Boolean} open Is the dialog open ?
+ * @param {EventListener} onClose Event to close the dialog
+ */
+export const CreateStudyForm = ({ open, onClose }) => {
     const [caseExist, setCaseExist] = React.useState(false);
 
     const [studyName, setStudyName] = React.useState('');
@@ -175,7 +181,7 @@ export const CreateStudyForm = (props) => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
     const handleCloseDialog = () => {
-        props.setOpen(false);
+        onClose();
         setCreateStudyErr('');
     };
 
@@ -273,7 +279,7 @@ export const CreateStudyForm = (props) => {
             activeDirectory
         ).then((res) => {
             if (res.ok) {
-                props.setOpen(false);
+                onClose();
                 setCreateStudyErr('');
                 setStudyName('');
                 setStudyDescription('');
@@ -306,7 +312,7 @@ export const CreateStudyForm = (props) => {
         <div>
             <Dialog
                 fullWidth={true}
-                open={props.open}
+                open={open}
                 onClose={handleCloseDialog}
                 aria-labelledby="form-dialog-title"
                 onKeyPress={handleKeyPressed}
@@ -415,6 +421,11 @@ export const CreateStudyForm = (props) => {
             </Dialog>
         </div>
     );
+};
+
+CreateStudyForm.propTypes = {
+    open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
 };
 
 export default CreateStudyForm;
