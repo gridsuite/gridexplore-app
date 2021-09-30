@@ -338,6 +338,7 @@ const DirectoryContent = () => {
     const handleCloseFiltersContingency = () => {
         setOpenFiltersContingencyDialog(false);
         setActiveElement(null);
+        setCurrentFiltersContingencyListId(null);
     };
 
     const [
@@ -448,6 +449,7 @@ const DirectoryContent = () => {
     const handleCloseScriptContingency = () => {
         setOpenScriptContingencyDialog(false);
         setActiveElement(null);
+        setCurrentScriptContingencyListId(null);
     };
 
     /**
@@ -458,6 +460,7 @@ const DirectoryContent = () => {
     const handleCloseScriptDialog = () => {
         setOpenScriptDialog(false);
         setActiveElement('');
+        setCurrentScriptId(null);
     };
 
     const abbreviationFromUserName = (name) => {
@@ -743,12 +746,10 @@ const DirectoryContent = () => {
     const isAllowed = () => {
         if (activeElement) return activeElement.owner === userId;
         if (!selectedUuids) return false;
-        let children = getSelectedChildren();
-        let soFar = true;
-        for (let i = children.size - 1; i >= 0; i--) {
-            soFar = children[i].owner === userId;
-        }
-        return soFar;
+        return (
+            getSelectedChildren().find((child) => child.owner !== userId) ===
+            null
+        );
     };
 
     const allowsDelete = (mayChange = false) => {
@@ -816,6 +817,19 @@ const DirectoryContent = () => {
             </>
         );
     }
+
+    const emptyMenu = () => {
+        return !(
+            allowsRename() ||
+            allowsPublishability() ||
+            allowsExport() ||
+            allowsDelete() ||
+            allowsCopyContingencyToScript() ||
+            allowsReplaceContingencyWithScript() ||
+            allowsCopyFilterToScript() ||
+            allowsReplaceFilterWithScript()
+        );
+    };
 
     const areSelectedElementsAllPrivate = () => {
         let sel = getSelectedChildren();
@@ -935,7 +949,7 @@ const DirectoryContent = () => {
                     id="row-menu"
                     anchorEl={anchorEl}
                     keepMounted
-                    open={Boolean(anchorEl)}
+                    open={!emptyMenu() && Boolean(anchorEl)}
                     onClose={handleCloseRowMenu}
                     anchorReference="anchorPosition"
                     anchorPosition={
