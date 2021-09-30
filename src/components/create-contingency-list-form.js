@@ -81,7 +81,6 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
 
         let isPrivateContingencyList = contingencyListPrivacy === 'private';
 
-        onClose();
         createContingencyList(
             contingencyListType,
             contingencyListName,
@@ -93,7 +92,9 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
             setContingencyListName('');
             setContingencyListDescription('');
 
-            if (!res.ok) {
+            if (res.ok) {
+                onClose();
+            } else {
                 console.debug('Error when creating the contingency list');
                 res.json()
                     .then((data) => {
