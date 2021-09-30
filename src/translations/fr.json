@@ -129,5 +129,6 @@
     "Min": "Min",
     "Max": "Max",
 
-    "FilterName": "Nom"
+    "FilterName": "Nom",
+    "getAppLinkError": "Erreur lors de la récupération du lien vers l'application pour le type = {type}"
 }

@@ -13,6 +13,7 @@ import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 /**
  * Dialog to replace a filters contingency list with a script contingency list or a filter with a script
@@ -24,12 +25,14 @@ import React from 'react';
  * @param title Title of the dialog
  */
 const ReplaceWithScriptDialog = ({ id, open, onClose, onClick, title }) => {
+    const selectedDirectory = useSelector((state) => state.selectedDirectory);
+
     const handleClose = () => {
         onClose();
     };
 
     const handleClick = () => {
-        onClick(id);
+        onClick(id, selectedDirectory);
     };
 
     return (
