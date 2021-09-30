@@ -553,7 +553,18 @@ const TreeViewsContainer = () => {
             type,
             isPrivate,
             activeDirectory
-        ).then();
+        ).then((res) => {
+            if (!res.ok) {
+                console.debug('Error when creating the filter');
+                res.json()
+                    .then((data) => {
+                        console.debug(data.message);
+                    })
+                    .catch((error) => {
+                        console.debug(error.message);
+                    });
+            }
+        });
     };
 
     const getActiveDirectory = () => {
