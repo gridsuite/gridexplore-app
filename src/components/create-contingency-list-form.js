@@ -52,6 +52,8 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
     const handleCloseDialog = () => {
         onClose();
         setCreateContingencyListErr('');
+        setContingencyListName('');
+        setContingencyListDescription('');
     };
 
     const handleContingencyListDescriptionChanges = (e) => {
@@ -88,20 +90,23 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
             isPrivateContingencyList,
             activeDirectory
         ).then((res) => {
-            setCreateContingencyListErr('');
-            setContingencyListName('');
-            setContingencyListDescription('');
-
             if (res.ok) {
                 onClose();
+                setCreateContingencyListErr('');
+                setContingencyListName('');
+                setContingencyListDescription('');
             } else {
                 console.debug('Error when creating the contingency list');
                 res.json()
                     .then((data) => {
-                        setCreateContingencyListErr(data.message);
+                        setCreateContingencyListErr(
+                            data.error + ' - ' + data.message
+                        );
                     })
                     .catch((error) => {
-                        setCreateContingencyListErr(error.message);
+                        setCreateContingencyListErr(
+                            error.error + ' - ' + error.message
+                        );
                     });
             }
         });

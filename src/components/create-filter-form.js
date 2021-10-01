@@ -23,6 +23,9 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Grid from '@material-ui/core/Grid';
+import { ScriptTypes } from '../utils/script-types';
+import { createFilter } from '../utils/rest-api';
+import Alert from '@material-ui/lab/Alert';
 
 const styles = (theme) => ({
     root: {
@@ -86,12 +89,13 @@ const CreateFilterDialog = ({
     title,
     customTextValidationBtn,
     customTextCancelBtn,
-    action,
+    activeDirectory,
 }) => {
     const [disableBtnSave, setDisableBtnSave] = useState(true);
     const [newNameList, setNewListName] = useState(false);
     const [newListType, setNewListType] = useState('SCRIPT');
     const [filterPrivacy, setFilterPrivacy] = React.useState('public');
+    const [createFilterErr, setCreateFilterErr] = React.useState('');
 
     /**
      * on change input popup check if name already exist
@@ -107,18 +111,38 @@ const CreateFilterDialog = ({
     };
 
     const handleSave = () => {
-        if (action) {
-            action({
+        const filterType =
+            newListType === ScriptTypes.SCRIPT ? newListType : 'LINE';
+        createFilter(
+            {
                 name: newNameList,
-                type: newListType,
-                isPrivate: filterPrivacy === 'private',
-            });
-            onClose();
-        }
+                type: filterType,
+                transient: true,
+            },
+            newNameList,
+            newListType,
+            filterPrivacy === 'private',
+            activeDirectory
+        ).then((res) => {
+            if (res.ok) {
+                onClose();
+                setCreateFilterErr('');
+            } else {
+                console.debug('Error when creating the filter');
+                res.json()
+                    .then((data) => {
+                        setCreateFilterErr(data.error + ' - ' + data.message);
+                    })
+                    .catch((error) => {
+                        setCreateFilterErr(error.error + ' - ' + error.message);
+                    });
+            }
+        });
     };
 
     const handleClose = () => {
         onClose();
+        setCreateFilterErr('');
     };
 
     const handleChangeFilterPrivacy = (event) => {
@@ -177,6 +201,9 @@ const CreateFilterDialog = ({
                         </RadioGroup>
                     </Grid>
                 </Grid>
+                {createFilterErr !== '' && (
+                    <Alert severity="error">{createFilterErr}</Alert>
+                )}
             </CustomDialogContent>
             <CustomDialogActions>
                 <Button autoFocus size="small" onClick={handleClose}>
@@ -199,6 +226,7 @@ CreateFilterDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     inputLabelText: PropTypes.object.isRequired,
+    activeDirectory: PropTypes.string.isRequired,
     title: PropTypes.object.isRequired,
     customTextValidationBtn: PropTypes.object.isRequired,
     customTextCancelBtn: PropTypes.object.isRequired,

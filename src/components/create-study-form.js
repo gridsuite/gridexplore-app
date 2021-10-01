@@ -180,9 +180,16 @@ export const CreateStudyForm = ({ open, onClose }) => {
     const caseName = useSelector((state) => state.selectedCase);
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
+    const resetDialog = () => {
+        setCreateStudyErr('');
+        setStudyName('');
+        setStudyDescription('');
+        dispatch(removeSelectedFile());
+    };
+
     const handleCloseDialog = () => {
         onClose();
-        setCreateStudyErr('');
+        resetDialog();
     };
 
     const handleChangeSwitch = (e) => {
@@ -280,10 +287,7 @@ export const CreateStudyForm = ({ open, onClose }) => {
         ).then((res) => {
             if (res.ok) {
                 onClose();
-                setCreateStudyErr('');
-                setStudyName('');
-                setStudyDescription('');
-                dispatch(removeSelectedFile());
+                resetDialog();
             } else {
                 console.debug('Error when creating the study');
                 if (res.status === 409) {
@@ -293,10 +297,14 @@ export const CreateStudyForm = ({ open, onClose }) => {
                 } else {
                     res.json()
                         .then((data) => {
-                            setCreateStudyErr(data.message);
+                            setCreateStudyErr(
+                                data.error + ' - ' + data.message
+                            );
                         })
                         .catch((error) => {
-                            setCreateStudyErr(error.message);
+                            setCreateStudyErr(
+                                error.error + ' - ' + error.message
+                            );
                         });
                 }
             }
