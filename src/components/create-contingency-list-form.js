@@ -49,11 +49,17 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    const handleCloseDialog = () => {
-        onClose();
-        setCreateContingencyListErr('');
+    const resetDialog = () => {
         setContingencyListName('');
         setContingencyListDescription('');
+        setContingencyListPrivacy('private');
+        setContingencyListType(ScriptTypes.SCRIPT);
+        setCreateContingencyListErr('');
+    };
+
+    const handleCloseDialog = () => {
+        onClose();
+        resetDialog();
     };
 
     const handleContingencyListDescriptionChanges = (e) => {
@@ -92,9 +98,7 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
         ).then((res) => {
             if (res.ok) {
                 onClose();
-                setCreateContingencyListErr('');
-                setContingencyListName('');
-                setContingencyListDescription('');
+                resetDialog();
             } else {
                 console.debug('Error when creating the contingency list');
                 res.json()

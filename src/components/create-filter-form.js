@@ -26,6 +26,7 @@ import Grid from '@material-ui/core/Grid';
 import { ScriptTypes } from '../utils/script-types';
 import { createFilter } from '../utils/rest-api';
 import Alert from '@material-ui/lab/Alert';
+import { useSelector } from 'react-redux';
 
 const styles = (theme) => ({
     root: {
@@ -89,13 +90,13 @@ const CreateFilterDialog = ({
     title,
     customTextValidationBtn,
     customTextCancelBtn,
-    activeDirectory,
 }) => {
     const [disableBtnSave, setDisableBtnSave] = useState(true);
-    const [newNameList, setNewListName] = useState(false);
-    const [newListType, setNewListType] = useState('SCRIPT');
-    const [filterPrivacy, setFilterPrivacy] = React.useState('public');
+    const [newNameList, setNewListName] = useState('');
+    const [newListType, setNewListType] = useState(ScriptTypes.SCRIPT);
+    const [filterPrivacy, setFilterPrivacy] = React.useState('private');
     const [createFilterErr, setCreateFilterErr] = React.useState('');
+    const activeDirectory = useSelector((state) => state.activeDirectory);
 
     /**
      * on change input popup check if name already exist
@@ -108,6 +109,13 @@ const CreateFilterDialog = ({
             setNewListName(name);
             setDisableBtnSave(false);
         }
+    };
+
+    const resetDialog = () => {
+        setNewListName('');
+        setNewListType(ScriptTypes.SCRIPT);
+        setFilterPrivacy('private');
+        setCreateFilterErr('');
     };
 
     const handleSave = () => {
@@ -126,7 +134,7 @@ const CreateFilterDialog = ({
         ).then((res) => {
             if (res.ok) {
                 onClose();
-                setCreateFilterErr('');
+                resetDialog();
             } else {
                 console.debug('Error when creating the filter');
                 res.json()
@@ -142,7 +150,7 @@ const CreateFilterDialog = ({
 
     const handleClose = () => {
         onClose();
-        setCreateFilterErr('');
+        resetDialog();
     };
 
     const handleChangeFilterPrivacy = (event) => {

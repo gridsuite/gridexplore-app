@@ -81,8 +81,6 @@ const TreeViewsContainer = () => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
 
-    // const currentEdit = useRef(null);
-
     const mapDataRef = useRef({});
     mapDataRef.current = mapData;
 
@@ -788,7 +786,6 @@ const TreeViewsContainer = () => {
                 inputLabelText={<FormattedMessage id="FilterName" />}
                 customTextValidationBtn={<FormattedMessage id="create" />}
                 customTextCancelBtn={<FormattedMessage id="cancel" />}
-                activeDirectory={activeDirectory || ''}
             />
         </>
     );

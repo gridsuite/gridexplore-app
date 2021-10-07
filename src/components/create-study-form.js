@@ -184,6 +184,7 @@ export const CreateStudyForm = ({ open, onClose }) => {
         setCreateStudyErr('');
         setStudyName('');
         setStudyDescription('');
+        setStudyPrivacy('private');
         dispatch(removeSelectedFile());
     };
 
