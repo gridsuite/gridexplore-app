@@ -234,7 +234,6 @@ CreateFilterDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     inputLabelText: PropTypes.object.isRequired,
-    activeDirectory: PropTypes.string.isRequired,
     title: PropTypes.object.isRequired,
     customTextValidationBtn: PropTypes.object.isRequired,
     customTextCancelBtn: PropTypes.object.isRequired,
