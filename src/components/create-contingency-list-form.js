@@ -25,8 +25,14 @@ import { useSelector } from 'react-redux';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import { ScriptTypes } from '../utils/script-types';
+import PropTypes from 'prop-types';
 
-export const CreateContingencyListForm = (props) => {
+/**
+ * Dialog to create a contingency
+ * @param {Boolean} open Is the dialog open ?
+ * @param {EventListener} onClose Event to close the dialog
+ */
+export const CreateContingencyListForm = ({ open, onClose }) => {
     const [contingencyListType, setContingencyListType] = React.useState(
         ScriptTypes.SCRIPT
     );
@@ -43,9 +49,17 @@ export const CreateContingencyListForm = (props) => {
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    const handleCloseDialog = () => {
-        props.setOpen(false);
+    const resetDialog = () => {
+        setContingencyListName('');
+        setContingencyListDescription('');
+        setContingencyListPrivacy('private');
+        setContingencyListType(ScriptTypes.SCRIPT);
         setCreateContingencyListErr('');
+    };
+
+    const handleCloseDialog = () => {
+        onClose();
+        resetDialog();
     };
 
     const handleContingencyListDescriptionChanges = (e) => {
@@ -75,7 +89,6 @@ export const CreateContingencyListForm = (props) => {
 
         let isPrivateContingencyList = contingencyListPrivacy === 'private';
 
-        props.setOpen(false);
         createContingencyList(
             contingencyListType,
             contingencyListName,
@@ -83,18 +96,21 @@ export const CreateContingencyListForm = (props) => {
             isPrivateContingencyList,
             activeDirectory
         ).then((res) => {
-            setCreateContingencyListErr('');
-            setContingencyListName('');
-            setContingencyListDescription('');
-
-            if (!res.ok) {
+            if (res.ok) {
+                onClose();
+                resetDialog();
+            } else {
                 console.debug('Error when creating the contingency list');
                 res.json()
                     .then((data) => {
-                        setCreateContingencyListErr(data.message);
+                        setCreateContingencyListErr(
+                            data.error + ' - ' + data.message
+                        );
                     })
                     .catch((error) => {
-                        setCreateContingencyListErr(error);
+                        setCreateContingencyListErr(
+                            error.name + ' - ' + error.message
+                        );
                     });
             }
         });
@@ -109,7 +125,7 @@ export const CreateContingencyListForm = (props) => {
         <div>
             <Dialog
                 fullWidth={true}
-                open={props.open}
+                open={open}
                 onClose={handleCloseDialog}
                 aria-labelledby="form-dialog-title"
                 onKeyPress={handleKeyPressed}
@@ -203,6 +219,11 @@ export const CreateContingencyListForm = (props) => {
             </Dialog>
         </div>
     );
+};
+
+CreateContingencyListForm.propTypes = {
+    open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
 };
 
 export default CreateContingencyListForm;
