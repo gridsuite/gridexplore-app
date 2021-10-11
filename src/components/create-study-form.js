@@ -304,7 +304,7 @@ export const CreateStudyForm = ({ open, onClose }) => {
                         })
                         .catch((error) => {
                             setCreateStudyErr(
-                                error.error + ' - ' + error.message
+                                error.name + ' - ' + error.message
                             );
                         });
                 }

@@ -142,7 +142,7 @@ const CreateFilterDialog = ({
                         setCreateFilterErr(data.error + ' - ' + data.message);
                     })
                     .catch((error) => {
-                        setCreateFilterErr(error.error + ' - ' + error.message);
+                        setCreateFilterErr(error.name + ' - ' + error.message);
                     });
             }
         });

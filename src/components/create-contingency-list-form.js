@@ -109,7 +109,7 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
                     })
                     .catch((error) => {
                         setCreateContingencyListErr(
-                            error.error + ' - ' + error.message
+                            error.name + ' - ' + error.message
                         );
                     });
             }
