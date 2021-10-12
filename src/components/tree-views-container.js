@@ -24,7 +24,6 @@ import {
     deleteElement,
     updateAccessRights,
     renameElement,
-    createFilter,
 } from '../utils/rest-api';
 
 import DirectoryTreeView from './directory-tree-view';
@@ -57,7 +56,6 @@ import RenameDialog from './dialogs/rename-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
 import { CreateFilterDialog } from './create-filter-form';
-import { ScriptTypes } from '../utils/script-types';
 
 const StyledMenu = withStyles({
     paper: {
@@ -82,8 +80,6 @@ const TreeViewsContainer = () => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
-
-    const currentEdit = useRef(null);
 
     const mapDataRef = useRef({});
     mapDataRef.current = mapData;
@@ -540,22 +536,6 @@ const TreeViewsContainer = () => {
         );
     };
 
-    const newFilter = (name, type, isPrivate) => {
-        const filterType = type === ScriptTypes.SCRIPT ? type : 'LINE';
-        currentEdit.current = {
-            name: name,
-            type: filterType,
-            transient: true,
-        };
-        createFilter(
-            currentEdit.current,
-            name,
-            type,
-            isPrivate,
-            activeDirectory
-        ).then();
-    };
-
     const getActiveDirectory = () => {
         return mapDataRef.current && mapDataRef.current[activeDirectory]
             ? mapDataRef.current[activeDirectory]
@@ -734,11 +714,11 @@ const TreeViewsContainer = () => {
             {/** Dialogs **/}
             <CreateStudyForm
                 open={openAddNewStudyDialog}
-                setOpen={setOpenAddNewStudyDialog}
+                onClose={() => setOpenAddNewStudyDialog(false)}
             />
             <CreateContingencyListForm
                 open={openAddNewContingencyListDialog}
-                setOpen={setOpenAddNewContingencyListDialog}
+                onClose={() => setOpenAddNewContingencyListDialog(false)}
             />
             <CreateDirectoryDialog
                 message={''}
@@ -806,9 +786,6 @@ const TreeViewsContainer = () => {
                 inputLabelText={<FormattedMessage id="FilterName" />}
                 customTextValidationBtn={<FormattedMessage id="create" />}
                 customTextCancelBtn={<FormattedMessage id="cancel" />}
-                action={({ name, type, isPrivate }) =>
-                    newFilter(name, type, isPrivate)
-                }
             />
         </>
     );

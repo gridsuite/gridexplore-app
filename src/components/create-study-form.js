@@ -38,6 +38,7 @@ import {
 import { store } from '../redux/store';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -149,7 +150,12 @@ const UploadCase = () => {
     );
 };
 
-export const CreateStudyForm = (props) => {
+/**
+ * Dialog to create a study
+ * @param {Boolean} open Is the dialog open ?
+ * @param {EventListener} onClose Event to close the dialog
+ */
+export const CreateStudyForm = ({ open, onClose }) => {
     const [caseExist, setCaseExist] = React.useState(false);
 
     const [studyName, setStudyName] = React.useState('');
@@ -174,9 +180,17 @@ export const CreateStudyForm = (props) => {
     const caseName = useSelector((state) => state.selectedCase);
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    const handleCloseDialog = () => {
-        props.setOpen(false);
+    const resetDialog = () => {
         setCreateStudyErr('');
+        setStudyName('');
+        setStudyDescription('');
+        setStudyPrivacy('private');
+        dispatch(removeSelectedFile());
+    };
+
+    const handleCloseDialog = () => {
+        onClose();
+        resetDialog();
     };
 
     const handleChangeSwitch = (e) => {
@@ -263,7 +277,6 @@ export const CreateStudyForm = (props) => {
 
         let isPrivateStudy = studyPrivacy === 'private';
 
-        props.setOpen(false);
         createStudy(
             caseExist,
             studyName,
@@ -273,12 +286,10 @@ export const CreateStudyForm = (props) => {
             isPrivateStudy,
             activeDirectory
         ).then((res) => {
-            setCreateStudyErr('');
-            setStudyName('');
-            setStudyDescription('');
-            dispatch(removeSelectedFile());
-
-            if (!res.ok) {
+            if (res.ok) {
+                onClose();
+                resetDialog();
+            } else {
                 console.debug('Error when creating the study');
                 if (res.status === 409) {
                     setCreateStudyErr(
@@ -287,10 +298,14 @@ export const CreateStudyForm = (props) => {
                 } else {
                     res.json()
                         .then((data) => {
-                            setCreateStudyErr(data.message);
+                            setCreateStudyErr(
+                                data.error + ' - ' + data.message
+                            );
                         })
                         .catch((error) => {
-                            setCreateStudyErr(error);
+                            setCreateStudyErr(
+                                error.name + ' - ' + error.message
+                            );
                         });
                 }
             }
@@ -306,7 +321,7 @@ export const CreateStudyForm = (props) => {
         <div>
             <Dialog
                 fullWidth={true}
-                open={props.open}
+                open={open}
                 onClose={handleCloseDialog}
                 aria-labelledby="form-dialog-title"
                 onKeyPress={handleKeyPressed}
@@ -415,6 +430,11 @@ export const CreateStudyForm = (props) => {
             </Dialog>
         </div>
     );
+};
+
+CreateStudyForm.propTypes = {
+    open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
 };
 
 export default CreateStudyForm;

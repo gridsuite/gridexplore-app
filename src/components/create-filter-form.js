@@ -23,6 +23,10 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Grid from '@material-ui/core/Grid';
+import { ScriptTypes } from '../utils/script-types';
+import { createFilter } from '../utils/rest-api';
+import Alert from '@material-ui/lab/Alert';
+import { useSelector } from 'react-redux';
 
 const styles = (theme) => ({
     root: {
@@ -86,12 +90,13 @@ const CreateFilterDialog = ({
     title,
     customTextValidationBtn,
     customTextCancelBtn,
-    action,
 }) => {
     const [disableBtnSave, setDisableBtnSave] = useState(true);
-    const [newNameList, setNewListName] = useState(false);
-    const [newListType, setNewListType] = useState('SCRIPT');
-    const [filterPrivacy, setFilterPrivacy] = React.useState('public');
+    const [newNameList, setNewListName] = useState('');
+    const [newListType, setNewListType] = useState(ScriptTypes.SCRIPT);
+    const [filterPrivacy, setFilterPrivacy] = React.useState('private');
+    const [createFilterErr, setCreateFilterErr] = React.useState('');
+    const activeDirectory = useSelector((state) => state.activeDirectory);
 
     /**
      * on change input popup check if name already exist
@@ -106,19 +111,46 @@ const CreateFilterDialog = ({
         }
     };
 
+    const resetDialog = () => {
+        setNewListName('');
+        setNewListType(ScriptTypes.SCRIPT);
+        setFilterPrivacy('private');
+        setCreateFilterErr('');
+    };
+
     const handleSave = () => {
-        if (action) {
-            action({
+        const filterType =
+            newListType === ScriptTypes.SCRIPT ? newListType : 'LINE';
+        createFilter(
+            {
                 name: newNameList,
-                type: newListType,
-                isPrivate: filterPrivacy === 'private',
-            });
-            onClose();
-        }
+                type: filterType,
+                transient: true,
+            },
+            newNameList,
+            newListType,
+            filterPrivacy === 'private',
+            activeDirectory
+        ).then((res) => {
+            if (res.ok) {
+                onClose();
+                resetDialog();
+            } else {
+                console.debug('Error when creating the filter');
+                res.json()
+                    .then((data) => {
+                        setCreateFilterErr(data.error + ' - ' + data.message);
+                    })
+                    .catch((error) => {
+                        setCreateFilterErr(error.name + ' - ' + error.message);
+                    });
+            }
+        });
     };
 
     const handleClose = () => {
         onClose();
+        resetDialog();
     };
 
     const handleChangeFilterPrivacy = (event) => {
@@ -177,6 +209,9 @@ const CreateFilterDialog = ({
                         </RadioGroup>
                     </Grid>
                 </Grid>
+                {createFilterErr !== '' && (
+                    <Alert severity="error">{createFilterErr}</Alert>
+                )}
             </CustomDialogContent>
             <CustomDialogActions>
                 <Button autoFocus size="small" onClick={handleClose}>
