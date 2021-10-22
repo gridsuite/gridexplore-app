@@ -16,6 +16,8 @@ let PREFIX_CONFIG_NOTIFICATION_WS =
 let PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 let PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
+let PREFIX_EXPLORE_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/explore';
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';
 const PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
@@ -121,7 +123,7 @@ export function fetchDirectoryContent(directoryUuid) {
 export function deleteElement(elementUuid) {
     console.info("Deleting element %s'", elementUuid);
     const fetchParams =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${elementUuid}`;
+        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/directories/${elementUuid}`;
     return backendFetch(fetchParams, {
         method: 'delete',
     });
@@ -135,8 +137,7 @@ export function updateAccessRights(elementUuid, isPrivate) {
             isPrivate
     );
     const updateAccessRightUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${elementUuid}/rights`;
+        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/directories/${elementUuid}/rights`;
     return backendFetch(updateAccessRightUrl, {
         method: 'put',
         headers: {
@@ -232,15 +233,6 @@ export function renameElement(studyUuid, newStudyName) {
     });
 }
 
-export function deleteStudy(studyUuid) {
-    console.info('Deleting study ' + studyUuid + '...');
-    const deleteStudyUrl = getStudyUrl(studyUuid);
-    console.debug(deleteStudyUrl);
-    return backendFetch(deleteStudyUrl, {
-        method: 'delete',
-    });
-}
-
 export function fetchRootFolders() {
     console.info('Fetching Root Directories');
     const fetchRootFoldersUrl =
@@ -319,7 +311,7 @@ export function createStudy(
 
     if (caseExist) {
         const createStudyWithExistingCaseUrl =
-            PREFIX_DIRECTORY_SERVER_QUERIES +
+            PREFIX_EXPLORE_SERVER_QUERIES +
             '/v1/directories/studies/' +
             encodeURIComponent(studyName) +
             '/cases/' +
@@ -332,7 +324,7 @@ export function createStudy(
         });
     } else {
         const createStudyWithNewCaseUrl =
-            PREFIX_DIRECTORY_SERVER_QUERIES +
+            PREFIX_EXPLORE_SERVER_QUERIES +
             '/v1/directories/studies/' +
             encodeURIComponent(studyName) +
             '?' +
@@ -394,7 +386,7 @@ export function createContingencyList(
             : 'filters-contingency-lists';
 
     const createContingencyListUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
+        PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/directories/' +
         typeUriParam +
         '/' +
@@ -482,7 +474,7 @@ export function replaceFiltersWithScriptContingencyList(
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     const url =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
+        PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/directories/filters-contingency-lists/' +
         encodeURIComponent(id) +
         '/replace-with-script' +
@@ -507,7 +499,7 @@ export function newScriptFromFiltersContingencyList(
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     const url =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
+        PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/directories/filters-contingency-lists/' +
         encodeURIComponent(id) +
         '/new-script/' +
@@ -564,7 +556,7 @@ export function createFilter(
     urlSearchParams.append('isPrivate', isPrivate);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     return backendFetch(
-        PREFIX_DIRECTORY_SERVER_QUERIES +
+        PREFIX_EXPLORE_SERVER_QUERIES +
             '/v1/directories/filters?' +
             urlSearchParams.toString(),
         {
@@ -620,7 +612,7 @@ export function replaceFiltersWithScript(id, parentDirectoryUuid) {
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     const url =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
+        PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/directories/filters/' +
         encodeURIComponent(id) +
         '/replace-with-script' +
@@ -640,7 +632,7 @@ export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     const url =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
+        PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/directories/filters/' +
         encodeURIComponent(id) +
         '/new-script/' +
