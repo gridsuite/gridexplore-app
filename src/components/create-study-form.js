@@ -25,7 +25,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { createStudy, fetchCases, studyExists } from '../utils/rest-api';
+import { createStudy, fetchCases, elementExists } from '../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -217,7 +217,7 @@ export const CreateStudyForm = ({ open, onClose }) => {
 
     const updateStudyFormState = (inputValue, userId) => {
         if (inputValue !== '') {
-            studyExists(inputValue, userId)
+            elementExists(activeDirectory, inputValue)
                 .then((data) => {
                     if (data === true) {
                         setStudyFormState(

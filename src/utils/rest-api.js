@@ -340,25 +340,17 @@ export function fetchCases() {
     return backendFetch(fetchCasesUrl).then((response) => response.json());
 }
 
-function getStudyUrlByStudyNameAndUserId(studyName, userId) {
-    return (
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName)
-    );
-}
+export function elementExists(directoryUuid, studyName) {
+    const existsElementUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${directoryUuid}/${studyName}/exists`;
 
-export function studyExists(studyName, userId) {
-    // current implementation prevent having two studies with the same name and the same user
-    // later we will prevent same studyName and userId in the same directory
-    const studyExistsUrl =
-        getStudyUrlByStudyNameAndUserId(studyName, userId) + '/exists';
-    console.debug(studyExistsUrl);
-    return backendFetch(studyExistsUrl, { method: 'get' }).then((response) => {
-        return response.json();
-    });
+    console.debug(existsElementUrl);
+    return backendFetch(existsElementUrl, { method: 'get' }).then(
+        (response) => {
+            return response.json();
+        }
+    );
 }
 
 export function createContingencyList(
