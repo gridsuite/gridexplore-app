@@ -123,7 +123,6 @@ const CreateFilterDialog = ({
             newListType === ScriptTypes.SCRIPT ? newListType : 'LINE';
         createFilter(
             {
-                name: newNameList,
                 type: filterType,
                 transient: true,
             },

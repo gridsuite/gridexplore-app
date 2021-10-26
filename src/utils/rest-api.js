@@ -370,6 +370,7 @@ export function createContingencyList(
 ) {
     console.info('Creating a new contingency list...');
     let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('description', contingencyListDescription);
     urlSearchParams.append('isPrivate', isPrivateContingencyList);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
@@ -388,10 +389,7 @@ export function createContingencyList(
         urlSearchParams.toString();
     console.debug(createContingencyListUrl);
 
-    let body = {
-        name: contingencyListName,
-        description: contingencyListDescription,
-    };
+    let body = {};
     if (contingencyListType === ScriptTypes.FILTERS) {
         body.equipmentType = EquipmentTypes.LINE;
         body.nominalVoltage = -1;
@@ -546,6 +544,7 @@ export function createFilter(
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append('type', type);
+    urlSearchParams.append('description', '');
     urlSearchParams.append('isPrivate', isPrivate);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     return backendFetch(
