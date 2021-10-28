@@ -29,9 +29,7 @@ import { Toolbar } from '@material-ui/core';
 
 import {
     deleteElement,
-    fetchContingencyListsInfos,
-    fetchFiltersInfos,
-    fetchStudiesInfos,
+    fetchElementsInfos,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,
     renameElement,
@@ -643,58 +641,20 @@ const DirectoryContent = () => {
 
     useEffect(() => {
         setIsMetadataLoading(true);
-        if (currentChildren !== null) {
-            let studyUuids = [];
-            let contingencyListsUuids = [];
-            let filtersUuids = [];
-
-            currentChildren
-                .filter((e) => e.type !== elementType.DIRECTORY)
-                .forEach((e) => {
-                    if (e.type === elementType.STUDY)
-                        studyUuids.push(e.elementUuid);
-                    else if (
-                        e.type === elementType.SCRIPT_CONTINGENCY_LIST ||
-                        e.type === elementType.FILTERS_CONTINGENCY_LIST
-                    ) {
-                        contingencyListsUuids.push(e.elementUuid);
-                    } else if (
-                        e.type === elementType.FILTER ||
-                        e.type === elementType.SCRIPT
-                    ) {
-                        filtersUuids.push(e.elementUuid);
-                    }
-                });
+        if (currentChildren !== null && currentChildren.length > 0) {
             let metadata = {};
-            Promise.all([
-                fetchStudiesInfos(studyUuids).then((res) => {
+            fetchElementsInfos(currentChildren.map((e) => e.elementUuid))
+                .then((res) => {
                     res.forEach((e) => {
-                        metadata[e.studyUuid] = {
-                            name: e.studyName,
+                        metadata[e.elementUuid] = {
+                            name: e.elementName,
                         };
                     });
-                }),
-                fetchContingencyListsInfos(contingencyListsUuids).then(
-                    (res) => {
-                        res.forEach((e) => {
-                            metadata[e.id] = {
-                                name: e.name,
-                            };
-                        });
-                    }
-                ),
-                fetchFiltersInfos(filtersUuids).then((res) => {
-                    res.forEach((e) => {
-                        metadata[e.id] = {
-                            name: e.name,
-                            filterType: e.type,
-                        };
-                    });
-                }),
-            ]).finally(() => {
-                setChildrenMetadata(metadata);
-                setIsMetadataLoading(false);
-            });
+                })
+                .finally(() => {
+                    setChildrenMetadata(metadata);
+                    setIsMetadataLoading(false);
+                });
         }
         setSelectedUuids(new Set());
     }, [currentChildren]);

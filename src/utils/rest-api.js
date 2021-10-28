@@ -263,30 +263,23 @@ export function updateConfigParameter(name, value) {
     );
 }
 
-export function fetchStudiesInfos(uuids) {
-    console.info('Fetching studies metadata ... ');
-    const fetchStudiesInfosUrl = PREFIX_STUDY_QUERIES + `/v1/studies/metadata`;
-    return backendFetch(fetchStudiesInfosUrl, {
-        method: 'GET',
-        headers: {
-            uuids: uuids,
-        },
-    }).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
+function getElementsIdsListsQueryParams(ids) {
+    if (ids !== undefined && ids.length > 0) {
+        const urlSearchParams = new URLSearchParams();
+        ids.forEach((id) => urlSearchParams.append('id', id));
+        return '?' + urlSearchParams.toString();
+    }
+    return '';
 }
 
-export function fetchContingencyListsInfos(uuids) {
-    console.info('Fetching contingency lists metadata ... ');
-    const fetchContingencyListsInfosUrl =
-        PREFIX_ACTIONS_QUERIES + `/v1/contingency-lists/metadata`;
-    return backendFetch(fetchContingencyListsInfosUrl, {
+export function fetchElementsInfos(ids) {
+    console.info('Fetching elements metadata ... ');
+    const fetchElementsInfosUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/directories/elements' +
+        getElementsIdsListsQueryParams(ids);
+    return backendFetch(fetchElementsInfosUrl, {
         method: 'GET',
-        headers: {
-            ids: uuids,
-        },
     }).then((response) =>
         response.ok
             ? response.json()
@@ -584,23 +577,6 @@ export function getFilters() {
 export function getFilterById(id) {
     const url = PREFIX_FILTERS_QUERIES + '/' + id;
     return backendFetch(url).then((response) => response.json());
-}
-
-export function fetchFiltersInfos(uuids) {
-    let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('ids', uuids);
-
-    console.info('Fetching filters metadata ... ');
-    const fetchFiltersInfosUrl = PREFIX_FILTERS_QUERIES + `/metadata`;
-    return backendFetch(fetchFiltersInfosUrl, {
-        method: 'POST',
-        body: JSON.stringify(uuids),
-        headers: { 'Content-Type': 'application/json' },
-    }).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
 }
 
 /**
