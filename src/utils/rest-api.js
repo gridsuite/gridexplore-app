@@ -535,7 +535,6 @@ export function createFilter(
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
-    urlSearchParams.append('type', type);
     urlSearchParams.append('description', '');
     urlSearchParams.append('isPrivate', isPrivate);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);

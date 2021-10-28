@@ -119,11 +119,8 @@ const CreateFilterDialog = ({
     };
 
     const handleSave = () => {
-        const filterType =
-            newListType === ScriptTypes.SCRIPT ? newListType : 'LINE';
         createFilter(
             {
-                type: filterType,
                 transient: true,
             },
             newNameList,
