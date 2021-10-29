@@ -536,12 +536,7 @@ export function connectNotificationsWsUpdateStudies() {
  * Create Filter
  * @returns {Promise<Response>}
  */
-export function createFilter(
-    newFilter,
-    name,
-    isPrivate,
-    parentDirectoryUuid
-) {
+export function createFilter(newFilter, name, isPrivate, parentDirectoryUuid) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append('isPrivate', isPrivate);
