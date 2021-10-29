@@ -539,7 +539,6 @@ export function connectNotificationsWsUpdateStudies() {
 export function createFilter(
     newFilter,
     name,
-    type,
     isPrivate,
     parentDirectoryUuid
 ) {

@@ -119,13 +119,15 @@ const CreateFilterDialog = ({
     };
 
     const handleSave = () => {
+        const filterType =
+            newListType === ScriptTypes.SCRIPT ? newListType : 'LINE';
         createFilter(
             {
                 name: newNameList,
+                type: filterType,
                 transient: true,
             },
             newNameList,
-            newListType,
             filterPrivacy === 'private',
             activeDirectory
         ).then((res) => {
