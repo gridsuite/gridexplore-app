@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import CheckIcon from '@material-ui/icons/Check';
@@ -30,15 +30,18 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    loadCasesSuccess,
+    addGhostStudy,
+    loadCasesSuccess, removeGhostStudy,
     removeSelectedFile,
     selectCase,
-    selectFile,
+    selectFile
 } from '../redux/actions';
 import { store } from '../redux/store';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import PropTypes from 'prop-types';
+import { useSnackbar } from 'notistack';
+import { displayErrorMessageWithSnackbar } from '../utils/messages';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -150,6 +153,11 @@ const UploadCase = () => {
     );
 };
 
+const ghostStudyKeyGenerator = (() => {
+    let key = 1;
+    return () => key++;
+})();
+
 /**
  * Dialog to create a study
  * @param {Boolean} open Is the dialog open ?
@@ -157,6 +165,8 @@ const UploadCase = () => {
  */
 export const CreateStudyForm = ({ open, onClose }) => {
     const [caseExist, setCaseExist] = React.useState(false);
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const [studyName, setStudyName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
@@ -263,6 +273,20 @@ export const CreateStudyForm = ({ open, onClose }) => {
         setStudyPrivacy(event.target.value);
     };
 
+    const studyCreationError = useCallback(
+        (studyName, msg) =>
+            displayErrorMessageWithSnackbar({
+                errorMessage: msg,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: studyCreationError,
+                    /*intlRef: intl,*/
+                    studyName: studyName,
+                },
+            }),
+        [enqueueSnackbar, intl]
+    );
+
     const handleCreateNewStudy = () => {
         if (studyName === '') {
             setCreateStudyErr(intl.formatMessage({ id: 'studyNameErrorMsg' }));
@@ -276,7 +300,12 @@ export const CreateStudyForm = ({ open, onClose }) => {
         }
 
         let isPrivateStudy = studyPrivacy === 'private';
-
+        const ghostStudy = {
+            id: ghostStudyKeyGenerator(),
+            studyName,
+            directory: activeDirectory,
+            uploaded: false,
+        };
         createStudy(
             caseExist,
             studyName,
@@ -286,30 +315,36 @@ export const CreateStudyForm = ({ open, onClose }) => {
             isPrivateStudy,
             activeDirectory
         ).then((res) => {
-            if (res.ok) {
-                onClose();
-                resetDialog();
-            } else {
+            dispatch(removeGhostStudy(ghostStudy));
+            if (!res.ok) {
                 console.debug('Error when creating the study');
                 if (res.status === 409) {
-                    setCreateStudyErr(
-                        intl.formatMessage({ id: 'studyNameAlreadyUsed' })
+                    studyCreationError(
+                        studyName,
+                        intl.formatMessage({
+                            id: 'studyNameAlreadyUsed',
+                        })
                     );
                 } else {
                     res.json()
                         .then((data) => {
-                            setCreateStudyErr(
+                            studyCreationError(
+                                studyName,
                                 data.error + ' - ' + data.message
                             );
                         })
                         .catch((error) => {
-                            setCreateStudyErr(
+                            studyCreationError(
+                                studyName,
                                 error.name + ' - ' + error.message
                             );
                         });
                 }
             }
         });
+        dispatch(addGhostStudy(ghostStudy));
+        onClose();
+        resetDialog();
     };
 
     const handleKeyPressed = (event) => {

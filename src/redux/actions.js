@@ -102,3 +102,15 @@ export const SELECT_CASE = 'SELECT_CASE';
 export function selectCase(selectedCase) {
     return { type: SELECT_CASE, selectedCase: selectedCase };
 }
+
+export const ADD_GHOST_STUDY = 'ADD_GHOST_STUDY';
+
+export function addGhostStudy(ghostStudy) {
+    return { type: ADD_GHOST_STUDY, ghostStudy };
+}
+
+export const REMOVE_GHOST_STUDY = 'ADD_GHOST_STUDY';
+
+export function removeGhostStudy(ghostStudy) {
+    return { type: REMOVE_GHOST_STUDY, ghostStudy };
+}

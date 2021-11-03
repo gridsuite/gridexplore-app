@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { shallowEqual, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import * as constants from '../utils/UIconstants';
@@ -68,6 +68,7 @@ import ReplaceWithScriptDialog from './dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from './dialogs/copy-to-script-dialog';
 import { useSnackbar } from 'notistack';
 import GenericFilterDialog from './generic-filter';
+import { object } from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -120,6 +121,14 @@ const DirectoryContent = () => {
     const [selectedUuids, setSelectedUuids] = useState(new Set());
 
     const currentChildren = useSelector((state) => state.currentChildren);
+    const [displayedElements, setDisplayedElements] = useState([]);
+    const ghostStudies = useSelector(
+        (state) =>
+            Object.values(state.ghostStudies).filter(
+                (e) => e.activeDirectory === state.selectedDirectory
+            ),
+        shallowEqual
+    );
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
@@ -859,6 +868,13 @@ const DirectoryContent = () => {
         return undefined;
     };
 
+    useEffect(() => {
+        let children = {};
+        ghostStudies.map((e) => (children[e.elementName] = e));
+        if (currentChildren)
+            currentChildren.map((e) => (children[e.elementName] = e));
+        setDisplayedElements(Object.values(children));
+    }, [ghostStudies, currentChildren, setDisplayedElements]);
     return (
         <>
             <div
@@ -873,8 +889,7 @@ const DirectoryContent = () => {
                 }}
             >
                 {selectedDirectory !== null &&
-                    currentChildren !== null &&
-                    currentChildren.length === 0 && (
+                    displayedElements.length === 0 && (
                         <div
                             style={{ textAlign: 'center', marginTop: '100px' }}
                         >
@@ -897,8 +912,7 @@ const DirectoryContent = () => {
                     )}
                 </Toolbar>
                 {selectedDirectory !== null &&
-                    currentChildren !== null &&
-                    currentChildren.length > 0 && (
+                    displayedElements.length > 0 && (
                         <>
                             <VirtualizedTable
                                 style={{ flexGrow: 1 }}

@@ -29,6 +29,7 @@ import {
     SELECT_FILE,
     REMOVE_SELECTED_FILE,
     ACTIVE_DIRECTORY,
+    ADD_GHOST_STUDY, REMOVE_GHOST_STUDY
 } from './actions';
 
 import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
@@ -51,6 +52,7 @@ const initialState = {
     cases: [],
     selectedCase: null,
     selectedFile: null,
+    ghostStudies: {},
     ...paramsInitialState,
 };
 
@@ -115,5 +117,19 @@ export const reducer = createReducer(initialState, {
 
     [REMOVE_SELECTED_FILE]: (state) => {
         state.selectedFile = null;
+    },
+
+    [ADD_GHOST_STUDY]: (state, action) => {
+        state.ghostStudies = {
+            ...state.ghostStudies,
+            ...{ [action.ghostStudy.id]: action.ghostStudy },
+        };
+    },
+
+    [REMOVE_GHOST_STUDY]: (state, action) => {
+        delete state.ghostStudies[action.ghostStudy.id];
+        /* should we really need to trigger an update? this will create a glitch
+        (ghost will disappear, then the real element will take place) */
+        // state.ghostStudies = {...state.ghostStudies}
     },
 });
