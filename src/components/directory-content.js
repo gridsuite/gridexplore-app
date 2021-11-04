@@ -305,10 +305,7 @@ const DirectoryContent = () => {
             ) {
                 setCurrentScriptId(event.rowData.elementUuid);
                 setOpenScriptDialog(true);
-            } else if (
-                event.rowData.type === elementType.FILTER &&
-                subtype === filterSubtype.FILTER
-            ) {
+            } else if (event.rowData.type === elementType.FILTER) {
                 setCurrentFilterId(event.rowData.elementUuid);
                 setOpenGenericFilterDialog(true);
             }
@@ -526,9 +523,9 @@ const DirectoryContent = () => {
     function buildTypeWithSubtype(type, subtype) {
         switch (type) {
             case elementType.FILTER:
-                return subtype === filterSubtype.FILTER
-                    ? type
-                    : filterSubtype.SCRIPT;
+                return subtype === filterSubtype.SCRIPT
+                    ? filterSubtype.SCRIPT
+                    : type;
             case elementType.CONTINGENCY_LIST:
                 return subtype === contingencyListSubtype.FILTERS
                     ? contingencyListSubtype.FILTERS +
@@ -573,17 +570,26 @@ const DirectoryContent = () => {
         );
     }
 
-    function getElementIcon(objectType) {
+    function getElementIcon(objectType, objectSubtype) {
         if (objectType === elementType.STUDY) {
             return <LibraryBooksOutlinedIcon className={classes.icon} />;
-        } else if (objectType === elementType.SCRIPT_CONTINGENCY_LIST) {
+        } else if (
+            objectType === elementType.CONTINGENCY_LIST &&
+            objectSubtype === contingencyListSubtype.SCRIPT
+        ) {
             return <DescriptionIcon className={classes.icon} />;
-        } else if (objectType === elementType.FILTERS_CONTINGENCY_LIST) {
+        } else if (
+            objectType === elementType.CONTINGENCY_LIST &&
+            objectSubtype === contingencyListSubtype.FILTERS
+        ) {
             return <PanToolIcon className={classes.icon} />;
+        } else if (
+            objectType === elementType.FILTER &&
+            objectSubtype === filterSubtype.SCRIPT
+        ) {
+            return <FilterIcon className={classes.icon} />;
         } else if (objectType === elementType.FILTER) {
             return <FilterListIcon className={classes.icon} />;
-        } else if (objectType === elementType.SCRIPT) {
-            return <FilterIcon className={classes.icon} />;
         }
     }
 
@@ -601,7 +607,11 @@ const DirectoryContent = () => {
                             className={classes.circularRoot}
                         />
                     )}
-                {childrenMetadata[elementUuid] && getElementIcon(objectType)}
+                {childrenMetadata[elementUuid] &&
+                    getElementIcon(
+                        objectType,
+                        childrenMetadata[elementUuid].subtype
+                    )}
                 {/* Name */}
                 {isMetadataLoading ? null : childrenMetadata[elementUuid] ? (
                     <div>{elementName}</div>
@@ -688,7 +698,9 @@ const DirectoryContent = () => {
                     res.forEach((e) => {
                         metadata[e.elementUuid] = {
                             name: e.elementName,
-                            subtype: e.specificMetadata.type,
+                            subtype: e.specificMetadata
+                                ? e.specificMetadata.type
+                                : null,
                         };
                     });
                 })
@@ -775,7 +787,9 @@ const DirectoryContent = () => {
         let children = getSelectedChildren();
         return (
             children.length === 1 &&
-            children[0].type === elementType.FILTERS_CONTINGENCY_LIST
+            children[0].type === elementType.CONTINGENCY_LIST &&
+            childrenMetadata[children[0].elementUuid].subtype ===
+                contingencyListSubtype.FILTERS
         );
     };
 
@@ -783,14 +797,23 @@ const DirectoryContent = () => {
         let children = getSelectedChildren();
         return (
             children.length === 1 &&
-            children[0].type === elementType.FILTERS_CONTINGENCY_LIST &&
+            children[0].type === elementType.CONTINGENCY_LIST &&
+            childrenMetadata[children[0].elementUuid].subtype ===
+                contingencyListSubtype.FILTERS &&
             children[0].owner === userId
         );
     };
 
     const allowsCopyFilterToScript = () => {
         let children = getSelectedChildren();
-        return children.length === 1 && children[0].type === elementType.FILTER;
+        return (
+            children.length === 1 &&
+            children[0].type === elementType.FILTER &&
+            !(
+                childrenMetadata[children[0].elementUuid].subtype ===
+                filterSubtype.SCRIPT
+            )
+        );
     };
 
     const allowsReplaceFilterWithScript = () => {
@@ -798,6 +821,10 @@ const DirectoryContent = () => {
         return (
             children.length === 1 &&
             children[0].type === elementType.FILTER &&
+            !(
+                childrenMetadata[children[0].elementUuid].subtype ===
+                filterSubtype.SCRIPT
+            ) &&
             children[0].owner === userId
         );
     };
