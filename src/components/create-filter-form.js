@@ -23,10 +23,10 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Grid from '@material-ui/core/Grid';
-import { ScriptTypes } from '../utils/script-types';
 import { createFilter } from '../utils/rest-api';
 import Alert from '@material-ui/lab/Alert';
 import { useSelector } from 'react-redux';
+import { filterSubtype } from '../utils/elementType';
 
 const styles = (theme) => ({
     root: {
@@ -93,7 +93,7 @@ const CreateFilterDialog = ({
 }) => {
     const [disableBtnSave, setDisableBtnSave] = useState(true);
     const [newNameList, setNewListName] = useState('');
-    const [newListType, setNewListType] = useState(ScriptTypes.SCRIPT);
+    const [newListType, setNewListType] = useState(filterSubtype.SCRIPT);
     const [filterPrivacy, setFilterPrivacy] = React.useState('private');
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
@@ -113,14 +113,14 @@ const CreateFilterDialog = ({
 
     const resetDialog = () => {
         setNewListName('');
-        setNewListType(ScriptTypes.SCRIPT);
+        setNewListType(filterSubtype.SCRIPT);
         setFilterPrivacy('private');
         setCreateFilterErr('');
     };
 
     const handleSave = () => {
         const filterType =
-            newListType === ScriptTypes.SCRIPT ? newListType : 'LINE';
+            newListType === filterSubtype.SCRIPT ? newListType : 'LINE';
         createFilter(
             {
                 name: newNameList,

@@ -8,8 +8,8 @@
 import { APP_NAME, getAppName } from './config-params';
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { ScriptTypes } from './script-types';
 import { EquipmentTypes } from './equipment-types';
+import { contingencyListSubtype } from './elementType';
 
 let PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
@@ -275,7 +275,7 @@ function getElementsIdsListsQueryParams(ids) {
 export function fetchElementsInfos(ids) {
     console.info('Fetching elements metadata ... ');
     const fetchElementsInfosUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
+        PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/directories/elements' +
         getElementsIdsListsQueryParams(ids);
     return backendFetch(fetchElementsInfosUrl, {
@@ -374,7 +374,7 @@ export function createContingencyList(
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     const typeUriParam =
-        contingencyListType === ScriptTypes.SCRIPT
+        contingencyListType === contingencyListSubtype.SCRIPT
             ? 'script-contingency-lists'
             : 'filters-contingency-lists';
 
@@ -392,7 +392,7 @@ export function createContingencyList(
         name: contingencyListName,
         description: contingencyListDescription,
     };
-    if (contingencyListType === ScriptTypes.FILTERS) {
+    if (contingencyListType === contingencyListSubtype.FILTERS) {
         body.equipmentType = EquipmentTypes.LINE;
         body.nominalVoltage = -1;
         body.nominalVoltageOperator = '=';
