@@ -137,7 +137,8 @@ export function updateAccessRights(elementUuid, isPrivate) {
             isPrivate
     );
     const updateAccessRightUrl =
-        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/directories/${elementUuid}/rights`;
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${elementUuid}/rights`;
     return backendFetch(updateAccessRightUrl, {
         method: 'put',
         headers: {
