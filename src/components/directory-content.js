@@ -525,7 +525,7 @@ const DirectoryContent = () => {
             case elementType.FILTER:
                 return subtype === filterSubtype.SCRIPT
                     ? filterSubtype.SCRIPT
-                    : type;
+                    : filterSubtype.FILTER;
             case elementType.CONTINGENCY_LIST:
                 return subtype === contingencyListSubtype.FILTERS
                     ? contingencyListSubtype.FILTERS +
