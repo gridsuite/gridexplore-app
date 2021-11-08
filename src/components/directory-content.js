@@ -788,7 +788,7 @@ const DirectoryContent = () => {
         return (
             children.length === 1 &&
             children[0].type === elementType.CONTINGENCY_LIST &&
-            childrenMetadata[children[0].elementUuid].subtype ===
+            childrenMetadata[children[0].elementUuid] && childrenMetadata[children[0].elementUuid].subtype ===
                 contingencyListSubtype.FILTERS
         );
     };
@@ -798,7 +798,7 @@ const DirectoryContent = () => {
         return (
             children.length === 1 &&
             children[0].type === elementType.CONTINGENCY_LIST &&
-            childrenMetadata[children[0].elementUuid].subtype ===
+            childrenMetadata[children[0].elementUuid] && childrenMetadata[children[0].elementUuid].subtype ===
                 contingencyListSubtype.FILTERS &&
             children[0].owner === userId
         );
@@ -810,7 +810,7 @@ const DirectoryContent = () => {
             children.length === 1 &&
             children[0].type === elementType.FILTER &&
             !(
-                childrenMetadata[children[0].elementUuid].subtype ===
+                childrenMetadata[children[0].elementUuid] && childrenMetadata[children[0].elementUuid].subtype ===
                 filterSubtype.SCRIPT
             )
         );
@@ -822,7 +822,7 @@ const DirectoryContent = () => {
             children.length === 1 &&
             children[0].type === elementType.FILTER &&
             !(
-                childrenMetadata[children[0].elementUuid].subtype ===
+                childrenMetadata[children[0].elementUuid] && childrenMetadata[children[0].elementUuid].subtype ===
                 filterSubtype.SCRIPT
             ) &&
             children[0].owner === userId
