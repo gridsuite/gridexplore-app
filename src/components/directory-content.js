@@ -287,27 +287,26 @@ const DirectoryContent = () => {
                               { type: event.rowData.type }
                           )
                       );
-            } else if (
-                event.rowData.type === elementType.CONTINGENCY_LIST &&
-                subtype === contingencyListSubtype.FILTERS
-            ) {
-                setCurrentFiltersContingencyListId(event.rowData.elementUuid);
-                setOpenFiltersContingencyDialog(true);
-            } else if (
-                event.rowData.type === elementType.CONTINGENCY_LIST &&
-                subtype === contingencyListSubtype.SCRIPT
-            ) {
-                setCurrentScriptContingencyListId(event.rowData.elementUuid);
-                setOpenScriptContingencyDialog(true);
-            } else if (
-                event.rowData.type === elementType.FILTER &&
-                subtype === filterSubtype.SCRIPT
-            ) {
-                setCurrentScriptId(event.rowData.elementUuid);
-                setOpenScriptDialog(true);
+            } else if (event.rowData.type === elementType.CONTINGENCY_LIST) {
+                if (subtype === contingencyListSubtype.FILTERS) {
+                    setCurrentFiltersContingencyListId(
+                        event.rowData.elementUuid
+                    );
+                    setOpenFiltersContingencyDialog(true);
+                } else if (subtype === contingencyListSubtype.SCRIPT) {
+                    setCurrentScriptContingencyListId(
+                        event.rowData.elementUuid
+                    );
+                    setOpenScriptContingencyDialog(true);
+                }
             } else if (event.rowData.type === elementType.FILTER) {
-                setCurrentFilterId(event.rowData.elementUuid);
-                setOpenGenericFilterDialog(true);
+                if (subtype === filterSubtype.SCRIPT) {
+                    setCurrentScriptId(event.rowData.elementUuid);
+                    setOpenScriptDialog(true);
+                } else if (subtype === filterSubtype.FILTER) {
+                    setCurrentFilterId(event.rowData.elementUuid);
+                    setOpenGenericFilterDialog(true);
+                }
             }
         }
     };
@@ -523,9 +522,7 @@ const DirectoryContent = () => {
     function buildTypeWithSubtype(type, subtype) {
         switch (type) {
             case elementType.FILTER:
-                return subtype === filterSubtype.SCRIPT
-                    ? filterSubtype.SCRIPT
-                    : filterSubtype.FILTER;
+                return subtype;
             case elementType.CONTINGENCY_LIST:
                 return subtype === contingencyListSubtype.FILTERS
                     ? contingencyListSubtype.FILTERS +
@@ -573,23 +570,18 @@ const DirectoryContent = () => {
     function getElementIcon(objectType, objectSubtype) {
         if (objectType === elementType.STUDY) {
             return <LibraryBooksOutlinedIcon className={classes.icon} />;
-        } else if (
-            objectType === elementType.CONTINGENCY_LIST &&
-            objectSubtype === contingencyListSubtype.SCRIPT
-        ) {
-            return <DescriptionIcon className={classes.icon} />;
-        } else if (
-            objectType === elementType.CONTINGENCY_LIST &&
-            objectSubtype === contingencyListSubtype.FILTERS
-        ) {
-            return <PanToolIcon className={classes.icon} />;
-        } else if (
-            objectType === elementType.FILTER &&
-            objectSubtype === filterSubtype.SCRIPT
-        ) {
-            return <FilterIcon className={classes.icon} />;
+        } else if (objectType === elementType.CONTINGENCY_LIST) {
+            if (objectSubtype === contingencyListSubtype.SCRIPT) {
+                return <DescriptionIcon className={classes.icon} />;
+            } else if (objectSubtype === contingencyListSubtype.FILTERS) {
+                return <PanToolIcon className={classes.icon} />;
+            }
         } else if (objectType === elementType.FILTER) {
-            return <FilterListIcon className={classes.icon} />;
+            if (objectSubtype === filterSubtype.SCRIPT) {
+                return <FilterIcon className={classes.icon} />;
+            } else if (objectSubtype === filterSubtype.FILTER) {
+                return <FilterListIcon className={classes.icon} />;
+            }
         }
     }
 
