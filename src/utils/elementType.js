@@ -9,7 +9,15 @@ export const elementType = {
     DIRECTORY: 'DIRECTORY',
     STUDY: 'STUDY',
     FILTER: 'FILTER',
+    CONTINGENCY_LIST: 'CONTINGENCY_LIST',
+};
+
+export const filterSubtype = {
+    FILTER: 'FILTER',
     SCRIPT: 'SCRIPT',
-    SCRIPT_CONTINGENCY_LIST: 'SCRIPT_CONTINGENCY_LIST',
-    FILTERS_CONTINGENCY_LIST: 'FILTERS_CONTINGENCY_LIST',
+};
+
+export const contingencyListSubtype = {
+    SCRIPT: 'SCRIPT',
+    FILTERS: 'FILTERS',
 };

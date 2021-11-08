@@ -24,8 +24,8 @@ import { createContingencyList } from '../utils/rest-api';
 import { useSelector } from 'react-redux';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
-import { ScriptTypes } from '../utils/script-types';
 import PropTypes from 'prop-types';
+import { contingencyListSubtype } from '../utils/elementType';
 
 /**
  * Dialog to create a contingency
@@ -34,7 +34,7 @@ import PropTypes from 'prop-types';
  */
 export const CreateContingencyListForm = ({ open, onClose }) => {
     const [contingencyListType, setContingencyListType] = React.useState(
-        ScriptTypes.SCRIPT
+        contingencyListSubtype.SCRIPT
     );
 
     const [contingencyListName, setContingencyListName] = React.useState('');
@@ -53,7 +53,7 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
         setContingencyListName('');
         setContingencyListDescription('');
         setContingencyListPrivacy('private');
-        setContingencyListType(ScriptTypes.SCRIPT);
+        setContingencyListType(contingencyListSubtype.SCRIPT);
         setCreateContingencyListErr('');
     };
 

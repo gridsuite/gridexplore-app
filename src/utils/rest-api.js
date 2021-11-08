@@ -8,8 +8,8 @@
 import { APP_NAME, getAppName } from './config-params';
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { ScriptTypes } from './script-types';
 import { EquipmentTypes } from './equipment-types';
+import { contingencyListSubtype } from './elementType';
 
 let PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
@@ -123,7 +123,7 @@ export function fetchDirectoryContent(directoryUuid) {
 export function deleteElement(elementUuid) {
     console.info("Deleting element %s'", elementUuid);
     const fetchParams =
-        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/directories/${elementUuid}`;
+        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/${elementUuid}`;
     return backendFetch(fetchParams, {
         method: 'delete',
     });
@@ -137,7 +137,8 @@ export function updateAccessRights(elementUuid, isPrivate) {
             isPrivate
     );
     const updateAccessRightUrl =
-        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/directories/${elementUuid}/rights`;
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${elementUuid}/rights`;
     return backendFetch(updateAccessRightUrl, {
         method: 'put',
         headers: {
@@ -275,8 +276,8 @@ function getElementsIdsListsQueryParams(ids) {
 export function fetchElementsInfos(ids) {
     console.info('Fetching elements metadata ... ');
     const fetchElementsInfosUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        '/v1/directories/elements' +
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/elements/metadata' +
         getElementsIdsListsQueryParams(ids);
     return backendFetch(fetchElementsInfosUrl, {
         method: 'GET',
@@ -305,7 +306,7 @@ export function createStudy(
     if (caseExist) {
         const createStudyWithExistingCaseUrl =
             PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/directories/studies/' +
+            '/v1/explore/studies/' +
             encodeURIComponent(studyName) +
             '/cases/' +
             encodeURIComponent(caseName) +
@@ -318,7 +319,7 @@ export function createStudy(
     } else {
         const createStudyWithNewCaseUrl =
             PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/directories/studies/' +
+            '/v1/explore/studies/' +
             encodeURIComponent(studyName) +
             '?' +
             urlSearchParams.toString();
@@ -367,13 +368,13 @@ export function createContingencyList(
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     const typeUriParam =
-        contingencyListType === ScriptTypes.SCRIPT
+        contingencyListType === contingencyListSubtype.SCRIPT
             ? 'script-contingency-lists'
             : 'filters-contingency-lists';
 
     const createContingencyListUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/directories/' +
+        '/v1/explore/' +
         typeUriParam +
         '/' +
         encodeURIComponent(contingencyListName) +
@@ -382,7 +383,7 @@ export function createContingencyList(
     console.debug(createContingencyListUrl);
 
     let body = {};
-    if (contingencyListType === ScriptTypes.FILTERS) {
+    if (contingencyListType === contingencyListSubtype.FILTERS) {
         body.equipmentType = EquipmentTypes.LINE;
         body.nominalVoltage = -1;
         body.nominalVoltageOperator = '=';
@@ -458,7 +459,7 @@ export function replaceFiltersWithScriptContingencyList(
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/directories/filters-contingency-lists/' +
+        '/v1/explore/filters-contingency-lists/' +
         encodeURIComponent(id) +
         '/replace-with-script' +
         '?' +
@@ -483,7 +484,7 @@ export function newScriptFromFiltersContingencyList(
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/directories/filters-contingency-lists/' +
+        '/v1/explore/filters-contingency-lists/' +
         encodeURIComponent(id) +
         '/new-script/' +
         encodeURIComponent(newName) +
@@ -534,7 +535,7 @@ export function createFilter(newFilter, name, isPrivate, parentDirectoryUuid) {
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     return backendFetch(
         PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/directories/filters?' +
+            '/v1/explore/filters?' +
             urlSearchParams.toString(),
         {
             method: 'post',
@@ -573,7 +574,7 @@ export function replaceFiltersWithScript(id, parentDirectoryUuid) {
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/directories/filters/' +
+        '/v1/explore/filters/' +
         encodeURIComponent(id) +
         '/replace-with-script' +
         '?' +
@@ -593,7 +594,7 @@ export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/directories/filters/' +
+        '/v1/explore/filters/' +
         encodeURIComponent(id) +
         '/new-script/' +
         encodeURIComponent(newName) +
