@@ -524,13 +524,7 @@ const DirectoryContent = () => {
             case elementType.FILTER:
                 return subtype;
             case elementType.CONTINGENCY_LIST:
-                return subtype === contingencyListSubtype.FILTERS
-                    ? contingencyListSubtype.FILTERS +
-                          '_' +
-                          elementType.CONTINGENCY_LIST
-                    : contingencyListSubtype.SCRIPT +
-                          '_' +
-                          elementType.CONTINGENCY_LIST;
+                return subtype + '_' + elementType.CONTINGENCY_LIST;
             default:
                 return type;
         }
