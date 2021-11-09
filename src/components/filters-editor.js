@@ -263,6 +263,7 @@ const FiltersEditor = ({ filters, onChange }) => {
                                     size={'small'}
                                     label={countriesList.get(code)}
                                     {...getTagsProps({ index })}
+                                    key={'chip_' + code}
                                 />
                             ))
                         }

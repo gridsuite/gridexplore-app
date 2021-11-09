@@ -62,6 +62,7 @@ export const CountriesSelection = ({ initialValue, onChange, disabled }) => {
                         size={'small'}
                         label={countriesList.get(code)}
                         {...getTagsProps({ index })}
+                        key={'chip_' + code}
                     />
                 ))
             }
