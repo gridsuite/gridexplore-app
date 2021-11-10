@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { shallowEqual, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import * as constants from '../utils/UIconstants';
@@ -68,7 +68,6 @@ import ReplaceWithScriptDialog from './dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from './dialogs/copy-to-script-dialog';
 import { useSnackbar } from 'notistack';
 import GenericFilterDialog from './generic-filter';
-import { object } from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -122,13 +121,7 @@ const DirectoryContent = () => {
 
     const currentChildren = useSelector((state) => state.currentChildren);
     const [displayedElements, setDisplayedElements] = useState([]);
-    const ghostStudies = useSelector(
-        (state) =>
-            Object.values(state.ghostStudies).filter(
-                (e) => e.activeDirectory === state.selectedDirectory
-            ),
-        shallowEqual
-    );
+    const ghostStudies = useSelector((state) => state.ghostStudies);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
@@ -870,11 +863,23 @@ const DirectoryContent = () => {
 
     useEffect(() => {
         let children = {};
-        ghostStudies.map((e) => (children[e.elementName] = e));
+        Object.values(ghostStudies)
+            .filter((e) => e.directory === selectedDirectory)
+            .map((e) => (children[e.elementName] = e));
         if (currentChildren)
             currentChildren.map((e) => (children[e.elementName] = e));
-        setDisplayedElements(Object.values(children));
-    }, [ghostStudies, currentChildren, setDisplayedElements]);
+        setDisplayedElements(
+            Object.values(children).sort((a, b) =>
+                a.elementName.localeCompare(b.elementName)
+            )
+        );
+    }, [
+        ghostStudies,
+        currentChildren,
+        setDisplayedElements,
+        selectedDirectory,
+    ]);
+
     return (
         <>
             <div
@@ -888,19 +893,16 @@ const DirectoryContent = () => {
                         handleCloseRowMenu();
                 }}
             >
-                {selectedDirectory !== null &&
-                    displayedElements.length === 0 && (
-                        <div
-                            style={{ textAlign: 'center', marginTop: '100px' }}
-                        >
-                            <FolderOpenRoundedIcon
-                                style={{ width: '100px', height: '100px' }}
-                            />
-                            <h1>
-                                <FormattedMessage id={'emptyDir'} />
-                            </h1>
-                        </div>
-                    )}
+                {selectedDirectory !== null && displayedElements.length === 0 && (
+                    <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                        <FolderOpenRoundedIcon
+                            style={{ width: '100px', height: '100px' }}
+                        />
+                        <h1>
+                            <FormattedMessage id={'emptyDir'} />
+                        </h1>
+                    </div>
+                )}
                 <Toolbar>
                     {allowsDelete(false) && selectedUuids.size > 0 && (
                         <IconButton
@@ -911,72 +913,71 @@ const DirectoryContent = () => {
                         </IconButton>
                     )}
                 </Toolbar>
-                {selectedDirectory !== null &&
-                    displayedElements.length > 0 && (
-                        <>
-                            <VirtualizedTable
-                                style={{ flexGrow: 1 }}
-                                onRowRightClick={(event) => {
-                                    if (event.rowData.type !== 'DIRECTORY') {
-                                        setActiveElement(event.rowData);
-                                    }
-                                    setMousePosition({
-                                        mouseX:
-                                            event.event.clientX +
-                                            constants.HORIZONTAL_SHIFT,
-                                        mouseY:
-                                            event.event.clientY +
-                                            constants.VERTICAL_SHIFT,
-                                    });
-                                    setAnchorEl(event.event.currentTarget);
-                                }}
-                                onRowClick={handleRowClick}
-                                rows={currentChildren}
-                                columns={[
-                                    {
-                                        cellRenderer: selectionRenderer,
-                                        dataKey: 'selected',
-                                        label: '',
-                                        headerRenderer: selectionHeaderRenderer,
-                                        maxWidth: 60,
-                                    },
-                                    {
-                                        width: 100,
-                                        label: intl.formatMessage({
-                                            id: 'elementName',
-                                        }),
-                                        dataKey: 'elementName',
-                                        cellRenderer: nameCellRender,
-                                    },
-                                    {
-                                        width: 100,
-                                        label: intl.formatMessage({
-                                            id: 'type',
-                                        }),
-                                        dataKey: 'type',
-                                        cellRenderer: typeCellRender,
-                                    },
-                                    {
-                                        width: 50,
-                                        label: intl.formatMessage({
-                                            id: 'owner',
-                                        }),
-                                        dataKey: 'owner',
-                                        cellRenderer: accessOwnerCellRender,
-                                    },
-                                    {
-                                        width: 50,
-                                        label: intl.formatMessage({
-                                            id: 'accessRights',
-                                        }),
-                                        dataKey: 'accessRights',
-                                        cellRenderer: accessRightsCellRender,
-                                    },
-                                ]}
-                                sortable={true}
-                            />
-                        </>
-                    )}
+                {selectedDirectory !== null && displayedElements.length > 0 && (
+                    <>
+                        <VirtualizedTable
+                            style={{ flexGrow: 1 }}
+                            onRowRightClick={(event) => {
+                                if (event.rowData.type !== 'DIRECTORY') {
+                                    setActiveElement(event.rowData);
+                                }
+                                setMousePosition({
+                                    mouseX:
+                                        event.event.clientX +
+                                        constants.HORIZONTAL_SHIFT,
+                                    mouseY:
+                                        event.event.clientY +
+                                        constants.VERTICAL_SHIFT,
+                                });
+                                setAnchorEl(event.event.currentTarget);
+                            }}
+                            onRowClick={handleRowClick}
+                            rows={displayedElements}
+                            columns={[
+                                {
+                                    cellRenderer: selectionRenderer,
+                                    dataKey: 'selected',
+                                    label: '',
+                                    headerRenderer: selectionHeaderRenderer,
+                                    maxWidth: 60,
+                                },
+                                {
+                                    width: 100,
+                                    label: intl.formatMessage({
+                                        id: 'elementName',
+                                    }),
+                                    dataKey: 'elementName',
+                                    cellRenderer: nameCellRender,
+                                },
+                                {
+                                    width: 100,
+                                    label: intl.formatMessage({
+                                        id: 'type',
+                                    }),
+                                    dataKey: 'type',
+                                    cellRenderer: typeCellRender,
+                                },
+                                {
+                                    width: 50,
+                                    label: intl.formatMessage({
+                                        id: 'owner',
+                                    }),
+                                    dataKey: 'owner',
+                                    cellRenderer: accessOwnerCellRender,
+                                },
+                                {
+                                    width: 50,
+                                    label: intl.formatMessage({
+                                        id: 'accessRights',
+                                    }),
+                                    dataKey: 'accessRights',
+                                    cellRenderer: accessRightsCellRender,
+                                },
+                            ]}
+                            sortable={true}
+                        />
+                    </>
+                )}
                 <StyledMenu
                     id="row-menu"
                     anchorEl={anchorEl}

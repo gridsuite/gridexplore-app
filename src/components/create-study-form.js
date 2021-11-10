@@ -31,17 +31,18 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     addGhostStudy,
-    loadCasesSuccess, removeGhostStudy,
+    loadCasesSuccess,
+    removeGhostStudy,
     removeSelectedFile,
     selectCase,
-    selectFile
+    selectFile,
 } from '../redux/actions';
 import { store } from '../redux/store';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
-import { displayErrorMessageWithSnackbar } from '../utils/messages';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -184,6 +185,7 @@ export const CreateStudyForm = ({ open, onClose }) => {
 
     const classes = useStyles();
     const intl = useIntl();
+    const intlRef = useIntlRef();
     const dispatch = useDispatch();
 
     const selectedFile = useSelector((state) => state.selectedFile);
@@ -279,12 +281,12 @@ export const CreateStudyForm = ({ open, onClose }) => {
                 errorMessage: msg,
                 enqueueSnackbar: enqueueSnackbar,
                 headerMessage: {
-                    headerMessageId: studyCreationError,
-                    /*intlRef: intl,*/
-                    studyName: studyName,
+                    headerMessageId: 'studyCreationError',
+                    intlRef: intlRef,
+                    headerMessageValues: { studyName },
                 },
             }),
-        [enqueueSnackbar, intl]
+        [enqueueSnackbar, intlRef]
     );
 
     const handleCreateNewStudy = () => {
@@ -302,9 +304,11 @@ export const CreateStudyForm = ({ open, onClose }) => {
         let isPrivateStudy = studyPrivacy === 'private';
         const ghostStudy = {
             id: ghostStudyKeyGenerator(),
-            studyName,
+            elementName: studyName,
             directory: activeDirectory,
-            uploaded: false,
+            type: 'STUDY',
+            owner: userId,
+            accessRights: isPrivateStudy,
         };
         createStudy(
             caseExist,
@@ -314,34 +318,38 @@ export const CreateStudyForm = ({ open, onClose }) => {
             selectedFile,
             isPrivateStudy,
             activeDirectory
-        ).then((res) => {
-            dispatch(removeGhostStudy(ghostStudy));
-            if (!res.ok) {
-                console.debug('Error when creating the study');
-                if (res.status === 409) {
-                    studyCreationError(
-                        studyName,
-                        intl.formatMessage({
-                            id: 'studyNameAlreadyUsed',
-                        })
-                    );
-                } else {
-                    res.json()
-                        .then((data) => {
-                            studyCreationError(
-                                studyName,
-                                data.error + ' - ' + data.message
-                            );
-                        })
-                        .catch((error) => {
-                            studyCreationError(
-                                studyName,
-                                error.name + ' - ' + error.message
-                            );
-                        });
+        )
+            .then((res) => {
+                dispatch(removeGhostStudy(ghostStudy));
+                if (!res.ok) {
+                    if (res.status === 409) {
+                        studyCreationError(
+                            studyName,
+                            intl.formatMessage({
+                                id: 'studyNameAlreadyUsed',
+                            })
+                        );
+                    } else {
+                        res.json()
+                            .then((data) => {
+                                studyCreationError(
+                                    studyName,
+                                    data.error + ' - ' + data.message
+                                );
+                            })
+                            .catch((error) => {
+                                studyCreationError(
+                                    studyName,
+                                    error.name + ' - ' + error.message
+                                );
+                            });
+                    }
                 }
-            }
-        });
+            })
+            .catch((e) => {
+                studyCreationError(studyName, e.name + ' - ' + e.message);
+                dispatch(removeGhostStudy(ghostStudy));
+            });
         dispatch(addGhostStudy(ghostStudy));
         onClose();
         resetDialog();
