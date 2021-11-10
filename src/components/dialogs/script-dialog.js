@@ -211,7 +211,7 @@ ScriptDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     onError: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired
+    type: PropTypes.string.isRequired,
 };
 
 export default ScriptDialog;
