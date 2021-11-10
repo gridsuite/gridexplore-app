@@ -11,12 +11,12 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 import { EquipmentTypes } from './equipment-types';
 import { contingencyListSubtype } from './elementType';
 
-let PREFIX_CONFIG_NOTIFICATION_WS =
+const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
-let PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
-let PREFIX_DIRECTORY_SERVER_QUERIES =
+const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
+const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
-let PREFIX_EXPLORE_SERVER_QUERIES =
+const PREFIX_EXPLORE_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/explore';
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';

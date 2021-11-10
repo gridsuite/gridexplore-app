@@ -56,7 +56,7 @@ const useStyles = makeStyles(() => ({
  * @param type Contingencies or filter
  * @param subtype Element's subtype
  */
-const ScriptDialog = ({ id, open, onClose, onError, title, type, subtype }) => {
+const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
     const classes = useStyles();
     const selectedTheme = useSelector((state) => state.theme);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
@@ -88,10 +88,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type, subtype }) => {
 
     const handleClick = () => {
         let newScript;
-        if (
-            type === elementType.CONTINGENCY_LIST &&
-            subtype === contingencyListSubtype.SCRIPT
-        ) {
+        if (type === elementType.CONTINGENCY_LIST) {
             newScript = {
                 id: id,
                 name: name,
@@ -132,10 +129,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type, subtype }) => {
 
     const getCurrentScript = useCallback(
         (currentItemId) => {
-            if (
-                type === elementType.CONTINGENCY_LIST &&
-                subtype === contingencyListSubtype.SCRIPT
-            ) {
+            if (type === elementType.CONTINGENCY_LIST) {
                 getContingencyList(contingencyListSubtype.SCRIPT, currentItemId)
                     .then((data) => {
                         if (data) {
@@ -148,10 +142,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type, subtype }) => {
                     .catch((error) => {
                         onError(error.message);
                     });
-            } else if (
-                type === elementType.FILTER &&
-                subtype === filterSubtype.SCRIPT
-            ) {
+            } else if (type === elementType.FILTER) {
                 getFilterById(currentItemId)
                     .then((data) => {
                         if (data) {
@@ -168,7 +159,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type, subtype }) => {
                     });
             }
         },
-        [onError, type, subtype]
+        [onError, type]
     );
 
     useEffect(() => {
@@ -220,8 +211,7 @@ ScriptDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     onError: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    subtype: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired
 };
 
 export default ScriptDialog;

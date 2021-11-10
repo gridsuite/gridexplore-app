@@ -287,27 +287,26 @@ const DirectoryContent = () => {
                               { type: event.rowData.type }
                           )
                       );
-            } else if (
-                event.rowData.type === elementType.CONTINGENCY_LIST &&
-                subtype === contingencyListSubtype.FILTERS
-            ) {
-                setCurrentFiltersContingencyListId(event.rowData.elementUuid);
-                setOpenFiltersContingencyDialog(true);
-            } else if (
-                event.rowData.type === elementType.CONTINGENCY_LIST &&
-                subtype === contingencyListSubtype.SCRIPT
-            ) {
-                setCurrentScriptContingencyListId(event.rowData.elementUuid);
-                setOpenScriptContingencyDialog(true);
-            } else if (
-                event.rowData.type === elementType.FILTER &&
-                subtype === filterSubtype.SCRIPT
-            ) {
-                setCurrentScriptId(event.rowData.elementUuid);
-                setOpenScriptDialog(true);
+            } else if (event.rowData.type === elementType.CONTINGENCY_LIST) {
+                if (subtype === contingencyListSubtype.FILTERS) {
+                    setCurrentFiltersContingencyListId(
+                        event.rowData.elementUuid
+                    );
+                    setOpenFiltersContingencyDialog(true);
+                } else if (subtype === contingencyListSubtype.SCRIPT) {
+                    setCurrentScriptContingencyListId(
+                        event.rowData.elementUuid
+                    );
+                    setOpenScriptContingencyDialog(true);
+                }
             } else if (event.rowData.type === elementType.FILTER) {
-                setCurrentFilterId(event.rowData.elementUuid);
-                setOpenGenericFilterDialog(true);
+                if (subtype === filterSubtype.SCRIPT) {
+                    setCurrentScriptId(event.rowData.elementUuid);
+                    setOpenScriptDialog(true);
+                } else if (subtype === filterSubtype.FILTER) {
+                    setCurrentFilterId(event.rowData.elementUuid);
+                    setOpenGenericFilterDialog(true);
+                }
             }
         }
     };
@@ -523,17 +522,9 @@ const DirectoryContent = () => {
     function buildTypeWithSubtype(type, subtype) {
         switch (type) {
             case elementType.FILTER:
-                return subtype === filterSubtype.SCRIPT
-                    ? filterSubtype.SCRIPT
-                    : type;
+                return subtype;
             case elementType.CONTINGENCY_LIST:
-                return subtype === contingencyListSubtype.FILTERS
-                    ? contingencyListSubtype.FILTERS +
-                          '_' +
-                          elementType.CONTINGENCY_LIST
-                    : contingencyListSubtype.SCRIPT +
-                          '_' +
-                          elementType.CONTINGENCY_LIST;
+                return subtype + '_' + elementType.CONTINGENCY_LIST;
             default:
                 return type;
         }
@@ -573,23 +564,18 @@ const DirectoryContent = () => {
     function getElementIcon(objectType, objectSubtype) {
         if (objectType === elementType.STUDY) {
             return <LibraryBooksOutlinedIcon className={classes.icon} />;
-        } else if (
-            objectType === elementType.CONTINGENCY_LIST &&
-            objectSubtype === contingencyListSubtype.SCRIPT
-        ) {
-            return <DescriptionIcon className={classes.icon} />;
-        } else if (
-            objectType === elementType.CONTINGENCY_LIST &&
-            objectSubtype === contingencyListSubtype.FILTERS
-        ) {
-            return <PanToolIcon className={classes.icon} />;
-        } else if (
-            objectType === elementType.FILTER &&
-            objectSubtype === filterSubtype.SCRIPT
-        ) {
-            return <FilterIcon className={classes.icon} />;
+        } else if (objectType === elementType.CONTINGENCY_LIST) {
+            if (objectSubtype === contingencyListSubtype.SCRIPT) {
+                return <DescriptionIcon className={classes.icon} />;
+            } else if (objectSubtype === contingencyListSubtype.FILTERS) {
+                return <PanToolIcon className={classes.icon} />;
+            }
         } else if (objectType === elementType.FILTER) {
-            return <FilterListIcon className={classes.icon} />;
+            if (objectSubtype === filterSubtype.SCRIPT) {
+                return <FilterIcon className={classes.icon} />;
+            } else if (objectSubtype === filterSubtype.FILTER) {
+                return <FilterListIcon className={classes.icon} />;
+            }
         }
     }
 
@@ -788,6 +774,7 @@ const DirectoryContent = () => {
         return (
             children.length === 1 &&
             children[0].type === elementType.CONTINGENCY_LIST &&
+            childrenMetadata[children[0].elementUuid] &&
             childrenMetadata[children[0].elementUuid].subtype ===
                 contingencyListSubtype.FILTERS
         );
@@ -798,6 +785,7 @@ const DirectoryContent = () => {
         return (
             children.length === 1 &&
             children[0].type === elementType.CONTINGENCY_LIST &&
+            childrenMetadata[children[0].elementUuid] &&
             childrenMetadata[children[0].elementUuid].subtype ===
                 contingencyListSubtype.FILTERS &&
             children[0].owner === userId
@@ -810,8 +798,9 @@ const DirectoryContent = () => {
             children.length === 1 &&
             children[0].type === elementType.FILTER &&
             !(
+                childrenMetadata[children[0].elementUuid] &&
                 childrenMetadata[children[0].elementUuid].subtype ===
-                filterSubtype.SCRIPT
+                    filterSubtype.SCRIPT
             )
         );
     };
@@ -822,8 +811,9 @@ const DirectoryContent = () => {
             children.length === 1 &&
             children[0].type === elementType.FILTER &&
             !(
+                childrenMetadata[children[0].elementUuid] &&
                 childrenMetadata[children[0].elementUuid].subtype ===
-                filterSubtype.SCRIPT
+                    filterSubtype.SCRIPT
             ) &&
             children[0].owner === userId
         );
@@ -1116,7 +1106,6 @@ const DirectoryContent = () => {
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'editContingencyList' })}
                 type={elementType.CONTINGENCY_LIST}
-                subtype={contingencyListSubtype.SCRIPT}
             />
             <ScriptDialog
                 id={currentScriptId}
@@ -1125,7 +1114,6 @@ const DirectoryContent = () => {
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'editFilterScript' })}
                 type={elementType.FILTER}
-                subtype={filterSubtype.SCRIPT}
             />
             <ReplaceWithScriptDialog
                 id={activeElement ? activeElement.elementUuid : ''}
