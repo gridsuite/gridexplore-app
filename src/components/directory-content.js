@@ -22,16 +22,18 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 
 import VirtualizedTable from './virtualized-table';
-import { elementType } from '../utils/elementType';
+import {
+    contingencyListSubtype,
+    elementType,
+    filterSubtype,
+} from '../utils/elementType';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
 import { Checkbox } from '@material-ui/core';
 import { Toolbar } from '@material-ui/core';
 
 import {
     deleteElement,
-    fetchContingencyListsInfos,
-    fetchFiltersInfos,
-    fetchStudiesInfos,
+    fetchElementsInfos,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,
     renameElement,
@@ -271,6 +273,7 @@ const DirectoryContent = () => {
 
     const handleRowClick = (event) => {
         if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
+            const subtype = childrenMetadata[event.rowData.elementUuid].subtype;
             if (event.rowData.type === elementType.STUDY) {
                 let url = getLink(
                     event.rowData.elementUuid,
@@ -284,22 +287,26 @@ const DirectoryContent = () => {
                               { type: event.rowData.type }
                           )
                       );
-            } else if (
-                event.rowData.type === elementType.FILTERS_CONTINGENCY_LIST
-            ) {
-                setCurrentFiltersContingencyListId(event.rowData.elementUuid);
-                setOpenFiltersContingencyDialog(true);
-            } else if (
-                event.rowData.type === elementType.SCRIPT_CONTINGENCY_LIST
-            ) {
-                setCurrentScriptContingencyListId(event.rowData.elementUuid);
-                setOpenScriptContingencyDialog(true);
-            } else if (event.rowData.type === elementType.SCRIPT) {
-                setCurrentScriptId(event.rowData.elementUuid);
-                setOpenScriptDialog(true);
+            } else if (event.rowData.type === elementType.CONTINGENCY_LIST) {
+                if (subtype === contingencyListSubtype.FILTERS) {
+                    setCurrentFiltersContingencyListId(
+                        event.rowData.elementUuid
+                    );
+                    setOpenFiltersContingencyDialog(true);
+                } else if (subtype === contingencyListSubtype.SCRIPT) {
+                    setCurrentScriptContingencyListId(
+                        event.rowData.elementUuid
+                    );
+                    setOpenScriptContingencyDialog(true);
+                }
             } else if (event.rowData.type === elementType.FILTER) {
-                setCurrentFilterId(event.rowData.elementUuid);
-                setOpenGenericFilterDialog(true);
+                if (subtype === filterSubtype.SCRIPT) {
+                    setCurrentScriptId(event.rowData.elementUuid);
+                    setOpenScriptDialog(true);
+                } else if (subtype === filterSubtype.FILTER) {
+                    setCurrentFilterId(event.rowData.elementUuid);
+                    setOpenGenericFilterDialog(true);
+                }
             }
         }
     };
@@ -512,11 +519,30 @@ const DirectoryContent = () => {
         return href;
     }
 
+    function buildTypeWithSubtype(type, subtype) {
+        switch (type) {
+            case elementType.FILTER:
+                return subtype;
+            case elementType.CONTINGENCY_LIST:
+                return subtype + '_' + elementType.CONTINGENCY_LIST;
+            default:
+                return type;
+        }
+    }
+
     function typeCellRender(cellData) {
+        const elementUuid = cellData.rowData['elementUuid'];
         const objectType = cellData.rowData[cellData.dataKey];
         return (
             <div className={classes.cell}>
-                <p>{objectType.toLowerCase()}</p>
+                {!isMetadataLoading && childrenMetadata[elementUuid] ? (
+                    <div>
+                        {buildTypeWithSubtype(
+                            objectType,
+                            childrenMetadata[elementUuid].subtype
+                        ).toLowerCase()}
+                    </div>
+                ) : null}
             </div>
         );
     }
@@ -535,17 +561,21 @@ const DirectoryContent = () => {
         );
     }
 
-    function getElementIcon(objectType) {
+    function getElementIcon(objectType, objectSubtype) {
         if (objectType === elementType.STUDY) {
             return <LibraryBooksOutlinedIcon className={classes.icon} />;
-        } else if (objectType === elementType.SCRIPT_CONTINGENCY_LIST) {
-            return <DescriptionIcon className={classes.icon} />;
-        } else if (objectType === elementType.FILTERS_CONTINGENCY_LIST) {
-            return <PanToolIcon className={classes.icon} />;
+        } else if (objectType === elementType.CONTINGENCY_LIST) {
+            if (objectSubtype === contingencyListSubtype.SCRIPT) {
+                return <DescriptionIcon className={classes.icon} />;
+            } else if (objectSubtype === contingencyListSubtype.FILTERS) {
+                return <PanToolIcon className={classes.icon} />;
+            }
         } else if (objectType === elementType.FILTER) {
-            return <FilterListIcon className={classes.icon} />;
-        } else if (objectType === elementType.SCRIPT) {
-            return <FilterIcon className={classes.icon} />;
+            if (objectSubtype === filterSubtype.SCRIPT) {
+                return <FilterIcon className={classes.icon} />;
+            } else if (objectSubtype === filterSubtype.FILTER) {
+                return <FilterListIcon className={classes.icon} />;
+            }
         }
     }
 
@@ -563,7 +593,11 @@ const DirectoryContent = () => {
                             className={classes.circularRoot}
                         />
                     )}
-                {childrenMetadata[elementUuid] && getElementIcon(objectType)}
+                {childrenMetadata[elementUuid] &&
+                    getElementIcon(
+                        objectType,
+                        childrenMetadata[elementUuid].subtype
+                    )}
                 {/* Name */}
                 {isMetadataLoading ? null : childrenMetadata[elementUuid] ? (
                     <div>{childrenMetadata[elementUuid].name}</div>
@@ -643,58 +677,23 @@ const DirectoryContent = () => {
 
     useEffect(() => {
         setIsMetadataLoading(true);
-        if (currentChildren !== null) {
-            let studyUuids = [];
-            let contingencyListsUuids = [];
-            let filtersUuids = [];
-
-            currentChildren
-                .filter((e) => e.type !== elementType.DIRECTORY)
-                .forEach((e) => {
-                    if (e.type === elementType.STUDY)
-                        studyUuids.push(e.elementUuid);
-                    else if (
-                        e.type === elementType.SCRIPT_CONTINGENCY_LIST ||
-                        e.type === elementType.FILTERS_CONTINGENCY_LIST
-                    ) {
-                        contingencyListsUuids.push(e.elementUuid);
-                    } else if (
-                        e.type === elementType.FILTER ||
-                        e.type === elementType.SCRIPT
-                    ) {
-                        filtersUuids.push(e.elementUuid);
-                    }
-                });
+        if (currentChildren !== null && currentChildren.length > 0) {
             let metadata = {};
-            Promise.all([
-                fetchStudiesInfos(studyUuids).then((res) => {
+            fetchElementsInfos(currentChildren.map((e) => e.elementUuid))
+                .then((res) => {
                     res.forEach((e) => {
-                        metadata[e.studyUuid] = {
-                            name: e.studyName,
+                        metadata[e.elementUuid] = {
+                            name: e.elementName,
+                            subtype: e.specificMetadata
+                                ? e.specificMetadata.type
+                                : null,
                         };
                     });
-                }),
-                fetchContingencyListsInfos(contingencyListsUuids).then(
-                    (res) => {
-                        res.forEach((e) => {
-                            metadata[e.id] = {
-                                name: e.name,
-                            };
-                        });
-                    }
-                ),
-                fetchFiltersInfos(filtersUuids).then((res) => {
-                    res.forEach((e) => {
-                        metadata[e.id] = {
-                            name: e.name,
-                            filterType: e.type,
-                        };
-                    });
-                }),
-            ]).finally(() => {
-                setChildrenMetadata(metadata);
-                setIsMetadataLoading(false);
-            });
+                })
+                .finally(() => {
+                    setChildrenMetadata(metadata);
+                    setIsMetadataLoading(false);
+                });
         }
         setSelectedUuids(new Set());
     }, [currentChildren]);
@@ -774,7 +773,10 @@ const DirectoryContent = () => {
         let children = getSelectedChildren();
         return (
             children.length === 1 &&
-            children[0].type === elementType.FILTERS_CONTINGENCY_LIST
+            children[0].type === elementType.CONTINGENCY_LIST &&
+            childrenMetadata[children[0].elementUuid] &&
+            childrenMetadata[children[0].elementUuid].subtype ===
+                contingencyListSubtype.FILTERS
         );
     };
 
@@ -782,14 +784,25 @@ const DirectoryContent = () => {
         let children = getSelectedChildren();
         return (
             children.length === 1 &&
-            children[0].type === elementType.FILTERS_CONTINGENCY_LIST &&
+            children[0].type === elementType.CONTINGENCY_LIST &&
+            childrenMetadata[children[0].elementUuid] &&
+            childrenMetadata[children[0].elementUuid].subtype ===
+                contingencyListSubtype.FILTERS &&
             children[0].owner === userId
         );
     };
 
     const allowsCopyFilterToScript = () => {
         let children = getSelectedChildren();
-        return children.length === 1 && children[0].type === elementType.FILTER;
+        return (
+            children.length === 1 &&
+            children[0].type === elementType.FILTER &&
+            !(
+                childrenMetadata[children[0].elementUuid] &&
+                childrenMetadata[children[0].elementUuid].subtype ===
+                    filterSubtype.SCRIPT
+            )
+        );
     };
 
     const allowsReplaceFilterWithScript = () => {
@@ -797,6 +810,11 @@ const DirectoryContent = () => {
         return (
             children.length === 1 &&
             children[0].type === elementType.FILTER &&
+            !(
+                childrenMetadata[children[0].elementUuid] &&
+                childrenMetadata[children[0].elementUuid].subtype ===
+                    filterSubtype.SCRIPT
+            ) &&
             children[0].owner === userId
         );
     };
@@ -1087,7 +1105,7 @@ const DirectoryContent = () => {
                 onClose={handleCloseScriptContingency}
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'editContingencyList' })}
-                type={elementType.SCRIPT_CONTINGENCY_LIST}
+                type={elementType.CONTINGENCY_LIST}
             />
             <ScriptDialog
                 id={currentScriptId}
@@ -1095,7 +1113,7 @@ const DirectoryContent = () => {
                 onClose={handleCloseScriptDialog}
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'editFilterScript' })}
-                type={elementType.SCRIPT}
+                type={elementType.FILTER}
             />
             <ReplaceWithScriptDialog
                 id={activeElement ? activeElement.elementUuid : ''}

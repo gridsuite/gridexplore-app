@@ -19,7 +19,7 @@ import {
     getContingencyList,
     saveFiltersContingencyList,
 } from '../../utils/rest-api';
-import { ScriptTypes } from '../../utils/script-types';
+import { contingencyListSubtype } from '../../utils/elementType';
 
 const emptyFiltersContingency = {
     equipmentID: '*',
@@ -96,7 +96,7 @@ const FiltersContingencyDialog = ({
 
     const getCurrentContingencyList = useCallback(
         (currentItemId) => {
-            getContingencyList(ScriptTypes.FILTERS, currentItemId)
+            getContingencyList(contingencyListSubtype.FILTERS, currentItemId)
                 .then((data) => {
                     if (data) {
                         setCurrentFiltersContingency(data);

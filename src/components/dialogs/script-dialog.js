@@ -25,8 +25,11 @@ import {
     saveFilter,
     saveScriptContingencyList,
 } from '../../utils/rest-api';
-import { ScriptTypes } from '../../utils/script-types';
-import { elementType } from '../../utils/elementType';
+import {
+    contingencyListSubtype,
+    elementType,
+    filterSubtype,
+} from '../../utils/elementType';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -84,7 +87,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
 
     const handleClick = () => {
         let newScript;
-        if (type === elementType.SCRIPT_CONTINGENCY_LIST) {
+        if (type === elementType.CONTINGENCY_LIST) {
             newScript = {
                 id: id,
                 name: name,
@@ -102,7 +105,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                 name: name,
                 description: description,
                 script: aceEditorContent,
-                type: elementType.SCRIPT,
+                type: filterSubtype.SCRIPT,
             };
             saveFilter(newScript)
                 .then((unused) => {})
@@ -125,8 +128,8 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
 
     const getCurrentScript = useCallback(
         (currentItemId) => {
-            if (type === elementType.SCRIPT_CONTINGENCY_LIST) {
-                getContingencyList(ScriptTypes.SCRIPT, currentItemId)
+            if (type === elementType.CONTINGENCY_LIST) {
+                getContingencyList(contingencyListSubtype.SCRIPT, currentItemId)
                     .then((data) => {
                         if (data) {
                             setCurrentScript(data);
@@ -138,7 +141,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                     .catch((error) => {
                         onError(error.message);
                     });
-            } else if (type === elementType.SCRIPT) {
+            } else if (type === elementType.FILTER) {
                 getFilterById(currentItemId)
                     .then((data) => {
                         if (data) {
