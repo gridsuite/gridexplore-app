@@ -103,14 +103,14 @@ export function selectCase(selectedCase) {
     return { type: SELECT_CASE, selectedCase: selectedCase };
 }
 
-export const ADD_GHOST_STUDY = 'ADD_GHOST_STUDY';
+export const ADD_UPLOADING_STUDY = 'ADD_UPLOADING_STUDY';
 
-export function addGhostStudy(ghostStudy) {
-    return { type: ADD_GHOST_STUDY, ghostStudy: ghostStudy };
+export function addUploadingStudy(uploadingStudy) {
+    return { type: ADD_UPLOADING_STUDY, uploadingStudy: uploadingStudy };
 }
 
-export const REMOVE_GHOST_STUDY = 'REMOVE_GHOST_STUDY';
+export const REMOVE_UPLOADING_STUDY = 'REMOVE_UPLOADING_STUDY';
 
-export function removeGhostStudy(ghostStudy) {
-    return { type: REMOVE_GHOST_STUDY, ghostStudy: ghostStudy };
+export function removeUploadingStudy(uploadingStudy) {
+    return { type: REMOVE_UPLOADING_STUDY, uploadingStudy: uploadingStudy };
 }

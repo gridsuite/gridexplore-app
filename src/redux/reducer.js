@@ -29,8 +29,8 @@ import {
     SELECT_FILE,
     REMOVE_SELECTED_FILE,
     ACTIVE_DIRECTORY,
-    ADD_GHOST_STUDY,
-    REMOVE_GHOST_STUDY,
+    ADD_UPLOADING_STUDY,
+    REMOVE_UPLOADING_STUDY,
 } from './actions';
 
 import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
@@ -53,7 +53,7 @@ const initialState = {
     cases: [],
     selectedCase: null,
     selectedFile: null,
-    ghostStudies: {},
+    uploadingStudies: {},
     ...paramsInitialState,
 };
 
@@ -120,17 +120,16 @@ export const reducer = createReducer(initialState, {
         state.selectedFile = null;
     },
 
-    [ADD_GHOST_STUDY]: (state, action) => {
-        state.ghostStudies = {
-            ...state.ghostStudies,
-            ...{ [action.ghostStudy.id]: action.ghostStudy },
+    [ADD_UPLOADING_STUDY]: (state, action) => {
+        state.uploadingStudies = {
+            ...state.uploadingStudies,
+            ...{ [action.uploadingStudy.id]: action.uploadingStudy },
         };
     },
 
-    [REMOVE_GHOST_STUDY]: (state, action) => {
-        delete state.ghostStudies[action.ghostStudy.id];
-        /* should we really need to trigger an update? this could create a glitch
-        (ghost will disappear, then the real element will take place) */
-        state.ghostStudies = { ...state.ghostStudies };
+    [REMOVE_UPLOADING_STUDY]: (state, action) => {
+        let newUploadingStudies = { ...state.uploadingStudies };
+        delete newUploadingStudies[action.uploadingStudy.id];
+        state.uploadingStudies = newUploadingStudies;
     },
 });

@@ -121,7 +121,7 @@ const DirectoryContent = () => {
 
     const currentChildren = useSelector((state) => state.currentChildren);
     const [displayedElements, setDisplayedElements] = useState([]);
-    const ghostStudies = useSelector((state) => state.ghostStudies);
+    const uploadingStudies = useSelector((state) => state.uploadingStudies);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
@@ -863,7 +863,7 @@ const DirectoryContent = () => {
 
     useEffect(() => {
         let children = {};
-        Object.values(ghostStudies)
+        Object.values(uploadingStudies)
             .filter((e) => e.directory === selectedDirectory)
             .map((e) => (children[e.elementName] = e));
         if (currentChildren)
@@ -874,7 +874,7 @@ const DirectoryContent = () => {
             )
         );
     }, [
-        ghostStudies,
+        uploadingStudies,
         currentChildren,
         setDisplayedElements,
         selectedDirectory,

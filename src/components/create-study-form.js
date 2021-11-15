@@ -30,9 +30,9 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    addGhostStudy,
+    addUploadingStudy,
     loadCasesSuccess,
-    removeGhostStudy,
+    removeUploadingStudy,
     removeSelectedFile,
     selectCase,
     selectFile,
@@ -154,7 +154,7 @@ const UploadCase = () => {
     );
 };
 
-const ghostStudyKeyGenerator = (() => {
+const uploadingStudyKeyGenerator = (() => {
     let key = 1;
     return () => key++;
 })();
@@ -302,8 +302,8 @@ export const CreateStudyForm = ({ open, onClose }) => {
         }
 
         let isPrivateStudy = studyPrivacy === 'private';
-        const ghostStudy = {
-            id: ghostStudyKeyGenerator(),
+        const uploadingStudy = {
+            id: uploadingStudyKeyGenerator(),
             elementName: studyName,
             directory: activeDirectory,
             type: 'STUDY',
@@ -320,7 +320,7 @@ export const CreateStudyForm = ({ open, onClose }) => {
             activeDirectory
         )
             .then((res) => {
-                dispatch(removeGhostStudy(ghostStudy));
+                dispatch(removeUploadingStudy(uploadingStudy));
                 if (!res.ok) {
                     if (res.status === 409) {
                         studyCreationError(
@@ -348,9 +348,9 @@ export const CreateStudyForm = ({ open, onClose }) => {
             })
             .catch((e) => {
                 studyCreationError(studyName, e.name + ' - ' + e.message);
-                dispatch(removeGhostStudy(ghostStudy));
+                dispatch(removeUploadingStudy(uploadingStudy));
             });
-        dispatch(addGhostStudy(ghostStudy));
+        dispatch(addUploadingStudy(uploadingStudy));
         onClose();
         resetDialog();
     };
