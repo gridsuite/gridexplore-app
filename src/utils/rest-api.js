@@ -344,12 +344,16 @@ export function fetchCases() {
 export function elementExists(directoryUuid, studyName) {
     const existsElementUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/${studyName}/exists`;
+        `/v1/directories/${directoryUuid}/${studyName}`;
 
     console.debug(existsElementUrl);
-    return backendFetch(existsElementUrl, { method: 'get' }).then(
+    return backendFetch(existsElementUrl, { method: 'head' }).then(
         (response) => {
-            return response.json();
+            return response.ok
+                ? true
+                : response.status === 404
+                ? false
+                : Promise.reject(response.statusText);
         }
     );
 }

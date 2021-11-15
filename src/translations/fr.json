@@ -130,5 +130,6 @@
     "Max": "Max",
 
     "FilterName": "Nom",
-    "getAppLinkError": "Erreur lors de la récupération du lien vers l'application pour le type = {type}"
+    "getAppLinkError": "Erreur lors de la récupération du lien vers l'application pour le type = {type}",
+    "nameValidityCheckErrorMsg": "Erreur lors de la vérification de la validité du nom : "
 }

@@ -132,5 +132,6 @@
     "Max": "Max",
 
     "FilterName": "Name",
-    "getAppLinkError": "Error getting application link for type = {type}"
+    "getAppLinkError": "Error getting application link for type = {type}",
+    "nameValidityCheckErrorMsg": "Error checking name validity : "
 }

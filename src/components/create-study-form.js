@@ -219,26 +219,14 @@ export const CreateStudyForm = ({ open, onClose }) => {
         if (inputValue !== '') {
             elementExists(activeDirectory, inputValue)
                 .then((data) => {
-                    if (data === true) {
-                        setStudyFormState(
-                            intl.formatMessage({
-                                id: 'studyNameAlreadyUsed',
-                            }),
-                            false
-                        );
-                    } else if (data === false) {
-                        setStudyFormState('', true);
-                    } else {
-                        setCreateStudyErr(
-                            intl.formatMessage({
-                                id: 'nameValidityCheckErrorMsg',
-                            }) +
-                                data.status +
-                                ' (' +
-                                data.error +
-                                ')'
-                        );
-                    }
+                    setStudyFormState(
+                        data
+                            ? intl.formatMessage({
+                                  id: 'studyNameAlreadyUsed',
+                              })
+                            : '',
+                        !data
+                    );
                 })
                 .catch((error) => {
                     setCreateStudyErr(
