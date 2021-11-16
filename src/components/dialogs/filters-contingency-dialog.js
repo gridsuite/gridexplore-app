@@ -92,16 +92,21 @@ const FiltersContingencyDialog = ({
 
     const getCurrentContingencyList = useCallback(
         (currentItemId) => {
-            getContingencyList(contingencyListSubtype.FILTERS, currentItemId)
-                .then((data) => {
-                    if (data) {
-                        setCurrentFiltersContingency(data);
-                        setNewFiltersContingency(data);
-                    }
-                })
-                .catch((error) => {
-                    onError(error.message);
-                });
+            if (currentItemId !== null) {
+                getContingencyList(
+                    contingencyListSubtype.FILTERS,
+                    currentItemId
+                )
+                    .then((data) => {
+                        if (data) {
+                            setCurrentFiltersContingency(data);
+                            setNewFiltersContingency(data);
+                        }
+                    })
+                    .catch((error) => {
+                        onError(error.message);
+                    });
+            }
         },
         [onError]
     );
