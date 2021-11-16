@@ -614,6 +614,11 @@ const DirectoryContent = () => {
     };
 
     function toggleSelection(elementUuid) {
+        if (
+            currentChildren &&
+            currentChildren.find((e) => e.elementUuid === elementUuid) == null
+        )
+            return;
         let newSelection = new Set(selectedUuids);
         if (!newSelection.delete(elementUuid)) {
             newSelection.add(elementUuid);
