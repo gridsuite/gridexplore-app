@@ -413,7 +413,6 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     function onChange(newVal) {
         currentFilter.current = newVal;
         currentFilter.current.id = id;
-        currentFilter.current.name = initialFilter.name;
         currentFilter.current.type = filterType;
         setBtnSaveListDisabled(false);
     }
