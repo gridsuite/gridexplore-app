@@ -600,7 +600,7 @@ const DirectoryContent = () => {
                     )}
                 {/* Name */}
                 {isMetadataLoading ? null : childrenMetadata[elementUuid] ? (
-                    <div>{childrenMetadata[elementUuid].name}</div>
+                    <div>{elementName}</div>
                 ) : (
                     <>
                         {elementName + ' '}

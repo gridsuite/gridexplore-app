@@ -54,6 +54,7 @@ const useStyles = makeStyles(() => ({
  * @param onError handle errors
  * @param title Title of the dialog
  * @param type Contingencies or filter
+ * @param subtype Element's subtype
  */
 const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
     const classes = useStyles();

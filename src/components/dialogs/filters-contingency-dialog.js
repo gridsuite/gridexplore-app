@@ -64,8 +64,6 @@ const FiltersContingencyDialog = ({
     const [newFiltersContingency, setNewFiltersContingency] = useState(
         emptyFiltersContingency
     );
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
 
     const handleClose = () => {
         handleCancel();
@@ -82,8 +80,6 @@ const FiltersContingencyDialog = ({
             ...currentFiltersContingency,
             ...newFiltersContingency,
             id: listId,
-            name: name,
-            description: description,
         };
         saveFiltersContingencyList(newFiltersContingencyList)
             .then((response) => {})
@@ -96,18 +92,21 @@ const FiltersContingencyDialog = ({
 
     const getCurrentContingencyList = useCallback(
         (currentItemId) => {
-            getContingencyList(contingencyListSubtype.FILTERS, currentItemId)
-                .then((data) => {
-                    if (data) {
-                        setCurrentFiltersContingency(data);
-                        setNewFiltersContingency(data);
-                        setName(data.name);
-                        setDescription(data.description);
-                    }
-                })
-                .catch((error) => {
-                    onError(error.message);
-                });
+            if (currentItemId !== null) {
+                getContingencyList(
+                    contingencyListSubtype.FILTERS,
+                    currentItemId
+                )
+                    .then((data) => {
+                        if (data) {
+                            setCurrentFiltersContingency(data);
+                            setNewFiltersContingency(data);
+                        }
+                    })
+                    .catch((error) => {
+                        onError(error.message);
+                    });
+            }
         },
         [onError]
     );
