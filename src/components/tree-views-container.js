@@ -410,20 +410,46 @@ const TreeViewsContainer = () => {
         [insertContent, selectedDirectoryRef, mapDataRef, dispatch]
     );
 
+    const mergeCurrentAndUploading = useCallback(
+        (current) => {
+            let children = {};
+            let updated = current !== currentChildrenRef.current;
+            if (current != null) {
+                Object.values(current).map(
+                    (e) => (children[e.elementName] = e)
+                );
+            }
+            Object.values(uploadingStudies)
+                .filter((e) => e.directory === selectedDirectoryRef.current)
+                .forEach((e) => {
+                    if (children[e.elementName] === undefined) {
+                        children[e.elementName] = e;
+                        updated = true;
+                    }
+                });
+            if (!updated) return current;
+
+            return Object.values(children).sort(function (a, b) {
+                return a.elementName.localeCompare(b.elementName);
+            });
+        },
+        [uploadingStudies, selectedDirectoryRef, currentChildrenRef]
+    );
+
     /* currentChildren management */
     const updateCurrentChildren = useCallback(
         (children) => {
             dispatch(
                 setCurrentChildren(
-                    children
-                        .filter((child) => child.type !== elementType.DIRECTORY)
-                        .sort(function (a, b) {
-                            return a.elementName.localeCompare(b.elementName);
-                        })
+                    mergeCurrentAndUploading(
+                        children.filter(
+                            (child) => child.type !== elementType.DIRECTORY
+                        )
+                    )
                 )
             );
         },
-        [dispatch]
+        [dispatch, mergeCurrentAndUploading]
     );
 
     const updateDirectoryTreeAndContent = useCallback(
@@ -439,31 +465,12 @@ const TreeViewsContainer = () => {
     );
 
     useEffect(() => {
-        let children = {};
-        let updated = false;
-        if (currentChildrenRef.current != null) {
-            Object.values(currentChildrenRef.current).map(
-                (e) => (children[e.elementName] = e)
-            );
-        }
-        Object.values(uploadingStudies)
-            .filter((e) => e.directory === selectedDirectory)
-            .forEach((e) => {
-                if (children[e.elementName] === undefined) {
-                    children[e.elementName] = e;
-                    updated = true;
-                }
-            });
-        if (updated) {
-            dispatch(
-                setCurrentChildren(
-                    Object.values(children).sort(function (a, b) {
-                        return a.elementName.localeCompare(b.elementName);
-                    })
-                )
-            );
-        }
-    }, [currentChildrenRef, uploadingStudies, selectedDirectory, dispatch]);
+        dispatch(
+            setCurrentChildren(
+                mergeCurrentAndUploading(currentChildrenRef.current)
+            )
+        );
+    }, [currentChildrenRef, mergeCurrentAndUploading, dispatch]);
 
     const updateDirectoryTree = useCallback(
         (nodeId) => {
