@@ -341,25 +341,21 @@ export function fetchCases() {
     return backendFetch(fetchCasesUrl).then((response) => response.json());
 }
 
-function getStudyUrlByStudyNameAndUserId(studyName, userId) {
-    return (
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName)
-    );
-}
+export function elementExists(directoryUuid, studyName) {
+    const existsElementUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${directoryUuid}/${studyName}`;
 
-export function studyExists(studyName, userId) {
-    // current implementation prevent having two studies with the same name and the same user
-    // later we will prevent same studyName and userId in the same directory
-    const studyExistsUrl =
-        getStudyUrlByStudyNameAndUserId(studyName, userId) + '/exists';
-    console.debug(studyExistsUrl);
-    return backendFetch(studyExistsUrl, { method: 'get' }).then((response) => {
-        return response.json();
-    });
+    console.debug(existsElementUrl);
+    return backendFetch(existsElementUrl, { method: 'head' }).then(
+        (response) => {
+            return response.ok
+                ? true
+                : response.status === 404
+                ? false
+                : Promise.reject(response.statusText);
+        }
+    );
 }
 
 export function createContingencyList(
@@ -371,6 +367,7 @@ export function createContingencyList(
 ) {
     console.info('Creating a new contingency list...');
     let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('description', contingencyListDescription);
     urlSearchParams.append('isPrivate', isPrivateContingencyList);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
@@ -389,10 +386,7 @@ export function createContingencyList(
         urlSearchParams.toString();
     console.debug(createContingencyListUrl);
 
-    let body = {
-        name: contingencyListName,
-        description: contingencyListDescription,
-    };
+    let body = {};
     if (contingencyListType === contingencyListSubtype.FILTERS) {
         body.equipmentType = EquipmentTypes.LINE;
         body.nominalVoltage = -1;
@@ -540,6 +534,7 @@ export function connectNotificationsWsUpdateStudies() {
 export function createFilter(newFilter, name, isPrivate, parentDirectoryUuid) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
+    urlSearchParams.append('description', '');
     urlSearchParams.append('isPrivate', isPrivate);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     return backendFetch(

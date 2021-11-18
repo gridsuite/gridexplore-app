@@ -25,7 +25,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { createStudy, fetchCases, studyExists } from '../utils/rest-api';
+import { createStudy, fetchCases, elementExists } from '../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -229,28 +229,16 @@ export const CreateStudyForm = ({ open, onClose }) => {
 
     const updateStudyFormState = (inputValue, userId) => {
         if (inputValue !== '') {
-            studyExists(inputValue, userId)
+            elementExists(activeDirectory, inputValue)
                 .then((data) => {
-                    if (data === true) {
-                        setStudyFormState(
-                            intl.formatMessage({
-                                id: 'studyNameAlreadyUsed',
-                            }),
-                            false
-                        );
-                    } else if (data === false) {
-                        setStudyFormState('', true);
-                    } else {
-                        setCreateStudyErr(
-                            intl.formatMessage({
-                                id: 'nameValidityCheckErrorMsg',
-                            }) +
-                                data.status +
-                                ' (' +
-                                data.error +
-                                ')'
-                        );
-                    }
+                    setStudyFormState(
+                        data
+                            ? intl.formatMessage({
+                                  id: 'studyNameAlreadyUsed',
+                              })
+                            : '',
+                        !data
+                    );
                 })
                 .catch((error) => {
                     setCreateStudyErr(
