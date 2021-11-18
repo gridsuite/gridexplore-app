@@ -120,8 +120,6 @@ const DirectoryContent = () => {
     const [selectedUuids, setSelectedUuids] = useState(new Set());
 
     const currentChildren = useSelector((state) => state.currentChildren);
-    const [displayedElements, setDisplayedElements] = useState([]);
-    const uploadingStudies = useSelector((state) => state.uploadingStudies);
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
@@ -581,9 +579,21 @@ const DirectoryContent = () => {
         }
     }
 
+    const getDisplayedElementName = (cellData) => {
+        const { elementName, uploading, elementUuid } = cellData.rowData;
+        const formatMessage = intl.formatMessage;
+        if (uploading)
+            return elementName + ' ' + formatMessage({ id: 'uploading' });
+        if (isMetadataLoading) return elementName;
+        if (childrenMetadata[elementUuid] == null)
+            return (
+                elementName + ' ' + formatMessage({ id: 'creationInProgress' })
+            );
+        return childrenMetadata[elementUuid].name;
+    };
+
     const nameCellRender = (cellData) => {
         const elementUuid = cellData.rowData['elementUuid'];
-        const elementName = cellData.rowData['elementName'];
         const objectType = cellData.rowData['type'];
         return (
             <div className={classes.cell}>
@@ -601,24 +611,18 @@ const DirectoryContent = () => {
                         childrenMetadata[elementUuid].subtype
                     )}
                 {/* Name */}
-                {isMetadataLoading ? null : childrenMetadata[elementUuid] ? (
-                    <div>{childrenMetadata[elementUuid].name}</div>
-                ) : (
-                    <>
-                        {elementName + ' '}
-                        <FormattedMessage id="creationInProgress" />
-                    </>
-                )}
+                {<div>{getDisplayedElementName(cellData)}</div>}
             </div>
         );
     };
 
     function toggleSelection(elementUuid) {
-        if (
-            currentChildren &&
-            currentChildren.find((e) => e.elementUuid === elementUuid) == null
-        )
+        let element = currentChildren?.find(
+            (e) => e.elementUuid === elementUuid
+        );
+        if (element.uploading) {
             return;
+        }
         let newSelection = new Set(selectedUuids);
         if (!newSelection.delete(elementUuid)) {
             newSelection.add(elementUuid);
@@ -629,7 +633,11 @@ const DirectoryContent = () => {
     function toggleSelectAll() {
         if (selectedUuids.size === 0) {
             setSelectedUuids(
-                new Set(currentChildren.map((c) => c.elementUuid))
+                new Set(
+                    currentChildren
+                        .map((c) => c.elementUuid)
+                        .filter((e) => !e.uploading)
+                )
             );
         } else {
             setSelectedUuids(new Set());
@@ -686,7 +694,11 @@ const DirectoryContent = () => {
         setIsMetadataLoading(true);
         if (currentChildren !== null && currentChildren.length > 0) {
             let metadata = {};
-            fetchElementsInfos(currentChildren.map((e) => e.elementUuid))
+            fetchElementsInfos(
+                currentChildren
+                    .filter((e) => !e.uploading)
+                    .map((e) => e.elementUuid)
+            )
                 .then((res) => {
                     res.forEach((e) => {
                         metadata[e.elementUuid] = {
@@ -866,25 +878,6 @@ const DirectoryContent = () => {
         return undefined;
     };
 
-    useEffect(() => {
-        let children = {};
-        Object.values(uploadingStudies)
-            .filter((e) => e.directory === selectedDirectory)
-            .map((e) => (children[e.elementName] = e));
-        if (currentChildren)
-            currentChildren.map((e) => (children[e.elementName] = e));
-        setDisplayedElements(
-            Object.values(children).sort((a, b) =>
-                a.elementName.localeCompare(b.elementName)
-            )
-        );
-    }, [
-        uploadingStudies,
-        currentChildren,
-        setDisplayedElements,
-        selectedDirectory,
-    ]);
-
     return (
         <>
             <div
@@ -898,16 +891,20 @@ const DirectoryContent = () => {
                         handleCloseRowMenu();
                 }}
             >
-                {selectedDirectory !== null && displayedElements.length === 0 && (
-                    <div style={{ textAlign: 'center', marginTop: '100px' }}>
-                        <FolderOpenRoundedIcon
-                            style={{ width: '100px', height: '100px' }}
-                        />
-                        <h1>
-                            <FormattedMessage id={'emptyDir'} />
-                        </h1>
-                    </div>
-                )}
+                {selectedDirectory !== null &&
+                    currentChildren !== null &&
+                    currentChildren.length === 0 && (
+                        <div
+                            style={{ textAlign: 'center', marginTop: '100px' }}
+                        >
+                            <FolderOpenRoundedIcon
+                                style={{ width: '100px', height: '100px' }}
+                            />
+                            <h1>
+                                <FormattedMessage id={'emptyDir'} />
+                            </h1>
+                        </div>
+                    )}
                 <Toolbar>
                     {allowsDelete(false) && selectedUuids.size > 0 && (
                         <IconButton
@@ -918,8 +915,9 @@ const DirectoryContent = () => {
                         </IconButton>
                     )}
                 </Toolbar>
-                {selectedDirectory !== null && displayedElements.length > 0 && (
-                    <>
+                {selectedDirectory !== null &&
+                    currentChildren !== null &&
+                    currentChildren.length > 0 && (
                         <VirtualizedTable
                             style={{ flexGrow: 1 }}
                             onRowRightClick={(event) => {
@@ -937,7 +935,7 @@ const DirectoryContent = () => {
                                 setAnchorEl(event.event.currentTarget);
                             }}
                             onRowClick={handleRowClick}
-                            rows={displayedElements}
+                            rows={currentChildren}
                             columns={[
                                 {
                                     cellRenderer: selectionRenderer,
@@ -981,8 +979,7 @@ const DirectoryContent = () => {
                             ]}
                             sortable={true}
                         />
-                    </>
-                )}
+                    )}
                 <StyledMenu
                     id="row-menu"
                     anchorEl={anchorEl}

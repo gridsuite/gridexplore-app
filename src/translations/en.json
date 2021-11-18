@@ -39,6 +39,7 @@
     "copy": "COPY",
 
     "creationInProgress": "creation in progress",
+    "uploading": "upload in progress",
     "studyCreatingError": "An error occurred while creating the study: {studyName}",
     "studyNameAlreadyUsed": "This study name is already used",
 

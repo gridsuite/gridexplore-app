@@ -81,6 +81,9 @@ const TreeViewsContainer = () => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
 
+    const uploadingStudies = useSelector((state) => state.uploadingStudies);
+    const currentChildren = useSelector((state) => state.currentChildren);
+
     const mapDataRef = useRef({});
     mapDataRef.current = mapData;
 
@@ -432,6 +435,33 @@ const TreeViewsContainer = () => {
         },
         [updateCurrentChildren, updateMapData]
     );
+
+    useEffect(() => {
+        let children = {};
+        let updated = false;
+        if (currentChildren != null) {
+            Object.values(currentChildren).map(
+                (e) => (children[e.elementName] = e)
+            );
+        }
+        Object.values(uploadingStudies)
+            .filter((e) => e.directory === selectedDirectory)
+            .forEach((e) => {
+                if (children[e.elementName] === undefined) {
+                    children[e.elementName] = e;
+                    updated = true;
+                }
+            });
+        if (updated) {
+            dispatch(
+                setCurrentChildren(
+                    Object.values(children).sort(function (a, b) {
+                        return a.elementName.localeCompare(b.elementName);
+                    })
+                )
+            );
+        }
+    }, [currentChildren, uploadingStudies, selectedDirectory, dispatch]);
 
     const updateDirectoryTree = useCallback(
         (nodeId) => {

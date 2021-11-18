@@ -309,6 +309,7 @@ export const CreateStudyForm = ({ open, onClose }) => {
             type: 'STUDY',
             owner: userId,
             accessRights: isPrivateStudy,
+            uploading: true,
         };
         createStudy(
             caseExist,
