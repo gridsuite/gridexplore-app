@@ -175,9 +175,9 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
                             label={<FormattedMessage id="SCRIPT" />}
                         />
                         <FormControlLabel
-                            value="FILTERS"
+                            value="FORM"
                             control={<Radio />}
-                            label={<FormattedMessage id="FILTERS" />}
+                            label={<FormattedMessage id="FORM" />}
                         />
                     </RadioGroup>
 

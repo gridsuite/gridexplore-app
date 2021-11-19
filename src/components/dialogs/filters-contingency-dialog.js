@@ -93,10 +93,7 @@ const FiltersContingencyDialog = ({
     const getCurrentContingencyList = useCallback(
         (currentItemId) => {
             if (currentItemId !== null) {
-                getContingencyList(
-                    contingencyListSubtype.FILTERS,
-                    currentItemId
-                )
+                getContingencyList(contingencyListSubtype.FORM, currentItemId)
                     .then((data) => {
                         if (data) {
                             setCurrentFiltersContingency(data);

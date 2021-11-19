@@ -19,5 +19,5 @@ export const filterSubtype = {
 
 export const contingencyListSubtype = {
     SCRIPT: 'SCRIPT',
-    FILTERS: 'FILTERS',
+    FORM: 'FORM',
 };

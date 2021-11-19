@@ -288,7 +288,7 @@ const DirectoryContent = () => {
                           )
                       );
             } else if (event.rowData.type === elementType.CONTINGENCY_LIST) {
-                if (subtype === contingencyListSubtype.FILTERS) {
+                if (subtype === contingencyListSubtype.FORM) {
                     setCurrentFiltersContingencyListId(
                         event.rowData.elementUuid
                     );
@@ -567,7 +567,7 @@ const DirectoryContent = () => {
         } else if (objectType === elementType.CONTINGENCY_LIST) {
             if (objectSubtype === contingencyListSubtype.SCRIPT) {
                 return <DescriptionIcon className={classes.icon} />;
-            } else if (objectSubtype === contingencyListSubtype.FILTERS) {
+            } else if (objectSubtype === contingencyListSubtype.FORM) {
                 return <PanToolIcon className={classes.icon} />;
             }
         } else if (objectType === elementType.FILTER) {
@@ -776,7 +776,7 @@ const DirectoryContent = () => {
             children[0].type === elementType.CONTINGENCY_LIST &&
             childrenMetadata[children[0].elementUuid] &&
             childrenMetadata[children[0].elementUuid].subtype ===
-                contingencyListSubtype.FILTERS
+                contingencyListSubtype.FORM
         );
     };
 
@@ -787,7 +787,7 @@ const DirectoryContent = () => {
             children[0].type === elementType.CONTINGENCY_LIST &&
             childrenMetadata[children[0].elementUuid] &&
             childrenMetadata[children[0].elementUuid].subtype ===
-                contingencyListSubtype.FILTERS &&
+                contingencyListSubtype.FORM &&
             children[0].owner === userId
         );
     };

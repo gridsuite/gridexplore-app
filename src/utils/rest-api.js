@@ -387,7 +387,7 @@ export function createContingencyList(
     console.debug(createContingencyListUrl);
 
     let body = {};
-    if (contingencyListType === contingencyListSubtype.FILTERS) {
+    if (contingencyListType === contingencyListSubtype.FORM) {
         body.equipmentType = EquipmentTypes.LINE;
         body.nominalVoltage = -1;
         body.nominalVoltageOperator = '=';

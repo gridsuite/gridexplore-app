@@ -389,9 +389,9 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
         if (id !== null) {
             getFilterById(id).then((response) => {
                 setInitialFilter(response);
-                setFilterType(response.type);
+                setFilterType(response.subtype);
                 setCurrentFormEdit({
-                    type: { enabled: true, value: response.type },
+                    type: { enabled: true, value: response.subtype },
                 });
             });
         } else {
@@ -413,7 +413,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     function onChange(newVal) {
         currentFilter.current = newVal;
         currentFilter.current.id = id;
-        currentFilter.current.type = newVal.type;
+        currentFilter.current.subtype = newVal.type;
         setBtnSaveListDisabled(false);
     }
 
@@ -429,6 +429,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     };
 
     const handleClick = () => {
+        console.info(currentFilter.current);
         saveFilter(currentFilter.current)
             .then()
             .catch((error) => {
@@ -446,6 +447,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     };
 
     const changeFilterType = (newType) => {
+        console.info('newType', newType);
         currentFormEdit.type = { enabled: true, value: newType };
         setFilterType(newType);
         editDone();
