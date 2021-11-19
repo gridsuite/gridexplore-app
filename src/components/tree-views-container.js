@@ -412,28 +412,19 @@ const TreeViewsContainer = () => {
 
     const mergeCurrentAndUploading = useCallback(
         (current) => {
-            let children = {};
-            let updated = current !== currentChildrenRef.current;
-            if (current != null) {
-                Object.values(current).map(
-                    (e) => (children[e.elementName] = e)
-                );
-            }
-            Object.values(uploadingStudies)
-                .filter((e) => e.directory === selectedDirectoryRef.current)
-                .forEach((e) => {
-                    if (children[e.elementName] === undefined) {
-                        children[e.elementName] = e;
-                        updated = true;
-                    }
-                });
-            if (!updated) return current;
+            let toMerge = Object.values(uploadingStudies).filter(
+                (e) =>
+                    e.directory === selectedDirectoryRef.current &&
+                    current[e.elementName] === undefined
+            );
 
-            return Object.values(children).sort(function (a, b) {
-                return a.elementName.localeCompare(b.elementName);
-            });
+            if (toMerge != null && toMerge.length > 0) {
+                return [...current, ...toMerge];
+            } else {
+                return current;
+            }
         },
-        [uploadingStudies, selectedDirectoryRef, currentChildrenRef]
+        [uploadingStudies, selectedDirectoryRef]
     );
 
     /* currentChildren management */
@@ -442,9 +433,15 @@ const TreeViewsContainer = () => {
             dispatch(
                 setCurrentChildren(
                     mergeCurrentAndUploading(
-                        children.filter(
-                            (child) => child.type !== elementType.DIRECTORY
-                        )
+                        children
+                            .filter(
+                                (child) => child.type !== elementType.DIRECTORY
+                            )
+                            .sort(function (a, b) {
+                                return a.elementName.localeCompare(
+                                    b.elementName
+                                );
+                            })
                     )
                 )
             );
