@@ -589,7 +589,7 @@ const DirectoryContent = () => {
             return (
                 elementName + ' ' + formatMessage({ id: 'creationInProgress' })
             );
-        return elementName;
+        return childrenMetadata[elementUuid].name;
     };
 
     const nameCellRender = (cellData) => {
