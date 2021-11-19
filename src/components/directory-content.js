@@ -694,25 +694,29 @@ const DirectoryContent = () => {
         setIsMetadataLoading(true);
         if (currentChildren !== null && currentChildren.length > 0) {
             let metadata = {};
-            fetchElementsInfos(
-                currentChildren
-                    .filter((e) => !e.uploading)
-                    .map((e) => e.elementUuid)
-            )
-                .then((res) => {
-                    res.forEach((e) => {
-                        metadata[e.elementUuid] = {
-                            name: e.elementName,
-                            subtype: e.specificMetadata
-                                ? e.specificMetadata.type
-                                : null,
-                        };
+            let childrenToFetchElementsInfos = Object.values(currentChildren)
+                .filter((e) => !e.uploading)
+                .map((e) => e.elementUuid);
+            if (
+                childrenToFetchElementsInfos !== null &&
+                childrenToFetchElementsInfos.length > 0
+            ) {
+                fetchElementsInfos(childrenToFetchElementsInfos)
+                    .then((res) => {
+                        res.forEach((e) => {
+                            metadata[e.elementUuid] = {
+                                name: e.elementName,
+                                subtype: e.specificMetadata
+                                    ? e.specificMetadata.type
+                                    : null,
+                            };
+                        });
+                    })
+                    .finally(() => {
+                        setChildrenMetadata(metadata);
+                        setIsMetadataLoading(false);
                     });
-                })
-                .finally(() => {
-                    setChildrenMetadata(metadata);
-                    setIsMetadataLoading(false);
-                });
+            }
         }
         setSelectedUuids(new Set());
     }, [currentChildren]);
@@ -921,18 +925,23 @@ const DirectoryContent = () => {
                         <VirtualizedTable
                             style={{ flexGrow: 1 }}
                             onRowRightClick={(event) => {
-                                if (event.rowData.type !== 'DIRECTORY') {
-                                    setActiveElement(event.rowData);
+                                if (
+                                    event.rowData.uploading !== null &&
+                                    !event.rowData.uploading
+                                ) {
+                                    if (event.rowData.type !== 'DIRECTORY') {
+                                        setActiveElement(event.rowData);
+                                    }
+                                    setMousePosition({
+                                        mouseX:
+                                            event.event.clientX +
+                                            constants.HORIZONTAL_SHIFT,
+                                        mouseY:
+                                            event.event.clientY +
+                                            constants.VERTICAL_SHIFT,
+                                    });
+                                    setAnchorEl(event.event.currentTarget);
                                 }
-                                setMousePosition({
-                                    mouseX:
-                                        event.event.clientX +
-                                        constants.HORIZONTAL_SHIFT,
-                                    mouseY:
-                                        event.event.clientY +
-                                        constants.VERTICAL_SHIFT,
-                                });
-                                setAnchorEl(event.event.currentTarget);
                             }}
                             onRowClick={handleRowClick}
                             rows={currentChildren}
