@@ -419,7 +419,9 @@ const TreeViewsContainer = () => {
             );
 
             if (toMerge != null && toMerge.length > 0) {
-                return [...current, ...toMerge];
+                return [...current, ...toMerge].sort(function (a, b) {
+                    return a.elementName.localeCompare(b.elementName);
+                });
             } else {
                 return current;
             }
