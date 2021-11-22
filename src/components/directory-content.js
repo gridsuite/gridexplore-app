@@ -620,7 +620,7 @@ const DirectoryContent = () => {
         let element = currentChildren?.find(
             (e) => e.elementUuid === elementUuid
         );
-        if (element.uploading) {
+        if (element === undefined) {
             return;
         }
         let newSelection = new Set(selectedUuids);
@@ -635,8 +635,8 @@ const DirectoryContent = () => {
             setSelectedUuids(
                 new Set(
                     currentChildren
-                        .map((c) => c.elementUuid)
                         .filter((e) => !e.uploading)
+                        .map((c) => c.elementUuid)
                 )
             );
         } else {
@@ -697,10 +697,7 @@ const DirectoryContent = () => {
             let childrenToFetchElementsInfos = Object.values(currentChildren)
                 .filter((e) => !e.uploading)
                 .map((e) => e.elementUuid);
-            if (
-                childrenToFetchElementsInfos !== null &&
-                childrenToFetchElementsInfos.length > 0
-            ) {
+            if (childrenToFetchElementsInfos.length > 0) {
                 fetchElementsInfos(childrenToFetchElementsInfos)
                     .then((res) => {
                         res.forEach((e) => {
