@@ -185,7 +185,7 @@ const CreateFilterDialog = ({
                                 label={<FormattedMessage id="SCRIPT" />}
                             />
                             <FormControlLabel
-                                value="FILTERS"
+                                value="FILTER"
                                 control={<Radio />}
                                 label={<FormattedMessage id="FILTERS" />}
                             />
