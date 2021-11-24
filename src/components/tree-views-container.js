@@ -423,7 +423,13 @@ const TreeViewsContainer = () => {
                     return a.elementName.localeCompare(b.elementName);
                 });
             } else {
-                return current;
+                if (current == null) {
+                    return current;
+                } else {
+                    return current.sort(function (a, b) {
+                        return a.elementName.localeCompare(b.elementName);
+                    });
+                }
             }
         },
         [uploadingStudies, selectedDirectoryRef]
@@ -435,15 +441,9 @@ const TreeViewsContainer = () => {
             dispatch(
                 setCurrentChildren(
                     mergeCurrentAndUploading(
-                        children
-                            .filter(
-                                (child) => child.type !== elementType.DIRECTORY
-                            )
-                            .sort(function (a, b) {
-                                return a.elementName.localeCompare(
-                                    b.elementName
-                                );
-                            })
+                        children.filter(
+                            (child) => child.type !== elementType.DIRECTORY
+                        )
                     )
                 )
             );
