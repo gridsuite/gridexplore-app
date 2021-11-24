@@ -112,7 +112,7 @@ export function fetchDirectoryContent(directoryUuid) {
     console.info("Fetching Folder content '%s'", directoryUuid);
     const fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/content`;
+        `/v1/directories/${directoryUuid}/elements`;
     return backendFetch(fetchDirectoryContentUrl).then((response) =>
         response.ok
             ? response.json()
@@ -137,23 +137,24 @@ export function updateAccessRights(elementUuid, isPrivate) {
             isPrivate
     );
     const updateAccessRightUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${elementUuid}/rights`;
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${elementUuid}`;
     return backendFetch(updateAccessRightUrl, {
         method: 'put',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: isPrivate === 'true',
+        body: JSON.stringify({
+            accessRights: { private: isPrivate },
+        }),
     });
 }
 
 export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
     console.info("Inserting a new folder '%s'", directoryName);
     const insertDirectoryUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/` + parentUuid;
-
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${parentUuid}/elements`;
     return backendFetch(insertDirectoryUrl, {
         method: 'POST',
         headers: {
@@ -178,7 +179,6 @@ export function insertRootDirectory(directoryName, isPrivate, owner) {
     console.info("Inserting a new root folder '%s'", directoryName);
     const insertRootDirectoryUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories/`;
-
     return backendFetch(insertRootDirectoryUrl, {
         method: 'POST',
         headers: {
@@ -225,12 +225,17 @@ export function getExportUrl(studyUuid, exportFormat) {
 export function renameElement(studyUuid, newStudyName) {
     console.info('Renaming study ' + studyUuid);
     const renameElementUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${studyUuid}/rename/${newStudyName}`;
-
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${studyUuid}`;
     console.debug(renameElementUrl);
     return backendFetch(renameElementUrl, {
-        method: 'PUT',
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            elementName: newStudyName,
+        }),
     });
 }
 
@@ -341,12 +346,10 @@ export function fetchCases() {
     return backendFetch(fetchCasesUrl).then((response) => response.json());
 }
 
-export function elementExists(directoryUuid, studyName) {
+export function elementExists(directoryUuid, elementName) {
     const existsElementUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/${studyName}`;
-
-    console.debug(existsElementUrl);
+        `/v1/directories/${directoryUuid}/elements/${elementName}`;
     return backendFetch(existsElementUrl, { method: 'head' }).then(
         (response) => {
             return response.ok
