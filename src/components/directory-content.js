@@ -520,14 +520,13 @@ const DirectoryContent = () => {
     }
 
     function buildTypeWithSubtype(type, subtype) {
-        switch (type) {
-            case elementType.FILTER:
-                return subtype;
-            case elementType.CONTINGENCY_LIST:
-                return subtype + '_' + elementType.CONTINGENCY_LIST;
-            default:
-                return type;
+        if (
+            type === elementType.FILTER ||
+            type === elementType.CONTINGENCY_LIST
+        ) {
+            return subtype + '_' + type;
         }
+        return type;
     }
 
     function typeCellRender(cellData) {
