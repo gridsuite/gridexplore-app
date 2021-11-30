@@ -38,7 +38,7 @@ import {
     newScriptFromFiltersContingencyList,
     renameElement,
     replaceFiltersWithScript,
-    replaceFiltersWithScriptContingencyList,
+    replaceFormContingencyListWithScript,
     updateAccessRights,
 } from '../utils/rest-api';
 
@@ -423,7 +423,7 @@ const DirectoryContent = () => {
     };
 
     const handleClickFiltersContingencyReplaceWithScript = (id) => {
-        replaceFiltersWithScriptContingencyList(id, selectedDirectory)
+        replaceFormContingencyListWithScript(id, selectedDirectory)
             .then()
             .catch((error) => handleError(error.message));
         handleCloseFiltersContingencyReplaceWithScript();

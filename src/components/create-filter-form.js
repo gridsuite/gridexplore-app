@@ -119,14 +119,13 @@ const CreateFilterDialog = ({
     };
 
     const handleSave = () => {
-        const subtype =
-            newListType === filterSubtype.SCRIPT
-                ? filterSubtype.SCRIPT
-                : 'LINE';
+        const subtype = newListType === filterSubtype.SCRIPT ? null : 'LINE';
         createFilter(
             {
                 type: newListType,
-                subtype: subtype,
+                equipmentFilterForm: {
+                    equipmentType: subtype,
+                },
                 transient: true,
             },
             newNameList,

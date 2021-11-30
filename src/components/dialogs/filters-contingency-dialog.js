@@ -17,7 +17,7 @@ import { EquipmentTypes } from '../../utils/equipment-types';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     getContingencyList,
-    saveFiltersContingencyList,
+    saveFormContingencyList,
 } from '../../utils/rest-api';
 import { contingencyListSubtype } from '../../utils/elementType';
 
@@ -81,7 +81,7 @@ const FiltersContingencyDialog = ({
             ...newFiltersContingency,
             id: listId,
         };
-        saveFiltersContingencyList(newFiltersContingencyList)
+        saveFormContingencyList(newFiltersContingencyList)
             .then((response) => {})
             .catch((error) => {
                 onError(error.message);

@@ -374,7 +374,7 @@ export function createContingencyList(
     const typeUriParam =
         contingencyListType === contingencyListSubtype.SCRIPT
             ? 'script-contingency-lists'
-            : 'filters-contingency-lists';
+            : 'form-contingency-lists';
 
     const createContingencyListUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +
@@ -409,7 +409,7 @@ export function getContingencyList(type, id) {
     if (type === 'SCRIPT') {
         url += '/v1/script-contingency-lists/';
     } else {
-        url += '/v1/filters-contingency-lists/';
+        url += '/v1/form-contingency-lists/';
     }
     url += id;
 
@@ -420,10 +420,10 @@ export function getContingencyList(type, id) {
  * Add new Filter contingency list
  * @returns {Promise<Response>}
  */
-export function saveFiltersContingencyList(filter) {
-    const { nominalVoltage, ...rest } = filter;
+export function saveFormContingencyList(form) {
+    const { nominalVoltage, ...rest } = form;
     const url =
-        PREFIX_ACTIONS_QUERIES + '/v1/filters-contingency-lists/' + filter.id;
+        PREFIX_ACTIONS_QUERIES + '/v1/form-contingency-lists/' + form.id;
     return backendFetch(url, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
@@ -451,19 +451,16 @@ export function saveScriptContingencyList(scriptContingencyList) {
 }
 
 /**
- * Replace filter with script filter
+ * Replace form contingency list with script contingency list
  * @returns {Promise<Response>}
  */
-export function replaceFiltersWithScriptContingencyList(
-    id,
-    parentDirectoryUuid
-) {
+export function replaceFormContingencyListWithScript(id, parentDirectoryUuid) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/filters-contingency-lists/' +
+        '/v1/explore/form-contingency-lists/' +
         encodeURIComponent(id) +
         '/replace-with-script' +
         '?' +
@@ -475,7 +472,7 @@ export function replaceFiltersWithScriptContingencyList(
 }
 
 /**
- * Save new script contingency list from filters contingency list
+ * Save new script contingency list from form contingency list
  * @returns {Promise<Response>}
  */
 export function newScriptFromFiltersContingencyList(
@@ -488,7 +485,7 @@ export function newScriptFromFiltersContingencyList(
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/filters-contingency-lists/' +
+        '/v1/explore/form-contingency-lists/' +
         encodeURIComponent(id) +
         '/new-script/' +
         encodeURIComponent(newName) +
