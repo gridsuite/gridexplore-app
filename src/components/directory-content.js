@@ -62,7 +62,7 @@ import ExportDialog from './export-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
-import FiltersContingencyDialog from './dialogs/filters-contingency-dialog';
+import FormContingencyDialog from './dialogs/form-contingency-dialog';
 import ScriptDialog from './dialogs/script-dialog';
 import ReplaceWithScriptDialog from './dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from './dialogs/copy-to-script-dialog';
@@ -303,7 +303,7 @@ const DirectoryContent = () => {
                 if (subtype === filterSubtype.SCRIPT) {
                     setCurrentScriptId(event.rowData.elementUuid);
                     setOpenScriptDialog(true);
-                } else if (subtype === filterSubtype.FILTER) {
+                } else if (subtype === filterSubtype.FORM) {
                     setCurrentFilterId(event.rowData.elementUuid);
                     setOpenGenericFilterDialog(true);
                 }
@@ -572,7 +572,7 @@ const DirectoryContent = () => {
         } else if (objectType === elementType.FILTER) {
             if (objectSubtype === filterSubtype.SCRIPT) {
                 return <FilterIcon className={classes.icon} />;
-            } else if (objectSubtype === filterSubtype.FILTER) {
+            } else if (objectSubtype === filterSubtype.FORM) {
                 return <FilterListIcon className={classes.icon} />;
             }
         }
@@ -1091,7 +1091,7 @@ const DirectoryContent = () => {
                 isPrivate={areSelectedElementsAllPrivate()}
                 error={accessRightsError}
             />
-            <FiltersContingencyDialog
+            <FormContingencyDialog
                 listId={currentFiltersContingencyListId}
                 open={openFiltersContingencyDialog}
                 onClose={handleCloseFiltersContingency}

@@ -19,6 +19,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import { getFilterById, saveFilter } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar } from '../utils/messages';
+import { filterSubtype } from '../utils/elementType';
 
 const useStyles = makeStyles((theme) => ({
     controlItem: {
@@ -299,7 +300,6 @@ const SingleFilter = ({ filter, definition, onChange, sequence }) => {
         setEnabled(filter.enabled);
         onChange();
     };
-
     return (
         <Grid container item direction="row" key={definition.name + '-cont'}>
             <Grid
@@ -389,14 +389,17 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
         if (id !== null) {
             getFilterById(id).then((response) => {
                 setInitialFilter(response);
-                setFilterType(response.subtype);
+                setFilterType(response.equipmentFilterForm.equipmentType);
                 setCurrentFormEdit({
-                    type: { enabled: true, value: response.subtype },
+                    equipmentType: {
+                        enabled: true,
+                        value: response.equipmentFilterForm.equipmentType,
+                    },
                 });
             });
         } else {
             setCurrentFormEdit({
-                type: { enabled: true, value: null },
+                equipmentType: { enabled: true, value: null },
             });
             currentFilter.current = null;
             setInitialFilter(null);
@@ -411,9 +414,10 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     }, [initialFilter]);
 
     function onChange(newVal) {
-        currentFilter.current = newVal;
+        currentFilter.current = {};
         currentFilter.current.id = id;
-        currentFilter.current.subtype = newVal.type;
+        currentFilter.current.type = filterSubtype.FORM;
+        currentFilter.current.equipmentFilterForm = newVal;
         setBtnSaveListDisabled(false);
     }
 
@@ -421,7 +425,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
         onClose();
         currentFilter.current = null;
         setCurrentFormEdit({
-            type: { enabled: true, value: null },
+            equipmentType: { enabled: true, value: null },
         });
         setInitialFilter(null);
         setFilterType(null);
@@ -429,7 +433,6 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     };
 
     const handleClick = () => {
-        console.info(currentFilter.current);
         saveFilter(currentFilter.current)
             .then()
             .catch((error) => {
@@ -447,8 +450,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     };
 
     const changeFilterType = (newType) => {
-        console.info('newType', newType);
-        currentFormEdit.type = { enabled: true, value: newType };
+        currentFormEdit.equipmentType = { enabled: true, value: newType };
         setFilterType(newType);
         editDone();
     };
@@ -458,7 +460,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
             if (currentFormEdit[key] === undefined) {
                 currentFormEdit[key] = generateDefaultValue(
                     definition,
-                    initialFilter[key]
+                    initialFilter.equipmentFilterForm[key]
                 );
             }
             return (

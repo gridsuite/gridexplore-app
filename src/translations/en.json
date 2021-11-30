@@ -86,7 +86,6 @@
     "contingencyListName": "Name of contingency list",
     "contingencyListDescription": "Contingency list description",
     "SCRIPT": "Script",
-    "FILTERS": "Filters",
     "FORM": "Form",
     "editContingencyList": "Edit contingency list",
     "editFilterScript": "Edit filter script",

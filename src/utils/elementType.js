@@ -13,7 +13,7 @@ export const elementType = {
 };
 
 export const filterSubtype = {
-    FILTER: 'FILTER',
+    FORM: 'FORM',
     SCRIPT: 'SCRIPT',
 };
 
