@@ -81,6 +81,11 @@ const TreeViewsContainer = () => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
 
+    const uploadingStudies = useSelector((state) => state.uploadingStudies);
+    const currentChildren = useSelector((state) => state.currentChildren);
+    const currentChildrenRef = useRef(currentChildren);
+    currentChildrenRef.current = currentChildren;
+
     const mapDataRef = useRef({});
     mapDataRef.current = mapData;
 
@@ -405,20 +410,45 @@ const TreeViewsContainer = () => {
         [insertContent, selectedDirectoryRef, mapDataRef, dispatch]
     );
 
+    const mergeCurrentAndUploading = useCallback(
+        (current) => {
+            let toMerge = Object.values(uploadingStudies).filter(
+                (e) =>
+                    e.directory === selectedDirectoryRef.current &&
+                    current[e.elementName] === undefined
+            );
+
+            if (toMerge != null && toMerge.length > 0) {
+                return [...current, ...toMerge].sort(function (a, b) {
+                    return a.elementName.localeCompare(b.elementName);
+                });
+            } else {
+                if (current == null) {
+                    return current;
+                } else {
+                    return current.sort(function (a, b) {
+                        return a.elementName.localeCompare(b.elementName);
+                    });
+                }
+            }
+        },
+        [uploadingStudies, selectedDirectoryRef]
+    );
+
     /* currentChildren management */
     const updateCurrentChildren = useCallback(
         (children) => {
             dispatch(
                 setCurrentChildren(
-                    children
-                        .filter((child) => child.type !== elementType.DIRECTORY)
-                        .sort(function (a, b) {
-                            return a.elementName.localeCompare(b.elementName);
-                        })
+                    mergeCurrentAndUploading(
+                        children.filter(
+                            (child) => child.type !== elementType.DIRECTORY
+                        )
+                    )
                 )
             );
         },
-        [dispatch]
+        [dispatch, mergeCurrentAndUploading]
     );
 
     const updateDirectoryTreeAndContent = useCallback(
@@ -432,6 +462,14 @@ const TreeViewsContainer = () => {
         },
         [updateCurrentChildren, updateMapData]
     );
+
+    useEffect(() => {
+        dispatch(
+            setCurrentChildren(
+                mergeCurrentAndUploading(currentChildrenRef.current)
+            )
+        );
+    }, [currentChildrenRef, mergeCurrentAndUploading, dispatch]);
 
     const updateDirectoryTree = useCallback(
         (nodeId) => {

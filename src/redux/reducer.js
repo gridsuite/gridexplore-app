@@ -29,6 +29,8 @@ import {
     SELECT_FILE,
     REMOVE_SELECTED_FILE,
     ACTIVE_DIRECTORY,
+    ADD_UPLOADING_STUDY,
+    REMOVE_UPLOADING_STUDY,
 } from './actions';
 
 import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
@@ -51,6 +53,7 @@ const initialState = {
     cases: [],
     selectedCase: null,
     selectedFile: null,
+    uploadingStudies: {},
     ...paramsInitialState,
 };
 
@@ -115,5 +118,18 @@ export const reducer = createReducer(initialState, {
 
     [REMOVE_SELECTED_FILE]: (state) => {
         state.selectedFile = null;
+    },
+
+    [ADD_UPLOADING_STUDY]: (state, action) => {
+        state.uploadingStudies = {
+            ...state.uploadingStudies,
+            ...{ [action.uploadingStudy.id]: action.uploadingStudy },
+        };
+    },
+
+    [REMOVE_UPLOADING_STUDY]: (state, action) => {
+        let newUploadingStudies = { ...state.uploadingStudies };
+        delete newUploadingStudies[action.uploadingStudy.id];
+        state.uploadingStudies = newUploadingStudies;
     },
 });

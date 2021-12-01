@@ -579,9 +579,21 @@ const DirectoryContent = () => {
         }
     }
 
+    const getDisplayedElementName = (cellData) => {
+        const { elementName, uploading, elementUuid } = cellData.rowData;
+        const formatMessage = intl.formatMessage;
+        if (uploading)
+            return elementName + ' ' + formatMessage({ id: 'uploading' });
+        if (isMetadataLoading) return elementName;
+        if (childrenMetadata[elementUuid] == null)
+            return (
+                elementName + ' ' + formatMessage({ id: 'creationInProgress' })
+            );
+        return childrenMetadata[elementUuid].name;
+    };
+
     const nameCellRender = (cellData) => {
         const elementUuid = cellData.rowData['elementUuid'];
-        const elementName = cellData.rowData['elementName'];
         const objectType = cellData.rowData['type'];
         return (
             <div className={classes.cell}>
@@ -599,19 +611,18 @@ const DirectoryContent = () => {
                         childrenMetadata[elementUuid].subtype
                     )}
                 {/* Name */}
-                {isMetadataLoading ? null : childrenMetadata[elementUuid] ? (
-                    <div>{elementName}</div>
-                ) : (
-                    <>
-                        {elementName + ' '}
-                        <FormattedMessage id="creationInProgress" />
-                    </>
-                )}
+                {<div>{getDisplayedElementName(cellData)}</div>}
             </div>
         );
     };
 
     function toggleSelection(elementUuid) {
+        let element = currentChildren?.find(
+            (e) => e.elementUuid === elementUuid
+        );
+        if (element === undefined) {
+            return;
+        }
         let newSelection = new Set(selectedUuids);
         if (!newSelection.delete(elementUuid)) {
             newSelection.add(elementUuid);
@@ -622,7 +633,11 @@ const DirectoryContent = () => {
     function toggleSelectAll() {
         if (selectedUuids.size === 0) {
             setSelectedUuids(
-                new Set(currentChildren.map((c) => c.elementUuid))
+                new Set(
+                    currentChildren
+                        .filter((e) => !e.uploading)
+                        .map((c) => c.elementUuid)
+                )
             );
         } else {
             setSelectedUuids(new Set());
@@ -679,21 +694,26 @@ const DirectoryContent = () => {
         setIsMetadataLoading(true);
         if (currentChildren !== null && currentChildren.length > 0) {
             let metadata = {};
-            fetchElementsInfos(currentChildren.map((e) => e.elementUuid))
-                .then((res) => {
-                    res.forEach((e) => {
-                        metadata[e.elementUuid] = {
-                            name: e.elementName,
-                            subtype: e.specificMetadata
-                                ? e.specificMetadata.type
-                                : null,
-                        };
+            let childrenToFetchElementsInfos = Object.values(currentChildren)
+                .filter((e) => !e.uploading)
+                .map((e) => e.elementUuid);
+            if (childrenToFetchElementsInfos.length > 0) {
+                fetchElementsInfos(childrenToFetchElementsInfos)
+                    .then((res) => {
+                        res.forEach((e) => {
+                            metadata[e.elementUuid] = {
+                                name: e.elementName,
+                                subtype: e.specificMetadata
+                                    ? e.specificMetadata.type
+                                    : null,
+                            };
+                        });
+                    })
+                    .finally(() => {
+                        setChildrenMetadata(metadata);
+                        setIsMetadataLoading(false);
                     });
-                })
-                .finally(() => {
-                    setChildrenMetadata(metadata);
-                    setIsMetadataLoading(false);
-                });
+            }
         }
         setSelectedUuids(new Set());
     }, [currentChildren]);
@@ -899,10 +919,13 @@ const DirectoryContent = () => {
                 {selectedDirectory !== null &&
                     currentChildren !== null &&
                     currentChildren.length > 0 && (
-                        <>
-                            <VirtualizedTable
-                                style={{ flexGrow: 1 }}
-                                onRowRightClick={(event) => {
+                        <VirtualizedTable
+                            style={{ flexGrow: 1 }}
+                            onRowRightClick={(event) => {
+                                if (
+                                    event.rowData.uploading !== null &&
+                                    !event.rowData.uploading
+                                ) {
                                     if (event.rowData.type !== 'DIRECTORY') {
                                         setActiveElement(event.rowData);
                                     }
@@ -915,53 +938,53 @@ const DirectoryContent = () => {
                                             constants.VERTICAL_SHIFT,
                                     });
                                     setAnchorEl(event.event.currentTarget);
-                                }}
-                                onRowClick={handleRowClick}
-                                rows={currentChildren}
-                                columns={[
-                                    {
-                                        cellRenderer: selectionRenderer,
-                                        dataKey: 'selected',
-                                        label: '',
-                                        headerRenderer: selectionHeaderRenderer,
-                                        maxWidth: 60,
-                                    },
-                                    {
-                                        width: 100,
-                                        label: intl.formatMessage({
-                                            id: 'elementName',
-                                        }),
-                                        dataKey: 'elementName',
-                                        cellRenderer: nameCellRender,
-                                    },
-                                    {
-                                        width: 100,
-                                        label: intl.formatMessage({
-                                            id: 'type',
-                                        }),
-                                        dataKey: 'type',
-                                        cellRenderer: typeCellRender,
-                                    },
-                                    {
-                                        width: 50,
-                                        label: intl.formatMessage({
-                                            id: 'owner',
-                                        }),
-                                        dataKey: 'owner',
-                                        cellRenderer: accessOwnerCellRender,
-                                    },
-                                    {
-                                        width: 50,
-                                        label: intl.formatMessage({
-                                            id: 'accessRights',
-                                        }),
-                                        dataKey: 'accessRights',
-                                        cellRenderer: accessRightsCellRender,
-                                    },
-                                ]}
-                                sortable={true}
-                            />
-                        </>
+                                }
+                            }}
+                            onRowClick={handleRowClick}
+                            rows={currentChildren}
+                            columns={[
+                                {
+                                    cellRenderer: selectionRenderer,
+                                    dataKey: 'selected',
+                                    label: '',
+                                    headerRenderer: selectionHeaderRenderer,
+                                    maxWidth: 60,
+                                },
+                                {
+                                    width: 100,
+                                    label: intl.formatMessage({
+                                        id: 'elementName',
+                                    }),
+                                    dataKey: 'elementName',
+                                    cellRenderer: nameCellRender,
+                                },
+                                {
+                                    width: 100,
+                                    label: intl.formatMessage({
+                                        id: 'type',
+                                    }),
+                                    dataKey: 'type',
+                                    cellRenderer: typeCellRender,
+                                },
+                                {
+                                    width: 50,
+                                    label: intl.formatMessage({
+                                        id: 'owner',
+                                    }),
+                                    dataKey: 'owner',
+                                    cellRenderer: accessOwnerCellRender,
+                                },
+                                {
+                                    width: 50,
+                                    label: intl.formatMessage({
+                                        id: 'accessRights',
+                                    }),
+                                    dataKey: 'accessRights',
+                                    cellRenderer: accessRightsCellRender,
+                                },
+                            ]}
+                            sortable={true}
+                        />
                     )}
                 <StyledMenu
                     id="row-menu"
