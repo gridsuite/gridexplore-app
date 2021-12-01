@@ -12,6 +12,7 @@
 
     "createNewStudy": "Create new study",
     "createNewStudyDescription": "To create a new study, you should enter the following information:",
+    "studyCreationError": "Error when creating study: {studyName}",
     "renameElement": "Rename the element",
     "renameElementMsg": "Element new name: ",
     "renameElementNotAllowedError": "Cannot rename the element if you are not the owner",
@@ -38,6 +39,7 @@
     "copy": "COPY",
 
     "creationInProgress": "creation in progress",
+    "uploading": "upload in progress",
     "studyCreatingError": "An error occurred while creating the study: {studyName}",
     "studyNameAlreadyUsed": "This study name is already used",
 

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import CheckIcon from '@material-ui/icons/Check';
@@ -30,7 +30,9 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
+    addUploadingStudy,
     loadCasesSuccess,
+    removeUploadingStudy,
     removeSelectedFile,
     selectCase,
     selectFile,
@@ -39,6 +41,8 @@ import { store } from '../redux/store';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import PropTypes from 'prop-types';
+import { useSnackbar } from 'notistack';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -150,6 +154,11 @@ const UploadCase = () => {
     );
 };
 
+const uploadingStudyKeyGenerator = (() => {
+    let key = 1;
+    return () => key++;
+})();
+
 /**
  * Dialog to create a study
  * @param {Boolean} open Is the dialog open ?
@@ -157,6 +166,8 @@ const UploadCase = () => {
  */
 export const CreateStudyForm = ({ open, onClose }) => {
     const [caseExist, setCaseExist] = React.useState(false);
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const [studyName, setStudyName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
@@ -174,6 +185,7 @@ export const CreateStudyForm = ({ open, onClose }) => {
 
     const classes = useStyles();
     const intl = useIntl();
+    const intlRef = useIntlRef();
     const dispatch = useDispatch();
 
     const selectedFile = useSelector((state) => state.selectedFile);
@@ -251,6 +263,20 @@ export const CreateStudyForm = ({ open, onClose }) => {
         setStudyPrivacy(event.target.value);
     };
 
+    const studyCreationError = useCallback(
+        (studyName, msg) =>
+            displayErrorMessageWithSnackbar({
+                errorMessage: msg,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: 'studyCreationError',
+                    intlRef: intlRef,
+                    headerMessageValues: { studyName },
+                },
+            }),
+        [enqueueSnackbar, intlRef]
+    );
+
     const handleCreateNewStudy = () => {
         if (studyName === '') {
             setCreateStudyErr(intl.formatMessage({ id: 'studyNameErrorMsg' }));
@@ -264,7 +290,15 @@ export const CreateStudyForm = ({ open, onClose }) => {
         }
 
         let isPrivateStudy = studyPrivacy === 'private';
-
+        const uploadingStudy = {
+            id: uploadingStudyKeyGenerator(),
+            elementName: studyName,
+            directory: activeDirectory,
+            type: 'STUDY',
+            owner: userId,
+            accessRights: isPrivateStudy,
+            uploading: true,
+        };
         createStudy(
             caseExist,
             studyName,
@@ -273,31 +307,41 @@ export const CreateStudyForm = ({ open, onClose }) => {
             selectedFile,
             isPrivateStudy,
             activeDirectory
-        ).then((res) => {
-            if (res.ok) {
-                onClose();
-                resetDialog();
-            } else {
-                console.debug('Error when creating the study');
-                if (res.status === 409) {
-                    setCreateStudyErr(
-                        intl.formatMessage({ id: 'studyNameAlreadyUsed' })
-                    );
-                } else {
-                    res.json()
-                        .then((data) => {
-                            setCreateStudyErr(
-                                data.error + ' - ' + data.message
-                            );
-                        })
-                        .catch((error) => {
-                            setCreateStudyErr(
-                                error.name + ' - ' + error.message
-                            );
-                        });
+        )
+            .then((res) => {
+                dispatch(removeUploadingStudy(uploadingStudy));
+                if (!res.ok) {
+                    if (res.status === 409) {
+                        studyCreationError(
+                            studyName,
+                            intl.formatMessage({
+                                id: 'studyNameAlreadyUsed',
+                            })
+                        );
+                    } else {
+                        res.json()
+                            .then((data) => {
+                                studyCreationError(
+                                    studyName,
+                                    data.error + ' - ' + data.message
+                                );
+                            })
+                            .catch((error) => {
+                                studyCreationError(
+                                    studyName,
+                                    error.name + ' - ' + error.message
+                                );
+                            });
+                    }
                 }
-            }
-        });
+            })
+            .catch((e) => {
+                studyCreationError(studyName, e.name + ' - ' + e.message);
+                dispatch(removeUploadingStudy(uploadingStudy));
+            });
+        dispatch(addUploadingStudy(uploadingStudy));
+        onClose();
+        resetDialog();
     };
 
     const handleKeyPressed = (event) => {
