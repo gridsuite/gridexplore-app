@@ -102,8 +102,6 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                 name: name,
                 description: description,
                 script: aceEditorContent,
-                // type: ElementType.FILTER,
-                // subtype: FilterType.SCRIPT,
             };
             saveFilter(newScript)
                 .then((unused) => {})
