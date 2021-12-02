@@ -26,7 +26,7 @@ import Grid from '@material-ui/core/Grid';
 import { createFilter } from '../utils/rest-api';
 import Alert from '@material-ui/lab/Alert';
 import { useSelector } from 'react-redux';
-import { filterSubtype } from '../utils/elementType';
+import { FilterType } from '../utils/elementType';
 
 const styles = (theme) => ({
     root: {
@@ -93,7 +93,7 @@ const CreateFilterDialog = ({
 }) => {
     const [disableBtnSave, setDisableBtnSave] = useState(true);
     const [newNameList, setNewListName] = useState('');
-    const [newListType, setNewListType] = useState(filterSubtype.SCRIPT);
+    const [newListType, setNewListType] = useState(FilterType.SCRIPT);
     const [filterPrivacy, setFilterPrivacy] = React.useState('private');
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
@@ -113,13 +113,13 @@ const CreateFilterDialog = ({
 
     const resetDialog = () => {
         setNewListName('');
-        setNewListType(filterSubtype.SCRIPT);
+        setNewListType(FilterType.SCRIPT);
         setFilterPrivacy('private');
         setCreateFilterErr('');
     };
 
     const handleSave = () => {
-        const subtype = newListType === filterSubtype.SCRIPT ? null : 'LINE';
+        const subtype = newListType === FilterType.SCRIPT ? null : 'LINE';
         createFilter(
             {
                 type: newListType,

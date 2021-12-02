@@ -19,7 +19,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import { getFilterById, saveFilter } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar } from '../utils/messages';
-import { filterSubtype } from '../utils/elementType';
+import { FilterType } from '../utils/elementType';
 
 const useStyles = makeStyles((theme) => ({
     controlItem: {
@@ -416,7 +416,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     function onChange(newVal) {
         currentFilter.current = {};
         currentFilter.current.id = id;
-        currentFilter.current.type = filterSubtype.FORM;
+        currentFilter.current.type = FilterType.FORM;
         currentFilter.current.equipmentFilterForm = newVal;
         setBtnSaveListDisabled(false);
     }

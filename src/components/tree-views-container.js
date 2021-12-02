@@ -30,7 +30,7 @@ import DirectoryTreeView from './directory-tree-view';
 
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
-import { elementType } from '../utils/elementType';
+import { ElementType } from '../utils/elementType';
 import { notificationType } from '../utils/notificationType';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -392,7 +392,7 @@ const TreeViewsContainer = () => {
     const updateMapData = useCallback(
         (nodeId, children) => {
             let newSubdirectories = children.filter(
-                (child) => child.type === elementType.DIRECTORY
+                (child) => child.type === ElementType.DIRECTORY
             );
             insertContent(nodeId, newSubdirectories);
             if (
@@ -442,7 +442,7 @@ const TreeViewsContainer = () => {
                 setCurrentChildren(
                     mergeCurrentAndUploading(
                         children.filter(
-                            (child) => child.type !== elementType.DIRECTORY
+                            (child) => child.type !== ElementType.DIRECTORY
                         )
                     )
                 )

@@ -9,7 +9,7 @@ import { APP_NAME, getAppName } from './config-params';
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { EquipmentTypes } from './equipment-types';
-import { contingencyListSubtype } from './elementType';
+import { ContingencyListType } from './elementType';
 
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
@@ -372,7 +372,7 @@ export function createContingencyList(
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     const typeUriParam =
-        contingencyListType === contingencyListSubtype.SCRIPT
+        contingencyListType === ContingencyListType.SCRIPT
             ? 'script-contingency-lists'
             : 'form-contingency-lists';
 
@@ -387,7 +387,7 @@ export function createContingencyList(
     console.debug(createContingencyListUrl);
 
     let body = {};
-    if (contingencyListType === contingencyListSubtype.FORM) {
+    if (contingencyListType === ContingencyListType.FORM) {
         body.equipmentType = EquipmentTypes.LINE;
         body.nominalVoltage = -1;
         body.nominalVoltageOperator = '=';

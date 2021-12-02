@@ -19,7 +19,7 @@ import {
     getContingencyList,
     saveFormContingencyList,
 } from '../../utils/rest-api';
-import { contingencyListSubtype } from '../../utils/elementType';
+import { ContingencyListType } from '../../utils/elementType';
 
 const emptyFormContingency = {
     equipmentID: '*',
@@ -85,7 +85,7 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
     const getCurrentContingencyList = useCallback(
         (currentItemId) => {
             if (currentItemId !== null) {
-                getContingencyList(contingencyListSubtype.FORM, currentItemId)
+                getContingencyList(ContingencyListType.FORM, currentItemId)
                     .then((data) => {
                         if (data) {
                             setCurrentFormContingency(data);
