@@ -25,7 +25,11 @@ import {
     saveFilter,
     saveScriptContingencyList,
 } from '../../utils/rest-api';
-import { ContingencyListType, ElementType } from '../../utils/elementType';
+import {
+    ContingencyListType,
+    ElementType,
+    FilterType,
+} from '../../utils/elementType';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -102,6 +106,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                 name: name,
                 description: description,
                 script: aceEditorContent,
+                type: FilterType.SCRIPT,
             };
             saveFilter(newScript)
                 .then((unused) => {})
