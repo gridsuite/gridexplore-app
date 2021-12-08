@@ -520,16 +520,16 @@ const DirectoryContent = () => {
     }
 
     function getElementTypeTranslation(type, subtype) {
-        let typeTranslationKey;
-        if (
-            type === ElementType.FILTER ||
-            type === ElementType.CONTINGENCY_LIST
-        ) {
-            typeTranslationKey = subtype + '_' + type;
-        } else {
-            typeTranslationKey = type;
-        }
-        return <FormattedMessage id={typeTranslationKey} />;
+        return (
+            <FormattedMessage
+                id={
+                    type === ElementType.FILTER ||
+                    type === ElementType.CONTINGENCY_LIST
+                        ? subtype + '_' + type
+                        : type
+                }
+            />
+        );
     }
 
     function typeCellRender(cellData) {
