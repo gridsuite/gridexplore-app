@@ -26,7 +26,7 @@ import Grid from '@material-ui/core/Grid';
 import { createFilter } from '../utils/rest-api';
 import Alert from '@material-ui/lab/Alert';
 import { useSelector } from 'react-redux';
-import { filterSubtype } from '../utils/elementType';
+import { FilterType } from '../utils/elementType';
 
 const styles = (theme) => ({
     root: {
@@ -93,7 +93,7 @@ const CreateFilterDialog = ({
 }) => {
     const [disableBtnSave, setDisableBtnSave] = useState(true);
     const [newNameList, setNewListName] = useState('');
-    const [newListType, setNewListType] = useState(filterSubtype.SCRIPT);
+    const [newListType, setNewListType] = useState(FilterType.SCRIPT);
     const [filterPrivacy, setFilterPrivacy] = React.useState('private');
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
@@ -113,17 +113,19 @@ const CreateFilterDialog = ({
 
     const resetDialog = () => {
         setNewListName('');
-        setNewListType(filterSubtype.SCRIPT);
+        setNewListType(FilterType.SCRIPT);
         setFilterPrivacy('private');
         setCreateFilterErr('');
     };
 
     const handleSave = () => {
-        const filterType =
-            newListType === filterSubtype.SCRIPT ? newListType : 'LINE';
+        const subtype = newListType === FilterType.SCRIPT ? null : 'LINE';
         createFilter(
             {
-                type: filterType,
+                type: newListType,
+                equipmentFilterForm: {
+                    equipmentType: subtype,
+                },
                 transient: true,
             },
             newNameList,
@@ -182,9 +184,9 @@ const CreateFilterDialog = ({
                                 label={<FormattedMessage id="SCRIPT" />}
                             />
                             <FormControlLabel
-                                value="FILTERS"
+                                value="FORM"
                                 control={<Radio />}
-                                label={<FormattedMessage id="FILTERS" />}
+                                label={<FormattedMessage id="FORM" />}
                             />
                         </RadioGroup>
                         <RadioGroup

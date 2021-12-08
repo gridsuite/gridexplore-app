@@ -17,11 +17,11 @@ import { EquipmentTypes } from '../../utils/equipment-types';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     getContingencyList,
-    saveFiltersContingencyList,
+    saveFormContingencyList,
 } from '../../utils/rest-api';
-import { contingencyListSubtype } from '../../utils/elementType';
+import { ContingencyListType } from '../../utils/elementType';
 
-const emptyFiltersContingency = {
+const emptyFormContingency = {
     equipmentID: '*',
     equipmentName: '*',
     equipmentType: EquipmentTypes.LINE,
@@ -43,64 +43,53 @@ const useStyles = makeStyles(() => ({
 }));
 
 /**
- * Dialog to edit a filters contingency list
+ * Dialog to edit a form contingency list
  * @param listId id of list to edit
  * @param open Is the dialog open ?
  * @param onClose Event to close the dialog
  * @param onError handle errors
  * @param title Title of the dialog
  */
-const FiltersContingencyDialog = ({
-    listId,
-    open,
-    onClose,
-    onError,
-    title,
-}) => {
+const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
     const classes = useStyles();
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
-    const [currentFiltersContingency, setCurrentFiltersContingency] =
-        useState(null);
-    const [newFiltersContingency, setNewFiltersContingency] = useState(
-        emptyFiltersContingency
-    );
+    const [currentFormContingency, setCurrentFormContingency] = useState(null);
+    const [newFormContingency, setNewFormContingency] =
+        useState(emptyFormContingency);
 
     const handleClose = () => {
         handleCancel();
     };
 
     const handleCancel = () => {
-        setNewFiltersContingency(currentFiltersContingency);
+        setNewFormContingency(currentFormContingency);
         setBtnSaveListDisabled(true);
         onClose();
     };
 
     const handleClick = () => {
         let newFiltersContingencyList = {
-            ...currentFiltersContingency,
-            ...newFiltersContingency,
+            ...currentFormContingency,
+            ...newFormContingency,
             id: listId,
         };
-        saveFiltersContingencyList(newFiltersContingencyList)
+        saveFormContingencyList(newFiltersContingencyList)
             .then((response) => {})
             .catch((error) => {
                 onError(error.message);
             });
         onClose();
-        setCurrentFiltersContingency(newFiltersContingencyList);
+        setCurrentFormContingency(newFiltersContingencyList);
     };
 
     const getCurrentContingencyList = useCallback(
         (currentItemId) => {
             if (currentItemId !== null) {
-                getContingencyList(
-                    contingencyListSubtype.FILTERS,
-                    currentItemId
-                )
+                getContingencyList(ContingencyListType.FORM, currentItemId)
                     .then((data) => {
                         if (data) {
-                            setCurrentFiltersContingency(data);
-                            setNewFiltersContingency(data);
+                            setCurrentFormContingency(data);
+                            setNewFormContingency(data);
                         }
                     })
                     .catch((error) => {
@@ -117,20 +106,20 @@ const FiltersContingencyDialog = ({
     }, [listId, getCurrentContingencyList]);
 
     function onChangeFiltersContingency(newFiltersContingency) {
-        if (currentFiltersContingency !== null) {
+        if (currentFormContingency !== null) {
             if (
                 newFiltersContingency.equipmentID !==
-                    currentFiltersContingency.equipmentID ||
+                    currentFormContingency.equipmentID ||
                 newFiltersContingency.equipmentName !==
-                    currentFiltersContingency.equipmentName ||
+                    currentFormContingency.equipmentName ||
                 newFiltersContingency.equipmentType !==
-                    currentFiltersContingency.equipmentType ||
+                    currentFormContingency.equipmentType ||
                 newFiltersContingency.nominalVoltageOperator !==
-                    currentFiltersContingency.nominalVoltageOperator ||
+                    currentFormContingency.nominalVoltageOperator ||
                 newFiltersContingency.nominalVoltage !==
-                    currentFiltersContingency.nominalVoltage + '' ||
+                    currentFormContingency.nominalVoltage + '' ||
                 newFiltersContingency.countries.sort().join(',') !==
-                    currentFiltersContingency.countries.sort().join(',')
+                    currentFormContingency.countries.sort().join(',')
             ) {
                 setBtnSaveListDisabled(false);
             } else {
@@ -139,7 +128,7 @@ const FiltersContingencyDialog = ({
         } else {
             setBtnSaveListDisabled(false);
         }
-        setNewFiltersContingency(newFiltersContingency);
+        setNewFormContingency(newFiltersContingency);
     }
 
     return (
@@ -147,13 +136,13 @@ const FiltersContingencyDialog = ({
             classes={{ paper: classes.dialogPaper }}
             open={open}
             onClose={handleClose}
-            aria-labelledby="dialog-title-filters-contingency-edit"
+            aria-labelledby="dialog-title-form-contingency-edit"
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <div className={classes.filtersEditor}>
                     <FiltersEditor
-                        filters={newFiltersContingency}
+                        filters={newFormContingency}
                         onChange={onChangeFiltersContingency}
                     />
                 </div>
@@ -174,7 +163,7 @@ const FiltersContingencyDialog = ({
     );
 };
 
-FiltersContingencyDialog.propTypes = {
+FormContingencyDialog.propTypes = {
     listId: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
@@ -182,4 +171,4 @@ FiltersContingencyDialog.propTypes = {
     title: PropTypes.string.isRequired,
 };
 
-export default FiltersContingencyDialog;
+export default FormContingencyDialog;

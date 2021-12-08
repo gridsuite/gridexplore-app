@@ -25,7 +25,7 @@ import { useSelector } from 'react-redux';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import PropTypes from 'prop-types';
-import { contingencyListSubtype } from '../utils/elementType';
+import { ContingencyListType } from '../utils/elementType';
 
 /**
  * Dialog to create a contingency
@@ -34,7 +34,7 @@ import { contingencyListSubtype } from '../utils/elementType';
  */
 export const CreateContingencyListForm = ({ open, onClose }) => {
     const [contingencyListType, setContingencyListType] = React.useState(
-        contingencyListSubtype.SCRIPT
+        ContingencyListType.SCRIPT
     );
 
     const [contingencyListName, setContingencyListName] = React.useState('');
@@ -53,7 +53,7 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
         setContingencyListName('');
         setContingencyListDescription('');
         setContingencyListPrivacy('private');
-        setContingencyListType(contingencyListSubtype.SCRIPT);
+        setContingencyListType(ContingencyListType.SCRIPT);
         setCreateContingencyListErr('');
     };
 
@@ -175,9 +175,9 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
                             label={<FormattedMessage id="SCRIPT" />}
                         />
                         <FormControlLabel
-                            value="FILTERS"
+                            value="FORM"
                             control={<Radio />}
-                            label={<FormattedMessage id="FILTERS" />}
+                            label={<FormattedMessage id="FORM" />}
                         />
                     </RadioGroup>
 

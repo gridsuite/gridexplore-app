@@ -26,9 +26,9 @@ import {
     saveScriptContingencyList,
 } from '../../utils/rest-api';
 import {
-    contingencyListSubtype,
-    elementType,
-    filterSubtype,
+    ContingencyListType,
+    ElementType,
+    FilterType,
 } from '../../utils/elementType';
 
 const useStyles = makeStyles(() => ({
@@ -88,7 +88,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
 
     const handleClick = () => {
         let newScript;
-        if (type === elementType.CONTINGENCY_LIST) {
+        if (type === ElementType.CONTINGENCY_LIST) {
             newScript = {
                 id: id,
                 name: name,
@@ -106,7 +106,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                 name: name,
                 description: description,
                 script: aceEditorContent,
-                type: filterSubtype.SCRIPT,
+                type: FilterType.SCRIPT,
             };
             saveFilter(newScript)
                 .then((unused) => {})
@@ -129,34 +129,39 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
 
     const getCurrentScript = useCallback(
         (currentItemId) => {
-            if (type === elementType.CONTINGENCY_LIST) {
-                getContingencyList(contingencyListSubtype.SCRIPT, currentItemId)
-                    .then((data) => {
-                        if (data) {
-                            setCurrentScript(data);
-                            setAceEditorContent(data.script);
-                            setName(data.name);
-                            setDescription(data.description);
-                        }
-                    })
-                    .catch((error) => {
-                        onError(error.message);
-                    });
-            } else if (type === elementType.FILTER) {
-                getFilterById(currentItemId)
-                    .then((data) => {
-                        if (data) {
-                            setCurrentScript(data);
-                            setAceEditorContent(
-                                data.script === null ? '' : data.script
-                            );
-                            setName(data.name);
-                            setDescription(data.description);
-                        }
-                    })
-                    .catch((error) => {
-                        onError(error.message);
-                    });
+            if (currentItemId != null) {
+                if (type === ElementType.CONTINGENCY_LIST) {
+                    getContingencyList(
+                        ContingencyListType.SCRIPT,
+                        currentItemId
+                    )
+                        .then((data) => {
+                            if (data) {
+                                setCurrentScript(data);
+                                setAceEditorContent(data.script);
+                                setName(data.name);
+                                setDescription(data.description);
+                            }
+                        })
+                        .catch((error) => {
+                            onError(error.message);
+                        });
+                } else if (type === ElementType.FILTER) {
+                    getFilterById(currentItemId)
+                        .then((data) => {
+                            if (data) {
+                                setCurrentScript(data);
+                                setAceEditorContent(
+                                    data.script === null ? '' : data.script
+                                );
+                                setName(data.name);
+                                setDescription(data.description);
+                            }
+                        })
+                        .catch((error) => {
+                            onError(error.message);
+                        });
+                }
             }
         },
         [onError, type]
