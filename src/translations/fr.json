@@ -90,6 +90,11 @@
     "editContingencyList": "Editer la liste de contingences",
     "editFilterScript": "Editer le script de filtre",
     "editFilter": "Editer le filtre",
+    "STUDY": "Étude",
+    "SCRIPT_FILTER": "Filtre script",
+    "FORM_FILTER": "Filtre formulaire",
+    "SCRIPT_CONTINGENCY_LIST": "Liste de contingences script",
+    "FORM_CONTINGENCY_LIST": "Liste de contingences formulaire",
 
     "LINE": "LIGNE",
     "TWO_WINDINGS_TRANSFORMER": "TRANSFO 2E",

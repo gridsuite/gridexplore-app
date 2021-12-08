@@ -519,14 +519,17 @@ const DirectoryContent = () => {
         return href;
     }
 
-    function buildTypeWithSubtype(type, subtype) {
+    function getElementTypeTranslation(type, subtype) {
+        let typeTranslationKey;
         if (
             type === ElementType.FILTER ||
             type === ElementType.CONTINGENCY_LIST
         ) {
-            return subtype + '_' + type;
+            typeTranslationKey = subtype + '_' + type;
+        } else {
+            typeTranslationKey = type;
         }
-        return type;
+        return <FormattedMessage id={typeTranslationKey} />;
     }
 
     function typeCellRender(cellData) {
@@ -536,10 +539,10 @@ const DirectoryContent = () => {
             <div className={classes.cell}>
                 {!isMetadataLoading && childrenMetadata[elementUuid] ? (
                     <div>
-                        {buildTypeWithSubtype(
+                        {getElementTypeTranslation(
                             objectType,
                             childrenMetadata[elementUuid].subtype
-                        ).toLowerCase()}
+                        )}
                     </div>
                 ) : null}
             </div>
