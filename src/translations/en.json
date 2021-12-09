@@ -92,6 +92,12 @@
     "editContingencyList": "Edit contingency list",
     "editFilterScript": "Edit filter script",
     "editFilter": "Edit filter",
+    "STUDY": "Study",
+    "SCRIPT_FILTER": "Script filter",
+    "FORM_FILTER": "Form filter",
+    "SCRIPT_CONTINGENCY_LIST": "Script contingency list",
+    "FORM_CONTINGENCY_LIST": "Form contingency list",
+
 
     "LINE": "LINE",
     "TWO_WINDINGS_TRANSFORMER": "2W TRANSFORMER",
