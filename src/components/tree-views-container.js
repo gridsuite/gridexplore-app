@@ -717,7 +717,7 @@ const TreeViewsContainer = () => {
                                     })}
                                 />
                             </MenuItem>,
-                            <hr />,
+                            <hr key={'hr'} />,
                         ],
                         <MenuItem
                             onClick={handleOpenCreateNewDirectoryDialog}
