@@ -222,10 +222,10 @@ export function getExportUrl(studyUuid, exportFormat) {
     return getUrlWithToken(url);
 }
 
-export function renameElement(studyUuid, newStudyName) {
-    console.info('Renaming study ' + studyUuid);
+export function renameElement(elementUuid, newElementName) {
+    console.info('Renaming element ' + elementUuid);
     const renameElementUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${studyUuid}`;
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${elementUuid}`;
     console.debug(renameElementUrl);
     return backendFetch(renameElementUrl, {
         method: 'put',
@@ -234,7 +234,7 @@ export function renameElement(studyUuid, newStudyName) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            elementName: newStudyName,
+            elementName: newElementName,
         }),
     });
 }
