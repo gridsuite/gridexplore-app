@@ -424,9 +424,9 @@ const TreeViewsContainer = () => {
                 });
             } else {
                 if (current == null) {
-                    return current;
+                    return null;
                 } else {
-                    return current.sort(function (a, b) {
+                    return [...current].sort(function (a, b) {
                         return a.elementName.localeCompare(b.elementName);
                     });
                 }
