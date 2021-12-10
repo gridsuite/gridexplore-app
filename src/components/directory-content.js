@@ -100,9 +100,16 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         justifyContent: 'center',
     },
+    circularProgressContainer: {
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'row',
+        flexGrow: '1',
+    },
     centeredCircularProgress: {
         alignSelf: 'center',
-        margin: theme.spacing(4),
+        marginLeft: '50%',
+        marginTop: -circularProgressSize / 2,
     },
 }));
 
@@ -121,7 +128,7 @@ const DirectoryContent = () => {
     const { enqueueSnackbar } = useSnackbar();
 
     const [childrenMetadata, setChildrenMetadata] = useState({});
-    const [isMetadataLoading, setIsMetadataLoading] = useState(false);
+    const [isMetaDataPresent, setIsMetaDataPresent] = useState(false);
 
     const [selectedUuids, setSelectedUuids] = useState(new Set());
 
@@ -546,7 +553,7 @@ const DirectoryContent = () => {
         const objectType = cellData.rowData[cellData.dataKey];
         return (
             <div className={classes.cell}>
-                {!isMetadataLoading && childrenMetadata[elementUuid] ? (
+                {isMetaDataPresent && childrenMetadata[elementUuid] ? (
                     <div>
                         {getElementTypeTranslation(
                             objectType,
@@ -595,7 +602,7 @@ const DirectoryContent = () => {
         const formatMessage = intl.formatMessage;
         if (uploading)
             return elementName + ' ' + formatMessage({ id: 'uploading' });
-        if (isMetadataLoading) return elementName;
+        if (!isMetaDataPresent) return elementName;
         if (childrenMetadata[elementUuid] == null)
             return (
                 elementName + ' ' + formatMessage({ id: 'creationInProgress' })
@@ -702,8 +709,12 @@ const DirectoryContent = () => {
     }
 
     useEffect(() => {
+        setIsMetaDataPresent(false);
+    }, [selectedDirectory, setIsMetaDataPresent]);
+
+    useEffect(() => {
         if (currentChildren?.length > 0) {
-            setIsMetadataLoading(true);
+            setIsMetaDataPresent(false);
             let metadata = {};
             let childrenToFetchElementsInfos = Object.values(currentChildren)
                 .filter((e) => !e.uploading)
@@ -724,10 +735,12 @@ const DirectoryContent = () => {
                         // discarding request for older directory
                         if (currentChildrenRef.current === currentChildren) {
                             setChildrenMetadata(metadata);
-                            setIsMetadataLoading(false);
+                            setIsMetaDataPresent(true);
                         }
                     });
             }
+        } else {
+            setIsMetaDataPresent(true);
         }
         setSelectedUuids(new Set());
     }, [currentChildren, currentChildrenRef]);
@@ -906,14 +919,15 @@ const DirectoryContent = () => {
                         handleCloseRowMenu();
                 }}
             >
-                {isMetadataLoading ||
-                    (currentChildren === undefined && (
+                {!isMetaDataPresent && selectedDirectory && (
+                    <div className={classes.circularProgressContainer}>
                         <CircularProgress
-                            size={circularProgressSize}
+                            size={'60px'}
                             className={classes.centeredCircularProgress}
                         />
-                    ))}
-                {!isMetadataLoading && currentChildren?.length === 0 && (
+                    </div>
+                )}
+                {isMetaDataPresent && currentChildren?.length === 0 && (
                     <div style={{ textAlign: 'center', marginTop: '100px' }}>
                         <FolderOpenRoundedIcon
                             style={{ width: '100px', height: '100px' }}
@@ -923,7 +937,7 @@ const DirectoryContent = () => {
                         </h1>
                     </div>
                 )}
-                {!isMetadataLoading && currentChildren?.length > 0 && (
+                {isMetaDataPresent && currentChildren?.length > 0 && (
                     <>
                         <Toolbar>
                             {allowsDelete(false) && selectedUuids.size > 0 && (
