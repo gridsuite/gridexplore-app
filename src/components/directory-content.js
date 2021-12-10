@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -69,6 +69,8 @@ import CopyToScriptDialog from './dialogs/copy-to-script-dialog';
 import { useSnackbar } from 'notistack';
 import GenericFilterDialog from './generic-filter';
 
+const circularProgressSize = 100;
+
 const useStyles = makeStyles((theme) => ({
     link: {
         color: theme.link.color,
@@ -98,6 +100,10 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         justifyContent: 'center',
     },
+    centeredCircularProgress: {
+        alignSelf: 'center',
+        margin: theme.spacing(4),
+    },
 }));
 
 const StyledMenu = withStyles({
@@ -120,6 +126,9 @@ const DirectoryContent = () => {
     const [selectedUuids, setSelectedUuids] = useState(new Set());
 
     const currentChildren = useSelector((state) => state.currentChildren);
+    const currentChildrenRef = useRef();
+    currentChildrenRef.current = currentChildren;
+
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
@@ -693,8 +702,8 @@ const DirectoryContent = () => {
     }
 
     useEffect(() => {
-        setIsMetadataLoading(true);
-        if (currentChildren !== null && currentChildren.length > 0) {
+        if (currentChildren?.length > 0) {
+            setIsMetadataLoading(true);
             let metadata = {};
             let childrenToFetchElementsInfos = Object.values(currentChildren)
                 .filter((e) => !e.uploading)
@@ -712,13 +721,16 @@ const DirectoryContent = () => {
                         });
                     })
                     .finally(() => {
-                        setChildrenMetadata(metadata);
-                        setIsMetadataLoading(false);
+                        // discarding request for older directory
+                        if (currentChildrenRef.current === currentChildren) {
+                            setChildrenMetadata(metadata);
+                            setIsMetadataLoading(false);
+                        }
                     });
             }
         }
         setSelectedUuids(new Set());
-    }, [currentChildren]);
+    }, [currentChildren, currentChildrenRef]);
 
     const contextualMixPolicies = {
         BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
@@ -894,33 +906,35 @@ const DirectoryContent = () => {
                         handleCloseRowMenu();
                 }}
             >
-                {selectedDirectory !== null &&
-                    currentChildren !== null &&
-                    currentChildren.length === 0 && (
-                        <div
-                            style={{ textAlign: 'center', marginTop: '100px' }}
-                        >
-                            <FolderOpenRoundedIcon
-                                style={{ width: '100px', height: '100px' }}
-                            />
-                            <h1>
-                                <FormattedMessage id={'emptyDir'} />
-                            </h1>
-                        </div>
-                    )}
-                <Toolbar>
-                    {allowsDelete(false) && selectedUuids.size > 0 && (
-                        <IconButton
-                            className={classes.icon}
-                            onClick={() => handleOpenDeleteElement()}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    )}
-                </Toolbar>
-                {selectedDirectory !== null &&
-                    currentChildren !== null &&
-                    currentChildren.length > 0 && (
+                {isMetadataLoading ||
+                    (currentChildren === undefined && (
+                        <CircularProgress
+                            size={circularProgressSize}
+                            className={classes.centeredCircularProgress}
+                        />
+                    ))}
+                {!isMetadataLoading && currentChildren?.length === 0 && (
+                    <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                        <FolderOpenRoundedIcon
+                            style={{ width: '100px', height: '100px' }}
+                        />
+                        <h1>
+                            <FormattedMessage id={'emptyDir'} />
+                        </h1>
+                    </div>
+                )}
+                {!isMetadataLoading && currentChildren?.length > 0 && (
+                    <>
+                        <Toolbar>
+                            {allowsDelete(false) && selectedUuids.size > 0 && (
+                                <IconButton
+                                    className={classes.icon}
+                                    onClick={() => handleOpenDeleteElement()}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            )}
+                        </Toolbar>
                         <VirtualizedTable
                             style={{ flexGrow: 1 }}
                             onRowRightClick={(event) => {
@@ -987,7 +1001,8 @@ const DirectoryContent = () => {
                             ]}
                             sortable={true}
                         />
-                    )}
+                    </>
+                )}
                 <StyledMenu
                     id="row-menu"
                     anchorEl={anchorEl}

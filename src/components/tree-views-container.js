@@ -453,6 +453,7 @@ const TreeViewsContainer = () => {
 
     const updateDirectoryTreeAndContent = useCallback(
         (nodeId) => {
+            dispatch(setCurrentChildren(undefined));
             fetchDirectoryContent(nodeId).then((childrenToBeInserted) => {
                 // update directory Content
                 updateCurrentChildren(childrenToBeInserted);
@@ -460,7 +461,7 @@ const TreeViewsContainer = () => {
                 updateMapData(nodeId, childrenToBeInserted);
             });
         },
-        [updateCurrentChildren, updateMapData]
+        [updateCurrentChildren, updateMapData, dispatch]
     );
 
     useEffect(() => {
