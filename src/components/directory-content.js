@@ -69,7 +69,7 @@ import CopyToScriptDialog from './dialogs/copy-to-script-dialog';
 import { useSnackbar } from 'notistack';
 import GenericFilterDialog from './generic-filter';
 
-const circularProgressSize = 100;
+const circularProgressSize = '33vh';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -108,8 +108,7 @@ const useStyles = makeStyles((theme) => ({
     },
     centeredCircularProgress: {
         alignSelf: 'center',
-        marginLeft: '50%',
-        marginTop: -circularProgressSize / 2,
+        marginLeft: '33%',
     },
 }));
 
@@ -922,7 +921,7 @@ const DirectoryContent = () => {
                 {!isMetaDataPresent && selectedDirectory && (
                     <div className={classes.circularProgressContainer}>
                         <CircularProgress
-                            size={'60px'}
+                            size={circularProgressSize}
                             className={classes.centeredCircularProgress}
                         />
                     </div>
