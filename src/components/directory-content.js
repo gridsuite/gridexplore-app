@@ -23,9 +23,9 @@ import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 
 import VirtualizedTable from './virtualized-table';
 import {
-    contingencyListSubtype,
-    elementType,
-    filterSubtype,
+    ContingencyListType,
+    ElementType,
+    FilterType,
 } from '../utils/elementType';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
 import { Checkbox } from '@material-ui/core';
@@ -38,7 +38,7 @@ import {
     newScriptFromFiltersContingencyList,
     renameElement,
     replaceFiltersWithScript,
-    replaceFiltersWithScriptContingencyList,
+    replaceFormContingencyListWithScript,
     updateAccessRights,
 } from '../utils/rest-api';
 
@@ -62,7 +62,7 @@ import ExportDialog from './export-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
-import FiltersContingencyDialog from './dialogs/filters-contingency-dialog';
+import FormContingencyDialog from './dialogs/form-contingency-dialog';
 import ScriptDialog from './dialogs/script-dialog';
 import ReplaceWithScriptDialog from './dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from './dialogs/copy-to-script-dialog';
@@ -274,7 +274,7 @@ const DirectoryContent = () => {
     const handleRowClick = (event) => {
         if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
             const subtype = childrenMetadata[event.rowData.elementUuid].subtype;
-            if (event.rowData.type === elementType.STUDY) {
+            if (event.rowData.type === ElementType.STUDY) {
                 let url = getLink(
                     event.rowData.elementUuid,
                     event.rowData.type
@@ -287,23 +287,23 @@ const DirectoryContent = () => {
                               { type: event.rowData.type }
                           )
                       );
-            } else if (event.rowData.type === elementType.CONTINGENCY_LIST) {
-                if (subtype === contingencyListSubtype.FILTERS) {
+            } else if (event.rowData.type === ElementType.CONTINGENCY_LIST) {
+                if (subtype === ContingencyListType.FORM) {
                     setCurrentFiltersContingencyListId(
                         event.rowData.elementUuid
                     );
                     setOpenFiltersContingencyDialog(true);
-                } else if (subtype === contingencyListSubtype.SCRIPT) {
+                } else if (subtype === ContingencyListType.SCRIPT) {
                     setCurrentScriptContingencyListId(
                         event.rowData.elementUuid
                     );
                     setOpenScriptContingencyDialog(true);
                 }
-            } else if (event.rowData.type === elementType.FILTER) {
-                if (subtype === filterSubtype.SCRIPT) {
+            } else if (event.rowData.type === ElementType.FILTER) {
+                if (subtype === FilterType.SCRIPT) {
                     setCurrentScriptId(event.rowData.elementUuid);
                     setOpenScriptDialog(true);
-                } else if (subtype === filterSubtype.FILTER) {
+                } else if (subtype === FilterType.FORM) {
                     setCurrentFilterId(event.rowData.elementUuid);
                     setOpenGenericFilterDialog(true);
                 }
@@ -423,7 +423,7 @@ const DirectoryContent = () => {
     };
 
     const handleClickFiltersContingencyReplaceWithScript = (id) => {
-        replaceFiltersWithScriptContingencyList(id, selectedDirectory)
+        replaceFormContingencyListWithScript(id, selectedDirectory)
             .then()
             .catch((error) => handleError(error.message));
         handleCloseFiltersContingencyReplaceWithScript();
@@ -519,15 +519,17 @@ const DirectoryContent = () => {
         return href;
     }
 
-    function buildTypeWithSubtype(type, subtype) {
-        switch (type) {
-            case elementType.FILTER:
-                return subtype;
-            case elementType.CONTINGENCY_LIST:
-                return subtype + '_' + elementType.CONTINGENCY_LIST;
-            default:
-                return type;
-        }
+    function getElementTypeTranslation(type, subtype) {
+        return (
+            <FormattedMessage
+                id={
+                    type === ElementType.FILTER ||
+                    type === ElementType.CONTINGENCY_LIST
+                        ? subtype + '_' + type
+                        : type
+                }
+            />
+        );
     }
 
     function typeCellRender(cellData) {
@@ -537,10 +539,10 @@ const DirectoryContent = () => {
             <div className={classes.cell}>
                 {!isMetadataLoading && childrenMetadata[elementUuid] ? (
                     <div>
-                        {buildTypeWithSubtype(
+                        {getElementTypeTranslation(
                             objectType,
                             childrenMetadata[elementUuid].subtype
-                        ).toLowerCase()}
+                        )}
                     </div>
                 ) : null}
             </div>
@@ -562,18 +564,18 @@ const DirectoryContent = () => {
     }
 
     function getElementIcon(objectType, objectSubtype) {
-        if (objectType === elementType.STUDY) {
+        if (objectType === ElementType.STUDY) {
             return <LibraryBooksOutlinedIcon className={classes.icon} />;
-        } else if (objectType === elementType.CONTINGENCY_LIST) {
-            if (objectSubtype === contingencyListSubtype.SCRIPT) {
+        } else if (objectType === ElementType.CONTINGENCY_LIST) {
+            if (objectSubtype === ContingencyListType.SCRIPT) {
                 return <DescriptionIcon className={classes.icon} />;
-            } else if (objectSubtype === contingencyListSubtype.FILTERS) {
+            } else if (objectSubtype === ContingencyListType.FORM) {
                 return <PanToolIcon className={classes.icon} />;
             }
-        } else if (objectType === elementType.FILTER) {
-            if (objectSubtype === filterSubtype.SCRIPT) {
+        } else if (objectType === ElementType.FILTER) {
+            if (objectSubtype === FilterType.SCRIPT) {
                 return <FilterIcon className={classes.icon} />;
-            } else if (objectSubtype === filterSubtype.FILTER) {
+            } else if (objectSubtype === FilterType.FORM) {
                 return <FilterListIcon className={classes.icon} />;
             }
         }
@@ -599,7 +601,7 @@ const DirectoryContent = () => {
             <div className={classes.cell}>
                 {/*  Icon */}
                 {!childrenMetadata[elementUuid] &&
-                    objectType === elementType.STUDY && (
+                    objectType === ElementType.STUDY && (
                         <CircularProgress
                             size={18}
                             className={classes.circularRoot}
@@ -786,17 +788,17 @@ const DirectoryContent = () => {
 
     const allowsExport = () => {
         let children = getSelectedChildren();
-        return children.length === 1 && children[0].type === elementType.STUDY;
+        return children.length === 1 && children[0].type === ElementType.STUDY;
     };
 
     const allowsCopyContingencyToScript = () => {
         let children = getSelectedChildren();
         return (
             children.length === 1 &&
-            children[0].type === elementType.CONTINGENCY_LIST &&
+            children[0].type === ElementType.CONTINGENCY_LIST &&
             childrenMetadata[children[0].elementUuid] &&
             childrenMetadata[children[0].elementUuid].subtype ===
-                contingencyListSubtype.FILTERS
+                ContingencyListType.FORM
         );
     };
 
@@ -804,10 +806,10 @@ const DirectoryContent = () => {
         let children = getSelectedChildren();
         return (
             children.length === 1 &&
-            children[0].type === elementType.CONTINGENCY_LIST &&
+            children[0].type === ElementType.CONTINGENCY_LIST &&
             childrenMetadata[children[0].elementUuid] &&
             childrenMetadata[children[0].elementUuid].subtype ===
-                contingencyListSubtype.FILTERS &&
+                ContingencyListType.FORM &&
             children[0].owner === userId
         );
     };
@@ -816,11 +818,11 @@ const DirectoryContent = () => {
         let children = getSelectedChildren();
         return (
             children.length === 1 &&
-            children[0].type === elementType.FILTER &&
+            children[0].type === ElementType.FILTER &&
             !(
                 childrenMetadata[children[0].elementUuid] &&
                 childrenMetadata[children[0].elementUuid].subtype ===
-                    filterSubtype.SCRIPT
+                    FilterType.SCRIPT
             )
         );
     };
@@ -829,11 +831,11 @@ const DirectoryContent = () => {
         let children = getSelectedChildren();
         return (
             children.length === 1 &&
-            children[0].type === elementType.FILTER &&
+            children[0].type === ElementType.FILTER &&
             !(
                 childrenMetadata[children[0].elementUuid] &&
                 childrenMetadata[children[0].elementUuid].subtype ===
-                    filterSubtype.SCRIPT
+                    FilterType.SCRIPT
             ) &&
             children[0].owner === userId
         );
@@ -1115,7 +1117,7 @@ const DirectoryContent = () => {
                 isPrivate={areSelectedElementsAllPrivate()}
                 error={accessRightsError}
             />
-            <FiltersContingencyDialog
+            <FormContingencyDialog
                 listId={currentFiltersContingencyListId}
                 open={openFiltersContingencyDialog}
                 onClose={handleCloseFiltersContingency}
@@ -1128,7 +1130,7 @@ const DirectoryContent = () => {
                 onClose={handleCloseScriptContingency}
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'editContingencyList' })}
-                type={elementType.CONTINGENCY_LIST}
+                type={ElementType.CONTINGENCY_LIST}
             />
             <ScriptDialog
                 id={currentScriptId}
@@ -1136,7 +1138,7 @@ const DirectoryContent = () => {
                 onClose={handleCloseScriptDialog}
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'editFilterScript' })}
-                type={elementType.FILTER}
+                type={ElementType.FILTER}
             />
             <ReplaceWithScriptDialog
                 id={activeElement ? activeElement.elementUuid : ''}

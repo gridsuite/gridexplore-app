@@ -5,19 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const elementType = {
+export const ElementType = {
     DIRECTORY: 'DIRECTORY',
     STUDY: 'STUDY',
     FILTER: 'FILTER',
     CONTINGENCY_LIST: 'CONTINGENCY_LIST',
 };
 
-export const filterSubtype = {
-    FILTER: 'FILTER',
+export const FilterType = {
+    FORM: 'FORM',
     SCRIPT: 'SCRIPT',
 };
 
-export const contingencyListSubtype = {
+export const ContingencyListType = {
     SCRIPT: 'SCRIPT',
-    FILTERS: 'FILTERS',
+    FORM: 'FORM',
 };

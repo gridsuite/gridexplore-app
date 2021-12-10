@@ -9,7 +9,7 @@ import { APP_NAME, getAppName } from './config-params';
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { EquipmentTypes } from './equipment-types';
-import { contingencyListSubtype } from './elementType';
+import { ContingencyListType } from './elementType';
 
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
@@ -375,9 +375,9 @@ export function createContingencyList(
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     const typeUriParam =
-        contingencyListType === contingencyListSubtype.SCRIPT
+        contingencyListType === ContingencyListType.SCRIPT
             ? 'script-contingency-lists'
-            : 'filters-contingency-lists';
+            : 'form-contingency-lists';
 
     const createContingencyListUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +
@@ -390,7 +390,7 @@ export function createContingencyList(
     console.debug(createContingencyListUrl);
 
     let body = {};
-    if (contingencyListType === contingencyListSubtype.FILTERS) {
+    if (contingencyListType === ContingencyListType.FORM) {
         body.equipmentType = EquipmentTypes.LINE;
         body.nominalVoltage = -1;
         body.nominalVoltageOperator = '=';
@@ -412,7 +412,7 @@ export function getContingencyList(type, id) {
     if (type === 'SCRIPT') {
         url += '/v1/script-contingency-lists/';
     } else {
-        url += '/v1/filters-contingency-lists/';
+        url += '/v1/form-contingency-lists/';
     }
     url += id;
 
@@ -423,10 +423,10 @@ export function getContingencyList(type, id) {
  * Add new Filter contingency list
  * @returns {Promise<Response>}
  */
-export function saveFiltersContingencyList(filter) {
-    const { nominalVoltage, ...rest } = filter;
+export function saveFormContingencyList(form) {
+    const { nominalVoltage, ...rest } = form;
     const url =
-        PREFIX_ACTIONS_QUERIES + '/v1/filters-contingency-lists/' + filter.id;
+        PREFIX_ACTIONS_QUERIES + '/v1/form-contingency-lists/' + form.id;
     return backendFetch(url, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
@@ -454,19 +454,16 @@ export function saveScriptContingencyList(scriptContingencyList) {
 }
 
 /**
- * Replace filter with script filter
+ * Replace form contingency list with script contingency list
  * @returns {Promise<Response>}
  */
-export function replaceFiltersWithScriptContingencyList(
-    id,
-    parentDirectoryUuid
-) {
+export function replaceFormContingencyListWithScript(id, parentDirectoryUuid) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/filters-contingency-lists/' +
+        '/v1/explore/form-contingency-lists/' +
         encodeURIComponent(id) +
         '/replace-with-script' +
         '?' +
@@ -478,7 +475,7 @@ export function replaceFiltersWithScriptContingencyList(
 }
 
 /**
- * Save new script contingency list from filters contingency list
+ * Save new script contingency list from form contingency list
  * @returns {Promise<Response>}
  */
 export function newScriptFromFiltersContingencyList(
@@ -491,7 +488,7 @@ export function newScriptFromFiltersContingencyList(
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/filters-contingency-lists/' +
+        '/v1/explore/form-contingency-lists/' +
         encodeURIComponent(id) +
         '/new-script/' +
         encodeURIComponent(newName) +
