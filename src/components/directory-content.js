@@ -106,8 +106,6 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         flexGrow: '1',
         justifyContent: 'center',
-        alignContent: 'center',
-        alignItems: 'center'
     },
     centeredCircularProgress: {
         alignSelf: 'center',
