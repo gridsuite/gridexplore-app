@@ -105,10 +105,12 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'row',
         flexGrow: '1',
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignItems: 'center'
     },
     centeredCircularProgress: {
         alignSelf: 'center',
-        marginLeft: '33%',
     },
 }));
 
