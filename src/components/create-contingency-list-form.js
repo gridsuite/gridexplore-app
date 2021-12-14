@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -19,13 +19,18 @@ import Alert from '@material-ui/lab/Alert';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { createContingencyList } from '../utils/rest-api';
+import { createContingencyList, elementExists } from '../utils/rest-api';
 
 import { useSelector } from 'react-redux';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import PropTypes from 'prop-types';
-import { ContingencyListType } from '../utils/elementType';
+import { ContingencyListType, ElementType } from '../utils/elementType';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+import CheckIcon from '@material-ui/icons/Check';
+
+const useStyles = makeStyles(() => ({}));
 
 /**
  * Dialog to create a contingency
@@ -45,7 +50,15 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
     const [createContingencyListErr, setCreateContingencyListErr] =
         React.useState('');
 
+    const [contingencyInvalid, setContingencyInvalid] = useState(false);
+    const [loadingCheckContingencyName, setLoadingCheckContingencyName] =
+        React.useState(false);
+    const [contingencyNameChecked, setContingencyNameChecked] =
+        React.useState(false);
+
+    const classes = useStyles();
     const intl = useIntl();
+    const timer = React.useRef();
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
@@ -54,6 +67,8 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
         setContingencyListDescription('');
         setContingencyListPrivacy('private');
         setContingencyListType(ContingencyListType.SCRIPT);
+        setContingencyNameChecked(false);
+        setLoadingCheckContingencyName(false);
         setCreateContingencyListErr('');
     };
 
@@ -66,9 +81,63 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
         setContingencyListDescription(e.target.value);
     };
 
-    const handleContingencyListNameChanges = (e) => {
-        const name = e.target.value;
+    /**
+     * on change input popup check if name already exist
+     * @param name
+     */
+    const updateContingencyFormState = (name) => {
+        if (name !== '') {
+            //If the name is not only white spaces
+            if (name.replace(/ /g, '') !== '') {
+                elementExists(
+                    activeDirectory,
+                    name,
+                    ElementType.CONTINGENCY_LIST
+                )
+                    .then((data) => {
+                        setContingencyFormState(
+                            data
+                                ? intl.formatMessage({
+                                      id: 'nameAlreadyUsed',
+                                  })
+                                : '',
+                            !data
+                        );
+                    })
+                    .catch((error) => {
+                        setCreateContingencyListErr(
+                            intl.formatMessage({
+                                id: 'nameValidityCheckErrorMsg',
+                            }) + error
+                        );
+                    });
+            } else {
+                setContingencyFormState(
+                    intl.formatMessage({ id: 'nameEmpty' }),
+                    false
+                );
+            }
+        } else {
+            setContingencyFormState('', false);
+        }
+        setLoadingCheckContingencyName(false);
+    };
+
+    const handleContingencyNameChanges = (name) => {
         setContingencyListName(name);
+        setContingencyNameChecked(false);
+        setLoadingCheckContingencyName(true);
+
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => {
+            updateContingencyFormState(name);
+        }, 700);
+    };
+
+    const setContingencyFormState = (errorMessage, isNameValid) => {
+        setCreateContingencyListErr(errorMessage);
+        setContingencyInvalid(!isNameValid);
+        setContingencyNameChecked(isNameValid);
     };
 
     const handleChangeContingencyListPrivacy = (event) => {
@@ -140,7 +209,7 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
                     <div>
                         <TextField
                             onChange={(e) =>
-                                handleContingencyListNameChanges(e)
+                                handleContingencyNameChanges(e.target.value)
                             }
                             autoFocus
                             margin="dense"
@@ -149,6 +218,29 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
                             style={{ width: '90%' }}
                             label=<FormattedMessage id="contingencyListName" />
                         />
+                        {loadingCheckContingencyName && (
+                            <div
+                                style={{
+                                    display: 'inline-block',
+                                    verticalAlign: 'bottom',
+                                }}
+                            >
+                                <CircularProgress
+                                    className={classes.progress}
+                                    size="1rem"
+                                />
+                            </div>
+                        )}
+                        {contingencyNameChecked && (
+                            <div
+                                style={{
+                                    display: 'inline-block',
+                                    verticalAlign: 'bottom',
+                                }}
+                            >
+                                <CheckIcon style={{ color: 'green' }} />
+                            </div>
+                        )}
                     </div>
                     <TextField
                         onChange={(e) =>
@@ -212,6 +304,7 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
                     <Button
                         onClick={() => handleCreateNewContingencyList()}
                         variant="outlined"
+                        disabled={!contingencyNameChecked || contingencyInvalid}
                     >
                         <FormattedMessage id="create" />
                     </Button>

@@ -43,6 +43,7 @@ import Radio from '@material-ui/core/Radio';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import { ElementType } from '../utils/elementType';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -197,6 +198,9 @@ export const CreateStudyForm = ({ open, onClose }) => {
         setStudyName('');
         setStudyDescription('');
         setStudyPrivacy('private');
+        setLoadingCheckStudyName(false);
+        setStudyInvalid(false);
+        setStudyNameChecked(false);
         dispatch(removeSelectedFile());
     };
 
@@ -223,30 +227,38 @@ export const CreateStudyForm = ({ open, onClose }) => {
 
         clearTimeout(timer.current);
         timer.current = setTimeout(() => {
-            updateStudyFormState(name, userId);
+            updateStudyFormState(name);
         }, 700);
     };
 
-    const updateStudyFormState = (inputValue, userId) => {
+    const updateStudyFormState = (inputValue) => {
         if (inputValue !== '') {
-            elementExists(activeDirectory, inputValue)
-                .then((data) => {
-                    setStudyFormState(
-                        data
-                            ? intl.formatMessage({
-                                  id: 'studyNameAlreadyUsed',
-                              })
-                            : '',
-                        !data
-                    );
-                })
-                .catch((error) => {
-                    setCreateStudyErr(
-                        intl.formatMessage({
-                            id: 'nameValidityCheckErrorMsg',
-                        }) + error
-                    );
-                });
+            //If the name is not only white spaces
+            if (inputValue.replace(/ /g, '') !== '') {
+                elementExists(activeDirectory, inputValue, ElementType.STUDY)
+                    .then((data) => {
+                        setStudyFormState(
+                            data
+                                ? intl.formatMessage({
+                                      id: 'studyNameAlreadyUsed',
+                                  })
+                                : '',
+                            !data
+                        );
+                    })
+                    .catch((error) => {
+                        setCreateStudyErr(
+                            intl.formatMessage({
+                                id: 'nameValidityCheckErrorMsg',
+                            }) + error
+                        );
+                    });
+            } else {
+                setStudyFormState(
+                    intl.formatMessage({ id: 'nameEmpty' }),
+                    false
+                );
+            }
         } else {
             setStudyFormState('', false);
         }
@@ -453,7 +465,7 @@ export const CreateStudyForm = ({ open, onClose }) => {
                     </Button>
                     <Button
                         onClick={() => handleCreateNewStudy()}
-                        disabled={studyInvalid}
+                        disabled={!studyNameChecked || studyInvalid}
                         variant="outlined"
                     >
                         <FormattedMessage id="create" />
