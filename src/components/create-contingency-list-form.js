@@ -53,8 +53,6 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
     const [contingencyInvalid, setContingencyInvalid] = useState(false);
     const [loadingCheckContingencyName, setLoadingCheckContingencyName] =
         React.useState(false);
-    const [contingencyNameChecked, setContingencyNameChecked] =
-        React.useState(false);
 
     const classes = useStyles();
     const intl = useIntl();
@@ -67,7 +65,6 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
         setContingencyListDescription('');
         setContingencyListPrivacy('private');
         setContingencyListType(ContingencyListType.SCRIPT);
-        setContingencyNameChecked(false);
         setLoadingCheckContingencyName(false);
         setCreateContingencyListErr('');
     };
@@ -110,24 +107,28 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
                                 id: 'nameValidityCheckErrorMsg',
                             }) + error
                         );
+                    })
+                    .finally(() => {
+                        setLoadingCheckContingencyName(false);
                     });
             } else {
                 setContingencyFormState(
                     intl.formatMessage({ id: 'nameEmpty' }),
                     false
                 );
+                setLoadingCheckContingencyName(false);
             }
         } else {
             setContingencyFormState('', false);
+            setLoadingCheckContingencyName(false);
         }
-        setLoadingCheckContingencyName(false);
     };
 
     const handleContingencyNameChanges = (name) => {
         setContingencyListName(name);
-        setContingencyNameChecked(false);
         setLoadingCheckContingencyName(true);
 
+        //Reset the timer so we only call update on the last input
         clearTimeout(timer.current);
         timer.current = setTimeout(() => {
             updateContingencyFormState(name);
@@ -137,7 +138,6 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
     const setContingencyFormState = (errorMessage, isNameValid) => {
         setCreateContingencyListErr(errorMessage);
         setContingencyInvalid(!isNameValid);
-        setContingencyNameChecked(isNameValid);
     };
 
     const handleChangeContingencyListPrivacy = (event) => {
@@ -185,6 +185,29 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
         });
     };
 
+    const renderContingencyNameStatus = () => {
+        const showOk =
+            contingencyListName !== '' &&
+            !loadingCheckContingencyName &&
+            !contingencyInvalid;
+        return (
+            <div
+                style={{
+                    display: 'inline-block',
+                    verticalAlign: 'bottom',
+                }}
+            >
+                {loadingCheckContingencyName && (
+                    <CircularProgress
+                        className={classes.progress}
+                        size="1rem"
+                    />
+                )}
+                {showOk && <CheckIcon style={{ color: 'green' }} />}
+            </div>
+        );
+    };
+
     const handleKeyPressed = (event) => {
         if (event.key === 'Enter') {
             handleCreateNewContingencyList();
@@ -218,29 +241,7 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
                             style={{ width: '90%' }}
                             label=<FormattedMessage id="contingencyListName" />
                         />
-                        {loadingCheckContingencyName && (
-                            <div
-                                style={{
-                                    display: 'inline-block',
-                                    verticalAlign: 'bottom',
-                                }}
-                            >
-                                <CircularProgress
-                                    className={classes.progress}
-                                    size="1rem"
-                                />
-                            </div>
-                        )}
-                        {contingencyNameChecked && (
-                            <div
-                                style={{
-                                    display: 'inline-block',
-                                    verticalAlign: 'bottom',
-                                }}
-                            >
-                                <CheckIcon style={{ color: 'green' }} />
-                            </div>
-                        )}
+                        {renderContingencyNameStatus()}
                     </div>
                     <TextField
                         onChange={(e) =>
@@ -304,7 +305,11 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
                     <Button
                         onClick={() => handleCreateNewContingencyList()}
                         variant="outlined"
-                        disabled={!contingencyNameChecked || contingencyInvalid}
+                        disabled={
+                            contingencyListName === '' ||
+                            contingencyInvalid ||
+                            loadingCheckContingencyName
+                        }
                     >
                         <FormattedMessage id="create" />
                     </Button>

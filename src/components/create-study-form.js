@@ -175,10 +175,9 @@ export const CreateStudyForm = ({ open, onClose }) => {
     const [studyPrivacy, setStudyPrivacy] = React.useState('private');
     const [createStudyErr, setCreateStudyErr] = React.useState('');
 
-    const [studyInvalid, setStudyInvalid] = useState(false);
     const [loadingCheckStudyName, setLoadingCheckStudyName] =
         React.useState(false);
-    const [studyNameChecked, setStudyNameChecked] = React.useState(false);
+    const [studyNameValid, setStudyNameValid] = useState(false);
 
     const userId = useSelector((state) => state.user.profile.sub);
 
@@ -199,8 +198,7 @@ export const CreateStudyForm = ({ open, onClose }) => {
         setStudyDescription('');
         setStudyPrivacy('private');
         setLoadingCheckStudyName(false);
-        setStudyInvalid(false);
-        setStudyNameChecked(false);
+        setStudyNameValid(false);
         dispatch(removeSelectedFile());
     };
 
@@ -222,13 +220,34 @@ export const CreateStudyForm = ({ open, onClose }) => {
         const name = e.target.value;
         setStudyName(name);
 
-        setStudyNameChecked(false);
         setLoadingCheckStudyName(true);
 
+        //Reset the timer so we only call update on the last input
         clearTimeout(timer.current);
         timer.current = setTimeout(() => {
             updateStudyFormState(name);
         }, 700);
+    };
+
+    const renderStudyNameStatus = () => {
+        const showOk =
+            studyName !== '' && !loadingCheckStudyName && studyNameValid;
+        return (
+            <div
+                style={{
+                    display: 'inline-block',
+                    verticalAlign: 'bottom',
+                }}
+            >
+                {loadingCheckStudyName && (
+                    <CircularProgress
+                        className={classes.progress}
+                        size="1rem"
+                    />
+                )}
+                {showOk && <CheckIcon style={{ color: 'green' }} />}
+            </div>
+        );
     };
 
     const updateStudyFormState = (inputValue) => {
@@ -237,6 +256,7 @@ export const CreateStudyForm = ({ open, onClose }) => {
             if (inputValue.replace(/ /g, '') !== '') {
                 elementExists(activeDirectory, inputValue, ElementType.STUDY)
                     .then((data) => {
+                        console.log(data);
                         setStudyFormState(
                             data
                                 ? intl.formatMessage({
@@ -252,23 +272,26 @@ export const CreateStudyForm = ({ open, onClose }) => {
                                 id: 'nameValidityCheckErrorMsg',
                             }) + error
                         );
+                    })
+                    .finally(() => {
+                        setLoadingCheckStudyName(false);
                     });
             } else {
                 setStudyFormState(
                     intl.formatMessage({ id: 'nameEmpty' }),
                     false
                 );
+                setLoadingCheckStudyName(false);
             }
         } else {
             setStudyFormState('', false);
+            setLoadingCheckStudyName(false);
         }
-        setLoadingCheckStudyName(false);
     };
 
     const setStudyFormState = (errorMessage, isNameValid) => {
         setCreateStudyErr(errorMessage);
-        setStudyInvalid(!isNameValid);
-        setStudyNameChecked(isNameValid);
+        setStudyNameValid(isNameValid);
     };
 
     const handleChangeStudyPrivacy = (event) => {
@@ -398,33 +421,15 @@ export const CreateStudyForm = ({ open, onClose }) => {
                             margin="dense"
                             value={studyName}
                             type="text"
-                            error={studyInvalid}
+                            error={
+                                studyName !== '' &&
+                                !studyNameValid &&
+                                !loadingCheckStudyName
+                            }
                             style={{ width: '90%' }}
                             label=<FormattedMessage id="studyName" />
                         />
-                        {loadingCheckStudyName && (
-                            <div
-                                style={{
-                                    display: 'inline-block',
-                                    verticalAlign: 'bottom',
-                                }}
-                            >
-                                <CircularProgress
-                                    className={classes.progress}
-                                    size="1rem"
-                                />
-                            </div>
-                        )}
-                        {studyNameChecked && (
-                            <div
-                                style={{
-                                    display: 'inline-block',
-                                    verticalAlign: 'bottom',
-                                }}
-                            >
-                                <CheckIcon style={{ color: 'green' }} />
-                            </div>
-                        )}
+                        {renderStudyNameStatus()}
                     </div>
                     <TextField
                         onChange={(e) => handleStudyDescriptionChanges(e)}
@@ -465,7 +470,7 @@ export const CreateStudyForm = ({ open, onClose }) => {
                     </Button>
                     <Button
                         onClick={() => handleCreateNewStudy()}
-                        disabled={!studyNameChecked || studyInvalid}
+                        disabled={studyName === '' || !studyNameValid}
                         variant="outlined"
                     >
                         <FormattedMessage id="create" />

@@ -104,7 +104,6 @@ const CreateFilterDialog = ({
     const [filterInvalid, setFilterInvalid] = useState(false);
     const [loadingCheckFilterName, setLoadingCheckFilterName] =
         React.useState(false);
-    const [filterNameChecked, setFilterNameChecked] = React.useState(false);
 
     const classes = useStyles();
     const intl = useIntl();
@@ -135,24 +134,28 @@ const CreateFilterDialog = ({
                                 id: 'nameValidityCheckErrorMsg',
                             }) + error
                         );
+                    })
+                    .finally(() => {
+                        setLoadingCheckFilterName(false);
                     });
             } else {
                 setFilterFormState(
                     intl.formatMessage({ id: 'nameEmpty' }),
                     false
                 );
+                setLoadingCheckFilterName(false);
             }
         } else {
             setFilterFormState('', false);
+            setLoadingCheckFilterName(false);
         }
-        setLoadingCheckFilterName(false);
     };
 
     const handleFilterNameChanges = (name) => {
         setNewListName(name);
-        setFilterNameChecked(false);
         setLoadingCheckFilterName(true);
 
+        //Reset the timer so we only call update on the last input
         clearTimeout(timer.current);
         timer.current = setTimeout(() => {
             updateFilterFormState(name);
@@ -162,14 +165,12 @@ const CreateFilterDialog = ({
     const setFilterFormState = (errorMessage, isNameValid) => {
         setCreateFilterErr(errorMessage);
         setFilterInvalid(!isNameValid);
-        setFilterNameChecked(isNameValid);
     };
 
     const resetDialog = () => {
         setNewListName('');
         setNewListType(FilterType.SCRIPT);
         setFilterPrivacy('private');
-        setFilterNameChecked(false);
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
     };
@@ -213,6 +214,27 @@ const CreateFilterDialog = ({
         setFilterPrivacy(event.target.value);
     };
 
+    const renderFilterNameStatus = () => {
+        const showOk =
+            newNameList !== '' && !loadingCheckFilterName && !filterInvalid;
+        return (
+            <div
+                style={{
+                    display: 'inline-block',
+                    verticalAlign: 'bottom',
+                }}
+            >
+                {loadingCheckFilterName && (
+                    <CircularProgress
+                        className={classes.progress}
+                        size="1rem"
+                    />
+                )}
+                {showOk && <CheckIcon style={{ color: 'green' }} />}
+            </div>
+        );
+    };
+
     return (
         <DialogContainer open={open} onClose={handleClose}>
             <CustomDialogTitle onClose={handleClose}>{title}</CustomDialogTitle>
@@ -227,29 +249,7 @@ const CreateFilterDialog = ({
                             }
                             label={inputLabelText}
                         />
-                        {loadingCheckFilterName && (
-                            <div
-                                style={{
-                                    display: 'inline-block',
-                                    verticalAlign: 'bottom',
-                                }}
-                            >
-                                <CircularProgress
-                                    className={classes.progress}
-                                    size="1rem"
-                                />
-                            </div>
-                        )}
-                        {filterNameChecked && (
-                            <div
-                                style={{
-                                    display: 'inline-block',
-                                    verticalAlign: 'bottom',
-                                }}
-                            >
-                                <CheckIcon style={{ color: 'green' }} />
-                            </div>
-                        )}
+                        {renderFilterNameStatus()}
                         <RadioGroup
                             aria-label="type"
                             name="filterType"
@@ -300,7 +300,11 @@ const CreateFilterDialog = ({
                     variant="outlined"
                     size="small"
                     onClick={handleSave}
-                    disabled={!filterNameChecked || filterInvalid}
+                    disabled={
+                        newNameList === '' ||
+                        filterInvalid ||
+                        loadingCheckFilterName
+                    }
                 >
                     {customTextValidationBtn}
                 </Button>
