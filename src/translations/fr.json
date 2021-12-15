@@ -42,6 +42,9 @@
     "uploading": "téléversement en cours",
     "studyCreatingError": "Une erreur est survenue lors de la création de l'étude : {studyName}",
     "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé",
+    "nameEmpty": "Le nom est vide",
+
+    "nameAlreadyUsed": "Ce nom est déjà utilisé",
 
     "delete": "Supprimer",
     "rename": "Renommer",

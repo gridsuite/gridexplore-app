@@ -346,10 +346,12 @@ export function fetchCases() {
     return backendFetch(fetchCasesUrl).then((response) => response.json());
 }
 
-export function elementExists(directoryUuid, elementName) {
+export function elementExists(directoryUuid, elementName, type) {
     const existsElementUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/elements/${elementName}`;
+        `/v1/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
+
+    console.debug(existsElementUrl);
     return backendFetch(existsElementUrl, { method: 'head' }).then(
         (response) => {
             return response.ok
