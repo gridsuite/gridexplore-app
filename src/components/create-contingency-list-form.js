@@ -50,7 +50,7 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
     const [createContingencyListErr, setCreateContingencyListErr] =
         React.useState('');
 
-    const [contingencyInvalid, setContingencyInvalid] = useState(false);
+    const [contingencyNameValid, setContingencyNameValid] = useState(false);
     const [loadingCheckContingencyName, setLoadingCheckContingencyName] =
         React.useState(false);
 
@@ -67,6 +67,7 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
         setContingencyListType(ContingencyListType.SCRIPT);
         setLoadingCheckContingencyName(false);
         setCreateContingencyListErr('');
+        setContingencyNameValid(false);
     };
 
     const handleCloseDialog = () => {
@@ -137,7 +138,7 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
 
     const setContingencyFormState = (errorMessage, isNameValid) => {
         setCreateContingencyListErr(errorMessage);
-        setContingencyInvalid(!isNameValid);
+        setContingencyNameValid(isNameValid);
     };
 
     const handleChangeContingencyListPrivacy = (event) => {
@@ -189,7 +190,7 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
         const showOk =
             contingencyListName !== '' &&
             !loadingCheckContingencyName &&
-            !contingencyInvalid;
+            contingencyNameValid;
         return (
             <div
                 style={{
@@ -237,6 +238,11 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
                             autoFocus
                             margin="dense"
                             value={contingencyListName}
+                            error={
+                                contingencyListName !== '' &&
+                                !contingencyNameValid &&
+                                !loadingCheckContingencyName
+                            }
                             type="text"
                             style={{ width: '90%' }}
                             label=<FormattedMessage id="contingencyListName" />
@@ -307,7 +313,7 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
                         variant="outlined"
                         disabled={
                             contingencyListName === '' ||
-                            contingencyInvalid ||
+                            !contingencyNameValid ||
                             loadingCheckContingencyName
                         }
                     >

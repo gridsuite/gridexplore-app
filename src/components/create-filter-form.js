@@ -101,7 +101,7 @@ const CreateFilterDialog = ({
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    const [filterInvalid, setFilterInvalid] = useState(false);
+    const [filterNameValid, setFilterNameValid] = useState(false);
     const [loadingCheckFilterName, setLoadingCheckFilterName] =
         React.useState(false);
 
@@ -164,7 +164,7 @@ const CreateFilterDialog = ({
 
     const setFilterFormState = (errorMessage, isNameValid) => {
         setCreateFilterErr(errorMessage);
-        setFilterInvalid(!isNameValid);
+        setFilterNameValid(isNameValid);
     };
 
     const resetDialog = () => {
@@ -173,6 +173,7 @@ const CreateFilterDialog = ({
         setFilterPrivacy('private');
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
+        setFilterNameValid(false);
     };
 
     const handleSave = () => {
@@ -216,7 +217,7 @@ const CreateFilterDialog = ({
 
     const renderFilterNameStatus = () => {
         const showOk =
-            newNameList !== '' && !loadingCheckFilterName && !filterInvalid;
+            newNameList !== '' && !loadingCheckFilterName && filterNameValid;
         return (
             <div
                 style={{
@@ -242,10 +243,17 @@ const CreateFilterDialog = ({
                 <Grid container direction="row" spacing={1}>
                     <Grid item xs={12} sm={8}>
                         <TextField
+                            autoFocus
+                            margin="dense"
+                            type="text"
                             style={{ width: '90%' }}
-                            defaultValue={''}
                             onChange={(event) =>
                                 handleFilterNameChanges(event.target.value)
+                            }
+                            error={
+                                newNameList !== '' &&
+                                !filterNameValid &&
+                                !loadingCheckFilterName
                             }
                             label={inputLabelText}
                         />
@@ -302,7 +310,7 @@ const CreateFilterDialog = ({
                     onClick={handleSave}
                     disabled={
                         newNameList === '' ||
-                        filterInvalid ||
+                        !filterNameValid ||
                         loadingCheckFilterName
                     }
                 >

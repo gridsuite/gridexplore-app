@@ -219,7 +219,6 @@ export const CreateStudyForm = ({ open, onClose }) => {
     const handleStudyNameChanges = (e) => {
         const name = e.target.value;
         setStudyName(name);
-
         setLoadingCheckStudyName(true);
 
         //Reset the timer so we only call update on the last input
@@ -256,7 +255,6 @@ export const CreateStudyForm = ({ open, onClose }) => {
             if (inputValue.replace(/ /g, '') !== '') {
                 elementExists(activeDirectory, inputValue, ElementType.STUDY)
                     .then((data) => {
-                        console.log(data);
                         setStudyFormState(
                             data
                                 ? intl.formatMessage({
@@ -470,7 +468,11 @@ export const CreateStudyForm = ({ open, onClose }) => {
                     </Button>
                     <Button
                         onClick={() => handleCreateNewStudy()}
-                        disabled={studyName === '' || !studyNameValid}
+                        disabled={
+                            studyName === '' ||
+                            !studyNameValid ||
+                            loadingCheckStudyName
+                        }
                         variant="outlined"
                     >
                         <FormattedMessage id="create" />
