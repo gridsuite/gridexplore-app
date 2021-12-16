@@ -17,18 +17,21 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import TextField from '@material-ui/core/TextField';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Grid from '@material-ui/core/Grid';
-import { createFilter } from '../utils/rest-api';
+import { createFilter, elementExists } from '../utils/rest-api';
 import Alert from '@material-ui/lab/Alert';
 import { useSelector } from 'react-redux';
-import { FilterType } from '../utils/elementType';
+import { ElementType, FilterType } from '../utils/elementType';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import CheckIcon from '@material-ui/icons/Check';
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         margin: 0,
         padding: theme.spacing(2),
@@ -39,10 +42,11 @@ const styles = (theme) => ({
         top: theme.spacing(1),
         color: theme.palette.grey[500],
     },
-});
+}));
 
-const CustomDialogTitle = withStyles(styles)((props) => {
-    const { children, classes, onClose, ...other } = props;
+const CustomDialogTitle = (props) => {
+    const { children, onClose, ...other } = props;
+    const classes = useStyles();
     return (
         <DialogTitle
             disableTypography
@@ -62,7 +66,7 @@ const CustomDialogTitle = withStyles(styles)((props) => {
             ) : null}
         </DialogTitle>
     );
-});
+};
 
 const CustomDialogContent = withStyles(() => ({
     root: {
@@ -91,31 +95,85 @@ const CreateFilterDialog = ({
     customTextValidationBtn,
     customTextCancelBtn,
 }) => {
-    const [disableBtnSave, setDisableBtnSave] = useState(true);
     const [newNameList, setNewListName] = useState('');
     const [newListType, setNewListType] = useState(FilterType.SCRIPT);
     const [filterPrivacy, setFilterPrivacy] = React.useState('private');
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
+    const [filterNameValid, setFilterNameValid] = useState(false);
+    const [loadingCheckFilterName, setLoadingCheckFilterName] =
+        React.useState(false);
+
+    const classes = useStyles();
+    const intl = useIntl();
+    const timer = React.useRef();
+
     /**
      * on change input popup check if name already exist
      * @param name
      */
-    const onChangeInputName = (name) => {
-        if (name.length === 0) {
-            setDisableBtnSave(true);
+    const updateFilterFormState = (name) => {
+        if (name !== '') {
+            //If the name is not only white spaces
+            if (name.replace(/ /g, '') !== '') {
+                elementExists(activeDirectory, name, ElementType.FILTER)
+                    .then((data) => {
+                        setFilterFormState(
+                            data
+                                ? intl.formatMessage({
+                                      id: 'nameAlreadyUsed',
+                                  })
+                                : '',
+                            !data
+                        );
+                    })
+                    .catch((error) => {
+                        setCreateFilterErr(
+                            intl.formatMessage({
+                                id: 'nameValidityCheckErrorMsg',
+                            }) + error
+                        );
+                    })
+                    .finally(() => {
+                        setLoadingCheckFilterName(false);
+                    });
+            } else {
+                setFilterFormState(
+                    intl.formatMessage({ id: 'nameEmpty' }),
+                    false
+                );
+                setLoadingCheckFilterName(false);
+            }
         } else {
-            setNewListName(name);
-            setDisableBtnSave(false);
+            setFilterFormState('', false);
+            setLoadingCheckFilterName(false);
         }
+    };
+
+    const handleFilterNameChanges = (name) => {
+        setNewListName(name);
+        setLoadingCheckFilterName(true);
+
+        //Reset the timer so we only call update on the last input
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => {
+            updateFilterFormState(name);
+        }, 700);
+    };
+
+    const setFilterFormState = (errorMessage, isNameValid) => {
+        setCreateFilterErr(errorMessage);
+        setFilterNameValid(isNameValid);
     };
 
     const resetDialog = () => {
         setNewListName('');
         setNewListType(FilterType.SCRIPT);
         setFilterPrivacy('private');
+        setLoadingCheckFilterName(false);
         setCreateFilterErr('');
+        setFilterNameValid(false);
     };
 
     const handleSave = () => {
@@ -157,6 +215,27 @@ const CreateFilterDialog = ({
         setFilterPrivacy(event.target.value);
     };
 
+    const renderFilterNameStatus = () => {
+        const showOk =
+            newNameList !== '' && !loadingCheckFilterName && filterNameValid;
+        return (
+            <div
+                style={{
+                    display: 'inline-block',
+                    verticalAlign: 'bottom',
+                }}
+            >
+                {loadingCheckFilterName && (
+                    <CircularProgress
+                        className={classes.progress}
+                        size="1rem"
+                    />
+                )}
+                {showOk && <CheckIcon style={{ color: 'green' }} />}
+            </div>
+        );
+    };
+
     return (
         <DialogContainer open={open} onClose={handleClose}>
             <CustomDialogTitle onClose={handleClose}>{title}</CustomDialogTitle>
@@ -164,13 +243,21 @@ const CreateFilterDialog = ({
                 <Grid container direction="row" spacing={1}>
                     <Grid item xs={12} sm={8}>
                         <TextField
-                            style={{ width: '100%' }}
-                            defaultValue={''}
+                            autoFocus
+                            margin="dense"
+                            type="text"
+                            style={{ width: '90%' }}
                             onChange={(event) =>
-                                onChangeInputName(event.target.value)
+                                handleFilterNameChanges(event.target.value)
+                            }
+                            error={
+                                newNameList !== '' &&
+                                !filterNameValid &&
+                                !loadingCheckFilterName
                             }
                             label={inputLabelText}
                         />
+                        {renderFilterNameStatus()}
                         <RadioGroup
                             aria-label="type"
                             name="filterType"
@@ -221,7 +308,11 @@ const CreateFilterDialog = ({
                     variant="outlined"
                     size="small"
                     onClick={handleSave}
-                    disabled={disableBtnSave}
+                    disabled={
+                        newNameList === '' ||
+                        !filterNameValid ||
+                        loadingCheckFilterName
+                    }
                 >
                     {customTextValidationBtn}
                 </Button>
