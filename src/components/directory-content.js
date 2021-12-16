@@ -127,7 +127,7 @@ const DirectoryContent = () => {
     const { enqueueSnackbar } = useSnackbar();
 
     const [childrenMetadata, setChildrenMetadata] = useState({});
-    const [isMetaDataPresent, setIsMetaDataPresent] = useState(false);
+    const [isAllDataPresent, setIsAllDataPresent] = useState(false);
 
     const [selectedUuids, setSelectedUuids] = useState(new Set());
 
@@ -552,7 +552,7 @@ const DirectoryContent = () => {
         const objectType = cellData.rowData[cellData.dataKey];
         return (
             <div className={classes.cell}>
-                {isMetaDataPresent && childrenMetadata[elementUuid] ? (
+                {isAllDataPresent && childrenMetadata[elementUuid] ? (
                     <div>
                         {getElementTypeTranslation(
                             objectType,
@@ -601,7 +601,7 @@ const DirectoryContent = () => {
         const formatMessage = intl.formatMessage;
         if (uploading)
             return elementName + ' ' + formatMessage({ id: 'uploading' });
-        if (!isMetaDataPresent) return elementName;
+        if (!isAllDataPresent) return elementName;
         if (childrenMetadata[elementUuid] == null)
             return (
                 elementName + ' ' + formatMessage({ id: 'creationInProgress' })
@@ -707,13 +707,14 @@ const DirectoryContent = () => {
         );
     }
 
+    /* directory changed, current data are not up to date, display loader */
     useEffect(() => {
-        setIsMetaDataPresent(false);
-    }, [selectedDirectory, setIsMetaDataPresent]);
+        setIsAllDataPresent(false);
+    }, [selectedDirectory, setIsAllDataPresent]);
 
     useEffect(() => {
         if (currentChildren?.length > 0) {
-            setIsMetaDataPresent(false);
+            setIsAllDataPresent(false);
             let metadata = {};
             let childrenToFetchElementsInfos = Object.values(currentChildren)
                 .filter((e) => !e.uploading)
@@ -734,12 +735,12 @@ const DirectoryContent = () => {
                         // discarding request for older directory
                         if (currentChildrenRef.current === currentChildren) {
                             setChildrenMetadata(metadata);
-                            setIsMetaDataPresent(true);
+                            setIsAllDataPresent(true);
                         }
                     });
             }
         } else {
-            setIsMetaDataPresent(true);
+            setIsAllDataPresent(true);
         }
         setSelectedUuids(new Set());
     }, [currentChildren, currentChildrenRef]);
@@ -918,7 +919,7 @@ const DirectoryContent = () => {
                         handleCloseRowMenu();
                 }}
             >
-                {!isMetaDataPresent && selectedDirectory && (
+                {!isAllDataPresent && selectedDirectory && (
                     <div className={classes.circularProgressContainer}>
                         <CircularProgress
                             size={circularProgressSize}
@@ -926,7 +927,7 @@ const DirectoryContent = () => {
                         />
                     </div>
                 )}
-                {isMetaDataPresent && currentChildren?.length === 0 && (
+                {isAllDataPresent && currentChildren?.length === 0 && (
                     <div style={{ textAlign: 'center', marginTop: '100px' }}>
                         <FolderOpenRoundedIcon
                             style={{ width: '100px', height: '100px' }}
@@ -936,7 +937,7 @@ const DirectoryContent = () => {
                         </h1>
                     </div>
                 )}
-                {isMetaDataPresent && currentChildren?.length > 0 && (
+                {isAllDataPresent && currentChildren?.length > 0 && (
                     <>
                         <Toolbar>
                             {allowsDelete(false) && selectedUuids.size > 0 && (
