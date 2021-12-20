@@ -265,10 +265,11 @@ export const CreateStudyForm = ({ open, onClose }) => {
                         );
                     })
                     .catch((error) => {
-                        setCreateStudyErr(
+                        setStudyFormState(
                             intl.formatMessage({
                                 id: 'nameValidityCheckErrorMsg',
-                            }) + error
+                            }) + error,
+                            false
                         );
                     })
                     .finally(() => {
@@ -311,17 +312,23 @@ export const CreateStudyForm = ({ open, onClose }) => {
     );
 
     const handleCreateNewStudy = () => {
+        //To manage the case when we never tried to enter a name
         if (studyName === '') {
-            setCreateStudyErr(intl.formatMessage({ id: 'studyNameErrorMsg' }));
+            setCreateStudyErr(intl.formatMessage({ id: 'nameEmpty' }));
             return;
-        } else if (caseExist && caseName === null) {
+        }
+        //We don't do anything if the checks are not over or the name is not valid
+        if (!studyNameValid || loadingCheckStudyName) {
+            return;
+        }
+        if (caseExist && caseName === null) {
             setCreateStudyErr(intl.formatMessage({ id: 'caseNameErrorMsg' }));
             return;
-        } else if (!caseExist && selectedFile === null) {
+        }
+        if (!caseExist && selectedFile === null) {
             setCreateStudyErr(intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
         }
-
         let isPrivateStudy = studyPrivacy === 'private';
         const uploadingStudy = {
             id: uploadingStudyKeyGenerator(),
