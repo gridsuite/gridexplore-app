@@ -103,10 +103,11 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
                         );
                     })
                     .catch((error) => {
-                        setCreateContingencyListErr(
+                        setContingencyFormState(
                             intl.formatMessage({
                                 id: 'nameValidityCheckErrorMsg',
-                            }) + error
+                            }) + error,
+                            false
                         );
                     })
                     .finally(() => {
@@ -150,13 +151,17 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
     };
 
     const handleCreateNewContingencyList = () => {
+        //To manage the case when we never tried to enter a name
         if (contingencyListName === '') {
             setCreateContingencyListErr(
-                intl.formatMessage({ id: 'elementNameErrorMsg' })
+                intl.formatMessage({ id: 'nameEmpty' })
             );
             return;
         }
-
+        //We don't do anything if the checks are not over or the name is not valid
+        if (loadingCheckContingencyName || contingencyNameValid) {
+            return;
+        }
         let isPrivateContingencyList = contingencyListPrivacy === 'private';
 
         createContingencyList(
