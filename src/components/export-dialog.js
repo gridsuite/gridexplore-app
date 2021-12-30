@@ -65,15 +65,10 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, title }) => {
 
     const handleClose = () => {
         setExportStudyErr('');
-        setLoading(false);
-        onClose();
-    };
-
-    const handleExited = () => {
-        setExportStudyErr('');
         setSelectedFormat('');
         setLoading(false);
         setDownloadUrl('');
+        onClose();
     };
 
     const handleChange = (event) => {
@@ -89,7 +84,6 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, title }) => {
         <Dialog
             open={open}
             onClose={handleClose}
-            onExited={handleExited}
             aria-labelledby="dialog-title-export"
         >
             <DialogTitle>{title}</DialogTitle>

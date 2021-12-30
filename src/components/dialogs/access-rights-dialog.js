@@ -62,11 +62,6 @@ const AccessRightsDialog = ({
         setLoading(false);
     };
 
-    const handleExited = () => {
-        onClose();
-        setLoading(false);
-    };
-
     const handleChange = (event) => {
         setSelected(event.target.value);
     };
@@ -85,7 +80,6 @@ const AccessRightsDialog = ({
         <Dialog
             open={open}
             onClose={handleClose}
-            onExited={handleExited}
             onKeyPress={handleKeyPressed}
             aria-labelledby="dialog-title-accessRights"
         >
