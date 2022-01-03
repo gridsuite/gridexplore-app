@@ -44,11 +44,8 @@ const CopyToScriptDialog = ({
     };
 
     const handleClose = () => {
-        onClose();
-    };
-
-    const handleExited = () => {
         setNewNameValue(currentName);
+        onClose();
     };
 
     const handleKeyPressed = (event) => {
@@ -65,7 +62,6 @@ const CopyToScriptDialog = ({
         <Dialog
             open={open}
             onClose={handleClose}
-            onExited={handleExited}
             aria-labelledby="dialog-title-rename"
             onKeyPress={handleKeyPressed}
         >
