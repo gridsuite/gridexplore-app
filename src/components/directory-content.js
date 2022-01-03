@@ -69,7 +69,7 @@ import CopyToScriptDialog from './dialogs/copy-to-script-dialog';
 import { useSnackbar } from 'notistack';
 import GenericFilterDialog from './generic-filter';
 
-const circularProgressSize = '33vh';
+const circularProgressSize = '70px';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -923,6 +923,7 @@ const DirectoryContent = () => {
                     <div className={classes.circularProgressContainer}>
                         <CircularProgress
                             size={circularProgressSize}
+                            color="inherit"
                             className={classes.centeredCircularProgress}
                         />
                     </div>
