@@ -129,10 +129,11 @@ const CreateFilterDialog = ({
                         );
                     })
                     .catch((error) => {
-                        setCreateFilterErr(
+                        setFilterFormState(
                             intl.formatMessage({
                                 id: 'nameValidityCheckErrorMsg',
-                            }) + error
+                            }) + error,
+                            false
                         );
                     })
                     .finally(() => {
@@ -177,6 +178,15 @@ const CreateFilterDialog = ({
     };
 
     const handleSave = () => {
+        //To manage the case when we never tried to enter a name
+        if (newNameList === '') {
+            setCreateFilterErr(intl.formatMessage({ id: 'nameEmpty' }));
+            return;
+        }
+        //We don't do anything if the checks are not over or the name is not valid
+        if (!filterNameValid || loadingCheckFilterName) {
+            return;
+        }
         const subtype = newListType === FilterType.SCRIPT ? null : 'LINE';
         createFilter(
             {
@@ -236,8 +246,18 @@ const CreateFilterDialog = ({
         );
     };
 
+    const handleKeyPressed = (event) => {
+        if (event.key === 'Enter') {
+            handleSave();
+        }
+    };
+
     return (
-        <DialogContainer open={open} onClose={handleClose}>
+        <DialogContainer
+            open={open}
+            onClose={handleClose}
+            onKeyPress={handleKeyPressed}
+        >
             <CustomDialogTitle onClose={handleClose}>{title}</CustomDialogTitle>
             <CustomDialogContent dividers>
                 <Grid container direction="row" spacing={1}>
