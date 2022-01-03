@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -69,6 +69,8 @@ import CopyToScriptDialog from './dialogs/copy-to-script-dialog';
 import { useSnackbar } from 'notistack';
 import GenericFilterDialog from './generic-filter';
 
+const circularProgressSize = '33vh';
+
 const useStyles = makeStyles((theme) => ({
     link: {
         color: theme.link.color,
@@ -98,6 +100,16 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         justifyContent: 'center',
     },
+    circularProgressContainer: {
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'row',
+        flexGrow: '1',
+        justifyContent: 'center',
+    },
+    centeredCircularProgress: {
+        alignSelf: 'center',
+    },
 }));
 
 const StyledMenu = withStyles({
@@ -115,11 +127,14 @@ const DirectoryContent = () => {
     const { enqueueSnackbar } = useSnackbar();
 
     const [childrenMetadata, setChildrenMetadata] = useState({});
-    const [isMetadataLoading, setIsMetadataLoading] = useState(false);
+    const [isAllDataPresent, setIsAllDataPresent] = useState(false);
 
     const [selectedUuids, setSelectedUuids] = useState(new Set());
 
     const currentChildren = useSelector((state) => state.currentChildren);
+    const currentChildrenRef = useRef();
+    currentChildrenRef.current = currentChildren;
+
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
@@ -537,7 +552,7 @@ const DirectoryContent = () => {
         const objectType = cellData.rowData[cellData.dataKey];
         return (
             <div className={classes.cell}>
-                {!isMetadataLoading && childrenMetadata[elementUuid] ? (
+                {isAllDataPresent && childrenMetadata[elementUuid] ? (
                     <div>
                         {getElementTypeTranslation(
                             objectType,
@@ -586,7 +601,7 @@ const DirectoryContent = () => {
         const formatMessage = intl.formatMessage;
         if (uploading)
             return elementName + ' ' + formatMessage({ id: 'uploading' });
-        if (isMetadataLoading) return elementName;
+        if (!isAllDataPresent) return elementName;
         if (childrenMetadata[elementUuid] == null)
             return (
                 elementName + ' ' + formatMessage({ id: 'creationInProgress' })
@@ -692,9 +707,14 @@ const DirectoryContent = () => {
         );
     }
 
+    /* directory changed, current data are not up to date, display loader */
     useEffect(() => {
-        setIsMetadataLoading(true);
-        if (currentChildren !== null && currentChildren.length > 0) {
+        setIsAllDataPresent(false);
+    }, [selectedDirectory, setIsAllDataPresent]);
+
+    useEffect(() => {
+        if (currentChildren?.length > 0) {
+            setIsAllDataPresent(false);
             let metadata = {};
             let childrenToFetchElementsInfos = Object.values(currentChildren)
                 .filter((e) => !e.uploading)
@@ -712,13 +732,18 @@ const DirectoryContent = () => {
                         });
                     })
                     .finally(() => {
-                        setChildrenMetadata(metadata);
-                        setIsMetadataLoading(false);
+                        // discarding request for older directory
+                        if (currentChildrenRef.current === currentChildren) {
+                            setChildrenMetadata(metadata);
+                            setIsAllDataPresent(true);
+                        }
                     });
             }
+        } else {
+            setIsAllDataPresent(true);
         }
         setSelectedUuids(new Set());
-    }, [currentChildren]);
+    }, [currentChildren, currentChildrenRef]);
 
     const contextualMixPolicies = {
         BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
@@ -894,33 +919,36 @@ const DirectoryContent = () => {
                         handleCloseRowMenu();
                 }}
             >
-                {selectedDirectory !== null &&
-                    currentChildren !== null &&
-                    currentChildren.length === 0 && (
-                        <div
-                            style={{ textAlign: 'center', marginTop: '100px' }}
-                        >
-                            <FolderOpenRoundedIcon
-                                style={{ width: '100px', height: '100px' }}
-                            />
-                            <h1>
-                                <FormattedMessage id={'emptyDir'} />
-                            </h1>
-                        </div>
-                    )}
-                <Toolbar>
-                    {allowsDelete(false) && selectedUuids.size > 0 && (
-                        <IconButton
-                            className={classes.icon}
-                            onClick={() => handleOpenDeleteElement()}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    )}
-                </Toolbar>
-                {selectedDirectory !== null &&
-                    currentChildren !== null &&
-                    currentChildren.length > 0 && (
+                {!isAllDataPresent && selectedDirectory && (
+                    <div className={classes.circularProgressContainer}>
+                        <CircularProgress
+                            size={circularProgressSize}
+                            className={classes.centeredCircularProgress}
+                        />
+                    </div>
+                )}
+                {isAllDataPresent && currentChildren?.length === 0 && (
+                    <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                        <FolderOpenRoundedIcon
+                            style={{ width: '100px', height: '100px' }}
+                        />
+                        <h1>
+                            <FormattedMessage id={'emptyDir'} />
+                        </h1>
+                    </div>
+                )}
+                {isAllDataPresent && currentChildren?.length > 0 && (
+                    <>
+                        <Toolbar>
+                            {allowsDelete(false) && selectedUuids.size > 0 && (
+                                <IconButton
+                                    className={classes.icon}
+                                    onClick={() => handleOpenDeleteElement()}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            )}
+                        </Toolbar>
                         <VirtualizedTable
                             style={{ flexGrow: 1 }}
                             onRowRightClick={(event) => {
@@ -987,7 +1015,8 @@ const DirectoryContent = () => {
                             ]}
                             sortable={true}
                         />
-                    )}
+                    </>
+                )}
                 <StyledMenu
                     id="row-menu"
                     anchorEl={anchorEl}
