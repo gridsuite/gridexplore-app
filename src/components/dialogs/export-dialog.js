@@ -18,7 +18,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { getAvailableExportFormats, getExportUrl } from '../utils/rest-api';
+import { getAvailableExportFormats, getExportUrl } from '../../utils/rest-api';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
 /**

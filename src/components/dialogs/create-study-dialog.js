@@ -25,7 +25,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { createStudy, fetchCases, elementExists } from '../utils/rest-api';
+import { createStudy, fetchCases, elementExists } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -36,14 +36,17 @@ import {
     removeSelectedFile,
     selectCase,
     selectFile,
-} from '../redux/actions';
-import { store } from '../redux/store';
+} from '../../redux/actions';
+import { store } from '../../redux/store';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { ElementType } from '../utils/elementType';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
+import { ElementType } from '../../utils/elementType';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -165,7 +168,7 @@ const uploadingStudyKeyGenerator = (() => {
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  */
-export const CreateStudyForm = ({ open, onClose }) => {
+export const CreateStudyDialog = ({ open, onClose }) => {
     const [caseExist, setCaseExist] = React.useState(false);
 
     const { enqueueSnackbar } = useSnackbar();
@@ -490,9 +493,9 @@ export const CreateStudyForm = ({ open, onClose }) => {
     );
 };
 
-CreateStudyForm.propTypes = {
+CreateStudyDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
 };
 
-export default CreateStudyForm;
+export default CreateStudyDialog;
