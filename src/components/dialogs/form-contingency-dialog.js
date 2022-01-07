@@ -74,9 +74,9 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
             id: listId,
         };
         saveFormContingencyList(newFiltersContingencyList)
-            .then((response) => {})
-            .catch((error) => {
-                onError(error.message);
+            .then(() => {})
+            .catch((errorMessage) => {
+                onError(errorMessage);
             });
         onClose();
         setCurrentFormContingency(newFiltersContingencyList);
@@ -92,8 +92,8 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
                             setNewFormContingency(data);
                         }
                     })
-                    .catch((error) => {
-                        onError(error.message);
+                    .catch((errorMessage) => {
+                        onError(errorMessage);
                     });
             }
         },
