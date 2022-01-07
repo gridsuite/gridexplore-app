@@ -51,11 +51,11 @@ import CreateIcon from '@material-ui/icons/Create';
 // Dialogs
 import CreateStudyForm from './create-study-form';
 import CreateContingencyListForm from './create-contingency-list-form';
-import { CreateDirectoryDialog } from './dialogs/create-directory-dialog';
+import CreateDirectoryDialog from './dialogs/create-directory-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
-import { CreateFilterDialog } from './create-filter-form';
+import CreateFilterDialog from './create-filter-form';
 
 const StyledMenu = withStyles({
     paper: {

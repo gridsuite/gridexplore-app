@@ -399,4 +399,4 @@ PopupInfo.propTypes = {
     handleBtnCancel: PropTypes.func.isRequired,
 };
 
-export { CreateFilterDialog };
+export default CreateFilterDialog;
