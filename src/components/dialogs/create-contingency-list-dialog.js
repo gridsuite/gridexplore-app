@@ -159,7 +159,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
             return;
         }
         //We don't do anything if the checks are not over or the name is not valid
-        if (loadingCheckContingencyName || contingencyNameValid) {
+        if (loadingCheckContingencyName || !contingencyNameValid) {
             return;
         }
         let isPrivateContingencyList = contingencyListPrivacy === 'private';
