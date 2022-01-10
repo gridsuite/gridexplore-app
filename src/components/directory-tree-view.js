@@ -128,11 +128,11 @@ const DirectoryTreeView = ({
         onContextMenu(event, nodeId);
     }
 
-    function handleLabelClick(nodeId, toggle) {
-        dispatch(setSelectedDirectory(nodeId));
+    function handleLabelClick(node, toggle) {
+        dispatch(setSelectedDirectory(node));
         if (toggle) {
             // update fold status of item
-            toggleDirectories([nodeId]);
+            toggleDirectories([node.elementUuid]);
         }
     }
 
@@ -163,7 +163,7 @@ const DirectoryTreeView = ({
                 }}
                 onLabelClick={() => {
                     handleLabelClick(
-                        node.elementUuid,
+                        node,
                         !expandedRef.current.includes(node.elementUuid)
                     );
                 }}
@@ -238,7 +238,9 @@ const DirectoryTreeView = ({
                     <ChevronRightIcon className={classes.icon} />
                 }
                 expanded={expanded}
-                selected={selectedDirectory}
+                selected={
+                    selectedDirectory ? selectedDirectory.elementUuid : null
+                }
             >
                 {renderTree(mapDataRef.current[treeViewUuid])}
             </TreeView>

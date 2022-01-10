@@ -32,7 +32,7 @@ const ReplaceWithScriptDialog = ({ id, open, onClose, onClick, title }) => {
     };
 
     const handleClick = () => {
-        onClick(id, selectedDirectory);
+        onClick(id, selectedDirectory.elementUuid);
     };
 
     return (

@@ -40,7 +40,7 @@ const CopyToScriptDialog = ({
         setNewNameValue(event.target.value);
     };
     const handleClick = () => {
-        onClick(id, newNameValue, selectedDirectory);
+        onClick(id, newNameValue, selectedDirectory.elementUuid);
     };
 
     const handleClose = () => {

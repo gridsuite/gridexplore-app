@@ -6,7 +6,8 @@
  */
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setActiveDirectory } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import * as constants from '../utils/UIconstants';
@@ -18,8 +19,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
-import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 
 import VirtualizedTable from './virtualized-table';
 import {
@@ -29,45 +28,24 @@ import {
 } from '../utils/elementType';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
 import { Checkbox } from '@material-ui/core';
-import { Toolbar } from '@material-ui/core';
 
-import {
-    deleteElement,
-    fetchElementsInfos,
-    newScriptFromFilter,
-    newScriptFromFiltersContingencyList,
-    renameElement,
-    replaceFiltersWithScript,
-    replaceFormContingencyListWithScript,
-    updateAccessRights,
-} from '../utils/rest-api';
+import { fetchElementsInfos } from '../utils/rest-api';
 
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import FilterIcon from '@material-ui/icons/Filter';
-import withStyles from '@material-ui/core/styles/withStyles';
-import Menu from '@material-ui/core/Menu';
-
-import BuildIcon from '@material-ui/icons/Build';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import IconButton from '@material-ui/core/IconButton';
 import DescriptionIcon from '@material-ui/icons/Description';
 import PanToolIcon from '@material-ui/icons/PanTool';
 
-import ExportDialog from './export-dialog';
-import RenameDialog from './dialogs/rename-dialog';
-import DeleteDialog from './dialogs/delete-dialog';
-import AccessRightsDialog from './dialogs/access-rights-dialog';
 import FormContingencyDialog from './dialogs/form-contingency-dialog';
 import ScriptDialog from './dialogs/script-dialog';
-import ReplaceWithScriptDialog from './dialogs/replace-with-script-dialog';
-import CopyToScriptDialog from './dialogs/copy-to-script-dialog';
 import { useSnackbar } from 'notistack';
 import GenericFilterDialog from './generic-filter';
+
+import ContentContextualMenuController from './menus/content-contextual-menu-controller';
+import ContextualMenuView from './menus/contextual-menu-view';
+import ContentToolbarController from './toolbars/content-toolbar-controller';
+import ToolbarView from './toolbars/toolbar-view';
+import DirectoryTreeContextualMenuController from './menus/directory-tree-contextual-menu-controller';
 
 const circularProgressSize = '70px';
 
@@ -112,12 +90,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const StyledMenu = withStyles({
-    paper: {
-        border: '1px solid #d3d4d5',
-    },
-})((props) => <Menu elevation={0} getContentAnchorEl={null} {...props} />);
-
 const initialMousePosition = {
     mouseX: null,
     mouseY: null,
@@ -125,6 +97,7 @@ const initialMousePosition = {
 
 const DirectoryContent = () => {
     const { enqueueSnackbar } = useSnackbar();
+    const dispatch = useDispatch();
 
     const [childrenMetadata, setChildrenMetadata] = useState({});
     const [isAllDataPresent, setIsAllDataPresent] = useState(false);
@@ -137,12 +110,8 @@ const DirectoryContent = () => {
 
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const userId = useSelector((state) => state.user.profile.sub);
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
     const [activeElement, setActiveElement] = React.useState(null);
-
-    const DownloadIframe = 'downloadIframe';
 
     const classes = useStyles();
     const intl = useIntl();
@@ -150,141 +119,6 @@ const DirectoryContent = () => {
     /* Menu states */
     const [mousePosition, setMousePosition] =
         React.useState(initialMousePosition);
-
-    /**
-     * Rename dialog: window status value for renaming
-     */
-    const [openRenameElementDialog, setOpenRenameElementDialog] =
-        React.useState(false);
-    const [renameError, setRenameError] = React.useState('');
-
-    const handleOpenRenameElement = () => {
-        setAnchorEl(null);
-        setOpenRenameElementDialog(true);
-    };
-
-    const handleCloseRenameElement = () => {
-        setOpenRenameElementDialog(false);
-        setRenameError('');
-    };
-
-    const handleClickRenameElement = (newElementNameValue) => {
-        renameElement(activeElement.elementUuid, newElementNameValue)
-            .then((response) => {
-                if (response.status === 403) {
-                    // == FORBIDDEN
-                    setRenameError(
-                        intl.formatMessage({
-                            id: 'renameElementNotAllowedError',
-                        })
-                    );
-                } else if (response.status === 404) {
-                    // == NOT FOUND
-                    setRenameError(
-                        intl.formatMessage({ id: 'renameElementNotFoundError' })
-                    );
-                } else {
-                    handleCloseRenameElement();
-                }
-            })
-            .catch((e) => {
-                setRenameError(e.message || e);
-            });
-    };
-
-    /**
-     * Delete dialog: window status value for deletion
-     */
-    const [openDeleteElementDialog, setOpenDeleteElementDialog] =
-        React.useState(false);
-    const [deleteError, setDeleteError] = React.useState('');
-
-    const handleOpenDeleteElement = () => {
-        setAnchorEl(null);
-        setOpenDeleteElementDialog(true);
-    };
-
-    const handleCloseDeleteElement = () => {
-        setOpenDeleteElementDialog(false);
-        setDeleteError('');
-    };
-
-    const handleClickDeleteElement = () => {
-        let selectedChildren = getSelectedChildren(false);
-        let notDeleted = [];
-        let doneChildren = [];
-        for (let child of selectedChildren) {
-            deleteElement(child.elementUuid).then((response) => {
-                doneChildren.push(child);
-                if (!response.ok) {
-                    notDeleted.push(child.elementName);
-                }
-
-                if (doneChildren.length === selectedChildren.length) {
-                    if (notDeleted.length === 0) {
-                        handleCloseDeleteElement();
-                        setActiveElement(null);
-                    } else {
-                        let msg = intl.formatMessage(
-                            { id: 'deleteElementsFailure' },
-                            {
-                                pbn: notDeleted.length,
-                                stn: selectedChildren.length,
-                                problematic: notDeleted.join(' '),
-                            }
-                        );
-                        console.warn(msg);
-                        setDeleteError(msg);
-                    }
-                }
-            });
-        }
-    };
-
-    /**
-     * Export dialog: window status value for exporting a network
-     */
-    const [openExportStudyDialog, setOpenExportStudyDialog] =
-        React.useState(false);
-
-    const handleOpenExportStudy = () => {
-        setAnchorEl(null);
-        setOpenExportStudyDialog(true);
-    };
-
-    const handleCloseExportStudy = () => {
-        setOpenExportStudyDialog(false);
-        setActiveElement(null);
-    };
-
-    const handleClickExportStudy = (url) => {
-        window.open(url, DownloadIframe);
-        handleCloseExportStudy();
-    };
-
-    /**
-     * AccessRights dialog: window status value for updating access rights
-     */
-    const [openElementAccessRightsDialog, setOpenElementAccessRightsDialog] =
-        React.useState(false);
-
-    const [accessRightsError, setAccessRightsError] = React.useState('');
-
-    const handleOpenElementAccessRights = () => {
-        setAnchorEl(null);
-        setOpenElementAccessRightsDialog(true);
-    };
-
-    const handleCloseElementAccessRights = () => {
-        setOpenElementAccessRightsDialog(false);
-        setAccessRightsError('');
-        setActiveElement(null);
-    };
-
-    const handleCloseRowMenu = () => {
-        setAnchorEl(null);
-        setActiveElement(null);
-    };
 
     const handleRowClick = (event) => {
         if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
@@ -326,28 +160,6 @@ const DirectoryContent = () => {
         }
     };
 
-    const handleClickElementAccessRights = (selected) => {
-        updateAccessRights(activeElement.elementUuid, selected).then(
-            (response) => {
-                if (response.status === 403) {
-                    setAccessRightsError(
-                        intl.formatMessage({
-                            id: 'modifyAccessRightsNotAllowedError',
-                        })
-                    );
-                } else if (response.status === 404) {
-                    setAccessRightsError(
-                        intl.formatMessage({
-                            id: 'modifyAccessRightsNotFoundError',
-                        })
-                    );
-                } else {
-                    handleCloseElementAccessRights();
-                }
-            }
-        );
-    };
-
     /**
      * Filters contingency list dialog: window status value for editing a filters contingency list
      */
@@ -363,24 +175,6 @@ const DirectoryContent = () => {
         setCurrentFiltersContingencyListId(null);
     };
 
-    const [
-        openFiltersContingencyReplaceWithScriptDialog,
-        setOpenFiltersContingencyReplaceWithScriptDialog,
-    ] = React.useState(false);
-    const handleCloseFiltersContingencyReplaceWithScript = () => {
-        setOpenFiltersContingencyReplaceWithScriptDialog(false);
-        setActiveElement(null);
-    };
-
-    const [
-        openFiltersContingencyCopyToScriptDialog,
-        setOpenFiltersContingencyCopyToScriptDialog,
-    ] = React.useState(false);
-    const handleCloseFiltersContingencyCopyToScript = () => {
-        setOpenFiltersContingencyCopyToScriptDialog(false);
-        setActiveElement(null);
-    };
-
     /**
      * Filters dialog: window status value to edit filters
      */
@@ -389,77 +183,10 @@ const DirectoryContent = () => {
     const handleCloseGenericFilterDialog = () => {
         setOpenGenericFilterDialog(false);
         setCurrentFilterId(null);
-        setActiveElement('');
+        setActiveElement(null);
     };
 
     const [currentFilterId, setCurrentFilterId] = React.useState(null);
-
-    /**
-     * Filters script dialog: window status value to edit filters script
-     */
-    const [openFiltersCopyToScriptDialog, setOpenFiltersCopyToScriptDialog] =
-        React.useState(false);
-    const handleCloseFiltersCopyToScript = () => {
-        setOpenFiltersCopyToScriptDialog(false);
-        setActiveElement('');
-    };
-
-    const [
-        openFiltersReplaceWithScriptDialog,
-        setOpenFiltersReplaceWithScriptDialog,
-    ] = React.useState(false);
-    const handleCloseFiltersReplaceWithScript = () => {
-        setOpenFiltersReplaceWithScriptDialog(false);
-        setActiveElement('');
-    };
-
-    const handleClickFiltersReplaceWithScript = (id) => {
-        replaceFiltersWithScript(id, selectedDirectory)
-            .then()
-            .catch((error) => handleError(error.message));
-        handleCloseFiltersReplaceWithScript();
-    };
-
-    const handleContingencyCopyToScript = () => {
-        setAnchorEl(null);
-        setOpenFiltersContingencyCopyToScriptDialog(true);
-    };
-
-    const handleClickContingencyCopyToScript = (id, newNameValue) => {
-        newScriptFromFiltersContingencyList(id, newNameValue, selectedDirectory)
-            .then()
-            .catch((error) => handleError(error.message));
-        handleCloseFiltersContingencyCopyToScript();
-    };
-
-    const handleContingencyReplaceWithScript = () => {
-        setAnchorEl(null);
-        setOpenFiltersContingencyReplaceWithScriptDialog(true);
-    };
-
-    const handleClickFiltersContingencyReplaceWithScript = (id) => {
-        replaceFormContingencyListWithScript(id, selectedDirectory)
-            .then()
-            .catch((error) => handleError(error.message));
-        handleCloseFiltersContingencyReplaceWithScript();
-    };
-
-    const handleFilterCopyToScript = () => {
-        setAnchorEl(null);
-        setOpenFiltersCopyToScriptDialog(true);
-    };
-
-    const handleClickFilterCopyToScript = (id, newNameValue) => {
-        newScriptFromFilter(id, newNameValue, selectedDirectory)
-            .then()
-            .catch((error) => handleError(error.message));
-        handleCloseFiltersCopyToScript();
-    };
-
-    const handleFilterReplaceWithScript = () => {
-        setAnchorEl(null);
-        setOpenFiltersReplaceWithScriptDialog(true);
-    };
 
     /**
      * Script contingency list dialog: window status value for editing a script contingency list
@@ -481,8 +208,60 @@ const DirectoryContent = () => {
     const [currentScriptId, setCurrentScriptId] = React.useState('');
     const handleCloseScriptDialog = () => {
         setOpenScriptDialog(false);
-        setActiveElement('');
+        setActiveElement(null);
         setCurrentScriptId(null);
+    };
+
+    /**
+     * Contextual Menus
+     */
+    const [openDirectoryMenu, setOpenDirectoryMenu] = React.useState(false);
+    const [openContentMenu, setOpenContentMenu] = React.useState(false);
+
+    const handleOpenContentMenu = (event) => {
+        setOpenContentMenu(true);
+        event.stopPropagation();
+    };
+
+    const handleCloseContentMenu = () => {
+        setOpenContentMenu(false);
+        setActiveElement(null);
+    };
+
+    const handleCloseDirectoryMenu = () => {
+        setOpenDirectoryMenu(false);
+    };
+
+    const handleOpenDirectoryMenu = (event) => {
+        setOpenDirectoryMenu(true);
+        event.stopPropagation();
+    };
+
+    /* User interactions */
+    const onContextMenu = (event) => {
+        if (
+            event.rowData &&
+            event.rowData.uploading !== null &&
+            !event.rowData.uploading
+        ) {
+            if (event.rowData.type !== 'DIRECTORY') {
+                setActiveElement(event.rowData);
+            }
+            setMousePosition({
+                mouseX: event.event.clientX + constants.HORIZONTAL_SHIFT,
+                mouseY: event.event.clientY + constants.VERTICAL_SHIFT,
+            });
+            handleOpenContentMenu(event.event);
+        } else {
+            setMousePosition({
+                mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
+                mouseY: event.clientY + constants.VERTICAL_SHIFT,
+            });
+            if (selectedDirectory) {
+                dispatch(setActiveDirectory(selectedDirectory.elementUuid));
+            }
+            handleOpenDirectoryMenu(event);
+        }
     };
 
     const abbreviationFromUserName = (name) => {
@@ -666,7 +445,6 @@ const DirectoryContent = () => {
             <div
                 onClick={(e) => {
                     toggleSelectAll();
-                    setActiveElement(null);
                     e.stopPropagation();
                 }}
                 className={classes.checkboxes}
@@ -690,11 +468,6 @@ const DirectoryContent = () => {
             <div
                 onClick={(e) => {
                     toggleSelection(elementUuid);
-                    if (selectedUuids.has(elementUuid)) {
-                        setActiveElement(null);
-                    } else {
-                        setActiveElement(cellData.rowData);
-                    }
                     e.stopPropagation();
                 }}
                 className={classes.checkboxes}
@@ -756,7 +529,16 @@ const DirectoryContent = () => {
         let acc = [];
         let ctxtUuid = activeElement ? activeElement.elementUuid : null;
         if (activeElement) {
-            acc.push(activeElement);
+            acc.push(
+                Object.assign(
+                    {
+                        subtype:
+                            childrenMetadata[activeElement.elementUuid]
+                                ?.subtype,
+                    },
+                    activeElement
+                )
+            );
         }
 
         if (selectedUuids && currentChildren) {
@@ -766,9 +548,22 @@ const DirectoryContent = () => {
                 selectedUuids.has(ctxtUuid)
             ) {
                 acc = acc.concat(
-                    currentChildren.filter((child) =>
-                        selectedUuids.has(child.elementUuid)
-                    )
+                    currentChildren
+                        .filter(
+                            (child) =>
+                                selectedUuids.has(child.elementUuid) &&
+                                childrenMetadata[child.elementUuid] &&
+                                child.elementUuid !== activeElement?.elementUuid
+                        )
+                        .map((child2) => {
+                            return Object.assign(
+                                {
+                                    subtype:
+                                        childrenMetadata[child2.elementUuid],
+                                },
+                                child2
+                            );
+                        })
                 );
             } else if (
                 mayChange &&
@@ -780,373 +575,148 @@ const DirectoryContent = () => {
         return [...new Set(acc)];
     };
 
-    const hasSelectedAndAllAreOwned = (mayChange = false) => {
-        let selectedChildren = getSelectedChildren(mayChange);
-        return (
-            selectedChildren &&
-            selectedChildren.length > 0 &&
-            undefined === selectedChildren.find((c) => c.owner !== userId)
-        );
-    };
-
-    const isAllowed = () => {
-        if (activeElement) return activeElement.owner === userId;
-        if (!selectedUuids) return false;
-        return (
-            getSelectedChildren().find((child) => child.owner !== userId) ===
-            null
-        );
-    };
-
-    const allowsDelete = (mayChange = false) => {
-        return hasSelectedAndAllAreOwned(mayChange);
-    };
-
-    const allowsRename = (mayChange = false) => {
-        let children = getSelectedChildren(mayChange);
-        return children.length === 1 && children[0].owner === userId;
-    };
-
-    const allowsPublishability = () => {
-        return isAllowed();
-    };
-
-    const allowsExport = () => {
-        let children = getSelectedChildren();
-        return children.length === 1 && children[0].type === ElementType.STUDY;
-    };
-
-    const allowsCopyContingencyToScript = () => {
-        let children = getSelectedChildren();
-        return (
-            children.length === 1 &&
-            children[0].type === ElementType.CONTINGENCY_LIST &&
-            childrenMetadata[children[0].elementUuid] &&
-            childrenMetadata[children[0].elementUuid].subtype ===
-                ContingencyListType.FORM
-        );
-    };
-
-    const allowsReplaceContingencyWithScript = () => {
-        let children = getSelectedChildren();
-        return (
-            children.length === 1 &&
-            children[0].type === ElementType.CONTINGENCY_LIST &&
-            childrenMetadata[children[0].elementUuid] &&
-            childrenMetadata[children[0].elementUuid].subtype ===
-                ContingencyListType.FORM &&
-            children[0].owner === userId
-        );
-    };
-
-    const allowsCopyFilterToScript = () => {
-        let children = getSelectedChildren();
-        return (
-            children.length === 1 &&
-            children[0].type === ElementType.FILTER &&
-            !(
-                childrenMetadata[children[0].elementUuid] &&
-                childrenMetadata[children[0].elementUuid].subtype ===
-                    FilterType.SCRIPT
-            )
-        );
-    };
-
-    const allowsReplaceFilterWithScript = () => {
-        let children = getSelectedChildren();
-        return (
-            children.length === 1 &&
-            children[0].type === ElementType.FILTER &&
-            !(
-                childrenMetadata[children[0].elementUuid] &&
-                childrenMetadata[children[0].elementUuid].subtype ===
-                    FilterType.SCRIPT
-            ) &&
-            children[0].owner === userId
-        );
-    };
-
-    function makeMenuItem(utMsg, cb, ico = <EditIcon fontSize="small" />) {
-        return (
-            <>
-                <MenuItem onClick={cb}>
-                    <ListItemIcon
-                        style={{
-                            minWidth: '25px',
-                        }}
-                    >
-                        {ico}
-                    </ListItemIcon>
-                    <ListItemText primary={<FormattedMessage id={utMsg} />} />
-                </MenuItem>
-            </>
-        );
-    }
-
-    const emptyMenu = () => {
-        return !(
-            allowsRename() ||
-            allowsPublishability() ||
-            allowsExport() ||
-            allowsDelete() ||
-            allowsCopyContingencyToScript() ||
-            allowsReplaceContingencyWithScript() ||
-            allowsCopyFilterToScript() ||
-            allowsReplaceFilterWithScript()
-        );
-    };
-
-    const areSelectedElementsAllPrivate = () => {
-        let sel = getSelectedChildren();
-        if (!sel || sel.length === 0) return undefined;
-        let priv = sel.filter((child) => child.accessRights.private);
-        if (!priv || priv.length === 0) return false;
-        if (priv.length === sel.length) return true;
-
-        return undefined;
-    };
-
     return (
         <>
             <div
                 style={{
-                    display: 'flex',
-                    flexDirection: 'column',
                     height: '100%',
                 }}
                 onMouseDownCapture={(e) => {
-                    if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON)
-                        handleCloseRowMenu();
+                    if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON) {
+                        handleCloseContentMenu();
+                        handleCloseDirectoryMenu();
+                    }
                 }}
             >
-                {!isAllDataPresent && selectedDirectory && (
-                    <div className={classes.circularProgressContainer}>
-                        <CircularProgress
-                            size={circularProgressSize}
-                            color="inherit"
-                            className={classes.centeredCircularProgress}
-                        />
-                    </div>
-                )}
-                {isAllDataPresent && currentChildren?.length === 0 && (
-                    <div style={{ textAlign: 'center', marginTop: '100px' }}>
-                        <FolderOpenRoundedIcon
-                            style={{ width: '100px', height: '100px' }}
-                        />
-                        <h1>
-                            <FormattedMessage id={'emptyDir'} />
-                        </h1>
-                    </div>
-                )}
-                {isAllDataPresent && currentChildren?.length > 0 && (
-                    <>
-                        <Toolbar>
-                            {allowsDelete(false) && selectedUuids.size > 0 && (
-                                <IconButton
-                                    className={classes.icon}
-                                    onClick={() => handleOpenDeleteElement()}
-                                >
-                                    <DeleteIcon />
-                                </IconButton>
-                            )}
-                        </Toolbar>
-                        <VirtualizedTable
-                            style={{ flexGrow: 1 }}
-                            onRowRightClick={(event) => {
-                                if (
-                                    event.rowData.uploading !== null &&
-                                    !event.rowData.uploading
-                                ) {
-                                    if (event.rowData.type !== 'DIRECTORY') {
-                                        setActiveElement(event.rowData);
-                                    }
-                                    setMousePosition({
-                                        mouseX:
-                                            event.event.clientX +
-                                            constants.HORIZONTAL_SHIFT,
-                                        mouseY:
-                                            event.event.clientY +
-                                            constants.VERTICAL_SHIFT,
-                                    });
-                                    setAnchorEl(event.event.currentTarget);
-                                }
-                            }}
-                            onRowClick={handleRowClick}
-                            rows={currentChildren}
-                            columns={[
-                                {
-                                    cellRenderer: selectionRenderer,
-                                    dataKey: 'selected',
-                                    label: '',
-                                    headerRenderer: selectionHeaderRenderer,
-                                    maxWidth: 60,
-                                },
-                                {
-                                    width: 100,
-                                    label: intl.formatMessage({
-                                        id: 'elementName',
-                                    }),
-                                    dataKey: 'elementName',
-                                    cellRenderer: nameCellRender,
-                                },
-                                {
-                                    width: 100,
-                                    label: intl.formatMessage({
-                                        id: 'type',
-                                    }),
-                                    dataKey: 'type',
-                                    cellRenderer: typeCellRender,
-                                },
-                                {
-                                    width: 50,
-                                    label: intl.formatMessage({
-                                        id: 'owner',
-                                    }),
-                                    dataKey: 'owner',
-                                    cellRenderer: accessOwnerCellRender,
-                                },
-                                {
-                                    width: 50,
-                                    label: intl.formatMessage({
-                                        id: 'accessRights',
-                                    }),
-                                    dataKey: 'accessRights',
-                                    cellRenderer: accessRightsCellRender,
-                                },
-                            ]}
-                            sortable={true}
-                        />
-                    </>
-                )}
-                <StyledMenu
-                    id="row-menu"
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={!emptyMenu() && Boolean(anchorEl)}
-                    onClose={handleCloseRowMenu}
-                    anchorReference="anchorPosition"
-                    anchorPosition={
-                        mousePosition.mouseY !== null &&
-                        mousePosition.mouseX !== null
-                            ? {
-                                  top: mousePosition.mouseY,
-                                  left: mousePosition.mouseX,
-                              }
-                            : undefined
-                    }
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        height: '100%',
+                    }}
+                    onContextMenu={(e) => onContextMenu(e)}
                 >
-                    {activeElement && (
-                        <div>
-                            {allowsRename() && (
-                                <>
-                                    {makeMenuItem(
-                                        'rename',
-                                        handleOpenRenameElement
-                                    )}
-                                </>
-                            )}
-                            {allowsPublishability() && (
-                                <>
-                                    {makeMenuItem(
-                                        'accessRights',
-                                        handleOpenElementAccessRights,
-                                        <BuildIcon fontSize="small" />
-                                    )}
-                                </>
-                            )}
-                            {allowsExport() && (
-                                <>
-                                    {makeMenuItem(
-                                        'export',
-                                        handleOpenExportStudy,
-                                        <GetAppIcon fontSize="small" />
-                                    )}
-                                </>
-                            )}
-                            {allowsDelete(true) && (
-                                <>
-                                    {makeMenuItem(
-                                        'delete',
-                                        handleOpenDeleteElement,
-                                        <DeleteIcon fontSize="small" />
-                                    )}
-                                </>
-                            )}
-                            {allowsCopyContingencyToScript() && (
-                                <>
-                                    {makeMenuItem(
-                                        'copyToScript',
-                                        handleContingencyCopyToScript,
-                                        <FileCopyIcon fontSize="small" />
-                                    )}
-                                </>
-                            )}
-                            {allowsReplaceContingencyWithScript() && (
-                                <>
-                                    {makeMenuItem(
-                                        'replaceWithScript',
-                                        handleContingencyReplaceWithScript,
-                                        <InsertDriveFileIcon fontSize="small" />
-                                    )}
-                                </>
-                            )}
-                            {allowsCopyFilterToScript() && (
-                                <>
-                                    {makeMenuItem(
-                                        'copyToScript',
-                                        handleFilterCopyToScript,
-                                        <FileCopyIcon fontSize="small" />
-                                    )}
-                                </>
-                            )}
-                            {allowsReplaceFilterWithScript() && (
-                                <>
-                                    {makeMenuItem(
-                                        'replaceWithScript',
-                                        handleFilterReplaceWithScript,
-                                        <InsertDriveFileIcon fontSize="small" />
-                                    )}
-                                </>
-                            )}
+                    {!isAllDataPresent && selectedDirectory && (
+                        <div className={classes.circularProgressContainer}>
+                            <CircularProgress
+                                size={circularProgressSize}
+                                color="inherit"
+                                className={classes.centeredCircularProgress}
+                            />
                         </div>
                     )}
-                </StyledMenu>
+                    {isAllDataPresent && currentChildren?.length === 0 && (
+                        <div
+                            style={{ textAlign: 'center', marginTop: '100px' }}
+                        >
+                            <FolderOpenRoundedIcon
+                                style={{ width: '100px', height: '100px' }}
+                            />
+                            <h1>
+                                <FormattedMessage id={'emptyDir'} />
+                            </h1>
+                        </div>
+                    )}
+
+                    {isAllDataPresent && currentChildren?.length > 0 && (
+                        <>
+                            <ContentToolbarController
+                                selectedElements={getSelectedChildren()}
+                            >
+                                <ToolbarView />
+                            </ContentToolbarController>
+
+                            <VirtualizedTable
+                                style={{ flexGrow: 1 }}
+                                onRowRightClick={(e) => onContextMenu(e)}
+                                onRowClick={handleRowClick}
+                                rows={currentChildren}
+                                columns={[
+                                    {
+                                        cellRenderer: selectionRenderer,
+                                        dataKey: 'selected',
+                                        label: '',
+                                        headerRenderer: selectionHeaderRenderer,
+                                        maxWidth: 60,
+                                    },
+                                    {
+                                        width: 100,
+                                        label: intl.formatMessage({
+                                            id: 'elementName',
+                                        }),
+                                        dataKey: 'elementName',
+                                        cellRenderer: nameCellRender,
+                                    },
+                                    {
+                                        width: 100,
+                                        label: intl.formatMessage({
+                                            id: 'type',
+                                        }),
+                                        dataKey: 'type',
+                                        cellRenderer: typeCellRender,
+                                    },
+                                    {
+                                        width: 50,
+                                        label: intl.formatMessage({
+                                            id: 'owner',
+                                        }),
+                                        dataKey: 'owner',
+                                        cellRenderer: accessOwnerCellRender,
+                                    },
+                                    {
+                                        width: 50,
+                                        label: intl.formatMessage({
+                                            id: 'accessRights',
+                                        }),
+                                        dataKey: 'accessRights',
+                                        cellRenderer: accessRightsCellRender,
+                                    },
+                                ]}
+                                sortable={true}
+                            />
+                        </>
+                    )}
+
+                    <ContentContextualMenuController
+                        activeElement={activeElement}
+                        selectedElements={getSelectedChildren()}
+                        // Controller should manage those eventListener props to manage menu, dialogs synchronization
+                        open={openContentMenu}
+                        onClose={handleCloseContentMenu}
+                    >
+                        <ContextualMenuView
+                            anchorReference="anchorPosition"
+                            anchorPosition={
+                                mousePosition.mouseY !== null &&
+                                mousePosition.mouseX !== null
+                                    ? {
+                                          top: mousePosition.mouseY,
+                                          left: mousePosition.mouseX,
+                                      }
+                                    : undefined
+                            }
+                        />
+                    </ContentContextualMenuController>
+                    <DirectoryTreeContextualMenuController
+                        directory={selectedDirectory}
+                        open={openDirectoryMenu}
+                        onClose={handleCloseDirectoryMenu}
+                    >
+                        <ContextualMenuView
+                            anchorReference="anchorPosition"
+                            anchorPosition={
+                                mousePosition.mouseY !== null &&
+                                mousePosition.mouseX !== null
+                                    ? {
+                                          top: mousePosition.mouseY,
+                                          left: mousePosition.mouseX,
+                                      }
+                                    : undefined
+                            }
+                        />
+                    </DirectoryTreeContextualMenuController>
+                </div>
             </div>
-            <RenameDialog
-                open={openRenameElementDialog}
-                onClose={handleCloseRenameElement}
-                onClick={handleClickRenameElement}
-                title={useIntl().formatMessage({ id: 'renameElement' })}
-                message={useIntl().formatMessage({ id: 'renameElementMsg' })}
-                currentName={activeElement ? activeElement.elementName : ''}
-                error={renameError}
-            />
-            <DeleteDialog
-                open={openDeleteElementDialog}
-                onClose={handleCloseDeleteElement}
-                onClick={handleClickDeleteElement}
-                items={getSelectedChildren()}
-                multipleDeleteFormatMessageId={
-                    'deleteMultipleItemsDialogMessage'
-                }
-                simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
-                error={deleteError}
-            />
-            <ExportDialog
-                open={openExportStudyDialog}
-                onClose={handleCloseExportStudy}
-                onClick={handleClickExportStudy}
-                studyUuid={activeElement ? activeElement.elementUuid : ''}
-                title={useIntl().formatMessage({ id: 'exportNetwork' })}
-            />
-            <AccessRightsDialog
-                open={openElementAccessRightsDialog}
-                onClose={handleCloseElementAccessRights}
-                onClick={handleClickElementAccessRights}
-                title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
-                isPrivate={areSelectedElementsAllPrivate()}
-                error={accessRightsError}
-            />
             <FormContingencyDialog
                 listId={currentFiltersContingencyListId}
                 open={openFiltersContingencyDialog}
@@ -1170,49 +740,12 @@ const DirectoryContent = () => {
                 title={useIntl().formatMessage({ id: 'editFilterScript' })}
                 type={ElementType.FILTER}
             />
-            <ReplaceWithScriptDialog
-                id={activeElement ? activeElement.elementUuid : ''}
-                open={openFiltersContingencyReplaceWithScriptDialog}
-                onClose={handleCloseFiltersContingencyReplaceWithScript}
-                onClick={handleClickFiltersContingencyReplaceWithScript}
-                onError={handleError}
-                title={useIntl().formatMessage({ id: 'replaceList' })}
-            />
-            <CopyToScriptDialog
-                id={activeElement ? activeElement.elementUuid : ''}
-                open={openFiltersContingencyCopyToScriptDialog}
-                onClose={handleCloseFiltersContingencyCopyToScript}
-                onClick={handleClickContingencyCopyToScript}
-                currentName={activeElement ? activeElement.elementName : ''}
-                title={useIntl().formatMessage({ id: 'copyToScriptList' })}
-            />
-            <ReplaceWithScriptDialog
-                id={activeElement ? activeElement.elementUuid : ''}
-                open={openFiltersReplaceWithScriptDialog}
-                onClose={handleCloseFiltersReplaceWithScript}
-                onClick={handleClickFiltersReplaceWithScript}
-                title={useIntl().formatMessage({ id: 'replaceList' })}
-            />
-            <CopyToScriptDialog
-                id={activeElement ? activeElement.elementUuid : ''}
-                open={openFiltersCopyToScriptDialog}
-                onClose={handleCloseFiltersCopyToScript}
-                onClick={handleClickFilterCopyToScript}
-                currentName={activeElement ? activeElement.elementName : ''}
-                title={useIntl().formatMessage({ id: 'copyToScriptList' })}
-            />
             <GenericFilterDialog
                 id={currentFilterId}
                 open={openGenericFilterDialog}
                 onClose={handleCloseGenericFilterDialog}
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'editFilter' })}
-            />
-            <iframe
-                id={DownloadIframe}
-                name={DownloadIframe}
-                title={DownloadIframe}
-                style={{ display: 'none' }}
             />
         </>
     );
