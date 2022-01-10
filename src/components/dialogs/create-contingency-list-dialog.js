@@ -250,9 +250,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                             }
                             type="text"
                             style={{ width: '90%' }}
-                            label={
-                                <FormattedMessage id="contingencyListName" />
-                            }
+                            label=<FormattedMessage id="contingencyListName" />
                         />
                         {renderContingencyNameStatus()}
                     </div>
@@ -264,9 +262,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                         value={contingencyListDescription}
                         type="text"
                         style={{ width: '90%' }}
-                        label={
-                            <FormattedMessage id="contingencyListDescription" />
-                        }
+                        label=<FormattedMessage id="contingencyListDescription" />
                     />
 
                     <RadioGroup
@@ -280,12 +276,12 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                         <FormControlLabel
                             value="SCRIPT"
                             control={<Radio />}
-                            label={<FormattedMessage id="SCRIPT" />}
+                            label=<FormattedMessage id="SCRIPT" />
                         />
                         <FormControlLabel
                             value="FORM"
                             control={<Radio />}
-                            label={<FormattedMessage id="FORM" />}
+                            label=<FormattedMessage id="FORM" />
                         />
                     </RadioGroup>
 
@@ -299,12 +295,12 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                         <FormControlLabel
                             value="public"
                             control={<Radio />}
-                            label={<FormattedMessage id="public" />}
+                            label=<FormattedMessage id="public" />
                         />
                         <FormControlLabel
                             value="private"
                             control={<Radio />}
-                            label={<FormattedMessage id="private" />}
+                            label=<FormattedMessage id="private" />
                         />
                     </RadioGroup>
                     {createContingencyListErr !== '' && (
