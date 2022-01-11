@@ -713,7 +713,6 @@ const DirectoryContent = () => {
 
     useEffect(() => {
         if (currentChildren?.length > 0) {
-            setIsAllDataPresent(false);
             let metadata = {};
             let childrenToFetchElementsInfos = Object.values(currentChildren)
                 .filter((e) => !e.uploading)
