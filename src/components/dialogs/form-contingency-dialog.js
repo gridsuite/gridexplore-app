@@ -12,7 +12,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import FiltersEditor from '../filters-editor';
+import FiltersEditor from './filters-editor';
 import { EquipmentTypes } from '../../utils/equipment-types';
 import { makeStyles } from '@material-ui/core/styles';
 import {

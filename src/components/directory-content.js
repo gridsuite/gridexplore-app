@@ -28,8 +28,7 @@ import {
     FilterType,
 } from '../utils/elementType';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
-import { Checkbox } from '@material-ui/core';
-import { Toolbar } from '@material-ui/core';
+import { Checkbox, Toolbar } from '@material-ui/core';
 
 import {
     deleteElement,
@@ -58,7 +57,7 @@ import IconButton from '@material-ui/core/IconButton';
 import DescriptionIcon from '@material-ui/icons/Description';
 import PanToolIcon from '@material-ui/icons/PanTool';
 
-import ExportDialog from './export-dialog';
+import ExportDialog from './dialogs/export-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
@@ -67,7 +66,7 @@ import ScriptDialog from './dialogs/script-dialog';
 import ReplaceWithScriptDialog from './dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from './dialogs/copy-to-script-dialog';
 import { useSnackbar } from 'notistack';
-import GenericFilterDialog from './generic-filter';
+import GenericFilterDialog from './dialogs/generic-filter-dialog';
 
 const circularProgressSize = '70px';
 
