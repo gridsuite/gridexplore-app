@@ -49,13 +49,13 @@ import AddIcon from '@material-ui/icons/Add';
 import CreateIcon from '@material-ui/icons/Create';
 
 // Dialogs
-import CreateStudyForm from './create-study-form';
-import CreateContingencyListForm from './create-contingency-list-form';
-import { CreateDirectoryDialog } from './dialogs/create-directory-dialog';
+import CreateStudyDialog from './dialogs/create-study-dialog';
+import CreateContingencyListDialog from './dialogs/create-contingency-list-dialog';
+import CreateDirectoryDialog from './dialogs/create-directory-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import AccessRightsDialog from './dialogs/access-rights-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
-import { CreateFilterDialog } from './create-filter-form';
+import CreateFilterDialog from './dialogs/create-filter-dialog';
 
 const StyledMenu = withStyles({
     paper: {
@@ -750,11 +750,11 @@ const TreeViewsContainer = () => {
             </div>
 
             {/** Dialogs **/}
-            <CreateStudyForm
+            <CreateStudyDialog
                 open={openAddNewStudyDialog}
                 onClose={() => setOpenAddNewStudyDialog(false)}
             />
-            <CreateContingencyListForm
+            <CreateContingencyListDialog
                 open={openAddNewContingencyListDialog}
                 onClose={() => setOpenAddNewContingencyListDialog(false)}
             />

@@ -23,10 +23,10 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Grid from '@material-ui/core/Grid';
-import { createFilter, elementExists } from '../utils/rest-api';
+import { createFilter, elementExists } from '../../utils/rest-api';
 import Alert from '@material-ui/lab/Alert';
 import { useSelector } from 'react-redux';
-import { ElementType, FilterType } from '../utils/elementType';
+import { ElementType, FilterType } from '../../utils/elementType';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import CheckIcon from '@material-ui/icons/Check';
@@ -399,4 +399,4 @@ PopupInfo.propTypes = {
     handleBtnCancel: PropTypes.func.isRequired,
 };
 
-export { CreateFilterDialog };
+export default CreateFilterDialog;
