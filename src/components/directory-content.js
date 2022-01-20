@@ -355,7 +355,7 @@ const DirectoryContent = () => {
     const [
         currentFiltersContingencyListId,
         setCurrentFiltersContingencyListId,
-    ] = React.useState('');
+    ] = React.useState(null);
     const handleCloseFiltersContingency = () => {
         setOpenFiltersContingencyDialog(false);
         setActiveElement(null);
@@ -466,7 +466,7 @@ const DirectoryContent = () => {
     const [openScriptContingencyDialog, setOpenScriptContingencyDialog] =
         React.useState(false);
     const [currentScriptContingencyListId, setCurrentScriptContingencyListId] =
-        React.useState('');
+        React.useState(null);
     const handleCloseScriptContingency = () => {
         setOpenScriptContingencyDialog(false);
         setActiveElement(null);
@@ -477,7 +477,7 @@ const DirectoryContent = () => {
      * Filter script dialog: window status value for editing a filter script
      */
     const [openScriptDialog, setOpenScriptDialog] = React.useState(false);
-    const [currentScriptId, setCurrentScriptId] = React.useState('');
+    const [currentScriptId, setCurrentScriptId] = React.useState(null);
     const handleCloseScriptDialog = () => {
         setOpenScriptDialog(false);
         setActiveElement('');
@@ -729,6 +729,7 @@ const DirectoryContent = () => {
                             };
                         });
                     })
+                    .catch(handleError)
                     .finally(() => {
                         // discarding request for older directory
                         if (currentChildrenRef.current === currentChildren) {
@@ -741,7 +742,7 @@ const DirectoryContent = () => {
             setIsAllDataPresent(true);
         }
         setSelectedUuids(new Set());
-    }, [currentChildren, currentChildrenRef]);
+    }, [handleError, currentChildren, currentChildrenRef]);
 
     const contextualMixPolicies = {
         BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids

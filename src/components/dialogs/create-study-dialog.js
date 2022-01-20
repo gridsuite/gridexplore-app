@@ -351,37 +351,11 @@ export const CreateStudyDialog = ({ open, onClose }) => {
             isPrivateStudy,
             activeDirectory
         )
-            .then((res) => {
-                dispatch(removeUploadingStudy(uploadingStudy));
-                if (!res.ok) {
-                    if (res.status === 409) {
-                        studyCreationError(
-                            studyName,
-                            intl.formatMessage({
-                                id: 'studyNameAlreadyUsed',
-                            })
-                        );
-                    } else {
-                        res.json()
-                            .then((data) => {
-                                studyCreationError(
-                                    studyName,
-                                    data.error + ' - ' + data.message
-                                );
-                            })
-                            .catch((error) => {
-                                studyCreationError(
-                                    studyName,
-                                    error.name + ' - ' + error.message
-                                );
-                            });
-                    }
-                }
+            .then()
+            .catch((message) => {
+                studyCreationError(studyName, message);
             })
-            .catch((e) => {
-                studyCreationError(studyName, e.name + ' - ' + e.message);
-                dispatch(removeUploadingStudy(uploadingStudy));
-            });
+            .finally(() => dispatch(removeUploadingStudy(uploadingStudy)));
         dispatch(addUploadingStudy(uploadingStudy));
         onClose();
         resetDialog();
