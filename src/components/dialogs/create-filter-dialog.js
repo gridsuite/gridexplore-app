@@ -199,21 +199,14 @@ const CreateFilterDialog = ({
             newNameList,
             filterPrivacy === 'private',
             activeDirectory
-        ).then((res) => {
-            if (res.ok) {
+        )
+            .then(() => {
                 onClose();
                 resetDialog();
-            } else {
-                console.debug('Error when creating the filter');
-                res.json()
-                    .then((data) => {
-                        setCreateFilterErr(data.error + ' - ' + data.message);
-                    })
-                    .catch((error) => {
-                        setCreateFilterErr(error.name + ' - ' + error.message);
-                    });
-            }
-        });
+            })
+            .catch((message) => {
+                setCreateFilterErr(message);
+            });
     };
 
     const handleClose = () => {

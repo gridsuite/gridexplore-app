@@ -170,25 +170,14 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
             contingencyListDescription,
             isPrivateContingencyList,
             activeDirectory
-        ).then((res) => {
-            if (res.ok) {
+        )
+            .then(() => {
                 onClose();
                 resetDialog();
-            } else {
-                console.debug('Error when creating the contingency list');
-                res.json()
-                    .then((data) => {
-                        setCreateContingencyListErr(
-                            data.error + ' - ' + data.message
-                        );
-                    })
-                    .catch((error) => {
-                        setCreateContingencyListErr(
-                            error.name + ' - ' + error.message
-                        );
-                    });
-            }
-        });
+            })
+            .catch((message) => {
+                setCreateContingencyListErr(message);
+            });
     };
 
     const renderContingencyNameStatus = () => {
