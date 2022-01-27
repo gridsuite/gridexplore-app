@@ -23,9 +23,12 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 
-import { updateConfigParameter } from '../utils/rest-api';
+import { updateConfigParameter } from '../../utils/rest-api';
 import { useSnackbar } from 'notistack';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -82,7 +85,7 @@ export function useParameterState(paramName) {
     return [paramLocalState, handleChangeParamLocalState];
 }
 
-const Parameters = ({ showParameters, hideParameters }) => {
+const ParametersDialog = ({ showParameters, hideParameters }) => {
     const classes = useStyles();
 
     const [tabIndex, setTabIndex] = useState(0);
@@ -158,4 +161,4 @@ const Parameters = ({ showParameters, hideParameters }) => {
     );
 };
 
-export default Parameters;
+export default ParametersDialog;

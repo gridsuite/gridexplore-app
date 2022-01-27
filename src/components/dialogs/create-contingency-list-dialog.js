@@ -19,13 +19,13 @@ import Alert from '@material-ui/lab/Alert';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { createContingencyList, elementExists } from '../utils/rest-api';
+import { createContingencyList, elementExists } from '../../utils/rest-api';
 
 import { useSelector } from 'react-redux';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import PropTypes from 'prop-types';
-import { ContingencyListType, ElementType } from '../utils/elementType';
+import { ContingencyListType, ElementType } from '../../utils/elementType';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 import CheckIcon from '@material-ui/icons/Check';
@@ -37,7 +37,7 @@ const useStyles = makeStyles(() => ({}));
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  */
-export const CreateContingencyListForm = ({ open, onClose }) => {
+export const CreateContingencyListDialog = ({ open, onClose }) => {
     const [contingencyListType, setContingencyListType] = React.useState(
         ContingencyListType.SCRIPT
     );
@@ -161,25 +161,14 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
             contingencyListName,
             contingencyListDescription,
             activeDirectory
-        ).then((res) => {
-            if (res.ok) {
+        )
+            .then(() => {
                 onClose();
                 resetDialog();
-            } else {
-                console.debug('Error when creating the contingency list');
-                res.json()
-                    .then((data) => {
-                        setCreateContingencyListErr(
-                            data.error + ' - ' + data.message
-                        );
-                    })
-                    .catch((error) => {
-                        setCreateContingencyListErr(
-                            error.name + ' - ' + error.message
-                        );
-                    });
-            }
-        });
+            })
+            .catch((message) => {
+                setCreateContingencyListErr(message);
+            });
     };
 
     const renderContingencyNameStatus = () => {
@@ -267,12 +256,12 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
                         <FormControlLabel
                             value="SCRIPT"
                             control={<Radio />}
-                            label={<FormattedMessage id="SCRIPT" />}
+                            label=<FormattedMessage id="SCRIPT" />
                         />
                         <FormControlLabel
                             value="FORM"
                             control={<Radio />}
-                            label={<FormattedMessage id="FORM" />}
+                            label=<FormattedMessage id="FORM" />
                         />
                     </RadioGroup>
                     {createContingencyListErr !== '' && (
@@ -302,9 +291,9 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
     );
 };
 
-CreateContingencyListForm.propTypes = {
+CreateContingencyListDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
 };
 
-export default CreateContingencyListForm;
+export default CreateContingencyListDialog;

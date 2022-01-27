@@ -278,6 +278,21 @@ function getElementsIdsListsQueryParams(ids) {
     return '';
 }
 
+function handleJsonResponse(response) {
+    return handleResponse(response, true);
+}
+function handleResponse(response, isJson) {
+    return response.ok
+        ? isJson
+            ? response.json()
+            : response
+        : response
+              .text()
+              .then((text) =>
+                  Promise.reject(text ? text : response.statusText)
+              );
+}
+
 export function fetchElementsInfos(ids) {
     console.info('Fetching elements metadata ... ');
     const fetchElementsInfosUrl =
@@ -286,11 +301,7 @@ export function fetchElementsInfos(ids) {
         getElementsIdsListsQueryParams(ids);
     return backendFetch(fetchElementsInfosUrl, {
         method: 'GET',
-    }).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
+    }).then((response) => handleJsonResponse(response));
 }
 
 export function createStudy(
@@ -318,7 +329,7 @@ export function createStudy(
         console.debug(createStudyWithExistingCaseUrl);
         return backendFetch(createStudyWithExistingCaseUrl, {
             method: 'post',
-        });
+        }).then((response) => handleResponse(response, false));
     } else {
         const createStudyWithNewCaseUrl =
             PREFIX_EXPLORE_SERVER_QUERIES +
@@ -333,7 +344,7 @@ export function createStudy(
         return backendFetch(createStudyWithNewCaseUrl, {
             method: 'post',
             body: formData,
-        });
+        }).then((response) => handleResponse(response, false));
     }
 }
 
@@ -398,7 +409,7 @@ export function createContingencyList(
     return backendFetch(createContingencyListUrl, {
         method: 'post',
         body: JSON.stringify(body),
-    });
+    }).then((response) => handleResponse(response, false));
 }
 
 /**
@@ -414,7 +425,7 @@ export function getContingencyList(type, id) {
     }
     url += id;
 
-    return backendFetch(url).then((response) => response.json());
+    return backendFetch(url).then((response) => handleJsonResponse(response));
 }
 
 /**
@@ -432,7 +443,7 @@ export function saveFormContingencyList(form) {
             ...rest,
             nominalVoltage: nominalVoltage === '' ? -1 : nominalVoltage,
         }),
-    });
+    }).then((response) => handleResponse(response, false));
 }
 
 /**
@@ -448,7 +459,7 @@ export function saveScriptContingencyList(scriptContingencyList) {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(scriptContingencyList),
-    });
+    }).then((response) => handleResponse(response, false));
 }
 
 /**
@@ -543,7 +554,7 @@ export function createFilter(newFilter, name, parentDirectoryUuid) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newFilter),
         }
-    );
+    ).then((response) => handleResponse(response, false));
 }
 
 /**
@@ -562,7 +573,7 @@ export function getFilters() {
  */
 export function getFilterById(id) {
     const url = PREFIX_FILTERS_QUERIES + '/' + id;
-    return backendFetch(url).then((response) => response.json());
+    return backendFetch(url).then((response) => handleJsonResponse(response));
 }
 
 /**
@@ -615,5 +626,5 @@ export function saveFilter(filter) {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(filter),
-    });
+    }).then((response) => handleResponse(response, false));
 }

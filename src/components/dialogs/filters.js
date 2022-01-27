@@ -11,9 +11,9 @@ import Grid from '@material-ui/core/Grid';
 import { Chip, InputAdornment, MenuItem, Select } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { PARAM_LANGUAGE } from '../utils/config-params';
-import { useParameterState } from './parameters';
-import { getComputedLanguage } from '../utils/language';
+import { PARAM_LANGUAGE } from '../../utils/config-params';
+import { useParameterState } from './parameters-dialog';
+import { getComputedLanguage } from '../../utils/language';
 
 export const StringInput = ({ initialValue, onChange, disabled }) => {
     return (

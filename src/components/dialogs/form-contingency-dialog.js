@@ -12,7 +12,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import FiltersEditor from '../filters-editor';
+import FiltersEditor from './filters-editor';
 import { EquipmentTypes } from '../../utils/equipment-types';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -74,9 +74,9 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
             id: listId,
         };
         saveFormContingencyList(newFiltersContingencyList)
-            .then((response) => {})
-            .catch((error) => {
-                onError(error.message);
+            .then(() => {})
+            .catch((errorMessage) => {
+                onError(errorMessage);
             });
         onClose();
         setCurrentFormContingency(newFiltersContingencyList);
@@ -92,8 +92,8 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
                             setNewFormContingency(data);
                         }
                     })
-                    .catch((error) => {
-                        onError(error.message);
+                    .catch((errorMessage) => {
+                        onError(errorMessage);
                     });
             }
         },

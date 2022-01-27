@@ -154,3 +154,5 @@ CreateDirectoryDialog.propTypes = {
     message: PropTypes.string.isRequired,
     error: PropTypes.string.isRequired,
 };
+
+export default CreateDirectoryDialog;

@@ -28,8 +28,7 @@ import {
     FilterType,
 } from '../utils/elementType';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
-import { Checkbox } from '@material-ui/core';
-import { Toolbar } from '@material-ui/core';
+import { Checkbox, Toolbar } from '@material-ui/core';
 
 import {
     deleteElement,
@@ -56,7 +55,7 @@ import IconButton from '@material-ui/core/IconButton';
 import DescriptionIcon from '@material-ui/icons/Description';
 import PanToolIcon from '@material-ui/icons/PanTool';
 
-import ExportDialog from './export-dialog';
+import ExportDialog from './dialogs/export-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
 import FormContingencyDialog from './dialogs/form-contingency-dialog';
@@ -64,9 +63,9 @@ import ScriptDialog from './dialogs/script-dialog';
 import ReplaceWithScriptDialog from './dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from './dialogs/copy-to-script-dialog';
 import { useSnackbar } from 'notistack';
-import GenericFilterDialog from './generic-filter';
+import GenericFilterDialog from './dialogs/generic-filter-dialog';
 
-const circularProgressSize = '33vh';
+const circularProgressSize = '70px';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -312,7 +311,7 @@ const DirectoryContent = () => {
     const [
         currentFiltersContingencyListId,
         setCurrentFiltersContingencyListId,
-    ] = React.useState('');
+    ] = React.useState(null);
     const handleCloseFiltersContingency = () => {
         setOpenFiltersContingencyDialog(false);
         setActiveElement(null);
@@ -423,7 +422,7 @@ const DirectoryContent = () => {
     const [openScriptContingencyDialog, setOpenScriptContingencyDialog] =
         React.useState(false);
     const [currentScriptContingencyListId, setCurrentScriptContingencyListId] =
-        React.useState('');
+        React.useState(null);
     const handleCloseScriptContingency = () => {
         setOpenScriptContingencyDialog(false);
         setActiveElement(null);
@@ -434,7 +433,7 @@ const DirectoryContent = () => {
      * Filter script dialog: window status value for editing a filter script
      */
     const [openScriptDialog, setOpenScriptDialog] = React.useState(false);
-    const [currentScriptId, setCurrentScriptId] = React.useState('');
+    const [currentScriptId, setCurrentScriptId] = React.useState(null);
     const handleCloseScriptDialog = () => {
         setOpenScriptDialog(false);
         setActiveElement('');
@@ -657,7 +656,6 @@ const DirectoryContent = () => {
 
     useEffect(() => {
         if (currentChildren?.length > 0) {
-            setIsAllDataPresent(false);
             let metadata = {};
             let childrenToFetchElementsInfos = Object.values(currentChildren)
                 .filter((e) => !e.uploading)
@@ -674,6 +672,7 @@ const DirectoryContent = () => {
                             };
                         });
                     })
+                    .catch(handleError)
                     .finally(() => {
                         // discarding request for older directory
                         if (currentChildrenRef.current === currentChildren) {
@@ -686,7 +685,7 @@ const DirectoryContent = () => {
             setIsAllDataPresent(true);
         }
         setSelectedUuids(new Set());
-    }, [currentChildren, currentChildrenRef]);
+    }, [handleError, currentChildren, currentChildrenRef]);
 
     const contextualMixPolicies = {
         BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
@@ -839,6 +838,7 @@ const DirectoryContent = () => {
                     <div className={classes.circularProgressContainer}>
                         <CircularProgress
                             size={circularProgressSize}
+                            color="inherit"
                             className={classes.centeredCircularProgress}
                         />
                     </div>

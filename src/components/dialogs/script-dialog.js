@@ -96,9 +96,9 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                 script: aceEditorContent,
             };
             saveScriptContingencyList(newScript)
-                .then((response) => {})
-                .catch((error) => {
-                    onError(error.message);
+                .then(() => {})
+                .catch((errorMessage) => {
+                    onError(errorMessage);
                 });
         } else {
             newScript = {
@@ -109,9 +109,9 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                 type: FilterType.SCRIPT,
             };
             saveFilter(newScript)
-                .then((unused) => {})
-                .catch((error) => {
-                    onError(error.message);
+                .then(() => {})
+                .catch((errorMessage) => {
+                    onError(errorMessage);
                 });
         }
         onClose();
@@ -143,8 +143,8 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                                 setDescription(data.description);
                             }
                         })
-                        .catch((error) => {
-                            onError(error.message);
+                        .catch((errorMessage) => {
+                            onError(errorMessage);
                         });
                 } else if (type === ElementType.FILTER) {
                     getFilterById(currentItemId)
@@ -158,8 +158,8 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                                 setDescription(data.description);
                             }
                         })
-                        .catch((error) => {
-                            onError(error.message);
+                        .catch((errorMessage) => {
+                            onError(errorMessage);
                         });
                 }
             }
@@ -213,7 +213,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
 };
 
 ScriptDialog.propTypes = {
-    id: PropTypes.string.isRequired,
+    id: PropTypes.string,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onError: PropTypes.func.isRequired,

@@ -6,7 +6,9 @@
  */
 import React, { useEffect, useState } from 'react';
 import { LIGHT_THEME, logout, TopBar } from '@gridsuite/commons-ui';
-import Parameters, { useParameterState } from './parameters';
+import ParametersDialog, {
+    useParameterState,
+} from './dialogs/parameters-dialog';
 import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAppsAndUrls } from '../utils/rest-api';
@@ -69,7 +71,7 @@ const AppTopBar = ({ user, userManager }) => {
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
             />
-            <Parameters
+            <ParametersDialog
                 showParameters={showParameters}
                 hideParameters={hideParameters}
             />
