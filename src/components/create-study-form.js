@@ -38,8 +38,6 @@ import {
     selectFile,
 } from '../redux/actions';
 import { store } from '../redux/store';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Radio from '@material-ui/core/Radio';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
@@ -172,7 +170,6 @@ export const CreateStudyForm = ({ open, onClose }) => {
 
     const [studyName, setStudyName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
-    const [studyPrivacy, setStudyPrivacy] = React.useState('private');
     const [createStudyErr, setCreateStudyErr] = React.useState('');
 
     const [loadingCheckStudyName, setLoadingCheckStudyName] =
@@ -196,7 +193,6 @@ export const CreateStudyForm = ({ open, onClose }) => {
         setCreateStudyErr('');
         setStudyName('');
         setStudyDescription('');
-        setStudyPrivacy('private');
         setLoadingCheckStudyName(false);
         setStudyNameValid(false);
         dispatch(removeSelectedFile());
@@ -293,10 +289,6 @@ export const CreateStudyForm = ({ open, onClose }) => {
         setStudyNameValid(isNameValid);
     };
 
-    const handleChangeStudyPrivacy = (event) => {
-        setStudyPrivacy(event.target.value);
-    };
-
     const studyCreationError = useCallback(
         (studyName, msg) =>
             displayErrorMessageWithSnackbar({
@@ -329,14 +321,12 @@ export const CreateStudyForm = ({ open, onClose }) => {
             setCreateStudyErr(intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
         }
-        let isPrivateStudy = studyPrivacy === 'private';
         const uploadingStudy = {
             id: uploadingStudyKeyGenerator(),
             elementName: studyName,
             directory: activeDirectory,
             type: 'STUDY',
             owner: userId,
-            accessRights: isPrivateStudy,
             uploading: true,
         };
         createStudy(
@@ -345,7 +335,6 @@ export const CreateStudyForm = ({ open, onClose }) => {
             studyDescription,
             caseName,
             selectedFile,
-            isPrivateStudy,
             activeDirectory
         )
             .then((res) => {
@@ -444,25 +433,6 @@ export const CreateStudyForm = ({ open, onClose }) => {
                         style={{ width: '90%' }}
                         label=<FormattedMessage id="studyDescription" />
                     />
-
-                    <RadioGroup
-                        aria-label=""
-                        name="studyPrivacy"
-                        value={studyPrivacy}
-                        onChange={handleChangeStudyPrivacy}
-                        row
-                    >
-                        <FormControlLabel
-                            value="public"
-                            control={<Radio />}
-                            label=<FormattedMessage id="public" />
-                        />
-                        <FormControlLabel
-                            value="private"
-                            control={<Radio />}
-                            label=<FormattedMessage id="private" />
-                        />
-                    </RadioGroup>
                     {caseExist && <SelectCase />}
                     {!caseExist && <UploadCase />}
                     {createStudyErr !== '' && (

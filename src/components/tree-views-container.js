@@ -570,6 +570,15 @@ const TreeViewsContainer = () => {
         return (
             activeDirectory &&
             mapData[activeDirectory] &&
+            (mapData[activeDirectory].owner === userId ||
+                !mapData[activeDirectory].isPrivate)
+        );
+    };
+
+    const isAllowedForAccessRights = () => {
+        return (
+            activeDirectory &&
+            mapData[activeDirectory] &&
             mapData[activeDirectory].owner === userId
         );
     };
@@ -676,6 +685,23 @@ const TreeViewsContainer = () => {
                         </MenuItem>,
                         <hr key={'hr'} />,
                         /* A sub array is pushed as an element of the MenuItems array initiated above if isAllowed()=>true. The JSX spec allow to give the elements as an array with inner arrays of elements. */
+
+                        isAllowedForAccessRights() && [
+                            <MenuItem
+                                onClick={handleOpenAccessRightsDirectoryDialog}
+                                key={'accessRights'}
+                            >
+                                <ListItemIcon style={{ minWidth: '25px' }}>
+                                    <BuildIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={intl.formatMessage({
+                                        id: 'accessRights',
+                                    })}
+                                />
+                            </MenuItem>,
+                        ],
+
                         isAllowed() && [
                             <MenuItem
                                 onClick={handleOpenRenameDirectoryDialog}
@@ -687,20 +713,6 @@ const TreeViewsContainer = () => {
                                 <ListItemText
                                     primary={intl.formatMessage({
                                         id: 'renameFolder',
-                                    })}
-                                />
-                            </MenuItem>,
-
-                            <MenuItem
-                                onClick={handleOpenAccessRightsDirectoryDialog}
-                                key={'accessRights'}
-                            >
-                                <ListItemIcon style={{ minWidth: '25px' }}>
-                                    <BuildIcon fontSize="small" />
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={intl.formatMessage({
-                                        id: 'accessRights',
                                     })}
                                 />
                             </MenuItem>,
@@ -806,7 +818,7 @@ const TreeViewsContainer = () => {
                     mapDataRef.current &&
                     mapDataRef.current[activeDirectory] !== undefined
                         ? mapDataRef.current[activeDirectory].accessRights
-                              .private
+                              .isPrivate
                         : false
                 }
                 open={openAccessRightsDirectoryDialog}

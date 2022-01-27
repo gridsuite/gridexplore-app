@@ -102,7 +102,9 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
 
     useEffect(() => {
         // get contingency list
-        getCurrentContingencyList(listId);
+        if (listId !== '') {
+            getCurrentContingencyList(listId);
+        }
     }, [listId, getCurrentContingencyList]);
 
     function onChangeFiltersContingency(newFiltersContingency) {

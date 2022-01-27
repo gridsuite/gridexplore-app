@@ -169,7 +169,9 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
 
     useEffect(() => {
         // get contingency list
-        getCurrentScript(id);
+        if (id !== '') {
+            getCurrentScript(id);
+        }
     }, [id, getCurrentScript]);
 
     return (
