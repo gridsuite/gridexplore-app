@@ -36,8 +36,8 @@ import {
     removeSelectedFile,
     selectCase,
     selectFile,
-} from '../redux/actions';
-import { store } from '../redux/store';
+} from '../../redux/actions';
+import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import {

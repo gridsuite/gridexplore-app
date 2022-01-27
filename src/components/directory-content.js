@@ -133,7 +133,6 @@ const DirectoryContent = () => {
 
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const userId = useSelector((state) => state.user.profile.sub);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [activeElement, setActiveElement] = React.useState(null);
@@ -724,10 +723,7 @@ const DirectoryContent = () => {
 
     const hasSelected = (mayChange = false) => {
         let selectedChildren = getSelectedChildren(mayChange);
-        return (
-            selectedChildren &&
-            selectedChildren.length > 0
-        );
+        return selectedChildren && selectedChildren.length > 0;
     };
 
     const allowsDelete = (mayChange = false) => {
