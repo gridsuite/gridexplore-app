@@ -38,7 +38,6 @@ import {
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
-    updateAccessRights,
 } from '../utils/rest-api';
 
 import MenuItem from '@material-ui/core/MenuItem';
@@ -49,7 +48,6 @@ import FilterIcon from '@material-ui/icons/Filter';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Menu from '@material-ui/core/Menu';
 
-import BuildIcon from '@material-ui/icons/Build';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -60,7 +58,6 @@ import PanToolIcon from '@material-ui/icons/PanTool';
 import ExportDialog from './dialogs/export-dialog';
 import RenameDialog from './dialogs/rename-dialog';
 import DeleteDialog from './dialogs/delete-dialog';
-import AccessRightsDialog from './dialogs/access-rights-dialog';
 import FormContingencyDialog from './dialogs/form-contingency-dialog';
 import ScriptDialog from './dialogs/script-dialog';
 import ReplaceWithScriptDialog from './dialogs/replace-with-script-dialog';
@@ -136,7 +133,6 @@ const DirectoryContent = () => {
 
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const userId = useSelector((state) => state.user.profile.sub);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [activeElement, setActiveElement] = React.useState(null);
@@ -261,25 +257,6 @@ const DirectoryContent = () => {
         handleCloseExportStudy();
     };
 
-    /**
-     * AccessRights dialog: window status value for updating access rights
-     */
-    const [openElementAccessRightsDialog, setOpenElementAccessRightsDialog] =
-        React.useState(false);
-
-    const [accessRightsError, setAccessRightsError] = React.useState('');
-
-    const handleOpenElementAccessRights = () => {
-        setAnchorEl(null);
-        setOpenElementAccessRightsDialog(true);
-    };
-
-    const handleCloseElementAccessRights = () => {
-        setOpenElementAccessRightsDialog(false);
-        setAccessRightsError('');
-        setActiveElement(null);
-    };
-
     const handleCloseRowMenu = () => {
         setAnchorEl(null);
         setActiveElement(null);
@@ -323,28 +300,6 @@ const DirectoryContent = () => {
                 }
             }
         }
-    };
-
-    const handleClickElementAccessRights = (selected) => {
-        updateAccessRights(activeElement.elementUuid, selected).then(
-            (response) => {
-                if (response.status === 403) {
-                    setAccessRightsError(
-                        intl.formatMessage({
-                            id: 'modifyAccessRightsNotAllowedError',
-                        })
-                    );
-                } else if (response.status === 404) {
-                    setAccessRightsError(
-                        intl.formatMessage({
-                            id: 'modifyAccessRightsNotFoundError',
-                        })
-                    );
-                } else {
-                    handleCloseElementAccessRights();
-                }
-            }
-        );
     };
 
     /**
@@ -502,19 +457,6 @@ const DirectoryContent = () => {
         [enqueueSnackbar]
     );
 
-    function accessRightsCellRender(cellData) {
-        const isPrivate = cellData.rowData[cellData.dataKey].private;
-        return (
-            <div className={classes.cell}>
-                {isPrivate ? (
-                    <FormattedMessage id="private" />
-                ) : (
-                    <FormattedMessage id="public" />
-                )}
-            </div>
-        );
-    }
-
     function getLink(elementUuid, objectType) {
         let href;
         if (appsAndUrls !== null) {
@@ -563,14 +505,14 @@ const DirectoryContent = () => {
         );
     }
 
-    function accessOwnerCellRender(cellData) {
-        const owner = cellData.rowData[cellData.dataKey];
+    function creatorCellRender(cellData) {
+        const creator = cellData.rowData[cellData.dataKey];
         return (
             <div className={classes.cell}>
-                <Tooltip title={owner} placement="right">
+                <Tooltip title={creator} placement="right">
                     <Chip
                         className={classes.chip}
-                        label={abbreviationFromUserName(owner)}
+                        label={abbreviationFromUserName(creator)}
                     />
                 </Tooltip>
             </div>
@@ -779,35 +721,18 @@ const DirectoryContent = () => {
         return [...new Set(acc)];
     };
 
-    const hasSelectedAndAllAreOwned = (mayChange = false) => {
+    const hasSelected = (mayChange = false) => {
         let selectedChildren = getSelectedChildren(mayChange);
-        return (
-            selectedChildren &&
-            selectedChildren.length > 0 &&
-            undefined === selectedChildren.find((c) => c.owner !== userId)
-        );
-    };
-
-    const isAllowed = () => {
-        if (activeElement) return activeElement.owner === userId;
-        if (!selectedUuids) return false;
-        return (
-            getSelectedChildren().find((child) => child.owner !== userId) ===
-            null
-        );
+        return selectedChildren && selectedChildren.length > 0;
     };
 
     const allowsDelete = (mayChange = false) => {
-        return hasSelectedAndAllAreOwned(mayChange);
+        return hasSelected(mayChange);
     };
 
     const allowsRename = (mayChange = false) => {
         let children = getSelectedChildren(mayChange);
-        return children.length === 1 && children[0].owner === userId;
-    };
-
-    const allowsPublishability = () => {
-        return isAllowed();
+        return children.length === 1;
     };
 
     const allowsExport = () => {
@@ -833,8 +758,7 @@ const DirectoryContent = () => {
             children[0].type === ElementType.CONTINGENCY_LIST &&
             childrenMetadata[children[0].elementUuid] &&
             childrenMetadata[children[0].elementUuid].subtype ===
-                ContingencyListType.FORM &&
-            children[0].owner === userId
+                ContingencyListType.FORM
         );
     };
 
@@ -860,8 +784,7 @@ const DirectoryContent = () => {
                 childrenMetadata[children[0].elementUuid] &&
                 childrenMetadata[children[0].elementUuid].subtype ===
                     FilterType.SCRIPT
-            ) &&
-            children[0].owner === userId
+            )
         );
     };
 
@@ -885,7 +808,6 @@ const DirectoryContent = () => {
     const emptyMenu = () => {
         return !(
             allowsRename() ||
-            allowsPublishability() ||
             allowsExport() ||
             allowsDelete() ||
             allowsCopyContingencyToScript() ||
@@ -893,16 +815,6 @@ const DirectoryContent = () => {
             allowsCopyFilterToScript() ||
             allowsReplaceFilterWithScript()
         );
-    };
-
-    const areSelectedElementsAllPrivate = () => {
-        let sel = getSelectedChildren();
-        if (!sel || sel.length === 0) return undefined;
-        let priv = sel.filter((child) => child.accessRights.private);
-        if (!priv || priv.length === 0) return false;
-        if (priv.length === sel.length) return true;
-
-        return undefined;
     };
 
     return (
@@ -999,18 +911,10 @@ const DirectoryContent = () => {
                                 {
                                     width: 50,
                                     label: intl.formatMessage({
-                                        id: 'owner',
+                                        id: 'creator',
                                     }),
                                     dataKey: 'owner',
-                                    cellRenderer: accessOwnerCellRender,
-                                },
-                                {
-                                    width: 50,
-                                    label: intl.formatMessage({
-                                        id: 'accessRights',
-                                    }),
-                                    dataKey: 'accessRights',
-                                    cellRenderer: accessRightsCellRender,
+                                    cellRenderer: creatorCellRender,
                                 },
                             ]}
                             sortable={true}
@@ -1041,15 +945,6 @@ const DirectoryContent = () => {
                                     {makeMenuItem(
                                         'rename',
                                         handleOpenRenameElement
-                                    )}
-                                </>
-                            )}
-                            {allowsPublishability() && (
-                                <>
-                                    {makeMenuItem(
-                                        'accessRights',
-                                        handleOpenElementAccessRights,
-                                        <BuildIcon fontSize="small" />
                                     )}
                                 </>
                             )}
@@ -1137,14 +1032,6 @@ const DirectoryContent = () => {
                 onClick={handleClickExportStudy}
                 studyUuid={activeElement ? activeElement.elementUuid : ''}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
-            />
-            <AccessRightsDialog
-                open={openElementAccessRightsDialog}
-                onClose={handleCloseElementAccessRights}
-                onClick={handleClickElementAccessRights}
-                title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
-                isPrivate={areSelectedElementsAllPrivate()}
-                error={accessRightsError}
             />
             <FormContingencyDialog
                 listId={currentFiltersContingencyListId}

@@ -4,7 +4,7 @@
     "paramsRetrievingError": "Une erreur est survenue lors de la récupération des paramètres",
     "elementUuid": "Uuid de l'élément",
     "elementName": "Nom",
-    "owner": "Propriétaire",
+    "creator": "Créateur",
     "type": "Type",
     "private": "privé",
     "public": "public",

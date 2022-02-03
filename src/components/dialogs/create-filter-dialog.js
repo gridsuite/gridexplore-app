@@ -97,7 +97,6 @@ const CreateFilterDialog = ({
 }) => {
     const [newNameList, setNewListName] = useState('');
     const [newListType, setNewListType] = useState(FilterType.SCRIPT);
-    const [filterPrivacy, setFilterPrivacy] = React.useState('private');
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
@@ -171,7 +170,6 @@ const CreateFilterDialog = ({
     const resetDialog = () => {
         setNewListName('');
         setNewListType(FilterType.SCRIPT);
-        setFilterPrivacy('private');
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
         setFilterNameValid(false);
@@ -197,7 +195,6 @@ const CreateFilterDialog = ({
                 transient: true,
             },
             newNameList,
-            filterPrivacy === 'private',
             activeDirectory
         )
             .then(() => {
@@ -212,10 +209,6 @@ const CreateFilterDialog = ({
     const handleClose = () => {
         onClose();
         resetDialog();
-    };
-
-    const handleChangeFilterPrivacy = (event) => {
-        setFilterPrivacy(event.target.value);
     };
 
     const renderFilterNameStatus = () => {
@@ -287,24 +280,6 @@ const CreateFilterDialog = ({
                                 value="FORM"
                                 control={<Radio />}
                                 label={<FormattedMessage id="FORM" />}
-                            />
-                        </RadioGroup>
-                        <RadioGroup
-                            aria-label="privacy"
-                            name="filterPrivacy"
-                            value={filterPrivacy}
-                            onChange={handleChangeFilterPrivacy}
-                            row
-                        >
-                            <FormControlLabel
-                                value="public"
-                                control={<Radio />}
-                                label=<FormattedMessage id="public" />
-                            />
-                            <FormControlLabel
-                                value="private"
-                                control={<Radio />}
-                                label=<FormattedMessage id="private" />
                             />
                         </RadioGroup>
                     </Grid>

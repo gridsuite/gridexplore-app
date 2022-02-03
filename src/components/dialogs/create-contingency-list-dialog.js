@@ -45,8 +45,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const [contingencyListName, setContingencyListName] = React.useState('');
     const [contingencyListDescription, setContingencyListDescription] =
         React.useState('');
-    const [contingencyListPrivacy, setContingencyListPrivacy] =
-        React.useState('private');
     const [createContingencyListErr, setCreateContingencyListErr] =
         React.useState('');
 
@@ -63,7 +61,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const resetDialog = () => {
         setContingencyListName('');
         setContingencyListDescription('');
-        setContingencyListPrivacy('private');
         setContingencyListType(ContingencyListType.SCRIPT);
         setLoadingCheckContingencyName(false);
         setCreateContingencyListErr('');
@@ -142,10 +139,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         setContingencyNameValid(isNameValid);
     };
 
-    const handleChangeContingencyListPrivacy = (event) => {
-        setContingencyListPrivacy(event.target.value);
-    };
-
     const handleChangeContingencyListType = (event) => {
         setContingencyListType(event.target.value);
     };
@@ -162,13 +155,11 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         if (loadingCheckContingencyName || !contingencyNameValid) {
             return;
         }
-        let isPrivateContingencyList = contingencyListPrivacy === 'private';
 
         createContingencyList(
             contingencyListType,
             contingencyListName,
             contingencyListDescription,
-            isPrivateContingencyList,
             activeDirectory
         )
             .then(() => {
@@ -271,25 +262,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                             value="FORM"
                             control={<Radio />}
                             label=<FormattedMessage id="FORM" />
-                        />
-                    </RadioGroup>
-
-                    <RadioGroup
-                        aria-label=""
-                        name="contingencyListPrivacy"
-                        value={contingencyListPrivacy}
-                        onChange={handleChangeContingencyListPrivacy}
-                        row
-                    >
-                        <FormControlLabel
-                            value="public"
-                            control={<Radio />}
-                            label=<FormattedMessage id="public" />
-                        />
-                        <FormControlLabel
-                            value="private"
-                            control={<Radio />}
-                            label=<FormattedMessage id="private" />
                         />
                     </RadioGroup>
                     {createContingencyListErr !== '' && (

@@ -164,7 +164,7 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
 };
 
 FormContingencyDialog.propTypes = {
-    listId: PropTypes.string.isRequired,
+    listId: PropTypes.string,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onError: PropTypes.func.isRequired,
