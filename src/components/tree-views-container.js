@@ -95,6 +95,7 @@ const TreeViewsContainer = () => {
     const [DOMFocusedDirectory, setDOMFocusedDirectory] = useState(null);
 
     const websocketExpectedCloseRef = useRef();
+    const websocketRef = useRef(null);
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -500,64 +501,67 @@ const TreeViewsContainer = () => {
     );
 
     const connectNotificationsUpdateStudies = useCallback(() => {
-        const ws = connectNotificationsWsUpdateStudies();
-        ws.onmessage = function (event) {
-            console.debug('Received Update Studies notification', event);
-            let eventData = JSON.parse(event.data);
-            if (eventData.headers) {
-                const notificationTypeHeader =
-                    eventData.headers['notificationType'];
-                const isRootDirectory = eventData.headers['isRootDirectory'];
-                const directoryUuid = eventData.headers['directoryUuid'];
-                const error = eventData.headers['error'];
+        if (websocketRef.current === null) {
+            const ws = connectNotificationsWsUpdateStudies();
+            websocketRef.current = ws;
 
-                displayErrorIfExist(error);
+            ws.onmessage = function (event) {
+                console.debug('Received Update Studies notification', event);
+                let eventData = JSON.parse(event.data);
+                if (eventData.headers) {
+                    const notificationTypeHeader =
+                        eventData.headers['notificationType'];
+                    const isRootDirectory =
+                        eventData.headers['isRootDirectory'];
+                    const directoryUuid = eventData.headers['directoryUuid'];
+                    const error = eventData.headers['error'];
+                    const elementName = eventData.headers['elementName'];
 
-                if (isRootDirectory) {
-                    updateRootDirectories();
-                    if (
-                        notificationTypeHeader ===
-                            notificationType.DELETE_DIRECTORY &&
-                        selectedDirectoryRef.current === directoryUuid
-                    ) {
-                        dispatch(setSelectedDirectory(null));
+                    displayErrorIfExist(error, elementName);
+
+                    if (isRootDirectory) {
+                        updateRootDirectories();
+                        if (
+                            notificationTypeHeader ===
+                                notificationType.DELETE_DIRECTORY &&
+                            selectedDirectoryRef.current === directoryUuid
+                        ) {
+                            dispatch(setSelectedDirectory(null));
+                        }
+                        return;
                     }
-                    return;
-                }
 
-                if (directoryUuid) {
-                    if (directoryUuid === selectedDirectoryRef.current) {
-                        updateDirectoryTreeAndContent(directoryUuid);
-                    } else {
-                        updateDirectoryTree(directoryUuid);
+                    if (directoryUuid) {
+                        if (directoryUuid === selectedDirectoryRef.current) {
+                            updateDirectoryTreeAndContent(directoryUuid);
+                        } else {
+                            updateDirectoryTree(directoryUuid);
+                        }
                     }
                 }
-            }
-        };
-        ws.onclose = function () {
-            if (!websocketExpectedCloseRef.current) {
-                console.error('Unexpected Notification WebSocket closed');
-            }
-        };
-        ws.onerror = function (event) {
-            console.error('Unexpected Notification WebSocket error', event);
-        };
-        return ws;
+            };
+            ws.onclose = function () {
+                if (!websocketExpectedCloseRef.current) {
+                    console.error('Unexpected Notification WebSocket closed');
+                }
+            };
+            ws.onerror = function (event) {
+                websocketRef.current = null;
+                websocketRef.current.close();
+                console.error('Unexpected Notification WebSocket error', event);
+            };
+        }
+        return websocketRef.current;
     }, [
-        displayErrorIfExist,
-        updateDirectoryTreeAndContent,
-        updateDirectoryTree,
-        updateRootDirectories,
         dispatch,
+        displayErrorIfExist,
+        updateDirectoryTree,
+        updateDirectoryTreeAndContent,
+        updateRootDirectories,
     ]);
 
     useEffect(() => {
-        const ws = connectNotificationsUpdateStudies();
-        // Note: dispatch doesn't change
-        // cleanup at unmount event
-        return function () {
-            ws.close();
-        };
+        connectNotificationsUpdateStudies();
     }, [connectNotificationsUpdateStudies]);
 
     /* Handle components synchronization */
