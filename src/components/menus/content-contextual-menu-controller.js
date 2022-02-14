@@ -5,14 +5,12 @@ import { useIntl } from 'react-intl';
 
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
-import BuildIcon from '@material-ui/icons/Build';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
 
 import ExportDialog from '../dialogs/export-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
-import AccessRightsDialog from '../dialogs/access-rights-dialog';
 import FormContingencyDialog from '../dialogs/form-contingency-dialog';
 import ScriptDialog from '../dialogs/script-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
@@ -26,7 +24,6 @@ import {
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
-    updateAccessRights,
 } from '../../utils/rest-api';
 
 import {
@@ -40,7 +37,6 @@ import { useSnackbar } from 'notistack';
 const DialogsId = {
     RENAME: 'rename',
     DELETE: 'delete',
-    ACCESS_RIGHTS: 'access_rights',
     EXPORT: 'export',
     FILTERS_CONTINGENCY: 'filters_contingency',
     SCRIPT_CONTINGENCY: 'script_contingency',
@@ -152,28 +148,6 @@ const ContentContextualMenuController = (props) => {
         handleCloseDialog();
     };
 
-    const handleClickElementAccessRights = (selected) => {
-        updateAccessRights(activeElement.elementUuid, selected).then(
-            (response) => {
-                if (response.status === 403) {
-                    setLastError(
-                        intl.formatMessage({
-                            id: 'modifyAccessRightsNotAllowedError',
-                        })
-                    );
-                } else if (response.status === 404) {
-                    setLastError(
-                        intl.formatMessage({
-                            id: 'modifyAccessRightsNotFoundError',
-                        })
-                    );
-                } else {
-                    handleCloseDialog();
-                }
-            }
-        );
-    };
-
     const handleClickFiltersReplaceWithScript = (a_id) => {
         replaceFiltersWithScript(a_id, directory.elementUuid)
             .then()
@@ -205,19 +179,6 @@ const ContentContextualMenuController = (props) => {
         handleCloseDialog();
     };
 
-    // utils
-    const areSelectedElementsAllPrivate = () => {
-        if (!selectedElements || selectedElements.length === 0)
-            return undefined;
-        let priv = selectedElements.filter(
-            (child) => child.accessRights.private
-        );
-        if (!priv || priv.length === 0) return false;
-        if (priv.length === selectedElements.length) return true;
-
-        return undefined;
-    };
-
     // Allowance
     const isUserAllowed = useCallback(() => {
         return selectedElements.every((el) => {
@@ -232,10 +193,6 @@ const ContentContextualMenuController = (props) => {
     const allowsRename = useCallback(() => {
         return selectedElements.length === 1 && isUserAllowed();
     }, [isUserAllowed, selectedElements]);
-
-    const allowsPublishability = useCallback(() => {
-        return isUserAllowed();
-    }, [isUserAllowed]);
 
     const allowsExport = useCallback(() => {
         return (
@@ -285,7 +242,7 @@ const ContentContextualMenuController = (props) => {
         ) {
             return activeElement.elementUuid;
         } else {
-            return '';
+            return null;
         }
     };
 
@@ -296,7 +253,7 @@ const ContentContextualMenuController = (props) => {
         ) {
             return activeElement.elementUuid;
         } else {
-            return '';
+            return null;
         }
     };
 
@@ -307,7 +264,7 @@ const ContentContextualMenuController = (props) => {
         ) {
             return activeElement.elementUuid;
         } else {
-            return '';
+            return null;
         }
     };
 
@@ -335,17 +292,6 @@ const ContentContextualMenuController = (props) => {
                     setHideMenu(true);
                     handleOpenDialog(DialogsId.RENAME);
                 },
-            });
-        }
-
-        if (allowsPublishability()) {
-            menuItems.push({
-                messageDescriptorId: 'accessRights',
-                callback: () => {
-                    setHideMenu(true);
-                    handleOpenDialog(DialogsId.ACCESS_RIGHTS);
-                },
-                icon: <BuildIcon fontSize="small" />,
             });
         }
 
@@ -464,14 +410,6 @@ const ContentContextualMenuController = (props) => {
                 onClick={handleClickExportStudy}
                 studyUuid={activeElement ? activeElement.elementUuid : ''}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
-            />
-            <AccessRightsDialog
-                open={openDialog === DialogsId.ACCESS_RIGHTS}
-                onClose={handleCloseDialog}
-                onClick={handleClickElementAccessRights}
-                title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
-                isPrivate={areSelectedElementsAllPrivate()}
-                error={lastError}
             />
             <FormContingencyDialog
                 listId={getActiveContingencyFormId()}

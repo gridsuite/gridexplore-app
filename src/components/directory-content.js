@@ -645,7 +645,7 @@ const DirectoryContent = () => {
                                     {
                                         width: 50,
                                         label: intl.formatMessage({
-                                            id: 'owner',
+                                            id: 'creator',
                                         }),
                                         dataKey: 'owner',
                                         cellRenderer: creatorCellRender,
