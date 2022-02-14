@@ -10,13 +10,13 @@ import BuildIcon from '@material-ui/icons/Build';
 import AddIcon from '@material-ui/icons/Add';
 import CreateIcon from '@material-ui/icons/Create';
 
-import CreateStudyForm from '../create-study-form';
-import CreateContingencyListForm from '../create-contingency-list-form';
+import CreateStudyForm from '../dialogs/create-study-dialog';
+import CreateContingencyListDialog from '../dialogs/create-contingency-list-dialog';
 import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
 import AccessRightsDialog from '../dialogs/access-rights-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
-import CreateFilterDialog from '../create-filter-form';
+import CreateFilterDialog from '../dialogs/create-filter-dialog';
 
 import {
     insertDirectory,
@@ -236,7 +236,7 @@ const DirectoryTreeContextualMenuController = (props) => {
                 open={openDialog === DialogsId.ADD_NEW_STUDY}
                 onClose={handleCloseDialog}
             />
-            <CreateContingencyListForm
+            <CreateContingencyListDialog
                 open={openDialog === DialogsId.ADD_NEW_CONTINGENCY_LIST}
                 onClose={handleCloseDialog}
             />

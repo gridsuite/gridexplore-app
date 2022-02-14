@@ -23,10 +23,10 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Grid from '@material-ui/core/Grid';
-import { createFilter, elementExists } from '../utils/rest-api';
+import { createFilter, elementExists } from '../../utils/rest-api';
 import Alert from '@material-ui/lab/Alert';
 import { useSelector } from 'react-redux';
-import { ElementType, FilterType } from '../utils/elementType';
+import { ElementType, FilterType } from '../../utils/elementType';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import CheckIcon from '@material-ui/icons/Check';
@@ -97,7 +97,6 @@ const CreateFilterDialog = ({
 }) => {
     const [newNameList, setNewListName] = useState('');
     const [newListType, setNewListType] = useState(FilterType.SCRIPT);
-    const [filterPrivacy, setFilterPrivacy] = React.useState('private');
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
@@ -171,7 +170,6 @@ const CreateFilterDialog = ({
     const resetDialog = () => {
         setNewListName('');
         setNewListType(FilterType.SCRIPT);
-        setFilterPrivacy('private');
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
         setFilterNameValid(false);
@@ -197,32 +195,20 @@ const CreateFilterDialog = ({
                 transient: true,
             },
             newNameList,
-            filterPrivacy === 'private',
             activeDirectory
-        ).then((res) => {
-            if (res.ok) {
+        )
+            .then(() => {
                 onClose();
                 resetDialog();
-            } else {
-                console.debug('Error when creating the filter');
-                res.json()
-                    .then((data) => {
-                        setCreateFilterErr(data.error + ' - ' + data.message);
-                    })
-                    .catch((error) => {
-                        setCreateFilterErr(error.name + ' - ' + error.message);
-                    });
-            }
-        });
+            })
+            .catch((message) => {
+                setCreateFilterErr(message);
+            });
     };
 
     const handleClose = () => {
         onClose();
         resetDialog();
-    };
-
-    const handleChangeFilterPrivacy = (event) => {
-        setFilterPrivacy(event.target.value);
     };
 
     const renderFilterNameStatus = () => {
@@ -294,24 +280,6 @@ const CreateFilterDialog = ({
                                 value="FORM"
                                 control={<Radio />}
                                 label={<FormattedMessage id="FORM" />}
-                            />
-                        </RadioGroup>
-                        <RadioGroup
-                            aria-label="privacy"
-                            name="filterPrivacy"
-                            value={filterPrivacy}
-                            onChange={handleChangeFilterPrivacy}
-                            row
-                        >
-                            <FormControlLabel
-                                value="public"
-                                control={<Radio />}
-                                label=<FormattedMessage id="public" />
-                            />
-                            <FormControlLabel
-                                value="private"
-                                control={<Radio />}
-                                label=<FormattedMessage id="private" />
                             />
                         </RadioGroup>
                     </Grid>

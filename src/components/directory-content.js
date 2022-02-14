@@ -39,7 +39,7 @@ import PanToolIcon from '@material-ui/icons/PanTool';
 import FormContingencyDialog from './dialogs/form-contingency-dialog';
 import ScriptDialog from './dialogs/script-dialog';
 import { useSnackbar } from 'notistack';
-import GenericFilterDialog from './generic-filter';
+import GenericFilterDialog from './dialogs/generic-filter-dialog';
 
 import ContentContextualMenuController from './menus/content-contextual-menu-controller';
 import ContextualMenuView from './menus/contextual-menu-view';
@@ -168,7 +168,7 @@ const DirectoryContent = () => {
     const [
         currentFiltersContingencyListId,
         setCurrentFiltersContingencyListId,
-    ] = React.useState('');
+    ] = React.useState(null);
     const handleCloseFiltersContingency = () => {
         setOpenFiltersContingencyDialog(false);
         setActiveElement(null);
@@ -194,7 +194,7 @@ const DirectoryContent = () => {
     const [openScriptContingencyDialog, setOpenScriptContingencyDialog] =
         React.useState(false);
     const [currentScriptContingencyListId, setCurrentScriptContingencyListId] =
-        React.useState('');
+        React.useState(null);
     const handleCloseScriptContingency = () => {
         setOpenScriptContingencyDialog(false);
         setActiveElement(null);
@@ -205,7 +205,7 @@ const DirectoryContent = () => {
      * Filter script dialog: window status value for editing a filter script
      */
     const [openScriptDialog, setOpenScriptDialog] = React.useState(false);
-    const [currentScriptId, setCurrentScriptId] = React.useState('');
+    const [currentScriptId, setCurrentScriptId] = React.useState(null);
     const handleCloseScriptDialog = () => {
         setOpenScriptDialog(false);
         setActiveElement(null);
@@ -282,19 +282,6 @@ const DirectoryContent = () => {
         [enqueueSnackbar]
     );
 
-    function accessRightsCellRender(cellData) {
-        const isPrivate = cellData.rowData[cellData.dataKey].private;
-        return (
-            <div className={classes.cell}>
-                {isPrivate ? (
-                    <FormattedMessage id="private" />
-                ) : (
-                    <FormattedMessage id="public" />
-                )}
-            </div>
-        );
-    }
-
     function getLink(elementUuid, objectType) {
         let href;
         if (appsAndUrls !== null) {
@@ -343,14 +330,14 @@ const DirectoryContent = () => {
         );
     }
 
-    function accessOwnerCellRender(cellData) {
-        const owner = cellData.rowData[cellData.dataKey];
+    function creatorCellRender(cellData) {
+        const creator = cellData.rowData[cellData.dataKey];
         return (
             <div className={classes.cell}>
-                <Tooltip title={owner} placement="right">
+                <Tooltip title={creator} placement="right">
                     <Chip
                         className={classes.chip}
-                        label={abbreviationFromUserName(owner)}
+                        label={abbreviationFromUserName(creator)}
                     />
                 </Tooltip>
             </div>
@@ -487,7 +474,6 @@ const DirectoryContent = () => {
 
     useEffect(() => {
         if (currentChildren?.length > 0) {
-            setIsAllDataPresent(false);
             let metadata = {};
             let childrenToFetchElementsInfos = Object.values(currentChildren)
                 .filter((e) => !e.uploading)
@@ -504,6 +490,7 @@ const DirectoryContent = () => {
                             };
                         });
                     })
+                    .catch(handleError)
                     .finally(() => {
                         // discarding request for older directory
                         if (currentChildrenRef.current === currentChildren) {
@@ -516,7 +503,7 @@ const DirectoryContent = () => {
             setIsAllDataPresent(true);
         }
         setSelectedUuids(new Set());
-    }, [currentChildren, currentChildrenRef]);
+    }, [handleError, currentChildren, currentChildrenRef]);
 
     const contextualMixPolicies = {
         BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
@@ -661,15 +648,7 @@ const DirectoryContent = () => {
                                             id: 'owner',
                                         }),
                                         dataKey: 'owner',
-                                        cellRenderer: accessOwnerCellRender,
-                                    },
-                                    {
-                                        width: 50,
-                                        label: intl.formatMessage({
-                                            id: 'accessRights',
-                                        }),
-                                        dataKey: 'accessRights',
-                                        cellRenderer: accessRightsCellRender,
+                                        cellRenderer: creatorCellRender,
                                     },
                                 ]}
                                 sortable={true}

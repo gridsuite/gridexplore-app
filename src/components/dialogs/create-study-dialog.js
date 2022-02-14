@@ -25,7 +25,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { createStudy, fetchCases, elementExists } from '../utils/rest-api';
+import { createStudy, fetchCases, elementExists } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -36,14 +36,15 @@ import {
     removeSelectedFile,
     selectCase,
     selectFile,
-} from '../redux/actions';
-import { store } from '../redux/store';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Radio from '@material-ui/core/Radio';
+} from '../../redux/actions';
+import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { ElementType } from '../utils/elementType';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
+import { ElementType } from '../../utils/elementType';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -165,14 +166,13 @@ const uploadingStudyKeyGenerator = (() => {
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  */
-export const CreateStudyForm = ({ open, onClose }) => {
+export const CreateStudyDialog = ({ open, onClose }) => {
     const [caseExist, setCaseExist] = React.useState(false);
 
     const { enqueueSnackbar } = useSnackbar();
 
     const [studyName, setStudyName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
-    const [studyPrivacy, setStudyPrivacy] = React.useState('private');
     const [createStudyErr, setCreateStudyErr] = React.useState('');
 
     const [loadingCheckStudyName, setLoadingCheckStudyName] =
@@ -196,7 +196,6 @@ export const CreateStudyForm = ({ open, onClose }) => {
         setCreateStudyErr('');
         setStudyName('');
         setStudyDescription('');
-        setStudyPrivacy('private');
         setLoadingCheckStudyName(false);
         setStudyNameValid(false);
         dispatch(removeSelectedFile());
@@ -293,10 +292,6 @@ export const CreateStudyForm = ({ open, onClose }) => {
         setStudyNameValid(isNameValid);
     };
 
-    const handleChangeStudyPrivacy = (event) => {
-        setStudyPrivacy(event.target.value);
-    };
-
     const studyCreationError = useCallback(
         (studyName, msg) =>
             displayErrorMessageWithSnackbar({
@@ -329,14 +324,12 @@ export const CreateStudyForm = ({ open, onClose }) => {
             setCreateStudyErr(intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
         }
-        let isPrivateStudy = studyPrivacy === 'private';
         const uploadingStudy = {
             id: uploadingStudyKeyGenerator(),
             elementName: studyName,
             directory: activeDirectory,
             type: 'STUDY',
             owner: userId,
-            accessRights: isPrivateStudy,
             uploading: true,
         };
         createStudy(
@@ -345,40 +338,13 @@ export const CreateStudyForm = ({ open, onClose }) => {
             studyDescription,
             caseName,
             selectedFile,
-            isPrivateStudy,
             activeDirectory
         )
-            .then((res) => {
-                dispatch(removeUploadingStudy(uploadingStudy));
-                if (!res.ok) {
-                    if (res.status === 409) {
-                        studyCreationError(
-                            studyName,
-                            intl.formatMessage({
-                                id: 'studyNameAlreadyUsed',
-                            })
-                        );
-                    } else {
-                        res.json()
-                            .then((data) => {
-                                studyCreationError(
-                                    studyName,
-                                    data.error + ' - ' + data.message
-                                );
-                            })
-                            .catch((error) => {
-                                studyCreationError(
-                                    studyName,
-                                    error.name + ' - ' + error.message
-                                );
-                            });
-                    }
-                }
+            .then()
+            .catch((message) => {
+                studyCreationError(studyName, message);
             })
-            .catch((e) => {
-                studyCreationError(studyName, e.name + ' - ' + e.message);
-                dispatch(removeUploadingStudy(uploadingStudy));
-            });
+            .finally(() => dispatch(removeUploadingStudy(uploadingStudy)));
         dispatch(addUploadingStudy(uploadingStudy));
         onClose();
         resetDialog();
@@ -444,25 +410,6 @@ export const CreateStudyForm = ({ open, onClose }) => {
                         style={{ width: '90%' }}
                         label=<FormattedMessage id="studyDescription" />
                     />
-
-                    <RadioGroup
-                        aria-label=""
-                        name="studyPrivacy"
-                        value={studyPrivacy}
-                        onChange={handleChangeStudyPrivacy}
-                        row
-                    >
-                        <FormControlLabel
-                            value="public"
-                            control={<Radio />}
-                            label=<FormattedMessage id="public" />
-                        />
-                        <FormControlLabel
-                            value="private"
-                            control={<Radio />}
-                            label=<FormattedMessage id="private" />
-                        />
-                    </RadioGroup>
                     {caseExist && <SelectCase />}
                     {!caseExist && <UploadCase />}
                     {createStudyErr !== '' && (
@@ -490,9 +437,9 @@ export const CreateStudyForm = ({ open, onClose }) => {
     );
 };
 
-CreateStudyForm.propTypes = {
+CreateStudyDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
 };
 
-export default CreateStudyForm;
+export default CreateStudyDialog;

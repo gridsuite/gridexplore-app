@@ -9,7 +9,7 @@ import BuildIcon from '@material-ui/icons/Build';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
 
-import ExportDialog from '../export-dialog';
+import ExportDialog from '../dialogs/export-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 import AccessRightsDialog from '../dialogs/access-rights-dialog';
@@ -17,7 +17,7 @@ import FormContingencyDialog from '../dialogs/form-contingency-dialog';
 import ScriptDialog from '../dialogs/script-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
-import GenericFilterDialog from '../generic-filter';
+import GenericFilterDialog from '../dialogs/generic-filter-dialog';
 
 import {
     deleteElement,

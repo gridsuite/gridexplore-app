@@ -17,9 +17,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import { getFilterById, saveFilter } from '../utils/rest-api';
-import { displayErrorMessageWithSnackbar } from '../utils/messages';
-import { FilterType } from '../utils/elementType';
+import { getFilterById, saveFilter } from '../../utils/rest-api';
+import { displayErrorMessageWithSnackbar } from '../../utils/messages';
+import { FilterType } from '../../utils/elementType';
 
 const useStyles = makeStyles((theme) => ({
     controlItem: {

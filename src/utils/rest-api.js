@@ -145,7 +145,7 @@ export function updateAccessRights(elementUuid, isPrivate) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            accessRights: { private: isPrivate },
+            accessRights: { isPrivate: isPrivate },
         }),
     });
 }
@@ -165,7 +165,7 @@ export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
             elementUuid: null,
             elementName: directoryName,
             type: 'DIRECTORY',
-            accessRights: { private: isPrivate },
+            accessRights: { isPrivate: isPrivate },
             owner: owner,
         }),
     }).then((response) =>
@@ -187,7 +187,7 @@ export function insertRootDirectory(directoryName, isPrivate, owner) {
         },
         body: JSON.stringify({
             elementName: directoryName,
-            accessRights: { private: isPrivate },
+            accessRights: { isPrivate: isPrivate },
             owner: owner,
         }),
     }).then((response) =>
@@ -272,10 +272,25 @@ export function updateConfigParameter(name, value) {
 function getElementsIdsListsQueryParams(ids) {
     if (ids !== undefined && ids.length > 0) {
         const urlSearchParams = new URLSearchParams();
-        ids.forEach((id) => urlSearchParams.append('id', id));
+        ids.forEach((id) => urlSearchParams.append('ids', id));
         return '?' + urlSearchParams.toString();
     }
     return '';
+}
+
+function handleJsonResponse(response) {
+    return handleResponse(response, true);
+}
+function handleResponse(response, isJson) {
+    return response.ok
+        ? isJson
+            ? response.json()
+            : response
+        : response
+              .text()
+              .then((text) =>
+                  Promise.reject(text ? text : response.statusText)
+              );
 }
 
 export function fetchElementsInfos(ids) {
@@ -286,11 +301,7 @@ export function fetchElementsInfos(ids) {
         getElementsIdsListsQueryParams(ids);
     return backendFetch(fetchElementsInfosUrl, {
         method: 'GET',
-    }).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
+    }).then((response) => handleJsonResponse(response));
 }
 
 export function createStudy(
@@ -299,13 +310,11 @@ export function createStudy(
     studyDescription,
     caseName,
     selectedFile,
-    isPrivateStudy,
     parentDirectoryUuid
 ) {
     console.info('Creating a new study...');
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('description', studyDescription);
-    urlSearchParams.append('isPrivate', isPrivateStudy);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     if (caseExist) {
@@ -320,7 +329,7 @@ export function createStudy(
         console.debug(createStudyWithExistingCaseUrl);
         return backendFetch(createStudyWithExistingCaseUrl, {
             method: 'post',
-        });
+        }).then((response) => handleResponse(response, false));
     } else {
         const createStudyWithNewCaseUrl =
             PREFIX_EXPLORE_SERVER_QUERIES +
@@ -335,7 +344,7 @@ export function createStudy(
         return backendFetch(createStudyWithNewCaseUrl, {
             method: 'post',
             body: formData,
-        });
+        }).then((response) => handleResponse(response, false));
     }
 }
 
@@ -367,13 +376,11 @@ export function createContingencyList(
     contingencyListType,
     contingencyListName,
     contingencyListDescription,
-    isPrivateContingencyList,
     parentDirectoryUuid
 ) {
     console.info('Creating a new contingency list...');
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('description', contingencyListDescription);
-    urlSearchParams.append('isPrivate', isPrivateContingencyList);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     const typeUriParam =
@@ -402,7 +409,7 @@ export function createContingencyList(
     return backendFetch(createContingencyListUrl, {
         method: 'post',
         body: JSON.stringify(body),
-    });
+    }).then((response) => handleResponse(response, false));
 }
 
 /**
@@ -418,7 +425,7 @@ export function getContingencyList(type, id) {
     }
     url += id;
 
-    return backendFetch(url).then((response) => response.json());
+    return backendFetch(url).then((response) => handleJsonResponse(response));
 }
 
 /**
@@ -436,7 +443,7 @@ export function saveFormContingencyList(form) {
             ...rest,
             nominalVoltage: nominalVoltage === '' ? -1 : nominalVoltage,
         }),
-    });
+    }).then((response) => handleResponse(response, false));
 }
 
 /**
@@ -452,7 +459,7 @@ export function saveScriptContingencyList(scriptContingencyList) {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(scriptContingencyList),
-    });
+    }).then((response) => handleResponse(response, false));
 }
 
 /**
@@ -533,11 +540,10 @@ export function connectNotificationsWsUpdateStudies() {
  * Create Filter
  * @returns {Promise<Response>}
  */
-export function createFilter(newFilter, name, isPrivate, parentDirectoryUuid) {
+export function createFilter(newFilter, name, parentDirectoryUuid) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append('description', '');
-    urlSearchParams.append('isPrivate', isPrivate);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     return backendFetch(
         PREFIX_EXPLORE_SERVER_QUERIES +
@@ -548,7 +554,7 @@ export function createFilter(newFilter, name, isPrivate, parentDirectoryUuid) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newFilter),
         }
-    );
+    ).then((response) => handleResponse(response, false));
 }
 
 /**
@@ -567,7 +573,7 @@ export function getFilters() {
  */
 export function getFilterById(id) {
     const url = PREFIX_FILTERS_QUERIES + '/' + id;
-    return backendFetch(url).then((response) => response.json());
+    return backendFetch(url).then((response) => handleJsonResponse(response));
 }
 
 /**
@@ -620,5 +626,5 @@ export function saveFilter(filter) {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(filter),
-    });
+    }).then((response) => handleResponse(response, false));
 }

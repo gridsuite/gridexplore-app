@@ -19,13 +19,13 @@ import Alert from '@material-ui/lab/Alert';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { createContingencyList, elementExists } from '../utils/rest-api';
+import { createContingencyList, elementExists } from '../../utils/rest-api';
 
 import { useSelector } from 'react-redux';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import PropTypes from 'prop-types';
-import { ContingencyListType, ElementType } from '../utils/elementType';
+import { ContingencyListType, ElementType } from '../../utils/elementType';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 import CheckIcon from '@material-ui/icons/Check';
@@ -37,7 +37,7 @@ const useStyles = makeStyles(() => ({}));
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  */
-export const CreateContingencyListForm = ({ open, onClose }) => {
+export const CreateContingencyListDialog = ({ open, onClose }) => {
     const [contingencyListType, setContingencyListType] = React.useState(
         ContingencyListType.SCRIPT
     );
@@ -45,8 +45,6 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
     const [contingencyListName, setContingencyListName] = React.useState('');
     const [contingencyListDescription, setContingencyListDescription] =
         React.useState('');
-    const [contingencyListPrivacy, setContingencyListPrivacy] =
-        React.useState('private');
     const [createContingencyListErr, setCreateContingencyListErr] =
         React.useState('');
 
@@ -63,7 +61,6 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
     const resetDialog = () => {
         setContingencyListName('');
         setContingencyListDescription('');
-        setContingencyListPrivacy('private');
         setContingencyListType(ContingencyListType.SCRIPT);
         setLoadingCheckContingencyName(false);
         setCreateContingencyListErr('');
@@ -142,10 +139,6 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
         setContingencyNameValid(isNameValid);
     };
 
-    const handleChangeContingencyListPrivacy = (event) => {
-        setContingencyListPrivacy(event.target.value);
-    };
-
     const handleChangeContingencyListType = (event) => {
         setContingencyListType(event.target.value);
     };
@@ -162,33 +155,20 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
         if (loadingCheckContingencyName || !contingencyNameValid) {
             return;
         }
-        let isPrivateContingencyList = contingencyListPrivacy === 'private';
 
         createContingencyList(
             contingencyListType,
             contingencyListName,
             contingencyListDescription,
-            isPrivateContingencyList,
             activeDirectory
-        ).then((res) => {
-            if (res.ok) {
+        )
+            .then(() => {
                 onClose();
                 resetDialog();
-            } else {
-                console.debug('Error when creating the contingency list');
-                res.json()
-                    .then((data) => {
-                        setCreateContingencyListErr(
-                            data.error + ' - ' + data.message
-                        );
-                    })
-                    .catch((error) => {
-                        setCreateContingencyListErr(
-                            error.name + ' - ' + error.message
-                        );
-                    });
-            }
-        });
+            })
+            .catch((message) => {
+                setCreateContingencyListErr(message);
+            });
     };
 
     const renderContingencyNameStatus = () => {
@@ -276,31 +256,12 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
                         <FormControlLabel
                             value="SCRIPT"
                             control={<Radio />}
-                            label={<FormattedMessage id="SCRIPT" />}
+                            label=<FormattedMessage id="SCRIPT" />
                         />
                         <FormControlLabel
                             value="FORM"
                             control={<Radio />}
-                            label={<FormattedMessage id="FORM" />}
-                        />
-                    </RadioGroup>
-
-                    <RadioGroup
-                        aria-label=""
-                        name="contingencyListPrivacy"
-                        value={contingencyListPrivacy}
-                        onChange={handleChangeContingencyListPrivacy}
-                        row
-                    >
-                        <FormControlLabel
-                            value="public"
-                            control={<Radio />}
-                            label=<FormattedMessage id="public" />
-                        />
-                        <FormControlLabel
-                            value="private"
-                            control={<Radio />}
-                            label=<FormattedMessage id="private" />
+                            label=<FormattedMessage id="FORM" />
                         />
                     </RadioGroup>
                     {createContingencyListErr !== '' && (
@@ -330,9 +291,9 @@ export const CreateContingencyListForm = ({ open, onClose }) => {
     );
 };
 
-CreateContingencyListForm.propTypes = {
+CreateContingencyListDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
 };
 
-export default CreateContingencyListForm;
+export default CreateContingencyListDialog;
