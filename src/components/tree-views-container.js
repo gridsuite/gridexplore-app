@@ -94,8 +94,7 @@ const TreeViewsContainer = () => {
 
     const [DOMFocusedDirectory, setDOMFocusedDirectory] = useState(null);
 
-    const websocketExpectedCloseRef = useRef();
-    const websocketRef = useRef(null);
+    const wsRef = useRef();
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -500,35 +499,47 @@ const TreeViewsContainer = () => {
         [enqueueSnackbar, intlRef]
     );
 
-    const connectNotificationsUpdateStudies = useCallback(() => {
-        if (websocketRef.current === null) {
-            const ws = connectNotificationsWsUpdateStudies();
-            websocketRef.current = ws;
+    useEffect(() => {
+        // create ws at mount event
+        wsRef.current = connectNotificationsWsUpdateStudies();
 
-            ws.onmessage = function (event) {
-                console.debug('Received Update Studies notification', event);
-                let eventData = JSON.parse(event.data);
-                if (eventData.headers) {
-                    const notificationTypeHeader =
-                        eventData.headers['notificationType'];
-                    const isRootDirectory =
-                        eventData.headers['isRootDirectory'];
-                    const directoryUuid = eventData.headers['directoryUuid'];
-                    const error = eventData.headers['error'];
-                    const elementName = eventData.headers['elementName'];
+        wsRef.current.onclose = function () {
+            console.error('Unexpected Notification WebSocket closed');
+        };
+        wsRef.current.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        // We must save wsRef.current in a variable to make sure that when close is called it refers to the same instance.
+        // That's because wsRef.current could be modify outside of this scope.
+        const wsToClose = wsRef.current;
+        // cleanup at unmount event
+        return () => {
+            wsToClose.close();
+        };
+    }, []);
 
-                    displayErrorIfExist(error, elementName);
+    const onUpdateStudies = useCallback(
+        (event) => {
+            console.debug('Received Update Studies notification', event);
+            let eventData = JSON.parse(event.data);
+            if (eventData.headers) {
+                const notificationTypeHeader =
+                    eventData.headers['notificationType'];
+                const isRootDirectory = eventData.headers['isRootDirectory'];
+                const directoryUuid = eventData.headers['directoryUuid'];
+                const error = eventData.headers['error'];
+                const elementName = eventData.headers['elementName'];
 
-                    if (isRootDirectory) {
-                        updateRootDirectories();
-                        if (
-                            notificationTypeHeader ===
-                                notificationType.DELETE_DIRECTORY &&
-                            selectedDirectoryRef.current === directoryUuid
-                        ) {
-                            dispatch(setSelectedDirectory(null));
-                        }
-                        return;
+                displayErrorIfExist(error, elementName);
+
+                if (isRootDirectory) {
+                    updateRootDirectories();
+                    if (
+                        notificationTypeHeader ===
+                            notificationType.DELETE_DIRECTORY &&
+                        selectedDirectoryRef.current === directoryUuid
+                    ) {
+                        dispatch(setSelectedDirectory(null));
                     }
 
                     if (directoryUuid) {
@@ -539,30 +550,23 @@ const TreeViewsContainer = () => {
                         }
                     }
                 }
-            };
-            ws.onclose = function () {
-                if (!websocketExpectedCloseRef.current) {
-                    console.error('Unexpected Notification WebSocket closed');
-                }
-            };
-            ws.onerror = function (event) {
-                websocketRef.current = null;
-                websocketRef.current.close();
-                console.error('Unexpected Notification WebSocket error', event);
-            };
-        }
-        return websocketRef.current;
-    }, [
-        dispatch,
-        displayErrorIfExist,
-        updateDirectoryTree,
-        updateDirectoryTreeAndContent,
-        updateRootDirectories,
-    ]);
+            }
+        },
+        [
+            dispatch,
+            displayErrorIfExist,
+            updateDirectoryTree,
+            updateDirectoryTreeAndContent,
+            updateRootDirectories,
+        ]
+    );
 
     useEffect(() => {
-        connectNotificationsUpdateStudies();
-    }, [connectNotificationsUpdateStudies]);
+        if (!wsRef.current) return;
+
+        // Update onmessage of ws when needed.
+        wsRef.current.onmessage = onUpdateStudies;
+    }, [onUpdateStudies]);
 
     /* Handle components synchronization */
     useEffect(() => {
