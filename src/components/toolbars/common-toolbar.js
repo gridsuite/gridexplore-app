@@ -17,10 +17,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Generic Toolbar View
+ * Generic CommonToolbar
  * @param {Array} items Action items to add in the toolbar as buttons
  */
-const ToolbarView = (props) => {
+const CommonToolbar = (props) => {
     const { items, ...others } = props;
 
     const classes = useStyles();
@@ -64,8 +64,8 @@ const ToolbarView = (props) => {
     );
 };
 
-ToolbarView.propTypes = {
+CommonToolbar.propTypes = {
     items: PropTypes.array,
 };
 
-export default ToolbarView;
+export default CommonToolbar;

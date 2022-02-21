@@ -32,6 +32,11 @@ import {
     FilterType,
 } from '../../utils/elementType';
 
+import CommonContextualMenu from './common-contextual-menu';
+import {
+    useDeferredFetch,
+    useMultipleDeferredFetch,
+} from '../../utils/custom-hooks';
 import { useSnackbar } from 'notistack';
 
 const DialogsId = {
@@ -50,7 +55,7 @@ const DialogsId = {
     NONE: 'none',
 };
 
-const ContentContextualMenuController = (props) => {
+const ContentContextualMenu = (props) => {
     const {
         directory,
         activeElement,
@@ -58,6 +63,7 @@ const ContentContextualMenuController = (props) => {
         open,
         onClose,
         children,
+        ...others
     } = props;
     const userId = useSelector((state) => state.user.profile.sub);
     const intl = useIntl();
@@ -66,7 +72,6 @@ const ContentContextualMenuController = (props) => {
     const DownloadIframe = 'downloadIframe';
 
     const [openDialog, setOpenDialog] = useState(null);
-    const [lastError, setLastError] = React.useState('');
     const [hideMenu, setHideMenu] = useState(false);
 
     const handleLastError = useCallback(
@@ -85,99 +90,108 @@ const ContentContextualMenuController = (props) => {
     const handleCloseDialog = () => {
         onClose();
         setOpenDialog(DialogsId.NONE);
-        setLastError('');
         setHideMenu(false);
-    };
-
-    const handleClickRenameElement = (newElementNameValue) => {
-        renameElement(activeElement.elementUuid, newElementNameValue)
-            .then((response) => {
-                if (response.status === 403) {
-                    // == FORBIDDEN
-                    setLastError(
-                        intl.formatMessage({
-                            id: 'renameElementNotAllowedError',
-                        })
-                    );
-                } else if (response.status === 404) {
-                    // == NOT FOUND
-                    setLastError(
-                        intl.formatMessage({ id: 'renameElementNotFoundError' })
-                    );
-                } else {
-                    handleCloseDialog();
-                }
-            })
-            .catch((e) => {
-                setLastError(e.message || e);
-            });
-    };
-
-    const handleClickDeleteElement = () => {
-        let notDeleted = [];
-        let doneChildren = [];
-        for (let child of selectedElements) {
-            deleteElement(child.elementUuid).then((response) => {
-                doneChildren.push(child);
-                if (!response.ok) {
-                    notDeleted.push(child.elementName);
-                }
-
-                if (doneChildren.length === selectedElements.length) {
-                    if (notDeleted.length === 0) {
-                        handleCloseDialog();
-                    } else {
-                        let msg = intl.formatMessage(
-                            { id: 'deleteElementsFailure' },
-                            {
-                                pbn: notDeleted.length,
-                                stn: selectedElements.length,
-                                problematic: notDeleted.join(' '),
-                            }
-                        );
-                        console.warn(msg);
-                        setLastError(msg);
-                    }
-                }
-            });
-        }
     };
 
     const handleClickExportStudy = (url) => {
         window.open(url, DownloadIframe);
         handleCloseDialog();
     };
+    const [multipleDeleteError, setMultipleDeleteError] = useState('');
+    const [deleteCB] = useMultipleDeferredFetch(
+        deleteElement,
+        {
+            elementUuid: activeElement?.elementUuid,
+        },
+        handleCloseDialog,
+        undefined,
+        (errorMessages, paramsOnErrors, params) => {
+            let msg = intl.formatMessage(
+                { id: 'deleteElementsFailure' },
+                {
+                    pbn: errorMessages.length,
+                    stn: params.length,
+                    problematic: paramsOnErrors
+                        .map((p) => p.elementUuid)
+                        .join(' '),
+                }
+            );
+            console.debug(msg);
+            setMultipleDeleteError(msg);
+        },
+        false
+    );
 
-    const handleClickFiltersReplaceWithScript = (a_id) => {
-        replaceFiltersWithScript(a_id, directory.elementUuid)
-            .then()
-            .catch((error) => handleLastError(error.message));
-        handleCloseDialog();
-    };
-    const handleClickContingencyCopyToScript = (a_id, newNameValue) => {
-        newScriptFromFiltersContingencyList(
-            a_id,
-            newNameValue,
-            directory.elementUuid
-        )
-            .then()
-            .catch((error) => handleLastError(error.message));
-        handleCloseDialog();
-    };
+    const [renameCB, renameState] = useDeferredFetch(
+        renameElement,
+        {
+            elementUuid: activeElement?.elementUuid,
+            newElementName: undefined,
+        },
+        handleCloseDialog,
+        (HTTPStatusCode) => {
+            if (HTTPStatusCode === 403) {
+                return intl.formatMessage({
+                    id: 'renameElementNotAllowedError',
+                });
+            } else if (HTTPStatusCode === 404) {
+                // == NOT FOUND
+                return intl.formatMessage({ id: 'renameElementNotFoundError' });
+            }
+        },
+        undefined,
+        false
+    );
 
-    const handleClickFiltersContingencyReplaceWithScript = (a_id) => {
-        replaceFormContingencyListWithScript(a_id, directory.elementUuid)
-            .then()
-            .catch((error) => handleLastError(error.message));
-        handleCloseDialog();
-    };
+    const [FiltersReplaceWithScriptCB] = useDeferredFetch(
+        replaceFiltersWithScript,
+        {
+            id: undefined,
+            parentDirectoryUuid: directory?.elementUuid,
+        },
+        handleCloseDialog,
+        undefined,
+        handleLastError,
+        false
+    );
 
-    const handleClickFilterCopyToScript = (a_id, newNameValue) => {
-        newScriptFromFilter(a_id, newNameValue, directory.elementUuid)
-            .then()
-            .catch((error) => handleLastError(error.message));
-        handleCloseDialog();
-    };
+    const [newScriptFromFiltersContingencyListCB] = useDeferredFetch(
+        newScriptFromFiltersContingencyList,
+        {
+            id: undefined,
+            newName: undefined,
+            parentDirectoryUuid: directory?.elementUuid,
+        },
+        handleCloseDialog,
+        undefined,
+        handleLastError,
+        false
+    );
+
+    const [replaceFormContingencyListWithScriptCB] = useDeferredFetch(
+        replaceFormContingencyListWithScript,
+        {
+            id: undefined,
+            parentDirectoryUuid: directory?.elementUuid,
+        },
+        handleCloseDialog,
+        undefined,
+        handleLastError,
+        false
+    );
+
+    const [newScriptFromFilterCB] = useDeferredFetch(
+        newScriptFromFilter,
+        {
+            id: undefined,
+            newName: undefined,
+            parentDirectoryUuid: directory?.elementUuid,
+        },
+        handleCloseDialog,
+        undefined,
+        handleLastError,
+        false
+    );
 
     // Allowance
     const isUserAllowed = useCallback(() => {
@@ -279,7 +293,7 @@ const ContentContextualMenuController = (props) => {
         }
     };
 
-    const renderMenu = () => {
+    const buildMenu = () => {
         if (selectedElements.length === 0) return;
 
         // build menuItems here
@@ -367,42 +381,47 @@ const ContentContextualMenuController = (props) => {
                 icon: <InsertDriveFileIcon fontSize="small" />,
             });
         }
-
-        if (menuItems.length !== 0) {
-            return React.Children.map(children, (child) => {
-                return React.cloneElement(child, {
-                    menuItems: menuItems,
-                    open: open && !hideMenu,
-                    onClose: onClose,
-                });
-            });
-        } else {
-            return;
-        }
+        return menuItems;
     };
 
     return (
         <>
-            {open && renderMenu()}
+            {open && (
+                <CommonContextualMenu
+                    {...others}
+                    menuItems={buildMenu()}
+                    open={open && !hideMenu}
+                    onClose={onClose}
+                />
+            )}
+            {/** Dialogs **/}
             <RenameDialog
                 open={openDialog === DialogsId.RENAME}
                 onClose={handleCloseDialog}
-                onClick={handleClickRenameElement}
+                onClick={(elementName) =>
+                    renameCB({ newElementName: elementName })
+                }
                 title={useIntl().formatMessage({ id: 'renameElement' })}
                 message={useIntl().formatMessage({ id: 'renameElementMsg' })}
                 currentName={activeElement ? activeElement.elementName : ''}
-                error={lastError}
+                error={renameState.errorMessage}
             />
             <DeleteDialog
                 open={openDialog === DialogsId.DELETE}
                 onClose={handleCloseDialog}
-                onClick={handleClickDeleteElement}
+                onClick={() =>
+                    deleteCB(
+                        selectedElements.map((e) => {
+                            return { elementUuid: e.elementUuid };
+                        })
+                    )
+                }
                 items={selectedElements}
                 multipleDeleteFormatMessageId={
                     'deleteMultipleItemsDialogMessage'
                 }
                 simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
-                error={lastError}
+                error={multipleDeleteError}
             />
             <ExportDialog
                 open={openDialog === DialogsId.EXPORT}
@@ -441,7 +460,9 @@ const ContentContextualMenuController = (props) => {
                     DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY
                 }
                 onClose={handleCloseDialog}
-                onClick={handleClickFiltersContingencyReplaceWithScript}
+                onClick={(id) =>
+                    replaceFormContingencyListWithScriptCB({ id: id })
+                }
                 onError={handleLastError}
                 title={useIntl().formatMessage({ id: 'replaceList' })}
             />
@@ -451,7 +472,12 @@ const ContentContextualMenuController = (props) => {
                     openDialog === DialogsId.COPY_FILTER_TO_SCRIPT_CONTINGENCY
                 }
                 onClose={handleCloseDialog}
-                onClick={handleClickContingencyCopyToScript}
+                onClick={(id, newName) =>
+                    newScriptFromFiltersContingencyListCB({
+                        id: id,
+                        newName: newName,
+                    })
+                }
                 currentName={activeElement ? activeElement.elementName : ''}
                 title={useIntl().formatMessage({ id: 'copyToScriptList' })}
             />
@@ -459,14 +485,19 @@ const ContentContextualMenuController = (props) => {
                 id={activeElement ? activeElement.elementUuid : ''}
                 open={openDialog === DialogsId.REPLACE_FILTER_BY_SCRIPT}
                 onClose={handleCloseDialog}
-                onClick={handleClickFiltersReplaceWithScript}
+                onClick={(id) => FiltersReplaceWithScriptCB({ id: id })}
                 title={useIntl().formatMessage({ id: 'replaceList' })}
             />
             <CopyToScriptDialog
                 id={activeElement ? activeElement.elementUuid : ''}
                 open={openDialog === DialogsId.COPY_FILTER_TO_SCRIPT}
                 onClose={handleCloseDialog}
-                onClick={handleClickFilterCopyToScript}
+                onClick={(id, newName) =>
+                    newScriptFromFilterCB({
+                        id: id,
+                        newName: newName,
+                    })
+                }
                 currentName={activeElement ? activeElement.elementName : ''}
                 title={useIntl().formatMessage({ id: 'copyToScriptList' })}
             />
@@ -487,8 +518,8 @@ const ContentContextualMenuController = (props) => {
     );
 };
 
-ContentContextualMenuController.propTypes = {
+ContentContextualMenu.propTypes = {
     onClose: PropTypes.func,
 };
 
-export default ContentContextualMenuController;
+export default ContentContextualMenu;

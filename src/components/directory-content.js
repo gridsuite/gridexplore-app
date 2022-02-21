@@ -41,11 +41,9 @@ import ScriptDialog from './dialogs/script-dialog';
 import { useSnackbar } from 'notistack';
 import GenericFilterDialog from './dialogs/generic-filter-dialog';
 
-import ContentContextualMenuController from './menus/content-contextual-menu-controller';
-import ContextualMenuView from './menus/contextual-menu-view';
-import ContentToolbarController from './toolbars/content-toolbar-controller';
-import ToolbarView from './toolbars/toolbar-view';
-import DirectoryTreeContextualMenuController from './menus/directory-tree-contextual-menu-controller';
+import ContentContextualMenu from './menus/content-contextual-menu';
+import ContentToolbar from './toolbars/content-toolbar';
+import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 
 const circularProgressSize = '70px';
 
@@ -607,11 +605,9 @@ const DirectoryContent = () => {
 
                     {isAllDataPresent && currentChildren?.length > 0 && (
                         <>
-                            <ContentToolbarController
+                            <ContentToolbar
                                 selectedElements={getSelectedChildren()}
-                            >
-                                <ToolbarView />
-                            </ContentToolbarController>
+                            />
 
                             <VirtualizedTable
                                 style={{ flexGrow: 1 }}
@@ -656,44 +652,37 @@ const DirectoryContent = () => {
                         </>
                     )}
 
-                    <ContentContextualMenuController
+                    <ContentContextualMenu
                         activeElement={activeElement}
                         selectedElements={getSelectedChildren()}
-                        // Controller should manage those eventListener props to manage menu, dialogs synchronization
                         open={openContentMenu}
                         onClose={handleCloseContentMenu}
-                    >
-                        <ContextualMenuView
-                            anchorReference="anchorPosition"
-                            anchorPosition={
-                                mousePosition.mouseY !== null &&
-                                mousePosition.mouseX !== null
-                                    ? {
-                                          top: mousePosition.mouseY,
-                                          left: mousePosition.mouseX,
-                                      }
-                                    : undefined
-                            }
-                        />
-                    </ContentContextualMenuController>
-                    <DirectoryTreeContextualMenuController
+                        anchorReference="anchorPosition"
+                        anchorPosition={
+                            mousePosition.mouseY !== null &&
+                            mousePosition.mouseX !== null
+                                ? {
+                                      top: mousePosition.mouseY,
+                                      left: mousePosition.mouseX,
+                                  }
+                                : undefined
+                        }
+                    />
+                    <DirectoryTreeContextualMenu
                         directory={selectedDirectory}
                         open={openDirectoryMenu}
                         onClose={handleCloseDirectoryMenu}
-                    >
-                        <ContextualMenuView
-                            anchorReference="anchorPosition"
-                            anchorPosition={
-                                mousePosition.mouseY !== null &&
-                                mousePosition.mouseX !== null
-                                    ? {
-                                          top: mousePosition.mouseY,
-                                          left: mousePosition.mouseX,
-                                      }
-                                    : undefined
-                            }
-                        />
-                    </DirectoryTreeContextualMenuController>
+                        anchorReference="anchorPosition"
+                        anchorPosition={
+                            mousePosition.mouseY !== null &&
+                            mousePosition.mouseX !== null
+                                ? {
+                                      top: mousePosition.mouseY,
+                                      left: mousePosition.mouseX,
+                                  }
+                                : undefined
+                        }
+                    />
                 </div>
             </div>
             <FormContingencyDialog

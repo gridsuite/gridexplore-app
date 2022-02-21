@@ -21,7 +21,7 @@ const StyledMenu = withStyles({
  * Generic Contextual Menu View
  * @param {Array} menuItems Action items to add in the Menu as MenuItems
  */
-const ContextualMenuView = (props) => {
+const CommonContextualMenu = (props) => {
     const { menuItems, ...others } = props;
 
     function makeMenuItem(
@@ -69,10 +69,10 @@ const ContextualMenuView = (props) => {
     );
 };
 
-ContextualMenuView.propTypes = {
+CommonContextualMenu.propTypes = {
     handleCloseMenu: PropTypes.func,
     position: PropTypes.object,
     menuItems: PropTypes.array,
 };
 
-export default ContextualMenuView;
+export default CommonContextualMenu;

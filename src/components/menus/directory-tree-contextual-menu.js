@@ -26,6 +26,9 @@ import {
     renameElement,
 } from '../../utils/rest-api';
 
+import CommonContextualMenu from './common-contextual-menu';
+import { useDeferredFetch } from '../../utils/custom-hooks';
+
 const DialogsId = {
     ADD_ROOT_DIRECTORY: 'add_root_directory',
     ADD_DIRECTORY: 'add_directory',
@@ -39,14 +42,13 @@ const DialogsId = {
     NONE: 'none',
 };
 
-const DirectoryTreeContextualMenuController = (props) => {
-    const { directory, open, onClose, children } = props;
+const DirectoryTreeContextualMenu = (props) => {
+    const { directory, open, onClose, children, ...others } = props;
     const userId = useSelector((state) => state.user.profile.sub);
 
     const intl = useIntl();
 
     const [openDialog, setOpenDialog] = useState(null);
-    const [lastError, setLastError] = React.useState('');
     const [hideMenu, setHideMenu] = useState(false);
 
     const handleOpenDialog = (DialogId) => {
@@ -56,72 +58,78 @@ const DirectoryTreeContextualMenuController = (props) => {
     const handleCloseDialog = (e, nextSelectedDirectoryId = null) => {
         onClose(e, nextSelectedDirectoryId);
         setOpenDialog(DialogsId.NONE);
-        setLastError('');
         setHideMenu(false);
     };
 
-    /* Handle Dialogs actions */
-    function insertNewDirectory(directoryName, isPrivate) {
-        insertDirectory(
-            directoryName,
-            directory?.elementUuid,
-            isPrivate,
-            userId
-        ).then((newDir) => {
-            handleCloseDialog(null, newDir.elementUuid);
-        });
-    }
+    const [deleteCB, deleteState] = useDeferredFetch(
+        deleteElement,
+        {
+            elementUuid: directory?.elementUuid,
+        },
+        () => handleCloseDialog(null, directory?.parentUuid),
+        (HTTPStatusCode) => {
+            if (HTTPStatusCode === 403) {
+                return intl.formatMessage({ id: 'deleteDirectoryError' });
+            }
+        },
+        undefined,
+        false
+    );
 
-    function insertNewRootDirectory(directoryName, isPrivate) {
-        insertRootDirectory(directoryName, isPrivate, userId).then((newDir) => {
-            handleCloseDialog(null, newDir.elementUuid);
-        });
-    }
+    const [renameCB, renameState] = useDeferredFetch(
+        renameElement,
+        {
+            elementUuid: directory?.elementUuid,
+            newElementName: undefined,
+        },
+        () => handleCloseDialog(null, null),
+        (HTTPStatusCode) => {
+            if (HTTPStatusCode === 403) {
+                return intl.formatMessage({ id: 'renameDirectoryError' });
+            }
+        },
+        undefined,
+        false
+    );
 
-    function deleteSelectedDirectory() {
-        deleteElement(directory?.elementUuid).then((r) => {
-            if (r.ok) {
-                handleCloseDialog(null, directory.parentUuid);
-            }
-            if (r.status === 403) {
-                setLastError(
-                    intl.formatMessage({ id: 'deleteDirectoryError' })
-                );
-            }
-        });
-    }
+    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(
+        insertDirectory,
+        {
+            directoryName: undefined,
+            parentUuid: directory?.elementUuid,
+            isPrivate: undefined,
+            owner: userId,
+        },
+        (response) => handleCloseDialog(null, response?.elementUuid)
+    );
 
-    function changeSelectedDirectoryAccessRights(isPrivate) {
-        updateAccessRights(directory?.elementUuid, isPrivate).then((r) => {
-            if (r.status === 403) {
-                setLastError(
-                    intl.formatMessage({
-                        id: 'modifyDirectoryAccessRightsError',
-                    })
-                );
-            }
-            if (r.ok) {
-                handleCloseDialog(null, null);
-            }
-        });
-    }
+    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(
+        insertRootDirectory,
+        {
+            directoryName: undefined,
+            isPrivate: undefined,
+            owner: userId,
+        },
+        (response) => handleCloseDialog(null, response?.elementUuid)
+    );
 
-    function renameSelectedDirectory(newName) {
-        renameElement(directory?.elementUuid, newName).then((r) => {
-            if (r.status === 403) {
-                setLastError(
-                    intl.formatMessage({
-                        id: 'renameDirectoryError',
-                    })
-                );
+    const [updateAccessRightsCB, updateAccessRightsState] = useDeferredFetch(
+        updateAccessRights,
+        {
+            elementUuid: directory?.elementUuid,
+            isPrivate: undefined,
+        },
+        () => handleCloseDialog(null, null),
+        (HTTPStatusCode) => {
+            if (HTTPStatusCode === 403) {
+                return intl.formatMessage({
+                    id: 'modifyDirectoryAccessRightsError',
+                });
             }
-            if (r.ok) {
-                handleCloseDialog(null, null);
-            }
-        });
-    }
-
-    // utils
+        },
+        undefined,
+        false
+    );
 
     // Allowance
     const showMenuFromEmptyZone = useCallback(() => {
@@ -132,7 +140,7 @@ const DirectoryTreeContextualMenuController = (props) => {
         return directory && directory.owner === userId;
     }, [directory, userId]);
 
-    const renderMenu = () => {
+    const buildMenu = () => {
         // build menuItems here
         let menuItems = [];
 
@@ -215,22 +223,19 @@ const DirectoryTreeContextualMenuController = (props) => {
             icon: <FolderSpecialIcon fontSize="small" />,
         });
 
-        if (menuItems.length !== 0) {
-            return React.Children.map(children, (child) => {
-                return React.cloneElement(child, {
-                    menuItems: menuItems,
-                    open: open && !hideMenu,
-                    onClose: onClose,
-                });
-            });
-        } else {
-            return;
-        }
+        return menuItems;
     };
 
     return (
         <>
-            {open && renderMenu()}
+            {open && (
+                <CommonContextualMenu
+                    {...others}
+                    menuItems={buildMenu()}
+                    open={open && !hideMenu}
+                    onClose={onClose}
+                />
+            )}
             {/** Dialogs **/}
             <CreateStudyForm
                 open={openDialog === DialogsId.ADD_NEW_STUDY}
@@ -243,33 +248,43 @@ const DirectoryTreeContextualMenuController = (props) => {
             <CreateDirectoryDialog
                 message={''}
                 open={openDialog === DialogsId.ADD_DIRECTORY}
-                onClick={insertNewDirectory}
+                onClick={(elementName, isPrivate) =>
+                    insertDirectoryCB({
+                        directoryName: elementName,
+                        isPrivate: isPrivate,
+                    })
+                }
                 onClose={handleCloseDialog}
                 title={intl.formatMessage({
                     id: 'insertNewDirectoryDialogTitle',
                 })}
-                error={''}
+                error={insertDirectoryState?.errorMessage}
             />
             <CreateDirectoryDialog
                 message={''}
                 open={openDialog === DialogsId.ADD_ROOT_DIRECTORY}
-                onClick={insertNewRootDirectory}
+                onClick={(elementName, isPrivate) =>
+                    insertRootDirectoryCB({
+                        directoryName: elementName,
+                        isPrivate: isPrivate,
+                    })
+                }
                 onClose={handleCloseDialog}
                 title={intl.formatMessage({
                     id: 'insertNewRootDirectoryDialogTitle',
                 })}
-                error={''}
+                error={insertRootDirectoryState?.errorMessage}
             />
             <RenameDialog
                 message={''}
                 currentName={directory?.elementName}
                 open={openDialog === DialogsId.RENAME}
-                onClick={renameSelectedDirectory}
+                onClick={(newName) => renameCB({ newElementName: newName })}
                 onClose={handleCloseDialog}
                 title={intl.formatMessage({
                     id: 'renameDirectoryDialogTitle',
                 })}
-                error={lastError}
+                error={renameState.errorMessage}
             />
             <DeleteDialog
                 items={directory ? [directory] : []}
@@ -278,20 +293,24 @@ const DirectoryTreeContextualMenuController = (props) => {
                 }
                 simpleDeleteFormatMessageId={'deleteDirectoryDialogMessage'}
                 open={openDialog === DialogsId.DELETE}
-                onClick={deleteSelectedDirectory}
+                onClick={deleteCB}
                 onClose={handleCloseDialog}
-                error={lastError}
+                error={deleteState.errorMessage}
             />
             <AccessRightsDialog
                 message={''}
-                isPrivate={directory?.accessRights.private}
+                isPrivate={directory?.accessRights.isPrivate}
                 open={openDialog === DialogsId.ACCESS_RIGHTS}
-                onClick={changeSelectedDirectoryAccessRights}
+                onClick={(isPrivate) =>
+                    updateAccessRightsCB({
+                        isPrivate: isPrivate,
+                    })
+                }
                 onClose={handleCloseDialog}
                 title={intl.formatMessage({
                     id: 'accessRights',
                 })}
-                error={lastError}
+                error={updateAccessRightsState.errorMessage}
             />
             <CreateFilterDialog
                 open={openDialog === DialogsId.ADD_NEW_FILTER}
@@ -305,8 +324,8 @@ const DirectoryTreeContextualMenuController = (props) => {
     );
 };
 
-DirectoryTreeContextualMenuController.propTypes = {
+DirectoryTreeContextualMenu.propTypes = {
     onClose: PropTypes.func,
 };
 
-export default DirectoryTreeContextualMenuController;
+export default DirectoryTreeContextualMenu;

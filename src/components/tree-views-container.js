@@ -29,8 +29,7 @@ import { notificationType } from '../utils/notificationType';
 
 import * as constants from '../utils/UIconstants';
 // Menu
-import DirectoryTreeContextualMenuController from './menus/directory-tree-contextual-menu-controller';
-import ContextualMenuView from './menus/contextual-menu-view';
+import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 
 const initialMousePosition = {
     mouseX: null,
@@ -61,7 +60,7 @@ const TreeViewsContainer = () => {
 
     const [DOMFocusedDirectory, setDOMFocusedDirectory] = useState(null);
 
-    const websocketExpectedCloseRef = useRef();
+    const wsRef = useRef();
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -323,9 +322,27 @@ const TreeViewsContainer = () => {
         [enqueueSnackbar, intlRef]
     );
 
-    const connectNotificationsUpdateStudies = useCallback(() => {
-        const ws = connectNotificationsWsUpdateStudies();
-        ws.onmessage = function (event) {
+    useEffect(() => {
+        // create ws at mount event
+        wsRef.current = connectNotificationsWsUpdateStudies();
+
+        wsRef.current.onclose = function () {
+            console.error('Unexpected Notification WebSocket closed');
+        };
+        wsRef.current.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        // We must save wsRef.current in a variable to make sure that when close is called it refers to the same instance.
+        // That's because wsRef.current could be modify outside of this scope.
+        const wsToClose = wsRef.current;
+        // cleanup at unmount event
+        return () => {
+            wsToClose.close();
+        };
+    }, []);
+
+    const onUpdateStudies = useCallback(
+        (event) => {
             console.debug('Received Update Studies notification', event);
             let eventData = JSON.parse(event.data);
             if (eventData.headers) {
@@ -340,6 +357,7 @@ const TreeViewsContainer = () => {
                 if (isRootDirectory) {
                     updateRootDirectories();
                     if (
+                        selectedDirectoryRef.current != null && // nothing to do if nothing already selected
                         notificationTypeHeader ===
                             notificationType.DELETE_DIRECTORY &&
                         selectedDirectoryRef.current.elementUuid ===
@@ -351,42 +369,37 @@ const TreeViewsContainer = () => {
                 }
 
                 if (directoryUuid) {
-                    if (
-                        directoryUuid ===
-                        selectedDirectoryRef.current.elementUuid
-                    ) {
-                        updateDirectoryTreeAndContent(directoryUuid);
-                    } else {
-                        updateDirectoryTree(directoryUuid);
+                    // Remark : It could be a Uuid of a rootDirectory if we need to update it because its content update
+                    // if dir is actually selected then call updateDirectoryTreeAndContent of this dir
+                    // else expanded or not then updateDirectoryTree
+                    if (selectedDirectoryRef.current != null) {
+                        if (
+                            directoryUuid ===
+                            selectedDirectoryRef.current.elementUuid
+                        ) {
+                            updateDirectoryTreeAndContent(directoryUuid);
+                            return; // break here
+                        }
                     }
+                    updateDirectoryTree(directoryUuid);
                 }
             }
-        };
-        ws.onclose = function () {
-            if (!websocketExpectedCloseRef.current) {
-                console.error('Unexpected Notification WebSocket closed');
-            }
-        };
-        ws.onerror = function (event) {
-            console.error('Unexpected Notification WebSocket error', event);
-        };
-        return ws;
-    }, [
-        displayErrorIfExist,
-        updateDirectoryTreeAndContent,
-        updateDirectoryTree,
-        updateRootDirectories,
-        dispatch,
-    ]);
+        },
+        [
+            dispatch,
+            displayErrorIfExist,
+            updateDirectoryTree,
+            updateDirectoryTreeAndContent,
+            updateRootDirectories,
+        ]
+    );
 
     useEffect(() => {
-        const ws = connectNotificationsUpdateStudies();
-        // Note: dispatch doesn't change
-        // cleanup at unmount event
-        return function () {
-            ws.close();
-        };
-    }, [connectNotificationsUpdateStudies]);
+        if (!wsRef.current) return;
+
+        // Update onmessage of ws when needed.
+        wsRef.current.onmessage = onUpdateStudies;
+    }, [onUpdateStudies]);
 
     /* Handle components synchronization */
     useEffect(() => {
@@ -441,24 +454,21 @@ const TreeViewsContainer = () => {
                             />
                         ))}
                 </div>
-                <DirectoryTreeContextualMenuController
+                <DirectoryTreeContextualMenu
                     directory={getActiveDirectory()}
                     open={openDirectoryMenu}
                     onClose={(e) => handleCloseDirectoryMenu(e, null)}
-                >
-                    <ContextualMenuView
-                        anchorReference="anchorPosition"
-                        anchorPosition={
-                            mousePosition.mouseY !== null &&
-                            mousePosition.mouseX !== null
-                                ? {
-                                      top: mousePosition.mouseY,
-                                      left: mousePosition.mouseX,
-                                  }
-                                : undefined
-                        }
-                    />
-                </DirectoryTreeContextualMenuController>
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                        mousePosition.mouseY !== null &&
+                        mousePosition.mouseX !== null
+                            ? {
+                                  top: mousePosition.mouseY,
+                                  left: mousePosition.mouseX,
+                              }
+                            : undefined
+                    }
+                />
             </div>
         </>
     );

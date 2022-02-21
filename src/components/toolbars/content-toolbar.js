@@ -7,14 +7,15 @@ import { deleteElement } from '../../utils/rest-api';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import DeleteDialog from '../dialogs/delete-dialog';
+import CommonToolbar from './common-toolbar';
 
 const DialogsId = {
     DELETE: 'delete',
     NONE: 'none',
 };
 
-const ContentToolbarController = (props) => {
-    const { selectedElements, children } = props;
+const ContentToolbar = (props) => {
+    const { selectedElements, ...others } = props;
     const userId = useSelector((state) => state.user.profile.sub);
     const intl = useIntl();
 
@@ -94,12 +95,7 @@ const ContentToolbarController = (props) => {
 
     return (
         <>
-            {children &&
-                React.Children.map(children, (child) => {
-                    return React.cloneElement(child, {
-                        items: [...items],
-                    });
-                })}
+            <CommonToolbar {...others} items={items} />
             <DeleteDialog
                 open={openDialog === DialogsId.DELETE}
                 onClose={handleCloseDialog}
@@ -115,9 +111,8 @@ const ContentToolbarController = (props) => {
     );
 };
 
-ContentToolbarController.propTypes = {
+ContentToolbar.propTypes = {
     selectedElements: PropTypes.array,
-    children: PropTypes.object,
 };
 
-export default ContentToolbarController;
+export default ContentToolbar;
