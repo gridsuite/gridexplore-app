@@ -52,6 +52,7 @@ const DirectoryTreeContextualMenu = (props) => {
     const [hideMenu, setHideMenu] = useState(false);
 
     const handleOpenDialog = (DialogId) => {
+        setHideMenu(true);
         setOpenDialog(DialogId);
     };
 
@@ -148,7 +149,6 @@ const DirectoryTreeContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'createNewStudy',
                 callback: () => {
-                    setHideMenu(true);
                     handleOpenDialog(DialogsId.ADD_NEW_STUDY);
                 },
                 icon: <AddIcon fontSize="small" />,
@@ -157,7 +157,6 @@ const DirectoryTreeContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'createNewContingencyList',
                 callback: () => {
-                    setHideMenu(true);
                     handleOpenDialog(DialogsId.ADD_NEW_CONTINGENCY_LIST);
                 },
                 icon: <AddIcon fontSize="small" />,
@@ -166,7 +165,6 @@ const DirectoryTreeContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'createNewFilter',
                 callback: () => {
-                    setHideMenu(true);
                     handleOpenDialog(DialogsId.ADD_NEW_FILTER);
                 },
                 icon: <AddIcon fontSize="small" />,
@@ -178,7 +176,6 @@ const DirectoryTreeContextualMenu = (props) => {
                 menuItems.push({
                     messageDescriptorId: 'renameFolder',
                     callback: () => {
-                        setHideMenu(true);
                         handleOpenDialog(DialogsId.RENAME);
                     },
                     icon: <CreateIcon fontSize="small" />,
@@ -187,7 +184,6 @@ const DirectoryTreeContextualMenu = (props) => {
                 menuItems.push({
                     messageDescriptorId: 'accessRights',
                     callback: () => {
-                        setHideMenu(true);
                         handleOpenDialog(DialogsId.ACCESS_RIGHTS);
                     },
                     icon: <BuildIcon fontSize="small" />,
@@ -196,7 +192,6 @@ const DirectoryTreeContextualMenu = (props) => {
                 menuItems.push({
                     messageDescriptorId: 'deleteFolder',
                     callback: () => {
-                        setHideMenu(true);
                         handleOpenDialog(DialogsId.DELETE);
                     },
                     icon: <DeleteIcon fontSize="small" />,
@@ -207,7 +202,6 @@ const DirectoryTreeContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'createFolder',
                 callback: () => {
-                    setHideMenu(true);
                     handleOpenDialog(DialogsId.ADD_DIRECTORY);
                 },
                 icon: <CreateNewFolderIcon fontSize="small" />,
@@ -217,7 +211,6 @@ const DirectoryTreeContextualMenu = (props) => {
         menuItems.push({
             messageDescriptorId: 'createRootFolder',
             callback: () => {
-                setHideMenu(true);
                 handleOpenDialog(DialogsId.ADD_ROOT_DIRECTORY);
             },
             icon: <FolderSpecialIcon fontSize="small" />,

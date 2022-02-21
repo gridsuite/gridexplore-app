@@ -84,6 +84,7 @@ const ContentContextualMenu = (props) => {
     );
 
     const handleOpenDialog = (DialogId) => {
+        setHideMenu(true);
         setOpenDialog(DialogId);
     };
 
@@ -303,7 +304,6 @@ const ContentContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'rename',
                 callback: () => {
-                    setHideMenu(true);
                     handleOpenDialog(DialogsId.RENAME);
                 },
             });
@@ -313,7 +313,6 @@ const ContentContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'export',
                 callback: () => {
-                    setHideMenu(true);
                     handleOpenDialog(DialogsId.EXPORT);
                 },
                 icon: <GetAppIcon fontSize="small" />,
@@ -324,7 +323,6 @@ const ContentContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'delete',
                 callback: () => {
-                    setHideMenu(true);
                     handleOpenDialog(DialogsId.DELETE);
                 },
                 icon: <DeleteIcon fontSize="small" />,
@@ -337,7 +335,6 @@ const ContentContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'copyToScript',
                 callback: () => {
-                    setHideMenu(true);
                     handleOpenDialog(
                         DialogsId.COPY_FILTER_TO_SCRIPT_CONTINGENCY
                     );
@@ -350,7 +347,6 @@ const ContentContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'replaceWithScript',
                 callback: () => {
-                    setHideMenu(true);
                     handleOpenDialog(
                         DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY
                     );
@@ -364,7 +360,6 @@ const ContentContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'copyToScript',
                 callback: () => {
-                    setHideMenu(true);
                     handleOpenDialog(DialogsId.COPY_FILTER_TO_SCRIPT);
                 },
                 icon: <FileCopyIcon fontSize="small" />,
@@ -375,7 +370,6 @@ const ContentContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'replaceWithScript',
                 callback: () => {
-                    setHideMenu(true);
                     handleOpenDialog(DialogsId.REPLACE_FILTER_BY_SCRIPT);
                 },
                 icon: <InsertDriveFileIcon fontSize="small" />,
