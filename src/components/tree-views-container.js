@@ -538,8 +538,7 @@ const TreeViewsContainer = () => {
                         selectedDirectoryRef.current != null && // nothing to do if nothing already selected
                         notificationTypeHeader ===
                             notificationType.DELETE_DIRECTORY &&
-                        selectedDirectoryRef.current ===
-                            directoryUuid
+                        selectedDirectoryRef.current === directoryUuid
                     ) {
                         dispatch(setSelectedDirectory(null));
                     }
@@ -550,10 +549,7 @@ const TreeViewsContainer = () => {
                     // if dir is actually selected then call updateDirectoryTreeAndContent of this dir
                     // else expanded or not then updateDirectoryTree
                     if (selectedDirectoryRef.current != null) {
-                        if (
-                            directoryUuid ===
-                            selectedDirectoryRef.current
-                        ) {
+                        if (directoryUuid === selectedDirectoryRef.current) {
                             updateDirectoryTreeAndContent(directoryUuid);
                             return; // break here
                         }
