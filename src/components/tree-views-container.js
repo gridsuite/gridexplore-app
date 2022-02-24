@@ -535,20 +535,30 @@ const TreeViewsContainer = () => {
                 if (isRootDirectory) {
                     updateRootDirectories();
                     if (
+                        selectedDirectoryRef.current != null && // nothing to do if nothing already selected
                         notificationTypeHeader ===
                             notificationType.DELETE_DIRECTORY &&
-                        selectedDirectoryRef.current === directoryUuid
+                        selectedDirectoryRef.current ===
+                            directoryUuid
                     ) {
                         dispatch(setSelectedDirectory(null));
                     }
-
-                    if (directoryUuid) {
-                        if (directoryUuid === selectedDirectoryRef.current) {
+                    return;
+                }
+                if (directoryUuid) {
+                    // Remark : It could be a Uuid of a rootDirectory if we need to update it because its content update
+                    // if dir is actually selected then call updateDirectoryTreeAndContent of this dir
+                    // else expanded or not then updateDirectoryTree
+                    if (selectedDirectoryRef.current != null) {
+                        if (
+                            directoryUuid ===
+                            selectedDirectoryRef.current
+                        ) {
                             updateDirectoryTreeAndContent(directoryUuid);
-                        } else {
-                            updateDirectoryTree(directoryUuid);
+                            return; // break here
                         }
                     }
+                    updateDirectoryTree(directoryUuid);
                 }
             }
         },
