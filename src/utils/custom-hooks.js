@@ -91,9 +91,7 @@ export const useDeferredFetch = (
                 // Params resolution
                 const response = await fetchFunction.apply(
                     null,
-                    Object.keys(finalParams).map((key) => {
-                        return finalParams[key];
-                    })
+                    Object.values(finalParams)
                 );
                 if (hasResult) {
                     const data = response;

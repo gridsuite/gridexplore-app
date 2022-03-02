@@ -83,9 +83,9 @@ const ContentContextualMenu = (props) => {
         [enqueueSnackbar]
     );
 
-    const handleOpenDialog = (DialogId) => {
+    const handleOpenDialog = (dialogId) => {
         setHideMenu(true);
-        setOpenDialog(DialogId);
+        setOpenDialog(dialogId);
     };
 
     const handleCloseDialog = () => {

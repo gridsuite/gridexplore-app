@@ -606,7 +606,13 @@ const DirectoryContent = () => {
                     {isAllDataPresent && currentChildren?.length > 0 && (
                         <>
                             <ContentToolbar
-                                selectedElements={getSelectedChildren()}
+                                selectedElements={
+                                    // Check selectedUuids.size here to show toolbar options only
+                                    // when multi selection checkboxes are used.
+                                    selectedUuids.size > 0
+                                        ? getSelectedChildren()
+                                        : []
+                                }
                             />
 
                             <VirtualizedTable
