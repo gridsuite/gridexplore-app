@@ -129,7 +129,9 @@ const DirectoryTreeView = ({
     }
 
     function handleLabelClick(node, toggle) {
-        dispatch(setSelectedDirectory(node));
+        if (selectedDirectory?.elementUuid !== node?.elementUuid) {
+            dispatch(setSelectedDirectory(node));
+        }
         if (toggle) {
             // update fold status of item
             toggleDirectories([node.elementUuid]);
