@@ -64,9 +64,6 @@ const DirectoryTreeContextualMenu = (props) => {
 
     const [deleteCB, deleteState] = useDeferredFetch(
         deleteElement,
-        {
-            elementUuid: directory?.elementUuid,
-        },
         () => handleCloseDialog(null, directory?.parentUuid),
         (HTTPStatusCode) => {
             if (HTTPStatusCode === 403) {
@@ -79,10 +76,6 @@ const DirectoryTreeContextualMenu = (props) => {
 
     const [renameCB, renameState] = useDeferredFetch(
         renameElement,
-        {
-            elementUuid: directory?.elementUuid,
-            newElementName: undefined,
-        },
         () => handleCloseDialog(null, null),
         (HTTPStatusCode) => {
             if (HTTPStatusCode === 403) {
@@ -95,31 +88,16 @@ const DirectoryTreeContextualMenu = (props) => {
 
     const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(
         insertDirectory,
-        {
-            directoryName: undefined,
-            parentUuid: directory?.elementUuid,
-            isPrivate: undefined,
-            owner: userId,
-        },
         (response) => handleCloseDialog(null, response?.elementUuid)
     );
 
     const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(
         insertRootDirectory,
-        {
-            directoryName: undefined,
-            isPrivate: undefined,
-            owner: userId,
-        },
         (response) => handleCloseDialog(null, response?.elementUuid)
     );
 
     const [updateAccessRightsCB, updateAccessRightsState] = useDeferredFetch(
         updateAccessRights,
-        {
-            elementUuid: directory?.elementUuid,
-            isPrivate: undefined,
-        },
         () => handleCloseDialog(null, null),
         (HTTPStatusCode) => {
             if (HTTPStatusCode === 403) {
@@ -242,10 +220,12 @@ const DirectoryTreeContextualMenu = (props) => {
                 message={''}
                 open={openDialog === DialogsId.ADD_DIRECTORY}
                 onClick={(elementName, isPrivate) =>
-                    insertDirectoryCB({
-                        directoryName: elementName,
-                        isPrivate: isPrivate,
-                    })
+                    insertDirectoryCB(
+                        elementName,
+                        directory?.elementUuid,
+                        isPrivate,
+                        userId
+                    )
                 }
                 onClose={handleCloseDialog}
                 title={intl.formatMessage({
@@ -257,10 +237,7 @@ const DirectoryTreeContextualMenu = (props) => {
                 message={''}
                 open={openDialog === DialogsId.ADD_ROOT_DIRECTORY}
                 onClick={(elementName, isPrivate) =>
-                    insertRootDirectoryCB({
-                        directoryName: elementName,
-                        isPrivate: isPrivate,
-                    })
+                    insertRootDirectoryCB(elementName, isPrivate, userId)
                 }
                 onClose={handleCloseDialog}
                 title={intl.formatMessage({
@@ -272,7 +249,7 @@ const DirectoryTreeContextualMenu = (props) => {
                 message={''}
                 currentName={directory?.elementName}
                 open={openDialog === DialogsId.RENAME}
-                onClick={(newName) => renameCB({ newElementName: newName })}
+                onClick={(newName) => renameCB(directory?.elementUuid, newName)}
                 onClose={handleCloseDialog}
                 title={intl.formatMessage({
                     id: 'renameDirectoryDialogTitle',
@@ -286,18 +263,16 @@ const DirectoryTreeContextualMenu = (props) => {
                 }
                 simpleDeleteFormatMessageId={'deleteDirectoryDialogMessage'}
                 open={openDialog === DialogsId.DELETE}
-                onClick={deleteCB}
+                onClick={() => deleteCB(directory?.elementUuid)}
                 onClose={handleCloseDialog}
                 error={deleteState.errorMessage}
             />
             <AccessRightsDialog
                 message={''}
-                isPrivate={directory?.accessRights.isPrivate}
+                isPrivate={directory?.accessRights?.isPrivate}
                 open={openDialog === DialogsId.ACCESS_RIGHTS}
                 onClick={(isPrivate) =>
-                    updateAccessRightsCB({
-                        isPrivate: isPrivate,
-                    })
+                    updateAccessRightsCB(directory?.elementUuid, isPrivate)
                 }
                 onClose={handleCloseDialog}
                 title={intl.formatMessage({

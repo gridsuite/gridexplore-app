@@ -101,9 +101,6 @@ const ContentContextualMenu = (props) => {
     const [multipleDeleteError, setMultipleDeleteError] = useState('');
     const [deleteCB] = useMultipleDeferredFetch(
         deleteElement,
-        {
-            elementUuid: activeElement?.elementUuid,
-        },
         handleCloseDialog,
         undefined,
         (errorMessages, paramsOnErrors, params) => {
@@ -125,10 +122,6 @@ const ContentContextualMenu = (props) => {
 
     const [renameCB, renameState] = useDeferredFetch(
         renameElement,
-        {
-            elementUuid: activeElement?.elementUuid,
-            newElementName: undefined,
-        },
         handleCloseDialog,
         (HTTPStatusCode) => {
             if (HTTPStatusCode === 403) {
@@ -146,10 +139,6 @@ const ContentContextualMenu = (props) => {
 
     const [FiltersReplaceWithScriptCB] = useDeferredFetch(
         replaceFiltersWithScript,
-        {
-            id: undefined,
-            parentDirectoryUuid: directory?.elementUuid,
-        },
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -158,11 +147,6 @@ const ContentContextualMenu = (props) => {
 
     const [newScriptFromFiltersContingencyListCB] = useDeferredFetch(
         newScriptFromFiltersContingencyList,
-        {
-            id: undefined,
-            newName: undefined,
-            parentDirectoryUuid: directory?.elementUuid,
-        },
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -171,10 +155,6 @@ const ContentContextualMenu = (props) => {
 
     const [replaceFormContingencyListWithScriptCB] = useDeferredFetch(
         replaceFormContingencyListWithScript,
-        {
-            id: undefined,
-            parentDirectoryUuid: directory?.elementUuid,
-        },
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -183,11 +163,6 @@ const ContentContextualMenu = (props) => {
 
     const [newScriptFromFilterCB] = useDeferredFetch(
         newScriptFromFilter,
-        {
-            id: undefined,
-            newName: undefined,
-            parentDirectoryUuid: directory?.elementUuid,
-        },
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -393,7 +368,7 @@ const ContentContextualMenu = (props) => {
                 open={openDialog === DialogsId.RENAME}
                 onClose={handleCloseDialog}
                 onClick={(elementName) =>
-                    renameCB({ newElementName: elementName })
+                    renameCB(activeElement?.elementUuid, elementName)
                 }
                 title={useIntl().formatMessage({ id: 'renameElement' })}
                 message={useIntl().formatMessage({ id: 'renameElementMsg' })}
@@ -406,7 +381,7 @@ const ContentContextualMenu = (props) => {
                 onClick={() =>
                     deleteCB(
                         selectedElements.map((e) => {
-                            return { elementUuid: e.elementUuid };
+                            return [e.elementUuid];
                         })
                     )
                 }
@@ -455,7 +430,10 @@ const ContentContextualMenu = (props) => {
                 }
                 onClose={handleCloseDialog}
                 onClick={(id) =>
-                    replaceFormContingencyListWithScriptCB({ id: id })
+                    replaceFormContingencyListWithScriptCB(
+                        id,
+                        directory?.elementUuid
+                    )
                 }
                 onError={handleLastError}
                 title={useIntl().formatMessage({ id: 'replaceList' })}
@@ -467,10 +445,11 @@ const ContentContextualMenu = (props) => {
                 }
                 onClose={handleCloseDialog}
                 onClick={(id, newName) =>
-                    newScriptFromFiltersContingencyListCB({
-                        id: id,
-                        newName: newName,
-                    })
+                    newScriptFromFiltersContingencyListCB(
+                        id,
+                        newName,
+                        directory?.elementUuid
+                    )
                 }
                 currentName={activeElement ? activeElement.elementName : ''}
                 title={useIntl().formatMessage({ id: 'copyToScriptList' })}
@@ -479,7 +458,9 @@ const ContentContextualMenu = (props) => {
                 id={activeElement ? activeElement.elementUuid : ''}
                 open={openDialog === DialogsId.REPLACE_FILTER_BY_SCRIPT}
                 onClose={handleCloseDialog}
-                onClick={(id) => FiltersReplaceWithScriptCB({ id: id })}
+                onClick={(id) =>
+                    FiltersReplaceWithScriptCB(id, directory?.elementUuid)
+                }
                 title={useIntl().formatMessage({ id: 'replaceList' })}
             />
             <CopyToScriptDialog
@@ -487,10 +468,7 @@ const ContentContextualMenu = (props) => {
                 open={openDialog === DialogsId.COPY_FILTER_TO_SCRIPT}
                 onClose={handleCloseDialog}
                 onClick={(id, newName) =>
-                    newScriptFromFilterCB({
-                        id: id,
-                        newName: newName,
-                    })
+                    newScriptFromFilterCB(id, newName, directory?.elementUuid)
                 }
                 currentName={activeElement ? activeElement.elementName : ''}
                 title={useIntl().formatMessage({ id: 'copyToScriptList' })}

@@ -9,6 +9,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar from './common-toolbar';
 
+import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
+
 const DialogsId = {
     DELETE: 'delete',
     NONE: 'none',
@@ -20,7 +22,6 @@ const ContentToolbar = (props) => {
     const intl = useIntl();
 
     const [openDialog, setOpenDialog] = useState(null);
-    const [lastError, setLastError] = React.useState('');
     const [items, setItems] = useState([]);
 
     const handleOpenDialog = (DialogId) => {
@@ -29,38 +30,29 @@ const ContentToolbar = (props) => {
 
     const handleCloseDialog = () => {
         setOpenDialog(DialogsId.NONE);
-        setLastError('');
     };
 
-    const handleClickDeleteElement = () => {
-        let notDeleted = [];
-        let doneChildren = [];
-        for (let child of selectedElements) {
-            deleteElement(child.elementUuid).then((response) => {
-                doneChildren.push(child);
-                if (!response.ok) {
-                    notDeleted.push(child.elementName);
+    const [multipleDeleteError, setMultipleDeleteError] = useState('');
+    const [deleteCB] = useMultipleDeferredFetch(
+        deleteElement,
+        handleCloseDialog,
+        undefined,
+        (errorMessages, paramsOnErrors, params) => {
+            let msg = intl.formatMessage(
+                { id: 'deleteElementsFailure' },
+                {
+                    pbn: errorMessages.length,
+                    stn: params.length,
+                    problematic: paramsOnErrors
+                        .map((p) => p.elementUuid)
+                        .join(' '),
                 }
-
-                if (doneChildren.length === selectedElements.length) {
-                    if (notDeleted.length === 0) {
-                        handleCloseDialog();
-                    } else {
-                        let msg = intl.formatMessage(
-                            { id: 'deleteElementsFailure' },
-                            {
-                                pbn: notDeleted.length,
-                                stn: selectedElements.length,
-                                problematic: notDeleted.join(' '),
-                            }
-                        );
-                        console.warn(msg);
-                        setLastError(msg);
-                    }
-                }
-            });
-        }
-    };
+            );
+            console.debug(msg);
+            setMultipleDeleteError(msg);
+        },
+        false
+    );
 
     // Allowance
     const isUserAllowed = useCallback(() => {
@@ -99,13 +91,19 @@ const ContentToolbar = (props) => {
             <DeleteDialog
                 open={openDialog === DialogsId.DELETE}
                 onClose={handleCloseDialog}
-                onClick={handleClickDeleteElement}
+                onClick={() =>
+                    deleteCB(
+                        selectedElements.map((e) => {
+                            return [e.elementUuid];
+                        })
+                    )
+                }
                 items={selectedElements}
                 multipleDeleteFormatMessageId={
                     'deleteMultipleItemsDialogMessage'
                 }
                 simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
-                error={lastError}
+                error={multipleDeleteError}
             />
         </>
     );

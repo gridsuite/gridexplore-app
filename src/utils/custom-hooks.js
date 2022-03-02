@@ -18,7 +18,7 @@ export const FetchStatus = {
  * @param {function} onError callback to call if request failed
  * @param {boolean} hasResult Configure if fetchFunction return results or only HTTP request response
  * @returns {function} fetchCallback The callback to call to execute the request.
- *                     It accepts params Object as argument which will completes and overwrites params entries with same name.
+ *                     It accepts params as argument which must follow fetch function params.
  * @returns {state} state complete state of the request
  *          {Enum}  state.status Status of the request
  *          {String} state.errorMessage error message of the request
@@ -26,7 +26,6 @@ export const FetchStatus = {
  */
 export const useDeferredFetch = (
     fetchFunction,
-    params,
     onSuccess,
     errorToString = undefined,
     onError = undefined,
@@ -85,14 +84,11 @@ export const useDeferredFetch = (
     );
 
     const fetchData = useCallback(
-        async (finalParams) => {
+        async (...args) => {
             dispatch({ type: FetchStatus.FETCHING });
             try {
                 // Params resolution
-                const response = await fetchFunction.apply(
-                    null,
-                    Object.values(finalParams)
-                );
+                const response = await fetchFunction.apply(null, args);
                 if (hasResult) {
                     const data = response;
                     dispatch({
@@ -104,11 +100,11 @@ export const useDeferredFetch = (
                     if (response.ok) {
                         if (onSuccess) onSuccess();
                     } else {
-                        handleError(response, finalParams);
+                        handleError(response, args);
                     }
                 }
             } catch (error) {
-                handleError(null, finalParams);
+                handleError(null, args);
                 throw error;
             }
         },
@@ -116,10 +112,11 @@ export const useDeferredFetch = (
     );
 
     const fetchCallback = useCallback(
-        (cbParams) => {
-            fetchData(Object.assign({}, params, cbParams));
+        (...args) => {
+            console.debug('#SBO args', args);
+            fetchData(...args);
         },
-        [fetchData, params]
+        [fetchData]
     );
 
     return [fetchCallback, state];
@@ -131,7 +128,6 @@ export const useDeferredFetch = (
  * This custom hook manage multiple fetchs workflows and return a unique callback to defer process execution when needed.
  * It also return a unique state which concatenate all fetch results independently.
  * @param {function} fetchFunction the fetch function to call for each request
- * @param {Object} params Params of the fetch function. WARNING: Must respect order here
  * @param {function} onSuccess callback to call on all request success
  * @param {function} errorToString callback to translate HTTPCode to string error messages
  * @param {function} onError callback to call if one or more requests failed
@@ -146,7 +142,6 @@ export const useDeferredFetch = (
  */
 export const useMultipleDeferredFetch = (
     fetchFunction,
-    params,
     onSuccess,
     errorToString = undefined,
     onError = undefined,
@@ -218,7 +213,6 @@ export const useMultipleDeferredFetch = (
 
     const [fetchCB] = useDeferredFetch(
         fetchFunction,
-        params,
         onInstanceSuccess,
         errorToString,
         onInstanceError,
@@ -226,11 +220,11 @@ export const useMultipleDeferredFetch = (
     );
 
     const fetchCallback = useCallback(
-        (cbParams) => {
+        (cbParamsList) => {
             dispatch({ type: FetchStatus.FETCHING });
-            setParamList(cbParams);
-            for (let param of cbParams) {
-                fetchCB(param);
+            setParamList(cbParamsList);
+            for (let params of cbParamsList) {
+                fetchCB(params);
             }
         },
         [fetchCB]
