@@ -351,8 +351,9 @@ const TreeViewsContainer = () => {
                 const isRootDirectory = eventData.headers['isRootDirectory'];
                 const directoryUuid = eventData.headers['directoryUuid'];
                 const error = eventData.headers['error'];
+                const elementName = eventData.headers['elementName'];
 
-                displayErrorIfExist(error);
+                displayErrorIfExist(error, elementName);
 
                 if (isRootDirectory) {
                     updateRootDirectories();
@@ -367,7 +368,6 @@ const TreeViewsContainer = () => {
                     }
                     return;
                 }
-
                 if (directoryUuid) {
                     // Remark : It could be a Uuid of a rootDirectory if we need to update it because its content update
                     // if dir is actually selected then call updateDirectoryTreeAndContent of this dir
