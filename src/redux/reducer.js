@@ -85,7 +85,9 @@ export const reducer = createReducer(initialState, {
     },
 
     [SELECT_DIRECTORY]: (state, action) => {
-        state.selectedDirectory = action.selectedDirectory;
+        state.selectedDirectory = action.selectedDirectory
+            ? { ...action.selectedDirectory }
+            : null;
     },
 
     [ACTIVE_DIRECTORY]: (state, action) => {

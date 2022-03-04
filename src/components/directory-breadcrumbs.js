@@ -66,13 +66,13 @@ const DirectoryBreadcrumbs = () => {
     const currentPath = useSelector((state) => state.currentPath);
 
     /* Handle User interactions */
-    const handleSelect = (event, nodeId) => {
+    const handleSelect = (event, dir) => {
         event.preventDefault();
-        dispatch(setSelectedDirectory(nodeId));
+        dispatch(setSelectedDirectory(dir));
     };
 
     /* Handle Rendering */
-    const renderBreadCrumbsLinks = (currentPath) => {
+    const renderBreadCrumbsLinks = () => {
         if (
             selectedDirectory !== null &&
             currentPath !== null &&
@@ -85,9 +85,7 @@ const DirectoryBreadcrumbs = () => {
                         className={classes.link}
                         key={dir.elementUuid}
                         href="/"
-                        onClick={(event) =>
-                            handleSelect(event, dir.elementUuid)
-                        }
+                        onClick={(event) => handleSelect(event, dir)}
                     >
                         {index === 0 ? (
                             <FolderOpenIcon className={classes.icon} />
@@ -98,7 +96,7 @@ const DirectoryBreadcrumbs = () => {
         }
     };
 
-    const renderBreadCrumbsTypography = (currentPath) => {
+    const renderBreadCrumbsTypography = () => {
         if (
             selectedDirectory !== null &&
             currentPath !== null &&
@@ -117,8 +115,8 @@ const DirectoryBreadcrumbs = () => {
 
     return (
         <Breadcrumbs aria-label="breadcrumb" className={classes.breadcrumbs}>
-            {renderBreadCrumbsLinks(currentPath)}
-            {renderBreadCrumbsTypography(currentPath)}
+            {renderBreadCrumbsLinks()}
+            {renderBreadCrumbsTypography()}
         </Breadcrumbs>
     );
 };
