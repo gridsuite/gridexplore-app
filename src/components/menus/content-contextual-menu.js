@@ -56,21 +56,14 @@ const DialogsId = {
 };
 
 const ContentContextualMenu = (props) => {
-    const {
-        directory,
-        activeElement,
-        selectedElements,
-        open,
-        onClose,
-        children,
-        ...others
-    } = props;
+    const { activeElement, selectedElements, open, onClose, ...others } = props;
     const userId = useSelector((state) => state.user.profile.sub);
     const intl = useIntl();
     const { enqueueSnackbar } = useSnackbar();
 
     const DownloadIframe = 'downloadIframe';
 
+    const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const [openDialog, setOpenDialog] = useState(null);
     const [hideMenu, setHideMenu] = useState(false);
 
@@ -432,7 +425,7 @@ const ContentContextualMenu = (props) => {
                 onClick={(id) =>
                     replaceFormContingencyListWithScriptCB(
                         id,
-                        directory?.elementUuid
+                        selectedDirectory?.elementUuid
                     )
                 }
                 onError={handleLastError}
@@ -448,7 +441,7 @@ const ContentContextualMenu = (props) => {
                     newScriptFromFiltersContingencyListCB(
                         id,
                         newName,
-                        directory?.elementUuid
+                        selectedDirectory?.elementUuid
                     )
                 }
                 currentName={activeElement ? activeElement.elementName : ''}
@@ -459,7 +452,10 @@ const ContentContextualMenu = (props) => {
                 open={openDialog === DialogsId.REPLACE_FILTER_BY_SCRIPT}
                 onClose={handleCloseDialog}
                 onClick={(id) =>
-                    FiltersReplaceWithScriptCB(id, directory?.elementUuid)
+                    FiltersReplaceWithScriptCB(
+                        id,
+                        selectedDirectory?.elementUuid
+                    )
                 }
                 title={useIntl().formatMessage({ id: 'replaceList' })}
             />
@@ -468,7 +464,11 @@ const ContentContextualMenu = (props) => {
                 open={openDialog === DialogsId.COPY_FILTER_TO_SCRIPT}
                 onClose={handleCloseDialog}
                 onClick={(id, newName) =>
-                    newScriptFromFilterCB(id, newName, directory?.elementUuid)
+                    newScriptFromFilterCB(
+                        id,
+                        newName,
+                        selectedDirectory?.elementUuid
+                    )
                 }
                 currentName={activeElement ? activeElement.elementName : ''}
                 title={useIntl().formatMessage({ id: 'copyToScriptList' })}

@@ -43,7 +43,7 @@ const DialogsId = {
 };
 
 const DirectoryTreeContextualMenu = (props) => {
-    const { directory, open, onClose, children, ...others } = props;
+    const { directory, open, onClose, ...others } = props;
     const userId = useSelector((state) => state.user.profile.sub);
 
     const intl = useIntl();
