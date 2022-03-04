@@ -113,7 +113,6 @@ export const useDeferredFetch = (
 
     const fetchCallback = useCallback(
         (...args) => {
-            console.debug('#SBO args', args);
             fetchData(...args);
         },
         [fetchData]
