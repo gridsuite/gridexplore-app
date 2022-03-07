@@ -44,6 +44,12 @@
     "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé",
     "nameEmpty": "Le nom est vide",
 
+    "ImportNewCase": "Importer une Situation",
+    "CaseName": "Nom de la situation",
+    "DescriptionOptional": "Description (optionnel)",
+    "caseCreationError": "Une erreur est survenue lors de la création de la situation : {name}",
+    "CASE": "Situation",
+
     "nameAlreadyUsed": "Ce nom est déjà utilisé",
 
     "delete": "Supprimer",

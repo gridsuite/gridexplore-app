@@ -10,6 +10,7 @@ export const ElementType = {
     STUDY: 'STUDY',
     FILTER: 'FILTER',
     CONTINGENCY_LIST: 'CONTINGENCY_LIST',
+    CASE: 'CASE',
 };
 
 export const FilterType = {

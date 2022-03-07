@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useIntl } from 'react-intl';
+import { useSnackbar } from 'notistack';
 
 //This useEffect must be at the beginning to be executed before other useEffects which use intlRef.
 //This ref is used to avoid redoing other useEffects when the language (intl) is changed for things that produce temporary messages using the snackbar.
@@ -46,3 +47,24 @@ export function displayErrorMessageWithSnackbar({
         style: { whiteSpace: 'pre-line' },
     });
 }
+
+export const useSnackbarMessage = () => {
+    const intlRef = useIntlRef();
+    const { enqueueSnackbar } = useSnackbar();
+    let message;
+    message = useCallback(
+        (msg, headerMessage, headerValues) =>
+            displayErrorMessageWithSnackbar({
+                errorMessage: msg,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: headerMessage,
+                    intlRef: intlRef,
+                    headerMessageValues: headerValues,
+                },
+            }),
+
+        [enqueueSnackbar, intlRef]
+    );
+    return message;
+};

@@ -44,6 +44,7 @@ import GenericFilterDialog from './dialogs/generic-filter-dialog';
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
+import PhotoIcon from '@material-ui/icons/Photo';
 
 const circularProgressSize = '70px';
 
@@ -357,6 +358,8 @@ const DirectoryContent = () => {
             } else if (objectSubtype === FilterType.FORM) {
                 return <FilterListIcon className={classes.icon} />;
             }
+        } else if (objectType === ElementType.CASE) {
+            return <PhotoIcon />;
         }
     }
 

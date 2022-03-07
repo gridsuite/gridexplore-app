@@ -1,7 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { useIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 import FolderSpecialIcon from '@material-ui/icons/FolderSpecial';
@@ -19,15 +19,16 @@ import DeleteDialog from '../dialogs/delete-dialog';
 import CreateFilterDialog from '../dialogs/create-filter-dialog';
 
 import {
+    deleteElement,
     insertDirectory,
     insertRootDirectory,
-    deleteElement,
-    updateAccessRights,
     renameElement,
+    updateAccessRights,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
+import { CreateCaseDialog } from '../dialogs/create-case-dialog';
 
 const DialogsId = {
     ADD_ROOT_DIRECTORY: 'add_root_directory',
@@ -35,6 +36,7 @@ const DialogsId = {
     ADD_NEW_STUDY: 'add_new_study',
     ADD_NEW_CONTINGENCY_LIST: 'add_new_contingency_list',
     ADD_NEW_FILTER: 'add_new_filter',
+    ADD_NEW_CASE: 'add_new_case',
     RENAME: 'rename',
     DELETE: 'delete',
     ACCESS_RIGHTS: 'access_rights',
@@ -124,57 +126,64 @@ const DirectoryTreeContextualMenu = (props) => {
         let menuItems = [];
 
         if (!showMenuFromEmptyZone()) {
-            menuItems.push({
-                messageDescriptorId: 'createNewStudy',
-                callback: () => {
-                    handleOpenDialog(DialogsId.ADD_NEW_STUDY);
+            menuItems.push(
+                {
+                    messageDescriptorId: 'createNewStudy',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.ADD_NEW_STUDY);
+                    },
+                    icon: <AddIcon fontSize="small" />,
                 },
-                icon: <AddIcon fontSize="small" />,
-            });
-
-            menuItems.push({
-                messageDescriptorId: 'createNewContingencyList',
-                callback: () => {
-                    handleOpenDialog(DialogsId.ADD_NEW_CONTINGENCY_LIST);
+                {
+                    messageDescriptorId: 'createNewContingencyList',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.ADD_NEW_CONTINGENCY_LIST);
+                    },
+                    icon: <AddIcon fontSize="small" />,
                 },
-                icon: <AddIcon fontSize="small" />,
-            });
-
-            menuItems.push({
-                messageDescriptorId: 'createNewFilter',
-                callback: () => {
-                    handleOpenDialog(DialogsId.ADD_NEW_FILTER);
+                {
+                    messageDescriptorId: 'createNewFilter',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.ADD_NEW_FILTER);
+                    },
+                    icon: <AddIcon fontSize="small" />,
                 },
-                icon: <AddIcon fontSize="small" />,
-            });
+                {
+                    messageDescriptorId: 'ImportNewCase',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.ADD_NEW_CASE);
+                    },
+                    icon: <AddIcon fontSize="small" />,
+                }
+            );
 
             menuItems.push({ isDivider: true });
 
             if (isAllowed()) {
-                menuItems.push({
-                    messageDescriptorId: 'renameFolder',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.RENAME);
+                menuItems.push(
+                    {
+                        messageDescriptorId: 'renameFolder',
+                        callback: () => {
+                            handleOpenDialog(DialogsId.RENAME);
+                        },
+                        icon: <CreateIcon fontSize="small" />,
                     },
-                    icon: <CreateIcon fontSize="small" />,
-                });
-
-                menuItems.push({
-                    messageDescriptorId: 'accessRights',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.ACCESS_RIGHTS);
+                    {
+                        messageDescriptorId: 'accessRights',
+                        callback: () => {
+                            handleOpenDialog(DialogsId.ACCESS_RIGHTS);
+                        },
+                        icon: <BuildIcon fontSize="small" />,
                     },
-                    icon: <BuildIcon fontSize="small" />,
-                });
-
-                menuItems.push({
-                    messageDescriptorId: 'deleteFolder',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.DELETE);
+                    {
+                        messageDescriptorId: 'deleteFolder',
+                        callback: () => {
+                            handleOpenDialog(DialogsId.DELETE);
+                        },
+                        icon: <DeleteIcon fontSize="small" />,
                     },
-                    icon: <DeleteIcon fontSize="small" />,
-                });
-                menuItems.push({ isDivider: true });
+                    { isDivider: true }
+                );
             }
 
             menuItems.push({
@@ -287,6 +296,10 @@ const DirectoryTreeContextualMenu = (props) => {
                 inputLabelText={<FormattedMessage id="FilterName" />}
                 customTextValidationBtn={<FormattedMessage id="create" />}
                 customTextCancelBtn={<FormattedMessage id="cancel" />}
+            />
+            <CreateCaseDialog
+                open={openDialog === DialogsId.ADD_NEW_CASE}
+                onClose={handleCloseDialog}
             />
         </>
     );

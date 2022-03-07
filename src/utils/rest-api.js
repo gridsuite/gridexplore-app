@@ -348,6 +348,28 @@ export function createStudy(
     }
 }
 
+export function createCase({ name, description, file, parentDirectoryUuid }) {
+    console.info('Creating a new case...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/cases/' +
+        encodeURIComponent(name) +
+        '?' +
+        urlSearchParams.toString();
+    const formData = new FormData();
+    formData.append('caseFile', file);
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
+        body: formData,
+    }).then((response) => handleResponse(response, false));
+}
+
 export function fetchCases() {
     console.info('Fetching cases...');
     const fetchCasesUrl = PREFIX_CASE_QUERIES + '/v1/cases';
