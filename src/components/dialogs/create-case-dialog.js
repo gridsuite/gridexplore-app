@@ -35,7 +35,7 @@ export function CreateCaseDialog({ onClose, open }) {
     });
 
     const [description, DescriptionField] = useTextValue({
-        label: 'DescriptionOptional',
+        label: 'CaseDescriptionOptional',
     });
     const [file, FileField] = useFileValue({ label: 'Case' });
 
@@ -92,7 +92,7 @@ export function CreateCaseDialog({ onClose, open }) {
             onKeyPress={handleKeyPressed}
         >
             <DialogTitle id="form-dialog-title">
-                <FormattedMessage id="createNewCase" />
+                <FormattedMessage id="ImportNewCase" />
             </DialogTitle>
             <DialogContent>
                 <DialogContentText>
