@@ -3,12 +3,12 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import DeleteIcon from '@material-ui/icons/Delete';
-import FolderSpecialIcon from '@material-ui/icons/FolderSpecial';
-import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
-import BuildIcon from '@material-ui/icons/Build';
-import AddIcon from '@material-ui/icons/Add';
-import CreateIcon from '@material-ui/icons/Create';
+import DeleteIcon from '@mui/icons-material/Delete';
+import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import BuildIcon from '@mui/icons-material/Build';
+import AddIcon from '@mui/icons-material/Add';
+import CreateIcon from '@mui/icons-material/Create';
 
 import CreateStudyForm from '../dialogs/create-study-dialog';
 import CreateContingencyListDialog from '../dialogs/create-contingency-list-dialog';

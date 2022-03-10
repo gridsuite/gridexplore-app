@@ -12,13 +12,13 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import * as constants from '../utils/UIconstants';
 
-import Chip from '@material-ui/core/Chip';
-import Tooltip from '@material-ui/core/Tooltip';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Chip from '@mui/material/Chip';
+import Tooltip from '@mui/material/Tooltip';
+import makeStyles from '@mui/styles/makeStyles';
+import CircularProgress from '@mui/material/CircularProgress';
 
-import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
-import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
+import LibraryBooksOutlinedIcon from '@mui/icons-material/LibraryBooksOutlined';
+import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
 
 import VirtualizedTable from './virtualized-table';
 import {
@@ -27,14 +27,14 @@ import {
     FilterType,
 } from '../utils/elementType';
 import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
-import { Checkbox } from '@material-ui/core';
+import { Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
 
-import FilterListIcon from '@material-ui/icons/FilterList';
-import FilterIcon from '@material-ui/icons/Filter';
-import DescriptionIcon from '@material-ui/icons/Description';
-import PanToolIcon from '@material-ui/icons/PanTool';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import FilterIcon from '@mui/icons-material/Filter';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PanToolIcon from '@mui/icons-material/PanTool';
 
 import FormContingencyDialog from './dialogs/form-contingency-dialog';
 import ScriptDialog from './dialogs/script-dialog';

@@ -3,10 +3,10 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
-import FileCopyIcon from '@material-ui/icons/FileCopy';
-import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
-import DeleteIcon from '@material-ui/icons/Delete';
-import GetAppIcon from '@material-ui/icons/GetApp';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import DeleteIcon from '@mui/icons-material/Delete';
+import GetAppIcon from '@mui/icons-material/GetApp';
 
 import ExportDialog from '../dialogs/export-dialog';
 import RenameDialog from '../dialogs/rename-dialog';

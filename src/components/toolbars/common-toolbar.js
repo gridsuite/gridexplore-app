@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles';
 
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 
-import IconButton from '@material-ui/core/IconButton';
-import { Toolbar, Tooltip } from '@material-ui/core';
+import IconButton from '@mui/material/IconButton';
+import { Toolbar, Tooltip } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -42,6 +42,7 @@ const CommonToolbar = (props) => {
                     <IconButton
                         className={classes.icon}
                         onClick={() => callback()}
+                        size="large"
                     >
                         {icon}
                     </IconButton>

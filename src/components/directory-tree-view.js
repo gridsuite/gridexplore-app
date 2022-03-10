@@ -7,15 +7,15 @@
 
 import React, { useCallback, useEffect, useRef } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import TreeItem from '@material-ui/lab/TreeItem';
-import TreeView from '@material-ui/lab/TreeView';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import LockIcon from '@material-ui/icons/Lock';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
-import Zoom from '@material-ui/core/Zoom';
+import makeStyles from '@mui/styles/makeStyles';
+import TreeItem from '@mui/lab/TreeItem';
+import TreeView from '@mui/lab/TreeView';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LockIcon from '@mui/icons-material/Lock';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import Zoom from '@mui/material/Zoom';
 
 import { FormattedMessage } from 'react-intl';
 

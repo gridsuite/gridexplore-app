@@ -7,10 +7,10 @@
 
 import React, { useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Grid from '@material-ui/core/Grid';
-import { Chip, InputAdornment, MenuItem, Select } from '@material-ui/core';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Grid from '@mui/material/Grid';
+import { Chip, InputAdornment, MenuItem, Select } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { useParameterState } from './parameters-dialog';
 import { getComputedLanguage } from '../../utils/language';

@@ -15,9 +15,14 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import App from './app';
 import { store } from '../redux/store';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+import {
+    createTheme,
+    ThemeProvider,
+    StyledEngineProvider,
+    adaptV4Theme,
+} from '@mui/material/styles';
 import { SnackbarProvider } from '@gridsuite/commons-ui';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import CssBaseline from '@mui/material/CssBaseline';
 
 let container = null;
 beforeEach(() => {
@@ -39,12 +44,16 @@ it('renders', async () => {
             <IntlProvider locale="en">
                 <BrowserRouter>
                     <Provider store={store}>
-                        <ThemeProvider theme={createTheme({})}>
-                            <SnackbarProvider hideIconVariant={false}>
-                                <CssBaseline />
-                                <App />
-                            </SnackbarProvider>
-                        </ThemeProvider>
+                        <StyledEngineProvider injectFirst>
+                            <ThemeProvider
+                                theme={createTheme(adaptV4Theme({}))}
+                            >
+                                <SnackbarProvider hideIconVariant={false}>
+                                    <CssBaseline />
+                                    <App />
+                                </SnackbarProvider>
+                            </ThemeProvider>
+                        </StyledEngineProvider>
                     </Provider>
                 </BrowserRouter>
             </IntlProvider>,
