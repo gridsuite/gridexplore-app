@@ -360,7 +360,6 @@ export const FilterTypeSelection = ({ type, onChange, disabled }) => {
                     value={type === null ? '' : type}
                     onChange={(e) => onChange(e.target.value)}
                     disabled={disabled}
-                    variant={'outlined'}
                 >
                     {Object.entries(equipmentsDefinition).map(
                         ([key, value]) => (

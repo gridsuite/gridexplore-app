@@ -23,7 +23,6 @@ export const StringInput = ({ initialValue, onChange, disabled }) => {
             }}
             disabled={disabled}
             defaultValue={initialValue}
-            variant={'outlined'}
         />
     );
 };
@@ -54,7 +53,7 @@ export const CountriesSelection = ({ initialValue, onChange, disabled }) => {
             onChange={(oldVal, newVal) => onChange(newVal)}
             options={Object.keys(countriesList.object())}
             getOptionLabel={(code) => countriesList.get(code)}
-            renderInput={(props) => <TextField {...props} variant="outlined" />}
+            renderInput={(props) => <TextField {...props} />}
             renderTags={(val, getTagsProps) =>
                 val.map((code, index) => (
                     <Chip
@@ -100,7 +99,6 @@ export const RangeSelection = ({ initialValue, onChange, disabled }) => {
                     value={equalityType}
                     onChange={onSetEqualityType}
                     disabled={disabled}
-                    variant={'outlined'}
                 >
                     {Object.entries(RangeType).map(([key, value]) => (
                         <MenuItem key={key} value={value}>
@@ -118,7 +116,6 @@ export const RangeSelection = ({ initialValue, onChange, disabled }) => {
                     defaultValue={range.current.value1}
                     inputMode={'numeric'}
                     type="number"
-                    variant={'outlined'}
                     placeholder={
                         equalityType === RangeType.range
                             ? intl.formatMessage({ id: 'Min' })
@@ -147,7 +144,6 @@ export const RangeSelection = ({ initialValue, onChange, disabled }) => {
                         defaultValue={range.current.value2}
                         inputMode={'numeric'}
                         type="number"
-                        variant={'outlined'}
                         placeholder={
                             equalityType === RangeType.range
                                 ? intl.formatMessage({ id: 'Max' })

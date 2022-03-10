@@ -88,11 +88,12 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, title }) => {
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <FormControl className={classes.formControl}>
+                <FormControl className={classes.formControl} variant="standard">
                     <InputLabel id="select-format-label">
                         <FormattedMessage id="exportFormat" />
                     </InputLabel>
                     <Select
+                        variant="standard"
                         labelId="select-format-label"
                         id="controlled-select-format"
                         onChange={handleChange}

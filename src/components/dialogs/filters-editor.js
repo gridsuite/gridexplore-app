@@ -155,7 +155,6 @@ const FiltersEditor = ({ filters, onChange }) => {
                 <Grid item xs={12} sm={9}>
                     <CustomTextField
                         onChange={handleEquipmentID}
-                        variant="outlined"
                         value={filters.equipmentID}
                     />
                 </Grid>
@@ -170,7 +169,6 @@ const FiltersEditor = ({ filters, onChange }) => {
                 <Grid item xs={12} sm={9}>
                     <CustomTextField
                         onChange={handleEquipmentName}
-                        variant="outlined"
                         value={filters.equipmentName}
                     />
                 </Grid>
@@ -183,8 +181,12 @@ const FiltersEditor = ({ filters, onChange }) => {
                     </h3>
                 </Grid>
                 <Grid item xs={3} sm={1}>
-                    <FormControl className={classes.formControl}>
+                    <FormControl
+                        className={classes.formControl}
+                        variant="standard"
+                    >
                         <Select
+                            variant="standard"
                             native
                             value={filters.nominalVoltageOperator}
                             onChange={handleOperator}
@@ -200,7 +202,6 @@ const FiltersEditor = ({ filters, onChange }) => {
                 <Grid item xs={12} sm={9}>
                     <CustomTextField
                         onChange={handleNominalVoltage}
-                        variant="outlined"
                         value={
                             filters.nominalVoltage === -1
                                 ? ''
@@ -218,7 +219,7 @@ const FiltersEditor = ({ filters, onChange }) => {
                     </h3>
                 </Grid>
                 <Grid item xs={12} sm={9}>
-                    <FormControl>
+                    <FormControl variant="standard">
                         <CustomNativeSelect
                             id="demo-customized-select-native"
                             value={filters.equipmentType}
@@ -253,9 +254,7 @@ const FiltersEditor = ({ filters, onChange }) => {
                         options={Object.keys(countriesList.object())}
                         style={BootstrapInput.input}
                         getOptionLabel={(code) => countriesList.get(code)}
-                        renderInput={(props) => (
-                            <TextField {...props} variant="outlined" />
-                        )}
+                        renderInput={(props) => <TextField {...props} />}
                         renderTags={(val, getTagsProps) =>
                             val.map((code, index) => (
                                 <Chip

@@ -82,11 +82,12 @@ const SelectCase = () => {
 
     return (
         <div>
-            <FormControl fullWidth>
+            <FormControl fullWidth variant="standard">
                 <InputLabel id="demo-controlled-open-select-label">
                     <FormattedMessage id="caseName" />
                 </InputLabel>
                 <Select
+                    variant="standard"
                     labelId="demo-controlled-open-select-label"
                     id="demo-controlled-open-select"
                     open={openSelectCase}
@@ -343,6 +344,7 @@ export const CreateStudyDialog = ({ open, onClose }) => {
                     />
                     <div>
                         <TextField
+                            variant="standard"
                             onChange={(e) => handleStudyNameChanges(e)}
                             autoFocus
                             margin="dense"
@@ -359,6 +361,7 @@ export const CreateStudyDialog = ({ open, onClose }) => {
                         {renderStudyNameStatus()}
                     </div>
                     <TextField
+                        variant="standard"
                         onChange={(e) => handleStudyDescriptionChanges(e)}
                         margin="dense"
                         value={studyDescription}

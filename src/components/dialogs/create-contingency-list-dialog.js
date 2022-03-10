@@ -217,6 +217,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     </DialogContentText>
                     <div>
                         <TextField
+                            variant="standard"
                             onChange={(e) =>
                                 handleContingencyNameChanges(e.target.value)
                             }
@@ -235,6 +236,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                         {renderContingencyNameStatus()}
                     </div>
                     <TextField
+                        variant="standard"
                         onChange={(e) =>
                             handleContingencyListDescriptionChanges(e)
                         }
