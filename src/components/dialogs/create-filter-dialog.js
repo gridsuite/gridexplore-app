@@ -59,7 +59,6 @@ const CustomDialogTitle = (props) => {
                     aria-label="close"
                     className={classes.closeButton}
                     onClick={onClose}
-                    size="large"
                 >
                     <CloseIcon />
                 </IconButton>
@@ -249,7 +248,6 @@ const CreateFilterDialog = ({
                 <Grid container direction="row" spacing={1}>
                     <Grid item xs={12} sm={8}>
                         <TextField
-                            variant="standard"
                             autoFocus
                             margin="dense"
                             type="text"

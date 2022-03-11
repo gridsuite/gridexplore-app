@@ -42,7 +42,6 @@ const CommonToolbar = (props) => {
                     <IconButton
                         className={classes.icon}
                         onClick={() => callback()}
-                        size="large"
                     >
                         {icon}
                     </IconButton>

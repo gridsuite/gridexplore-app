@@ -100,7 +100,6 @@ export const CreateDirectoryDialog = ({
                     </Grid>
                     <Grid item xs={7}>
                         <TextField
-                            variant="standard"
                             autoFocus
                             value={elementName}
                             required={true}
@@ -110,10 +109,7 @@ export const CreateDirectoryDialog = ({
                 </Grid>
                 <Grid container spacing={3} className={classes.root}>
                     <Grid item xs={12}>
-                        <FormControl
-                            className={classes.formControl}
-                            variant="standard"
-                        >
+                        <FormControl className={classes.formControl}>
                             <RadioGroup
                                 aria-label=""
                                 name="DirectoryAccessRights"

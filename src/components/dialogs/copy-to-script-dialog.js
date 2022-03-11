@@ -69,7 +69,6 @@ const CopyToScriptDialog = ({
                     <FormattedMessage id="newNameList" />
                 </InputLabel>
                 <TextField
-                    variant="standard"
                     autoFocus
                     value={newNameValue}
                     required={true}

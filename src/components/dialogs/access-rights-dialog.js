@@ -85,7 +85,7 @@ const AccessRightsDialog = ({
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <FormControl className={classes.formControl} variant="standard">
+                <FormControl className={classes.formControl}>
                     <RadioGroup
                         aria-label=""
                         name="elementAccessRights"

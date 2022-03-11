@@ -78,7 +78,6 @@ const RenameDialog = ({
             <DialogContent>
                 <InputLabel htmlFor="newName">{message}</InputLabel>
                 <TextField
-                    variant="standard"
                     autoFocus
                     value={newNameValue}
                     required={true}

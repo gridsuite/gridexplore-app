@@ -181,12 +181,8 @@ const FiltersEditor = ({ filters, onChange }) => {
                     </h3>
                 </Grid>
                 <Grid item xs={3} sm={1}>
-                    <FormControl
-                        className={classes.formControl}
-                        variant="standard"
-                    >
+                    <FormControl className={classes.formControl}>
                         <Select
-                            variant="standard"
                             native
                             value={filters.nominalVoltageOperator}
                             onChange={handleOperator}
@@ -219,7 +215,7 @@ const FiltersEditor = ({ filters, onChange }) => {
                     </h3>
                 </Grid>
                 <Grid item xs={12} sm={9}>
-                    <FormControl variant="standard">
+                    <FormControl>
                         <CustomNativeSelect
                             id="demo-customized-select-native"
                             value={filters.equipmentType}
