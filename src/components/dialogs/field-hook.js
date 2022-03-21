@@ -88,17 +88,7 @@ export const useFileValue = () => {
 
 const makeAdornmentEndIcon = (content) => {
     return {
-        endAdornment: (
-            <InputAdornment
-                position="end"
-                // hack to circumviate centering of adornment
-                // when TextField has variant 'filled' with 'end' position
-                // : classes.adornRightOther
-                //className={classes.adornRightFilled}
-            >
-                {content}
-            </InputAdornment>
-        ),
+        endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
     };
 };
 export const useNameField = ({

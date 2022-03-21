@@ -71,18 +71,6 @@ export function CreateCaseDialog({ onClose, open }) {
         onClose();
     };
 
-    const DisplayError = () => {
-        return (
-            <>
-                {nameError && <Alert severity="error">{nameError}</Alert>}
-                {!file && (
-                    <Alert severity="error">
-                        <FormattedMessage id={'uploadErrorMsg'} />
-                    </Alert>
-                )}
-            </>
-        );
-    };
     return (
         <Dialog
             fullWidth={true}
@@ -101,7 +89,7 @@ export function CreateCaseDialog({ onClose, open }) {
                 <div>{nameField}</div>
                 {DescriptionField}
                 {FileField}
-                {!validate() && <DisplayError />}
+                {nameError && <Alert severity="error">{nameError}</Alert>}
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => handleCloseDialog()} variant="text">

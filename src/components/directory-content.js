@@ -359,7 +359,7 @@ const DirectoryContent = () => {
                 return <FilterListIcon className={classes.icon} />;
             }
         } else if (objectType === ElementType.CASE) {
-            return <PhotoIcon />;
+            return <PhotoIcon className={classes.icon} />;
         }
     }
 

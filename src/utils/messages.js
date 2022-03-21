@@ -53,12 +53,12 @@ export const useSnackbarMessage = () => {
     const { enqueueSnackbar } = useSnackbar();
     let message;
     message = useCallback(
-        (msg, headerMessage, headerValues) =>
+        (msg, headerMessageId, headerValues) =>
             displayErrorMessageWithSnackbar({
                 errorMessage: msg,
                 enqueueSnackbar: enqueueSnackbar,
                 headerMessage: {
-                    headerMessageId: headerMessage,
+                    headerMessageId: headerMessageId,
                     intlRef: intlRef,
                     headerMessageValues: headerValues,
                 },
