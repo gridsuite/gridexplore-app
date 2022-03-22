@@ -87,6 +87,7 @@ const DirectoryBreadcrumbs = () => {
                         key={dir.elementUuid}
                         href="/"
                         onClick={(event) => handleSelect(event, dir)}
+                        underline="hover"
                     >
                         {index === 0 ? (
                             <FolderOpenIcon className={classes.icon} />
