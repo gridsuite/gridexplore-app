@@ -309,7 +309,6 @@ const SingleFilter = ({ filter, definition, onChange, sequence }) => {
             >
                 <Switch
                     checked={enabled}
-                    color="primary"
                     inputProps={{ 'aria-label': 'primary checkbox' }}
                     onChange={() => {
                         toggleFilter();

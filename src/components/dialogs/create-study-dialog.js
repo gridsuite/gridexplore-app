@@ -333,7 +333,6 @@ export const CreateStudyDialog = ({ open, onClose }) => {
                                 checked={caseExist}
                                 onChange={(e) => handleChangeSwitch(e)}
                                 value="checked"
-                                color="primary"
                                 inputProps={{
                                     'aria-label': 'primary checkbox',
                                 }}
