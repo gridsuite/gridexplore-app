@@ -438,8 +438,6 @@ const DirectoryContent = () => {
                 className={classes.checkboxes}
             >
                 <Checkbox
-                    color={'primary'}
-                    // set the color of checkbox (and check if not indeterminate)
                     checked={selectedUuids.size > 0}
                     indeterminate={
                         selectedUuids.size !== 0 &&
@@ -460,10 +458,7 @@ const DirectoryContent = () => {
                 }}
                 className={classes.checkboxes}
             >
-                <Checkbox
-                    color={'primary'}
-                    checked={selectedUuids.has(elementUuid)}
-                />
+                <Checkbox checked={selectedUuids.has(elementUuid)} />
             </div>
         );
     }
