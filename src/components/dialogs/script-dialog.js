@@ -195,7 +195,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                 </div>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCancel} variant="text">
+                <Button onClick={handleCancel}>
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button

@@ -149,7 +149,6 @@ const ParametersDialog = ({ showParameters, hideParameters }) => {
                         <Button
                             onClick={hideParameters}
                             variant="contained"
-                            color="primary"
                             className={classes.button}
                         >
                             <FormattedMessage id="close" />

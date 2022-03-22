@@ -554,7 +554,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCancel} variant="text">
+                <Button onClick={handleCancel}>
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button

@@ -148,7 +148,7 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
                 </div>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCancel} variant="text">
+                <Button onClick={handleCancel}>
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button

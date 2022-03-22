@@ -146,7 +146,7 @@ const DeleteDialog = ({
                 <Button onClick={handleClose} variant="outlined">
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleClick} variant="text">
+                <Button onClick={handleClick}>
                     <FormattedMessage id="delete" />
                 </Button>
             </DialogActions>

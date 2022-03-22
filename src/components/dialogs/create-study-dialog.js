@@ -373,7 +373,7 @@ export const CreateStudyDialog = ({ open, onClose }) => {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => handleCloseDialog()} variant="text">
+                    <Button onClick={() => handleCloseDialog()}>
                         <FormattedMessage id="cancel" />
                     </Button>
                     <Button
