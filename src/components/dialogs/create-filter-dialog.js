@@ -59,6 +59,7 @@ const CustomDialogTitle = (props) => {
                     aria-label="close"
                     className={classes.closeButton}
                     onClick={onClose}
+                    size="large"
                 >
                     <CloseIcon />
                 </IconButton>
