@@ -36,8 +36,9 @@ export function CreateCaseDialog({ onClose, open }) {
 
     const [description, DescriptionField] = useTextValue({
         label: 'CaseDescriptionOptional',
+        triggerReset,
     });
-    const [file, FileField] = useFileValue({ label: 'Case' });
+    const [file, FileField] = useFileValue({ label: 'Case', triggerReset });
 
     function validate() {
         return file && nameOk;

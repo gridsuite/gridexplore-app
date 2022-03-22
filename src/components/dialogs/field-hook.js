@@ -16,9 +16,10 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { UploadCase } from './upload-case';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import { removeSelectedFile } from '../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -76,10 +77,14 @@ export const useTextValue = ({
     return [value, field];
 };
 
-export const useFileValue = () => {
+export const useFileValue = ({ triggerReset }) => {
     const selectedFile = useSelector((state) => state.selectedFile);
+    const dispatch = useDispatch();
 
     const field = <UploadCase />;
+    useEffect(() => {
+        dispatch(removeSelectedFile());
+    }, [dispatch, triggerReset]);
     return [selectedFile, field];
 };
 
