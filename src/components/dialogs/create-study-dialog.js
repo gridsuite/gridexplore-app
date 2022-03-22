@@ -339,7 +339,7 @@ export const CreateStudyDialog = ({ open, onClose }) => {
                                 }}
                             />
                         }
-                        label=<FormattedMessage id="caseExist" />
+                        label={<FormattedMessage id="caseExist" />}
                     />
                     <div>
                         <TextField
@@ -354,7 +354,7 @@ export const CreateStudyDialog = ({ open, onClose }) => {
                                 !loadingCheckStudyName
                             }
                             style={{ width: '90%' }}
-                            label=<FormattedMessage id="studyName" />
+                            label={<FormattedMessage id="studyName" />}
                         />
                         {renderStudyNameStatus()}
                     </div>
@@ -364,7 +364,7 @@ export const CreateStudyDialog = ({ open, onClose }) => {
                         value={studyDescription}
                         type="text"
                         style={{ width: '90%' }}
-                        label=<FormattedMessage id="studyDescription" />
+                        label={<FormattedMessage id="studyDescription" />}
                     />
                     {caseExist && <SelectCase />}
                     {!caseExist && <UploadCase />}

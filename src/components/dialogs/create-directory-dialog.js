@@ -120,12 +120,12 @@ export const CreateDirectoryDialog = ({
                                 <FormControlLabel
                                     value="false"
                                     control={<Radio />}
-                                    label=<FormattedMessage id="public" />
+                                    label={<FormattedMessage id="public" />}
                                 />
                                 <FormControlLabel
                                     value="true"
                                     control={<Radio />}
-                                    label=<FormattedMessage id="private" />
+                                    label={<FormattedMessage id="private" />}
                                 />
                             </RadioGroup>
                         </FormControl>
