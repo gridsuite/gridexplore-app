@@ -32,7 +32,6 @@ export const useTextValue = ({
     id = label,
     defaultValue = '',
     adornment,
-    autoFocus = false,
     triggerReset,
     ...formProps
 }) => {
@@ -55,7 +54,6 @@ export const useTextValue = ({
                 value={value}
                 style={{ width: '100%' }}
                 onChange={handleChangeValue}
-                autoFocus={autoFocus}
                 FormHelperTextProps={{
                     className: classes.helperText,
                 }}
@@ -71,7 +69,6 @@ export const useTextValue = ({
         classes.helperText,
         formProps,
         adornment,
-        autoFocus,
     ]);
 
     useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
