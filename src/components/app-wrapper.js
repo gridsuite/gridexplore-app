@@ -11,7 +11,6 @@ import {
     createTheme,
     ThemeProvider,
     StyledEngineProvider,
-    adaptV4Theme,
 } from '@mui/material/styles';
 import {
     LIGHT_THEME,
@@ -32,71 +31,65 @@ import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
 
-const lightTheme = createTheme(
-    adaptV4Theme({
-        palette: {
-            mode: 'light',
-        },
-        arrow: {
-            fill: '#212121',
-            stroke: '#212121',
-        },
-        arrow_hover: {
-            fill: 'white',
-            stroke: 'white',
-        },
-        circle: {
-            stroke: 'white',
-            fill: 'white',
-        },
-        circle_hover: {
-            stroke: '#212121',
-            fill: '#212121',
-        },
-        link: {
-            color: 'black',
-        },
-        row: {
-            primary: '#E8E8E8',
-            secondary: '#F4F4F4',
-            hover: '#8E9C9B',
-        },
-        mapboxStyle: 'mapbox://styles/mapbox/light-v9',
-    })
-);
+const lightTheme = createTheme({
+    palette: {
+        mode: 'light',
+    },
+    arrow: {
+        fill: '#212121',
+        stroke: '#212121',
+    },
+    arrow_hover: {
+        fill: 'white',
+        stroke: 'white',
+    },
+    circle: {
+        stroke: 'white',
+        fill: 'white',
+    },
+    circle_hover: {
+        stroke: '#212121',
+        fill: '#212121',
+    },
+    link: {
+        color: 'black',
+    },
+    row: {
+        primary: '#E8E8E8',
+        secondary: '#F4F4F4',
+        hover: '#8E9C9B',
+    },
+});
 
-const darkTheme = createTheme(
-    adaptV4Theme({
-        palette: {
-            mode: 'dark',
-        },
-        arrow: {
-            fill: 'white',
-            stroke: 'white',
-        },
-        arrow_hover: {
-            fill: '#424242',
-            stroke: '#424242',
-        },
-        circle: {
-            stroke: '#424242',
-            fill: '#424242',
-        },
-        circle_hover: {
-            stroke: 'white',
-            fill: 'white',
-        },
-        link: {
-            color: 'white',
-        },
-        row: {
-            primary: '#272727',
-            secondary: '#323232',
-            hover: '#545C5B',
-        },
-        mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
-    })
-);
+const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+    },
+    arrow: {
+        fill: 'white',
+        stroke: 'white',
+    },
+    arrow_hover: {
+        fill: '#424242',
+        stroke: '#424242',
+    },
+    circle: {
+        stroke: '#424242',
+        fill: '#424242',
+    },
+    circle_hover: {
+        stroke: 'white',
+        fill: 'white',
+    },
+    link: {
+        color: 'white',
+    },
+    row: {
+        primary: '#272727',
+        secondary: '#323232',
+        hover: '#545C5B',
+    },
+});
 
 const getMuiTheme = (theme) => {
     if (theme === LIGHT_THEME) {
