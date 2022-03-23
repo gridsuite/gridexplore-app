@@ -19,7 +19,6 @@ import {
     createTheme,
     ThemeProvider,
     StyledEngineProvider,
-    adaptV4Theme,
 } from '@mui/material/styles';
 import { SnackbarProvider } from '@gridsuite/commons-ui';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -45,9 +44,7 @@ it('renders', async () => {
                 <BrowserRouter>
                     <Provider store={store}>
                         <StyledEngineProvider injectFirst>
-                            <ThemeProvider
-                                theme={createTheme(adaptV4Theme({}))}
-                            >
+                            <ThemeProvider theme={createTheme()}>
                                 <SnackbarProvider hideIconVariant={false}>
                                     <CssBaseline />
                                     <App />
