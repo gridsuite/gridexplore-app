@@ -25,17 +25,16 @@ import FormControl from '@material-ui/core/FormControl';
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { createStudy, fetchCases, elementExists } from '../../utils/rest-api';
+import { createStudy, elementExists, fetchCases } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
     addUploadingStudy,
     loadCasesSuccess,
-    removeUploadingStudy,
     removeSelectedFile,
+    removeUploadingStudy,
     selectCase,
-    selectFile,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
@@ -45,6 +44,7 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { ElementType } from '../../utils/elementType';
+import { UploadCase } from './upload-case';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -109,50 +109,6 @@ const SelectCase = () => {
                 </Select>
             </FormControl>
         </div>
-    );
-};
-
-const UploadCase = () => {
-    const dispatch = useDispatch();
-    const selectedFile = useSelector((state) => state.selectedFile);
-
-    const handleFileUpload = (e) => {
-        e.preventDefault();
-        let files = e.target.files;
-        dispatch(selectFile(files[0]));
-    };
-
-    return (
-        <table>
-            <tbody>
-                <tr>
-                    <th>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            component="label"
-                        >
-                            <FormattedMessage id="uploadCase" />
-                            <input
-                                type="file"
-                                name="file"
-                                onChange={(e) => handleFileUpload(e)}
-                                style={{ display: 'none' }}
-                            />
-                        </Button>
-                    </th>
-                    <th>
-                        <p>
-                            {selectedFile === null ? (
-                                <FormattedMessage id="uploadMessage" />
-                            ) : (
-                                selectedFile.name
-                            )}
-                        </p>
-                    </th>
-                </tr>
-            </tbody>
-        </table>
     );
 };
 
