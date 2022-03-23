@@ -7,7 +7,7 @@
 
 import { useDispatch, useSelector } from 'react-redux';
 import { selectFile } from '../../redux/actions';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
 

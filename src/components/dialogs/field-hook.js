@@ -14,11 +14,11 @@ import React, {
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists } from '../../utils/rest-api';
-import { CircularProgress, InputAdornment, TextField } from '@material-ui/core';
-import CheckIcon from '@material-ui/icons/Check';
+import { CircularProgress, InputAdornment, TextField } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
 import { useDispatch, useSelector } from 'react-redux';
 import { UploadCase } from './upload-case';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { removeSelectedFile } from '../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({

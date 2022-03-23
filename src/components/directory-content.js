@@ -44,7 +44,7 @@ import GenericFilterDialog from './dialogs/generic-filter-dialog';
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
-import PhotoIcon from '@material-ui/icons/Photo';
+import PhotoIcon from '@mui/icons-material/Photo';
 
 const circularProgressSize = '70px';
 
