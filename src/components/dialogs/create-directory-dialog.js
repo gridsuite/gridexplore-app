@@ -5,23 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage } from 'react-intl';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
-import Alert from '@material-ui/lab/Alert';
-import InputLabel from '@material-ui/core/InputLabel';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import FormControl from '@material-ui/core/FormControl';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Radio from '@material-ui/core/Radio';
+import Alert from '@mui/material/Alert';
+import InputLabel from '@mui/material/InputLabel';
+import TextField from '@mui/material/TextField';
+import Grid from '@mui/material/Grid';
+import makeStyles from '@mui/styles/makeStyles';
+import FormControl from '@mui/material/FormControl';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -120,12 +120,12 @@ export const CreateDirectoryDialog = ({
                                 <FormControlLabel
                                     value="false"
                                     control={<Radio />}
-                                    label=<FormattedMessage id="public" />
+                                    label={<FormattedMessage id="public" />}
                                 />
                                 <FormControlLabel
                                     value="true"
                                     control={<Radio />}
-                                    label=<FormattedMessage id="private" />
+                                    label={<FormattedMessage id="private" />}
                                 />
                             </RadioGroup>
                         </FormControl>
@@ -135,7 +135,7 @@ export const CreateDirectoryDialog = ({
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} variant="text">
+                <Button onClick={handleClose}>
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button onClick={handleClick} variant="outlined">

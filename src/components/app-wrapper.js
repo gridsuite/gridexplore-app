@@ -7,7 +7,11 @@
 
 import App from './app';
 import React from 'react';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+import {
+    createTheme,
+    ThemeProvider,
+    StyledEngineProvider,
+} from '@mui/material/styles';
 import {
     LIGHT_THEME,
     login_en,
@@ -24,12 +28,12 @@ import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import { store } from '../redux/store';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
 
 const lightTheme = createTheme({
     palette: {
-        type: 'light',
+        mode: 'light',
     },
     arrow: {
         fill: '#212121',
@@ -55,12 +59,11 @@ const lightTheme = createTheme({
         secondary: '#F4F4F4',
         hover: '#8E9C9B',
     },
-    mapboxStyle: 'mapbox://styles/mapbox/light-v9',
 });
 
 const darkTheme = createTheme({
     palette: {
-        type: 'dark',
+        mode: 'dark',
     },
     arrow: {
         fill: 'white',
@@ -86,7 +89,6 @@ const darkTheme = createTheme({
         secondary: '#323232',
         hover: '#545C5B',
     },
-    mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
 });
 
 const getMuiTheme = (theme) => {
@@ -115,12 +117,14 @@ const AppWrapperWithRedux = () => {
             messages={messages[computedLanguage]}
         >
             <BrowserRouter basename={basename}>
-                <ThemeProvider theme={getMuiTheme(theme)}>
-                    <SnackbarProvider hideIconVariant={false}>
-                        <CssBaseline />
-                        <App />
-                    </SnackbarProvider>
-                </ThemeProvider>
+                <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={getMuiTheme(theme)}>
+                        <SnackbarProvider hideIconVariant={false}>
+                            <CssBaseline />
+                            <App />
+                        </SnackbarProvider>
+                    </ThemeProvider>
+                </StyledEngineProvider>
             </BrowserRouter>
         </IntlProvider>
     );

@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import NativeSelect from '@material-ui/core/NativeSelect';
-import InputBase from '@material-ui/core/InputBase';
-import withStyles from '@material-ui/core/styles/withStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import NativeSelect from '@mui/material/NativeSelect';
+import InputBase from '@mui/material/InputBase';
 import { EquipmentTypes } from '../../utils/equipment-types';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Chip } from '@material-ui/core';
+import Autocomplete from '@mui/material/Autocomplete';
+import { Chip } from '@mui/material';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
 
 const CustomNativeSelect = withStyles((theme) => ({
     select: {
-        color: theme.palette.type === 'light' ? '#000 !important' : '#fff',
+        color: theme.palette.mode === 'light' ? '#000 !important' : '#fff',
         backgroundColor: 'transparent !important',
     },
 }))(NativeSelect);
@@ -155,7 +155,6 @@ const FiltersEditor = ({ filters, onChange }) => {
                 <Grid item xs={12} sm={9}>
                     <CustomTextField
                         onChange={handleEquipmentID}
-                        variant="outlined"
                         value={filters.equipmentID}
                     />
                 </Grid>
@@ -170,7 +169,6 @@ const FiltersEditor = ({ filters, onChange }) => {
                 <Grid item xs={12} sm={9}>
                     <CustomTextField
                         onChange={handleEquipmentName}
-                        variant="outlined"
                         value={filters.equipmentName}
                     />
                 </Grid>
@@ -200,7 +198,6 @@ const FiltersEditor = ({ filters, onChange }) => {
                 <Grid item xs={12} sm={9}>
                     <CustomTextField
                         onChange={handleNominalVoltage}
-                        variant="outlined"
                         value={
                             filters.nominalVoltage === -1
                                 ? ''
@@ -253,9 +250,7 @@ const FiltersEditor = ({ filters, onChange }) => {
                         options={Object.keys(countriesList.object())}
                         style={BootstrapInput.input}
                         getOptionLabel={(code) => countriesList.get(code)}
-                        renderInput={(props) => (
-                            <TextField {...props} variant="outlined" />
-                        )}
+                        renderInput={(props) => <TextField {...props} />}
                         renderTags={(val, getTagsProps) =>
                             val.map((code, index) => (
                                 <Chip

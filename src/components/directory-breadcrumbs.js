@@ -10,11 +10,12 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory } from '../redux/actions';
 
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
-import { emphasize, makeStyles } from '@material-ui/core/styles/';
-import FolderOpenIcon from '@material-ui/icons/FolderOpen';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import { emphasize } from '@mui/material/styles/';
+import makeStyles from '@mui/styles/makeStyles';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -86,6 +87,7 @@ const DirectoryBreadcrumbs = () => {
                         key={dir.elementUuid}
                         href="/"
                         onClick={(event) => handleSelect(event, dir)}
+                        underline="hover"
                     >
                         {index === 0 ? (
                             <FolderOpenIcon className={classes.icon} />

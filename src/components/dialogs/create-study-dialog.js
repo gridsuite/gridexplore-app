@@ -7,23 +7,23 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import CheckIcon from '@material-ui/icons/Check';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Alert from '@material-ui/lab/Alert';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import makeStyles from '@mui/styles/makeStyles';
+import CheckIcon from '@mui/icons-material/Check';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { createStudy, elementExists, fetchCases } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -333,13 +333,12 @@ export const CreateStudyDialog = ({ open, onClose }) => {
                                 checked={caseExist}
                                 onChange={(e) => handleChangeSwitch(e)}
                                 value="checked"
-                                color="primary"
                                 inputProps={{
                                     'aria-label': 'primary checkbox',
                                 }}
                             />
                         }
-                        label=<FormattedMessage id="caseExist" />
+                        label={<FormattedMessage id="caseExist" />}
                     />
                     <div>
                         <TextField
@@ -354,7 +353,7 @@ export const CreateStudyDialog = ({ open, onClose }) => {
                                 !loadingCheckStudyName
                             }
                             style={{ width: '90%' }}
-                            label=<FormattedMessage id="studyName" />
+                            label={<FormattedMessage id="studyName" />}
                         />
                         {renderStudyNameStatus()}
                     </div>
@@ -364,7 +363,7 @@ export const CreateStudyDialog = ({ open, onClose }) => {
                         value={studyDescription}
                         type="text"
                         style={{ width: '90%' }}
-                        label=<FormattedMessage id="studyDescription" />
+                        label={<FormattedMessage id="studyDescription" />}
                     />
                     {caseExist && <SelectCase />}
                     {!caseExist && <UploadCase />}
@@ -373,7 +372,7 @@ export const CreateStudyDialog = ({ open, onClose }) => {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => handleCloseDialog()} variant="text">
+                    <Button onClick={() => handleCloseDialog()}>
                         <FormattedMessage id="cancel" />
                     </Button>
                     <Button

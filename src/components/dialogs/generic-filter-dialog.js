@@ -7,16 +7,16 @@
 
 import { FormattedMessage } from 'react-intl';
 import React, { useEffect, useRef, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import { Divider, MenuItem, Select, Switch } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import Grid from '@mui/material/Grid';
+import { Divider, MenuItem, Select, Switch } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { filteredTypes } from './filters';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
 import { getFilterById, saveFilter } from '../../utils/rest-api';
 import { displayErrorMessageWithSnackbar } from '../../utils/messages';
 import { FilterType } from '../../utils/elementType';
@@ -309,7 +309,6 @@ const SingleFilter = ({ filter, definition, onChange, sequence }) => {
             >
                 <Switch
                     checked={enabled}
-                    color="primary"
                     inputProps={{ 'aria-label': 'primary checkbox' }}
                     onChange={() => {
                         toggleFilter();
@@ -360,7 +359,6 @@ export const FilterTypeSelection = ({ type, onChange, disabled }) => {
                     value={type === null ? '' : type}
                     onChange={(e) => onChange(e.target.value)}
                     disabled={disabled}
-                    variant={'outlined'}
                 >
                     {Object.entries(equipmentsDefinition).map(
                         ([key, value]) => (
@@ -555,7 +553,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCancel} variant="text">
+                <Button onClick={handleCancel}>
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button

@@ -5,19 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useEffect } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import FormControl from '@material-ui/core/FormControl';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Radio from '@material-ui/core/Radio';
-import Alert from '@material-ui/lab/Alert';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import FormControl from '@mui/material/FormControl';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 
 /**
@@ -96,12 +96,12 @@ const AccessRightsDialog = ({
                         <FormControlLabel
                             value="false"
                             control={<Radio />}
-                            label=<FormattedMessage id="public" />
+                            label={<FormattedMessage id="public" />}
                         />
                         <FormControlLabel
                             value="true"
                             control={<Radio />}
-                            label=<FormattedMessage id="private" />
+                            label={<FormattedMessage id="private" />}
                         />
                     </RadioGroup>
                     {error !== '' && <Alert severity="error">{error}</Alert>}
@@ -119,7 +119,7 @@ const AccessRightsDialog = ({
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} variant="text">
+                <Button onClick={handleClose}>
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button onClick={handleClick} variant="outlined">

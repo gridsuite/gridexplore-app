@@ -7,28 +7,28 @@
 
 import React, { useState } from 'react';
 
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Alert from '@material-ui/lab/Alert';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Alert from '@mui/material/Alert';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { createContingencyList, elementExists } from '../../utils/rest-api';
 
 import { useSelector } from 'react-redux';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import Radio from '@mui/material/Radio';
 import PropTypes from 'prop-types';
 import { ContingencyListType, ElementType } from '../../utils/elementType';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles';
-import CheckIcon from '@material-ui/icons/Check';
+import CircularProgress from '@mui/material/CircularProgress';
+import makeStyles from '@mui/styles/makeStyles';
+import CheckIcon from '@mui/icons-material/Check';
 
 const useStyles = makeStyles(() => ({}));
 
@@ -230,7 +230,9 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                             }
                             type="text"
                             style={{ width: '90%' }}
-                            label=<FormattedMessage id="contingencyListName" />
+                            label={
+                                <FormattedMessage id="contingencyListName" />
+                            }
                         />
                         {renderContingencyNameStatus()}
                     </div>
@@ -242,7 +244,9 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                         value={contingencyListDescription}
                         type="text"
                         style={{ width: '90%' }}
-                        label=<FormattedMessage id="contingencyListDescription" />
+                        label={
+                            <FormattedMessage id="contingencyListDescription" />
+                        }
                     />
 
                     <RadioGroup
@@ -256,12 +260,12 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                         <FormControlLabel
                             value="SCRIPT"
                             control={<Radio />}
-                            label=<FormattedMessage id="SCRIPT" />
+                            label={<FormattedMessage id="SCRIPT" />}
                         />
                         <FormControlLabel
                             value="FORM"
                             control={<Radio />}
-                            label=<FormattedMessage id="FORM" />
+                            label={<FormattedMessage id="FORM" />}
                         />
                     </RadioGroup>
                     {createContingencyListErr !== '' && (
@@ -271,7 +275,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => handleCloseDialog()} variant="text">
+                    <Button onClick={() => handleCloseDialog()}>
                         <FormattedMessage id="cancel" />
                     </Button>
                     <Button

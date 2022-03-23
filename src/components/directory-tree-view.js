@@ -7,20 +7,20 @@
 
 import React, { useCallback, useEffect, useRef } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import TreeItem from '@material-ui/lab/TreeItem';
-import TreeView from '@material-ui/lab/TreeView';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import LockIcon from '@material-ui/icons/Lock';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
-import Zoom from '@material-ui/core/Zoom';
+import makeStyles from '@mui/styles/makeStyles';
+import TreeView from '@mui/lab/TreeView';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LockIcon from '@mui/icons-material/Lock';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import Zoom from '@mui/material/Zoom';
 
 import { FormattedMessage } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory } from '../redux/actions';
+import CustomTreeItem from './custom-tree-item';
 
 const useStyles = makeStyles((theme) => ({
     treeViewRoot: {
@@ -31,23 +31,27 @@ const useStyles = makeStyles((theme) => ({
             borderRadius: theme.spacing(2),
             backgroundColor: theme.row.primary,
         },
-        '&:hover > $treeItemContent $treeItemLabel:hover': {
+        '&:hover': {
             borderRadius: theme.spacing(2),
             backgroundColor: theme.row.primary,
         },
-        '&$treeItemSelected > $treeItemContent $treeItemLabel:hover, &$treeItemSelected > $treeItemContent $treeItemLabel, &$treeItemSelected:focus > $treeItemContent $treeItemLabel':
-            {
-                borderRadius: theme.spacing(2),
-                backgroundColor: theme.row.hover,
-                fontWeight: 'bold',
-            },
     },
-    treeItemSelected: {}, // keep this!
+    treeItemSelected: {
+        borderRadius: theme.spacing(2),
+        backgroundColor: theme.row.hover,
+        fontWeight: 'bold',
+    },
     treeItemContent: {
         paddingRight: theme.spacing(1),
         paddingLeft: theme.spacing(1),
     },
+    treeItemIconContainer: {
+        width: '18px',
+        display: 'flex',
+        justifyContent: 'center',
+    },
     treeItemLabel: {
+        flexGrow: 1,
         overflow: 'hidden',
         paddingRight: theme.spacing(1),
         paddingLeft: theme.spacing(1),
@@ -128,13 +132,13 @@ const DirectoryTreeView = ({
         onContextMenu(event, nodeId);
     }
 
-    function handleLabelClick(node, toggle) {
-        if (selectedDirectory?.elementUuid !== node?.elementUuid) {
-            dispatch(setSelectedDirectory(node));
+    function handleLabelClick(nodeId) {
+        if (selectedDirectory?.elementUuid !== nodeId) {
+            dispatch(setSelectedDirectory(mapDataRef.current[nodeId]));
         }
-        if (toggle) {
+        if (!expandedRef.current.includes(nodeId)) {
             // update fold status of item
-            toggleDirectories([node.elementUuid]);
+            toggleDirectories([nodeId]);
         }
     }
 
@@ -157,18 +161,9 @@ const DirectoryTreeView = ({
             return;
         }
         return (
-            <TreeItem
+            <CustomTreeItem
                 key={node.elementUuid}
                 nodeId={node.elementUuid}
-                onIconClick={() => {
-                    handleIconClick(node.elementUuid);
-                }}
-                onLabelClick={() => {
-                    handleLabelClick(
-                        node,
-                        !expandedRef.current.includes(node.elementUuid)
-                    );
-                }}
                 label={
                     <div
                         className={classes.treeItemLabelRoot}
@@ -208,16 +203,24 @@ const DirectoryTreeView = ({
                         ) : null}
                     </div>
                 }
+                ContentProps={{
+                    onExpand: handleIconClick,
+                    onSelect: handleLabelClick,
+                    classes: {
+                        root: classes.treeItemRoot,
+                        selected: classes.treeItemSelected,
+                        focused: classes.treeItemFocused,
+                        label: classes.treeItemLabel,
+                        iconContainer: classes.treeItemIconContainer,
+                    },
+                }}
                 endIcon={
                     node.subdirectoriesCount > 0 ? (
                         <ChevronRightIcon className={classes.icon} />
                     ) : null
                 }
                 classes={{
-                    root: classes.treeItemRoot,
                     content: classes.treeItemContent,
-                    selected: classes.treeItemSelected,
-                    label: classes.treeItemLabel,
                 }}
             >
                 {Array.isArray(node.children)
@@ -225,7 +228,7 @@ const DirectoryTreeView = ({
                           renderTree(mapDataRef.current[child.elementUuid])
                       )
                     : null}
-            </TreeItem>
+            </CustomTreeItem>
         );
     };
 
