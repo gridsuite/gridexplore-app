@@ -85,7 +85,7 @@ export function CreateCaseDialog({ onClose, open }) {
             </DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    <FormattedMessage id="createNewStudyDescription" />
+                    <FormattedMessage id="createNewCaseDescription" />
                 </DialogContentText>
                 <div>{nameField}</div>
                 {DescriptionField}
@@ -101,7 +101,7 @@ export function CreateCaseDialog({ onClose, open }) {
                     disabled={!validate()}
                     variant="outlined"
                 >
-                    <FormattedMessage id="create" />
+                    <FormattedMessage id="CaseValidate" />
                 </Button>
             </DialogActions>
         </Dialog>
