@@ -47,9 +47,7 @@ const AccessRightsDialog = ({
     const classes = useStyles();
 
     const [loading, setLoading] = React.useState(false);
-    const [selected, setSelected] = React.useState(
-        isPrivate !== undefined ? isPrivate.toString() : null
-    );
+    const [selected, setSelected] = React.useState(isPrivate?.toString());
 
     const handleClick = () => {
         setLoading(true);
@@ -73,7 +71,7 @@ const AccessRightsDialog = ({
     };
 
     useEffect(() => {
-        setSelected(isPrivate !== undefined ? isPrivate.toString() : null);
+        setSelected(isPrivate?.toString());
     }, [isPrivate]);
 
     return (

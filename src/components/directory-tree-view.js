@@ -185,7 +185,7 @@ const DirectoryTreeView = ({
                                 {node.elementName}
                             </Typography>
                         </Tooltip>
-                        {node.accessRights.isPrivate ? (
+                        {node.accessRights?.isPrivate ? (
                             <Tooltip
                                 TransitionComponent={Zoom}
                                 disableFocusListener
