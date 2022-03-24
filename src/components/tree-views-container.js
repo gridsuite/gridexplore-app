@@ -36,6 +36,7 @@ const initialMousePosition = {
     mouseY: null,
 };
 
+// Node.js (used for tests) version < 11 has no Object.fromEntries
 Object.fromEntries =
     Object.fromEntries ||
     ((arr) =>
@@ -77,6 +78,23 @@ function refreshedUpNodes(m, nn) {
     return [nn, ...refreshedUpNodes(m, nextParent)];
 }
 
+function mapFromRoots(roots) {
+    return Object.fromEntries(
+        Array.prototype
+            .concat(
+                roots,
+                ...roots.map((r) => flattenDownNodes(r, (n) => n.children))
+            )
+            .map((n) => [n.elementUuid, n])
+    );
+}
+
+function sameRights(a, b) {
+    if (!a && !b) return true;
+    if (!a || !b) return false;
+    return a.isPrivate === b.isPrivate;
+}
+
 /**
  * Make an updated tree [root_nodes, id_to_node] from previous tree and new {id, children}
  * @param prevRoots previous [root nodes]
@@ -93,16 +111,21 @@ function updatedTree(prevRoots, prevMap, nodeId, children) {
                 return { ...n, children: [], parentUuid: nodeId };
             } else if (
                 n.elementName === pn.elementName &&
-                n.accessRights === pn.accessRights &&
-                n.subdirectoriesCount === pn.subdirectoriesCount
+                sameRights(n.accessRights, pn.accessRights) &&
+                n.subdirectoriesCount === pn.subdirectoriesCount &&
+                nodeId === pn.parentUuid
             ) {
                 return pn;
             } else {
+                if (pn.parentUuid !== nodeId) {
+                    console.warn('reparent ' + pn.parentUuid + ' -> ' + nodeId);
+                }
                 return {
                     ...pn,
                     elementName: n.elementName,
                     accessRights: n.accessRights,
                     subdirectoriesCount: n.subdirectoriesCount,
+                    parentUuid: nodeId,
                 };
             }
         });
@@ -110,7 +133,7 @@ function updatedTree(prevRoots, prevMap, nodeId, children) {
     const prevChildren = nodeId ? prevMap[nodeId]?.children : prevRoots;
     if (
         prevChildren?.length === nextChildren.length &&
-        !prevChildren.every((e, i) => e === nextChildren[i])
+        prevChildren.every((e, i) => e === nextChildren[i])
     ) {
         return [prevRoots, prevMap];
     }
@@ -139,6 +162,7 @@ function updatedTree(prevRoots, prevMap, nodeId, children) {
         parentUuid: null,
         ...prevNode,
         children: nextChildren,
+        subdirectoriesCount: nextChildren.length,
     };
 
     const nextMap = Object.fromEntries([
@@ -392,7 +416,21 @@ const TreeViewsContainer = () => {
     }, [currentChildrenRef, mergeCurrentAndUploading, dispatch]);
 
     const updateDirectoryTree = useCallback(
-        (nodeId) => {
+        (nodeId, isClose = false) => {
+            // quite rare occasion to clean up
+            if (isClose) {
+                if (rootDirectories.some((n) => n.elementUuid === nodeId)) {
+                    const newMap = mapFromRoots(rootDirectories);
+                    if (
+                        Object.entries(newMap).length !==
+                        Object.entries(mapData).length
+                    ) {
+                        setMapData(newMap);
+                    }
+                }
+                return;
+            }
+
             fetchDirectoryContent(nodeId)
                 .then((childrenToBeInserted) => {
                     // Update Tree Map data
@@ -405,7 +443,7 @@ const TreeViewsContainer = () => {
                     updateMapData(nodeId, []);
                 });
         },
-        [updateMapData]
+        [updateMapData, rootDirectories, mapData]
     );
 
     /* Manage Studies updating with Web Socket */

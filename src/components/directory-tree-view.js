@@ -143,9 +143,7 @@ const DirectoryTreeView = ({
     }
 
     function handleIconClick(nodeId) {
-        if (!expandedRef.current.includes(nodeId)) {
-            onDirectoryUpdate(nodeId);
-        }
+        onDirectoryUpdate(nodeId, expandedRef.current.includes(nodeId));
         toggleDirectories([nodeId]);
     }
 
