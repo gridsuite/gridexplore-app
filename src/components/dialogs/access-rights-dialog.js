@@ -48,7 +48,8 @@ const AccessRightsDialog = ({
 
     const [loading, setLoading] = React.useState(false);
     const [selected, setSelected] = React.useState(
-        isPrivate !== undefined ? isPrivate.toString() : null
+        // on purpose use of == with null, in stead of ===, idiomatic
+        isPrivate == null ? null : isPrivate.toString()
     );
 
     const handleClick = () => {
@@ -73,7 +74,8 @@ const AccessRightsDialog = ({
     };
 
     useEffect(() => {
-        setSelected(isPrivate !== undefined ? isPrivate.toString() : null);
+        // on purpose use of == with null, in stead of ===, idiomatic
+        setSelected(isPrivate == null ? null : isPrivate.toString());
     }, [isPrivate]);
 
     return (
