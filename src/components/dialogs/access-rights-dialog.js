@@ -47,7 +47,10 @@ const AccessRightsDialog = ({
     const classes = useStyles();
 
     const [loading, setLoading] = React.useState(false);
-    const [selected, setSelected] = React.useState(isPrivate?.toString());
+    const [selected, setSelected] = React.useState(
+        // on purpose use of == with null, in stead of ===, idiomatic
+        isPrivate == null ? null : isPrivate.toString()
+    );
 
     const handleClick = () => {
         setLoading(true);
