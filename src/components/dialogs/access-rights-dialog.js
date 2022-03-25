@@ -74,7 +74,8 @@ const AccessRightsDialog = ({
     };
 
     useEffect(() => {
-        setSelected(isPrivate?.toString());
+        // on purpose use of == with null, in stead of ===, idiomatic
+        setSelected(isPrivate == null ? null : isPrivate.toString());
     }, [isPrivate]);
 
     return (
