@@ -8,6 +8,7 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
+import PhotoLibrary from '@mui/icons-material/PhotoLibrary';
 
 import ExportDialog from '../dialogs/export-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
@@ -17,6 +18,7 @@ import ScriptDialog from '../dialogs/script-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import GenericFilterDialog from '../dialogs/generic-filter-dialog';
+import CreateStudyForm from '../dialogs/create-study-dialog';
 
 import {
     deleteElement,
@@ -223,6 +225,13 @@ const ContentContextualMenu = (props) => {
         );
     }, [isUserAllowed, selectedElements]);
 
+    const allowsCreateNewStudyFromCase = useCallback(() => {
+        return (
+            selectedElements.length === 1 &&
+            selectedElements[0].type === ElementType.CASE
+        );
+    }, [selectedElements]);
+
     const allowsCopyContingencyToScript = useCallback(() => {
         return (
             selectedElements.length === 1 &&
@@ -334,6 +343,16 @@ const ContentContextualMenu = (props) => {
                 },
                 icon: <DriveFileMoveIcon fontSize="small" />,
                 withDivider: true,
+            });
+        }
+
+        if (allowsCreateNewStudyFromCase()) {
+            menuItems.push({
+                messageDescriptorId: 'createNewStudyFromImportedCase',
+                callback: () => {
+                    handleOpenDialog(DialogsId.ADD_NEW_STUDY);
+                },
+                icon: <PhotoLibrary fontSize="small" />,
             });
         }
 
@@ -545,6 +564,13 @@ const ContentContextualMenu = (props) => {
                 onError={handleLastError}
                 title={useIntl().formatMessage({ id: 'editFilter' })}
             />
+
+            <CreateStudyForm
+                open={openDialog === DialogsId.ADD_NEW_STUDY}
+                onClose={handleCloseDialog}
+                providedCase={activeElement ? activeElement : undefined}
+            />
+
             <iframe
                 id={DownloadIframe}
                 name={DownloadIframe}
