@@ -254,7 +254,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             }
         };
 
-
         setLoadingCheckStudyName(true);
 
         //Reset the timer so we only call update on the last input
