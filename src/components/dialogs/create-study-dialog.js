@@ -211,6 +211,50 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     };
 
     useEffect(() => {
+        const updateStudyFormState = (inputValue) => {
+            if (inputValue !== '' && activeDirectory !== null) {
+                //If the name is not only white spaces
+                if (inputValue.replace(/ /g, '') !== '') {
+                    elementExists(
+                        activeDirectory,
+                        inputValue,
+                        ElementType.STUDY
+                    )
+                        .then((data) => {
+                            setStudyFormState(
+                                data
+                                    ? intl.formatMessage({
+                                          id: 'studyNameAlreadyUsed',
+                                      })
+                                    : '',
+                                !data
+                            );
+                        })
+                        .catch((error) => {
+                            setStudyFormState(
+                                intl.formatMessage({
+                                    id: 'nameValidityCheckErrorMsg',
+                                }) + error,
+                                false
+                            );
+                        })
+                        .finally(() => {
+                            setLoadingCheckStudyName(false);
+                        });
+                } else {
+                    setStudyFormState(
+                        intl.formatMessage({ id: 'nameEmpty' }),
+                        false
+                    );
+                    setLoadingCheckStudyName(false);
+                }
+            } else {
+                setStudyFormState('', false);
+                setLoadingCheckStudyName(false);
+            }
+        };
+
+
         setLoadingCheckStudyName(true);
 
         //Reset the timer so we only call update on the last input
@@ -218,7 +262,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         timer.current = setTimeout(() => {
             updateStudyFormState(studyName);
         }, 700);
-    }, [studyName]);
+    }, [activeDirectory, intl, studyName]);
 
     const renderStudyNameStatus = () => {
         const showOk =
@@ -239,45 +283,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 {showOk && <CheckIcon style={{ color: 'green' }} />}
             </div>
         );
-    };
-
-    const updateStudyFormState = (inputValue) => {
-        if (inputValue !== '' && activeDirectory !== null) {
-            //If the name is not only white spaces
-            if (inputValue.replace(/ /g, '') !== '') {
-                elementExists(activeDirectory, inputValue, ElementType.STUDY)
-                    .then((data) => {
-                        setStudyFormState(
-                            data
-                                ? intl.formatMessage({
-                                      id: 'studyNameAlreadyUsed',
-                                  })
-                                : '',
-                            !data
-                        );
-                    })
-                    .catch((error) => {
-                        setStudyFormState(
-                            intl.formatMessage({
-                                id: 'nameValidityCheckErrorMsg',
-                            }) + error,
-                            false
-                        );
-                    })
-                    .finally(() => {
-                        setLoadingCheckStudyName(false);
-                    });
-            } else {
-                setStudyFormState(
-                    intl.formatMessage({ id: 'nameEmpty' }),
-                    false
-                );
-                setLoadingCheckStudyName(false);
-            }
-        } else {
-            setStudyFormState('', false);
-            setLoadingCheckStudyName(false);
-        }
     };
 
     const setStudyFormState = (errorMessage, isNameValid) => {
