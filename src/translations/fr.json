@@ -58,6 +58,10 @@
     "move": "Déplacer",
     "delete": "Supprimer",
     "rename": "Renommer",
+    "createNewStudyFromImportedCase": "Créer étude",
+
+    "showSelectDirectoryDialog": "Modifier dossier",
+    "selectDirectoryDialogTitle": "Choisir un dossier",
 
     "createFolder": "Créer un dossier",
     "createRootFolder": "Créer un dossier racine",
