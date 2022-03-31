@@ -89,6 +89,7 @@ export const useDeferredFetch = (
             try {
                 // Params resolution
                 const response = await fetchFunction.apply(null, args);
+
                 if (hasResult) {
                     const data = response;
                     dispatch({
@@ -175,9 +176,9 @@ export const useMultipleDeferredFetch = (
                     ...initialState,
                     status: FetchStatus.FETCH_ERROR,
                     errorMessage: lastState.errorMessage.concat(action.payload),
-                    paramsOnError: lastState.paramsOnError.concat(
-                        action.context
-                    ),
+                    paramsOnError: lastState.paramsOnError.concat([
+                        action.context,
+                    ]),
                 };
             default:
                 return lastState;
@@ -202,12 +203,12 @@ export const useMultipleDeferredFetch = (
     }, []);
 
     const onInstanceError = useCallback((errorMessage, paramsOnError) => {
-        setCounter((oldValue) => oldValue + 1);
         dispatch({
             type: FetchStatus.FETCH_ERROR,
             payload: errorMessage,
             context: paramsOnError,
         });
+        setCounter((oldValue) => oldValue + 1);
     }, []);
 
     const [fetchCB] = useDeferredFetch(
@@ -223,7 +224,7 @@ export const useMultipleDeferredFetch = (
             dispatch({ type: FetchStatus.FETCHING });
             setParamList(cbParamsList);
             for (let params of cbParamsList) {
-                fetchCB(params);
+                fetchCB(...params);
             }
         },
         [fetchCB]
