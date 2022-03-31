@@ -129,6 +129,20 @@ export function deleteElement(elementUuid) {
     });
 }
 
+export function moveElementToDirectory(elementUuid, directoryUuid) {
+    console.info(
+        'Moving element %s to directory %s',
+        elementUuid,
+        directoryUuid
+    );
+    const fetchParams =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/elements/${elementUuid}/move?newDirectory=${directoryUuid}`;
+    return backendFetch(fetchParams, {
+        method: 'PATCH',
+    });
+}
+
 export function updateAccessRights(elementUuid, isPrivate) {
     console.info(
         'Updating access rights for ' +
