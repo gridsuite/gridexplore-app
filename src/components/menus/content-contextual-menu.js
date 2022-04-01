@@ -100,7 +100,7 @@ const ContentContextualMenu = (props) => {
         deleteElement,
         handleCloseDialog,
         undefined,
-        (errorMessages, paramsOnErrors, params) => {
+        (errorMessages, params, paramsOnErrors) => {
             let msg = intl.formatMessage(
                 { id: 'deleteElementsFailure' },
                 {
@@ -129,7 +129,7 @@ const ContentContextualMenu = (props) => {
                 return intl.formatMessage({ id: 'moveElementNotFoundError' });
             }
         },
-        (errorMessages, paramsOnErrors, params) => {
+        (errorMessages, params, paramsOnErrors) => {
             let msg = intl.formatMessage(
                 { id: 'moveElementsFailure' },
                 {
