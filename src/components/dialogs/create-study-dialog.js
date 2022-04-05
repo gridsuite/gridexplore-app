@@ -471,7 +471,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                                     id: 'selectDirectoryDialogTitle',
                                 })}
                                 validationButtonText={intl.formatMessage({
-                                    id: 'CaseValidate',
+                                    id: 'confirmDirectoryDialog',
                                 })}
                                 contentText={intl.formatMessage({
                                     id: 'moveItemContentText',

@@ -67,6 +67,7 @@
 
     "showSelectDirectoryDialog": "Change folder",
     "selectDirectoryDialogTitle": "Pick a folder",
+    "confirmDirectoryDialog": "Confirm",
 
     "insertNewDirectoryDialogMessage": "Please insert the following information! ",
     "insertNewDirectoryDialogTitle": "Create folder",
