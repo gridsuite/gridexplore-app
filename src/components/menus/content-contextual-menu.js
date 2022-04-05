@@ -143,7 +143,7 @@ const ContentContextualMenu = (props) => {
     );
 
     const moveElementOnError = useCallback(
-        (errorMessages, paramsOnErrors) => {
+        (errorMessages, params, paramsOnErrors) => {
             let msg = intl.formatMessage(
                 { id: 'moveElementsFailure' },
                 {
