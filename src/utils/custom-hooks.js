@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useReducer, useState, useRef } from 'react';
+import { useEffect, useCallback, useReducer, useState } from 'react';
 
 export const FetchStatus = {
     IDLE: 'IDLE',
@@ -148,37 +148,67 @@ export const useMultipleDeferredFetch = (
     hasResult = true
 ) => {
     const initialState = {
-        status: FetchStatus.IDLE,
-        errorMessage: [],
-        paramsOnError: [],
-        data: [],
+        public: {
+            status: FetchStatus.IDLE,
+            errorMessage: [],
+            paramsOnError: [],
+            data: [],
+        },
+        counter: 0,
     };
 
     const [state, dispatch] = useReducer((lastState, action) => {
         switch (action.type) {
             case FetchStatus.IDLE:
-                return { ...initialState };
-            case FetchStatus.FETCHING:
-                return { ...initialState, status: FetchStatus.FETCHING };
-            case FetchStatus.PARTIALLY_FETCHED:
                 return {
                     ...initialState,
-                    status: FetchStatus.PARTIALLY_FETCHED,
-                    data: lastState.data.concat(action.payload),
+                    counter: 0,
+                };
+            case FetchStatus.FETCHING:
+                return {
+                    public: {
+                        ...lastState.public,
+                        status:
+                            lastState.public.status === FetchStatus.FETCH_ERROR
+                                ? FetchStatus.FETCH_ERROR
+                                : FetchStatus.FETCHING,
+                    },
+                    counter: action.counterIncrement
+                        ? lastState.counter + 1
+                        : lastState.counter,
+                };
+            case FetchStatus.PARTIALLY_FETCHED:
+                return {
+                    ...lastState,
+                    public: {
+                        ...lastState.public,
+                        status: FetchStatus.PARTIALLY_FETCHED,
+                        data: lastState.public.data.concat(action.payload),
+                    },
                 };
             case FetchStatus.FETCHED:
                 return {
                     ...lastState,
-                    status: FetchStatus.FETCHED,
+                    public: {
+                        ...lastState.public,
+                        status: FetchStatus.FETCHED,
+                    },
                 };
             case FetchStatus.FETCH_ERROR:
                 return {
-                    ...initialState,
-                    status: FetchStatus.FETCH_ERROR,
-                    errorMessage: lastState.errorMessage.concat(action.payload),
-                    paramsOnError: lastState.paramsOnError.concat([
-                        action.context,
-                    ]),
+                    public: {
+                        ...lastState.public,
+                        status: FetchStatus.FETCH_ERROR,
+                        errorMessage: lastState.public.errorMessage.concat(
+                            action.payload
+                        ),
+                        paramsOnError: lastState.public.paramsOnError.concat([
+                            action.context,
+                        ]),
+                    },
+                    counter: action.counterIncrement
+                        ? lastState.counter + 1
+                        : lastState.counter,
                 };
             default:
                 return lastState;
@@ -186,29 +216,30 @@ export const useMultipleDeferredFetch = (
     }, initialState);
 
     const [paramList, setParamList] = useState([]);
-    const [counter, setCounter] = useState(0);
-    const counterRef = useRef(0);
-    counterRef.current = counter;
 
     const reset = () => {
         setParamList([]);
-        setCounter(0);
         dispatch({
             type: FetchStatus.IDLE,
         });
     };
 
     const onInstanceSuccess = useCallback((data) => {
-        setCounter((oldValue) => oldValue + 1);
+        dispatch({
+            type: FetchStatus.FETCHING,
+            counterIncrement: true,
+        });
     }, []);
 
     const onInstanceError = useCallback((errorMessage, paramsOnError) => {
+        // counter now stored in reducer to avoid counter and state being updated not simultenaously,
+        // causing useEffect to be triggered once for each change, which would cause an expected behaviour
         dispatch({
             type: FetchStatus.FETCH_ERROR,
             payload: errorMessage,
             context: paramsOnError,
+            counterIncrement: true,
         });
-        setCounter((oldValue) => oldValue + 1);
     }, []);
 
     const [fetchCB] = useDeferredFetch(
@@ -221,7 +252,7 @@ export const useMultipleDeferredFetch = (
 
     const fetchCallback = useCallback(
         (cbParamsList) => {
-            dispatch({ type: FetchStatus.FETCHING });
+            dispatch({ type: FetchStatus.FETCHING, counterIncrement: false });
             setParamList(cbParamsList);
             for (let params of cbParamsList) {
                 fetchCB(...params);
@@ -231,10 +262,14 @@ export const useMultipleDeferredFetch = (
     );
 
     useEffect(() => {
-        if (paramList.length !== 0 && paramList.length === counter) {
-            if (state.status === FetchStatus.FETCH_ERROR) {
+        if (paramList.length !== 0 && paramList.length === state.counter) {
+            if (state.public.status === FetchStatus.FETCH_ERROR) {
                 if (onError)
-                    onError(state.errorMessage, paramList, state.paramsOnError);
+                    onError(
+                        state.public.errorMessage,
+                        paramList,
+                        state.public.paramsOnError
+                    );
             } else {
                 dispatch({
                     type: FetchStatus.FETCHED,
@@ -243,7 +278,7 @@ export const useMultipleDeferredFetch = (
             }
             reset();
         }
-    }, [paramList, counter, onError, onSuccess, state]);
+    }, [paramList, onError, onSuccess, state]);
 
-    return [fetchCallback, state];
+    return [fetchCallback, state.public];
 };

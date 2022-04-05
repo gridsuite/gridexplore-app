@@ -85,21 +85,19 @@ const ContentContextualMenu = (props) => {
         setOpenDialog(dialogId);
     };
 
-    const handleCloseDialog = () => {
+    const handleCloseDialog = useCallback(() => {
         onClose();
         setOpenDialog(DialogsId.NONE);
         setHideMenu(false);
-    };
+    }, [onClose]);
 
     const handleClickExportStudy = (url) => {
         window.open(url, DownloadIframe);
         handleCloseDialog();
     };
     const [multipleDeleteError, setMultipleDeleteError] = useState('');
-    const [deleteCB] = useMultipleDeferredFetch(
-        deleteElement,
-        handleCloseDialog,
-        undefined,
+
+    const deleteElementOnError = useCallback(
         (errorMessages, params, paramsOnErrors) => {
             let msg = intl.formatMessage(
                 { id: 'deleteElementsFailure' },
@@ -114,12 +112,17 @@ const ContentContextualMenu = (props) => {
             console.debug(msg);
             setMultipleDeleteError(msg);
         },
+        [intl]
+    );
+    const [deleteCB] = useMultipleDeferredFetch(
+        deleteElement,
+        handleCloseDialog,
+        undefined,
+        deleteElementOnError,
         false
     );
 
-    const [moveCB] = useMultipleDeferredFetch(
-        moveElementToDirectory,
-        handleCloseDialog,
+    const moveElementErrorToString = useCallback(
         (HTTPStatusCode) => {
             if (HTTPStatusCode === 403) {
                 return intl.formatMessage({
@@ -129,18 +132,31 @@ const ContentContextualMenu = (props) => {
                 return intl.formatMessage({ id: 'moveElementNotFoundError' });
             }
         },
-        (errorMessages, params, paramsOnErrors) => {
+        [intl]
+    );
+
+    const moveElementOnError = useCallback(
+        (errorMessages, paramsOnErrors) => {
             let msg = intl.formatMessage(
                 { id: 'moveElementsFailure' },
                 {
                     pbn: errorMessages.length,
-                    stn: params.length,
+                    stn: paramsOnErrors.length,
                     problematic: paramsOnErrors.map((p) => p[0]).join(' '),
                 }
             );
             console.debug(msg);
+            handleCloseDialog();
             handleLastError(msg);
         },
+        [handleCloseDialog, handleLastError, intl]
+    );
+
+    const [moveCB] = useMultipleDeferredFetch(
+        moveElementToDirectory,
+        handleCloseDialog,
+        moveElementErrorToString,
+        moveElementOnError,
         false
     );
 
