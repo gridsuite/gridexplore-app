@@ -25,7 +25,6 @@ import FormControl from '@mui/material/FormControl';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import DirectorySelector from './directory-selector.js';
-import { elementType } from '@gridsuite/commons-ui';
 import {
     createStudy,
     elementExists,
@@ -262,7 +261,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     useEffect(() => {
         const updatePath = () => {
             if (activeDirectory) {
-                console.log('bouahah');
                 getElementAndParentsList(activeDirectory).then((res) => {
                     setActiveDirectoryName(
                         res
