@@ -26,7 +26,12 @@ import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import DirectorySelector from './directory-selector.js';
 import { elementType } from '@gridsuite/commons-ui';
-import { createStudy, elementExists, fetchCases } from '../../utils/rest-api';
+import {
+    createStudy,
+    elementExists,
+    fetchCases,
+    getElementAndParentsList,
+} from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -130,7 +135,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const initialStudyName = providedCase ? providedCase?.elementName : '';
     const [studyName, setStudyName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
     const [createStudyErr, setCreateStudyErr] = React.useState('');
@@ -152,17 +156,15 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const caseName = useSelector((state) => state.selectedCase);
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const selectedCase = useSelector((state) => state.selectedCase);
 
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
 
     useEffect(() => {
         const initDialog = () => {
-            setStudyName(initialStudyName);
-
             if (providedCase) {
-                setActiveDirectoryName(selectedDirectory?.elementName);
-
+                setStudyName(providedCase?.elementName);
                 setCaseExist(true);
                 dispatch(selectCase(providedCase?.elementUuid));
             }
@@ -171,13 +173,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         if (open) {
             initDialog();
         }
-    }, [
-        open,
-        dispatch,
-        providedCase,
-        selectedDirectory?.elementName,
-        initialStudyName,
-    ]);
+    }, [open, dispatch, selectedDirectory?.elementName, providedCase]);
 
     const resetDialog = () => {
         setCreateStudyErr('');
@@ -212,7 +208,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     useEffect(() => {
         const updateStudyFormState = (inputValue) => {
-            if (inputValue !== '' && activeDirectory !== null) {
+            if (inputValue !== '' && activeDirectory) {
                 //If the name is not only white spaces
                 if (inputValue.replace(/ /g, '') !== '') {
                     elementExists(
@@ -262,6 +258,23 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             updateStudyFormState(studyName);
         }, 700);
     }, [activeDirectory, intl, studyName]);
+
+    useEffect(() => {
+        const updatePath = () => {
+            if (activeDirectory) {
+                console.log('bouahah');
+                getElementAndParentsList(activeDirectory).then((res) => {
+                    setActiveDirectoryName(
+                        res
+                            .map((element) => element.elementName.trim())
+                            .reverse()
+                            .join('/')
+                    );
+                });
+            }
+        };
+        updatePath();
+    }, [activeDirectory]);
 
     const renderStudyNameStatus = () => {
         const showOk =
@@ -359,7 +372,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     const handleSelectedDirectoryToCreateStudy = (directory) => {
         if (directory.length > 0) {
-            setActiveDirectoryName(directory[0].name);
             dispatch(setActiveDirectory(directory[0].id));
         }
         setFolderSelectorOpen(false);
@@ -373,6 +385,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 onClose={handleCloseDialog}
                 aria-labelledby="form-dialog-title"
                 onKeyPress={handleKeyPressed}
+                onContextMenu={(e) => e.stopPropagation()}
             >
                 <DialogTitle id="form-dialog-title">
                     <FormattedMessage id="createNewStudy" />
@@ -381,7 +394,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                     <DialogContentText>
                         <FormattedMessage id="createNewStudyDescription" />
                     </DialogContentText>
-                    {!providedCase && (
+                    {!selectedCase && (
                         <FormControlLabel
                             control={
                                 <Switch
@@ -422,38 +435,40 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         style={{ width: '90%' }}
                         label={<FormattedMessage id="studyDescription" />}
                     />
-                    {!providedCase ? (
+                    {!selectedCase ? (
                         (caseExist && <SelectCase />) ||
                         (!caseExist && <UploadCase />)
                     ) : (
-                        <>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <th>
-                                            <Button
-                                                onClick={handleSelectFolder}
-                                                variant="contained"
-                                                style={{
-                                                    paddingLeft: '30px',
-                                                    paddingRight: '30px',
-                                                }}
-                                                color="primary"
-                                                component="label"
-                                            >
-                                                <FormattedMessage id="showSelectDirectoryDialog" />
-                                            </Button>
-                                        </th>
-                                        <th>
-                                            <p>{activeDirectoryName}</p>
-                                        </th>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div
+                            style={{
+                                marginTop: '10px',
+                            }}
+                        >
+                            <Button
+                                onClick={handleSelectFolder}
+                                variant="contained"
+                                style={{
+                                    paddingLeft: '30px',
+                                    paddingRight: '30px',
+                                }}
+                                color="primary"
+                                component="label"
+                            >
+                                <FormattedMessage id="showSelectDirectoryDialog" />
+                            </Button>
+                            <span
+                                style={{
+                                    marginLeft: '10px',
+                                    fontWeight: 'bold',
+                                }}
+                            >
+                                {activeDirectoryName}
+                            </span>
+
                             <DirectorySelector
                                 open={folderSelectorOpen}
                                 onClose={handleSelectedDirectoryToCreateStudy}
-                                types={[elementType.DIRECTORY]}
+                                types={[ElementType.DIRECTORY]}
                                 title={intl.formatMessage({
                                     id: 'selectDirectoryDialogTitle',
                                 })}
@@ -464,10 +479,17 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                                     id: 'moveItemContentText',
                                 })}
                             />
-                        </>
+                        </div>
                     )}
                     {createStudyErr !== '' && (
-                        <Alert severity="error">{createStudyErr}</Alert>
+                        <Alert
+                            style={{
+                                marginTop: '10px',
+                            }}
+                            severity="error"
+                        >
+                            {createStudyErr}
+                        </Alert>
                     )}
                 </DialogContent>
                 <DialogActions>

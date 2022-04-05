@@ -25,7 +25,7 @@ import ScriptDialog from '../dialogs/script-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import GenericFilterDialog from '../dialogs/generic-filter-dialog';
-import CreateStudyForm from '../dialogs/create-study-dialog';
+import CreateStudyDialog from '../dialogs/create-study-dialog';
 
 import {
     deleteElement,
@@ -55,6 +55,7 @@ const DialogsId = {
     RENAME: 'rename',
     DELETE: 'delete',
     MOVE: 'move',
+    ADD_NEW_STUDY: 'create_study',
     EXPORT: 'export',
     FILTERS_CONTINGENCY: 'filters_contingency',
     SCRIPT_CONTINGENCY: 'script_contingency',
@@ -587,10 +588,10 @@ const ContentContextualMenu = (props) => {
                 title={useIntl().formatMessage({ id: 'editFilter' })}
             />
 
-            <CreateStudyForm
+            <CreateStudyDialog
                 open={openDialog === DialogsId.ADD_NEW_STUDY}
                 onClose={handleCloseDialog}
-                providedCase={activeElement ? activeElement : undefined}
+                providedCase={activeElement}
             />
 
             <iframe
