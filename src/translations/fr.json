@@ -62,6 +62,7 @@
 
     "showSelectDirectoryDialog": "Modifier dossier",
     "selectDirectoryDialogTitle": "Choisir un dossier",
+    "confirmDirectoryDialog": "Valider",
 
     "createFolder": "Créer un dossier",
     "createRootFolder": "Créer un dossier racine",
