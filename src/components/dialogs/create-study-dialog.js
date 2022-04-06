@@ -162,12 +162,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     //Inits the dialog
     useEffect(() => {
-        if (open) {
-            if (providedCase) {
-                setStudyName(providedCase?.elementName);
-                setCaseExist(true);
-                dispatch(selectCase(providedCase?.elementUuid));
-            }
+        if (open && providedCase) {
+            setStudyName(providedCase?.elementName);
+            setCaseExist(true);
+            dispatch(selectCase(providedCase?.elementUuid));
         }
     }, [open, dispatch, selectedDirectory?.elementName, providedCase]);
 
@@ -216,8 +214,8 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                             setStudyFormState(
                                 data
                                     ? intl.formatMessage({
-                                          id: 'studyNameAlreadyUsed',
-                                      })
+                                        id: 'studyNameAlreadyUsed',
+                                    })
                                     : '',
                                 !data
                             );
@@ -378,6 +376,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 onClose={handleCloseDialog}
                 aria-labelledby="form-dialog-title"
                 onKeyPress={handleKeyPressed}
+                //Call to stopPropagation in order to prevent contextual menu to appear
                 onContextMenu={(e) => e.stopPropagation()}
             >
                 <DialogTitle id="form-dialog-title">
@@ -429,8 +428,11 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         label={<FormattedMessage id="studyDescription" />}
                     />
                     {!selectedCase ? (
-                        (caseExist && <SelectCase />) ||
-                        (!caseExist && <UploadCase />)
+                        caseExist ? (
+                            <SelectCase />
+                        ) : (
+                            <UploadCase />
+                        )
                     ) : (
                         <div
                             style={{
