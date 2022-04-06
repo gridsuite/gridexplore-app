@@ -3,8 +3,16 @@ import { useEffect, useCallback, useReducer, useState } from 'react';
 export const FetchStatus = {
     IDLE: 'IDLE',
     FETCHING: 'FETCHING',
-    FETCHED: 'FETCHED',
+    FETCH_SUCCESS: 'FETCH_SUCCESS',
     FETCH_ERROR: 'FETCH_ERROR',
+};
+
+export const ActionType = {
+    START: 'START',
+    ERROR: 'ERROR',
+    SUCCESS: 'SUCCESS',
+    ADD_ERROR: 'ADD_ERROR', // Use by multipleDeferredFetch when one request respond with error
+    ADD_SUCCESS: 'ADD_SUCCESS', // Use by multipleDeferredFetch when one request respond with success
 };
 
 /**
@@ -38,15 +46,15 @@ export const useDeferredFetch = (
 
     const [state, dispatch] = useReducer((lastState, action) => {
         switch (action.type) {
-            case FetchStatus.FETCHING:
+            case ActionType.START:
                 return { ...initialState, status: FetchStatus.FETCHING };
-            case FetchStatus.FETCHED:
+            case ActionType.SUCCESS:
                 return {
                     ...initialState,
-                    status: FetchStatus.FETCHED,
+                    status: FetchStatus.FETCH_SUCCESS,
                     data: action.payload,
                 };
-            case FetchStatus.FETCH_ERROR:
+            case ActionType.ERROR:
                 return {
                     ...initialState,
                     status: FetchStatus.FETCH_ERROR,
@@ -72,7 +80,7 @@ export const useDeferredFetch = (
             }
 
             dispatch({
-                type: FetchStatus.FETCH_ERROR,
+                type: ActionType.ERROR,
                 payload: errorMessage,
             });
             if (onError) {
@@ -84,7 +92,7 @@ export const useDeferredFetch = (
 
     const fetchData = useCallback(
         async (...args) => {
-            dispatch({ type: FetchStatus.FETCHING });
+            dispatch({ type: ActionType.START });
             try {
                 // Params resolution
                 const response = await fetchFunction.apply(null, args);
@@ -92,13 +100,16 @@ export const useDeferredFetch = (
                 if (hasResult) {
                     const data = response;
                     dispatch({
-                        type: FetchStatus.FETCHED,
+                        type: ActionType.SUCCESS,
                         payload: data,
                     });
-                    if (onSuccess) onSuccess(data);
+                    if (onSuccess) onSuccess(data, args);
                 } else {
+                    dispatch({
+                        type: ActionType.SUCCESS,
+                    });
                     if (response.ok) {
-                        if (onSuccess) onSuccess();
+                        if (onSuccess) onSuccess(null, args);
                     } else {
                         handleError(response, args);
                     }
@@ -146,44 +157,43 @@ export const useMultipleDeferredFetch = (
     onError = undefined,
     hasResult = true
 ) => {
-    const COUNTER_INCREMENT = 'counter_increment';
     const initialState = {
         public: {
             status: FetchStatus.IDLE,
             errorMessage: [],
             paramsOnError: [],
             data: [],
+            paramsOnSuccess: [],
         },
         counter: 0,
     };
 
     const [state, dispatch] = useReducer((lastState, action) => {
         switch (action.type) {
-            case FetchStatus.IDLE:
+            case ActionType.START:
                 return {
                     ...initialState,
-                };
-            case FetchStatus.FETCHING:
-                return {
-                    ...lastState,
                     public: {
-                        ...lastState.public,
+                        ...initialState.public,
                         status: FetchStatus.FETCHING,
                     },
                 };
-            case FetchStatus.FETCHED:
+            case ActionType.ADD_SUCCESS:
                 return {
-                    ...lastState,
                     public: {
                         ...lastState.public,
-                        status: FetchStatus.FETCHED,
+                        data: lastState.public.data.concat(action.payload),
+                        paramsOnSuccess:
+                            lastState.public.paramsOnSuccess.concat([
+                                action.context,
+                            ]),
                     },
+                    counter: lastState.counter + 1,
                 };
-            case FetchStatus.FETCH_ERROR:
+            case ActionType.ADD_ERROR:
                 return {
                     public: {
                         ...lastState.public,
-                        status: FetchStatus.FETCH_ERROR,
                         errorMessage: lastState.public.errorMessage.concat(
                             action.payload
                         ),
@@ -193,10 +203,23 @@ export const useMultipleDeferredFetch = (
                     },
                     counter: lastState.counter + 1,
                 };
-            case COUNTER_INCREMENT:
+            case ActionType.SUCCESS:
                 return {
                     ...lastState,
-                    counter: lastState.counter + 1,
+                    public: {
+                        ...lastState.public,
+                        status: FetchStatus.FETCH_SUCCESS,
+                    },
+                    counter: 0,
+                };
+            case ActionType.ERROR:
+                return {
+                    ...lastState,
+                    public: {
+                        ...lastState.public,
+                        status: FetchStatus.FETCH_ERROR,
+                    },
+                    counter: 0,
                 };
             default:
                 return lastState;
@@ -205,16 +228,11 @@ export const useMultipleDeferredFetch = (
 
     const [paramList, setParamList] = useState([]);
 
-    const reset = () => {
-        setParamList([]);
+    const onInstanceSuccess = useCallback((data, paramsOnSuccess) => {
         dispatch({
-            type: FetchStatus.IDLE,
-        });
-    };
-
-    const onInstanceSuccess = useCallback((data) => {
-        dispatch({
-            type: COUNTER_INCREMENT,
+            type: ActionType.ADD_SUCCESS,
+            payload: data,
+            context: paramsOnSuccess,
         });
     }, []);
 
@@ -222,7 +240,7 @@ export const useMultipleDeferredFetch = (
         // counter now stored in reducer to avoid counter and state being updated not simultenaously,
         // causing useEffect to be triggered once for each change, which would cause an expected behaviour
         dispatch({
-            type: FetchStatus.FETCH_ERROR,
+            type: ActionType.ADD_ERROR,
             payload: errorMessage,
             context: paramsOnError,
         });
@@ -238,7 +256,7 @@ export const useMultipleDeferredFetch = (
 
     const fetchCallback = useCallback(
         (cbParamsList) => {
-            dispatch({ type: FetchStatus.FETCHING });
+            dispatch({ type: ActionType.START });
             setParamList(cbParamsList);
             for (let params of cbParamsList) {
                 fetchCB(...params);
@@ -249,7 +267,10 @@ export const useMultipleDeferredFetch = (
 
     useEffect(() => {
         if (paramList.length !== 0 && paramList.length === state.counter) {
-            if (state.public.status === FetchStatus.FETCH_ERROR) {
+            if (state.public.errorMessage.length > 0) {
+                dispatch({
+                    type: ActionType.ERROR,
+                });
                 if (onError)
                     onError(
                         state.public.errorMessage,
@@ -258,11 +279,10 @@ export const useMultipleDeferredFetch = (
                     );
             } else {
                 dispatch({
-                    type: FetchStatus.FETCHED,
+                    type: ActionType.SUCCESS,
                 });
                 if (onSuccess) onSuccess(state.public.data);
             }
-            reset();
         }
     }, [paramList, onError, onSuccess, state]);
 

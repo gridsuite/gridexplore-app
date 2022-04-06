@@ -149,20 +149,13 @@ const ContentContextualMenu = (props) => {
                 {
                     pbn: errorMessages.length,
                     stn: paramsOnErrors.length,
-                    problematic: paramsOnErrors
-                        .map(
-                            (p) =>
-                                selectedElements.find(
-                                    (element) => element.elementUuid === p[0]
-                                ).elementName
-                        )
-                        .join(' '),
+                    problematic: paramsOnErrors.map((p) => p[0]).join(' '),
                 }
             );
             console.debug(msg);
             handleLastError(msg);
         },
-        [selectedElements, handleLastError, intl]
+        [handleLastError, intl]
     );
 
     const [moveCB] = useMultipleDeferredFetch(
