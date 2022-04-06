@@ -214,8 +214,8 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                             setStudyFormState(
                                 data
                                     ? intl.formatMessage({
-                                        id: 'studyNameAlreadyUsed',
-                                    })
+                                          id: 'studyNameAlreadyUsed',
+                                      })
                                     : '',
                                 !data
                             );
