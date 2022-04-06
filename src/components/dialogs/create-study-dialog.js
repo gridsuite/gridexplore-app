@@ -29,7 +29,7 @@ import {
     createStudy,
     elementExists,
     fetchCases,
-    getElementAndParentsList,
+    fetchPath,
 } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -160,17 +160,14 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
 
+    //Inits the dialog
     useEffect(() => {
-        const initDialog = () => {
+        if (open) {
             if (providedCase) {
                 setStudyName(providedCase?.elementName);
                 setCaseExist(true);
                 dispatch(selectCase(providedCase?.elementUuid));
             }
-        };
-
-        if (open) {
-            initDialog();
         }
     }, [open, dispatch, selectedDirectory?.elementName, providedCase]);
 
@@ -258,20 +255,18 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         }, 700);
     }, [activeDirectory, intl, studyName]);
 
+    //Updates the path display
     useEffect(() => {
-        const updatePath = () => {
-            if (activeDirectory) {
-                getElementAndParentsList(activeDirectory).then((res) => {
-                    setActiveDirectoryName(
-                        res
-                            .map((element) => element.elementName.trim())
-                            .reverse()
-                            .join('/')
-                    );
-                });
-            }
-        };
-        updatePath();
+        if (activeDirectory) {
+            fetchPath(activeDirectory).then((res) => {
+                setActiveDirectoryName(
+                    res
+                        .map((element) => element.elementName.trim())
+                        .reverse()
+                        .join('/')
+                );
+            });
+        }
     }, [activeDirectory]);
 
     const renderStudyNameStatus = () => {
