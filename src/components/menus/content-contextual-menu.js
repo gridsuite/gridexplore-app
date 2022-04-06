@@ -162,7 +162,7 @@ const ContentContextualMenu = (props) => {
             console.debug(msg);
             handleLastError(msg);
         },
-        [handleCloseDialog, handleLastError, intl]
+        [handleLastError, intl]
     );
 
     const [moveCB] = useMultipleDeferredFetch(

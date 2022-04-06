@@ -198,7 +198,6 @@ export const useMultipleDeferredFetch = (
                     ...lastState,
                     counter: lastState.counter + 1,
                 };
-                break;
             default:
                 return lastState;
         }
