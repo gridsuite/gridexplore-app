@@ -153,7 +153,6 @@ const ContentContextualMenu = (props) => {
                 }
             );
             console.debug(msg);
-            handleCloseDialog();
             handleLastError(msg);
         },
         [handleCloseDialog, handleLastError, intl]
@@ -161,7 +160,7 @@ const ContentContextualMenu = (props) => {
 
     const [moveCB] = useMultipleDeferredFetch(
         moveElementToDirectory,
-        handleCloseDialog,
+        undefined,
         moveElementErrorToString,
         moveElementOnError,
         false
@@ -467,9 +466,8 @@ const ContentContextualMenu = (props) => {
                                 return [element.elementUuid, selectedDir[0].id];
                             })
                         );
-                    } else {
-                        handleCloseDialog();
                     }
+                    handleCloseDialog();
                 }}
                 items={selectedElements}
             />

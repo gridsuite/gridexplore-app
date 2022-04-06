@@ -3,7 +3,6 @@ import { useEffect, useCallback, useReducer, useState } from 'react';
 export const FetchStatus = {
     IDLE: 'IDLE',
     FETCHING: 'FETCHING',
-    PARTIALLY_FETCHED: 'PARTIALLY_FETCHED',
     FETCHED: 'FETCHED',
     FETCH_ERROR: 'FETCH_ERROR',
 };
@@ -147,6 +146,7 @@ export const useMultipleDeferredFetch = (
     onError = undefined,
     hasResult = true
 ) => {
+    const COUNTER_INCREMENT = 'counter_increment';
     const initialState = {
         public: {
             status: FetchStatus.IDLE,
@@ -162,28 +162,13 @@ export const useMultipleDeferredFetch = (
             case FetchStatus.IDLE:
                 return {
                     ...initialState,
-                    counter: 0,
                 };
             case FetchStatus.FETCHING:
-                return {
-                    public: {
-                        ...lastState.public,
-                        status:
-                            lastState.public.status === FetchStatus.FETCH_ERROR
-                                ? FetchStatus.FETCH_ERROR
-                                : FetchStatus.FETCHING,
-                    },
-                    counter: action.counterIncrement
-                        ? lastState.counter + 1
-                        : lastState.counter,
-                };
-            case FetchStatus.PARTIALLY_FETCHED:
                 return {
                     ...lastState,
                     public: {
                         ...lastState.public,
-                        status: FetchStatus.PARTIALLY_FETCHED,
-                        data: lastState.public.data.concat(action.payload),
+                        status: FetchStatus.FETCHING,
                     },
                 };
             case FetchStatus.FETCHED:
@@ -206,10 +191,14 @@ export const useMultipleDeferredFetch = (
                             action.context,
                         ]),
                     },
-                    counter: action.counterIncrement
-                        ? lastState.counter + 1
-                        : lastState.counter,
+                    counter: lastState.counter + 1,
                 };
+            case COUNTER_INCREMENT:
+                return {
+                    ...lastState,
+                    counter: lastState.counter + 1,
+                };
+                break;
             default:
                 return lastState;
         }
@@ -226,8 +215,7 @@ export const useMultipleDeferredFetch = (
 
     const onInstanceSuccess = useCallback((data) => {
         dispatch({
-            type: FetchStatus.FETCHING,
-            counterIncrement: true,
+            type: COUNTER_INCREMENT,
         });
     }, []);
 
@@ -238,7 +226,6 @@ export const useMultipleDeferredFetch = (
             type: FetchStatus.FETCH_ERROR,
             payload: errorMessage,
             context: paramsOnError,
-            counterIncrement: true,
         });
     }, []);
 
@@ -252,7 +239,7 @@ export const useMultipleDeferredFetch = (
 
     const fetchCallback = useCallback(
         (cbParamsList) => {
-            dispatch({ type: FetchStatus.FETCHING, counterIncrement: false });
+            dispatch({ type: FetchStatus.FETCHING });
             setParamList(cbParamsList);
             for (let params of cbParamsList) {
                 fetchCB(...params);
@@ -274,11 +261,11 @@ export const useMultipleDeferredFetch = (
                 dispatch({
                     type: FetchStatus.FETCHED,
                 });
-                if (onSuccess) onSuccess(state.data);
+                if (onSuccess) onSuccess(state.public.data);
             }
             reset();
         }
     }, [paramList, onError, onSuccess, state]);
 
-    return [fetchCallback, state.public];
+    return [fetchCallback];
 };
