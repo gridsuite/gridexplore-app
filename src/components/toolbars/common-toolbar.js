@@ -29,7 +29,8 @@ const CommonToolbar = (props) => {
         key,
         tooltipTextId,
         callback,
-        icon = <EditIcon fontSize="small" />
+        icon = <EditIcon fontSize="small" />,
+        disabledItem
     ) {
         return (
             <Tooltip
@@ -43,6 +44,7 @@ const CommonToolbar = (props) => {
                         className={classes.icon}
                         onClick={() => callback()}
                         size="large"
+                        disabled={disabledItem}
                     >
                         {icon}
                     </IconButton>
@@ -58,7 +60,8 @@ const CommonToolbar = (props) => {
                     index,
                     item.tooltipTextId,
                     item.callback,
-                    item.icon
+                    item.icon,
+                    item.disabled
                 );
             })}
         </Toolbar>
