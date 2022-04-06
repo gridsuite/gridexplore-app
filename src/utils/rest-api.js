@@ -665,11 +665,17 @@ export function saveFilter(filter) {
     }).then((response) => handleResponse(response, false));
 }
 
-export function getElementAndParentsList(elementUuid) {
-    const fetchParams =
+export function fetchPath(elementUuid) {
+    console.info(`Fetching element '${elementUuid}' and its parents info ...`);
+    const fetchPathUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/elements/` +
         encodeURIComponent(elementUuid) +
         `/path`;
-    return backendFetch(fetchParams).then((response) => response.json());
+    console.debug(fetchPathUrl);
+    return backendFetch(fetchPathUrl).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
 }
