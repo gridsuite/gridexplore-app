@@ -182,7 +182,7 @@ export const useMultipleDeferredFetch = (
                 return {
                     public: {
                         ...lastState.public,
-                        data: lastState.public.data.concat(action.payload),
+                        data: lastState.public.data.concat([action.payload]),
                         paramsOnSuccess:
                             lastState.public.paramsOnSuccess.concat([
                                 action.context,
@@ -194,9 +194,9 @@ export const useMultipleDeferredFetch = (
                 return {
                     public: {
                         ...lastState.public,
-                        errorMessage: lastState.public.errorMessage.concat(
-                            action.payload
-                        ),
+                        errorMessage: lastState.public.errorMessage.concat([
+                            action.payload,
+                        ]),
                         paramsOnError: lastState.public.paramsOnError.concat([
                             action.context,
                         ]),
