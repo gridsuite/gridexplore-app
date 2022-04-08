@@ -12,10 +12,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React from 'react';
 import Alert from '@mui/material/Alert';
 import InputLabel from '@mui/material/InputLabel';
-import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import makeStyles from '@mui/styles/makeStyles';
 import FormControl from '@mui/material/FormControl';
@@ -84,7 +83,7 @@ export const CreateDirectoryDialog = ({
     };
 
     const canCreate = () => {
-        return !nameOk;
+        return nameOk;
     };
 
     return (
@@ -140,7 +139,7 @@ export const CreateDirectoryDialog = ({
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button
-                    disabled={canCreate()}
+                    disabled={!canCreate()}
                     onClick={handleClick}
                     variant="outlined"
                 >
