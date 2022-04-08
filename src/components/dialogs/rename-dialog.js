@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useReducer, useState } from 'react';
+import React from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -41,46 +41,15 @@ const RenameDialog = ({
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const intl = useIntl();
 
-    const initialState = {
-        nameFieldType: '',
-        nameFieldDirectoryId: '',
-        defaultNameFieldValue: '',
-        triggerReset: false,
-    };
-
-    // Props passed to the nameField are only updated when the dialog is closed or opened to avoid requests to be made when Dialogs is closed
-    const [state, dispatch] = useReducer((lastState, action) => {
-        switch (action.type) {
-            case 'OPEN_DIALOG':
-                return {
-                    ...lastState,
-                    defaultNameFieldValue: currentName,
-                    nameFieldDirectoryId:
-                        type === ElementType.DIRECTORY
-                            ? parentDirectory
-                            : activeDirectory,
-                    nameFieldType: type,
-                };
-            case 'CLOSE_DIALOG':
-                return {
-                    ...lastState,
-                    defaultNameFieldValue: currentName,
-                    triggerReset: !lastState.triggerReset,
-                };
-            default:
-                return {
-                    ...lastState,
-                };
-        }
-    }, initialState);
-
     const [newName, newNameField, newNameError, newNameOk] = useNameField({
         label: message,
         autoFocus: true,
-        triggerReset: state.triggerReset,
-        defaultValue: state.defaultNameFieldValue,
-        directoryId: state.nameFieldDirectoryId,
-        elementType: state.nameFieldType,
+        active: open,
+        defaultValue: currentName,
+        // if current element is directory, activeDirectory is current element
+        parentDirectoryId:
+            type === ElementType.DIRECTORY ? parentDirectory : activeDirectory,
+        elementType: type,
         alreadyExistingErrorMessage: intl.formatMessage({
             id: 'nameAlreadyUsed',
         }),
@@ -110,15 +79,6 @@ const RenameDialog = ({
     const canRename = () => {
         return newNameOk;
     };
-
-    useEffect(() => {
-        //Initialisation des paramètres par défaut du useNameField uniquement lorsque la modale est ouverte, quand elle est fermée, on repasse à une valeur vide pour le defaultValue
-        if (open) {
-            dispatch({ type: 'OPEN_DIALOG' });
-        } else {
-            dispatch({ type: 'CLOSE_DIALOG' });
-        }
-    }, [open]);
 
     return (
         <Dialog

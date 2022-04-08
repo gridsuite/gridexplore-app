@@ -34,7 +34,7 @@ export const useTextValue = ({
     id = label,
     defaultValue = '',
     adornment,
-    triggerReset,
+    active,
     ...formProps
 }) => {
     const [value, setValue] = useState(defaultValue);
@@ -73,21 +73,19 @@ export const useTextValue = ({
         adornment,
     ]);
 
-    useEffect(() => setValue(defaultValue), [defaultValue]);
-
-    useEffect(() => setValue(''), [triggerReset]);
+    useEffect(() => setValue(defaultValue), [defaultValue, active]);
 
     return [value, field];
 };
 
-export const useFileValue = ({ triggerReset }) => {
+export const useFileValue = ({ active }) => {
     const selectedFile = useSelector((state) => state.selectedFile);
     const dispatch = useDispatch();
 
     const field = <UploadCase />;
     useEffect(() => {
         dispatch(removeSelectedFile());
-    }, [dispatch, triggerReset]);
+    }, [dispatch, active]);
     return [selectedFile, field];
 };
 
@@ -97,9 +95,9 @@ const makeAdornmentEndIcon = (content) => {
     };
 };
 export const useNameField = ({
-    directoryId,
+    parentDirectoryId,
     elementType,
-    triggerReset,
+    active,
     alreadyExistingErrorMessage,
     ...props
 }) => {
@@ -109,12 +107,17 @@ export const useNameField = ({
     const [checking, setChecking] = useState(undefined);
     const [adornment, setAdornment] = useState();
 
+    // if element is a root directory, we need to make a specific api rest call (elementType is directory, and no parent element)
+    const doesElementExist = useCallback(
+        (name) =>
+            elementType === ElementType.DIRECTORY && !parentDirectoryId
+                ? rootDirectoryExists(name)
+                : elementExists(parentDirectoryId, name, elementType),
+        [elementType, parentDirectoryId]
+    );
+
     const updateValidity = useCallback(
         (name) => {
-            let doesElementExist = () =>
-                elementType === ElementType.DIRECTORY && !directoryId
-                    ? rootDirectoryExists(name)
-                    : elementExists(directoryId, name, elementType);
             if (name.replace(/ /g, '') === '') {
                 setError(intl.formatMessage({ id: 'nameEmpty' }));
                 setChecking(false);
@@ -129,7 +132,7 @@ export const useNameField = ({
                 setChecking(false);
             } else {
                 //If the name is not only white spaces and not defaultValue
-                doesElementExist()
+                doesElementExist(name)
                     .then((data) => {
                         setError(
                             data
@@ -156,9 +159,8 @@ export const useNameField = ({
         [
             props.defaultValue,
             alreadyExistingErrorMessage,
-            directoryId,
-            elementType,
             intl,
+            doesElementExist,
         ]
     );
 
@@ -177,26 +179,39 @@ export const useNameField = ({
 
     const [name, field] = useTextValue({
         ...props,
-        triggerReset,
+        active,
         error: !!error,
         adornment: adornment,
     });
 
     useEffect(() => {
-        if ((name === '' || name === props.defaultValue) && !timer.current) {
-            return; // initial render
+        if (
+            !active ||
+            ((name === '' || name === props.defaultValue) && !timer.current)
+        ) {
+            return; // initial render or inactive hook
         }
         clearTimeout(timer.current);
         setChecking(true);
         setError(undefined);
         timer.current = setTimeout(() => updateValidity(name), 700);
-    }, [props.defaultValue, name, updateValidity]);
+    }, [active, props.defaultValue, name, updateValidity]);
 
     useEffect(() => {
-        setError(undefined);
-        timer.current = undefined;
-        setChecking(undefined);
-        setAdornment(undefined);
-    }, [triggerReset]);
-    return [name, field, error, !error && !checking];
+        if (!active) {
+            setError(undefined);
+            timer.current = undefined;
+            setChecking(undefined);
+            setAdornment(undefined);
+        }
+    }, [active]);
+    return [
+        name,
+        field,
+        error,
+        name !== props.defaultValue &&
+            name.replace(/ /g, '') !== '' &&
+            !error &&
+            !checking,
+    ];
 };
