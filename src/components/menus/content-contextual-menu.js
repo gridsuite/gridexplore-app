@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import React, { useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -7,6 +14,7 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GetAppIcon from '@mui/icons-material/GetApp';
+import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 
 import ExportDialog from '../dialogs/export-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
@@ -19,6 +27,7 @@ import GenericFilterDialog from '../dialogs/generic-filter-dialog';
 
 import {
     deleteElement,
+    moveElementToDirectory,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,
     renameElement,
@@ -38,10 +47,12 @@ import {
     useMultipleDeferredFetch,
 } from '../../utils/custom-hooks';
 import { useSnackbar } from 'notistack';
+import MoveDialog from '../dialogs/move-dialog';
 
 const DialogsId = {
     RENAME: 'rename',
     DELETE: 'delete',
+    MOVE: 'move',
     EXPORT: 'export',
     FILTERS_CONTINGENCY: 'filters_contingency',
     SCRIPT_CONTINGENCY: 'script_contingency',
@@ -81,22 +92,20 @@ const ContentContextualMenu = (props) => {
         setOpenDialog(dialogId);
     };
 
-    const handleCloseDialog = () => {
+    const handleCloseDialog = useCallback(() => {
         onClose();
         setOpenDialog(DialogsId.NONE);
         setHideMenu(false);
-    };
+    }, [onClose]);
 
     const handleClickExportStudy = (url) => {
         window.open(url, DownloadIframe);
         handleCloseDialog();
     };
     const [multipleDeleteError, setMultipleDeleteError] = useState('');
-    const [deleteCB] = useMultipleDeferredFetch(
-        deleteElement,
-        handleCloseDialog,
-        undefined,
-        (errorMessages, paramsOnErrors, params) => {
+
+    const deleteElementOnError = useCallback(
+        (errorMessages, params, paramsOnErrors) => {
             let msg = intl.formatMessage(
                 { id: 'deleteElementsFailure' },
                 {
@@ -110,6 +119,50 @@ const ContentContextualMenu = (props) => {
             console.debug(msg);
             setMultipleDeleteError(msg);
         },
+        [intl]
+    );
+    const [deleteCB] = useMultipleDeferredFetch(
+        deleteElement,
+        handleCloseDialog,
+        undefined,
+        deleteElementOnError,
+        false
+    );
+
+    const moveElementErrorToString = useCallback(
+        (HTTPStatusCode) => {
+            if (HTTPStatusCode === 403) {
+                return intl.formatMessage({
+                    id: 'moveElementNotAllowedError',
+                });
+            } else if (HTTPStatusCode === 404) {
+                return intl.formatMessage({ id: 'moveElementNotFoundError' });
+            }
+        },
+        [intl]
+    );
+
+    const moveElementOnError = useCallback(
+        (errorMessages, params, paramsOnErrors) => {
+            let msg = intl.formatMessage(
+                { id: 'moveElementsFailure' },
+                {
+                    pbn: errorMessages.length,
+                    stn: paramsOnErrors.length,
+                    problematic: paramsOnErrors.map((p) => p[0]).join(' '),
+                }
+            );
+            console.debug(msg);
+            handleLastError(msg);
+        },
+        [handleLastError, intl]
+    );
+
+    const [moveCB] = useMultipleDeferredFetch(
+        moveElementToDirectory,
+        undefined,
+        moveElementErrorToString,
+        moveElementOnError,
         false
     );
 
@@ -183,6 +236,14 @@ const ContentContextualMenu = (props) => {
             selectedElements[0].type === ElementType.STUDY
         );
     }, [selectedElements]);
+
+    const allowsMove = useCallback(() => {
+        return (
+            selectedElements.every(
+                (element) => element.type !== ElementType.DIRECTORY
+            ) && isUserAllowed()
+        );
+    }, [isUserAllowed, selectedElements]);
 
     const allowsCopyContingencyToScript = useCallback(() => {
         return (
@@ -287,6 +348,17 @@ const ContentContextualMenu = (props) => {
             });
         }
 
+        if (allowsMove()) {
+            menuItems.push({
+                messageDescriptorId: 'move',
+                callback: () => {
+                    handleOpenDialog(DialogsId.MOVE);
+                },
+                icon: <DriveFileMoveIcon fontSize="small" />,
+                withDivider: true,
+            });
+        }
+
         if (allowsDelete()) {
             menuItems.push({
                 messageDescriptorId: 'delete',
@@ -384,6 +456,20 @@ const ContentContextualMenu = (props) => {
                 }
                 simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
                 error={multipleDeleteError}
+            />
+            <MoveDialog
+                open={openDialog === DialogsId.MOVE}
+                onClose={(selectedDir) => {
+                    if (selectedDir.length > 0) {
+                        moveCB(
+                            selectedElements.map((element) => {
+                                return [element.elementUuid, selectedDir[0].id];
+                            })
+                        );
+                    }
+                    handleCloseDialog();
+                }}
+                items={selectedElements}
             />
             <ExportDialog
                 open={openDialog === DialogsId.EXPORT}

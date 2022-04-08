@@ -21,6 +21,8 @@ import {
     top_bar_fr,
     table_fr,
     table_en,
+    treeview_finder_fr,
+    treeview_finder_en,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -100,8 +102,20 @@ const getMuiTheme = (theme) => {
 };
 
 const messages = {
-    en: { ...messages_en, ...login_en, ...top_bar_en, ...table_en },
-    fr: { ...messages_fr, ...login_fr, ...top_bar_fr, ...table_fr },
+    en: {
+        ...messages_en,
+        ...login_en,
+        ...top_bar_en,
+        ...table_en,
+        ...treeview_finder_en,
+    },
+    fr: {
+        ...messages_fr,
+        ...login_fr,
+        ...top_bar_fr,
+        ...table_fr,
+        ...treeview_finder_fr,
+    },
 };
 
 const basename = new URL(document.querySelector('base').href).pathname;

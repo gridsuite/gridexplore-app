@@ -22,6 +22,7 @@
     "genericConfirmQuestion": "Êtes-vous sûr(e) ?",
     "deleteStudyError": "Vous n'êtes pas le propriétaire de l'étude",
     "deleteElementsFailure": "Problème à la destruction {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {détruit} other {détruits}} : {problematic}",
+    "moveElementsFailure": "Problème au déplacement {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {déplacé} other {déplacés}} : {problematic}",
     "caseExist": "La situation existe-t-elle déjà ?",
     "studyName": "nom de l'étude",
     "studyNameProperty": "Nom de l'étude : ",
@@ -54,6 +55,7 @@
 
     "nameAlreadyUsed": "Ce nom est déjà utilisé",
 
+    "move": "Déplacer",
     "delete": "Supprimer",
     "rename": "Renommer",
 
@@ -149,5 +151,11 @@
 
     "FilterName": "Nom",
     "getAppLinkError": "Erreur lors de la récupération du lien vers l'application pour le type = {type}",
-    "nameValidityCheckErrorMsg": "Erreur lors de la vérification de la validité du nom : "
+    "nameValidityCheckErrorMsg": "Erreur lors de la vérification de la validité du nom : ",
+
+    "moveItemTitle": "Déplacer élément vers un autre dossier",
+    "moveItemValidate": "{nbElements, plural, =0 {Veuillez sélectionner un dossier} =1 {Déplacer l'élément} other {Déplacer # éléments}}",
+    "moveItemContentText": "Veuillez choisir un dossier",
+    "moveElementNotFoundError": "L'élément ou le dossier cible n'a pas été trouvé",
+    "moveElementNotAllowedError": "Vous ne pouvez pas déplacer cet élément dans le dossier cible. Action non autorisée"
 }
