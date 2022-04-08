@@ -137,9 +137,9 @@ export function moveElementToDirectory(elementUuid, directoryUuid) {
     );
     const fetchParams =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/elements/${elementUuid}/move?newDirectory=${directoryUuid}`;
+        `/v1/elements/${elementUuid}?newDirectory=${directoryUuid}`;
     return backendFetch(fetchParams, {
-        method: 'PATCH',
+        method: 'PUT',
     });
 }
 
@@ -664,6 +664,10 @@ export function saveFilter(filter) {
         body: JSON.stringify(filter),
     }).then((response) => handleResponse(response, false));
 }
+
+/**
+ * Fetch element and all its parents info
+ */
 
 export function fetchPath(elementUuid) {
     console.info(`Fetching element '${elementUuid}' and its parents info ...`);

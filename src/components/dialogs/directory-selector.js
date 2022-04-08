@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { TreeViewFinder } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
@@ -18,10 +25,7 @@ const DirectorySelector = (props) => {
     const nodeMap = useRef({});
     const classes = useStyles();
 
-    const contentFilter = useCallback(
-        () => new Set([elementType.DIRECTORY, ...props.types]),
-        [props.types]
-    );
+    const contentFilter = new Set([elementType.DIRECTORY]);
 
     const directory2Tree = useCallback(
         (newData) => {
@@ -54,11 +58,10 @@ const DirectorySelector = (props) => {
     );
 
     const fetchDirectory = (nodeId) => {
-        const filter = contentFilter();
         fetchDirectoryContent(nodeId).then((content) => {
             addToDirectory(
                 nodeId,
-                content.filter((item) => filter.has(item.type))
+                content.filter((item) => contentFilter.has(item.type))
             );
             setData([...data]);
         });
@@ -66,7 +69,6 @@ const DirectorySelector = (props) => {
 
     return (
         <TreeViewFinder
-            multiselect={false}
             onTreeBrowse={fetchDirectory}
             data={data}
             onlyLeaves={false}
@@ -77,9 +79,6 @@ const DirectorySelector = (props) => {
 
 DirectorySelector.propTypes = {
     open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    types: PropTypes.array.isRequired,
-    title: PropTypes.string.isRequired,
 };
 
 export default DirectorySelector;
