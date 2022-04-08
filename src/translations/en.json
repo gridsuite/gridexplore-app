@@ -159,5 +159,5 @@
     "moveItemValidate": "{nbElements, plural, =0 {Please select a folder} =1 {Move element} other {Move # elements}}",
     "moveItemContentText": "Please choose a folder",
     "moveElementNotFoundError": "The element or the targeted folder was not found",
-    "moveElementNotAllowedError": "You cannot move this element to the targeted folder. Unauthorized action"
+    "moveElementNotAllowedError": "You cannot move this element to the targeted folder. Either you are not the owner of the folder, or it does not have the same access rights as the origin folder"
 }

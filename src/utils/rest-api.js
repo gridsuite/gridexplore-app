@@ -137,9 +137,9 @@ export function moveElementToDirectory(elementUuid, directoryUuid) {
     );
     const fetchParams =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/elements/${elementUuid}?newDirectory=${directoryUuid}`;
+        `/v1/elements/${elementUuid}/move?newDirectory=${directoryUuid}`;
     return backendFetch(fetchParams, {
-        method: 'PUT',
+        method: 'PATCH',
     });
 }
 

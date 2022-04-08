@@ -154,8 +154,8 @@
     "nameValidityCheckErrorMsg": "Erreur lors de la vérification de la validité du nom : ",
 
     "moveItemTitle": "Déplacer élément vers un autre dossier",
-    "moveItemValidate": "{nbElements, plural, =0 {Veuillez sélectionner un dossier} =1 {Déplacer l'élément} other {Déplacer # éléments}}",
+    "moveItemValidate": "{nbElements, plural, =0 {Veuillez sélectionner un dossier} =1 {Déplacer élément} other {Déplacer # éléments}}",
     "moveItemContentText": "Veuillez choisir un dossier",
     "moveElementNotFoundError": "L'élément ou le dossier cible n'a pas été trouvé",
-    "moveElementNotAllowedError": "Vous ne pouvez pas déplacer cet élément dans le dossier cible. Action non autorisée"
+    "moveElementNotAllowedError": "Vous ne pouvez pas déplacer cet élément dans le dossier cible. Le dossier ne vous appartient pas ou ne possède pas les mêmes droits d'accès que le dossier d'origine"
 }
