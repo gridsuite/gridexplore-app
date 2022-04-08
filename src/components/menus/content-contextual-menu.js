@@ -486,9 +486,8 @@ const ContentContextualMenu = (props) => {
                                 return [element.elementUuid, selectedDir[0].id];
                             })
                         );
-                    } else {
-                        handleCloseDialog();
                     }
+                    handleCloseDialog();
                 }}
                 items={selectedElements}
             />
