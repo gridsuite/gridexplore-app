@@ -394,6 +394,27 @@ export function elementExists(directoryUuid, elementName, type) {
     );
 }
 
+export function rootDirectoryExists(directoryName) {
+    const existsRootDirectoryUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/root-directories?` +
+        new URLSearchParams({
+            directoryName: directoryName,
+        }).toString();
+
+    console.debug(existsRootDirectoryUrl);
+
+    return backendFetch(existsRootDirectoryUrl, { method: 'head' }).then(
+        (response) => {
+            return response.ok
+                ? true
+                : response.status === 404
+                ? false
+                : Promise.reject(response.statusText);
+        }
+    );
+}
+
 export function createContingencyList(
     contingencyListType,
     contingencyListName,

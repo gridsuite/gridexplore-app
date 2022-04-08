@@ -13,13 +13,14 @@ import React, {
     useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { elementExists } from '../../utils/rest-api';
+import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { useDispatch, useSelector } from 'react-redux';
 import { UploadCase } from './upload-case';
 import makeStyles from '@mui/styles/makeStyles';
 import { removeSelectedFile } from '../../redux/actions';
+import { ElementType } from '../../utils/elementType';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -72,7 +73,9 @@ export const useTextValue = ({
         adornment,
     ]);
 
-    useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
+    useEffect(() => setValue(defaultValue), [defaultValue]);
+
+    useEffect(() => setValue(''), [triggerReset]);
 
     return [value, field];
 };
@@ -97,6 +100,7 @@ export const useNameField = ({
     directoryId,
     elementType,
     triggerReset,
+    alreadyExistingErrorMessage,
     ...props
 }) => {
     const [error, setError] = useState();
@@ -107,15 +111,33 @@ export const useNameField = ({
 
     const updateValidity = useCallback(
         (name) => {
-            if (name.replace(/ /g, '') !== '') {
-                //If the name is not only white spaces
-                elementExists(directoryId, name, elementType)
+            let doesElementExist = () =>
+                elementType === ElementType.DIRECTORY && !directoryId
+                    ? rootDirectoryExists(name)
+                    : elementExists(directoryId, name, elementType);
+            if (name.replace(/ /g, '') === '') {
+                setError(intl.formatMessage({ id: 'nameEmpty' }));
+                setChecking(false);
+            } else if (name === props.defaultValue) {
+                setError(
+                    alreadyExistingErrorMessage
+                        ? alreadyExistingErrorMessage
+                        : intl.formatMessage({
+                              id: 'studyNameAlreadyUsed',
+                          })
+                );
+                setChecking(false);
+            } else {
+                //If the name is not only white spaces and not defaultValue
+                doesElementExist()
                     .then((data) => {
                         setError(
                             data
-                                ? intl.formatMessage({
-                                      id: 'studyNameAlreadyUsed',
-                                  })
+                                ? alreadyExistingErrorMessage
+                                    ? alreadyExistingErrorMessage
+                                    : intl.formatMessage({
+                                          id: 'studyNameAlreadyUsed',
+                                      })
                                 : ''
                         );
                     })
@@ -129,12 +151,15 @@ export const useNameField = ({
                     .finally(() => {
                         setChecking(false);
                     });
-            } else {
-                setError(intl.formatMessage({ id: 'nameEmpty' }));
-                setChecking(false);
             }
         },
-        [directoryId, elementType, intl]
+        [
+            props.defaultValue,
+            alreadyExistingErrorMessage,
+            directoryId,
+            elementType,
+            intl,
+        ]
     );
 
     useEffect(() => {
@@ -158,12 +183,14 @@ export const useNameField = ({
     });
 
     useEffect(() => {
-        if (name === '' && !timer.current) return; // initial render
+        if ((name === '' || name === props.defaultValue) && !timer.current) {
+            return; // initial render
+        }
         clearTimeout(timer.current);
         setChecking(true);
         setError(undefined);
         timer.current = setTimeout(() => updateValidity(name), 700);
-    }, [name, updateValidity]);
+    }, [props.defaultValue, name, updateValidity]);
 
     useEffect(() => {
         setError(undefined);

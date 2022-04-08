@@ -29,6 +29,7 @@ import {
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
 import { CreateCaseDialog } from '../dialogs/create-case-dialog';
+import { ElementType } from '../../utils/elementType';
 
 const DialogsId = {
     ADD_ROOT_DIRECTORY: 'add_root_directory',
@@ -254,8 +255,9 @@ const DirectoryTreeContextualMenu = (props) => {
                 })}
                 error={insertRootDirectoryState?.errorMessage}
             />
+
             <RenameDialog
-                message={''}
+                message={'renameElementMsg'}
                 currentName={directory?.elementName}
                 open={openDialog === DialogsId.RENAME}
                 onClick={(newName) => renameCB(directory?.elementUuid, newName)}
@@ -264,6 +266,8 @@ const DirectoryTreeContextualMenu = (props) => {
                     id: 'renameDirectoryDialogTitle',
                 })}
                 error={renameState.errorMessage}
+                type={ElementType.DIRECTORY}
+                parentDirectory={directory?.parentUuid}
             />
             <DeleteDialog
                 items={directory ? [directory] : []}
