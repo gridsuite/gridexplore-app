@@ -664,3 +664,22 @@ export function saveFilter(filter) {
         body: JSON.stringify(filter),
     }).then((response) => handleResponse(response, false));
 }
+
+/**
+ * Fetch element and all its parents info
+ */
+
+export function fetchPath(elementUuid) {
+    console.info(`Fetching element '${elementUuid}' and its parents info ...`);
+    const fetchPathUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/elements/` +
+        encodeURIComponent(elementUuid) +
+        `/path`;
+    console.debug(fetchPathUrl);
+    return backendFetch(fetchPathUrl).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}

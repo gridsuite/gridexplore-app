@@ -238,6 +238,9 @@ const DirectoryContent = () => {
 
     /* User interactions */
     const onContextMenu = (event) => {
+        if (selectedDirectory) {
+            dispatch(setActiveDirectory(selectedDirectory.elementUuid));
+        }
         if (
             event.rowData &&
             event.rowData.uploading !== null &&
@@ -256,9 +259,6 @@ const DirectoryContent = () => {
                 mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
                 mouseY: event.clientY + constants.VERTICAL_SHIFT,
             });
-            if (selectedDirectory) {
-                dispatch(setActiveDirectory(selectedDirectory.elementUuid));
-            }
             handleOpenDirectoryMenu(event);
         }
     };
