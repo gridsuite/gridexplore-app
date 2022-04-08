@@ -52,7 +52,7 @@ export const useTextValue = ({
                 size="small"
                 margin="dense"
                 id={id}
-                label={<FormattedMessage id={label} />}
+                label={id && <FormattedMessage id={label} />}
                 value={value}
                 style={{ width: '100%' }}
                 onChange={handleChangeValue}

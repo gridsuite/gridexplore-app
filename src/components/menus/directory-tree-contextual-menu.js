@@ -241,6 +241,7 @@ const DirectoryTreeContextualMenu = (props) => {
                 title={intl.formatMessage({
                     id: 'insertNewDirectoryDialogTitle',
                 })}
+                parentDirectory={directory?.elementUuid}
                 error={insertDirectoryState?.errorMessage}
             />
             <CreateDirectoryDialog

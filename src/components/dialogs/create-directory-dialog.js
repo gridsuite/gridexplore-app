@@ -22,6 +22,8 @@ import FormControl from '@mui/material/FormControl';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
+import { ElementType } from '../../utils/elementType';
+import { useNameField } from './field-hook';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -48,24 +50,27 @@ export const CreateDirectoryDialog = ({
     onClose,
     onClick,
     title,
+    parentDirectory,
     message,
     error,
 }) => {
     const classes = useStyles();
 
-    const [elementName, setElementName] = React.useState('');
     const [isPrivate, setIsPrivate] = React.useState(true);
+
+    const [name, nameField, nameError, nameOk] = useNameField({
+        autoFocus: true,
+        elementType: ElementType.DIRECTORY,
+        parentDirectoryId: parentDirectory,
+        active: open,
+    });
 
     const handleClose = () => {
         onClose();
     };
 
     const handleClick = () => {
-        onClick(elementName, isPrivate);
-    };
-
-    const updateElementName = (event) => {
-        setElementName(event.target.value);
+        onClick(name, isPrivate);
     };
 
     const handleChange = (event) => {
@@ -73,14 +78,14 @@ export const CreateDirectoryDialog = ({
     };
 
     const handleKeyPressed = (event) => {
-        if (open && event.key === 'Enter') {
+        if (open && event.key === 'Enter' && canCreate()) {
             handleClick();
         }
     };
 
-    useEffect(() => {
-        setElementName('');
-    }, [open]);
+    const canCreate = () => {
+        return !nameOk;
+    };
 
     return (
         <Dialog
@@ -99,12 +104,7 @@ export const CreateDirectoryDialog = ({
                         </InputLabel>
                     </Grid>
                     <Grid item xs={7}>
-                        <TextField
-                            autoFocus
-                            value={elementName}
-                            required={true}
-                            onChange={updateElementName}
-                        />
+                        {nameField}
                     </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.root}>
@@ -132,13 +132,18 @@ export const CreateDirectoryDialog = ({
                     </Grid>
                 </Grid>
                 <br />
+                {nameError && <Alert severity="error">{nameError}</Alert>}
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleClick} variant="outlined">
+                <Button
+                    disabled={canCreate()}
+                    onClick={handleClick}
+                    variant="outlined"
+                >
                     <FormattedMessage id="create" />
                 </Button>
             </DialogActions>
