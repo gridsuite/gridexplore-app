@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useEffect } from 'react';
-import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import InputLabel from '@mui/material/InputLabel';
@@ -15,6 +14,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
+import { BaseDialog } from './base-dialog';
 
 /**
  * Dialog to rename an element
@@ -68,7 +68,7 @@ const RenameDialog = ({
     }, [currentName]);
 
     return (
-        <Dialog
+        <BaseDialog
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-rename"
@@ -95,7 +95,7 @@ const RenameDialog = ({
                     <FormattedMessage id="rename" />
                 </Button>
             </DialogActions>
-        </Dialog>
+        </BaseDialog>
     );
 };
 

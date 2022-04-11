@@ -564,7 +564,7 @@ const DirectoryContent = () => {
                 style={{
                     height: '100%',
                 }}
-                onMouseDownCapture={(e) => {
+                onMouseDown={(e) => {
                     if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON) {
                         handleCloseContentMenu();
                         handleCloseDirectoryMenu();

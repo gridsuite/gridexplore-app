@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import Dialog from '@mui/material/Dialog';
+import { BaseDialog } from './base-dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import Alert from '@mui/material/Alert';
@@ -127,7 +127,7 @@ const DeleteDialog = ({
     };
 
     return (
-        <Dialog
+        <BaseDialog
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-delete"
@@ -150,7 +150,7 @@ const DeleteDialog = ({
                     <FormattedMessage id="delete" />
                 </Button>
             </DialogActions>
-        </Dialog>
+        </BaseDialog>
     );
 };
 
