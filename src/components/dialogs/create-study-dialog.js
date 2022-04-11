@@ -32,7 +32,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     addUploadingStudy,
     loadCasesSuccess,
-    removeSelectedFile,
     removeUploadingStudy,
     selectCase,
 } from '../../redux/actions';
@@ -44,7 +43,7 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { ElementType } from '../../utils/elementType';
-import { UploadCase } from './upload-case';
+import { useFileValue } from './field-hook';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -144,9 +143,14 @@ export const CreateStudyDialog = ({ open, onClose }) => {
     const intlRef = useIntlRef();
     const dispatch = useDispatch();
 
-    const selectedFile = useSelector((state) => state.selectedFile);
     const caseName = useSelector((state) => state.selectedCase);
     const activeDirectory = useSelector((state) => state.activeDirectory);
+
+    const [selectedFile, FileField, selectedFileError, isSelectedFileOk] =
+        useFileValue({
+            label: 'Case',
+            active: open,
+        });
 
     const resetDialog = () => {
         setCreateStudyErr('');
@@ -154,7 +158,6 @@ export const CreateStudyDialog = ({ open, onClose }) => {
         setStudyDescription('');
         setLoadingCheckStudyName(false);
         setStudyNameValid(false);
-        dispatch(removeSelectedFile());
     };
 
     const handleCloseDialog = () => {
@@ -311,6 +314,7 @@ export const CreateStudyDialog = ({ open, onClose }) => {
             handleCreateNewStudy();
         }
     };
+
     return (
         <div>
             <Dialog
@@ -366,9 +370,12 @@ export const CreateStudyDialog = ({ open, onClose }) => {
                         label={<FormattedMessage id="studyDescription" />}
                     />
                     {caseExist && <SelectCase />}
-                    {!caseExist && <UploadCase />}
+                    {!caseExist && FileField}
                     {createStudyErr !== '' && (
                         <Alert severity="error">{createStudyErr}</Alert>
+                    )}
+                    {selectedFileError && (
+                        <Alert severity="error">{selectedFileError}</Alert>
                     )}
                 </DialogContent>
                 <DialogActions>
@@ -380,7 +387,8 @@ export const CreateStudyDialog = ({ open, onClose }) => {
                         disabled={
                             studyName === '' ||
                             !studyNameValid ||
-                            loadingCheckStudyName
+                            loadingCheckStudyName ||
+                            !isSelectedFileOk
                         }
                         variant="outlined"
                     >

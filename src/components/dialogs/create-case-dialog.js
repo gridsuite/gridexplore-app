@@ -36,10 +36,13 @@ export function CreateCaseDialog({ onClose, open }) {
         label: 'CaseDescriptionOptional',
         active: open,
     });
-    const [file, FileField] = useFileValue({ label: 'Case', active: open });
+    const [file, FileField, fileError, isFileOk] = useFileValue({
+        label: 'Case',
+        active: open,
+    });
 
     function validate() {
-        return file && nameOk;
+        return file && nameOk && isFileOk;
     }
 
     const snackbarMessage = useSnackbarMessage();
@@ -88,6 +91,7 @@ export function CreateCaseDialog({ onClose, open }) {
                 {DescriptionField}
                 {FileField}
                 {nameError && <Alert severity="error">{nameError}</Alert>}
+                {fileError && <Alert severity="error">{fileError}</Alert>}
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => handleCloseDialog()} variant="text">

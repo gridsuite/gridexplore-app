@@ -78,15 +78,45 @@ export const useTextValue = ({
     return [value, field];
 };
 
-export const useFileValue = ({ active }) => {
+export const useFileValue = ({ active, fileExceedsLimitMessage }) => {
     const selectedFile = useSelector((state) => state.selectedFile);
+    const intl = useIntl();
     const dispatch = useDispatch();
+    const [isFileOk, setIsFileOk] = useState(false);
+    const [fileError, setFileError] = useState();
 
     const field = <UploadCase />;
     useEffect(() => {
         dispatch(removeSelectedFile());
     }, [dispatch, active]);
-    return [selectedFile, field];
+
+    useEffect(() => {
+        const MAX_FILE_SIZE_IN_MO = 100;
+        const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
+        if (!selectedFile) {
+            setFileError();
+            setIsFileOk(false);
+        } else if (selectedFile.size <= MAX_FILE_SIZE_IN_BYTES) {
+            setFileError();
+            setIsFileOk(true);
+        } else {
+            setFileError(
+                fileExceedsLimitMessage
+                    ? fileExceedsLimitMessage
+                    : intl.formatMessage(
+                          {
+                              id: 'uploadFileExceedingLimitSizeErrorMsg',
+                          },
+                          {
+                              maxSize: MAX_FILE_SIZE_IN_MO,
+                              br: <br />,
+                          }
+                      )
+            );
+            setIsFileOk(false);
+        }
+    }, [selectedFile, fileExceedsLimitMessage, intl]);
+    return [selectedFile, field, fileError, isFileOk];
 };
 
 const makeAdornmentEndIcon = (content) => {
