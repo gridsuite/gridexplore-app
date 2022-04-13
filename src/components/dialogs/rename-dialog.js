@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { ContextualMenuDialog } from './contextual-menu-dialog';
 import React, { useEffect } from 'react';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -14,7 +15,6 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import { BaseDialog } from './base-dialog';
 
 /**
  * Dialog to rename an element
@@ -68,7 +68,7 @@ const RenameDialog = ({
     }, [currentName]);
 
     return (
-        <BaseDialog
+        <ContextualMenuDialog
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-rename"
@@ -95,7 +95,7 @@ const RenameDialog = ({
                     <FormattedMessage id="rename" />
                 </Button>
             </DialogActions>
-        </BaseDialog>
+        </ContextualMenuDialog>
     );
 };
 

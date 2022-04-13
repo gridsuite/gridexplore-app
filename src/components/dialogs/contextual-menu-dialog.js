@@ -9,16 +9,17 @@ import * as constants from '../../utils/UIconstants';
 
 import Dialog from '@mui/material/Dialog';
 
-export const BaseDialog = (props) => {
-    const { open, handleClose, ariaLabel, handleKeyPressed } = props;
+export const ContextualMenuDialog = (props) => {
+    const { fullWidth, open, handleClose, ariaLabel, handleKeyPressed } = props;
 
     return (
         <Dialog
+            fullWidth={fullWidth}
             open={open}
             onClose={handleClose}
             aria-labelledby={ariaLabel}
             onKeyPress={handleKeyPressed}
-            //Call to stopPropagation in order to prevent contextual menu to appear
+            //Being in a dialog box, we don't want the right click event or oncontextmenu to bubble to the parent component
             onContextMenu={(e) => e.stopPropagation()}
             onMouseDown={(e) => {
                 if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON) {

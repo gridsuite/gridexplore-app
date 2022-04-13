@@ -14,6 +14,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
+import { ContextualMenuDialog } from './contextual-menu-dialog';
 
 /**
  * Dialog to copy a filters contingency list to a script contingency list or a filter to a script
@@ -57,7 +58,7 @@ const CopyToScriptDialog = ({
     }, [currentName]);
 
     return (
-        <Dialog
+        <ContextualMenuDialog
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-rename"
@@ -85,7 +86,7 @@ const CopyToScriptDialog = ({
                     <FormattedMessage id="copy" />
                 </Button>
             </DialogActions>
-        </Dialog>
+        </ContextualMenuDialog>
     );
 };
 

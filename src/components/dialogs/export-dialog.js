@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { BaseDialog } from './base-dialog';
+import { ContextualMenuDialog } from './contextual-menu-dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DialogContent from '@mui/material/DialogContent';
@@ -81,7 +81,7 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, title }) => {
     const intl = useIntl();
 
     return (
-        <BaseDialog
+        <ContextualMenuDialog
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-export"
@@ -134,7 +134,7 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, title }) => {
                     <FormattedMessage id="export" />
                 </Button>
             </DialogActions>
-        </BaseDialog>
+        </ContextualMenuDialog>
     );
 };
 

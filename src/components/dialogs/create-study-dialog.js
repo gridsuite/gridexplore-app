@@ -11,7 +11,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
+import { ContextualMenuDialog } from './contextual-menu-dialog.js';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -370,14 +370,12 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     return (
         <div>
-            <Dialog
+            <ContextualMenuDialog
                 fullWidth={true}
                 open={open}
                 onClose={handleCloseDialog}
                 aria-labelledby="form-dialog-title"
                 onKeyPress={handleKeyPressed}
-                //Call to stopPropagation in order to prevent contextual menu to appear
-                onContextMenu={(e) => e.stopPropagation()}
             >
                 <DialogTitle id="form-dialog-title">
                     <FormattedMessage id="createNewStudy" />
@@ -503,7 +501,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         <FormattedMessage id="create" />
                     </Button>
                 </DialogActions>
-            </Dialog>
+            </ContextualMenuDialog>
         </div>
     );
 };

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useCallback, useEffect, useState } from 'react';
-import Dialog from '@mui/material/Dialog';
+import { ContextualMenuDialog } from './contextual-menu-dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
@@ -173,7 +173,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
     }, [id, getCurrentScript]);
 
     return (
-        <Dialog
+        <ContextualMenuDialog
             classes={{ paper: classes.dialogPaper }}
             open={open}
             onClose={handleClose}
@@ -206,7 +206,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                     <FormattedMessage id="save" />
                 </Button>
             </DialogActions>
-        </Dialog>
+        </ContextualMenuDialog>
     );
 };
 
