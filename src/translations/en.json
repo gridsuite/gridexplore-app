@@ -22,6 +22,7 @@
     "genericConfirmQuestion": "Are you sure?",
     "deleteStudyError": "You are not the owner of this study",
     "deleteElementsFailure": "Problem encountered while deleting {stn, plural, one {an element} other {elements}}. Not deleted : {problematic}",
+    "moveElementsFailure": "Problem encountered while moving {stn, plural, one {an element} other {elements}}. Not moved : {problematic}",
     "caseExist": "Does the case already exist?",
     "studyName": "study name",
     "studyNameProperty": "Study name: ",
@@ -54,6 +55,7 @@
 
     "nameAlreadyUsed": "This name is already used",
 
+    "move": "Move",
     "rename": "Rename",
     "delete": "Delete",
 
@@ -61,6 +63,11 @@
     "createRootFolder": "Create root folder",
     "deleteFolder": "Delete",
     "renameFolder": "Rename",
+    "createNewStudyFromImportedCase": "Create study",
+
+    "showSelectDirectoryDialog": "Change folder",
+    "selectDirectoryDialogTitle": "Pick a folder",
+    "confirmDirectoryDialog": "Confirm",
 
     "insertNewDirectoryDialogMessage": "Please insert the following information! ",
     "insertNewDirectoryDialogTitle": "Create folder",
@@ -151,5 +158,11 @@
 
     "FilterName": "Name",
     "getAppLinkError": "Error getting application link for type = {type}",
-    "nameValidityCheckErrorMsg": "Error checking name validity : "
+    "nameValidityCheckErrorMsg": "Error checking name validity : ",
+
+    "moveItemTitle": "Move element to another folder",
+    "moveItemValidate": "{nbElements, plural, =0 {Please select a folder} =1 {Move element} other {Move # elements}}",
+    "moveItemContentText": "Please choose a folder",
+    "moveElementNotFoundError": "The element or the targeted folder was not found",
+    "moveElementNotAllowedError": "You cannot move this element to the targeted folder. Unauthorized action"
 }

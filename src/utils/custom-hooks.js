@@ -1,11 +1,18 @@
-import { useEffect, useCallback, useReducer, useState, useRef } from 'react';
+import { useEffect, useCallback, useReducer, useState } from 'react';
 
 export const FetchStatus = {
     IDLE: 'IDLE',
     FETCHING: 'FETCHING',
-    PARTIALLY_FETCHED: 'PARTIALLY_FETCHED',
-    FETCHED: 'FETCHED',
+    FETCH_SUCCESS: 'FETCH_SUCCESS',
     FETCH_ERROR: 'FETCH_ERROR',
+};
+
+export const ActionType = {
+    START: 'START',
+    ERROR: 'ERROR',
+    SUCCESS: 'SUCCESS',
+    ADD_ERROR: 'ADD_ERROR', // Use by multipleDeferredFetch when one request respond with error
+    ADD_SUCCESS: 'ADD_SUCCESS', // Use by multipleDeferredFetch when one request respond with success
 };
 
 /**
@@ -39,15 +46,15 @@ export const useDeferredFetch = (
 
     const [state, dispatch] = useReducer((lastState, action) => {
         switch (action.type) {
-            case FetchStatus.FETCHING:
+            case ActionType.START:
                 return { ...initialState, status: FetchStatus.FETCHING };
-            case FetchStatus.FETCHED:
+            case ActionType.SUCCESS:
                 return {
                     ...initialState,
-                    status: FetchStatus.FETCHED,
+                    status: FetchStatus.FETCH_SUCCESS,
                     data: action.payload,
                 };
-            case FetchStatus.FETCH_ERROR:
+            case ActionType.ERROR:
                 return {
                     ...initialState,
                     status: FetchStatus.FETCH_ERROR,
@@ -73,7 +80,7 @@ export const useDeferredFetch = (
             }
 
             dispatch({
-                type: FetchStatus.FETCH_ERROR,
+                type: ActionType.ERROR,
                 payload: errorMessage,
             });
             if (onError) {
@@ -85,20 +92,24 @@ export const useDeferredFetch = (
 
     const fetchData = useCallback(
         async (...args) => {
-            dispatch({ type: FetchStatus.FETCHING });
+            dispatch({ type: ActionType.START });
             try {
                 // Params resolution
                 const response = await fetchFunction.apply(null, args);
+
                 if (hasResult) {
                     const data = response;
                     dispatch({
-                        type: FetchStatus.FETCHED,
+                        type: ActionType.SUCCESS,
                         payload: data,
                     });
-                    if (onSuccess) onSuccess(data);
+                    if (onSuccess) onSuccess(data, args);
                 } else {
+                    dispatch({
+                        type: ActionType.SUCCESS,
+                    });
                     if (response.ok) {
-                        if (onSuccess) onSuccess();
+                        if (onSuccess) onSuccess(null, args);
                     } else {
                         handleError(response, args);
                     }
@@ -147,37 +158,68 @@ export const useMultipleDeferredFetch = (
     hasResult = true
 ) => {
     const initialState = {
-        status: FetchStatus.IDLE,
-        errorMessage: [],
-        paramsOnError: [],
-        data: [],
+        public: {
+            status: FetchStatus.IDLE,
+            errorMessage: [],
+            paramsOnError: [],
+            data: [],
+            paramsOnSuccess: [],
+        },
+        counter: 0,
     };
 
     const [state, dispatch] = useReducer((lastState, action) => {
         switch (action.type) {
-            case FetchStatus.IDLE:
-                return { ...initialState };
-            case FetchStatus.FETCHING:
-                return { ...initialState, status: FetchStatus.FETCHING };
-            case FetchStatus.PARTIALLY_FETCHED:
+            case ActionType.START:
                 return {
                     ...initialState,
-                    status: FetchStatus.PARTIALLY_FETCHED,
-                    data: lastState.data.concat(action.payload),
+                    public: {
+                        ...initialState.public,
+                        status: FetchStatus.FETCHING,
+                    },
                 };
-            case FetchStatus.FETCHED:
+            case ActionType.ADD_SUCCESS:
+                return {
+                    public: {
+                        ...lastState.public,
+                        data: lastState.public.data.concat([action.payload]),
+                        paramsOnSuccess:
+                            lastState.public.paramsOnSuccess.concat([
+                                action.context,
+                            ]),
+                    },
+                    counter: lastState.counter + 1,
+                };
+            case ActionType.ADD_ERROR:
+                return {
+                    public: {
+                        ...lastState.public,
+                        errorMessage: lastState.public.errorMessage.concat([
+                            action.payload,
+                        ]),
+                        paramsOnError: lastState.public.paramsOnError.concat([
+                            action.context,
+                        ]),
+                    },
+                    counter: lastState.counter + 1,
+                };
+            case ActionType.SUCCESS:
                 return {
                     ...lastState,
-                    status: FetchStatus.FETCHED,
+                    public: {
+                        ...lastState.public,
+                        status: FetchStatus.FETCH_SUCCESS,
+                    },
+                    counter: 0,
                 };
-            case FetchStatus.FETCH_ERROR:
+            case ActionType.ERROR:
                 return {
-                    ...initialState,
-                    status: FetchStatus.FETCH_ERROR,
-                    errorMessage: lastState.errorMessage.concat(action.payload),
-                    paramsOnError: lastState.paramsOnError.concat(
-                        action.context
-                    ),
+                    ...lastState,
+                    public: {
+                        ...lastState.public,
+                        status: FetchStatus.FETCH_ERROR,
+                    },
+                    counter: 0,
                 };
             default:
                 return lastState;
@@ -185,26 +227,20 @@ export const useMultipleDeferredFetch = (
     }, initialState);
 
     const [paramList, setParamList] = useState([]);
-    const [counter, setCounter] = useState(0);
-    const counterRef = useRef(0);
-    counterRef.current = counter;
 
-    const reset = () => {
-        setParamList([]);
-        setCounter(0);
+    const onInstanceSuccess = useCallback((data, paramsOnSuccess) => {
         dispatch({
-            type: FetchStatus.IDLE,
+            type: ActionType.ADD_SUCCESS,
+            payload: data,
+            context: paramsOnSuccess,
         });
-    };
-
-    const onInstanceSuccess = useCallback((data) => {
-        setCounter((oldValue) => oldValue + 1);
     }, []);
 
     const onInstanceError = useCallback((errorMessage, paramsOnError) => {
-        setCounter((oldValue) => oldValue + 1);
+        // counter now stored in reducer to avoid counter and state being updated not simultenaously,
+        // causing useEffect to be triggered once for each change, which would cause an expected behaviour
         dispatch({
-            type: FetchStatus.FETCH_ERROR,
+            type: ActionType.ADD_ERROR,
             payload: errorMessage,
             context: paramsOnError,
         });
@@ -220,29 +256,35 @@ export const useMultipleDeferredFetch = (
 
     const fetchCallback = useCallback(
         (cbParamsList) => {
-            dispatch({ type: FetchStatus.FETCHING });
+            dispatch({ type: ActionType.START });
             setParamList(cbParamsList);
             for (let params of cbParamsList) {
-                fetchCB(params);
+                fetchCB(...params);
             }
         },
         [fetchCB]
     );
 
     useEffect(() => {
-        if (paramList.length !== 0 && paramList.length === counter) {
-            if (state.status === FetchStatus.FETCH_ERROR) {
+        if (paramList.length !== 0 && paramList.length === state.counter) {
+            if (state.public.errorMessage.length > 0) {
+                dispatch({
+                    type: ActionType.ERROR,
+                });
                 if (onError)
-                    onError(state.errorMessage, paramList, state.paramsOnError);
+                    onError(
+                        state.public.errorMessage,
+                        paramList,
+                        state.public.paramsOnError
+                    );
             } else {
                 dispatch({
-                    type: FetchStatus.FETCHED,
+                    type: ActionType.SUCCESS,
                 });
-                if (onSuccess) onSuccess(state.data);
+                if (onSuccess) onSuccess(state.public.data);
             }
-            reset();
         }
-    }, [paramList, counter, onError, onSuccess, state]);
+    }, [paramList, onError, onSuccess, state]);
 
-    return [fetchCallback, state];
+    return [fetchCallback];
 };

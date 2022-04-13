@@ -129,6 +129,20 @@ export function deleteElement(elementUuid) {
     });
 }
 
+export function moveElementToDirectory(elementUuid, directoryUuid) {
+    console.info(
+        'Moving element %s to directory %s',
+        elementUuid,
+        directoryUuid
+    );
+    const fetchParams =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/elements/${elementUuid}?newDirectory=${directoryUuid}`;
+    return backendFetch(fetchParams, {
+        method: 'PUT',
+    });
+}
+
 export function updateAccessRights(elementUuid, isPrivate) {
     console.info(
         'Updating access rights for ' +
@@ -670,4 +684,23 @@ export function saveFilter(filter) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(filter),
     }).then((response) => handleResponse(response, false));
+}
+
+/**
+ * Fetch element and all its parents info
+ */
+
+export function fetchPath(elementUuid) {
+    console.info(`Fetching element '${elementUuid}' and its parents info ...`);
+    const fetchPathUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/elements/` +
+        encodeURIComponent(elementUuid) +
+        `/path`;
+    console.debug(fetchPathUrl);
+    return backendFetch(fetchPathUrl).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
 }

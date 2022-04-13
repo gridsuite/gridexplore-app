@@ -222,10 +222,10 @@ const DirectoryContent = () => {
         event.stopPropagation();
     };
 
-    const handleCloseContentMenu = () => {
+    const handleCloseContentMenu = useCallback(() => {
         setOpenContentMenu(false);
         setActiveElement(null);
-    };
+    }, []);
 
     const handleCloseDirectoryMenu = () => {
         setOpenDirectoryMenu(false);
