@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useEffect } from 'react';
-import Dialog from '@mui/material/Dialog';
+import { ContextualMenuDialog } from './contextual-menu-dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import InputLabel from '@mui/material/InputLabel';
@@ -14,7 +14,6 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import { ContextualMenuDialog } from './contextual-menu-dialog';
 
 /**
  * Dialog to copy a filters contingency list to a script contingency list or a filter to a script
