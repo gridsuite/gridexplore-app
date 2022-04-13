@@ -14,7 +14,7 @@
     "createNewStudyDescription": "Pour créer une étude, vous devez saisir les informations suivantes : ",
     "studyCreationError": "Erreur lors de la création de l'étude: {studyName}",
     "renameElement": "Renommer l'élément",
-    "renameElementMsg": "Nouveau nom de l'élément : ",
+    "renameElementMsg": "Nouveau nom de l'élément",
     "renameElementNotAllowedError": "Vous ne pouvez pas renommer un élément dont vous n'êtes pas propriétaire",
     "renameElementNotFoundError": "L'élément n'a pas été trouvé",
     "followingItems": "les {itemsCount} éléments suivants",

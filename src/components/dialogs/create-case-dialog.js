@@ -30,8 +30,9 @@ export function CreateCaseDialog({ onClose, open }) {
         label: 'CaseName',
         autoFocus: true,
         elementType: ElementType.CASE,
-        directoryId: activeDirectory,
+        parentDirectoryId: activeDirectory,
         triggerReset,
+        active: open,
     });
 
     const [description, DescriptionField] = useTextValue({

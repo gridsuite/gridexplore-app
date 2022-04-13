@@ -14,7 +14,7 @@
     "createNewStudyDescription": "To create a new study, you should enter the following information:",
     "studyCreationError": "Error when creating study: {studyName}",
     "renameElement": "Rename the element",
-    "renameElementMsg": "Element new name: ",
+    "renameElementMsg": "Element new name",
     "renameElementNotAllowedError": "Cannot rename the element if you are not the owner",
     "renameElementNotFoundError": "The element was not found",
     "followingItems": "the following {itemsCount} items",

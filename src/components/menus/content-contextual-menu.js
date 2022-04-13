@@ -437,7 +437,6 @@ const ContentContextualMenu = (props) => {
         }
         return menuItems;
     };
-
     return (
         <>
             {open && (
@@ -456,8 +455,9 @@ const ContentContextualMenu = (props) => {
                     renameCB(activeElement?.elementUuid, elementName)
                 }
                 title={useIntl().formatMessage({ id: 'renameElement' })}
-                message={useIntl().formatMessage({ id: 'renameElementMsg' })}
+                message={'renameElementMsg'}
                 currentName={activeElement ? activeElement.elementName : ''}
+                type={activeElement ? activeElement.type : ''}
                 error={renameState.errorMessage}
             />
             <DeleteDialog

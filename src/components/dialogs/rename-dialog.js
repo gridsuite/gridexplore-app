@@ -4,17 +4,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect } from 'react';
+import React from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import InputLabel from '@mui/material/InputLabel';
-import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
+import { useNameField } from './field-hook';
+import { useSelector } from 'react-redux';
+import { ElementType } from '../../utils/elementType';
 
 /**
  * Dialog to rename an element
@@ -33,39 +34,55 @@ const RenameDialog = ({
     title,
     message,
     currentName,
+    type,
     error,
+    parentDirectory,
 }) => {
-    const [newNameValue, setNewNameValue] = React.useState(currentName);
+    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const intl = useIntl();
 
-    const updateNameValue = (event) => {
-        setNewNameValue(event.target.value);
-    };
+    const [triggerReset, setTriggerReset] = React.useState(true);
+
+    const [newName, newNameField, newNameError, newNameOk] = useNameField({
+        label: message,
+        autoFocus: true,
+        active: open,
+        triggerReset,
+        defaultValue: currentName,
+        // if current element is directory, activeDirectory is current element
+        parentDirectoryId:
+            type === ElementType.DIRECTORY ? parentDirectory : activeDirectory,
+        elementType: type,
+        alreadyExistingErrorMessage: intl.formatMessage({
+            id: 'nameAlreadyUsed',
+        }),
+    });
 
     const handleClick = () => {
-        if (currentName !== newNameValue) {
+        if (currentName !== newName) {
             console.debug(
-                'Request for renaming : ' + currentName + ' => ' + newNameValue
+                'Request for renaming : ' + currentName + ' => ' + newName
             );
-            onClick(newNameValue);
+            onClick(newName);
         } else {
             handleClose();
         }
     };
 
     const handleClose = () => {
-        setNewNameValue(currentName);
+        setTriggerReset((oldValue) => !oldValue);
         onClose();
     };
 
     const handleKeyPressed = (event) => {
-        if (open && event.key === 'Enter') {
+        if (open && event.key === 'Enter' && canRename()) {
             handleClick();
         }
     };
 
-    useEffect(() => {
-        setNewNameValue(currentName || '');
-    }, [currentName]);
+    const canRename = () => {
+        return newNameOk;
+    };
 
     return (
         <Dialog
@@ -76,22 +93,21 @@ const RenameDialog = ({
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <InputLabel htmlFor="newName">{message}</InputLabel>
-                <TextField
-                    autoFocus
-                    value={newNameValue}
-                    required={true}
-                    onChange={updateNameValue}
-                />
+                {newNameField}
                 <br />
                 <br />
-                {error !== '' && <Alert severity="error">{error}</Alert>}
+                {newNameError && <Alert severity="error">{newNameError}</Alert>}
+                {error && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleClick} variant="outlined">
+                <Button
+                    onClick={handleClick}
+                    disabled={!canRename()}
+                    variant="outlined"
+                >
                     <FormattedMessage id="rename" />
                 </Button>
             </DialogActions>
@@ -107,6 +123,8 @@ RenameDialog.propTypes = {
     message: PropTypes.string.isRequired,
     error: PropTypes.string.isRequired,
     currentName: PropTypes.string,
+    tye: PropTypes.string,
+    parentDirectory: PropTypes.string,
 };
 
 export default RenameDialog;

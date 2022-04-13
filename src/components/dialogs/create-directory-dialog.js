@@ -12,16 +12,17 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React from 'react';
 import Alert from '@mui/material/Alert';
 import InputLabel from '@mui/material/InputLabel';
-import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import makeStyles from '@mui/styles/makeStyles';
 import FormControl from '@mui/material/FormControl';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
+import { ElementType } from '../../utils/elementType';
+import { useNameField } from './field-hook';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -48,24 +49,31 @@ export const CreateDirectoryDialog = ({
     onClose,
     onClick,
     title,
+    parentDirectory,
     message,
     error,
 }) => {
     const classes = useStyles();
 
-    const [elementName, setElementName] = React.useState('');
     const [isPrivate, setIsPrivate] = React.useState(true);
 
+    const [triggerReset, setTriggerReset] = React.useState(true);
+
+    const [name, nameField, nameError, nameOk] = useNameField({
+        autoFocus: true,
+        elementType: ElementType.DIRECTORY,
+        parentDirectoryId: parentDirectory,
+        triggerReset,
+        active: open,
+    });
+
     const handleClose = () => {
+        setTriggerReset((oldVal) => !oldVal);
         onClose();
     };
 
     const handleClick = () => {
-        onClick(elementName, isPrivate);
-    };
-
-    const updateElementName = (event) => {
-        setElementName(event.target.value);
+        onClick(name, isPrivate);
     };
 
     const handleChange = (event) => {
@@ -73,14 +81,14 @@ export const CreateDirectoryDialog = ({
     };
 
     const handleKeyPressed = (event) => {
-        if (open && event.key === 'Enter') {
+        if (open && event.key === 'Enter' && canCreate()) {
             handleClick();
         }
     };
 
-    useEffect(() => {
-        setElementName('');
-    }, [open]);
+    const canCreate = () => {
+        return nameOk;
+    };
 
     return (
         <Dialog
@@ -99,12 +107,7 @@ export const CreateDirectoryDialog = ({
                         </InputLabel>
                     </Grid>
                     <Grid item xs={7}>
-                        <TextField
-                            autoFocus
-                            value={elementName}
-                            required={true}
-                            onChange={updateElementName}
-                        />
+                        {nameField}
                     </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.root}>
@@ -132,13 +135,18 @@ export const CreateDirectoryDialog = ({
                     </Grid>
                 </Grid>
                 <br />
+                {nameError && <Alert severity="error">{nameError}</Alert>}
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleClick} variant="outlined">
+                <Button
+                    disabled={!canCreate()}
+                    onClick={handleClick}
+                    variant="outlined"
+                >
                     <FormattedMessage id="create" />
                 </Button>
             </DialogActions>
