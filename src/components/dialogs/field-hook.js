@@ -73,7 +73,7 @@ export const useTextValue = ({
         adornment,
     ]);
 
-    useEffect(() => setValue(defaultValue), [defaultValue, triggerReset]);
+    useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
 
     return [value, field];
 };
