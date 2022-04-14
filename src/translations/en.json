@@ -81,7 +81,7 @@
     "deleteItemDialogTitle": "Delete {itemName}",
     "deleteMultipleItemsDialogTitle": "Delete {itemsCount} items",
     "renameDirectoryDialogTitle": "Rename the folder",
-    "directoryNameLabel": "Folder Name",
+    "directoryNameLabel": "Name",
     "isPrivateLabel": "Private folder?",
 
     "directoryNewNameLabel": "New Name",

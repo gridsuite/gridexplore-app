@@ -80,7 +80,7 @@
     "deleteItemDialogTitle": "Supprimer {itemName}",
     "deleteMultipleItemsDialogTitle": "Supprimer {itemsCount} éléments",
     "renameDirectoryDialogTitle": "Renommer le dossier",
-    "directoryNameLabel": "Nom du dossier",
+    "directoryNameLabel": "Nom",
     "isPrivateLabel": "Dossier privé ?",
     "directoryNewNameLabel": "Nouveau Nom",
 
