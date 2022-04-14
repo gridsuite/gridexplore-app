@@ -244,7 +244,7 @@ const CreateFilterDialog = ({
             onKeyPress={handleKeyPressed}
         >
             <CustomDialogTitle onClose={handleClose}>{title}</CustomDialogTitle>
-            <CustomDialogContent dividers>
+            <CustomDialogContent>
                 <TextField
                     autoFocus
                     margin="dense"
