@@ -34,7 +34,7 @@ export const useTextValue = ({
     id = label,
     defaultValue = '',
     adornment,
-    active,
+    triggerReset,
     ...formProps
 }) => {
     const [value, setValue] = useState(defaultValue);
@@ -73,12 +73,12 @@ export const useTextValue = ({
         adornment,
     ]);
 
-    useEffect(() => setValue(defaultValue), [defaultValue, active]);
+    useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
 
     return [value, field];
 };
 
-export const useFileValue = ({ active, fileExceedsLimitMessage }) => {
+export const useFileValue = ({ triggerReset, fileExceedsLimitMessage }) => {
     const selectedFile = useSelector((state) => state.selectedFile);
     const intl = useIntl();
     const dispatch = useDispatch();
@@ -88,7 +88,7 @@ export const useFileValue = ({ active, fileExceedsLimitMessage }) => {
     const field = <UploadCase />;
     useEffect(() => {
         dispatch(removeSelectedFile());
-    }, [dispatch, active]);
+    }, [dispatch, triggerReset]);
 
     useEffect(() => {
         const MAX_FILE_SIZE_IN_MO = 100;
@@ -128,6 +128,7 @@ export const useNameField = ({
     parentDirectoryId,
     elementType,
     active,
+    triggerReset,
     alreadyExistingErrorMessage,
     ...props
 }) => {
@@ -209,7 +210,7 @@ export const useNameField = ({
 
     const [name, field] = useTextValue({
         ...props,
-        active,
+        triggerReset,
         error: !!error,
         adornment: adornment,
     });
@@ -219,7 +220,7 @@ export const useNameField = ({
             !active ||
             ((name === '' || name === props.defaultValue) && !timer.current)
         ) {
-            return; // initial render or inactive hook
+            return; // initial render or hook in closed component to avoid sending unexpected request
         }
         clearTimeout(timer.current);
         setChecking(true);
@@ -228,13 +229,11 @@ export const useNameField = ({
     }, [active, props.defaultValue, name, updateValidity]);
 
     useEffect(() => {
-        if (!active) {
-            setError(undefined);
-            timer.current = undefined;
-            setChecking(undefined);
-            setAdornment(undefined);
-        }
-    }, [active]);
+        setError(undefined);
+        timer.current = undefined;
+        setChecking(undefined);
+        setAdornment(undefined);
+    }, [triggerReset]);
     return [
         name,
         field,

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
@@ -24,21 +24,24 @@ import { useSnackbarMessage } from '../../utils/messages';
 export function CreateCaseDialog({ onClose, open }) {
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
+    const [triggerReset, setTriggerReset] = useState(true);
+
     const [name, nameField, nameError, nameOk] = useNameField({
         label: 'CaseName',
         autoFocus: true,
         elementType: ElementType.CASE,
         parentDirectoryId: activeDirectory,
+        triggerReset,
         active: open,
     });
 
     const [description, DescriptionField] = useTextValue({
         label: 'CaseDescriptionOptional',
-        active: open,
+        triggerReset,
     });
     const [file, FileField, fileError, isFileOk] = useFileValue({
         label: 'Case',
-        active: open,
+        triggerReset,
     });
 
     function validate() {
@@ -69,6 +72,7 @@ export function CreateCaseDialog({ onClose, open }) {
     };
 
     const handleCloseDialog = () => {
+        setTriggerReset((oldVal) => !oldVal);
         onClose();
     };
 

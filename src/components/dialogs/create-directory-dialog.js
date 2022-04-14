@@ -57,14 +57,18 @@ export const CreateDirectoryDialog = ({
 
     const [isPrivate, setIsPrivate] = React.useState(true);
 
+    const [triggerReset, setTriggerReset] = React.useState(true);
+
     const [name, nameField, nameError, nameOk] = useNameField({
         autoFocus: true,
         elementType: ElementType.DIRECTORY,
         parentDirectoryId: parentDirectory,
+        triggerReset,
         active: open,
     });
 
     const handleClose = () => {
+        setTriggerReset((oldVal) => !oldVal);
         onClose();
     };
 
