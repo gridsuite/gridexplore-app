@@ -212,9 +212,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     <FormattedMessage id="createNewContingencyList" />
                 </DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        <FormattedMessage id="createNewContingencyListDescription" />
-                    </DialogContentText>
                     <div>
                         <TextField
                             onChange={(e) =>
