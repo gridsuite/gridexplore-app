@@ -44,10 +44,9 @@
     "studyNameAlreadyUsed": "This study name is already used",
     "nameEmpty": "The name is empty",
 
-    "ImportNewCase": "Upload a new case",
-    "createNewCaseDescription": "To create a new case, you should enter the following information:",
-    "CaseName": "Case name",
-    "CaseDescriptionOptional": "Case description (optional)",
+    "ImportNewCase": "Upload a case",
+    "CaseName": "name",
+    "CaseDescriptionOptional": "description (optional)",
     "caseCreationError": "An error occurred while creating the case: {name}",
     "CASE": "Case",
     "CaseValidate": "Add",

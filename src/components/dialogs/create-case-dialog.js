@@ -94,9 +94,6 @@ export function CreateCaseDialog({ onClose, open }) {
                 <FormattedMessage id="ImportNewCase" />
             </DialogTitle>
             <DialogContent>
-                <DialogContentText>
-                    <FormattedMessage id="createNewCaseDescription" />
-                </DialogContentText>
                 {nameField}
                 {DescriptionField}
                 {FileField}
