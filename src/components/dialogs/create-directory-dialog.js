@@ -92,6 +92,7 @@ export const CreateDirectoryDialog = ({
 
     return (
         <Dialog
+            fullWidth={true}
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-delete"
