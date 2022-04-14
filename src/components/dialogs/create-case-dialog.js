@@ -33,11 +33,17 @@ export function CreateCaseDialog({ onClose, open }) {
         parentDirectoryId: activeDirectory,
         triggerReset,
         active: open,
+        style: {
+            width: '90%',
+        },
     });
 
     const [description, DescriptionField] = useTextValue({
         label: 'CaseDescriptionOptional',
         triggerReset,
+        style: {
+            width: '90%',
+        },
     });
     const [file, FileField, fileError, isFileOk] = useFileValue({
         label: 'Case',
@@ -91,7 +97,7 @@ export function CreateCaseDialog({ onClose, open }) {
                 <DialogContentText>
                     <FormattedMessage id="createNewCaseDescription" />
                 </DialogContentText>
-                <div>{nameField}</div>
+                {nameField}
                 {DescriptionField}
                 {FileField}
                 {nameError && <Alert severity="error">{nameError}</Alert>}
