@@ -389,25 +389,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                     <FormattedMessage id="createNewStudy" />
                 </DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        <FormattedMessage id="createNewStudyDescription" />
-                    </DialogContentText>
-                    {!selectedCase && (
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={caseExist}
-                                    onChange={(e) => handleChangeSwitch(e)}
-                                    value="checked"
-                                    color="primary"
-                                    inputProps={{
-                                        'aria-label': 'primary checkbox',
-                                    }}
-                                />
-                            }
-                            label={<FormattedMessage id="caseExist" />}
-                        />
-                    )}
                     <div>
                         <TextField
                             onChange={(e) => handleStudyNameChanges(e)}
