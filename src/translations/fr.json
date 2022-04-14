@@ -31,6 +31,7 @@
     "caseName": "nom de la situation",
     "uploadCase": "télécharger la situation",
     "uploadErrorMsg": "Veuillez télécharger la situation",
+    "uploadFileExceedingLimitSizeErrorMsg": "Le fichier sélectionné dépasse la taille limite ({maxSize} Mo).{br}Veuillez compresser ce fichier au format zip, gzip ou bzip2 puis réessayez de l'importer à nouveau.",
 
     "uploadMessage": " Aucun fichier sélectionné",
     "cancel": "ANNULER",

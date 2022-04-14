@@ -31,6 +31,7 @@
     "caseName": "case name",
     "uploadCase": "Upload case",
     "uploadErrorMsg": "Please upload the case file",
+    "uploadFileExceedingLimitSizeErrorMsg": "Selected file exceeds size limit ({maxSize} MB).{br}Please compress the file in zip, gzip or bzip2 format then try to upload it again",
 
     "uploadMessage": " No file selected",
     "cancel": "CANCEL",
