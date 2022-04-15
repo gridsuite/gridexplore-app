@@ -375,15 +375,12 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     };
 
     const isCreationAllowed = () => {
-        const validationImportedCase =
-            studyName === '' || !studyNameValid || loadingCheckStudyName;
-        const validationUploadedCase =
+        return !(
             studyName === '' ||
             !studyNameValid ||
             loadingCheckStudyName ||
-            !isSelectedFileOk;
-
-        return providedCase ? validationImportedCase : validationUploadedCase;
+            (!providedCase && !isSelectedFileOk)
+        );
     };
 
     return (
@@ -514,7 +511,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                     </Button>
                     <Button
                         onClick={() => handleCreateNewStudy()}
-                        disabled={isCreationAllowed()}
+                        disabled={!isCreationAllowed()}
                         variant="outlined"
                     >
                         <FormattedMessage id="create" />
