@@ -238,13 +238,14 @@ const CreateFilterDialog = ({
     };
 
     return (
-        <DialogContainer
+        <Dialog
+            fullWidth={true}
             open={open}
             onClose={handleClose}
             onKeyPress={handleKeyPressed}
         >
-            <CustomDialogTitle onClose={handleClose}>{title}</CustomDialogTitle>
-            <CustomDialogContent>
+            <DialogTitle onClose={handleClose}>{title}</DialogTitle>
+            <DialogContent>
                 <TextField
                     autoFocus
                     margin="dense"
@@ -282,8 +283,8 @@ const CreateFilterDialog = ({
                 {createFilterErr !== '' && (
                     <Alert severity="error">{createFilterErr}</Alert>
                 )}
-            </CustomDialogContent>
-            <CustomDialogActions>
+            </DialogContent>
+            <DialogActions>
                 <Button size="small" onClick={handleClose}>
                     {customTextCancelBtn}
                 </Button>
@@ -299,8 +300,8 @@ const CreateFilterDialog = ({
                 >
                     {customTextValidationBtn}
                 </Button>
-            </CustomDialogActions>
-        </DialogContainer>
+            </DialogActions>
+        </Dialog>
     );
 };
 

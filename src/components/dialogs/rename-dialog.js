@@ -56,6 +56,7 @@ const RenameDialog = ({
         alreadyExistingErrorMessage: intl.formatMessage({
             id: 'nameAlreadyUsed',
         }),
+        style: { width: '90%' },
     });
 
     const handleClick = () => {
@@ -86,6 +87,7 @@ const RenameDialog = ({
 
     return (
         <Dialog
+            fullWidth={true}
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-rename"
