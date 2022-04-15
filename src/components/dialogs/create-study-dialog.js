@@ -14,10 +14,7 @@ import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
@@ -190,11 +187,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setTriggerReset((oldVal) => !oldVal);
         onClose();
         resetDialog();
-    };
-
-    const handleChangeSwitch = (e) => {
-        setCaseExist(e.target.checked);
-        setCreateStudyErr('');
     };
 
     const handleStudyDescriptionChanges = (e) => {
