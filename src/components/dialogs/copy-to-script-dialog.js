@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useEffect } from 'react';
-import { ContextualMenuDialog } from './contextual-menu-dialog';
+import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import InputLabel from '@mui/material/InputLabel';
@@ -57,7 +57,7 @@ const CopyToScriptDialog = ({
     }, [currentName]);
 
     return (
-        <ContextualMenuDialog
+        <Dialog
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-rename"
@@ -85,7 +85,7 @@ const CopyToScriptDialog = ({
                     <FormattedMessage id="copy" />
                 </Button>
             </DialogActions>
-        </ContextualMenuDialog>
+        </Dialog>
     );
 };
 

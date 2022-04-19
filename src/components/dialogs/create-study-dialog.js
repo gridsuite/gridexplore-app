@@ -11,7 +11,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import { ContextualMenuDialog } from './contextual-menu-dialog.js';
+import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -370,7 +370,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     return (
         <div>
-            <ContextualMenuDialog
+            <Dialog
                 fullWidth={true}
                 open={open}
                 onClose={handleCloseDialog}
@@ -501,7 +501,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         <FormattedMessage id="create" />
                     </Button>
                 </DialogActions>
-            </ContextualMenuDialog>
+            </Dialog>
         </div>
     );
 };

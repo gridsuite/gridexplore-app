@@ -18,6 +18,8 @@ import AccessRightsDialog from '../dialogs/access-rights-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CreateFilterDialog from '../dialogs/create-filter-dialog';
 
+import { DialogsId } from '../../utils/UIconstants';
+
 import {
     deleteElement,
     insertDirectory,
@@ -30,22 +32,9 @@ import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
 import { CreateCaseDialog } from '../dialogs/create-case-dialog';
 
-const DialogsId = {
-    ADD_ROOT_DIRECTORY: 'add_root_directory',
-    ADD_DIRECTORY: 'add_directory',
-    ADD_NEW_STUDY: 'add_new_study',
-    ADD_NEW_CONTINGENCY_LIST: 'add_new_contingency_list',
-    ADD_NEW_FILTER: 'add_new_filter',
-    ADD_NEW_CASE: 'add_new_case',
-    RENAME: 'rename',
-    DELETE: 'delete',
-    ACCESS_RIGHTS: 'access_rights',
-
-    NONE: 'none',
-};
-
 const DirectoryTreeContextualMenu = (props) => {
-    const { directory, open, onClose, ...others } = props;
+    const { directory, open, onClose, openContextualDialogHandler, ...others } =
+        props;
     const userId = useSelector((state) => state.user.profile.sub);
 
     const intl = useIntl();
@@ -53,14 +42,18 @@ const DirectoryTreeContextualMenu = (props) => {
     const [openDialog, setOpenDialog] = useState(null);
     const [hideMenu, setHideMenu] = useState(false);
 
-    const handleOpenDialog = (DialogId) => {
+    const handleOpenDialog = (dialogId) => {
         setHideMenu(true);
-        setOpenDialog(DialogId);
+        setOpenDialog(dialogId);
+        //following callback let the parent know a dialog is open
+        openContextualDialogHandler(dialogId);
     };
 
     const handleCloseDialog = (e, nextSelectedDirectoryId = null) => {
         onClose(e, nextSelectedDirectoryId);
         setOpenDialog(DialogsId.NONE);
+        //following callback let the parent know no dialog is open
+        openContextualDialogHandler(DialogsId.NONE);
         setHideMenu(false);
     };
 
