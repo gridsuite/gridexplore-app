@@ -216,8 +216,7 @@ const DirectoryContent = () => {
      */
     const [openDirectoryMenu, setOpenDirectoryMenu] = React.useState(false);
     const [openContentMenu, setOpenContentMenu] = React.useState(false);
-    const [openContextualMenuDialog, setOpenContextualMenuDialog] =
-        React.useState(constants.DialogsId.NONE);
+    const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
 
     const handleOpenContentMenu = (event) => {
         setOpenContentMenu(true);
@@ -264,10 +263,6 @@ const DirectoryContent = () => {
             handleOpenDirectoryMenu(event);
         }
     };
-
-    const handleOpenContextualDialog = useCallback((dialogId) => {
-        setOpenContextualMenuDialog(dialogId);
-    }, []);
 
     const abbreviationFromUserName = (name) => {
         const tab = name.split(' ').map((x) => x.charAt(0));
@@ -654,7 +649,7 @@ const DirectoryContent = () => {
                 onMouseDown={(e) => {
                     if (
                         e.button === constants.MOUSE_EVENT_RIGHT_BUTTON &&
-                        openContextualMenuDialog === constants.DialogsId.NONE
+                        openDialog === constants.DialogsId.NONE
                     ) {
                         handleCloseContentMenu();
                         handleCloseDirectoryMenu();
@@ -665,7 +660,8 @@ const DirectoryContent = () => {
                     activeElement={activeElement}
                     selectedElements={getSelectedChildren()}
                     open={openContentMenu}
-                    openContextualDialogHandler={handleOpenContextualDialog}
+                    openDialog={openDialog}
+                    setOpenDialog={setOpenDialog}
                     onClose={handleCloseContentMenu}
                     anchorReference="anchorPosition"
                     anchorPosition={
@@ -682,8 +678,9 @@ const DirectoryContent = () => {
                 <DirectoryTreeContextualMenu
                     directory={selectedDirectory}
                     open={openDirectoryMenu}
+                    openDialog={openDialog}
+                    setOpenDialog={setOpenDialog}
                     onClose={handleCloseDirectoryMenu}
-                    openContextualDialogHandler={handleOpenContextualDialog}
                     anchorReference="anchorPosition"
                     anchorPosition={
                         mousePosition.mouseY !== null &&

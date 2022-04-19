@@ -13,6 +13,7 @@ export const DialogsId = {
     RENAME: 'rename',
     DELETE: 'delete',
     MOVE: 'move',
+    ADD_NEW_STUDY_FROM_CASE: 'create_study_from_case',
     ADD_NEW_STUDY: 'create_study',
     EXPORT: 'export',
     FILTERS_CONTINGENCY: 'filters_contingency',
@@ -31,6 +32,7 @@ export const DialogsId = {
     ADD_NEW_FILTER: 'add_new_filter',
     ADD_NEW_CASE: 'add_new_case',
     ACCESS_RIGHTS: 'access_rights',
-
+    RENAME_DIRECTORY: 'rename_directory',
+    DELETE_DIRECTORY: 'delete_directory',
     NONE: 'none',
 };

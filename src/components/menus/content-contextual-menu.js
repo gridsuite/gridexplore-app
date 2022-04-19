@@ -59,7 +59,8 @@ const ContentContextualMenu = (props) => {
         selectedElements,
         open,
         onClose,
-        openContextualDialogHandler,
+        openDialog,
+        setOpenDialog,
         ...others
     } = props;
     const userId = useSelector((state) => state.user.profile.sub);
@@ -69,7 +70,6 @@ const ContentContextualMenu = (props) => {
     const DownloadIframe = 'downloadIframe';
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const [openDialog, setOpenDialog] = useState(null);
     const [hideMenu, setHideMenu] = useState(false);
 
     const handleLastError = useCallback(
@@ -84,17 +84,13 @@ const ContentContextualMenu = (props) => {
     const handleOpenDialog = (dialogId) => {
         setHideMenu(true);
         setOpenDialog(dialogId);
-        //following callback let the parent know a dialog is open
-        openContextualDialogHandler(dialogId);
     };
 
     const handleCloseDialog = useCallback(() => {
         onClose();
         setOpenDialog(DialogsId.NONE);
-        //following callback let the parent know no dialog is open
-        openContextualDialogHandler(DialogsId.NONE);
         setHideMenu(false);
-    }, [onClose, openContextualDialogHandler]);
+    }, [onClose, setOpenDialog]);
 
     const handleClickExportStudy = (url) => {
         window.open(url, DownloadIframe);
@@ -368,7 +364,7 @@ const ContentContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'createNewStudyFromImportedCase',
                 callback: () => {
-                    handleOpenDialog(DialogsId.ADD_NEW_STUDY);
+                    handleOpenDialog(DialogsId.ADD_NEW_STUDY_FROM_CASE);
                 },
                 icon: <PhotoLibrary fontSize="small" />,
             });
@@ -583,7 +579,7 @@ const ContentContextualMenu = (props) => {
             />
 
             <CreateStudyDialog
-                open={openDialog === DialogsId.ADD_NEW_STUDY}
+                open={openDialog === DialogsId.ADD_NEW_STUDY_FROM_CASE}
                 onClose={handleCloseDialog}
                 providedCase={activeElement}
             />
