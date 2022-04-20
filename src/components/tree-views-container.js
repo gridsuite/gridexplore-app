@@ -582,6 +582,7 @@ const TreeViewsContainer = () => {
                         flexDirection: 'column',
                         height: '100%',
                     }}
+                    data-testid="treeViewsContainer"
                     onContextMenu={(e) => onContextMenu(e, null)}
                 >
                     {mapDataRef.current &&

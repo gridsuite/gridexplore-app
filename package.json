@@ -57,10 +57,17 @@
         ]
     },
     "devDependencies": {
+        "@testing-library/dom": "^8.13.0",
+        "@testing-library/jest-dom": "^5.16.4",
+        "@testing-library/react": "^12.1.2",
+        "@testing-library/user-event": "^13.0.5",
         "clsx": "^1.1.1",
+        "eslint-config-prettier": "^8.0.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-testing-library": "^5.3.1",
         "http-proxy-middleware": "^2.0.0",
         "prettier": "^2.0.0",
-        "eslint-config-prettier": "^8.0.0",
-        "eslint-plugin-prettier": "^4.0.0"
+        "redux-mock-store": "^1.5.4",
+        "testing-library": "0.0.2"
     }
 }
