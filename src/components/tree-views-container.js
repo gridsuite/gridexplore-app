@@ -599,9 +599,9 @@ const TreeViewsContainer = () => {
                 <DirectoryTreeContextualMenu
                     directory={getActiveDirectory()}
                     open={openDirectoryMenu}
-                    onClose={(e) => handleCloseDirectoryMenu(e, null)}
                     openDialog={openDialog}
                     setOpenDialog={setOpenDialog}
+                    onClose={(e) => handleCloseDirectoryMenu(e, null)}
                     anchorReference="anchorPosition"
                     anchorPosition={
                         mousePosition.mouseY !== null &&
