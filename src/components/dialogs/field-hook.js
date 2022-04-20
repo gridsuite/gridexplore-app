@@ -13,13 +13,14 @@ import React, {
     useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { elementExists } from '../../utils/rest-api';
+import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { useDispatch, useSelector } from 'react-redux';
 import { UploadCase } from './upload-case';
 import makeStyles from '@mui/styles/makeStyles';
 import { removeSelectedFile } from '../../redux/actions';
+import { ElementType } from '../../utils/elementType';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -51,7 +52,7 @@ export const useTextValue = ({
                 size="small"
                 margin="dense"
                 id={id}
-                label={<FormattedMessage id={label} />}
+                label={id && <FormattedMessage id={label} />}
                 value={value}
                 style={{ width: '100%' }}
                 onChange={handleChangeValue}
@@ -77,15 +78,45 @@ export const useTextValue = ({
     return [value, field];
 };
 
-export const useFileValue = ({ triggerReset }) => {
+export const useFileValue = ({ triggerReset, fileExceedsLimitMessage }) => {
     const selectedFile = useSelector((state) => state.selectedFile);
+    const intl = useIntl();
     const dispatch = useDispatch();
+    const [isFileOk, setIsFileOk] = useState(false);
+    const [fileError, setFileError] = useState();
 
     const field = <UploadCase />;
     useEffect(() => {
         dispatch(removeSelectedFile());
     }, [dispatch, triggerReset]);
-    return [selectedFile, field];
+
+    useEffect(() => {
+        const MAX_FILE_SIZE_IN_MO = 100;
+        const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
+        if (!selectedFile) {
+            setFileError();
+            setIsFileOk(false);
+        } else if (selectedFile.size <= MAX_FILE_SIZE_IN_BYTES) {
+            setFileError();
+            setIsFileOk(true);
+        } else {
+            setFileError(
+                fileExceedsLimitMessage
+                    ? fileExceedsLimitMessage
+                    : intl.formatMessage(
+                          {
+                              id: 'uploadFileExceedingLimitSizeErrorMsg',
+                          },
+                          {
+                              maxSize: MAX_FILE_SIZE_IN_MO,
+                              br: <br />,
+                          }
+                      )
+            );
+            setIsFileOk(false);
+        }
+    }, [selectedFile, fileExceedsLimitMessage, intl]);
+    return [selectedFile, field, fileError, isFileOk];
 };
 
 const makeAdornmentEndIcon = (content) => {
@@ -94,9 +125,11 @@ const makeAdornmentEndIcon = (content) => {
     };
 };
 export const useNameField = ({
-    directoryId,
+    parentDirectoryId,
     elementType,
+    active,
     triggerReset,
+    alreadyExistingErrorMessage,
     ...props
 }) => {
     const [error, setError] = useState();
@@ -105,17 +138,40 @@ export const useNameField = ({
     const [checking, setChecking] = useState(undefined);
     const [adornment, setAdornment] = useState();
 
+    // if element is a root directory, we need to make a specific api rest call (elementType is directory, and no parent element)
+    const doesElementExist = useCallback(
+        (name) =>
+            elementType === ElementType.DIRECTORY && !parentDirectoryId
+                ? rootDirectoryExists(name)
+                : elementExists(parentDirectoryId, name, elementType),
+        [elementType, parentDirectoryId]
+    );
+
     const updateValidity = useCallback(
         (name) => {
-            if (name.replace(/ /g, '') !== '') {
-                //If the name is not only white spaces
-                elementExists(directoryId, name, elementType)
+            if (name.replace(/ /g, '') === '') {
+                setError(intl.formatMessage({ id: 'nameEmpty' }));
+                setChecking(false);
+            } else if (name === props.defaultValue) {
+                setError(
+                    alreadyExistingErrorMessage
+                        ? alreadyExistingErrorMessage
+                        : intl.formatMessage({
+                              id: 'studyNameAlreadyUsed',
+                          })
+                );
+                setChecking(false);
+            } else {
+                //If the name is not only white spaces and not defaultValue
+                doesElementExist(name)
                     .then((data) => {
                         setError(
                             data
-                                ? intl.formatMessage({
-                                      id: 'studyNameAlreadyUsed',
-                                  })
+                                ? alreadyExistingErrorMessage
+                                    ? alreadyExistingErrorMessage
+                                    : intl.formatMessage({
+                                          id: 'studyNameAlreadyUsed',
+                                      })
                                 : ''
                         );
                     })
@@ -129,12 +185,14 @@ export const useNameField = ({
                     .finally(() => {
                         setChecking(false);
                     });
-            } else {
-                setError(intl.formatMessage({ id: 'nameEmpty' }));
-                setChecking(false);
             }
         },
-        [directoryId, elementType, intl]
+        [
+            props.defaultValue,
+            alreadyExistingErrorMessage,
+            intl,
+            doesElementExist,
+        ]
     );
 
     useEffect(() => {
@@ -158,12 +216,17 @@ export const useNameField = ({
     });
 
     useEffect(() => {
-        if (name === '' && !timer.current) return; // initial render
+        if (
+            !active ||
+            ((name === '' || name === props.defaultValue) && !timer.current)
+        ) {
+            return; // initial render or hook in closed component to avoid sending unexpected request
+        }
         clearTimeout(timer.current);
         setChecking(true);
         setError(undefined);
         timer.current = setTimeout(() => updateValidity(name), 700);
-    }, [name, updateValidity]);
+    }, [active, props.defaultValue, name, updateValidity]);
 
     useEffect(() => {
         setError(undefined);
@@ -171,5 +234,13 @@ export const useNameField = ({
         setChecking(undefined);
         setAdornment(undefined);
     }, [triggerReset]);
-    return [name, field, error, !error && !checking];
+    return [
+        name,
+        field,
+        error,
+        name !== props.defaultValue &&
+            name.replace(/ /g, '') !== '' &&
+            !error &&
+            !checking,
+    ];
 };

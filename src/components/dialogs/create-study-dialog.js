@@ -37,7 +37,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     addUploadingStudy,
     loadCasesSuccess,
-    removeSelectedFile,
     removeUploadingStudy,
     selectCase,
     removeSelectedCase,
@@ -51,7 +50,7 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { ElementType } from '../../utils/elementType';
-import { UploadCase } from './upload-case';
+import { useFileValue } from './field-hook';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -151,7 +150,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const intlRef = useIntlRef();
     const dispatch = useDispatch();
 
-    const selectedFile = useSelector((state) => state.selectedFile);
     const caseName = useSelector((state) => state.selectedCase);
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -159,6 +157,8 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
+
+    const [triggerReset, setTriggerReset] = React.useState(true);
 
     //Inits the dialog
     useEffect(() => {
@@ -169,6 +169,12 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         }
     }, [open, dispatch, selectedDirectory?.elementName, providedCase]);
 
+    const [selectedFile, FileField, selectedFileError, isSelectedFileOk] =
+        useFileValue({
+            label: 'Case',
+            triggerReset,
+        });
+
     const resetDialog = () => {
         setCreateStudyErr('');
         setStudyName('');
@@ -178,10 +184,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setActiveDirectoryName(selectedDirectory?.elementName);
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         dispatch(removeSelectedCase());
-        dispatch(removeSelectedFile());
     };
 
     const handleCloseDialog = () => {
+        setTriggerReset((oldVal) => !oldVal);
         onClose();
         resetDialog();
     };
@@ -368,6 +374,15 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setFolderSelectorOpen(false);
     };
 
+    const isCreationAllowed = () => {
+        return !(
+            studyName === '' ||
+            !studyNameValid ||
+            loadingCheckStudyName ||
+            (!providedCase && !isSelectedFileOk)
+        );
+    };
+
     return (
         <div>
             <Dialog
@@ -429,7 +444,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         caseExist ? (
                             <SelectCase />
                         ) : (
-                            <UploadCase />
+                            FileField
                         )
                     ) : (
                         <div
@@ -484,6 +499,9 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                             {createStudyErr}
                         </Alert>
                     )}
+                    {selectedFileError && (
+                        <Alert severity="error">{selectedFileError}</Alert>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => handleCloseDialog()}>
@@ -491,11 +509,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                     </Button>
                     <Button
                         onClick={() => handleCreateNewStudy()}
-                        disabled={
-                            studyName === '' ||
-                            !studyNameValid ||
-                            loadingCheckStudyName
-                        }
+                        disabled={!isCreationAllowed()}
                         variant="outlined"
                     >
                         <FormattedMessage id="create" />

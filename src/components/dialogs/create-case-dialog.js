@@ -30,18 +30,22 @@ export function CreateCaseDialog({ onClose, open }) {
         label: 'CaseName',
         autoFocus: true,
         elementType: ElementType.CASE,
-        directoryId: activeDirectory,
+        parentDirectoryId: activeDirectory,
         triggerReset,
+        active: open,
     });
 
     const [description, DescriptionField] = useTextValue({
         label: 'CaseDescriptionOptional',
         triggerReset,
     });
-    const [file, FileField] = useFileValue({ label: 'Case', triggerReset });
+    const [file, FileField, fileError, isFileOk] = useFileValue({
+        label: 'Case',
+        triggerReset,
+    });
 
     function validate() {
-        return file && nameOk;
+        return file && nameOk && isFileOk;
     }
 
     const snackbarMessage = useSnackbarMessage();
@@ -91,6 +95,7 @@ export function CreateCaseDialog({ onClose, open }) {
                 {DescriptionField}
                 {FileField}
                 {nameError && <Alert severity="error">{nameError}</Alert>}
+                {fileError && <Alert severity="error">{fileError}</Alert>}
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => handleCloseDialog()} variant="text">
