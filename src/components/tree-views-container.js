@@ -187,6 +187,7 @@ const TreeViewsContainer = () => {
 
     const [rootDirectories, setRootDirectories] = useState([]);
     const [mapData, setMapData] = useState({});
+    const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
 
     const user = useSelector((state) => state.user);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -599,6 +600,8 @@ const TreeViewsContainer = () => {
                     directory={getActiveDirectory()}
                     open={openDirectoryMenu}
                     onClose={(e) => handleCloseDirectoryMenu(e, null)}
+                    openDialog={openDialog}
+                    setOpenDialog={setOpenDialog}
                     anchorReference="anchorPosition"
                     anchorPosition={
                         mousePosition.mouseY !== null &&
