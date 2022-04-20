@@ -18,6 +18,8 @@ import AccessRightsDialog from '../dialogs/access-rights-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CreateFilterDialog from '../dialogs/create-filter-dialog';
 
+import { DialogsId } from '../../utils/UIconstants';
+
 import {
     deleteElement,
     insertDirectory,
@@ -31,32 +33,18 @@ import { useDeferredFetch } from '../../utils/custom-hooks';
 import { CreateCaseDialog } from '../dialogs/create-case-dialog';
 import { ElementType } from '../../utils/elementType';
 
-const DialogsId = {
-    ADD_ROOT_DIRECTORY: 'add_root_directory',
-    ADD_DIRECTORY: 'add_directory',
-    ADD_NEW_STUDY: 'add_new_study',
-    ADD_NEW_CONTINGENCY_LIST: 'add_new_contingency_list',
-    ADD_NEW_FILTER: 'add_new_filter',
-    ADD_NEW_CASE: 'add_new_case',
-    RENAME: 'rename',
-    DELETE: 'delete',
-    ACCESS_RIGHTS: 'access_rights',
-
-    NONE: 'none',
-};
-
 const DirectoryTreeContextualMenu = (props) => {
-    const { directory, open, onClose, ...others } = props;
+    const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
+        props;
     const userId = useSelector((state) => state.user.profile.sub);
 
     const intl = useIntl();
 
-    const [openDialog, setOpenDialog] = useState(null);
     const [hideMenu, setHideMenu] = useState(false);
 
-    const handleOpenDialog = (DialogId) => {
+    const handleOpenDialog = (dialogId) => {
         setHideMenu(true);
-        setOpenDialog(DialogId);
+        setOpenDialog(dialogId);
     };
 
     const handleCloseDialog = (e, nextSelectedDirectoryId = null) => {
@@ -165,7 +153,7 @@ const DirectoryTreeContextualMenu = (props) => {
                     {
                         messageDescriptorId: 'renameFolder',
                         callback: () => {
-                            handleOpenDialog(DialogsId.RENAME);
+                            handleOpenDialog(DialogsId.RENAME_DIRECTORY);
                         },
                         icon: <CreateIcon fontSize="small" />,
                     },
@@ -179,7 +167,7 @@ const DirectoryTreeContextualMenu = (props) => {
                     {
                         messageDescriptorId: 'deleteFolder',
                         callback: () => {
-                            handleOpenDialog(DialogsId.DELETE);
+                            handleOpenDialog(DialogsId.DELETE_DIRECTORY);
                         },
                         icon: <DeleteIcon fontSize="small" />,
                     },
@@ -260,7 +248,7 @@ const DirectoryTreeContextualMenu = (props) => {
             <RenameDialog
                 message={'renameElementMsg'}
                 currentName={directory?.elementName}
-                open={openDialog === DialogsId.RENAME}
+                open={openDialog === DialogsId.RENAME_DIRECTORY}
                 onClick={(newName) => renameCB(directory?.elementUuid, newName)}
                 onClose={handleCloseDialog}
                 title={intl.formatMessage({
@@ -276,7 +264,7 @@ const DirectoryTreeContextualMenu = (props) => {
                     'deleteMultipleDirectoriesDialogMessage'
                 }
                 simpleDeleteFormatMessageId={'deleteDirectoryDialogMessage'}
-                open={openDialog === DialogsId.DELETE}
+                open={openDialog === DialogsId.DELETE_DIRECTORY}
                 onClick={() => deleteCB(directory?.elementUuid)}
                 onClose={handleCloseDialog}
                 error={deleteState.errorMessage}

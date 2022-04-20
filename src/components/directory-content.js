@@ -216,6 +216,7 @@ const DirectoryContent = () => {
      */
     const [openDirectoryMenu, setOpenDirectoryMenu] = React.useState(false);
     const [openContentMenu, setOpenContentMenu] = React.useState(false);
+    const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
 
     const handleOpenContentMenu = (event) => {
         setOpenContentMenu(true);
@@ -562,133 +563,137 @@ const DirectoryContent = () => {
         <>
             <div
                 style={{
+                    display: 'flex',
+                    flexDirection: 'column',
                     height: '100%',
                 }}
-                onMouseDownCapture={(e) => {
-                    if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON) {
+                onContextMenu={(e) => onContextMenu(e)}
+            >
+                {!isAllDataPresent && selectedDirectory && (
+                    <div className={classes.circularProgressContainer}>
+                        <CircularProgress
+                            size={circularProgressSize}
+                            color="inherit"
+                            className={classes.centeredCircularProgress}
+                        />
+                    </div>
+                )}
+                {isAllDataPresent && currentChildren?.length === 0 && (
+                    <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                        <FolderOpenRoundedIcon
+                            style={{ width: '100px', height: '100px' }}
+                        />
+                        <h1>
+                            <FormattedMessage id={'emptyDir'} />
+                        </h1>
+                    </div>
+                )}
+
+                {isAllDataPresent && currentChildren?.length > 0 && (
+                    <>
+                        <ContentToolbar
+                            selectedElements={
+                                // Check selectedUuids.size here to show toolbar options only
+                                // when multi selection checkboxes are used.
+                                selectedUuids.size > 0
+                                    ? getSelectedChildren()
+                                    : []
+                            }
+                        />
+
+                        <VirtualizedTable
+                            style={{ flexGrow: 1 }}
+                            onRowRightClick={(e) => onContextMenu(e)}
+                            onRowClick={handleRowClick}
+                            rows={currentChildren}
+                            columns={[
+                                {
+                                    cellRenderer: selectionRenderer,
+                                    dataKey: 'selected',
+                                    label: '',
+                                    headerRenderer: selectionHeaderRenderer,
+                                    maxWidth: 60,
+                                },
+                                {
+                                    width: 100,
+                                    label: intl.formatMessage({
+                                        id: 'elementName',
+                                    }),
+                                    dataKey: 'elementName',
+                                    cellRenderer: nameCellRender,
+                                },
+                                {
+                                    width: 100,
+                                    label: intl.formatMessage({
+                                        id: 'type',
+                                    }),
+                                    dataKey: 'type',
+                                    cellRenderer: typeCellRender,
+                                },
+                                {
+                                    width: 50,
+                                    label: intl.formatMessage({
+                                        id: 'creator',
+                                    }),
+                                    dataKey: 'owner',
+                                    cellRenderer: creatorCellRender,
+                                },
+                            ]}
+                            sortable={true}
+                        />
+                    </>
+                )}
+            </div>
+
+            <div
+                onMouseDown={(e) => {
+                    if (
+                        e.button === constants.MOUSE_EVENT_RIGHT_BUTTON &&
+                        openDialog === constants.DialogsId.NONE
+                    ) {
                         handleCloseContentMenu();
                         handleCloseDirectoryMenu();
                     }
                 }}
             >
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        height: '100%',
-                    }}
-                    onContextMenu={(e) => onContextMenu(e)}
-                >
-                    {!isAllDataPresent && selectedDirectory && (
-                        <div className={classes.circularProgressContainer}>
-                            <CircularProgress
-                                size={circularProgressSize}
-                                color="inherit"
-                                className={classes.centeredCircularProgress}
-                            />
-                        </div>
-                    )}
-                    {isAllDataPresent && currentChildren?.length === 0 && (
-                        <div
-                            style={{ textAlign: 'center', marginTop: '100px' }}
-                        >
-                            <FolderOpenRoundedIcon
-                                style={{ width: '100px', height: '100px' }}
-                            />
-                            <h1>
-                                <FormattedMessage id={'emptyDir'} />
-                            </h1>
-                        </div>
-                    )}
+                <ContentContextualMenu
+                    activeElement={activeElement}
+                    selectedElements={getSelectedChildren()}
+                    open={openContentMenu}
+                    openDialog={openDialog}
+                    setOpenDialog={setOpenDialog}
+                    onClose={handleCloseContentMenu}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                        mousePosition.mouseY !== null &&
+                        mousePosition.mouseX !== null
+                            ? {
+                                  top: mousePosition.mouseY,
+                                  left: mousePosition.mouseX,
+                              }
+                            : undefined
+                    }
+                />
 
-                    {isAllDataPresent && currentChildren?.length > 0 && (
-                        <>
-                            <ContentToolbar
-                                selectedElements={
-                                    // Check selectedUuids.size here to show toolbar options only
-                                    // when multi selection checkboxes are used.
-                                    selectedUuids.size > 0
-                                        ? getSelectedChildren()
-                                        : []
-                                }
-                            />
-
-                            <VirtualizedTable
-                                style={{ flexGrow: 1 }}
-                                onRowRightClick={(e) => onContextMenu(e)}
-                                onRowClick={handleRowClick}
-                                rows={currentChildren}
-                                columns={[
-                                    {
-                                        cellRenderer: selectionRenderer,
-                                        dataKey: 'selected',
-                                        label: '',
-                                        headerRenderer: selectionHeaderRenderer,
-                                        maxWidth: 60,
-                                    },
-                                    {
-                                        width: 100,
-                                        label: intl.formatMessage({
-                                            id: 'elementName',
-                                        }),
-                                        dataKey: 'elementName',
-                                        cellRenderer: nameCellRender,
-                                    },
-                                    {
-                                        width: 100,
-                                        label: intl.formatMessage({
-                                            id: 'type',
-                                        }),
-                                        dataKey: 'type',
-                                        cellRenderer: typeCellRender,
-                                    },
-                                    {
-                                        width: 50,
-                                        label: intl.formatMessage({
-                                            id: 'creator',
-                                        }),
-                                        dataKey: 'owner',
-                                        cellRenderer: creatorCellRender,
-                                    },
-                                ]}
-                                sortable={true}
-                            />
-                        </>
-                    )}
-
-                    <ContentContextualMenu
-                        activeElement={activeElement}
-                        selectedElements={getSelectedChildren()}
-                        open={openContentMenu}
-                        onClose={handleCloseContentMenu}
-                        anchorReference="anchorPosition"
-                        anchorPosition={
-                            mousePosition.mouseY !== null &&
-                            mousePosition.mouseX !== null
-                                ? {
-                                      top: mousePosition.mouseY,
-                                      left: mousePosition.mouseX,
-                                  }
-                                : undefined
-                        }
-                    />
-                    <DirectoryTreeContextualMenu
-                        directory={selectedDirectory}
-                        open={openDirectoryMenu}
-                        onClose={handleCloseDirectoryMenu}
-                        anchorReference="anchorPosition"
-                        anchorPosition={
-                            mousePosition.mouseY !== null &&
-                            mousePosition.mouseX !== null
-                                ? {
-                                      top: mousePosition.mouseY,
-                                      left: mousePosition.mouseX,
-                                  }
-                                : undefined
-                        }
-                    />
-                </div>
+                <DirectoryTreeContextualMenu
+                    directory={selectedDirectory}
+                    open={openDirectoryMenu}
+                    openDialog={openDialog}
+                    setOpenDialog={setOpenDialog}
+                    onClose={handleCloseDirectoryMenu}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                        mousePosition.mouseY !== null &&
+                        mousePosition.mouseX !== null
+                            ? {
+                                  top: mousePosition.mouseY,
+                                  left: mousePosition.mouseX,
+                              }
+                            : undefined
+                    }
+                />
             </div>
+
             <FormContingencyDialog
                 listId={currentFiltersContingencyListId}
                 open={openFiltersContingencyDialog}

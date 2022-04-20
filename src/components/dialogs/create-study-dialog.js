@@ -391,8 +391,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 onClose={handleCloseDialog}
                 aria-labelledby="form-dialog-title"
                 onKeyPress={handleKeyPressed}
-                //Call to stopPropagation in order to prevent contextual menu to appear
-                onContextMenu={(e) => e.stopPropagation()}
             >
                 <DialogTitle id="form-dialog-title">
                     <FormattedMessage id="createNewStudy" />
