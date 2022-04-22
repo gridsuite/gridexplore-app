@@ -157,7 +157,7 @@ export const useNameField = ({
                     alreadyExistingErrorMessage
                         ? alreadyExistingErrorMessage
                         : intl.formatMessage({
-                              id: 'studyNameAlreadyUsed',
+                              id: 'nameAlreadyUsed',
                           })
                 );
                 setChecking(false);
@@ -170,7 +170,7 @@ export const useNameField = ({
                                 ? alreadyExistingErrorMessage
                                     ? alreadyExistingErrorMessage
                                     : intl.formatMessage({
-                                          id: 'studyNameAlreadyUsed',
+                                          id: 'nameAlreadyUsed',
                                       })
                                 : ''
                         );
