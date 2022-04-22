@@ -1,7 +1,7 @@
 import React from 'react';
 import CreateStudyDialog from './create-study-dialog';
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event'
+import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { IntlProvider } from 'react-intl';
 import '@testing-library/jest-dom/extend-expect';
@@ -106,18 +106,27 @@ function renderWithProviders(ui, locale = 'en') {
     );
 }
 
-test('create study from scratch should work', () => {
-    const { getByText } = renderWithProviders(
-        <CreateStudyDialog open={true} onClose={() => console.log('test')} />
-    );
-    const validateButton = getByText('CREATE');
-    expect(validateButton).toBeDisabled();
-});
+describe('TreeViewContainer', () => {
+    it('should prevent user to create study with empty name', () => {
+        const { getByText } = renderWithProviders(
+            <CreateStudyDialog
+                open={true}
+                onClose={() => console.log('test')}
+            />
+        );
+        const validateButton = getByText('CREATE');
+        expect(validateButton).toBeDisabled();
+    });
 
-test('test create root folder', () => {
-    const { getByText, getByTestId } = renderWithProviders(<TreeViewsContainer />);
-    userEvent.click(getByTestId('treeViewsContainer'), {button: RIGHT_CLICK_BUTTON});
-    const createRootFolderMenu = getByText('Create root folder');
-    expect(createRootFolderMenu).toBeVisible();
-    userEvent.click(createRootFolderMenu)
+    it('should be possible to create root menu from left tree view', () => {
+        const { getByText, getByTestId } = renderWithProviders(
+            <TreeViewsContainer />
+        );
+        userEvent.click(getByTestId('treeViewsContainer'), {
+            button: RIGHT_CLICK_BUTTON,
+        });
+        const createRootFolderMenu = getByText('Create root folder');
+        expect(createRootFolderMenu).toBeVisible();
+        userEvent.click(createRootFolderMenu);
+    });
 });
