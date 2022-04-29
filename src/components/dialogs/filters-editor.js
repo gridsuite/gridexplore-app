@@ -16,7 +16,6 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { Chip, Grid, InputLabel, MenuItem } from '@mui/material';
 
 const useStyles = makeStyles((theme) => {
-    console.log(theme);
     return {
         root: {
             flexGrow: 1,
