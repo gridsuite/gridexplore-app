@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => {
             flexGrow: 1,
             padding: '15px 40px',
         },
-        inputLabel: {
+        inputLegend: {
             backgroundImage:
                 'linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))',
             backgroundColor: theme.palette.background.paper,
@@ -123,7 +123,7 @@ const FiltersEditor = ({ filters, onChange }) => {
     const nominalVoltageOperators = ['=', '>', '>=', '<', '<='];
 
     return (
-        <div className={classes.root}>
+        <>
             <CustomTextField
                 margin="dense"
                 label={<FormattedMessage id="equipmentID" />}
@@ -136,15 +136,11 @@ const FiltersEditor = ({ filters, onChange }) => {
                 onChange={handleEquipmentName}
                 value={filters.equipmentName}
             />
-            <FormControl
-                fullWidth
-                margin="dense"
-                className={classes.formControl}
-            >
-                <InputLabel className={classes.inputLabel}>
+            <FormControl fullWidth margin="dense">
+                <InputLabel className={classes.inputLegend}>
                     <FormattedMessage id="nominalVoltage" />
                 </InputLabel>
-                <Grid direction={'row'}>
+                <Grid>
                     <Select
                         style={{ width: '15%', borderRadius: '4px 0 0 4px' }}
                         value={filters.nominalVoltageOperator}
@@ -172,17 +168,14 @@ const FiltersEditor = ({ filters, onChange }) => {
                     />
                 </Grid>
             </FormControl>
-            <FormControl
-                fullWidth
-                margin="dense"
-                className={classes.formControl}
-            >
-                <InputLabel className={classes.inputLabel}>
+            <FormControl fullWidth margin="dense">
+                <InputLabel>
                     <FormattedMessage id="equipmentType" />
                 </InputLabel>
                 <Select
                     style={{ width: '90%' }}
                     id="demo-customized-select-native"
+                    label={<FormattedMessage id="equipmentType" />}
                     value={filters.equipmentType}
                     onChange={handleEquipmentType}
                 >
@@ -222,7 +215,7 @@ const FiltersEditor = ({ filters, onChange }) => {
                     }
                 />
             </FormControl>
-        </div>
+        </>
     );
 };
 
