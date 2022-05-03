@@ -36,10 +36,6 @@ const useStyles = makeStyles(() => ({
         minHeight: '450px',
         margin: 'auto',
     },
-    filtersEditor: {
-        minWidth: '570px',
-        margin: 'auto',
-    },
 }));
 
 /**

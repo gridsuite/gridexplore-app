@@ -15,20 +15,18 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import Autocomplete from '@mui/material/Autocomplete';
 import { Chip, Grid, InputLabel, MenuItem } from '@mui/material';
 
-const useStyles = makeStyles((theme) => {
-    return {
-        root: {
-            flexGrow: 1,
-            padding: '15px 40px',
-        },
-        inputLegend: {
-            backgroundImage:
-                'linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))',
-            backgroundColor: theme.palette.background.paper,
-            padding: '0 8px 0 8px',
-        },
-    };
-});
+const useStyles = makeStyles((theme) => ({
+    root: {
+        flexGrow: 1,
+        padding: '15px 40px',
+    },
+    inputLegend: {
+        backgroundImage:
+            'linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))',
+        backgroundColor: theme.palette.background.paper,
+        padding: '0 8px 0 8px',
+    },
+}));
 
 const CustomTextField = withStyles(() => ({
     root: {
@@ -139,32 +137,39 @@ const FiltersEditor = ({ filters, onChange }) => {
                 <InputLabel className={classes.inputLegend}>
                     <FormattedMessage id="nominalVoltage" />
                 </InputLabel>
-                <Grid>
-                    <Select
-                        style={{ width: '15%', borderRadius: '4px 0 0 4px' }}
-                        value={filters.nominalVoltageOperator}
-                        onChange={handleOperator}
-                    >
-                        {nominalVoltageOperators.map((operator) => (
-                            <MenuItem key={operator} value={operator}>
-                                {operator}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                    <TextField
-                        style={{ width: '75%' }}
-                        onChange={handleNominalVoltage}
-                        value={
-                            filters.nominalVoltage === -1
-                                ? ''
-                                : filters.nominalVoltage
-                        }
-                        InputProps={{
-                            style: {
-                                borderRadius: '0 4px 4px 0',
-                            },
-                        }}
-                    />
+                <Grid container style={{ width: '90%' }} spacing={0}>
+                    <Grid item xs={2}>
+                        <Select
+                            fullWidth
+                            style={{
+                                borderRadius: '4px 0 0 4px',
+                            }}
+                            value={filters.nominalVoltageOperator}
+                            onChange={handleOperator}
+                        >
+                            {nominalVoltageOperators.map((operator) => (
+                                <MenuItem key={operator} value={operator}>
+                                    {operator}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </Grid>
+                    <Grid xs={10} item>
+                        <TextField
+                            fullWidth
+                            onChange={handleNominalVoltage}
+                            value={
+                                filters.nominalVoltage === -1
+                                    ? ''
+                                    : filters.nominalVoltage
+                            }
+                            InputProps={{
+                                style: {
+                                    borderRadius: '0 4px 4px 0',
+                                },
+                            }}
+                        />
+                    </Grid>
                 </Grid>
             </FormControl>
             <FormControl fullWidth margin="dense">
