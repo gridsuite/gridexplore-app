@@ -226,9 +226,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                             }
                             type="text"
                             style={{ width: '90%' }}
-                            label={
-                                <FormattedMessage id="contingencyListName" />
-                            }
+                            label={<FormattedMessage id="nameProperty" />}
                         />
                         {renderContingencyNameStatus()}
                     </div>
@@ -240,9 +238,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                         value={contingencyListDescription}
                         type="text"
                         style={{ width: '90%' }}
-                        label={
-                            <FormattedMessage id="contingencyListDescription" />
-                        }
+                        label={<FormattedMessage id="descriptionProperty" />}
                     />
 
                     <RadioGroup

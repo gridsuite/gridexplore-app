@@ -298,7 +298,7 @@ const DirectoryTreeContextualMenu = (props) => {
                 open={openDialog === DialogsId.ADD_NEW_FILTER}
                 onClose={handleCloseDialog}
                 title={<FormattedMessage id="createNewFilter" />}
-                inputLabelText={<FormattedMessage id="FilterName" />}
+                inputLabelText={<FormattedMessage id="nameProperty" />}
                 customTextValidationBtn={<FormattedMessage id="create" />}
                 customTextCancelBtn={<FormattedMessage id="cancel" />}
             />

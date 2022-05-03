@@ -25,8 +25,8 @@ export function CreateCaseDialog({ onClose, open }) {
 
     const [triggerReset, setTriggerReset] = useState(true);
 
-    const [name, nameField, nameError, nameOk] = useNameField({
-        label: 'CaseName',
+    const [name, NameField, nameError, nameOk] = useNameField({
+        label: 'nameProperty',
         autoFocus: true,
         elementType: ElementType.CASE,
         parentDirectoryId: activeDirectory,
@@ -38,7 +38,7 @@ export function CreateCaseDialog({ onClose, open }) {
     });
 
     const [description, DescriptionField] = useTextValue({
-        label: 'CaseDescriptionOptional',
+        label: 'descriptionProperty',
         triggerReset,
         style: {
             width: '90%',
@@ -93,7 +93,7 @@ export function CreateCaseDialog({ onClose, open }) {
                 <FormattedMessage id="ImportNewCase" />
             </DialogTitle>
             <DialogContent>
-                {nameField}
+                {NameField}
                 {DescriptionField}
                 {FileField}
                 {nameError && <Alert severity="error">{nameError}</Alert>}

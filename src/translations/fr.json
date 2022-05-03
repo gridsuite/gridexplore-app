@@ -22,14 +22,13 @@
     "deleteStudyError": "Vous n'êtes pas le propriétaire de l'étude",
     "deleteElementsFailure": "Problème à la destruction {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {détruit} other {détruits}} : {problematic}",
     "moveElementsFailure": "Problème au déplacement {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {déplacé} other {déplacés}} : {problematic}",
-    "studyName": "nom",
-    "studyNameProperty": "Nom de l'étude : ",
-    "studyDescription": "description (optionnel)",
-    "studyDescriptionProperty": "Description de l'étude : ",
     "caseName": "nom de la situation",
     "uploadCase": "télécharger la situation",
     "uploadErrorMsg": "Veuillez télécharger la situation",
     "uploadFileExceedingLimitSizeErrorMsg": "Le fichier sélectionné dépasse la taille limite ({maxSize} Mo).{br}Veuillez compresser ce fichier au format zip, gzip ou bzip2 puis réessayez de l'importer à nouveau.",
+
+    "nameProperty": "Nom",
+    "descriptionProperty": "Description (optionnel)",
 
     "uploadMessage": " Aucun fichier sélectionné",
     "cancel": "ANNULER",
@@ -45,8 +44,6 @@
     "nameEmpty": "Le nom est vide",
 
     "ImportNewCase": "Importer une situation",
-    "CaseName": "nom",
-    "CaseDescriptionOptional": "description (optionnel)",
     "caseCreationError": "Une erreur est survenue lors de la création de la situation : {name}",
     "CASE": "Situation",
     "CaseValidate": "Valider",
@@ -98,8 +95,6 @@
 
     "createNewContingencyList": "Créer une liste de contingences",
     "elementNameErrorMsg": "Le nom de l'élément n'est pas renseigné",
-    "contingencyListName": "nom",
-    "contingencyListDescription": "description (optionnel)",
     "SCRIPT": "Script",
     "FORM": "Formulaire",
     "editContingencyList": "Editer la liste de contingences",
@@ -151,7 +146,6 @@
     "Min": "Min",
     "Max": "Max",
 
-    "FilterName": "Nom",
     "getAppLinkError": "Erreur lors de la récupération du lien vers l'application pour le type = {type}",
     "nameValidityCheckErrorMsg": "Erreur lors de la vérification de la validité du nom : ",
 

@@ -10,7 +10,7 @@
     "public": "public",
     "emptyDir": "Empty directory",
 
-    "createNewStudy": "Create study",
+    "createNewStudy": "Create a study",
     "studyCreationError": "Error when creating study: {studyName}",
     "renameElement": "Rename the element",
     "renameElementMsg": "Element new name",
@@ -22,14 +22,13 @@
     "deleteStudyError": "You are not the owner of this study",
     "deleteElementsFailure": "Problem encountered while deleting {stn, plural, one {an element} other {elements}}. Not deleted : {problematic}",
     "moveElementsFailure": "Problem encountered while moving {stn, plural, one {an element} other {elements}}. Not moved : {problematic}",
-    "studyName": "name",
-    "studyNameProperty": "Study name: ",
-    "studyDescription": "description (optional)",
-    "studyDescriptionProperty": "Study description: ",
     "caseName": "case name",
     "uploadCase": "Upload case",
     "uploadErrorMsg": "Please upload the case file",
     "uploadFileExceedingLimitSizeErrorMsg": "Selected file exceeds size limit ({maxSize} MB).{br}Please compress the file in zip, gzip or bzip2 format then try to upload it again",
+
+    "nameProperty": "Name",
+    "descriptionProperty": "Description (optional)",
 
     "uploadMessage": " No file selected",
     "cancel": "CANCEL",
@@ -45,8 +44,6 @@
     "nameEmpty": "The name is empty",
 
     "ImportNewCase": "Upload a case",
-    "CaseName": "name",
-    "CaseDescriptionOptional": "description (optional)",
     "caseCreationError": "An error occurred while creating the case: {name}",
     "CASE": "Case",
     "CaseValidate": "Add",
@@ -98,10 +95,8 @@
     "renameDirectoryError": "You cannot rename a directory you don't own",
     "edit": "Edit",
 
-    "createNewContingencyList": "Create contingency list",
+    "createNewContingencyList": "Create a contingency list",
     "elementNameErrorMsg": "The element name is not provided",
-    "contingencyListName": "name",
-    "contingencyListDescription": "description (optional)",
     "SCRIPT": "Script",
     "FORM": "Form",
     "editContingencyList": "Edit contingency list",
@@ -153,7 +148,6 @@
     "Min": "Min",
     "Max": "Max",
 
-    "FilterName": "Name",
     "getAppLinkError": "Error getting application link for type = {type}",
     "nameValidityCheckErrorMsg": "Error checking name validity : ",
 

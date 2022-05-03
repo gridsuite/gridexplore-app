@@ -394,7 +394,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                                 !loadingCheckStudyName
                             }
                             style={{ width: '90%' }}
-                            label={<FormattedMessage id="studyName" />}
+                            label={<FormattedMessage id="nameProperty" />}
                         />
                         {renderStudyNameStatus()}
                     </div>
@@ -404,7 +404,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         value={studyDescription}
                         type="text"
                         style={{ width: '90%' }}
-                        label={<FormattedMessage id="studyDescription" />}
+                        label={<FormattedMessage id="descriptionProperty" />}
                     />
                     {!selectedCase ? (
                         caseExist ? (
