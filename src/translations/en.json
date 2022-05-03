@@ -75,9 +75,7 @@
     "deleteItemDialogTitle": "Delete {itemName}",
     "deleteMultipleItemsDialogTitle": "Delete {itemsCount} items",
     "renameDirectoryDialogTitle": "Rename the folder",
-    "directoryNameLabel": "Name",
     "isPrivateLabel": "Private folder?",
-
     "directoryNewNameLabel": "New Name",
 
     "exportNetwork": "Export the network",

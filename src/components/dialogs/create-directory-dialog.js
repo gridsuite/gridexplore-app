@@ -23,10 +23,6 @@ import { ElementType } from '../../utils/elementType';
 import { useNameField } from './field-hook';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-        alignItems: 'center',
-    },
     paper: {
         padding: theme.spacing(2),
         textAlign: 'center',
@@ -48,7 +44,6 @@ export const CreateDirectoryDialog = ({
     onClick,
     title,
     parentDirectory,
-    message,
     error,
 }) => {
     const classes = useStyles();
@@ -58,7 +53,7 @@ export const CreateDirectoryDialog = ({
     const [triggerReset, setTriggerReset] = React.useState(true);
 
     const [name, nameField, nameError, nameOk] = useNameField({
-        label: 'directoryNameLabel',
+        label: 'nameProperty',
         autoFocus: true,
         elementType: ElementType.DIRECTORY,
         parentDirectoryId: parentDirectory,
@@ -148,7 +143,6 @@ CreateDirectoryDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
-    message: PropTypes.string.isRequired,
     error: PropTypes.string.isRequired,
 };
 
