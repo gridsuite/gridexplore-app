@@ -7,59 +7,32 @@
 import React from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
-import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import NativeSelect from '@mui/material/NativeSelect';
-import InputBase from '@mui/material/InputBase';
 import { EquipmentTypes } from '../../utils/equipment-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Autocomplete from '@mui/material/Autocomplete';
-import { Chip } from '@mui/material';
+import { Chip, Grid, InputLabel, MenuItem } from '@mui/material';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
         padding: '15px 40px',
     },
+    inputLegend: {
+        backgroundImage:
+            'linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))',
+        backgroundColor: theme.palette.background.paper,
+        padding: '0 8px 0 8px',
+    },
 }));
-
-const CustomNativeSelect = withStyles((theme) => ({
-    select: {
-        color: theme.palette.mode === 'light' ? '#000 !important' : '#fff',
-        backgroundColor: 'transparent !important',
-    },
-}))(NativeSelect);
-
-const BootstrapInput = withStyles(() => ({
-    input: {
-        minWidth: '223px',
-        minHeight: '19px',
-        color: 'white',
-        borderColor: 'grey',
-        borderRadius: 4,
-        position: 'relative',
-        border: '1px solid',
-        fontSize: 16,
-        paddingLeft: 14,
-        paddingRight: 14,
-        paddingTop: 18.5,
-        paddingBottom: 18.5,
-    },
-}))(InputBase);
 
 const CustomTextField = withStyles(() => ({
     root: {
-        width: '263px',
+        width: '90%',
     },
 }))(TextField);
-
-const CustomAutocomplete = withStyles(() => ({
-    root: {
-        width: '263px',
-    },
-}))(Autocomplete);
 
 const FiltersEditor = ({ filters, onChange }) => {
     const classes = useStyles();
@@ -144,127 +117,109 @@ const FiltersEditor = ({ filters, onChange }) => {
         });
     }
 
+    const nominalVoltageOperators = ['=', '>', '>=', '<', '<='];
+
     return (
-        <div className={classes.root}>
-            <Grid container direction="row" spacing={1}>
-                <Grid item xs={12} sm={3}>
-                    <h3>
-                        <FormattedMessage id="equipmentID" />
-                    </h3>
-                </Grid>
-                <Grid item xs={12} sm={9}>
-                    <CustomTextField
-                        onChange={handleEquipmentID}
-                        value={filters.equipmentID}
-                    />
-                </Grid>
-            </Grid>
-
-            <Grid container direction="row" spacing={1}>
-                <Grid item xs={12} sm={3}>
-                    <h3>
-                        <FormattedMessage id="equipmentName" />
-                    </h3>
-                </Grid>
-                <Grid item xs={12} sm={9}>
-                    <CustomTextField
-                        onChange={handleEquipmentName}
-                        value={filters.equipmentName}
-                    />
-                </Grid>
-            </Grid>
-
-            <Grid container direction="row" spacing={1}>
-                <Grid item xs={9} sm={2}>
-                    <h3>
-                        <FormattedMessage id="nominalVoltage" />
-                    </h3>
-                </Grid>
-                <Grid item xs={3} sm={1}>
-                    <FormControl className={classes.formControl}>
+        <>
+            <CustomTextField
+                margin="dense"
+                label={<FormattedMessage id="equipmentID" />}
+                onChange={handleEquipmentID}
+                value={filters.equipmentID}
+            />
+            <CustomTextField
+                margin="dense"
+                label={<FormattedMessage id="equipmentName" />}
+                onChange={handleEquipmentName}
+                value={filters.equipmentName}
+            />
+            <FormControl fullWidth margin="dense">
+                <InputLabel className={classes.inputLegend}>
+                    <FormattedMessage id="nominalVoltage" />
+                </InputLabel>
+                <Grid container style={{ width: '90%' }} spacing={0}>
+                    <Grid item xs={2}>
                         <Select
-                            native
+                            fullWidth
+                            style={{
+                                borderRadius: '4px 0 0 4px',
+                            }}
                             value={filters.nominalVoltageOperator}
                             onChange={handleOperator}
                         >
-                            <option value={'='}>=</option>
-                            <option value={'>'}> &gt; </option>
-                            <option value={'>='}> &ge; </option>
-                            <option value={'<'}> &lt; </option>
-                            <option value={'<='}> &le; </option>
-                        </Select>
-                    </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={9}>
-                    <CustomTextField
-                        onChange={handleNominalVoltage}
-                        value={
-                            filters.nominalVoltage === -1
-                                ? ''
-                                : filters.nominalVoltage
-                        }
-                    />
-                </Grid>
-            </Grid>
-
-            <Grid container direction="row" spacing={1}>
-                <Grid item xs={12} sm={3}>
-                    <h3>
-                        {' '}
-                        <FormattedMessage id="equipmentType" />
-                    </h3>
-                </Grid>
-                <Grid item xs={12} sm={9}>
-                    <FormControl>
-                        <CustomNativeSelect
-                            id="demo-customized-select-native"
-                            value={filters.equipmentType}
-                            onChange={handleEquipmentType}
-                            input={<BootstrapInput />}
-                        >
-                            {Object.values(EquipmentTypes).map((val) => (
-                                <option value={val} key={val}>
-                                    {intl.formatMessage({ id: val })}
-                                </option>
+                            {nominalVoltageOperators.map((operator) => (
+                                <MenuItem key={operator} value={operator}>
+                                    {operator}
+                                </MenuItem>
                             ))}
-                        </CustomNativeSelect>
-                    </FormControl>
+                        </Select>
+                    </Grid>
+                    <Grid xs={10} item>
+                        <TextField
+                            fullWidth
+                            onChange={handleNominalVoltage}
+                            value={
+                                filters.nominalVoltage === -1
+                                    ? ''
+                                    : filters.nominalVoltage
+                            }
+                            InputProps={{
+                                style: {
+                                    borderRadius: '0 4px 4px 0',
+                                },
+                            }}
+                        />
+                    </Grid>
                 </Grid>
-            </Grid>
+            </FormControl>
+            <FormControl fullWidth margin="dense">
+                <InputLabel>
+                    <FormattedMessage id="equipmentType" />
+                </InputLabel>
+                <Select
+                    style={{ width: '90%' }}
+                    id="demo-customized-select-native"
+                    label={<FormattedMessage id="equipmentType" />}
+                    value={filters.equipmentType}
+                    onChange={handleEquipmentType}
+                >
+                    {Object.values(EquipmentTypes).map((val) => (
+                        <MenuItem value={val} key={val}>
+                            {intl.formatMessage({ id: val })}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
 
-            <Grid container direction="row" spacing={1}>
-                <Grid item xs={12} sm={3}>
-                    <h3>
-                        <FormattedMessage id="Countries" />
-                    </h3>
-                </Grid>
-                <Grid item xs={12} sm={9}>
-                    <CustomAutocomplete
-                        id="select_countries"
-                        value={filters.countries}
-                        multiple={true}
-                        onChange={(event, newValue) => {
-                            handleCountrySelection(newValue);
-                        }}
-                        input={<BootstrapInput />}
-                        options={Object.keys(countriesList.object())}
-                        style={BootstrapInput.input}
-                        getOptionLabel={(code) => countriesList.get(code)}
-                        renderInput={(props) => <TextField {...props} />}
-                        renderTags={(val, getTagsProps) =>
-                            val.map((code, index) => (
-                                <Chip
-                                    id={'chip_' + code}
-                                    size={'small'}
-                                    label={countriesList.get(code)}
-                                    {...getTagsProps({ index })}
-                                />
-                            ))
-                        }
-                    />
-                </Grid>
-            </Grid>
-        </div>
+            <FormControl fullWidth margin="dense">
+                <Autocomplete
+                    id="select_countries"
+                    value={filters.countries}
+                    multiple={true}
+                    onChange={(event, newValue) => {
+                        handleCountrySelection(newValue);
+                    }}
+                    options={Object.keys(countriesList.object())}
+                    getOptionLabel={(code) => countriesList.get(code)}
+                    renderInput={(props) => (
+                        <CustomTextField
+                            label={<FormattedMessage id="Countries" />}
+                            {...props}
+                        />
+                    )}
+                    renderTags={(val, getTagsProps) =>
+                        val.map((code, index) => (
+                            <Chip
+                                id={'chip_' + code}
+                                size={'small'}
+                                label={countriesList.get(code)}
+                                {...getTagsProps({ index })}
+                            />
+                        ))
+                    }
+                />
+            </FormControl>
+        </>
     );
 };
 

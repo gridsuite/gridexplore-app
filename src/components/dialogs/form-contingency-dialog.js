@@ -36,10 +36,6 @@ const useStyles = makeStyles(() => ({
         minHeight: '450px',
         margin: 'auto',
     },
-    filtersEditor: {
-        minWidth: '570px',
-        margin: 'auto',
-    },
 }));
 
 /**
@@ -140,12 +136,10 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <div className={classes.filtersEditor}>
-                    <FiltersEditor
-                        filters={newFormContingency}
-                        onChange={onChangeFiltersContingency}
-                    />
-                </div>
+                <FiltersEditor
+                    filters={newFormContingency}
+                    onChange={onChangeFiltersContingency}
+                />
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCancel}>
