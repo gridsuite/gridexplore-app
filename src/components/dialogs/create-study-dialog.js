@@ -366,6 +366,15 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setFolderSelectorOpen(false);
     };
 
+    const isCreationAllowed = () => {
+        return !(
+            studyName === '' ||
+            !studyNameValid ||
+            loadingCheckStudyName ||
+            (!providedCase && !isSelectedFileOk)
+        );
+    };
+
     return (
         <div>
             <Dialog
@@ -374,8 +383,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 onClose={handleCloseDialog}
                 aria-labelledby="form-dialog-title"
                 onKeyPress={handleKeyPressed}
-                //Call to stopPropagation in order to prevent contextual menu to appear
-                onContextMenu={(e) => e.stopPropagation()}
             >
                 <DialogTitle id="form-dialog-title">
                     <FormattedMessage id="createNewStudy" />
@@ -475,12 +482,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                     </Button>
                     <Button
                         onClick={() => handleCreateNewStudy()}
-                        disabled={
-                            studyName === '' ||
-                            !studyNameValid ||
-                            loadingCheckStudyName ||
-                            !isSelectedFileOk
-                        }
+                        disabled={!isCreationAllowed()}
                         variant="outlined"
                     >
                         <FormattedMessage id="create" />

@@ -27,6 +27,8 @@ import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import GenericFilterDialog from '../dialogs/generic-filter-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog';
 
+import { DialogsId } from '../../utils/UIconstants';
+
 import {
     deleteElement,
     moveElementToDirectory,
@@ -51,26 +53,16 @@ import {
 import { useSnackbar } from 'notistack';
 import MoveDialog from '../dialogs/move-dialog';
 
-const DialogsId = {
-    RENAME: 'rename',
-    DELETE: 'delete',
-    MOVE: 'move',
-    ADD_NEW_STUDY: 'create_study',
-    EXPORT: 'export',
-    FILTERS_CONTINGENCY: 'filters_contingency',
-    SCRIPT_CONTINGENCY: 'script_contingency',
-    SCRIPT: 'script',
-    REPLACE_FILTER_BY_SCRIPT_CONTINGENCY:
-        'replace_filter_by_script_contingency',
-    COPY_FILTER_TO_SCRIPT_CONTINGENCY: 'copy_filter_to_script_contingency',
-    REPLACE_FILTER_BY_SCRIPT: 'replace_filter_by_script',
-    COPY_FILTER_TO_SCRIPT: 'copy_filter_to_script',
-    GENERIC_FILTER: 'generic_filter',
-    NONE: 'none',
-};
-
 const ContentContextualMenu = (props) => {
-    const { activeElement, selectedElements, open, onClose, ...others } = props;
+    const {
+        activeElement,
+        selectedElements,
+        open,
+        onClose,
+        openDialog,
+        setOpenDialog,
+        ...others
+    } = props;
     const userId = useSelector((state) => state.user.profile.sub);
     const intl = useIntl();
     const { enqueueSnackbar } = useSnackbar();
@@ -78,7 +70,6 @@ const ContentContextualMenu = (props) => {
     const DownloadIframe = 'downloadIframe';
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const [openDialog, setOpenDialog] = useState(null);
     const [hideMenu, setHideMenu] = useState(false);
 
     const handleLastError = useCallback(
@@ -99,7 +90,7 @@ const ContentContextualMenu = (props) => {
         onClose();
         setOpenDialog(DialogsId.NONE);
         setHideMenu(false);
-    }, [onClose]);
+    }, [onClose, setOpenDialog]);
 
     const handleClickExportStudy = (url) => {
         window.open(url, DownloadIframe);
@@ -373,7 +364,7 @@ const ContentContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'createNewStudyFromImportedCase',
                 callback: () => {
-                    handleOpenDialog(DialogsId.ADD_NEW_STUDY);
+                    handleOpenDialog(DialogsId.ADD_NEW_STUDY_FROM_CASE);
                 },
                 icon: <PhotoLibrary fontSize="small" />,
             });
@@ -588,7 +579,7 @@ const ContentContextualMenu = (props) => {
             />
 
             <CreateStudyDialog
-                open={openDialog === DialogsId.ADD_NEW_STUDY}
+                open={openDialog === DialogsId.ADD_NEW_STUDY_FROM_CASE}
                 onClose={handleCloseDialog}
                 providedCase={activeElement}
             />

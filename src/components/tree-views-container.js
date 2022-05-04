@@ -187,6 +187,7 @@ const TreeViewsContainer = () => {
 
     const [rootDirectories, setRootDirectories] = useState([]);
     const [mapData, setMapData] = useState({});
+    const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
 
     const user = useSelector((state) => state.user);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -565,39 +566,39 @@ const TreeViewsContainer = () => {
         <>
             <div
                 style={{
+                    display: 'flex',
+                    flexDirection: 'column',
                     height: '100%',
                 }}
-                onMouseDownCapture={(e) => {
+                onContextMenu={(e) => onContextMenu(e, null)}
+            >
+                {mapDataRef.current &&
+                    rootDirectories.map((rootDirectory) => (
+                        <DirectoryTreeView
+                            key={rootDirectory.elementUuid}
+                            treeViewUuid={rootDirectory.elementUuid}
+                            mapData={mapDataRef.current}
+                            onContextMenu={onContextMenu}
+                            onDirectoryUpdate={updateDirectoryTree}
+                        />
+                    ))}
+            </div>
+
+            <div
+                onMouseDown={(e) => {
                     if (
                         e.button === constants.MOUSE_EVENT_RIGHT_BUTTON &&
-                        openDirectoryMenu // This means ctx menu is openned
+                        openDialog === constants.DialogsId.NONE
                     ) {
                         handleCloseDirectoryMenu(e, null);
                     }
                 }}
             >
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        height: '100%',
-                    }}
-                    onContextMenu={(e) => onContextMenu(e, null)}
-                >
-                    {mapDataRef.current &&
-                        rootDirectories.map((rootDirectory) => (
-                            <DirectoryTreeView
-                                key={rootDirectory.elementUuid}
-                                treeViewUuid={rootDirectory.elementUuid}
-                                mapData={mapDataRef.current}
-                                onContextMenu={onContextMenu}
-                                onDirectoryUpdate={updateDirectoryTree}
-                            />
-                        ))}
-                </div>
                 <DirectoryTreeContextualMenu
                     directory={getActiveDirectory()}
                     open={openDirectoryMenu}
+                    openDialog={openDialog}
+                    setOpenDialog={setOpenDialog}
                     onClose={(e) => handleCloseDirectoryMenu(e, null)}
                     anchorReference="anchorPosition"
                     anchorPosition={
