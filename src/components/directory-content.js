@@ -99,7 +99,7 @@ const DirectoryContent = () => {
     const dispatch = useDispatch();
 
     const [childrenMetadata, setChildrenMetadata] = useState({});
-    const [isAllDataPresent, setIsAllDataPresent] = useState(false);
+    const isAllDataPresent = true;
 
     const [selectedUuids, setSelectedUuids] = useState(new Set());
 
@@ -464,11 +464,6 @@ const DirectoryContent = () => {
         );
     }
 
-    /* directory changed, current data are not up to date, display loader */
-    useEffect(() => {
-        setIsAllDataPresent(false);
-    }, [selectedDirectory, setIsAllDataPresent]);
-
     useEffect(() => {
         if (currentChildren?.length > 0) {
             let metadata = {};
@@ -487,17 +482,18 @@ const DirectoryContent = () => {
                             };
                         });
                     })
-                    .catch(handleError)
+                    .catch(
+                        Object.keys(currentChildrenRef.current).length === 0
+                            ? handleError
+                            : () => {}
+                    )
                     .finally(() => {
                         // discarding request for older directory
                         if (currentChildrenRef.current === currentChildren) {
                             setChildrenMetadata(metadata);
-                            setIsAllDataPresent(true);
                         }
                     });
             }
-        } else {
-            setIsAllDataPresent(true);
         }
         setSelectedUuids(new Set());
     }, [handleError, currentChildren, currentChildrenRef]);
