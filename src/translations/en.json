@@ -10,8 +10,7 @@
     "public": "public",
     "emptyDir": "Empty directory",
 
-    "createNewStudy": "Create new study",
-    "createNewStudyDescription": "To create a new study, you should enter the following information:",
+    "createNewStudy": "Create a study",
     "studyCreationError": "Error when creating study: {studyName}",
     "renameElement": "Rename the element",
     "renameElementMsg": "Element new name",
@@ -23,15 +22,13 @@
     "deleteStudyError": "You are not the owner of this study",
     "deleteElementsFailure": "Problem encountered while deleting {stn, plural, one {an element} other {elements}}. Not deleted : {problematic}",
     "moveElementsFailure": "Problem encountered while moving {stn, plural, one {an element} other {elements}}. Not moved : {problematic}",
-    "caseExist": "Does the case already exist?",
-    "studyName": "study name",
-    "studyNameProperty": "Study name: ",
-    "studyDescription": "study description",
-    "studyDescriptionProperty": "Study description: ",
     "caseName": "case name",
     "uploadCase": "Upload case",
     "uploadErrorMsg": "Please upload the case file",
     "uploadFileExceedingLimitSizeErrorMsg": "Selected file exceeds size limit ({maxSize} MB).{br}Please compress the file in zip, gzip or bzip2 format then try to upload it again",
+
+    "nameProperty": "Name",
+    "descriptionProperty": "Description (optional)",
 
     "uploadMessage": " No file selected",
     "cancel": "CANCEL",
@@ -46,10 +43,7 @@
     "studyNameAlreadyUsed": "This study name is already used",
     "nameEmpty": "The name is empty",
 
-    "ImportNewCase": "Upload a new case",
-    "createNewCaseDescription": "To create a new case, you should enter the following information:",
-    "CaseName": "Case name",
-    "CaseDescriptionOptional": "Case description (optional)",
+    "ImportNewCase": "Upload a case",
     "caseCreationError": "An error occurred while creating the case: {name}",
     "CASE": "Case",
     "CaseValidate": "Add",
@@ -81,9 +75,7 @@
     "deleteItemDialogTitle": "Delete {itemName}",
     "deleteMultipleItemsDialogTitle": "Delete {itemsCount} items",
     "renameDirectoryDialogTitle": "Rename the folder",
-    "directoryNameLabel": "Folder Name",
     "isPrivateLabel": "Private folder?",
-
     "directoryNewNameLabel": "New Name",
 
     "exportNetwork": "Export the network",
@@ -101,11 +93,8 @@
     "renameDirectoryError": "You cannot rename a directory you don't own",
     "edit": "Edit",
 
-    "createNewContingencyList": "Create new contingency list",
-    "createNewContingencyListDescription": "To create a new contingency list, you should enter the following information:",
+    "createNewContingencyList": "Create a contingency list",
     "elementNameErrorMsg": "The element name is not provided",
-    "contingencyListName": "Name of contingency list",
-    "contingencyListDescription": "Contingency list description",
     "SCRIPT": "Script",
     "FORM": "Form",
     "editContingencyList": "Edit contingency list",
@@ -136,7 +125,7 @@
     "newNameList": "New list name",
     "copyToScript": "Copy to script",
     "replaceWithScript": "Replace with script",
-    "createNewFilter": "Create a new filter",
+    "createNewFilter": "Create a filter",
     "substationName": "Substation name",
     "Generators": "Generators",
     "Lines": "Lines",
@@ -157,7 +146,6 @@
     "Min": "Min",
     "Max": "Max",
 
-    "FilterName": "Name",
     "getAppLinkError": "Error getting application link for type = {type}",
     "nameValidityCheckErrorMsg": "Error checking name validity : ",
 

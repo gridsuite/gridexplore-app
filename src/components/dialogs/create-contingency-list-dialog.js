@@ -12,7 +12,6 @@ import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Alert from '@mui/material/Alert';
@@ -212,9 +211,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     <FormattedMessage id="createNewContingencyList" />
                 </DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        <FormattedMessage id="createNewContingencyListDescription" />
-                    </DialogContentText>
                     <div>
                         <TextField
                             onChange={(e) =>
@@ -230,9 +226,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                             }
                             type="text"
                             style={{ width: '90%' }}
-                            label={
-                                <FormattedMessage id="contingencyListName" />
-                            }
+                            label={<FormattedMessage id="nameProperty" />}
                         />
                         {renderContingencyNameStatus()}
                     </div>
@@ -244,9 +238,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                         value={contingencyListDescription}
                         type="text"
                         style={{ width: '90%' }}
-                        label={
-                            <FormattedMessage id="contingencyListDescription" />
-                        }
+                        label={<FormattedMessage id="descriptionProperty" />}
                     />
 
                     <RadioGroup

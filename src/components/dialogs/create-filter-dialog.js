@@ -23,7 +23,6 @@ import TextField from '@mui/material/TextField';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
-import Grid from '@mui/material/Grid';
 import { createFilter, elementExists } from '../../utils/rest-api';
 import Alert from '@mui/material/Alert';
 import { useSelector } from 'react-redux';
@@ -239,57 +238,54 @@ const CreateFilterDialog = ({
     };
 
     return (
-        <DialogContainer
+        <Dialog
+            fullWidth={true}
             open={open}
             onClose={handleClose}
             onKeyPress={handleKeyPressed}
         >
-            <CustomDialogTitle onClose={handleClose}>{title}</CustomDialogTitle>
-            <CustomDialogContent dividers>
-                <Grid container direction="row" spacing={1}>
-                    <Grid item xs={12} sm={8}>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            type="text"
-                            style={{ width: '90%' }}
-                            onChange={(event) =>
-                                handleFilterNameChanges(event.target.value)
-                            }
-                            error={
-                                newNameList !== '' &&
-                                !filterNameValid &&
-                                !loadingCheckFilterName
-                            }
-                            label={inputLabelText}
-                        />
-                        {renderFilterNameStatus()}
-                        <RadioGroup
-                            aria-label="type"
-                            name="filterType"
-                            value={newListType}
-                            onChange={(e) => setNewListType(e.target.value)}
-                            row
-                        >
-                            <FormControlLabel
-                                value="SCRIPT"
-                                control={<Radio />}
-                                label={<FormattedMessage id="SCRIPT" />}
-                            />
-                            <FormControlLabel
-                                value="FORM"
-                                control={<Radio />}
-                                label={<FormattedMessage id="FORM" />}
-                            />
-                        </RadioGroup>
-                    </Grid>
-                </Grid>
+            <DialogTitle onClose={handleClose}>{title}</DialogTitle>
+            <DialogContent>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    type="text"
+                    style={{ width: '90%' }}
+                    onChange={(event) =>
+                        handleFilterNameChanges(event.target.value)
+                    }
+                    error={
+                        newNameList !== '' &&
+                        !filterNameValid &&
+                        !loadingCheckFilterName
+                    }
+                    label={inputLabelText}
+                />
+                {renderFilterNameStatus()}
+                <RadioGroup
+                    aria-label="type"
+                    name="filterType"
+                    value={newListType}
+                    onChange={(e) => setNewListType(e.target.value)}
+                    row
+                >
+                    <FormControlLabel
+                        value="SCRIPT"
+                        control={<Radio />}
+                        label={<FormattedMessage id="SCRIPT" />}
+                    />
+                    <FormControlLabel
+                        value="FORM"
+                        control={<Radio />}
+                        label={<FormattedMessage id="FORM" />}
+                    />
+                </RadioGroup>
                 {createFilterErr !== '' && (
                     <Alert severity="error">{createFilterErr}</Alert>
                 )}
-            </CustomDialogContent>
-            <CustomDialogActions>
-                <Button autoFocus size="small" onClick={handleClose}>
+            </DialogContent>
+            <DialogActions>
+                <Button size="small" onClick={handleClose}>
                     {customTextCancelBtn}
                 </Button>
                 <Button
@@ -304,8 +300,8 @@ const CreateFilterDialog = ({
                 >
                     {customTextValidationBtn}
                 </Button>
-            </CustomDialogActions>
-        </DialogContainer>
+            </DialogActions>
+        </Dialog>
     );
 };
 

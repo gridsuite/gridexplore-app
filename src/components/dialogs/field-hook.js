@@ -49,7 +49,6 @@ export const useTextValue = ({
         return (
             <TextField
                 key={id}
-                size="small"
                 margin="dense"
                 id={id}
                 label={id && <FormattedMessage id={label} />}

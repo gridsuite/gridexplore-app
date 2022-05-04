@@ -215,7 +215,6 @@ const DirectoryTreeContextualMenu = (props) => {
                 onClose={handleCloseDialog}
             />
             <CreateDirectoryDialog
-                message={''}
                 open={openDialog === DialogsId.ADD_DIRECTORY}
                 onClick={(elementName, isPrivate) =>
                     insertDirectoryCB(
@@ -233,7 +232,6 @@ const DirectoryTreeContextualMenu = (props) => {
                 error={insertDirectoryState?.errorMessage}
             />
             <CreateDirectoryDialog
-                message={''}
                 open={openDialog === DialogsId.ADD_ROOT_DIRECTORY}
                 onClick={(elementName, isPrivate) =>
                     insertRootDirectoryCB(elementName, isPrivate, userId)
@@ -270,7 +268,6 @@ const DirectoryTreeContextualMenu = (props) => {
                 error={deleteState.errorMessage}
             />
             <AccessRightsDialog
-                message={''}
                 isPrivate={directory?.accessRights?.isPrivate}
                 open={openDialog === DialogsId.ACCESS_RIGHTS}
                 onClick={(isPrivate) =>
@@ -286,7 +283,7 @@ const DirectoryTreeContextualMenu = (props) => {
                 open={openDialog === DialogsId.ADD_NEW_FILTER}
                 onClose={handleCloseDialog}
                 title={<FormattedMessage id="createNewFilter" />}
-                inputLabelText={<FormattedMessage id="FilterName" />}
+                inputLabelText={<FormattedMessage id="nameProperty" />}
                 customTextValidationBtn={<FormattedMessage id="create" />}
                 customTextCancelBtn={<FormattedMessage id="cancel" />}
             />

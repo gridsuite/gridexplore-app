@@ -14,8 +14,6 @@ import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Alert from '@mui/material/Alert';
-import InputLabel from '@mui/material/InputLabel';
-import Grid from '@mui/material/Grid';
 import makeStyles from '@mui/styles/makeStyles';
 import FormControl from '@mui/material/FormControl';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -25,10 +23,6 @@ import { ElementType } from '../../utils/elementType';
 import { useNameField } from './field-hook';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-        alignItems: 'center',
-    },
     paper: {
         padding: theme.spacing(2),
         textAlign: 'center',
@@ -50,7 +44,6 @@ export const CreateDirectoryDialog = ({
     onClick,
     title,
     parentDirectory,
-    message,
     error,
 }) => {
     const classes = useStyles();
@@ -60,11 +53,15 @@ export const CreateDirectoryDialog = ({
     const [triggerReset, setTriggerReset] = React.useState(true);
 
     const [name, nameField, nameError, nameOk] = useNameField({
+        label: 'nameProperty',
         autoFocus: true,
         elementType: ElementType.DIRECTORY,
         parentDirectoryId: parentDirectory,
         triggerReset,
         active: open,
+        style: {
+            width: '90%',
+        },
     });
 
     const handleClose = () => {
@@ -92,6 +89,7 @@ export const CreateDirectoryDialog = ({
 
     return (
         <Dialog
+            fullWidth={true}
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-delete"
@@ -99,41 +97,27 @@ export const CreateDirectoryDialog = ({
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <InputLabel htmlFor="newName">{message}</InputLabel>
-                <Grid container spacing={3} className={classes.root}>
-                    <Grid item xs={5}>
-                        <InputLabel>
-                            <FormattedMessage id="directoryNameLabel" />
-                        </InputLabel>
-                    </Grid>
-                    <Grid item xs={7}>
-                        {nameField}
-                    </Grid>
-                </Grid>
-                <Grid container spacing={3} className={classes.root}>
-                    <Grid item xs={12}>
-                        <FormControl className={classes.formControl}>
-                            <RadioGroup
-                                aria-label=""
-                                name="DirectoryAccessRights"
-                                value={isPrivate + ''}
-                                onChange={handleChange}
-                                row
-                            >
-                                <FormControlLabel
-                                    value="false"
-                                    control={<Radio />}
-                                    label={<FormattedMessage id="public" />}
-                                />
-                                <FormControlLabel
-                                    value="true"
-                                    control={<Radio />}
-                                    label={<FormattedMessage id="private" />}
-                                />
-                            </RadioGroup>
-                        </FormControl>
-                    </Grid>
-                </Grid>
+                {nameField}
+                <FormControl className={classes.formControl}>
+                    <RadioGroup
+                        aria-label=""
+                        name="DirectoryAccessRights"
+                        value={isPrivate + ''}
+                        onChange={handleChange}
+                        row
+                    >
+                        <FormControlLabel
+                            value="false"
+                            control={<Radio />}
+                            label={<FormattedMessage id="public" />}
+                        />
+                        <FormControlLabel
+                            value="true"
+                            control={<Radio />}
+                            label={<FormattedMessage id="private" />}
+                        />
+                    </RadioGroup>
+                </FormControl>
                 <br />
                 {nameError && <Alert severity="error">{nameError}</Alert>}
                 {error !== '' && <Alert severity="error">{error}</Alert>}
@@ -159,7 +143,6 @@ CreateDirectoryDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
-    message: PropTypes.string.isRequired,
     error: PropTypes.string.isRequired,
 };
 

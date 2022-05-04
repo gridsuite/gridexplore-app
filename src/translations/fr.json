@@ -10,8 +10,7 @@
     "public": "public",
     "emptyDir": "Dossier vide",
 
-    "createNewStudy": "Créer une nouvelle étude",
-    "createNewStudyDescription": "Pour créer une étude, vous devez saisir les informations suivantes : ",
+    "createNewStudy": "Créer une étude",
     "studyCreationError": "Erreur lors de la création de l'étude: {studyName}",
     "renameElement": "Renommer l'élément",
     "renameElementMsg": "Nouveau nom de l'élément",
@@ -23,15 +22,13 @@
     "deleteStudyError": "Vous n'êtes pas le propriétaire de l'étude",
     "deleteElementsFailure": "Problème à la destruction {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {détruit} other {détruits}} : {problematic}",
     "moveElementsFailure": "Problème au déplacement {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {déplacé} other {déplacés}} : {problematic}",
-    "caseExist": "La situation existe-t-elle déjà ?",
-    "studyName": "nom de l'étude",
-    "studyNameProperty": "Nom de l'étude : ",
-    "studyDescription": "description de l'étude",
-    "studyDescriptionProperty": "Description de l'étude : ",
     "caseName": "nom de la situation",
     "uploadCase": "télécharger la situation",
     "uploadErrorMsg": "Veuillez télécharger la situation",
     "uploadFileExceedingLimitSizeErrorMsg": "Le fichier sélectionné dépasse la taille limite ({maxSize} Mo).{br}Veuillez compresser ce fichier au format zip, gzip ou bzip2 puis réessayez de l'importer à nouveau.",
+
+    "nameProperty": "Nom",
+    "descriptionProperty": "Description (optionnel)",
 
     "uploadMessage": " Aucun fichier sélectionné",
     "cancel": "ANNULER",
@@ -46,10 +43,7 @@
     "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé",
     "nameEmpty": "Le nom est vide",
 
-    "ImportNewCase": "Importer une nouvelle situation",
-    "createNewCaseDescription": "Pour créer une situation, vous devez saisir les informations suivantes : ",
-    "CaseName": "Nom de la situation",
-    "CaseDescriptionOptional": "Description de la situation (optionnel)",
+    "ImportNewCase": "Importer une situation",
     "caseCreationError": "Une erreur est survenue lors de la création de la situation : {name}",
     "CASE": "Situation",
     "CaseValidate": "Valider",
@@ -80,7 +74,6 @@
     "deleteItemDialogTitle": "Supprimer {itemName}",
     "deleteMultipleItemsDialogTitle": "Supprimer {itemsCount} éléments",
     "renameDirectoryDialogTitle": "Renommer le dossier",
-    "directoryNameLabel": "Nom du dossier",
     "isPrivateLabel": "Dossier privé ?",
     "directoryNewNameLabel": "Nouveau Nom",
 
@@ -100,10 +93,7 @@
     "edit": "Modifier",
 
     "createNewContingencyList": "Créer une nouvelle liste d'aléas",
-    "createNewContingencyListDescription": "Pour créer une liste d'aléas, vous devez saisir les informations suivantes : ",
     "elementNameErrorMsg": "Le nom de l'élément n'est pas renseigné",
-    "contingencyListName": "nom de la liste d'aléas",
-    "contingencyListDescription": "description de la liste d'aléas",
     "SCRIPT": "Script",
     "FORM": "Formulaire",
     "editContingencyList": "Editer la liste d'aléas",
@@ -134,7 +124,7 @@
     "newNameList": "Nouveau nom de la liste",
     "copyToScript": "Copier dans un script",
     "replaceWithScript": "Remplacer par un script",
-    "createNewFilter": "Créer un nouveau filtre",
+    "createNewFilter": "Créer un filtre",
     "substationName": "Nom Site",
     "Generators": "Groupes",
     "Lines": "Lignes",
@@ -155,7 +145,6 @@
     "Min": "Min",
     "Max": "Max",
 
-    "FilterName": "Nom",
     "getAppLinkError": "Erreur lors de la récupération du lien vers l'application pour le type = {type}",
     "nameValidityCheckErrorMsg": "Erreur lors de la vérification de la validité du nom : ",
 

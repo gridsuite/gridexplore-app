@@ -12,7 +12,6 @@ import { useSelector } from 'react-redux';
 import Dialog from '@mui/material//Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import Alert from '@mui/material/Alert';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
@@ -26,18 +25,24 @@ export function CreateCaseDialog({ onClose, open }) {
 
     const [triggerReset, setTriggerReset] = useState(true);
 
-    const [name, nameField, nameError, nameOk] = useNameField({
-        label: 'CaseName',
+    const [name, NameField, nameError, nameOk] = useNameField({
+        label: 'nameProperty',
         autoFocus: true,
         elementType: ElementType.CASE,
         parentDirectoryId: activeDirectory,
         triggerReset,
         active: open,
+        style: {
+            width: '90%',
+        },
     });
 
     const [description, DescriptionField] = useTextValue({
-        label: 'CaseDescriptionOptional',
+        label: 'descriptionProperty',
         triggerReset,
+        style: {
+            width: '90%',
+        },
     });
     const [file, FileField, fileError, isFileOk] = useFileValue({
         label: 'Case',
@@ -88,10 +93,7 @@ export function CreateCaseDialog({ onClose, open }) {
                 <FormattedMessage id="ImportNewCase" />
             </DialogTitle>
             <DialogContent>
-                <DialogContentText>
-                    <FormattedMessage id="createNewCaseDescription" />
-                </DialogContentText>
-                <div>{nameField}</div>
+                {NameField}
                 {DescriptionField}
                 {FileField}
                 {nameError && <Alert severity="error">{nameError}</Alert>}

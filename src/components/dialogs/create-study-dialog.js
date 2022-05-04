@@ -14,10 +14,7 @@ import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
@@ -190,11 +187,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setTriggerReset((oldVal) => !oldVal);
         onClose();
         resetDialog();
-    };
-
-    const handleChangeSwitch = (e) => {
-        setCaseExist(e.target.checked);
-        setCreateStudyErr('');
     };
 
     const handleStudyDescriptionChanges = (e) => {
@@ -396,25 +388,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                     <FormattedMessage id="createNewStudy" />
                 </DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        <FormattedMessage id="createNewStudyDescription" />
-                    </DialogContentText>
-                    {!selectedCase && (
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={caseExist}
-                                    onChange={(e) => handleChangeSwitch(e)}
-                                    value="checked"
-                                    color="primary"
-                                    inputProps={{
-                                        'aria-label': 'primary checkbox',
-                                    }}
-                                />
-                            }
-                            label={<FormattedMessage id="caseExist" />}
-                        />
-                    )}
                     <div>
                         <TextField
                             onChange={(e) => handleStudyNameChanges(e)}
@@ -428,7 +401,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                                 !loadingCheckStudyName
                             }
                             style={{ width: '90%' }}
-                            label={<FormattedMessage id="studyName" />}
+                            label={<FormattedMessage id="nameProperty" />}
                         />
                         {renderStudyNameStatus()}
                     </div>
@@ -438,7 +411,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         value={studyDescription}
                         type="text"
                         style={{ width: '90%' }}
-                        label={<FormattedMessage id="studyDescription" />}
+                        label={<FormattedMessage id="descriptionProperty" />}
                     />
                     {!selectedCase ? (
                         caseExist ? (
