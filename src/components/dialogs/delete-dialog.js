@@ -12,7 +12,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 
 /**
@@ -35,6 +35,17 @@ const DeleteDialog = ({
     error,
 }) => {
     const intl = useIntl();
+
+    const [itemsState, setItemState] = useState([]);
+
+    const openRef = useRef(null);
+
+    useEffect(() => {
+        if (open && !openRef.current) {
+            setItemState(items);
+        }
+        openRef.current = open;
+    }, [open, items]);
 
     const handleClose = () => {
         onClose();
@@ -133,10 +144,10 @@ const DeleteDialog = ({
             aria-labelledby="dialog-title-delete"
             onKeyPress={handleKeyPressed}
         >
-            <DialogTitle>{buildTitle(items)}</DialogTitle>
+            <DialogTitle>{buildTitle(itemsState)}</DialogTitle>
             <DialogContent>
                 {buildItemsToDeleteGrid(
-                    items,
+                    itemsState,
                     multipleDeleteFormatMessageId,
                     simpleDeleteFormatMessageId
                 )}

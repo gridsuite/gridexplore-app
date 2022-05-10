@@ -99,7 +99,6 @@ const DirectoryContent = () => {
     const dispatch = useDispatch();
 
     const [childrenMetadata, setChildrenMetadata] = useState({});
-    const [isAllDataPresent, setIsAllDataPresent] = useState(false);
 
     const [selectedUuids, setSelectedUuids] = useState(new Set());
 
@@ -318,7 +317,7 @@ const DirectoryContent = () => {
         const objectType = cellData.rowData[cellData.dataKey];
         return (
             <div className={classes.cell}>
-                {isAllDataPresent && childrenMetadata[elementUuid] ? (
+                {childrenMetadata[elementUuid] ? (
                     <div>
                         {getElementTypeTranslation(
                             objectType,
@@ -369,8 +368,7 @@ const DirectoryContent = () => {
         const formatMessage = intl.formatMessage;
         if (uploading)
             return elementName + ' ' + formatMessage({ id: 'uploading' });
-        if (!isAllDataPresent) return elementName;
-        if (childrenMetadata[elementUuid] == null)
+        if (!childrenMetadata[elementUuid])
             return (
                 elementName + ' ' + formatMessage({ id: 'creationInProgress' })
             );
@@ -464,11 +462,6 @@ const DirectoryContent = () => {
         );
     }
 
-    /* directory changed, current data are not up to date, display loader */
-    useEffect(() => {
-        setIsAllDataPresent(false);
-    }, [selectedDirectory, setIsAllDataPresent]);
-
     useEffect(() => {
         if (currentChildren?.length > 0) {
             let metadata = {};
@@ -487,17 +480,18 @@ const DirectoryContent = () => {
                             };
                         });
                     })
-                    .catch(handleError)
+                    .catch(
+                        Object.keys(currentChildrenRef.current).length === 0
+                            ? handleError
+                            : () => {}
+                    )
                     .finally(() => {
                         // discarding request for older directory
                         if (currentChildrenRef.current === currentChildren) {
                             setChildrenMetadata(metadata);
-                            setIsAllDataPresent(true);
                         }
                     });
             }
-        } else {
-            setIsAllDataPresent(true);
         }
         setSelectedUuids(new Set());
     }, [handleError, currentChildren, currentChildrenRef]);
@@ -569,16 +563,18 @@ const DirectoryContent = () => {
                 }}
                 onContextMenu={(e) => onContextMenu(e)}
             >
-                {!isAllDataPresent && selectedDirectory && (
-                    <div className={classes.circularProgressContainer}>
-                        <CircularProgress
-                            size={circularProgressSize}
-                            color="inherit"
-                            className={classes.centeredCircularProgress}
-                        />
-                    </div>
-                )}
-                {isAllDataPresent && currentChildren?.length === 0 && (
+                {Object.keys(childrenMetadata).length === 0 &&
+                    currentChildren?.length > 0 &&
+                    selectedDirectory && (
+                        <div className={classes.circularProgressContainer}>
+                            <CircularProgress
+                                size={circularProgressSize}
+                                color="inherit"
+                                className={classes.centeredCircularProgress}
+                            />
+                        </div>
+                    )}
+                {currentChildren?.length === 0 && (
                     <div style={{ textAlign: 'center', marginTop: '100px' }}>
                         <FolderOpenRoundedIcon
                             style={{ width: '100px', height: '100px' }}
@@ -589,7 +585,7 @@ const DirectoryContent = () => {
                     </div>
                 )}
 
-                {isAllDataPresent && currentChildren?.length > 0 && (
+                {currentChildren?.length > 0 && (
                     <>
                         <ContentToolbar
                             selectedElements={
