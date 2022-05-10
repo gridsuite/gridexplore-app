@@ -564,6 +564,7 @@ const DirectoryContent = () => {
                 onContextMenu={(e) => onContextMenu(e)}
             >
                 {Object.keys(childrenMetadata).length === 0 &&
+                    currentChildren?.length > 0 &&
                     selectedDirectory && (
                         <div className={classes.circularProgressContainer}>
                             <CircularProgress
