@@ -15,7 +15,6 @@ export const DialogsId = {
     MOVE: 'move',
     ADD_NEW_STUDY_FROM_CASE: 'create_study_from_case',
     ADD_NEW_STUDY: 'create_study',
-    EXPORT: 'export',
     FILTERS_CONTINGENCY: 'filters_contingency',
     SCRIPT_CONTINGENCY: 'script_contingency',
     SCRIPT: 'script',
