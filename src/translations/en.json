@@ -78,12 +78,6 @@
     "isPrivateLabel": "Private folder?",
     "directoryNewNameLabel": "New Name",
 
-    "exportNetwork": "Export the network",
-    "export": "Export",
-    "format": "Format",
-    "exportFormat": "Format of the export",
-    "exportStudyErrorMsg": "No export format specified",
-
     "accessRights": "Access rights",
     "modifyAccessRights": "Modify the access rights",
     "modifyAccessRightsNotAllowedError": "You cannot modify the access rights of an element you don't own",
