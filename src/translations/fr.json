@@ -77,12 +77,6 @@
     "isPrivateLabel": "Dossier privé ?",
     "directoryNewNameLabel": "Nouveau Nom",
 
-    "exportNetwork": "Exporter le réseau",
-    "export": "Exporter",
-    "format": "Format",
-    "exportFormat": "Format de l'export",
-    "exportStudyErrorMsg": "Le format de l'export n'est pas spécifié",
-
     "accessRights": "Droits d'accès",
     "modifyAccessRights": "Modifier les droits d'accès",
     "modifyAccessRightsNotAllowedError": "Vous ne pouvez pas modifier les droits d'accès d'un élément qui ne vous appartient pas",
