@@ -518,7 +518,6 @@ export function createContingencyList(
     }).then((response) => handleResponse(response, false));
 }
 
-
 export function duplicateContingencyList(
     contingencyListType,
     name,
@@ -700,7 +699,7 @@ export function duplicateFilter(
     name,
     description,
     parentFilterUuid,
-    parentDirectoryUuid,
+    parentDirectoryUuid
 ) {
     console.info('Duplicating a filter...');
     let urlSearchParams = new URLSearchParams();

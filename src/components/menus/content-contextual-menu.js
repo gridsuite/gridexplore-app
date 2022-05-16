@@ -59,7 +59,6 @@ import {
 } from '../../utils/custom-hooks';
 import { useSnackbar } from 'notistack';
 import MoveDialog from '../dialogs/move-dialog';
-import { handleSigninCallback } from '@gridsuite/commons-ui/lib/utils/AuthService';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -124,7 +123,8 @@ const ContentContextualMenu = (props) => {
                                 .then((res) => {
                                     duplicateContingencyList(
                                         res[0].specificMetadata.type,
-                                        activeElement.elementName + duplicateSuffix,
+                                        activeElement.elementName +
+                                            duplicateSuffix,
                                         activeElement.description,
                                         activeElement.elementUuid,
                                         selectedDirectory.elementUuid
