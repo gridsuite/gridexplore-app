@@ -18,7 +18,6 @@ const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
 const PREFIX_EXPLORE_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/explore';
-const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';
 const PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
 const PREFIX_NOTIFICATION_WS =
@@ -209,31 +208,6 @@ export function insertRootDirectory(directoryName, isPrivate, owner) {
             ? response.json()
             : response.text().then((text) => Promise.reject(text))
     );
-}
-
-export function getAvailableExportFormats() {
-    console.info('get export formats');
-    const getExportFormatsUrl =
-        PREFIX_STUDY_QUERIES + '/v1/export-network-formats';
-    console.debug(getExportFormatsUrl);
-    return backendFetch(getExportFormatsUrl, {
-        method: 'get',
-    }).then((response) => response.json());
-}
-
-function getUrlWithToken(baseUrl) {
-    return baseUrl + '?access_token=' + getToken();
-}
-
-function getStudyUrl(studyUuid) {
-    return (
-        PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyUuid)
-    );
-}
-
-export function getExportUrl(studyUuid, exportFormat) {
-    const url = getStudyUrl(studyUuid) + '/export-network/' + exportFormat;
-    return getUrlWithToken(url);
 }
 
 export function renameElement(elementUuid, newElementName) {
