@@ -50,9 +50,12 @@
 
     "nameAlreadyUsed": "This name is already used",
 
+    "unsuportedItem": "This element is not eligible",
+
     "move": "Move",
     "rename": "Rename",
     "delete": "Delete",
+    "duplicate": "Duplicate",
 
     "createFolder": "Create folder",
     "createRootFolder": "Create root folder",

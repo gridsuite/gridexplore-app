@@ -362,6 +362,31 @@ export function createStudy(
     }
 }
 
+export function duplicateStudy(
+    studyName,
+    studyDescription,
+    parentStudyUuid,
+    parentDirectoryUuid
+) {
+    console.info('Creating a new study...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('duplicateFrom', parentStudyUuid);
+    urlSearchParams.append('studyName', studyName);
+    urlSearchParams.append('description', studyDescription);
+    urlSearchParams.append('parentStudyUuid', parentStudyUuid);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const duplicateStudyUrl =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/studies?' +
+        urlSearchParams.toString();
+    console.debug(duplicateStudyUrl);
+
+    return backendFetch(duplicateStudyUrl, {
+        method: 'post',
+    }).then((response) => handleResponse(response, false));
+}
+
 export function createCase({ name, description, file, parentDirectoryUuid }) {
     console.info('Creating a new case...');
     let urlSearchParams = new URLSearchParams();
@@ -381,6 +406,30 @@ export function createCase({ name, description, file, parentDirectoryUuid }) {
     return backendFetch(url, {
         method: 'post',
         body: formData,
+    }).then((response) => handleResponse(response, false));
+}
+
+export function duplicateCase(
+    name,
+    description,
+    parentCaseUuid,
+    parentDirectoryUuid
+) {
+    console.info('Creating a new case...');
+    console.log(name);
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('duplicateFrom', parentCaseUuid);
+    urlSearchParams.append('caseName', name);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/cases?' +
+        urlSearchParams.toString();
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
     }).then((response) => handleResponse(response, false));
 }
 
@@ -466,6 +515,39 @@ export function createContingencyList(
     return backendFetch(createContingencyListUrl, {
         method: 'post',
         body: JSON.stringify(body),
+    }).then((response) => handleResponse(response, false));
+}
+
+
+export function duplicateContingencyList(
+    contingencyListType,
+    name,
+    description,
+    parentContingencyListUuid,
+    parentDirectoryUuid
+) {
+    console.info('Duplicating a contingency list...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('duplicateFrom', parentContingencyListUuid);
+    urlSearchParams.append('listName', name);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const typeUriParam =
+        contingencyListType === ContingencyListType.SCRIPT
+            ? 'script-contingency-lists'
+            : 'form-contingency-lists';
+
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/' +
+        typeUriParam +
+        '?' +
+        urlSearchParams.toString();
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
     }).then((response) => handleResponse(response, false));
 }
 
@@ -612,6 +694,29 @@ export function createFilter(newFilter, name, parentDirectoryUuid) {
             body: JSON.stringify(newFilter),
         }
     ).then((response) => handleResponse(response, false));
+}
+
+export function duplicateFilter(
+    name,
+    description,
+    parentFilterUuid,
+    parentDirectoryUuid,
+) {
+    console.info('Duplicating a filter...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('duplicateFrom', parentFilterUuid);
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/filters?' +
+        urlSearchParams.toString();
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
+    }).then((response) => handleResponse(response, false));
 }
 
 /**

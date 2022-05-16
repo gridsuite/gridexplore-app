@@ -16,6 +16,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import PhotoLibrary from '@mui/icons-material/PhotoLibrary';
+import ContentCopy from '@mui/icons-material/ContentCopy';
 
 import ExportDialog from '../dialogs/export-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
@@ -30,6 +31,8 @@ import CreateStudyDialog from '../dialogs/create-study-dialog';
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
+    elementExists,
+    duplicateCase,
     deleteElement,
     moveElementToDirectory,
     newScriptFromFilter,
@@ -37,6 +40,10 @@ import {
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
+    duplicateFilter,
+    duplicateContingencyList,
+    fetchElementsInfos,
+    duplicateStudy,
 } from '../../utils/rest-api';
 
 import {
@@ -52,6 +59,7 @@ import {
 } from '../../utils/custom-hooks';
 import { useSnackbar } from 'notistack';
 import MoveDialog from '../dialogs/move-dialog';
+import { handleSigninCallback } from '@gridsuite/commons-ui/lib/utils/AuthService';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -84,6 +92,102 @@ const ContentContextualMenu = (props) => {
     const handleOpenDialog = (dialogId) => {
         setHideMenu(true);
         setOpenDialog(dialogId);
+    };
+
+    const duplicateItem = () => {
+        if (activeElement) {
+            const duplicateSuffix = '(1)';
+            elementExists(
+                selectedDirectory.elementUuid,
+                activeElement.elementName + duplicateSuffix,
+                activeElement.type
+            ).then((data) => {
+                if (!data) {
+                    switch (activeElement.type) {
+                        case ElementType.CASE:
+                            duplicateCase(
+                                activeElement.elementName + duplicateSuffix,
+                                activeElement.description,
+                                activeElement.elementUuid,
+                                selectedDirectory.elementUuid
+                            )
+                                .then(() => {
+                                    onClose();
+                                    setHideMenu(false);
+                                })
+                                .catch((message) => {
+                                    handleLastError(message);
+                                });
+                            break;
+                        case ElementType.CONTINGENCY_LIST:
+                            fetchElementsInfos([activeElement.elementUuid])
+                                .then((res) => {
+                                    duplicateContingencyList(
+                                        res[0].specificMetadata.type,
+                                        activeElement.elementName + duplicateSuffix,
+                                        activeElement.description,
+                                        activeElement.elementUuid,
+                                        selectedDirectory.elementUuid
+                                    ).catch((message) => {
+                                        handleLastError(message);
+                                    });
+                                })
+                                .catch((message) => {
+                                    handleLastError(message);
+                                })
+                                .finally(() => {
+                                    onClose();
+                                    setHideMenu(false);
+                                });
+
+                            break;
+                        case ElementType.STUDY:
+                            duplicateStudy(
+                                activeElement.elementName + duplicateSuffix,
+                                activeElement.description,
+                                activeElement.elementUuid,
+                                selectedDirectory.elementUuid
+                            )
+                                .then(() => {
+                                    onClose();
+                                    setHideMenu(false);
+                                })
+                                .catch((message) => {
+                                    handleLastError(message);
+                                });
+                            break;
+                        case ElementType.FILTER:
+                            duplicateFilter(
+                                activeElement.elementName + duplicateSuffix,
+                                activeElement.description,
+                                activeElement.elementUuid,
+                                selectedDirectory.elementUuid
+                            )
+                                .then(() => {
+                                    onClose();
+                                    setHideMenu(false);
+                                })
+                                .catch((message) => {
+                                    handleLastError(message);
+                                });
+                            break;
+                        default:
+                            handleLastError(
+                                intl.formatMessage({ id: 'unsuportedItem' })
+                            );
+                    }
+                } else {
+                    handleLastError(
+                        activeElement.elementName +
+                            duplicateSuffix +
+                            ' : ' +
+                            intl.formatMessage({
+                                id: 'nameAlreadyUsed',
+                            })
+                    );
+                }
+            });
+        }
     };
 
     const handleCloseDialog = useCallback(() => {
@@ -239,6 +343,16 @@ const ContentContextualMenu = (props) => {
         );
     }, [isUserAllowed, selectedElements]);
 
+    const allowsDuplicate = useCallback(() => {
+        return (
+            selectedElements.length === 1 &&
+            (selectedElements[0].type === ElementType.CASE ||
+                selectedElements[0].type === ElementType.STUDY ||
+                selectedElements[0].type === ElementType.CONTINGENCY_LIST ||
+                selectedElements[0].type === ElementType.FILTER)
+        );
+    }, [selectedElements]);
+
     const allowsCreateNewStudyFromCase = useCallback(() => {
         return (
             selectedElements.length === 1 &&
@@ -367,6 +481,16 @@ const ContentContextualMenu = (props) => {
                     handleOpenDialog(DialogsId.ADD_NEW_STUDY_FROM_CASE);
                 },
                 icon: <PhotoLibrary fontSize="small" />,
+            });
+        }
+
+        if (allowsDuplicate()) {
+            menuItems.push({
+                messageDescriptorId: 'duplicate',
+                callback: () => {
+                    duplicateItem();
+                },
+                icon: <ContentCopy fontSize="small" />,
             });
         }
 
