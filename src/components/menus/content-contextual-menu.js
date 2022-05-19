@@ -96,23 +96,23 @@ const ContentContextualMenu = (props) => {
     const duplicateItem = () => {
         if (activeElement) {
             const duplicateSuffix = '(1)';
+            const newItemName = activeElement.elementName + duplicateSuffix;
             elementExists(
                 selectedDirectory.elementUuid,
-                activeElement.elementName + duplicateSuffix,
+                newItemName,
                 activeElement.type
             ).then((data) => {
                 if (!data) {
                     switch (activeElement.type) {
                         case ElementType.CASE:
                             duplicateCase(
-                                activeElement.elementName + duplicateSuffix,
+                                newItemName,
                                 activeElement.description,
                                 activeElement.elementUuid,
                                 selectedDirectory.elementUuid
                             )
                                 .then(() => {
-                                    onClose();
-                                    setHideMenu(false);
+                                    handleCloseDialog();
                                 })
                                 .catch((message) => {
                                     handleLastError(message);
@@ -136,21 +136,19 @@ const ContentContextualMenu = (props) => {
                                     handleLastError(message);
                                 })
                                 .finally(() => {
-                                    onClose();
-                                    setHideMenu(false);
+                                    handleCloseDialog();
                                 });
 
                             break;
                         case ElementType.STUDY:
                             duplicateStudy(
-                                activeElement.elementName + duplicateSuffix,
+                                newItemName,
                                 activeElement.description,
                                 activeElement.elementUuid,
                                 selectedDirectory.elementUuid
                             )
                                 .then(() => {
-                                    onClose();
-                                    setHideMenu(false);
+                                    handleCloseDialog();
                                 })
                                 .catch((message) => {
                                     handleLastError(message);
@@ -158,14 +156,13 @@ const ContentContextualMenu = (props) => {
                             break;
                         case ElementType.FILTER:
                             duplicateFilter(
-                                activeElement.elementName + duplicateSuffix,
+                                newItemName,
                                 activeElement.description,
                                 activeElement.elementUuid,
                                 selectedDirectory.elementUuid
                             )
                                 .then(() => {
-                                    onClose();
-                                    setHideMenu(false);
+                                    handleCloseDialog();
                                 })
                                 .catch((message) => {
                                     handleLastError(message);

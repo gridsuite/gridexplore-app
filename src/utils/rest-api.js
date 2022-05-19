@@ -365,15 +365,14 @@ export function createStudy(
 export function duplicateStudy(
     studyName,
     studyDescription,
-    parentStudyUuid,
+    sourceStudyUuid,
     parentDirectoryUuid
 ) {
-    console.info('Creating a new study...');
+    console.info('Duplicating a study...');
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('duplicateFrom', parentStudyUuid);
+    urlSearchParams.append('duplicateFrom', sourceStudyUuid);
     urlSearchParams.append('studyName', studyName);
     urlSearchParams.append('description', studyDescription);
-    urlSearchParams.append('parentStudyUuid', parentStudyUuid);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     const duplicateStudyUrl =
@@ -412,13 +411,13 @@ export function createCase({ name, description, file, parentDirectoryUuid }) {
 export function duplicateCase(
     name,
     description,
-    parentCaseUuid,
+    sourceCaseUuid,
     parentDirectoryUuid
 ) {
-    console.info('Creating a new case...');
+    console.info('Duplicating a case...');
     console.log(name);
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('duplicateFrom', parentCaseUuid);
+    urlSearchParams.append('duplicateFrom', sourceCaseUuid);
     urlSearchParams.append('caseName', name);
     urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
@@ -522,12 +521,12 @@ export function duplicateContingencyList(
     contingencyListType,
     name,
     description,
-    parentContingencyListUuid,
+    sourceContingencyListUuid,
     parentDirectoryUuid
 ) {
     console.info('Duplicating a contingency list...');
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('duplicateFrom', parentContingencyListUuid);
+    urlSearchParams.append('duplicateFrom', sourceContingencyListUuid);
     urlSearchParams.append('listName', name);
     urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
@@ -698,12 +697,12 @@ export function createFilter(newFilter, name, parentDirectoryUuid) {
 export function duplicateFilter(
     name,
     description,
-    parentFilterUuid,
+    sourceFilterUuid,
     parentDirectoryUuid
 ) {
     console.info('Duplicating a filter...');
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('duplicateFrom', parentFilterUuid);
+    urlSearchParams.append('duplicateFrom', sourceFilterUuid);
     urlSearchParams.append('name', name);
     urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
