@@ -415,7 +415,6 @@ export function duplicateCase(
     parentDirectoryUuid
 ) {
     console.info('Duplicating a case...');
-    console.log(name);
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('duplicateFrom', sourceCaseUuid);
     urlSearchParams.append('caseName', name);
