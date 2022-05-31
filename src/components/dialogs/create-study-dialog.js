@@ -181,10 +181,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setActiveDirectoryName(selectedDirectory?.elementName);
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         dispatch(removeSelectedCase());
+        setTriggerReset((oldVal) => !oldVal);
     };
 
     const handleCloseDialog = () => {
-        setTriggerReset((oldVal) => !oldVal);
         onClose();
         resetDialog();
     };
@@ -345,8 +345,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             })
             .finally(() => dispatch(removeUploadingStudy(uploadingStudy)));
         dispatch(addUploadingStudy(uploadingStudy));
-        onClose();
-        resetDialog();
+        handleCloseDialog();
     };
 
     const handleKeyPressed = (event) => {
