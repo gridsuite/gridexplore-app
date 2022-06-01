@@ -74,6 +74,7 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
             .catch((errorMessage) => {
                 onError(errorMessage);
             });
+        setBtnSaveListDisabled(true);
         onClose();
         setCurrentFormContingency(newFiltersContingencyList);
     };
