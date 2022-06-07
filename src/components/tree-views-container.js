@@ -194,6 +194,7 @@ const TreeViewsContainer = () => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
     const uploadingStudies = useSelector((state) => state.uploadingStudies);
+    const uploadingCases = useSelector((state) => state.uploadingCases);
     const currentChildren = useSelector((state) => state.currentChildren);
     const currentChildrenRef = useRef(currentChildren);
     currentChildrenRef.current = currentChildren;
@@ -347,16 +348,26 @@ const TreeViewsContainer = () => {
 
     const mergeCurrentAndUploading = useCallback(
         (current) => {
-            let toMerge = Object.values(uploadingStudies).filter(
+            let studiesToMerge = Object.values(uploadingStudies).filter(
+                (e) =>
+                    e.directory === selectedDirectoryRef.current.elementUuid &&
+                    current[e.elementName] === undefined
+            );
+            let casesToMerge = Object.values(uploadingCases).filter(
                 (e) =>
                     e.directory === selectedDirectoryRef.current.elementUuid &&
                     current[e.elementName] === undefined
             );
 
-            if (toMerge != null && toMerge.length > 0) {
-                return [...current, ...toMerge].sort(function (a, b) {
-                    return a.elementName.localeCompare(b.elementName);
-                });
+            if (
+                (studiesToMerge != null && studiesToMerge.length > 0) ||
+                (casesToMerge != null && casesToMerge.length > 0)
+            ) {
+                return [...current, ...studiesToMerge, ...casesToMerge].sort(
+                    function (a, b) {
+                        return a.elementName.localeCompare(b.elementName);
+                    }
+                );
             } else {
                 if (current == null) {
                     return null;
@@ -367,7 +378,7 @@ const TreeViewsContainer = () => {
                 }
             }
         },
-        [uploadingStudies, selectedDirectoryRef]
+        [uploadingStudies, uploadingCases, selectedDirectoryRef]
     );
 
     /* currentChildren management */
