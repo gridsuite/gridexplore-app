@@ -382,7 +382,8 @@ const DirectoryContent = () => {
             <div className={classes.cell}>
                 {/*  Icon */}
                 {!childrenMetadata[elementUuid] &&
-                    objectType === ElementType.STUDY && (
+                    (objectType === ElementType.STUDY ||
+                        objectType === ElementType.CASE) && (
                         <CircularProgress
                             size={18}
                             className={classes.circularRoot}

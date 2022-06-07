@@ -114,3 +114,16 @@ export const REMOVE_UPLOADING_STUDY = 'REMOVE_UPLOADING_STUDY';
 export function removeUploadingStudy(uploadingStudy) {
     return { type: REMOVE_UPLOADING_STUDY, uploadingStudy: uploadingStudy };
 }
+
+export const ADD_UPLOADING_CASE = 'ADD_UPLOADING_CASE';
+
+export function addUploadingCase(uploadingCase) {
+    return { type: ADD_UPLOADING_CASE, uploadingCase: uploadingCase };
+}
+
+export const REMOVE_UPLOADING_CASE = 'REMOVE_UPLOADING_CASE';
+
+export function removeUploadingCase(uploadingCase) {
+    return { type: REMOVE_UPLOADING_CASE, uploadingCase: uploadingCase };
+}
+

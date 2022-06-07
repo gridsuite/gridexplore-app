@@ -31,6 +31,8 @@ import {
     ACTIVE_DIRECTORY,
     ADD_UPLOADING_STUDY,
     REMOVE_UPLOADING_STUDY,
+    ADD_UPLOADING_CASE,
+    REMOVE_UPLOADING_CASE,
 } from './actions';
 
 import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
@@ -133,5 +135,18 @@ export const reducer = createReducer(initialState, {
         let newUploadingStudies = { ...state.uploadingStudies };
         delete newUploadingStudies[action.uploadingStudy.id];
         state.uploadingStudies = newUploadingStudies;
+    },
+
+    [ADD_UPLOADING_CASE]: (state, action) => {
+        state.uploadingCases = {
+            ...state.uploadingCases,
+            ...{ [action.uploadingCase.id]: action.uploadingCase },
+        };
+    },
+
+    [REMOVE_UPLOADING_CASE]: (state, action) => {
+        let newUploadingCases = { ...state.uploadingCases };
+        delete newUploadingCases[action.uploadingCase.id];
+        state.uploadingCases = newUploadingCases;
     },
 });
