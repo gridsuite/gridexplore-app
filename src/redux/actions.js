@@ -126,4 +126,3 @@ export const REMOVE_UPLOADING_CASE = 'REMOVE_UPLOADING_CASE';
 export function removeUploadingCase(uploadingCase) {
     return { type: REMOVE_UPLOADING_CASE, uploadingCase: uploadingCase };
 }
-

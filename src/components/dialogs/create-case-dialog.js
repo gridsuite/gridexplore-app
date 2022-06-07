@@ -55,9 +55,9 @@ export function CreateCaseDialog({ onClose, open }) {
     function validate() {
         return file && nameOk && isFileOk;
     }
-    
+
     const snackbarMessage = useSnackbarMessage();
-    
+
     const handleCreateNewCase = () => {
         if (!validate()) return;
         const uploadingCase = {
