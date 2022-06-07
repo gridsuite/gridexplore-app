@@ -15,6 +15,7 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import PhotoLibrary from '@mui/icons-material/PhotoLibrary';
+import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
 
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
@@ -403,6 +404,15 @@ const ContentContextualMenu = (props) => {
                 icon: <InsertDriveFileIcon fontSize="small" />,
             });
         }
+
+        if (menuItems.length === 0) {
+            menuItems.push({
+                messageDescriptorId: 'notElementCreator',
+                icon: <DoNotDisturbAltIcon fontSize="small" />,
+                disabled: true,
+            });
+        }
+
         return menuItems;
     };
     return (
