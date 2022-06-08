@@ -375,7 +375,7 @@ const DirectoryContent = () => {
         return childrenMetadata[elementUuid].name;
     };
 
-    const elementTypeVerification = (objectType) => {
+    const isElementCaseOrStudy = (objectType) => {
         return (
             objectType === ElementType.STUDY || objectType === ElementType.CASE
         );
@@ -388,7 +388,7 @@ const DirectoryContent = () => {
             <div className={classes.cell}>
                 {/*  Icon */}
                 {!childrenMetadata[elementUuid] &&
-                    elementTypeVerification(objectType) && (
+                    isElementCaseOrStudy(objectType) && (
                         <CircularProgress
                             size={18}
                             className={classes.circularRoot}

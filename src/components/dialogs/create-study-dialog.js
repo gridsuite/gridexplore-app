@@ -48,6 +48,7 @@ import {
 } from '../../utils/messages';
 import { ElementType } from '../../utils/elementType';
 import { useFileValue } from './field-hook';
+import { keyGenerator } from '../../utils/functions.js';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -114,11 +115,6 @@ const SelectCase = () => {
         </div>
     );
 };
-
-const uploadingStudyKeyGenerator = (() => {
-    let key = 1;
-    return () => key++;
-})();
 
 /**
  * Dialog to create a study
@@ -324,7 +320,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             return;
         }
         const uploadingStudy = {
-            id: uploadingStudyKeyGenerator(),
+            id: keyGenerator(),
             elementName: studyName,
             directory: activeDirectory,
             type: 'STUDY',

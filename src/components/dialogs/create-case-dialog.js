@@ -23,6 +23,7 @@ import {
     addUploadingElement,
     removeUploadingElement,
 } from '../../redux/actions';
+import { keyGenerator } from '../../utils/functions';
 
 /**
  * Dialog to create a case
@@ -66,15 +67,10 @@ export function CreateCaseDialog({ onClose, open }) {
 
     const snackbarMessage = useSnackbarMessage();
 
-    const uploadingCaseKeyGenerator = (() => {
-        let key = 1;
-        return () => key++;
-    })();
-
     const handleCreateNewCase = () => {
         if (!validate()) return;
         const uploadingCase = {
-            id: uploadingCaseKeyGenerator(),
+            id: keyGenerator(),
             elementName: name,
             directory: activeDirectory,
             type: 'CASE',
