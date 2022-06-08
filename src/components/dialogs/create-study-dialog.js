@@ -32,12 +32,12 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    addUploadingStudy,
     loadCasesSuccess,
-    removeUploadingStudy,
     selectCase,
     removeSelectedCase,
     setActiveDirectory,
+    addUploadingElement,
+    removeUploadingElement,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
@@ -48,6 +48,7 @@ import {
 } from '../../utils/messages';
 import { ElementType } from '../../utils/elementType';
 import { useFileValue } from './field-hook';
+import { keyGenerator } from '../../utils/functions.js';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -114,11 +115,6 @@ const SelectCase = () => {
         </div>
     );
 };
-
-const uploadingStudyKeyGenerator = (() => {
-    let key = 1;
-    return () => key++;
-})();
 
 /**
  * Dialog to create a study
@@ -324,7 +320,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             return;
         }
         const uploadingStudy = {
-            id: uploadingStudyKeyGenerator(),
+            id: keyGenerator(),
             elementName: studyName,
             directory: activeDirectory,
             type: 'STUDY',
@@ -343,8 +339,8 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             .catch((message) => {
                 studyCreationError(studyName, message);
             })
-            .finally(() => dispatch(removeUploadingStudy(uploadingStudy)));
-        dispatch(addUploadingStudy(uploadingStudy));
+            .finally(() => dispatch(removeUploadingElement(uploadingStudy)));
+        dispatch(addUploadingElement(uploadingStudy));
         handleCloseDialog();
     };
 
@@ -480,7 +476,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         <FormattedMessage id="cancel" />
                     </Button>
                     <Button
-                        onClick={() => handleCreateNewStudy()}
+                        onClick={handleCreateNewStudy}
                         disabled={!isCreationAllowed()}
                         variant="outlined"
                     >
