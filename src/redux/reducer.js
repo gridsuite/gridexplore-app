@@ -53,7 +53,6 @@ const initialState = {
     cases: [],
     selectedCase: null,
     selectedFile: null,
-    uploadingStudies: {},
     uploadingElements: {},
     ...paramsInitialState,
 };
