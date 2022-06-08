@@ -103,26 +103,17 @@ export function selectCase(selectedCase) {
     return { type: SELECT_CASE, selectedCase: selectedCase };
 }
 
-export const ADD_UPLOADING_STUDY = 'ADD_UPLOADING_STUDY';
+export const ADD_UPLOADING_ELEMENT = 'ADD_UPLOADING_ELEMENT';
 
-export function addUploadingStudy(uploadingStudy) {
-    return { type: ADD_UPLOADING_STUDY, uploadingStudy: uploadingStudy };
+export function addUploadingElement(uploadingElement) {
+    return { type: ADD_UPLOADING_ELEMENT, uploadingElement: uploadingElement };
 }
 
-export const REMOVE_UPLOADING_STUDY = 'REMOVE_UPLOADING_STUDY';
+export const REMOVE_UPLOADING_ELEMENT = 'REMOVE_UPLOADING_ELEMENT';
 
-export function removeUploadingStudy(uploadingStudy) {
-    return { type: REMOVE_UPLOADING_STUDY, uploadingStudy: uploadingStudy };
-}
-
-export const ADD_UPLOADING_CASE = 'ADD_UPLOADING_CASE';
-
-export function addUploadingCase(uploadingCase) {
-    return { type: ADD_UPLOADING_CASE, uploadingCase: uploadingCase };
-}
-
-export const REMOVE_UPLOADING_CASE = 'REMOVE_UPLOADING_CASE';
-
-export function removeUploadingCase(uploadingCase) {
-    return { type: REMOVE_UPLOADING_CASE, uploadingCase: uploadingCase };
+export function removeUploadingElement(uploadingElement) {
+    return {
+        type: REMOVE_UPLOADING_ELEMENT,
+        uploadingElement: uploadingElement,
+    };
 }

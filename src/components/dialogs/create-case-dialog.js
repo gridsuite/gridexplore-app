@@ -19,8 +19,16 @@ import { ElementType } from '../../utils/elementType';
 import { useFileValue, useNameField, useTextValue } from './field-hook';
 import { createCase } from '../../utils/rest-api';
 import { useSnackbarMessage } from '../../utils/messages';
-import { addUploadingCase, removeUploadingCase } from '../../redux/actions';
+import {
+    addUploadingElement,
+    removeUploadingElement,
+} from '../../redux/actions';
 
+/**
+ * Dialog to create a case
+ * @param {Boolean} open Is the dialog open ?
+ * @param {EventListener} onClose Event to close the dialog
+ */
 export function CreateCaseDialog({ onClose, open }) {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
@@ -58,9 +66,15 @@ export function CreateCaseDialog({ onClose, open }) {
 
     const snackbarMessage = useSnackbarMessage();
 
+    const uploadingCaseKeyGenerator = (() => {
+        let key = 1;
+        return () => key++;
+    })();
+
     const handleCreateNewCase = () => {
         if (!validate()) return;
         const uploadingCase = {
+            id: uploadingCaseKeyGenerator(),
             elementName: name,
             directory: activeDirectory,
             type: 'CASE',
@@ -77,10 +91,11 @@ export function CreateCaseDialog({ onClose, open }) {
             .catch((message) => {
                 snackbarMessage(message, 'caseCreationError', { name });
             })
-            .finally(() => dispatch(removeUploadingCase(uploadingCase)));
-        dispatch(addUploadingCase(uploadingCase));
+            .finally(() => dispatch(removeUploadingElement(uploadingCase)));
+        dispatch(addUploadingElement(uploadingCase));
         handleCloseDialog();
     };
+
     const handleKeyPressed = (event) => {
         if (event.key === 'Enter') {
             handleCreateNewCase(name, file);
@@ -115,7 +130,7 @@ export function CreateCaseDialog({ onClose, open }) {
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button
-                    onClick={() => handleCreateNewCase()}
+                    onClick={handleCreateNewCase}
                     disabled={!validate()}
                     variant="outlined"
                 >

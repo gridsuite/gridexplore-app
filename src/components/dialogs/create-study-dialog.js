@@ -32,12 +32,12 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    addUploadingStudy,
     loadCasesSuccess,
-    removeUploadingStudy,
     selectCase,
     removeSelectedCase,
     setActiveDirectory,
+    addUploadingElement,
+    removeUploadingElement,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
@@ -343,8 +343,8 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             .catch((message) => {
                 studyCreationError(studyName, message);
             })
-            .finally(() => dispatch(removeUploadingStudy(uploadingStudy)));
-        dispatch(addUploadingStudy(uploadingStudy));
+            .finally(() => dispatch(removeUploadingElement(uploadingStudy)));
+        dispatch(addUploadingElement(uploadingStudy));
         handleCloseDialog();
     };
 
@@ -480,7 +480,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         <FormattedMessage id="cancel" />
                     </Button>
                     <Button
-                        onClick={() => handleCreateNewStudy()}
+                        onClick={handleCreateNewStudy}
                         disabled={!isCreationAllowed()}
                         variant="outlined"
                     >

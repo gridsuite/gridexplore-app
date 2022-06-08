@@ -193,8 +193,7 @@ const TreeViewsContainer = () => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    const uploadingStudies = useSelector((state) => state.uploadingStudies);
-    const uploadingCases = useSelector((state) => state.uploadingCases);
+    const uploadingElements = useSelector((state) => state.uploadingElements);
     const currentChildren = useSelector((state) => state.currentChildren);
     const currentChildrenRef = useRef(currentChildren);
     currentChildrenRef.current = currentChildren;
@@ -348,26 +347,16 @@ const TreeViewsContainer = () => {
 
     const mergeCurrentAndUploading = useCallback(
         (current) => {
-            let studiesToMerge = Object.values(uploadingStudies).filter(
-                (e) =>
-                    e.directory === selectedDirectoryRef.current.elementUuid &&
-                    current[e.elementName] === undefined
-            );
-            let casesToMerge = Object.values(uploadingCases).filter(
+            let elementsToMerge = Object.values(uploadingElements).filter(
                 (e) =>
                     e.directory === selectedDirectoryRef.current.elementUuid &&
                     current[e.elementName] === undefined
             );
 
-            if (
-                (studiesToMerge != null && studiesToMerge.length > 0) ||
-                (casesToMerge != null && casesToMerge.length > 0)
-            ) {
-                return [...current, ...studiesToMerge, ...casesToMerge].sort(
-                    function (a, b) {
-                        return a.elementName.localeCompare(b.elementName);
-                    }
-                );
+            if (elementsToMerge != null && elementsToMerge.length > 0) {
+                return [...current, ...elementsToMerge].sort(function (a, b) {
+                    return a.elementName.localeCompare(b.elementName);
+                });
             } else {
                 if (current == null) {
                     return null;
@@ -378,7 +367,7 @@ const TreeViewsContainer = () => {
                 }
             }
         },
-        [uploadingStudies, uploadingCases, selectedDirectoryRef]
+        [uploadingElements, selectedDirectoryRef]
     );
 
     /* currentChildren management */
