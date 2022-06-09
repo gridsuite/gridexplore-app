@@ -8,7 +8,7 @@
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Dialog from '@mui/material//Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -19,9 +19,21 @@ import { ElementType } from '../../utils/elementType';
 import { useFileValue, useNameField, useTextValue } from './field-hook';
 import { createCase } from '../../utils/rest-api';
 import { useSnackbarMessage } from '../../utils/messages';
+import {
+    addUploadingElement,
+    removeUploadingElement,
+} from '../../redux/actions';
+import { keyGenerator } from '../../utils/functions';
 
+/**
+ * Dialog to create a case
+ * @param {Boolean} open Is the dialog open ?
+ * @param {EventListener} onClose Event to close the dialog
+ */
 export function CreateCaseDialog({ onClose, open }) {
     const activeDirectory = useSelector((state) => state.activeDirectory);
+    const userId = useSelector((state) => state.user.profile.sub);
+    const dispatch = useDispatch();
 
     const [triggerReset, setTriggerReset] = useState(true);
 
@@ -55,8 +67,16 @@ export function CreateCaseDialog({ onClose, open }) {
 
     const snackbarMessage = useSnackbarMessage();
 
-    const handleCreateNewStudy = () => {
+    const handleCreateNewCase = () => {
         if (!validate()) return;
+        const uploadingCase = {
+            id: keyGenerator(),
+            elementName: name,
+            directory: activeDirectory,
+            type: 'CASE',
+            owner: userId,
+            uploading: true,
+        };
         createCase({
             name,
             description,
@@ -66,13 +86,15 @@ export function CreateCaseDialog({ onClose, open }) {
             .then()
             .catch((message) => {
                 snackbarMessage(message, 'caseCreationError', { name });
-            });
+            })
+            .finally(() => dispatch(removeUploadingElement(uploadingCase)));
+        dispatch(addUploadingElement(uploadingCase));
         handleCloseDialog();
     };
 
     const handleKeyPressed = (event) => {
         if (event.key === 'Enter') {
-            handleCreateNewStudy(name, file);
+            handleCreateNewCase(name, file);
         }
     };
 
@@ -104,7 +126,7 @@ export function CreateCaseDialog({ onClose, open }) {
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button
-                    onClick={() => handleCreateNewStudy()}
+                    onClick={handleCreateNewCase}
                     disabled={!validate()}
                     variant="outlined"
                 >
