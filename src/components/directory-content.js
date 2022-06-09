@@ -496,9 +496,6 @@ const DirectoryContent = () => {
                                 : null,
                         };
                     });
-                    if (res.length === 0) {
-                        metadata['got'] = 'timeout';
-                    }
                 })
                 .catch((reason) => {
                     if (Object.keys(currentChildrenRef.current).length === 0) {
