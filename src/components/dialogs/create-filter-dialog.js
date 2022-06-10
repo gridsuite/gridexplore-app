@@ -285,12 +285,9 @@ const CreateFilterDialog = ({
                 )}
             </DialogContent>
             <DialogActions>
-                <Button size="small" onClick={handleClose}>
-                    {customTextCancelBtn}
-                </Button>
+                <Button onClick={handleClose}>{customTextCancelBtn}</Button>
                 <Button
                     variant="outlined"
-                    size="small"
                     onClick={handleSave}
                     disabled={
                         newNameList === '' ||
@@ -342,10 +339,10 @@ const PopupInfo = ({
                 {customAlertMessage}
             </CustomDialogContent>
             <CustomDialogActions>
-                <Button autoFocus size="small" onClick={handleCancel}>
+                <Button autoFocus onClick={handleCancel}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button variant="outlined" size="small" onClick={handleOk}>
+                <Button variant="outlined" onClick={handleOk}>
                     {customTextValidationBtn}
                 </Button>
             </CustomDialogActions>
