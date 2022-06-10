@@ -114,6 +114,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                     onError(errorMessage);
                 });
         }
+        setBtnSaveListDisabled(true);
         onClose();
         setCurrentScript(newScript);
     };

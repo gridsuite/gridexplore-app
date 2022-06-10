@@ -193,7 +193,7 @@ const TreeViewsContainer = () => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    const uploadingStudies = useSelector((state) => state.uploadingStudies);
+    const uploadingElements = useSelector((state) => state.uploadingElements);
     const currentChildren = useSelector((state) => state.currentChildren);
     const currentChildrenRef = useRef(currentChildren);
     currentChildrenRef.current = currentChildren;
@@ -347,14 +347,14 @@ const TreeViewsContainer = () => {
 
     const mergeCurrentAndUploading = useCallback(
         (current) => {
-            let toMerge = Object.values(uploadingStudies).filter(
+            let elementsToMerge = Object.values(uploadingElements).filter(
                 (e) =>
                     e.directory === selectedDirectoryRef.current.elementUuid &&
                     current[e.elementName] === undefined
             );
 
-            if (toMerge != null && toMerge.length > 0) {
-                return [...current, ...toMerge].sort(function (a, b) {
+            if (elementsToMerge != null && elementsToMerge.length > 0) {
+                return [...current, ...elementsToMerge].sort(function (a, b) {
                     return a.elementName.localeCompare(b.elementName);
                 });
             } else {
@@ -367,7 +367,7 @@ const TreeViewsContainer = () => {
                 }
             }
         },
-        [uploadingStudies, selectedDirectoryRef]
+        [uploadingElements, selectedDirectoryRef]
     );
 
     /* currentChildren management */

@@ -13,12 +13,11 @@ import { useIntl } from 'react-intl';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import DeleteIcon from '@mui/icons-material/Delete';
-import GetAppIcon from '@mui/icons-material/GetApp';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import PhotoLibrary from '@mui/icons-material/PhotoLibrary';
 import ContentCopy from '@mui/icons-material/ContentCopy';
+import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
 
-import ExportDialog from '../dialogs/export-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 import FormContingencyDialog from '../dialogs/form-contingency-dialog';
@@ -193,10 +192,6 @@ const ContentContextualMenu = (props) => {
         setHideMenu(false);
     }, [onClose, setOpenDialog]);
 
-    const handleClickExportStudy = (url) => {
-        window.open(url, DownloadIframe);
-        handleCloseDialog();
-    };
     const [multipleDeleteError, setMultipleDeleteError] = useState('');
 
     const deleteElementOnError = useCallback(
@@ -325,13 +320,6 @@ const ContentContextualMenu = (props) => {
         return selectedElements.length === 1 && isUserAllowed();
     }, [isUserAllowed, selectedElements]);
 
-    const allowsExport = useCallback(() => {
-        return (
-            selectedElements.length === 1 &&
-            selectedElements[0].type === ElementType.STUDY
-        );
-    }, [selectedElements]);
-
     const allowsMove = useCallback(() => {
         return (
             selectedElements.every(
@@ -450,16 +438,6 @@ const ContentContextualMenu = (props) => {
             });
         }
 
-        if (allowsExport()) {
-            menuItems.push({
-                messageDescriptorId: 'export',
-                callback: () => {
-                    handleOpenDialog(DialogsId.EXPORT);
-                },
-                icon: <GetAppIcon fontSize="small" />,
-            });
-        }
-
         if (allowsMove()) {
             menuItems.push({
                 messageDescriptorId: 'move',
@@ -547,6 +525,15 @@ const ContentContextualMenu = (props) => {
                 icon: <InsertDriveFileIcon fontSize="small" />,
             });
         }
+
+        if (menuItems.length === 0) {
+            menuItems.push({
+                messageDescriptorId: 'notElementCreator',
+                icon: <DoNotDisturbAltIcon fontSize="small" />,
+                disabled: true,
+            });
+        }
+
         return menuItems;
     };
     return (
@@ -602,13 +589,6 @@ const ContentContextualMenu = (props) => {
                     handleCloseDialog();
                 }}
                 items={selectedElements}
-            />
-            <ExportDialog
-                open={openDialog === DialogsId.EXPORT}
-                onClose={handleCloseDialog}
-                onClick={handleClickExportStudy}
-                studyUuid={activeElement ? activeElement.elementUuid : ''}
-                title={useIntl().formatMessage({ id: 'exportNetwork' })}
             />
             <FormContingencyDialog
                 listId={getActiveContingencyFormId()}

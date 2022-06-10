@@ -81,12 +81,6 @@
     "isPrivateLabel": "Private folder?",
     "directoryNewNameLabel": "New Name",
 
-    "exportNetwork": "Export the network",
-    "export": "Export",
-    "format": "Format",
-    "exportFormat": "Format of the export",
-    "exportStudyErrorMsg": "No export format specified",
-
     "accessRights": "Access rights",
     "modifyAccessRights": "Modify the access rights",
     "modifyAccessRightsNotAllowedError": "You cannot modify the access rights of an element you don't own",
@@ -156,5 +150,6 @@
     "moveItemValidate": "{nbElements, plural, =0 {Please select a folder} =1 {Move element} other {Move # elements}}",
     "moveItemContentText": "Please choose a folder",
     "moveElementNotFoundError": "The element or the targeted folder was not found",
-    "moveElementNotAllowedError": "You cannot move this element to the targeted folder. Unauthorized action"
+    "moveElementNotAllowedError": "You cannot move this element to the targeted folder. Unauthorized action",
+    "notElementCreator": "You are not the element's creator"
 }

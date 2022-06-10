@@ -32,12 +32,12 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    addUploadingStudy,
     loadCasesSuccess,
-    removeUploadingStudy,
     selectCase,
     removeSelectedCase,
     setActiveDirectory,
+    addUploadingElement,
+    removeUploadingElement,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
@@ -48,6 +48,7 @@ import {
 } from '../../utils/messages';
 import { ElementType } from '../../utils/elementType';
 import { useFileValue } from './field-hook';
+import { keyGenerator } from '../../utils/functions.js';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -115,11 +116,6 @@ const SelectCase = () => {
     );
 };
 
-const uploadingStudyKeyGenerator = (() => {
-    let key = 1;
-    return () => key++;
-})();
-
 /**
  * Dialog to create a study
  * @param {Boolean} open Is the dialog open ?
@@ -181,10 +177,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setActiveDirectoryName(selectedDirectory?.elementName);
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         dispatch(removeSelectedCase());
+        setTriggerReset((oldVal) => !oldVal);
     };
 
     const handleCloseDialog = () => {
-        setTriggerReset((oldVal) => !oldVal);
         onClose();
         resetDialog();
     };
@@ -324,7 +320,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             return;
         }
         const uploadingStudy = {
-            id: uploadingStudyKeyGenerator(),
+            id: keyGenerator(),
             elementName: studyName,
             directory: activeDirectory,
             type: 'STUDY',
@@ -343,10 +339,9 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             .catch((message) => {
                 studyCreationError(studyName, message);
             })
-            .finally(() => dispatch(removeUploadingStudy(uploadingStudy)));
-        dispatch(addUploadingStudy(uploadingStudy));
-        onClose();
-        resetDialog();
+            .finally(() => dispatch(removeUploadingElement(uploadingStudy)));
+        dispatch(addUploadingElement(uploadingStudy));
+        handleCloseDialog();
     };
 
     const handleKeyPressed = (event) => {
@@ -481,7 +476,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         <FormattedMessage id="cancel" />
                     </Button>
                     <Button
-                        onClick={() => handleCreateNewStudy()}
+                        onClick={handleCreateNewStudy}
                         disabled={!isCreationAllowed()}
                         variant="outlined"
                     >

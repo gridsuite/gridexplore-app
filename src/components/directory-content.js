@@ -110,6 +110,8 @@ const DirectoryContent = () => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
     const [activeElement, setActiveElement] = React.useState(null);
+    const [isMissingDataAfterDirChange, setIsMissingDataAfterDirChange] =
+        useState(true);
 
     const classes = useStyles();
     const intl = useIntl();
@@ -375,6 +377,12 @@ const DirectoryContent = () => {
         return childrenMetadata[elementUuid].name;
     };
 
+    const isElementCaseOrStudy = (objectType) => {
+        return (
+            objectType === ElementType.STUDY || objectType === ElementType.CASE
+        );
+    };
+
     const nameCellRender = (cellData) => {
         const elementUuid = cellData.rowData['elementUuid'];
         const objectType = cellData.rowData['type'];
@@ -382,7 +390,7 @@ const DirectoryContent = () => {
             <div className={classes.cell}>
                 {/*  Icon */}
                 {!childrenMetadata[elementUuid] &&
-                    objectType === ElementType.STUDY && (
+                    isElementCaseOrStudy(objectType) && (
                         <CircularProgress
                             size={18}
                             className={classes.circularRoot}
@@ -463,35 +471,44 @@ const DirectoryContent = () => {
     }
 
     useEffect(() => {
-        if (currentChildren?.length > 0) {
-            let metadata = {};
-            let childrenToFetchElementsInfos = Object.values(currentChildren)
-                .filter((e) => !e.uploading)
-                .map((e) => e.elementUuid);
-            if (childrenToFetchElementsInfos.length > 0) {
-                fetchElementsInfos(childrenToFetchElementsInfos)
-                    .then((res) => {
-                        res.forEach((e) => {
-                            metadata[e.elementUuid] = {
-                                name: e.elementName,
-                                subtype: e.specificMetadata
-                                    ? e.specificMetadata.type
-                                    : null,
-                            };
-                        });
-                    })
-                    .catch(
-                        Object.keys(currentChildrenRef.current).length === 0
-                            ? handleError
-                            : () => {}
-                    )
-                    .finally(() => {
-                        // discarding request for older directory
-                        if (currentChildrenRef.current === currentChildren) {
-                            setChildrenMetadata(metadata);
-                        }
+        setIsMissingDataAfterDirChange(true);
+    }, [selectedDirectory, setIsMissingDataAfterDirChange]);
+
+    useEffect(() => {
+        if (!currentChildren?.length) {
+            setChildrenMetadata({});
+            setIsMissingDataAfterDirChange(false);
+            return;
+        }
+
+        let metadata = {};
+        let childrenToFetchElementsInfos = Object.values(currentChildren)
+            .filter((e) => !e.uploading)
+            .map((e) => e.elementUuid);
+        if (childrenToFetchElementsInfos.length > 0) {
+            fetchElementsInfos(childrenToFetchElementsInfos)
+                .then((res) => {
+                    res.forEach((e) => {
+                        metadata[e.elementUuid] = {
+                            name: e.elementName,
+                            subtype: e.specificMetadata
+                                ? e.specificMetadata.type
+                                : null,
+                        };
                     });
-            }
+                })
+                .catch((reason) => {
+                    if (Object.keys(currentChildrenRef.current).length === 0) {
+                        handleError(reason);
+                    }
+                })
+                .finally(() => {
+                    // discarding request for older directory
+                    if (currentChildrenRef.current === currentChildren) {
+                        setChildrenMetadata(metadata);
+                        setIsMissingDataAfterDirChange(false);
+                    }
+                });
         }
         setSelectedUuids(new Set());
     }, [handleError, currentChildren, currentChildrenRef]);
@@ -563,17 +580,15 @@ const DirectoryContent = () => {
                 }}
                 onContextMenu={(e) => onContextMenu(e)}
             >
-                {Object.keys(childrenMetadata).length === 0 &&
-                    currentChildren?.length > 0 &&
-                    selectedDirectory && (
-                        <div className={classes.circularProgressContainer}>
-                            <CircularProgress
-                                size={circularProgressSize}
-                                color="inherit"
-                                className={classes.centeredCircularProgress}
-                            />
-                        </div>
-                    )}
+                {isMissingDataAfterDirChange && (
+                    <div className={classes.circularProgressContainer}>
+                        <CircularProgress
+                            size={circularProgressSize}
+                            color="inherit"
+                            className={classes.centeredCircularProgress}
+                        />
+                    </div>
+                )}
                 {currentChildren?.length === 0 && (
                     <div style={{ textAlign: 'center', marginTop: '100px' }}>
                         <FolderOpenRoundedIcon

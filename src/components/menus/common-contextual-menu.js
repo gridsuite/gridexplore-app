@@ -28,7 +28,8 @@ const CommonContextualMenu = (props) => {
         key,
         messageDescriptorId,
         callback,
-        icon = <EditIcon fontSize="small" />
+        icon = <EditIcon fontSize="small" />,
+        disabled = false
     ) {
         return (
             <MenuItem
@@ -36,6 +37,7 @@ const CommonContextualMenu = (props) => {
                 onClick={() => {
                     callback();
                 }}
+                disabled={disabled}
             >
                 <ListItemIcon
                     style={{
@@ -61,7 +63,8 @@ const CommonContextualMenu = (props) => {
                         index,
                         menuItem.messageDescriptorId,
                         menuItem.callback,
-                        menuItem.icon
+                        menuItem.icon,
+                        menuItem.disabled
                     );
                 }
             })}
