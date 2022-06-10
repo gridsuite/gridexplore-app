@@ -50,9 +50,12 @@
 
     "nameAlreadyUsed": "Ce nom est déjà utilisé",
 
+    "unsuportedItem": "Cet élément n'est pas supporté",
+
     "move": "Déplacer",
     "delete": "Supprimer",
     "rename": "Renommer",
+    "duplicate": "Dupliquer",
     "createNewStudyFromImportedCase": "Créer étude",
 
     "showSelectDirectoryDialog": "Modifier dossier",
