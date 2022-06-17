@@ -17,7 +17,6 @@ import Tooltip from '@mui/material/Tooltip';
 import makeStyles from '@mui/styles/makeStyles';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import LibraryBooksOutlinedIcon from '@mui/icons-material/LibraryBooksOutlined';
 import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
 
 import VirtualizedTable from './virtualized-table';
@@ -31,11 +30,6 @@ import { Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
 
-import FilterListIcon from '@mui/icons-material/FilterList';
-import FilterIcon from '@mui/icons-material/Filter';
-import DescriptionIcon from '@mui/icons-material/Description';
-import PanToolIcon from '@mui/icons-material/PanTool';
-
 import FormContingencyDialog from './dialogs/form-contingency-dialog';
 import ScriptDialog from './dialogs/script-dialog';
 import { useSnackbar } from 'notistack';
@@ -45,6 +39,9 @@ import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 import PhotoIcon from '@mui/icons-material/Photo';
+import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
+import ArticleIcon from '@mui/icons-material/Article';
+import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
 
 const circularProgressSize = '70px';
 
@@ -347,19 +344,11 @@ const DirectoryContent = () => {
 
     function getElementIcon(objectType, objectSubtype) {
         if (objectType === ElementType.STUDY) {
-            return <LibraryBooksOutlinedIcon className={classes.icon} />;
+            return <PhotoLibraryIcon className={classes.icon} />;
         } else if (objectType === ElementType.CONTINGENCY_LIST) {
-            if (objectSubtype === ContingencyListType.SCRIPT) {
-                return <DescriptionIcon className={classes.icon} />;
-            } else if (objectSubtype === ContingencyListType.FORM) {
-                return <PanToolIcon className={classes.icon} />;
-            }
+            return <OfflineBoltIcon className={classes.icon} />;
         } else if (objectType === ElementType.FILTER) {
-            if (objectSubtype === FilterType.SCRIPT) {
-                return <FilterIcon className={classes.icon} />;
-            } else if (objectSubtype === FilterType.FORM) {
-                return <FilterListIcon className={classes.icon} />;
-            }
+            return <ArticleIcon className={classes.icon} />;
         } else if (objectType === ElementType.CASE) {
             return <PhotoIcon className={classes.icon} />;
         }
@@ -570,6 +559,15 @@ const DirectoryContent = () => {
         return [...new Set(acc)];
     };
 
+    const getCurrentChildrenWithNotClickableRows = (currentChildren) => {
+        return currentChildren.map((child) => {
+            return {
+                ...child,
+                notClickable: child.type === ElementType.CASE,
+            };
+        });
+    };
+
     return (
         <>
             <div
@@ -616,7 +614,9 @@ const DirectoryContent = () => {
                             style={{ flexGrow: 1 }}
                             onRowRightClick={(e) => onContextMenu(e)}
                             onRowClick={handleRowClick}
-                            rows={currentChildren}
+                            rows={getCurrentChildrenWithNotClickableRows(
+                                currentChildren
+                            )}
                             columns={[
                                 {
                                     cellRenderer: selectionRenderer,
