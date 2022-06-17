@@ -336,6 +336,30 @@ export function createStudy(
     }
 }
 
+export function duplicateStudy(
+    studyName,
+    studyDescription,
+    sourceStudyUuid,
+    parentDirectoryUuid
+) {
+    console.info('Duplicating a study...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('duplicateFrom', sourceStudyUuid);
+    urlSearchParams.append('studyName', studyName);
+    urlSearchParams.append('description', studyDescription);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const duplicateStudyUrl =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/studies?' +
+        urlSearchParams.toString();
+    console.debug(duplicateStudyUrl);
+
+    return backendFetch(duplicateStudyUrl, {
+        method: 'post',
+    }).then((response) => handleResponse(response, false));
+}
+
 export function createCase({ name, description, file, parentDirectoryUuid }) {
     console.info('Creating a new case...');
     let urlSearchParams = new URLSearchParams();
@@ -355,6 +379,29 @@ export function createCase({ name, description, file, parentDirectoryUuid }) {
     return backendFetch(url, {
         method: 'post',
         body: formData,
+    }).then((response) => handleResponse(response, false));
+}
+
+export function duplicateCase(
+    name,
+    description,
+    sourceCaseUuid,
+    parentDirectoryUuid
+) {
+    console.info('Duplicating a case...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('duplicateFrom', sourceCaseUuid);
+    urlSearchParams.append('caseName', name);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/cases?' +
+        urlSearchParams.toString();
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
     }).then((response) => handleResponse(response, false));
 }
 
@@ -440,6 +487,38 @@ export function createContingencyList(
     return backendFetch(createContingencyListUrl, {
         method: 'post',
         body: JSON.stringify(body),
+    }).then((response) => handleResponse(response, false));
+}
+
+export function duplicateContingencyList(
+    contingencyListType,
+    name,
+    description,
+    sourceContingencyListUuid,
+    parentDirectoryUuid
+) {
+    console.info('Duplicating a contingency list...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('duplicateFrom', sourceContingencyListUuid);
+    urlSearchParams.append('listName', name);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const typeUriParam =
+        contingencyListType === ContingencyListType.SCRIPT
+            ? 'script-contingency-lists'
+            : 'form-contingency-lists';
+
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/' +
+        typeUriParam +
+        '?' +
+        urlSearchParams.toString();
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
     }).then((response) => handleResponse(response, false));
 }
 
@@ -586,6 +665,29 @@ export function createFilter(newFilter, name, parentDirectoryUuid) {
             body: JSON.stringify(newFilter),
         }
     ).then((response) => handleResponse(response, false));
+}
+
+export function duplicateFilter(
+    name,
+    description,
+    sourceFilterUuid,
+    parentDirectoryUuid
+) {
+    console.info('Duplicating a filter...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('duplicateFrom', sourceFilterUuid);
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/filters?' +
+        urlSearchParams.toString();
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
+    }).then((response) => handleResponse(response, false));
 }
 
 /**
