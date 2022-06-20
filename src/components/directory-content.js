@@ -574,7 +574,7 @@ const DirectoryContent = () => {
                 style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    height: '100%',
+                    flexGrow: 1,
                 }}
                 onContextMenu={(e) => onContextMenu(e)}
             >
@@ -587,7 +587,7 @@ const DirectoryContent = () => {
                         />
                     </div>
                 )}
-                {currentChildren?.length === 0 && (
+                {!isMissingDataAfterDirChange && currentChildren?.length === 0 && (
                     <div style={{ textAlign: 'center', marginTop: '100px' }}>
                         <FolderOpenRoundedIcon
                             style={{ width: '100px', height: '100px' }}
@@ -598,7 +598,7 @@ const DirectoryContent = () => {
                     </div>
                 )}
 
-                {currentChildren?.length > 0 && (
+                {!isMissingDataAfterDirChange && currentChildren?.length > 0 && (
                     <>
                         <ContentToolbar
                             selectedElements={
