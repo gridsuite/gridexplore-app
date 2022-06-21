@@ -460,6 +460,7 @@ const DirectoryContent = () => {
     }
 
     useEffect(() => {
+        if (!selectedDirectory) return;
         setIsMissingDataAfterDirChange(true);
     }, [selectedDirectory, setIsMissingDataAfterDirChange]);
 
@@ -559,13 +560,109 @@ const DirectoryContent = () => {
         return [...new Set(acc)];
     };
 
-    const getCurrentChildrenWithNotClickableRows = (currentChildren) => {
+    const getCurrentChildrenWithNotClickableRows = () => {
         return currentChildren.map((child) => {
             return {
                 ...child,
                 notClickable: child.type === ElementType.CASE,
             };
         });
+    };
+
+    const renderLoadingContent = () => {
+        return (
+            <div className={classes.circularProgressContainer}>
+                <CircularProgress
+                    size={circularProgressSize}
+                    color="inherit"
+                    className={classes.centeredCircularProgress}
+                />
+            </div>
+        );
+    };
+
+    const renderEmptyDirContent = () => {
+        return (
+            <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                <FolderOpenRoundedIcon
+                    style={{ width: '100px', height: '100px' }}
+                />
+                <h1>
+                    <FormattedMessage id={'emptyDir'} />
+                </h1>
+            </div>
+        );
+    };
+
+    const renderTableContent = () => {
+        return (
+            <>
+                <ContentToolbar
+                    selectedElements={
+                        // Check selectedUuids.size here to show toolbar options only
+                        // when multi selection checkboxes are used.
+                        selectedUuids.size > 0 ? getSelectedChildren() : []
+                    }
+                />
+
+                <VirtualizedTable
+                    style={{ flexGrow: 1 }}
+                    onRowRightClick={(e) => onContextMenu(e)}
+                    onRowClick={handleRowClick}
+                    rows={getCurrentChildrenWithNotClickableRows()}
+                    columns={[
+                        {
+                            cellRenderer: selectionRenderer,
+                            dataKey: 'selected',
+                            label: '',
+                            headerRenderer: selectionHeaderRenderer,
+                            maxWidth: 60,
+                        },
+                        {
+                            width: 100,
+                            label: intl.formatMessage({
+                                id: 'elementName',
+                            }),
+                            dataKey: 'elementName',
+                            cellRenderer: nameCellRender,
+                        },
+                        {
+                            width: 100,
+                            label: intl.formatMessage({
+                                id: 'type',
+                            }),
+                            dataKey: 'type',
+                            cellRenderer: typeCellRender,
+                        },
+                        {
+                            width: 50,
+                            label: intl.formatMessage({
+                                id: 'creator',
+                            }),
+                            dataKey: 'owner',
+                            cellRenderer: creatorCellRender,
+                        },
+                    ]}
+                    sortable={true}
+                />
+            </>
+        );
+    };
+
+    const renderContent = () => {
+        if (isMissingDataAfterDirChange) {
+            return renderLoadingContent();
+        } else {
+            if (currentChildren && selectedDirectory) {
+                console.log('SBO currentChildren', currentChildren);
+                if (currentChildren.length === 0) {
+                    return renderEmptyDirContent();
+                } else {
+                    return renderTableContent();
+                }
+            }
+            return;
+        }
     };
 
     return (
@@ -578,82 +675,7 @@ const DirectoryContent = () => {
                 }}
                 onContextMenu={(e) => onContextMenu(e)}
             >
-                {isMissingDataAfterDirChange && (
-                    <div className={classes.circularProgressContainer}>
-                        <CircularProgress
-                            size={circularProgressSize}
-                            color="inherit"
-                            className={classes.centeredCircularProgress}
-                        />
-                    </div>
-                )}
-                {!isMissingDataAfterDirChange && currentChildren?.length === 0 && (
-                    <div style={{ textAlign: 'center', marginTop: '100px' }}>
-                        <FolderOpenRoundedIcon
-                            style={{ width: '100px', height: '100px' }}
-                        />
-                        <h1>
-                            <FormattedMessage id={'emptyDir'} />
-                        </h1>
-                    </div>
-                )}
-
-                {!isMissingDataAfterDirChange && currentChildren?.length > 0 && (
-                    <>
-                        <ContentToolbar
-                            selectedElements={
-                                // Check selectedUuids.size here to show toolbar options only
-                                // when multi selection checkboxes are used.
-                                selectedUuids.size > 0
-                                    ? getSelectedChildren()
-                                    : []
-                            }
-                        />
-
-                        <VirtualizedTable
-                            style={{ flexGrow: 1 }}
-                            onRowRightClick={(e) => onContextMenu(e)}
-                            onRowClick={handleRowClick}
-                            rows={getCurrentChildrenWithNotClickableRows(
-                                currentChildren
-                            )}
-                            columns={[
-                                {
-                                    cellRenderer: selectionRenderer,
-                                    dataKey: 'selected',
-                                    label: '',
-                                    headerRenderer: selectionHeaderRenderer,
-                                    maxWidth: 60,
-                                },
-                                {
-                                    width: 100,
-                                    label: intl.formatMessage({
-                                        id: 'elementName',
-                                    }),
-                                    dataKey: 'elementName',
-                                    cellRenderer: nameCellRender,
-                                },
-                                {
-                                    width: 100,
-                                    label: intl.formatMessage({
-                                        id: 'type',
-                                    }),
-                                    dataKey: 'type',
-                                    cellRenderer: typeCellRender,
-                                },
-                                {
-                                    width: 50,
-                                    label: intl.formatMessage({
-                                        id: 'creator',
-                                    }),
-                                    dataKey: 'owner',
-                                    cellRenderer: creatorCellRender,
-                                },
-                            ]}
-                            sortable={true}
-                        />
-                    </>
-                )}
+                {renderContent()}
             </div>
 
             <div
