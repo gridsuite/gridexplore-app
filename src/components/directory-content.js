@@ -654,7 +654,6 @@ const DirectoryContent = () => {
             return renderLoadingContent();
         } else {
             if (currentChildren && selectedDirectory) {
-                console.log('SBO currentChildren', currentChildren);
                 if (currentChildren.length === 0) {
                     return renderEmptyDirContent();
                 } else {
