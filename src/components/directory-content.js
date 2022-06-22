@@ -650,18 +650,18 @@ const DirectoryContent = () => {
     };
 
     const renderContent = () => {
-        if (isMissingDataAfterDirChange) {
-            return renderLoadingContent();
-        } else {
-            if (currentChildren && selectedDirectory) {
-                if (currentChildren.length === 0) {
-                    return renderEmptyDirContent();
-                } else {
-                    return renderTableContent();
-                }
-            }
-            return;
-        }
+        // Here we wait for Metadata for the folder content
+        if (isMissingDataAfterDirChange) return renderLoadingContent();
+
+        // If no selection or currentChildren = null (first time) render nothing
+        // TODO : Make a beautiful page here
+        if (!currentChildren || !selectedDirectory) return;
+
+        // If empty dir then render an appropriate content
+        if (currentChildren.length === 0) return renderEmptyDirContent();
+
+        // Finally if we have elements then render the table
+        return renderTableContent();
     };
 
     return (
