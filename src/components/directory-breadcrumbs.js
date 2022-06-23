@@ -116,10 +116,19 @@ const DirectoryBreadcrumbs = () => {
     };
 
     return (
-        <Breadcrumbs aria-label="breadcrumb" className={classes.breadcrumbs}>
-            {renderBreadCrumbsLinks()}
-            {renderBreadCrumbsTypography()}
-        </Breadcrumbs>
+        <>
+            {selectedDirectory !== null &&
+                currentPath !== null &&
+                currentPath.length > 0 && (
+                    <Breadcrumbs
+                        aria-label="breadcrumb"
+                        className={classes.breadcrumbs}
+                    >
+                        {renderBreadCrumbsLinks()}
+                        {renderBreadCrumbsTypography()}
+                    </Breadcrumbs>
+                )}
+        </>
     );
 };
 

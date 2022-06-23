@@ -237,6 +237,7 @@ const App = () => {
                     (off by 1) and it causes scrollbar to blink
                     * */
                     overflow: 'hidden',
+                    marginTop: '20px',
                 }}
             >
                 {user !== null ? (
@@ -250,7 +251,6 @@ const App = () => {
                                     style={{
                                         borderRight:
                                             '1px solid rgba(81, 81, 81, 1)',
-                                        marginTop: '20px',
                                     }}
                                 >
                                     <TreeViewsContainer />
@@ -263,16 +263,8 @@ const App = () => {
                                             height: '100%',
                                         }}
                                     >
-                                        <div
-                                            style={{
-                                                marginTop: '20px',
-                                            }}
-                                        >
-                                            <DirectoryBreadcrumbs />
-                                        </div>
-                                        <div style={{ flexGrow: 1 }}>
-                                            <DirectoryContent />
-                                        </div>
+                                        <DirectoryBreadcrumbs />
+                                        <DirectoryContent />
                                     </div>
                                 </Grid>
                             </Grid>
