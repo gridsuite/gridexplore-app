@@ -87,6 +87,9 @@ const DirectoryBreadcrumbs = () => {
                         key={dir.elementUuid}
                         href="/"
                         onClick={(event) => handleSelect(event, dir)}
+                        onDragStart={(event) => {
+                            event.preventDefault();
+                        }}
                         underline="hover"
                     >
                         {index === 0 ? (
