@@ -537,7 +537,6 @@ const DirectoryContent = () => {
                         .filter(
                             (child) =>
                                 selectedUuids.has(child.elementUuid) &&
-                                childrenMetadata[child.elementUuid] &&
                                 child.elementUuid !== activeElement?.elementUuid
                         )
                         .map((child2) => {
