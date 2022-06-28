@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0.5),
     },
     treeItemRoot: {
+        userSelect: 'none',
         '&:focus > $treeItemContent $treeItemLabel, .focused': {
             borderRadius: theme.spacing(2),
             backgroundColor: theme.row.primary,
@@ -65,7 +66,8 @@ const useStyles = makeStyles((theme) => ({
     },
     treeItemLabelText: {
         fontWeight: 'inherit',
-        flexGrow: 1,
+        flexGrow: 0,
+        marginRight: '5px',
     },
     icon: {
         marginRight: theme.spacing(1),
@@ -169,22 +171,6 @@ const DirectoryTreeView = ({
                             handleContextMenuClick(e, node.elementUuid)
                         }
                     >
-                        <Tooltip
-                            TransitionComponent={Zoom}
-                            disableFocusListener
-                            disableTouchListener
-                            enterDelay={1000}
-                            enterNextDelay={1000}
-                            title={node.elementName}
-                            placement="bottom-end"
-                        >
-                            <Typography
-                                noWrap
-                                className={classes.treeItemLabelText}
-                            >
-                                {node.elementName}
-                            </Typography>
-                        </Tooltip>
                         {node.accessRights?.isPrivate ? (
                             <Tooltip
                                 TransitionComponent={Zoom}
@@ -193,12 +179,29 @@ const DirectoryTreeView = ({
                                 enterDelay={1000}
                                 enterNextDelay={1000}
                                 title={<FormattedMessage id="private" />}
-                                placement="right"
+                                placement="bottom"
                                 arrow
                             >
                                 <LockIcon className={classes.icon} />
                             </Tooltip>
                         ) : null}
+                        <Tooltip
+                            TransitionComponent={Zoom}
+                            disableFocusListener
+                            disableTouchListener
+                            enterDelay={1000}
+                            enterNextDelay={1000}
+                            title={node.elementName}
+                            arrow
+                            placement="bottom-start"
+                        >
+                            <Typography
+                                noWrap
+                                className={classes.treeItemLabelText}
+                            >
+                                {node.elementName}
+                            </Typography>
+                        </Tooltip>
                     </div>
                 }
                 ContentProps={{
