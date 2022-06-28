@@ -162,8 +162,8 @@ const DeleteDialog = ({
                 <Button onClick={handleClose} variant="outlined">
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleClick} disabled={loadingState} >
-                    {(loadingState && <CircularProgress size={24}/>) || (
+                <Button onClick={handleClick} disabled={loadingState}>
+                    {(loadingState && <CircularProgress size={24} />) || (
                         <FormattedMessage id="delete" />
                     )}
                 </Button>
