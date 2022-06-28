@@ -355,13 +355,10 @@ const DirectoryContent = () => {
     }
 
     const getDisplayedElementName = (cellData) => {
-        const { elementName, uploading, deleting, elementUuid } =
-            cellData.rowData;
+        const { elementName, uploading, elementUuid } = cellData.rowData;
         const formatMessage = intl.formatMessage;
         if (uploading)
             return elementName + ' ' + formatMessage({ id: 'uploading' });
-        if (deleting)
-            return elementName + ' ' + formatMessage({ id: 'deleting' });
         if (!childrenMetadata[elementUuid])
             return (
                 elementName + ' ' + formatMessage({ id: 'creationInProgress' })
