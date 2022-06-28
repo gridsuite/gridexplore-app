@@ -14,6 +14,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
+import CircularProgress from '@mui/material/CircularProgress';
 
 /**
  * Dialog to delete an element
@@ -38,11 +39,14 @@ const DeleteDialog = ({
 
     const [itemsState, setItemState] = useState([]);
 
+    const [loadingState, setLoadingState] = useState(false);
+
     const openRef = useRef(null);
 
     useEffect(() => {
         if (open && !openRef.current) {
             setItemState(items);
+            setLoadingState(false);
         }
         openRef.current = open;
     }, [open, items]);
@@ -53,6 +57,7 @@ const DeleteDialog = ({
 
     const handleClick = () => {
         console.debug('Request for deletion');
+        setLoadingState(true);
         onClick();
     };
 
@@ -157,8 +162,10 @@ const DeleteDialog = ({
                 <Button onClick={handleClose} variant="outlined">
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleClick}>
-                    <FormattedMessage id="delete" />
+                <Button onClick={handleClick} disabled={loadingState}>
+                    {(loadingState && <CircularProgress size={24} />) || (
+                        <FormattedMessage id="delete" />
+                    )}
                 </Button>
             </DialogActions>
         </Dialog>
