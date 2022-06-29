@@ -251,6 +251,9 @@ const App = () => {
                                     style={{
                                         borderRight:
                                             '1px solid rgba(81, 81, 81, 1)',
+                                        height: '100%',
+                                        overflow: 'auto',
+                                        display: 'flex',
                                     }}
                                 >
                                     <TreeViewsContainer />
