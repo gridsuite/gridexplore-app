@@ -25,6 +25,7 @@ import {
 
 import {
     AuthenticationRouter,
+    CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
 } from '@gridsuite/commons-ui';
@@ -230,72 +231,75 @@ const App = () => {
             }}
         >
             <AppTopBar user={user} userManager={userManager} />
-            <div
-                style={{
-                    flexGrow: 1,
-                    /* autosizer (used in virtual table) can return wrong size
-                    (off by 1) and it causes scrollbar to blink
-                    * */
-                    overflow: 'hidden',
-                    marginTop: '20px',
-                }}
-            >
-                {user !== null ? (
-                    <Switch>
-                        <Route exact path="/">
-                            <Grid container style={{ height: '100%' }}>
-                                <Grid
-                                    item
-                                    xs={12}
-                                    sm={3}
-                                    style={{
-                                        borderRight:
-                                            '1px solid rgba(81, 81, 81, 1)',
-                                        height: '100%',
-                                        overflow: 'auto',
-                                        display: 'flex',
-                                    }}
-                                >
-                                    <TreeViewsContainer />
-                                </Grid>
-                                <Grid item xs={12} sm={9}>
-                                    <div
+            <CardErrorBoundary>
+                <div
+                    style={{
+                        flexGrow: 1,
+                        /* autosizer (used in virtual table) can return wrong size
+                        (off by 1) and it causes scrollbar to blink
+                        * */
+                        overflow: 'hidden',
+                        marginTop: '20px',
+                    }}
+                >
+                    {user !== null ? (
+                        <Switch>
+                            <Route exact path="/">
+                                <Grid container style={{ height: '100%' }}>
+                                    <Grid
+                                        item
+                                        xs={12}
+                                        sm={3}
                                         style={{
-                                            display: 'flex',
-                                            flexDirection: 'column',
+                                            borderRight:
+                                                '1px solid rgba(81, 81, 81, 1)',
                                             height: '100%',
+                                            overflow: 'auto',
+                                            display: 'flex',
                                         }}
                                     >
-                                        <DirectoryBreadcrumbs />
-                                        <DirectoryContent />
-                                    </div>
+                                        <TreeViewsContainer />
+                                    </Grid>
+                                    <Grid item xs={12} sm={9}>
+                                        <div
+                                            style={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                height: '100%',
+                                            }}
+                                        >
+                                            <DirectoryBreadcrumbs />
+                                            <DirectoryContent />
+                                        </div>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                        </Route>
-                        <Route exact path="/sign-in-callback">
-                            <Redirect to={getPreLoginPath() || '/'} />
-                        </Route>
-                        <Route exact path="/logout-callback">
-                            <h1>
-                                Error: logout failed; you are still logged in.
-                            </h1>
-                        </Route>
-                        <Route>
-                            <h1>
-                                <FormattedMessage id="PageNotFound" />
-                            </h1>
-                        </Route>
-                    </Switch>
-                ) : (
-                    <AuthenticationRouter
-                        userManager={userManager}
-                        signInCallbackError={signInCallbackError}
-                        dispatch={dispatch}
-                        history={history}
-                        location={location}
-                    />
-                )}
-            </div>
+                            </Route>
+                            <Route exact path="/sign-in-callback">
+                                <Redirect to={getPreLoginPath() || '/'} />
+                            </Route>
+                            <Route exact path="/logout-callback">
+                                <h1>
+                                    Error: logout failed; you are still logged
+                                    in.
+                                </h1>
+                            </Route>
+                            <Route>
+                                <h1>
+                                    <FormattedMessage id="PageNotFound" />
+                                </h1>
+                            </Route>
+                        </Switch>
+                    ) : (
+                        <AuthenticationRouter
+                            userManager={userManager}
+                            signInCallbackError={signInCallbackError}
+                            dispatch={dispatch}
+                            history={history}
+                            location={location}
+                        />
+                    )}
+                </div>
+            </CardErrorBoundary>
         </div>
     );
 };
