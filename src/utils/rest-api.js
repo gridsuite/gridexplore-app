@@ -429,6 +429,22 @@ export function elementExists(directoryUuid, elementName, type) {
     );
 }
 
+export function getNameCandidate(directoryUuid, elementName, type) {
+    const existsElementUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${directoryUuid}/${elementName}/newNameCandidate?type=${type}`;
+
+    console.debug(existsElementUrl);
+    return backendFetch(existsElementUrl, { method: 'GET' }).then(
+        (response) => {
+            return response.ok
+                ? response.text()
+                : response.status === 404
+                ? false
+                : Promise.reject(response.statusText);
+        }
+    );
+}
 export function rootDirectoryExists(directoryName) {
     const existsRootDirectoryUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
