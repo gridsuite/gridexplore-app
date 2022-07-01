@@ -98,87 +98,99 @@ const ContentContextualMenu = (props) => {
                 selectedDirectory.elementUuid,
                 activeElement.elementName,
                 activeElement.type
-            ).then((newItemName) => {
-                if (newItemName) {
-                    switch (activeElement.type) {
-                        case ElementType.CASE:
-                            duplicateCase(
-                                newItemName,
-                                activeElement.description,
-                                activeElement.elementUuid,
-                                selectedDirectory.elementUuid
-                            )
-                                .then(() => {
-                                    handleCloseDialog();
-                                })
-                                .catch((message) => {
-                                    handleLastError(message);
-                                });
-                            break;
-                        case ElementType.CONTINGENCY_LIST:
-                            fetchElementsInfos([activeElement.elementUuid])
-                                .then((res) => {
-                                    duplicateContingencyList(
-                                        res[0].specificMetadata.type,
-                                        newItemName,
-                                        activeElement.description,
-                                        activeElement.elementUuid,
-                                        selectedDirectory.elementUuid
-                                    ).catch((message) => {
+            )
+                .then((newItemName) => {
+                    if (newItemName) {
+                        switch (activeElement.type) {
+                            case ElementType.CASE:
+                                duplicateCase(
+                                    newItemName,
+                                    activeElement.description,
+                                    activeElement.elementUuid,
+                                    selectedDirectory.elementUuid
+                                )
+                                    .then(() => {
+                                        handleCloseDialog();
+                                    })
+                                    .catch((message) => {
                                         handleLastError(message);
                                     });
-                                })
-                                .catch((message) => {
-                                    handleLastError(message);
-                                })
-                                .finally(() => {
-                                    handleCloseDialog();
-                                });
+                                break;
+                            case ElementType.CONTINGENCY_LIST:
+                                fetchElementsInfos([activeElement.elementUuid])
+                                    .then((res) => {
+                                        duplicateContingencyList(
+                                            res[0].specificMetadata.type,
+                                            newItemName,
+                                            activeElement.description,
+                                            activeElement.elementUuid,
+                                            selectedDirectory.elementUuid
+                                        ).catch((message) => {
+                                            handleLastError(message);
+                                        });
+                                    })
+                                    .catch((message) => {
+                                        handleLastError(message);
+                                    })
+                                    .finally(() => {
+                                        handleCloseDialog();
+                                    });
 
-                            break;
-                        case ElementType.STUDY:
-                            duplicateStudy(
-                                newItemName,
-                                activeElement.description,
-                                activeElement.elementUuid,
-                                selectedDirectory.elementUuid
-                            )
-                                .then(() => {
-                                    handleCloseDialog();
+                                break;
+                            case ElementType.STUDY:
+                                duplicateStudy(
+                                    newItemName,
+                                    activeElement.description,
+                                    activeElement.elementUuid,
+                                    selectedDirectory.elementUuid
+                                )
+                                    .then(() => {
+                                        handleCloseDialog();
+                                    })
+                                    .catch((message) => {
+                                        handleLastError(message);
+                                    });
+                                break;
+                            case ElementType.FILTER:
+                                duplicateFilter(
+                                    newItemName,
+                                    activeElement.description,
+                                    activeElement.elementUuid,
+                                    selectedDirectory.elementUuid
+                                )
+                                    .then(() => {
+                                        handleCloseDialog();
+                                    })
+                                    .catch((message) => {
+                                        handleLastError(message);
+                                    });
+                                break;
+                            default:
+                                handleLastError(
+                                    intl.formatMessage({ id: 'unsuportedItem' })
+                                );
+                        }
+                    } else {
+                        handleLastError(
+                            activeElement.elementName +
+                                ' : ' +
+                                intl.formatMessage({
+                                    id: 'nameAlreadyUsed',
                                 })
-                                .catch((message) => {
-                                    handleLastError(message);
-                                });
-                            break;
-                        case ElementType.FILTER:
-                            duplicateFilter(
-                                newItemName,
-                                activeElement.description,
-                                activeElement.elementUuid,
-                                selectedDirectory.elementUuid
-                            )
-                                .then(() => {
-                                    handleCloseDialog();
-                                })
-                                .catch((message) => {
-                                    handleLastError(message);
-                                });
-                            break;
-                        default:
-                            handleLastError(
-                                intl.formatMessage({ id: 'unsuportedItem' })
-                            );
+                        );
                     }
-                } else {
+                })
+                .catch((error) => {
                     handleLastError(
-                        activeElement.elementName +
-                            ' : ' +
-                            intl.formatMessage({
-                                id: 'nameAlreadyUsed',
-                            })
+                        intl.formatMessage(
+                            { id: 'duplicateElementFailure' },
+                            {
+                                itemName: activeElement.elementName,
+                                errorMessage: error,
+                            }
+                        )
                     );
-                }
-            });
+                });
         }
     };
 
