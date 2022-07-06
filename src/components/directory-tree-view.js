@@ -66,8 +66,7 @@ const useStyles = makeStyles((theme) => ({
     },
     treeItemLabelText: {
         fontWeight: 'inherit',
-        flexGrow: 0,
-        marginRight: '5px',
+        flexGrow: 1,
     },
     icon: {
         marginRight: theme.spacing(1),
