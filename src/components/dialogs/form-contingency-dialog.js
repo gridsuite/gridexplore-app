@@ -22,8 +22,6 @@ import {
 import { ContingencyListType } from '../../utils/elementType';
 
 const emptyFormContingency = {
-    equipmentID: '*',
-    equipmentName: '*',
     equipmentType: EquipmentTypes.LINE,
     nominalVoltageOperator: '=',
     nominalVoltage: '',
@@ -33,7 +31,7 @@ const emptyFormContingency = {
 const useStyles = makeStyles(() => ({
     dialogPaper: {
         minWidth: '600px',
-        minHeight: '450px',
+        minHeight: '400px',
         margin: 'auto',
     },
 }));
@@ -105,10 +103,6 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
     function onChangeFiltersContingency(newFiltersContingency) {
         if (currentFormContingency !== null) {
             if (
-                newFiltersContingency.equipmentID !==
-                    currentFormContingency.equipmentID ||
-                newFiltersContingency.equipmentName !==
-                    currentFormContingency.equipmentName ||
                 newFiltersContingency.equipmentType !==
                     currentFormContingency.equipmentType ||
                 newFiltersContingency.nominalVoltageOperator !==

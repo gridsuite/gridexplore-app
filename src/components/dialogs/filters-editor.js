@@ -53,8 +53,6 @@ const FiltersEditor = ({ filters, onChange }) => {
 
     function handleOperator(event) {
         onChange({
-            equipmentID: filters.equipmentID,
-            equipmentName: filters.equipmentName,
             equipmentType: filters.equipmentType,
             nominalVoltageOperator: event.target.value,
             nominalVoltage: filters.nominalVoltage,
@@ -64,8 +62,6 @@ const FiltersEditor = ({ filters, onChange }) => {
 
     function handleEquipmentType(event) {
         onChange({
-            equipmentID: filters.equipmentID,
-            equipmentName: filters.equipmentName,
             equipmentType: event.target.value,
             nominalVoltageOperator: filters.nominalVoltageOperator,
             nominalVoltage: filters.nominalVoltage,
@@ -75,8 +71,6 @@ const FiltersEditor = ({ filters, onChange }) => {
 
     function handleCountrySelection(newValue) {
         onChange({
-            equipmentID: filters.equipmentID,
-            equipmentName: filters.equipmentName,
             equipmentType: filters.equipmentType,
             nominalVoltageOperator: filters.nominalVoltageOperator,
             nominalVoltage: filters.nominalVoltage,
@@ -84,32 +78,8 @@ const FiltersEditor = ({ filters, onChange }) => {
         });
     }
 
-    function handleEquipmentID(event) {
-        onChange({
-            equipmentID: event.target.value,
-            equipmentName: filters.equipmentName,
-            equipmentType: filters.equipmentType,
-            nominalVoltageOperator: filters.nominalVoltageOperator,
-            nominalVoltage: filters.nominalVoltage,
-            countries: filters.countries,
-        });
-    }
-
-    function handleEquipmentName(event) {
-        onChange({
-            equipmentID: filters.equipmentID,
-            equipmentName: event.target.value,
-            equipmentType: filters.equipmentType,
-            nominalVoltageOperator: filters.nominalVoltageOperator,
-            nominalVoltage: filters.nominalVoltage,
-            countries: filters.countries,
-        });
-    }
-
     function handleNominalVoltage(event) {
         onChange({
-            equipmentID: filters.equipmentID,
-            equipmentName: filters.equipmentName,
             equipmentType: filters.equipmentType,
             nominalVoltageOperator: filters.nominalVoltageOperator,
             nominalVoltage: event.target.value,
@@ -121,18 +91,6 @@ const FiltersEditor = ({ filters, onChange }) => {
 
     return (
         <>
-            <CustomTextField
-                margin="dense"
-                label={<FormattedMessage id="equipmentID" />}
-                onChange={handleEquipmentID}
-                value={filters.equipmentID}
-            />
-            <CustomTextField
-                margin="dense"
-                label={<FormattedMessage id="equipmentName" />}
-                onChange={handleEquipmentName}
-                value={filters.equipmentName}
-            />
             <FormControl fullWidth margin="dense">
                 <InputLabel className={classes.inputLegend}>
                     <FormattedMessage id="nominalVoltage" />
