@@ -18,6 +18,7 @@ export const UploadCase = () => {
     const handleFileUpload = (e) => {
         e.preventDefault();
         let files = e.target.files;
+        if (files.size === 0) dispatch(selectFile(null));
         dispatch(selectFile(files[0]));
     };
 
@@ -42,7 +43,7 @@ export const UploadCase = () => {
                     </th>
                     <th>
                         <p>
-                            {selectedFile === null ? (
+                            {selectedFile?.name === undefined ? (
                                 <FormattedMessage id="uploadMessage" />
                             ) : (
                                 selectedFile.name
