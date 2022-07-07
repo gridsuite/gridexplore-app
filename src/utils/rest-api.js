@@ -40,11 +40,8 @@ export function connectNotificationsWsUpdateConfig() {
         '/notify?appName=' +
         APP_NAME;
 
-    let webSocketUrlWithToken;
-    webSocketUrlWithToken = webSocketUrl + '&access_token=' + getToken();
-
     const reconnectingWebSocket = new ReconnectingWebSocket(
-        webSocketUrlWithToken
+        () => webSocketUrl + '&access_token=' + getToken()
     );
     reconnectingWebSocket.onopen = function (event) {
         console.info(
@@ -648,11 +645,8 @@ export function connectNotificationsWsUpdateStudies() {
         PREFIX_NOTIFICATION_WS +
         '/notify?updateType=directories';
 
-    let webSocketUrlWithToken;
-    webSocketUrlWithToken = webSocketUrl + '&access_token=' + getToken();
-
     const reconnectingWebSocket = new ReconnectingWebSocket(
-        webSocketUrlWithToken
+        () => webSocketUrl + '&access_token=' + getToken()
     );
     reconnectingWebSocket.onopen = function (event) {
         console.info(
