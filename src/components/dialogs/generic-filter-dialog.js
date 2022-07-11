@@ -561,7 +561,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
                     variant="outlined"
                     disabled={btnSaveListDisabled}
                 >
-                    <FormattedMessage id="save" />
+                    <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
         </Dialog>
