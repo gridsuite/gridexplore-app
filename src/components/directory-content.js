@@ -353,25 +353,14 @@ const DirectoryContent = () => {
             return <PhotoIcon className={classes.icon} />;
         }
     }
-    const uploadingElements = useSelector((state) => state.uploadingElements);
 
     const getDisplayedElementName = (cellData) => {
         const { elementName, uploading, elementUuid } = cellData.rowData;
         const formatMessage = intl.formatMessage;
-        var myData = Object.keys(uploadingElements).map((key) => {
-            return uploadingElements[key];
-        });
-        const foundUpload = myData.some(
-            (element) =>
-                element.elementName === elementName && element.uploading
-        );
-        if (foundUpload) {
-            console.log('uploading', uploading);
+        if (uploading) {
             return elementName + ' ' + formatMessage({ id: 'uploading' });
         }
         if (!childrenMetadata[elementUuid]) {
-            console.log('creationInProgress');
-
             return (
                 elementName + ' ' + formatMessage({ id: 'creationInProgress' })
             );
@@ -388,18 +377,10 @@ const DirectoryContent = () => {
     const nameCellRender = (cellData) => {
         const elementUuid = cellData.rowData['elementUuid'];
         const objectType = cellData.rowData['type'];
-        const name = cellData.rowData['elementName'];
-        var myData = Object.keys(uploadingElements).map((key) => {
-            return uploadingElements[key];
-        });
-
-        const foundUpload = myData.some(
-            (element) => element.elementName === name && element.uploading
-        );
         return (
             <div className={classes.cell}>
                 {/*  Icon */}
-                {(!childrenMetadata[elementUuid] || foundUpload) &&
+                {!childrenMetadata[elementUuid] &&
                     isElementCaseOrStudy(objectType) && (
                         <CircularProgress
                             size={18}
@@ -581,14 +562,12 @@ const DirectoryContent = () => {
     };
 
     const getCurrentChildrenWithNotClickableRows = () => {
-        return currentChildren
-            .filter((c) => c.elementUuid)
-            .map((child) => {
-                return {
-                    ...child,
-                    notClickable: child.type === ElementType.CASE,
-                };
-            });
+        return currentChildren.map((child) => {
+            return {
+                ...child,
+                notClickable: child.type === ElementType.CASE,
+            };
+        });
     };
 
     const renderLoadingContent = () => {
