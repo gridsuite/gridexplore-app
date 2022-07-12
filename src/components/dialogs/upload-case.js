@@ -19,7 +19,7 @@ export const UploadCase = () => {
         e.preventDefault();
         let files = e.target.files;
         if (files.size === 0) dispatch(selectFile(null));
-        dispatch(selectFile(files[0]));
+        else dispatch(selectFile(files[0]));
     };
 
     return (
