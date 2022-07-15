@@ -42,7 +42,7 @@
     "ImportNewCase": "Upload a case",
     "caseCreationError": "An error occurred while creating the case: {name}",
     "CASE": "Case",
-    "validate": "validate",
+    "validate": "Validate",
 
     "nameAlreadyUsed": "This name is already used",
 
