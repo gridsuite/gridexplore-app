@@ -480,7 +480,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         disabled={!isCreationAllowed()}
                         variant="outlined"
                     >
-                        <FormattedMessage id="create" />
+                        <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -278,7 +278,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                             loadingCheckContingencyName
                         }
                     >
-                        <FormattedMessage id="create" />
+                        <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
             </Dialog>

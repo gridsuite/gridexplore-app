@@ -110,7 +110,7 @@ const RenameDialog = ({
                     disabled={!canRename()}
                     variant="outlined"
                 >
-                    <FormattedMessage id="rename" />
+                    <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
         </Dialog>
