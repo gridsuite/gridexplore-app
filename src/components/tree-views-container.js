@@ -352,11 +352,24 @@ const TreeViewsContainer = () => {
                     e.directory === selectedDirectoryRef.current.elementUuid &&
                     current[e.elementName] === undefined
             );
-
             if (elementsToMerge != null && elementsToMerge.length > 0) {
-                return [...current, ...elementsToMerge].sort(function (a, b) {
-                    return a.elementName.localeCompare(b.elementName);
-                });
+                // We need to filter current array of elements in elementsToMerge to avoid duplicates in the directoryContent component.
+                // An uploading element doesn't have an elementUuid yet, then we filter on element Name and type.
+                const filtredCurrentElements = current.filter(
+                    (el) =>
+                        !elementsToMerge.some(
+                            (e) =>
+                                (e.elementName === el.elementName &&
+                                    e.type === el.type) ||
+                                e.elementUuid
+                        )
+                );
+
+                return [...filtredCurrentElements, ...elementsToMerge].sort(
+                    function (a, b) {
+                        return a.elementName.localeCompare(b.elementName);
+                    }
+                );
             } else {
                 if (current == null) {
                     return null;
