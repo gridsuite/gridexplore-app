@@ -130,7 +130,7 @@ export function CreateCaseDialog({ onClose, open }) {
                     disabled={!validate()}
                     variant="outlined"
                 >
-                    <FormattedMessage id="CaseValidate" />
+                    <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
         </Dialog>

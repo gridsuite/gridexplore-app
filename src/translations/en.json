@@ -32,10 +32,6 @@
 
     "uploadMessage": " No file selected",
     "cancel": "CANCEL",
-    "create": "CREATE",
-    "save": "SAVE",
-    "replace": "REPLACE",
-    "copy": "COPY",
 
     "creationInProgress": "creation in progress",
     "uploading": "upload in progress",
@@ -46,7 +42,7 @@
     "ImportNewCase": "Upload a case",
     "caseCreationError": "An error occurred while creating the case: {name}",
     "CASE": "Case",
-    "CaseValidate": "Add",
+    "validate": "Validate",
 
     "nameAlreadyUsed": "This name is already used",
 

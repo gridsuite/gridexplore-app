@@ -145,7 +145,7 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
                     onClick={handleClick}
                     variant="outlined"
                 >
-                    <FormattedMessage id="save" />
+                    <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
         </Dialog>
