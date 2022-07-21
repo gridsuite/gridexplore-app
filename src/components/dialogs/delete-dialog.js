@@ -159,7 +159,11 @@ const DeleteDialog = ({
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} variant="outlined">
+                <Button
+                    onClick={handleClose}
+                    variant="outlined"
+                    disabled={loadingState}
+                >
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button onClick={handleClick} disabled={loadingState}>
