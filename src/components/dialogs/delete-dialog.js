@@ -16,6 +16,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { Tooltip } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
+import { OverflowableText } from '@gridsuite/commons-ui';
+import { makeStyles } from '@mui/styles';
 
 /**
  * Dialog to delete an element
@@ -27,7 +29,11 @@ import CircularProgress from '@mui/material/CircularProgress';
  * @param {String} simpleDeleteFormatMessageId Format message id for simple delete
  * @param {String} error Error message
  */
-
+const useStyles = makeStyles((theme) => ({
+    tooltip: {
+        maxWidth: '1000px',
+    },
+}));
 const DeleteDialog = ({
     open,
     onClose,
@@ -38,6 +44,8 @@ const DeleteDialog = ({
     error,
 }) => {
     const intl = useIntl();
+
+    const classes = useStyles();
 
     const [itemsState, setItemState] = useState([]);
 
@@ -84,16 +92,11 @@ const DeleteDialog = ({
     };
     function elementName() {
         return (
-            <Tooltip title={items[0].elementName}>
-                <div
-                    style={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                    }}
-                >
-                    {items[0].elementName}
-                </div>
-            </Tooltip>
+            <OverflowableText
+                text={items[0].elementName}
+                style={{ width: '100%' }}
+                tooltipStyle={classes.tooltip}
+            />
         );
     }
 
@@ -128,17 +131,11 @@ const DeleteDialog = ({
                                         }}
                                     >
                                         {
-                                            <Tooltip title={file.elementName}>
-                                                <div
-                                                    style={{
-                                                        overflow: 'hidden',
-                                                        textOverflow:
-                                                            'ellipsis',
-                                                    }}
-                                                >
-                                                    {file.elementName}
-                                                </div>
-                                            </Tooltip>
+                                            <OverflowableText
+                                                text={file.elementName}
+                                                style={{ width: '100%' }}
+                                                tooltipStyle={classes.tooltip}
+                                            />
                                         }
                                     </div>
                                 }{' '}
