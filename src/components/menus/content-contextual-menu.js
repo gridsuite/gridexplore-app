@@ -186,6 +186,7 @@ const ContentContextualMenu = (props) => {
         onClose();
         setOpenDialog(DialogsId.NONE);
         setHideMenu(false);
+        setMultipleDeleteError('');
     }, [onClose, setOpenDialog]);
 
     const [multipleDeleteError, setMultipleDeleteError] = useState('');
@@ -301,6 +302,10 @@ const ContentContextualMenu = (props) => {
         false
     );
 
+    const isNotUploadingElement = useCallback(() => {
+        return selectedElements.every((el) => !el.uploading);
+    }, [selectedElements]);
+
     // Allowance
     const isUserAllowed = useCallback(() => {
         return selectedElements.every((el) => {
@@ -309,8 +314,8 @@ const ContentContextualMenu = (props) => {
     }, [selectedElements, userId]);
 
     const allowsDelete = useCallback(() => {
-        return isUserAllowed();
-    }, [isUserAllowed]);
+        return isUserAllowed() && isNotUploadingElement();
+    }, [isUserAllowed, isNotUploadingElement]);
 
     const allowsRename = useCallback(() => {
         return (
@@ -531,7 +536,9 @@ const ContentContextualMenu = (props) => {
 
         if (menuItems.length === 0) {
             menuItems.push({
-                messageDescriptorId: 'notElementCreator',
+                messageDescriptorId: isNotUploadingElement()
+                    ? 'notElementCreator'
+                    : 'uploadingElement',
                 icon: <DoNotDisturbAltIcon fontSize="small" />,
                 disabled: true,
             });
