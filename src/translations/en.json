@@ -22,6 +22,7 @@
     "deleteStudyError": "You are not the owner of this study",
     "deleteElementsFailure": "Problem encountered while deleting {stn, plural, one {an element} other {elements}}. Not deleted : {problematic}",
     "moveElementsFailure": "Problem encountered while moving {stn, plural, one {an element} other {elements}}. Not moved : {problematic}",
+    "duplicateElementFailure": "An error occured while duplicating the element {itemName} : {errorMessage}",
     "caseName": "case name",
     "uploadCase": "Upload case",
     "uploadErrorMsg": "Please upload the case file",
