@@ -82,7 +82,7 @@ const CopyToScriptDialog = ({
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button onClick={handleClick} variant="outlined">
-                    <FormattedMessage id="copy" />
+                    <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
         </Dialog>

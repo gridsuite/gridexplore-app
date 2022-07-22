@@ -494,8 +494,6 @@ export function createContingencyList(
         body.equipmentType = EquipmentTypes.LINE;
         body.nominalVoltage = -1;
         body.nominalVoltageOperator = '=';
-        body.equipmentID = '*';
-        body.equipmentName = '*';
     }
     return backendFetch(createContingencyListUrl, {
         method: 'post',

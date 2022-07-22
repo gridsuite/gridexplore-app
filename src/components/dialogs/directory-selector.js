@@ -20,6 +20,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function sortAlphabetically(a, b) {
+    return a.name.localeCompare(b.name);
+}
+
 const DirectorySelector = (props) => {
     const [data, setData] = useState([]);
     const nodeMap = useRef({});
@@ -72,6 +76,7 @@ const DirectorySelector = (props) => {
             onTreeBrowse={fetchDirectory}
             data={data}
             onlyLeaves={false}
+            sortMethod={sortAlphabetically}
             {...props}
         />
     );

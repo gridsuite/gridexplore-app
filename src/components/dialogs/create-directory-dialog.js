@@ -131,7 +131,7 @@ export const CreateDirectoryDialog = ({
                     onClick={handleClick}
                     variant="outlined"
                 >
-                    <FormattedMessage id="create" />
+                    <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
         </Dialog>

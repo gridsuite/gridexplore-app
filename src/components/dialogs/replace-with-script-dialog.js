@@ -52,7 +52,7 @@ const ReplaceWithScriptDialog = ({ id, open, onClose, onClick, title }) => {
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button onClick={handleClick}>
-                    <FormattedMessage id="replace" />
+                    <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
         </Dialog>
