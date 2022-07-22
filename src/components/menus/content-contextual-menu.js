@@ -186,7 +186,6 @@ const ContentContextualMenu = (props) => {
         onClose();
         setOpenDialog(DialogsId.NONE);
         setHideMenu(false);
-        setMultipleDeleteError('');
     }, [onClose, setOpenDialog]);
 
     const [multipleDeleteError, setMultipleDeleteError] = useState('');
