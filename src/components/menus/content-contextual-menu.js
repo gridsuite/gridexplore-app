@@ -92,6 +92,18 @@ const ContentContextualMenu = (props) => {
         setOpenDialog(dialogId);
     };
 
+    const handleDuplicateError = (error) => {
+        return handleLastError(
+            intl.formatMessage(
+                { id: 'duplicateElementFailure' },
+                {
+                    itemName: activeElement.elementName,
+                    errorMessage: error,
+                }
+            )
+        );
+    };
+
     const duplicateItem = () => {
         if (activeElement) {
             getNameCandidate(
@@ -113,7 +125,7 @@ const ContentContextualMenu = (props) => {
                                         handleCloseDialog();
                                     })
                                     .catch((message) => {
-                                        handleLastError(message);
+                                        handleDuplicateError(message);
                                     });
                                 break;
                             case ElementType.CONTINGENCY_LIST:
@@ -126,7 +138,7 @@ const ContentContextualMenu = (props) => {
                                             activeElement.elementUuid,
                                             selectedDirectory.elementUuid
                                         ).catch((message) => {
-                                            handleLastError(message);
+                                            handleDuplicateError(message);
                                         });
                                     })
                                     .catch((message) => {
@@ -148,7 +160,7 @@ const ContentContextualMenu = (props) => {
                                         handleCloseDialog();
                                     })
                                     .catch((message) => {
-                                        handleLastError(message);
+                                        handleDuplicateError(message);
                                     });
                                 break;
                             case ElementType.FILTER:
@@ -162,7 +174,7 @@ const ContentContextualMenu = (props) => {
                                         handleCloseDialog();
                                     })
                                     .catch((message) => {
-                                        handleLastError(message);
+                                        handleDuplicateError(message);
                                     });
                                 break;
                             default:
@@ -181,15 +193,7 @@ const ContentContextualMenu = (props) => {
                     }
                 })
                 .catch((error) => {
-                    handleLastError(
-                        intl.formatMessage(
-                            { id: 'duplicateElementFailure' },
-                            {
-                                itemName: activeElement.elementName,
-                                errorMessage: error,
-                            }
-                        )
-                    );
+                    handleDuplicateError(error);
                 });
         }
     };
