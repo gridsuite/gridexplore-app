@@ -45,6 +45,7 @@ import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 import PhotoIcon from '@mui/icons-material/Photo';
+import OverflowableText from './overflowable-text';
 
 const circularProgressSize = '70px';
 
@@ -61,6 +62,9 @@ const useStyles = makeStyles((theme) => ({
         flex: 1,
         height: '48px',
         padding: DEFAULT_CELL_PADDING,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        width: '100%',
     },
     chip: {
         cursor: 'pointer',
@@ -86,6 +90,10 @@ const useStyles = makeStyles((theme) => ({
     },
     centeredCircularProgress: {
         alignSelf: 'center',
+    },
+    cellTooltip: {
+        backgroundColor: 'red',
+        maxWidth: '',
     },
 }));
 
@@ -402,7 +410,11 @@ const DirectoryContent = () => {
                         childrenMetadata[elementUuid].subtype
                     )}
                 {/* Name */}
-                {<div>{getDisplayedElementName(cellData)}</div>}
+
+                <OverflowableText
+                    text={getDisplayedElementName(cellData)}
+                    tooltipStyle={classes.cellTooltip}
+                />
             </div>
         );
     };
@@ -632,6 +644,10 @@ const DirectoryContent = () => {
                                     }),
                                     dataKey: 'elementName',
                                     cellRenderer: nameCellRender,
+                                    style: {
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                    },
                                 },
                                 {
                                     width: 100,
