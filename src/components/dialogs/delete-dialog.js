@@ -14,7 +14,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
-import { Tooltip } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import { makeStyles } from '@mui/styles';
