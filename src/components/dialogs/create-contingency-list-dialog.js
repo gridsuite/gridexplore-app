@@ -246,7 +246,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                         name="gender1"
                         value={contingencyListType}
                         onChange={handleChangeContingencyListType}
-                        style={{ paddingBottom: '20px' }}
                         row
                     >
                         <FormControlLabel
@@ -279,7 +278,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                             loadingCheckContingencyName
                         }
                     >
-                        <FormattedMessage id="create" />
+                        <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
             </Dialog>

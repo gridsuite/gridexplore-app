@@ -40,11 +40,8 @@ export function connectNotificationsWsUpdateConfig() {
         '/notify?appName=' +
         APP_NAME;
 
-    let webSocketUrlWithToken;
-    webSocketUrlWithToken = webSocketUrl + '&access_token=' + getToken();
-
     const reconnectingWebSocket = new ReconnectingWebSocket(
-        webSocketUrlWithToken
+        () => webSocketUrl + '&access_token=' + getToken()
     );
     reconnectingWebSocket.onopen = function (event) {
         console.info(
@@ -429,6 +426,22 @@ export function elementExists(directoryUuid, elementName, type) {
     );
 }
 
+export function getNameCandidate(directoryUuid, elementName, type) {
+    const existsElementUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${directoryUuid}/${elementName}/newNameCandidate?type=${type}`;
+
+    console.debug(existsElementUrl);
+    return backendFetch(existsElementUrl, { method: 'GET' }).then(
+        (response) => {
+            return response.ok
+                ? response.text()
+                : response.status === 404
+                ? false
+                : Promise.reject(response.statusText);
+        }
+    );
+}
 export function rootDirectoryExists(directoryName) {
     const existsRootDirectoryUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
@@ -481,8 +494,6 @@ export function createContingencyList(
         body.equipmentType = EquipmentTypes.LINE;
         body.nominalVoltage = -1;
         body.nominalVoltageOperator = '=';
-        body.equipmentID = '*';
-        body.equipmentName = '*';
     }
     return backendFetch(createContingencyListUrl, {
         method: 'post',
@@ -632,11 +643,8 @@ export function connectNotificationsWsUpdateStudies() {
         PREFIX_NOTIFICATION_WS +
         '/notify?updateType=directories';
 
-    let webSocketUrlWithToken;
-    webSocketUrlWithToken = webSocketUrl + '&access_token=' + getToken();
-
     const reconnectingWebSocket = new ReconnectingWebSocket(
-        webSocketUrlWithToken
+        () => webSocketUrl + '&access_token=' + getToken()
     );
     reconnectingWebSocket.onopen = function (event) {
         console.info(

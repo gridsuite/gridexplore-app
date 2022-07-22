@@ -204,7 +204,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                     onClick={handleClick}
                     variant="outlined"
                 >
-                    <FormattedMessage id="save" />
+                    <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
         </Dialog>

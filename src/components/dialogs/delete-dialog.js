@@ -15,6 +15,8 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { Tooltip } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+
 /**
  * Dialog to delete an element
  * @param {Boolean} open Is the dialog open ?
@@ -39,11 +41,14 @@ const DeleteDialog = ({
 
     const [itemsState, setItemState] = useState([]);
 
+    const [loadingState, setLoadingState] = useState(false);
+
     const openRef = useRef(null);
 
     useEffect(() => {
         if (open && !openRef.current) {
             setItemState(items);
+            setLoadingState(false);
         }
         openRef.current = open;
     }, [open, items]);
@@ -54,6 +59,7 @@ const DeleteDialog = ({
 
     const handleClick = () => {
         console.debug('Request for deletion');
+        setLoadingState(true);
         onClick();
     };
 
@@ -192,11 +198,17 @@ const DeleteDialog = ({
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} variant="outlined">
+                <Button
+                    onClick={handleClose}
+                    variant="outlined"
+                    disabled={loadingState}
+                >
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleClick}>
-                    <FormattedMessage id="delete" />
+                <Button onClick={handleClick} disabled={loadingState}>
+                    {(loadingState && <CircularProgress size={24} />) || (
+                        <FormattedMessage id="delete" />
+                    )}
                 </Button>
             </DialogActions>
         </Dialog>

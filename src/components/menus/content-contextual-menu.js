@@ -30,7 +30,6 @@ import CreateStudyDialog from '../dialogs/create-study-dialog';
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
-    elementExists,
     duplicateCase,
     deleteElement,
     moveElementToDirectory,
@@ -43,6 +42,7 @@ import {
     duplicateContingencyList,
     fetchElementsInfos,
     duplicateStudy,
+    getNameCandidate,
 } from '../../utils/rest-api';
 
 import {
@@ -94,14 +94,12 @@ const ContentContextualMenu = (props) => {
 
     const duplicateItem = () => {
         if (activeElement) {
-            const duplicateSuffix = '(1)';
-            const newItemName = activeElement.elementName + duplicateSuffix;
-            elementExists(
+            getNameCandidate(
                 selectedDirectory.elementUuid,
-                newItemName,
+                activeElement.elementName,
                 activeElement.type
-            ).then((data) => {
-                if (!data) {
+            ).then((newItemName) => {
+                if (newItemName) {
                     switch (activeElement.type) {
                         case ElementType.CASE:
                             duplicateCase(
@@ -122,8 +120,7 @@ const ContentContextualMenu = (props) => {
                                 .then((res) => {
                                     duplicateContingencyList(
                                         res[0].specificMetadata.type,
-                                        activeElement.elementName +
-                                            duplicateSuffix,
+                                        newItemName,
                                         activeElement.description,
                                         activeElement.elementUuid,
                                         selectedDirectory.elementUuid
@@ -175,7 +172,6 @@ const ContentContextualMenu = (props) => {
                 } else {
                     handleLastError(
                         activeElement.elementName +
-                            duplicateSuffix +
                             ' : ' +
                             intl.formatMessage({
                                 id: 'nameAlreadyUsed',

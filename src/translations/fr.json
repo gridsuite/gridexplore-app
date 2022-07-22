@@ -32,10 +32,6 @@
 
     "uploadMessage": " Aucun fichier sélectionné",
     "cancel": "ANNULER",
-    "create": "CRÉER",
-    "save": "SAUVEGARDER",
-    "replace": "REMPLACER",
-    "copy": "COPIER",
 
     "creationInProgress": "création en cours",
     "uploading": "téléversement en cours",
@@ -46,7 +42,7 @@
     "ImportNewCase": "Importer une situation",
     "caseCreationError": "Une erreur est survenue lors de la création de la situation : {name}",
     "CASE": "Situation",
-    "CaseValidate": "Valider",
+    "validate": "Valider",
 
     "nameAlreadyUsed": "Ce nom est déjà utilisé",
 
@@ -89,7 +85,7 @@
     "renameDirectoryError": "Vous ne pouvez pas renommer un dossier qui ne vous appartient pas",
     "edit": "Modifier",
 
-    "createNewContingencyList": "Créer une nouvelle liste d'aléas",
+    "createNewContingencyList": "Créer une liste d'aléas",
     "elementNameErrorMsg": "Le nom de l'élément n'est pas renseigné",
     "SCRIPT": "Script",
     "FORM": "Formulaire",
@@ -97,10 +93,10 @@
     "editFilterScript": "Editer le script de filtre",
     "editFilter": "Editer le filtre",
     "STUDY": "Étude",
-    "SCRIPT_FILTER": "Filtre script",
-    "FORM_FILTER": "Filtre formulaire",
-    "SCRIPT_CONTINGENCY_LIST": "Liste d'aléas script",
-    "FORM_CONTINGENCY_LIST": "Liste d'aléas formulaire",
+    "SCRIPT_FILTER": "Filtre (script)",
+    "FORM_FILTER": "Filtre (formulaire)",
+    "SCRIPT_CONTINGENCY_LIST": "Liste d'aléas (script)",
+    "FORM_CONTINGENCY_LIST": "Liste d'aléas (formulaire)",
 
     "LINE": "LIGNE",
     "TWO_WINDINGS_TRANSFORMER": "TRANSFO 2E",
