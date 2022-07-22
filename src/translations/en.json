@@ -3,7 +3,7 @@
     "paramsChangingError": "An error occured when changing the parameters",
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
     "elementUuid": "Element Uuid",
-    "elementName": "Name",
+    "elementName": "Name", 
     "creator": "Creator",
     "type": "Type",
     "private": "private",
