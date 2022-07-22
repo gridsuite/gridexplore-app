@@ -240,11 +240,8 @@ const DirectoryContent = () => {
         if (selectedDirectory) {
             dispatch(setActiveDirectory(selectedDirectory.elementUuid));
         }
-        if (
-            event.rowData &&
-            event.rowData.uploading !== null &&
-            !event.rowData.uploading
-        ) {
+
+        if (event.rowData && event.rowData.uploading !== null) {
             if (event.rowData.type !== 'DIRECTORY') {
                 setActiveElement(event.rowData);
             }
