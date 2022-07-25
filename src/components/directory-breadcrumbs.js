@@ -16,6 +16,7 @@ import Typography from '@mui/material/Typography';
 import { emphasize } from '@mui/material/styles/';
 import makeStyles from '@mui/styles/makeStyles';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import { OverflowableText } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -57,6 +58,9 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0.5, 0, 0.5),
         marginLeft: theme.spacing(1),
     },
+    tooltip: {
+        maxWidth: '1000px',
+    },
 }));
 
 const DirectoryBreadcrumbs = () => {
@@ -95,7 +99,11 @@ const DirectoryBreadcrumbs = () => {
                         {index === 0 ? (
                             <FolderOpenIcon className={classes.icon} />
                         ) : null}
-                        {dir.elementName}
+
+                        <OverflowableText
+                            text={dir.elementName}
+                            tooltipStyle={classes.tooltip}
+                        />
                     </Link>
                 ));
         }
@@ -108,11 +116,19 @@ const DirectoryBreadcrumbs = () => {
             currentPath.length > 0
         ) {
             return (
-                <Typography className={classes.directory} color="textPrimary">
+                <Typography
+                    className={classes.directory}
+                    color="textPrimary"
+                    style={{ width: '68%' }}
+                >
                     {currentPath.length === 1 && (
                         <FolderOpenIcon className={classes.icon} />
                     )}
-                    {currentPath[currentPath.length - 1].elementName}
+
+                    <OverflowableText
+                        text={currentPath[currentPath.length - 1].elementName}
+                        tooltipStyle={classes.tooltip}
+                    />
                 </Typography>
             );
         }
