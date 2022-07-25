@@ -81,7 +81,13 @@ const DeleteDialog = ({
             ? intl.formatMessage(
                   { id: 'deleteItemDialogTitle' },
                   {
-                      itemName: elementName(),
+                      itemName: (
+                          <OverflowableText
+                              text={items[0].elementName}
+                              style={{ width: '100%' }}
+                              tooltipStyle={classes.tooltip}
+                          />
+                      ),
                   }
               )
             : intl.formatMessage(
@@ -89,15 +95,6 @@ const DeleteDialog = ({
                   { itemsCount: items.length }
               );
     };
-    function elementName() {
-        return (
-            <OverflowableText
-                text={items[0].elementName}
-                style={{ width: '100%' }}
-                tooltipStyle={classes.tooltip}
-            />
-        );
-    }
 
     const buildItemsToDeleteGrid = (
         items,
@@ -165,8 +162,15 @@ const DeleteDialog = ({
                                 {
                                     itemName: (
                                         <span style={{ fontWeight: 'bold' }}>
-                                            {items.length === 1 &&
-                                                elementName()}
+                                            {items.length === 1 && (
+                                                <OverflowableText
+                                                    text={items[0].elementName}
+                                                    style={{ width: '100%' }}
+                                                    tooltipStyle={
+                                                        classes.tooltip
+                                                    }
+                                                />
+                                            )}
                                         </span>
                                     ),
                                 }
