@@ -51,7 +51,14 @@ const DeleteDialog = ({
         openRef.current = open;
     }, [open, items]);
 
-    const handleClose = () => {
+    const handleClose = (_, reasonOfClose) => {
+        if (
+            reasonOfClose &&
+            reasonOfClose === 'backdropClick' &&
+            loadingState
+        ) {
+            return;
+        }
         onClose();
     };
 
