@@ -92,6 +92,24 @@ const FiltersEditor = ({ filters, onChange }) => {
     return (
         <>
             <FormControl fullWidth margin="dense">
+                <InputLabel>
+                    <FormattedMessage id="equipmentType" />
+                </InputLabel>
+                <Select
+                    style={{ width: '90%' }}
+                    id="demo-customized-select-native"
+                    label={<FormattedMessage id="equipmentType" />}
+                    value={filters.equipmentType}
+                    onChange={handleEquipmentType}
+                >
+                    {Object.values(EquipmentTypes).map((val) => (
+                        <MenuItem value={val} key={val}>
+                            {intl.formatMessage({ id: val })}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+            <FormControl fullWidth margin="dense">
                 <InputLabel className={classes.inputLegend}>
                     <FormattedMessage id="nominalVoltage" />
                 </InputLabel>
@@ -129,24 +147,6 @@ const FiltersEditor = ({ filters, onChange }) => {
                         />
                     </Grid>
                 </Grid>
-            </FormControl>
-            <FormControl fullWidth margin="dense">
-                <InputLabel>
-                    <FormattedMessage id="equipmentType" />
-                </InputLabel>
-                <Select
-                    style={{ width: '90%' }}
-                    id="demo-customized-select-native"
-                    label={<FormattedMessage id="equipmentType" />}
-                    value={filters.equipmentType}
-                    onChange={handleEquipmentType}
-                >
-                    {Object.values(EquipmentTypes).map((val) => (
-                        <MenuItem value={val} key={val}>
-                            {intl.formatMessage({ id: val })}
-                        </MenuItem>
-                    ))}
-                </Select>
             </FormControl>
 
             <FormControl fullWidth margin="dense">
