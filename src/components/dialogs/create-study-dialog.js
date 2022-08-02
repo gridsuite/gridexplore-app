@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
+import SettingsIcon from '@mui/icons-material/Settings';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -27,6 +28,7 @@ import {
     elementExists,
     fetchCases,
     fetchPath,
+    getCaseImportParameters,
 } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -49,13 +51,30 @@ import {
 import { ElementType } from '../../utils/elementType';
 import { useFileValue } from './field-hook';
 import { keyGenerator } from '../../utils/functions.js';
+import {
+    Autocomplete,
+    Checkbox,
+    Chip,
+    Grid,
+    List,
+    ListItem,
+    ListItemText,
+    Stack,
+    Switch,
+    Tooltip,
+    Typography,
+} from '@mui/material';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     addIcon: {
         fontSize: '64px',
     },
     addButtonArea: {
         height: '136px',
+    },
+    paramListItem: {
+        justifyContent: 'space-between',
+        gap: theme.spacing(2),
     },
 }));
 
@@ -116,6 +135,173 @@ const SelectCase = () => {
     );
 };
 
+function longestCommonPrefix(strs) {
+    if (!strs?.length) return '';
+    let prefix = strs.reduce((acc, str) =>
+        str.length < acc.length ? str : acc
+    );
+
+    for (let str of strs) {
+        while (str.slice(0, prefix.length) !== prefix) {
+            prefix = prefix.slice(0, -1);
+        }
+    }
+    return prefix;
+}
+
+const useMeta = (metasAsArray) => {
+    const classes = useStyles();
+    const longestPrefix = longestCommonPrefix(metasAsArray.map((m) => m.name));
+    const lastDotIndex = longestPrefix.lastIndexOf('.');
+    const prefix = longestPrefix.slice(0, lastDotIndex + 1);
+
+    const defaultInst = useMemo(() => {
+        return Object.fromEntries(
+            metasAsArray.map((m) => {
+                if (m.type === 'BOOLEAN') return [m.name, m.defaultValue];
+                if (m.type === 'STRING_LIST')
+                    return [m.name, m.defaultValue ?? []];
+                return [m.name, m.defaultValue ?? null];
+            })
+        );
+    }, [metasAsArray]);
+    const [inst, setInst] = useState(defaultInst);
+
+    const onBoolChange = (value, paramName) => {
+        setInst((prevInst) => {
+            const nextInst = { ...prevInst };
+            nextInst[paramName] = value;
+            return nextInst;
+        });
+    };
+
+    const onFieldChange = (value, paramName) => {
+        setInst((prevInst) => {
+            const nextInst = { ...prevInst };
+            nextInst[paramName] = value;
+            console.log('CHANGEMENT VALUE ', prevInst, ' => ', nextInst);
+            return nextInst;
+        });
+    };
+
+    const onSelectChange = (value, paramName) => {
+        setInst((prevInst) => {
+            const nextInst = { ...prevInst };
+            nextInst[paramName] = value;
+            console.log('CHANGEMENT VALUE ', prevInst, ' => ', nextInst);
+
+            return nextInst;
+        });
+    };
+
+    const renderField = (meta) => {
+        console.log(meta, inst, defaultInst);
+        switch (meta.type) {
+            case 'BOOLEAN':
+                return (
+                    <Switch
+                        checked={inst?.[meta.name] ?? defaultInst[meta.name]}
+                        onChange={(e) =>
+                            onBoolChange(e.target.value, meta.name)
+                        }
+                    />
+                );
+            case 'STRING_LIST':
+                if (!meta.possibleValues) {
+                    return (
+                        <Autocomplete
+                            fullWidth
+                            multiple
+                            options={[]}
+                            freeSolo
+                            onChange={(e, value) =>
+                                onSelectChange(value, meta.name)
+                            }
+                            value={inst?.[meta.name] ?? defaultInst[meta.name]}
+                            renderTags={(value, getTagProps) =>
+                                value.map((option, index) => (
+                                    <Chip
+                                        variant="outlined"
+                                        label={option}
+                                        {...getTagProps({ index })}
+                                    />
+                                ))
+                            }
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Champ multivalué"
+                                    variant="standard"
+                                />
+                            )}
+                        />
+                    );
+                }
+                return (
+                    <FormControl fullWidth>
+                        <InputLabel>Select values</InputLabel>
+                        <Select
+                            multiple
+                            value={inst?.[meta.name] ?? defaultInst[meta.name]}
+                            label={'Select values'}
+                            onChange={(e) =>
+                                onSelectChange(e.target.value, meta.name)
+                            }
+                            defaultChecked={defaultInst[meta.name]}
+                            renderValue={(selected) => selected.join(', ')}
+                        >
+                            {meta.possibleValues.map((name) => (
+                                <MenuItem key={name} value={name}>
+                                    <Checkbox
+                                        checked={
+                                            inst?.[meta.name]?.indexOf(name) >
+                                            -1
+                                        }
+                                    />
+                                    <ListItemText primary={name} />
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                );
+            default:
+                return (
+                    <TextField
+                        fullWidth
+                        defaultValue={
+                            inst?.[meta.name] ?? defaultInst[meta.name]
+                        }
+                        onChange={(e) =>
+                            onFieldChange(e.target.value, meta.name)
+                        }
+                        variant={'standard'}
+                    />
+                );
+        }
+    };
+
+    const comp = (
+        <List>
+            {metasAsArray.map((meta) => (
+                <Tooltip
+                    title={meta.description}
+                    enterDelay={1200}
+                    key={meta.name}
+                >
+                    <ListItem key={meta.name} className={classes.paramListItem}>
+                        <Typography style={{ minWidth: '30%' }}>
+                            {meta.name.slice(prefix.length)}
+                        </Typography>
+                        {renderField(meta)}
+                    </ListItem>
+                </Tooltip>
+            ))}
+        </List>
+    );
+
+    return [inst, comp];
+};
+
 /**
  * Dialog to create a study
  * @param {Boolean} open Is the dialog open ?
@@ -151,7 +337,15 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
 
+    const [formatWithParameters, setFormatWithParameters] = useState([]);
+
     const [triggerReset, setTriggerReset] = React.useState(true);
+
+    const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
+
+    const handleShowParametersClick = () => {
+        setIsParamsDisplayed((oldValue) => !oldValue);
+    };
 
     //Inits the dialog
     useEffect(() => {
@@ -159,6 +353,12 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             setStudyName(providedCase?.elementName);
             setCaseExist(true);
             dispatch(selectCase(providedCase?.elementUuid));
+            getCaseImportParameters(providedCase?.elementUuid).then(
+                (parameters) => {
+                    console.log('PARAMETERES FOUND ', parameters);
+                    setFormatWithParameters(parameters);
+                }
+            );
         }
     }, [open, dispatch, selectedDirectory?.elementName, providedCase]);
 
@@ -192,6 +392,26 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const handleStudyNameChanges = (e) => {
         const name = e.target.value;
         setStudyName(name);
+    };
+
+    const MakeAdvancedParameterButton = (showOpenIcon, label, callback) => {
+        return (
+            <>
+                <Grid item xs={12} className={classes.advancedParameterButton}>
+                    <Button
+                        startIcon={<SettingsIcon />}
+                        endIcon={
+                            showOpenIcon && (
+                                <CheckIcon style={{ color: 'green' }} />
+                            )
+                        }
+                        onClick={callback}
+                    >
+                        <FormattedMessage id={label} />
+                    </Button>
+                </Grid>
+            </>
+        );
     };
 
     useEffect(() => {
@@ -319,6 +539,8 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             setCreateStudyErr(intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
         }
+        console.log('CREATING STUDY ', currentParameters);
+
         const uploadingStudy = {
             id: keyGenerator(),
             elementName: studyName,
@@ -333,7 +555,8 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             studyDescription,
             caseName,
             selectedFile,
-            activeDirectory
+            activeDirectory,
+            currentParameters ? JSON.stringify(currentParameters) : ''
         )
             .then()
             .catch((message) => {
@@ -369,6 +592,9 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             (!providedCase && !isSelectedFileOk)
         );
     };
+
+    const metasAsArray = formatWithParameters?.parameters || [];
+    const [currentParameters, paramsComponent] = useMeta(metasAsArray);
 
     return (
         <div>
@@ -415,47 +641,72 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                             FileField
                         )
                     ) : (
-                        <div
-                            style={{
-                                marginTop: '10px',
-                            }}
-                        >
-                            <Button
-                                onClick={handleSelectFolder}
-                                variant="contained"
+                        <>
+                            <div
                                 style={{
-                                    paddingLeft: '30px',
-                                    paddingRight: '30px',
-                                }}
-                                color="primary"
-                                component="label"
-                            >
-                                <FormattedMessage id="showSelectDirectoryDialog" />
-                            </Button>
-                            <span
-                                style={{
-                                    marginLeft: '10px',
-                                    fontWeight: 'bold',
+                                    marginTop: '10px',
                                 }}
                             >
-                                {activeDirectoryName}
-                            </span>
+                                <Button
+                                    onClick={handleSelectFolder}
+                                    variant="contained"
+                                    style={{
+                                        paddingLeft: '30px',
+                                        paddingRight: '30px',
+                                    }}
+                                    color="primary"
+                                    component="label"
+                                >
+                                    <FormattedMessage id="showSelectDirectoryDialog" />
+                                </Button>
+                                <span
+                                    style={{
+                                        marginLeft: '10px',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    {activeDirectoryName}
+                                </span>
 
-                            <DirectorySelector
-                                open={folderSelectorOpen}
-                                onClose={handleSelectedDirectoryToCreateStudy}
-                                types={[ElementType.DIRECTORY]}
-                                title={intl.formatMessage({
-                                    id: 'selectDirectoryDialogTitle',
-                                })}
-                                validationButtonText={intl.formatMessage({
-                                    id: 'confirmDirectoryDialog',
-                                })}
-                                contentText={intl.formatMessage({
-                                    id: 'moveItemContentText',
-                                })}
-                            />
-                        </div>
+                                <DirectorySelector
+                                    open={folderSelectorOpen}
+                                    onClose={
+                                        handleSelectedDirectoryToCreateStudy
+                                    }
+                                    types={[ElementType.DIRECTORY]}
+                                    title={intl.formatMessage({
+                                        id: 'selectDirectoryDialogTitle',
+                                    })}
+                                    validationButtonText={intl.formatMessage({
+                                        id: 'confirmDirectoryDialog',
+                                    })}
+                                    contentText={intl.formatMessage({
+                                        id: 'moveItemContentText',
+                                    })}
+                                />
+                            </div>
+                            {metasAsArray.length > 0 && (
+                                <div
+                                    style={{
+                                        marginTop: '10px',
+                                    }}
+                                >
+                                    <Stack
+                                        marginTop="0.7em"
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center"
+                                    >
+                                        {MakeAdvancedParameterButton(
+                                            isParamsDisplayed,
+                                            'Paramètres',
+                                            handleShowParametersClick
+                                        )}
+                                    </Stack>
+                                    {isParamsDisplayed && paramsComponent}
+                                </div>
+                            )}
+                        </>
                     )}
                     {createStudyErr !== '' && (
                         <Alert
