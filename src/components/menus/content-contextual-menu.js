@@ -301,6 +301,10 @@ const ContentContextualMenu = (props) => {
         false
     );
 
+    const isNotUploadingElement = useCallback(() => {
+        return selectedElements.every((el) => !el.uploading);
+    }, [selectedElements]);
+
     // Allowance
     const isUserAllowed = useCallback(() => {
         return selectedElements.every((el) => {
@@ -309,17 +313,22 @@ const ContentContextualMenu = (props) => {
     }, [selectedElements, userId]);
 
     const allowsDelete = useCallback(() => {
-        return isUserAllowed();
-    }, [isUserAllowed]);
+        return isUserAllowed() && isNotUploadingElement();
+    }, [isUserAllowed, isNotUploadingElement]);
 
     const allowsRename = useCallback(() => {
-        return selectedElements.length === 1 && isUserAllowed();
+        return (
+            selectedElements.length === 1 &&
+            isUserAllowed() &&
+            !selectedElements[0].uploading
+        );
     }, [isUserAllowed, selectedElements]);
 
     const allowsMove = useCallback(() => {
         return (
             selectedElements.every(
-                (element) => element.type !== ElementType.DIRECTORY
+                (element) =>
+                    element.type !== ElementType.DIRECTORY && !element.uploading
             ) && isUserAllowed()
         );
     }, [isUserAllowed, selectedElements]);
@@ -330,14 +339,16 @@ const ContentContextualMenu = (props) => {
             (selectedElements[0].type === ElementType.CASE ||
                 selectedElements[0].type === ElementType.STUDY ||
                 selectedElements[0].type === ElementType.CONTINGENCY_LIST ||
-                selectedElements[0].type === ElementType.FILTER)
+                selectedElements[0].type === ElementType.FILTER) &&
+            !selectedElements[0].uploading
         );
     }, [selectedElements]);
 
     const allowsCreateNewStudyFromCase = useCallback(() => {
         return (
             selectedElements.length === 1 &&
-            selectedElements[0].type === ElementType.CASE
+            selectedElements[0].type === ElementType.CASE &&
+            !selectedElements[0].uploading
         );
     }, [selectedElements]);
 
@@ -524,7 +535,9 @@ const ContentContextualMenu = (props) => {
 
         if (menuItems.length === 0) {
             menuItems.push({
-                messageDescriptorId: 'notElementCreator',
+                messageDescriptorId: isNotUploadingElement()
+                    ? 'notElementCreator'
+                    : 'uploadingElement',
                 icon: <DoNotDisturbAltIcon fontSize="small" />,
                 disabled: true,
             });
