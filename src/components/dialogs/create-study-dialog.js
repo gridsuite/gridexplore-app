@@ -55,6 +55,7 @@ import {
     Autocomplete,
     Checkbox,
     Chip,
+    Divider,
     Grid,
     List,
     ListItem,
@@ -75,6 +76,9 @@ const useStyles = makeStyles((theme) => ({
     paramListItem: {
         justifyContent: 'space-between',
         gap: theme.spacing(2),
+    },
+    paramDivider: {
+        marginTop: theme.spacing(2),
     },
 }));
 
@@ -179,23 +183,11 @@ const useMeta = (metasAsArray) => {
         setInst((prevInst) => {
             const nextInst = { ...prevInst };
             nextInst[paramName] = value;
-            console.log('CHANGEMENT VALUE ', prevInst, ' => ', nextInst);
-            return nextInst;
-        });
-    };
-
-    const onSelectChange = (value, paramName) => {
-        setInst((prevInst) => {
-            const nextInst = { ...prevInst };
-            nextInst[paramName] = value;
-            console.log('CHANGEMENT VALUE ', prevInst, ' => ', nextInst);
-
             return nextInst;
         });
     };
 
     const renderField = (meta) => {
-        console.log(meta, inst, defaultInst);
         switch (meta.type) {
             case 'BOOLEAN':
                 return (
@@ -215,7 +207,7 @@ const useMeta = (metasAsArray) => {
                             options={[]}
                             freeSolo
                             onChange={(e, value) =>
-                                onSelectChange(value, meta.name)
+                                onFieldChange(value, meta.name)
                             }
                             value={inst?.[meta.name] ?? defaultInst[meta.name]}
                             renderTags={(value, getTagProps) =>
@@ -245,7 +237,7 @@ const useMeta = (metasAsArray) => {
                             value={inst?.[meta.name] ?? defaultInst[meta.name]}
                             label={'Select values'}
                             onChange={(e) =>
-                                onSelectChange(e.target.value, meta.name)
+                                onFieldChange(e.target.value, meta.name)
                             }
                             defaultChecked={defaultInst[meta.name]}
                             renderValue={(selected) => selected.join(', ')}
@@ -354,9 +346,17 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             setCaseExist(true);
             dispatch(selectCase(providedCase?.elementUuid));
             getCaseImportParameters(providedCase?.elementUuid).then(
-                (parameters) => {
-                    console.log('PARAMETERES FOUND ', parameters);
-                    setFormatWithParameters(parameters);
+                (result) => {
+                    // sort possible values alphabetically to display select options sorted
+                    result.parameters = result.parameters.map((p) => {
+                        let sortedPossibleValue = p.possibleValues?.sort(
+                            (a, b) => a.localeCompare(b)
+                        );
+                        p.possibleValues = sortedPossibleValue;
+                        return p;
+                    });
+
+                    setFormatWithParameters(result);
                 }
             );
         }
@@ -539,7 +539,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             setCreateStudyErr(intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
         }
-        console.log('CREATING STUDY ', currentParameters);
 
         const uploadingStudy = {
             id: keyGenerator(),
@@ -686,25 +685,30 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                                 />
                             </div>
                             {metasAsArray.length > 0 && (
-                                <div
-                                    style={{
-                                        marginTop: '10px',
-                                    }}
-                                >
-                                    <Stack
-                                        marginTop="0.7em"
-                                        direction="row"
-                                        justifyContent="space-between"
-                                        alignItems="center"
+                                <>
+                                    <Divider className={classes.paramDivider} />
+                                    <div
+                                        style={{
+                                            marginTop: '10px',
+                                        }}
                                     >
-                                        {MakeAdvancedParameterButton(
-                                            isParamsDisplayed,
-                                            'Paramètres',
-                                            handleShowParametersClick
-                                        )}
-                                    </Stack>
-                                    {isParamsDisplayed && paramsComponent}
-                                </div>
+                                        <Stack
+                                            marginTop="0.7em"
+                                            direction="row"
+                                            justifyContent="space-between"
+                                            alignItems="center"
+                                        >
+                                            {MakeAdvancedParameterButton(
+                                                isParamsDisplayed,
+                                                intl.formatMessage({
+                                                    id: 'importParameters',
+                                                }),
+                                                handleShowParametersClick
+                                            )}
+                                        </Stack>
+                                        {isParamsDisplayed && paramsComponent}
+                                    </div>
+                                </>
                             )}
                         </>
                     )}

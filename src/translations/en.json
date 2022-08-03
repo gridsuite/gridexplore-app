@@ -41,6 +41,7 @@
 
     "ImportNewCase": "Upload a case",
     "caseCreationError": "An error occurred while creating the case: {name}",
+    "importParameters": "Import parameters",
     "CASE": "Case",
     "validate": "Validate",
 
