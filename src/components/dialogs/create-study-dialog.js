@@ -53,13 +53,11 @@ import { useFileValue } from './field-hook';
 import { keyGenerator } from '../../utils/functions.js';
 import {
     Autocomplete,
-    Checkbox,
     Chip,
     Divider,
     Grid,
     List,
     ListItem,
-    ListItemText,
     Stack,
     Switch,
     Tooltip,
@@ -194,67 +192,32 @@ const useMeta = (metasAsArray) => {
                     <Switch
                         checked={inst?.[meta.name] ?? defaultInst[meta.name]}
                         onChange={(e) =>
-                            onBoolChange(e.target.value, meta.name)
+                            onBoolChange(e.target.checked, meta.name)
                         }
                     />
                 );
             case 'STRING_LIST':
-                if (!meta.possibleValues) {
-                    return (
-                        <Autocomplete
-                            fullWidth
-                            multiple
-                            options={[]}
-                            freeSolo
-                            onChange={(e, value) =>
-                                onFieldChange(value, meta.name)
-                            }
-                            value={inst?.[meta.name] ?? defaultInst[meta.name]}
-                            renderTags={(value, getTagProps) =>
-                                value.map((option, index) => (
-                                    <Chip
-                                        variant="outlined"
-                                        label={option}
-                                        {...getTagProps({ index })}
-                                    />
-                                ))
-                            }
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Champ multivalué"
-                                    variant="standard"
-                                />
-                            )}
-                        />
-                    );
-                }
                 return (
-                    <FormControl fullWidth>
-                        <InputLabel>Select values</InputLabel>
-                        <Select
-                            multiple
-                            value={inst?.[meta.name] ?? defaultInst[meta.name]}
-                            label={'Select values'}
-                            onChange={(e) =>
-                                onFieldChange(e.target.value, meta.name)
-                            }
-                            defaultChecked={defaultInst[meta.name]}
-                            renderValue={(selected) => selected.join(', ')}
-                        >
-                            {meta.possibleValues.map((name) => (
-                                <MenuItem key={name} value={name}>
-                                    <Checkbox
-                                        checked={
-                                            inst?.[meta.name]?.indexOf(name) >
-                                            -1
-                                        }
-                                    />
-                                    <ListItemText primary={name} />
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    <Autocomplete
+                        fullWidth
+                        multiple
+                        options={meta.possibleValues ?? []}
+                        freeSolo={!meta.possibleValues}
+                        onChange={(e, value) => onFieldChange(value, meta.name)}
+                        value={inst?.[meta.name] ?? defaultInst[meta.name]}
+                        renderTags={(value, getTagProps) =>
+                            value.map((option, index) => (
+                                <Chip
+                                    variant="outlined"
+                                    label={option}
+                                    {...getTagProps({ index })}
+                                />
+                            ))
+                        }
+                        renderInput={(params) => (
+                            <TextField {...params} variant="standard" />
+                        )}
+                    />
                 );
             default:
                 return (
@@ -270,6 +233,10 @@ const useMeta = (metasAsArray) => {
                     />
                 );
         }
+    };
+
+    const resetValueToDefault = () => {
+        setInst({});
     };
 
     const comp = (
@@ -291,7 +258,7 @@ const useMeta = (metasAsArray) => {
         </List>
     );
 
-    return [inst, comp];
+    return [inst, comp, resetValueToDefault];
 };
 
 /**
@@ -339,6 +306,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setIsParamsDisplayed((oldValue) => !oldValue);
     };
 
+    const metasAsArray = formatWithParameters?.parameters || [];
+    const [currentParameters, paramsComponent, resetImportParamsToDefault] =
+        useMeta(metasAsArray);
+
     //Inits the dialog
     useEffect(() => {
         if (open && providedCase) {
@@ -355,7 +326,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         p.possibleValues = sortedPossibleValue;
                         return p;
                     });
-
                     setFormatWithParameters(result);
                 }
             );
@@ -382,6 +352,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     const handleCloseDialog = () => {
         onClose();
+        resetImportParamsToDefault();
         resetDialog();
     };
 
@@ -394,7 +365,12 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setStudyName(name);
     };
 
-    const MakeAdvancedParameterButton = (showOpenIcon, label, callback) => {
+    const MakeAdvancedParameterButton = (
+        showOpenIcon,
+        label,
+        callback,
+        disabled = false
+    ) => {
         return (
             <>
                 <Grid item xs={12} className={classes.advancedParameterButton}>
@@ -406,6 +382,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                             )
                         }
                         onClick={callback}
+                        disabled={disabled}
                     >
                         <FormattedMessage id={label} />
                     </Button>
@@ -555,7 +532,9 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             caseName,
             selectedFile,
             activeDirectory,
-            currentParameters ? JSON.stringify(currentParameters) : ''
+            currentParameters && isParamsDisplayed
+                ? JSON.stringify(currentParameters)
+                : ''
         )
             .then()
             .catch((message) => {
@@ -591,9 +570,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             (!providedCase && !isSelectedFileOk)
         );
     };
-
-    const metasAsArray = formatWithParameters?.parameters || [];
-    const [currentParameters, paramsComponent] = useMeta(metasAsArray);
 
     return (
         <div>
@@ -684,32 +660,29 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                                     })}
                                 />
                             </div>
-                            {metasAsArray.length > 0 && (
-                                <>
-                                    <Divider className={classes.paramDivider} />
-                                    <div
-                                        style={{
-                                            marginTop: '10px',
-                                        }}
-                                    >
-                                        <Stack
-                                            marginTop="0.7em"
-                                            direction="row"
-                                            justifyContent="space-between"
-                                            alignItems="center"
-                                        >
-                                            {MakeAdvancedParameterButton(
-                                                isParamsDisplayed,
-                                                intl.formatMessage({
-                                                    id: 'importParameters',
-                                                }),
-                                                handleShowParametersClick
-                                            )}
-                                        </Stack>
-                                        {isParamsDisplayed && paramsComponent}
-                                    </div>
-                                </>
-                            )}
+                            <Divider className={classes.paramDivider} />
+                            <div
+                                style={{
+                                    marginTop: '10px',
+                                }}
+                            >
+                                <Stack
+                                    marginTop="0.7em"
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center"
+                                >
+                                    {MakeAdvancedParameterButton(
+                                        isParamsDisplayed,
+                                        intl.formatMessage({
+                                            id: 'importParameters',
+                                        }),
+                                        handleShowParametersClick,
+                                        metasAsArray.length === 0
+                                    )}
+                                </Stack>
+                                {isParamsDisplayed && paramsComponent}
+                            </div>
                         </>
                     )}
                     {createStudyErr !== '' && (
