@@ -51,8 +51,8 @@ import {
 import { ElementType } from '../../utils/elementType';
 import { useFileValue } from './field-hook';
 import { keyGenerator } from '../../utils/functions.js';
-import { Divider, Grid, Stack } from '@mui/material';
-import { useMeta } from '@gridsuite/commons-ui';
+import { Divider, Grid } from '@mui/material';
+import { useImportExportParams } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     addIcon: {
@@ -63,6 +63,10 @@ const useStyles = makeStyles((theme) => ({
     },
     paramDivider: {
         marginTop: theme.spacing(2),
+    },
+    advancedParameterButton: {
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(1),
     },
 }));
 
@@ -168,18 +172,17 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setIsParamsDisplayed((oldValue) => !oldValue);
     };
 
-    const metasAsArray = formatWithParameters?.parameters || [];
     const [currentParameters, paramsComponent, resetImportParamsToDefault] =
-        useMeta(metasAsArray);
+        useImportExportParams(formatWithParameters);
 
     //Inits the dialog
     useEffect(() => {
         if (open && providedCase) {
-            setStudyName(providedCase?.elementName);
+            setStudyName(providedCase.elementName);
             setCaseExist(true);
-            dispatch(selectCase(providedCase?.elementUuid));
-            getCaseImportParameters(providedCase?.elementUuid).then(
-                (result) => {
+            dispatch(selectCase(providedCase.elementUuid));
+            getCaseImportParameters(providedCase.elementUuid)
+                .then((result) => {
                     // sort possible values alphabetically to display select options sorted
                     result.parameters = result.parameters?.map((p) => {
                         let sortedPossibleValue = p.possibleValues?.sort(
@@ -188,9 +191,11 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         p.possibleValues = sortedPossibleValue;
                         return p;
                     });
-                    setFormatWithParameters(result);
-                }
-            );
+                    setFormatWithParameters(result.parameters);
+                })
+                .catch(() => {
+                    setFormatWithParameters([]);
+                });
         }
     }, [open, dispatch, selectedDirectory?.elementName, providedCase]);
 
@@ -227,12 +232,12 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setStudyName(name);
     };
 
-    const MakeAdvancedParameterButton = (
+    const AdvancedParameterButton = ({
         showOpenIcon,
         label,
         callback,
-        disabled = false
-    ) => {
+        disabled = false,
+    }) => {
         return (
             <>
                 <Grid item xs={12} className={classes.advancedParameterButton}>
@@ -528,21 +533,12 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                                     marginTop: '10px',
                                 }}
                             >
-                                <Stack
-                                    marginTop="0.7em"
-                                    direction="row"
-                                    justifyContent="space-between"
-                                    alignItems="center"
-                                >
-                                    {MakeAdvancedParameterButton(
-                                        isParamsDisplayed,
-                                        intl.formatMessage({
-                                            id: 'importParameters',
-                                        }),
-                                        handleShowParametersClick,
-                                        metasAsArray.length === 0
-                                    )}
-                                </Stack>
+                                <AdvancedParameterButton
+                                    showOpenIcon={isParamsDisplayed}
+                                    label={'importParameters'}
+                                    callback={handleShowParametersClick}
+                                    disabled={formatWithParameters.length === 0}
+                                />
                                 {isParamsDisplayed && paramsComponent}
                             </div>
                         </>
