@@ -42,6 +42,7 @@
 
     "ImportNewCase": "Importer une situation",
     "caseCreationError": "Une erreur est survenue lors de la création de la situation : {name}",
+    "importParameters": "Paramètres d'import",
     "CASE": "Situation",
     "validate": "Valider",
 
