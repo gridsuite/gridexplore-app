@@ -22,6 +22,7 @@
     "deleteStudyError": "Vous n'êtes pas le propriétaire de l'étude",
     "deleteElementsFailure": "Problème à la destruction {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {détruit} other {détruits}} : {problematic}",
     "moveElementsFailure": "Problème au déplacement {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {déplacé} other {déplacés}} : {problematic}",
+    "duplicateElementFailure": "Une erreur est survenue lors de la duplication de l'élément {itemName} : {errorMessage}",
     "caseName": "nom de la situation",
     "uploadCase": "télécharger la situation",
     "uploadErrorMsg": "Veuillez télécharger la situation",
@@ -147,5 +148,6 @@
     "moveItemContentText": "Veuillez choisir un dossier",
     "moveElementNotFoundError": "L'élément ou le dossier cible n'a pas été trouvé",
     "moveElementNotAllowedError": "Vous ne pouvez pas déplacer cet élément dans le dossier cible. Action non autorisée",
-    "notElementCreator": "Vous n'êtes pas le créateur de l'élément"
+    "notElementCreator": "Vous n'êtes pas le créateur de l'élément",
+    "uploadingElement": "Téléversement en cours : pas d'opération autorisée"
 }
