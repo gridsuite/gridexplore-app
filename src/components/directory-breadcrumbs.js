@@ -66,11 +66,11 @@ const DirectoryBreadcrumbs = () => {
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const currentPath = useSelector((state) => state.currentPath);
+    const limitElementNameLength = 160;
 
-    function limitChar(str, limit) {
+    function limitChar(str, limit = limitElementNameLength) {
         return str.length > limit ? `${str.slice(0, limit)}...` : str;
     }
-    const limitElementNameLength = 160;
 
     /* Handle User interactions */
     const handleSelect = (event, dir) => {
@@ -103,12 +103,7 @@ const DirectoryBreadcrumbs = () => {
                         ) : null}
 
                         <Tooltip title={dir.elementName}>
-                            <div>
-                                {limitChar(
-                                    dir.elementName,
-                                    limitElementNameLength
-                                )}
-                            </div>
+                            <div>{limitChar(dir.elementName)}</div>
                         </Tooltip>
                     </Link>
                 ));
@@ -131,8 +126,7 @@ const DirectoryBreadcrumbs = () => {
                     >
                         <div>
                             {limitChar(
-                                currentPath[currentPath.length - 1].elementName,
-                                limitElementNameLength
+                                currentPath[currentPath.length - 1].elementName
                             )}
                         </div>
                     </Tooltip>
