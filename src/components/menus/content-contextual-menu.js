@@ -92,93 +92,109 @@ const ContentContextualMenu = (props) => {
         setOpenDialog(dialogId);
     };
 
+    const handleDuplicateError = (error) => {
+        return handleLastError(
+            intl.formatMessage(
+                { id: 'duplicateElementFailure' },
+                {
+                    itemName: activeElement.elementName,
+                    errorMessage: error,
+                }
+            )
+        );
+    };
+
     const duplicateItem = () => {
         if (activeElement) {
             getNameCandidate(
                 selectedDirectory.elementUuid,
                 activeElement.elementName,
                 activeElement.type
-            ).then((newItemName) => {
-                if (newItemName) {
-                    switch (activeElement.type) {
-                        case ElementType.CASE:
-                            duplicateCase(
-                                newItemName,
-                                activeElement.description,
-                                activeElement.elementUuid,
-                                selectedDirectory.elementUuid
-                            )
-                                .then(() => {
-                                    handleCloseDialog();
-                                })
-                                .catch((message) => {
-                                    handleLastError(message);
-                                });
-                            break;
-                        case ElementType.CONTINGENCY_LIST:
-                            fetchElementsInfos([activeElement.elementUuid])
-                                .then((res) => {
-                                    duplicateContingencyList(
-                                        res[0].specificMetadata.type,
-                                        newItemName,
-                                        activeElement.description,
-                                        activeElement.elementUuid,
-                                        selectedDirectory.elementUuid
-                                    ).catch((message) => {
-                                        handleLastError(message);
+            )
+                .then((newItemName) => {
+                    if (newItemName) {
+                        switch (activeElement.type) {
+                            case ElementType.CASE:
+                                duplicateCase(
+                                    newItemName,
+                                    activeElement.description,
+                                    activeElement.elementUuid,
+                                    selectedDirectory.elementUuid
+                                )
+                                    .then(() => {
+                                        handleCloseDialog();
+                                    })
+                                    .catch((message) => {
+                                        handleDuplicateError(message);
                                     });
-                                })
-                                .catch((message) => {
-                                    handleLastError(message);
-                                })
-                                .finally(() => {
-                                    handleCloseDialog();
-                                });
+                                break;
+                            case ElementType.CONTINGENCY_LIST:
+                                fetchElementsInfos([activeElement.elementUuid])
+                                    .then((res) => {
+                                        duplicateContingencyList(
+                                            res[0].specificMetadata.type,
+                                            newItemName,
+                                            activeElement.description,
+                                            activeElement.elementUuid,
+                                            selectedDirectory.elementUuid
+                                        ).catch((message) => {
+                                            handleDuplicateError(message);
+                                        });
+                                    })
+                                    .catch((message) => {
+                                        handleLastError(message);
+                                    })
+                                    .finally(() => {
+                                        handleCloseDialog();
+                                    });
 
-                            break;
-                        case ElementType.STUDY:
-                            duplicateStudy(
-                                newItemName,
-                                activeElement.description,
-                                activeElement.elementUuid,
-                                selectedDirectory.elementUuid
-                            )
-                                .then(() => {
-                                    handleCloseDialog();
+                                break;
+                            case ElementType.STUDY:
+                                duplicateStudy(
+                                    newItemName,
+                                    activeElement.description,
+                                    activeElement.elementUuid,
+                                    selectedDirectory.elementUuid
+                                )
+                                    .then(() => {
+                                        handleCloseDialog();
+                                    })
+                                    .catch((message) => {
+                                        handleDuplicateError(message);
+                                    });
+                                break;
+                            case ElementType.FILTER:
+                                duplicateFilter(
+                                    newItemName,
+                                    activeElement.description,
+                                    activeElement.elementUuid,
+                                    selectedDirectory.elementUuid
+                                )
+                                    .then(() => {
+                                        handleCloseDialog();
+                                    })
+                                    .catch((message) => {
+                                        handleDuplicateError(message);
+                                    });
+                                break;
+                            default:
+                                handleLastError(
+                                    intl.formatMessage({ id: 'unsuportedItem' })
+                                );
+                        }
+                    } else {
+                        handleLastError(
+                            activeElement.elementName +
+                                ' : ' +
+                                intl.formatMessage({
+                                    id: 'nameAlreadyUsed',
                                 })
-                                .catch((message) => {
-                                    handleLastError(message);
-                                });
-                            break;
-                        case ElementType.FILTER:
-                            duplicateFilter(
-                                newItemName,
-                                activeElement.description,
-                                activeElement.elementUuid,
-                                selectedDirectory.elementUuid
-                            )
-                                .then(() => {
-                                    handleCloseDialog();
-                                })
-                                .catch((message) => {
-                                    handleLastError(message);
-                                });
-                            break;
-                        default:
-                            handleLastError(
-                                intl.formatMessage({ id: 'unsuportedItem' })
-                            );
+                        );
                     }
-                } else {
-                    handleLastError(
-                        activeElement.elementName +
-                            ' : ' +
-                            intl.formatMessage({
-                                id: 'nameAlreadyUsed',
-                            })
-                    );
-                }
-            });
+                })
+                .catch((error) => {
+                    handleDuplicateError(error);
+                });
         }
     };
 
@@ -301,6 +317,10 @@ const ContentContextualMenu = (props) => {
         false
     );
 
+    const isNotUploadingElement = useCallback(() => {
+        return selectedElements.every((el) => !el.uploading);
+    }, [selectedElements]);
+
     // Allowance
     const isUserAllowed = useCallback(() => {
         return selectedElements.every((el) => {
@@ -309,17 +329,22 @@ const ContentContextualMenu = (props) => {
     }, [selectedElements, userId]);
 
     const allowsDelete = useCallback(() => {
-        return isUserAllowed();
-    }, [isUserAllowed]);
+        return isUserAllowed() && isNotUploadingElement();
+    }, [isUserAllowed, isNotUploadingElement]);
 
     const allowsRename = useCallback(() => {
-        return selectedElements.length === 1 && isUserAllowed();
+        return (
+            selectedElements.length === 1 &&
+            isUserAllowed() &&
+            !selectedElements[0].uploading
+        );
     }, [isUserAllowed, selectedElements]);
 
     const allowsMove = useCallback(() => {
         return (
             selectedElements.every(
-                (element) => element.type !== ElementType.DIRECTORY
+                (element) =>
+                    element.type !== ElementType.DIRECTORY && !element.uploading
             ) && isUserAllowed()
         );
     }, [isUserAllowed, selectedElements]);
@@ -330,14 +355,16 @@ const ContentContextualMenu = (props) => {
             (selectedElements[0].type === ElementType.CASE ||
                 selectedElements[0].type === ElementType.STUDY ||
                 selectedElements[0].type === ElementType.CONTINGENCY_LIST ||
-                selectedElements[0].type === ElementType.FILTER)
+                selectedElements[0].type === ElementType.FILTER) &&
+            !selectedElements[0].uploading
         );
     }, [selectedElements]);
 
     const allowsCreateNewStudyFromCase = useCallback(() => {
         return (
             selectedElements.length === 1 &&
-            selectedElements[0].type === ElementType.CASE
+            selectedElements[0].type === ElementType.CASE &&
+            !selectedElements[0].uploading
         );
     }, [selectedElements]);
 
@@ -524,7 +551,9 @@ const ContentContextualMenu = (props) => {
 
         if (menuItems.length === 0) {
             menuItems.push({
-                messageDescriptorId: 'notElementCreator',
+                messageDescriptorId: isNotUploadingElement()
+                    ? 'notElementCreator'
+                    : 'uploadingElement',
                 icon: <DoNotDisturbAltIcon fontSize="small" />,
                 disabled: true,
             });

@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
+import SettingsIcon from '@mui/icons-material/Settings';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -27,6 +28,7 @@ import {
     elementExists,
     fetchCases,
     fetchPath,
+    getCaseImportParameters,
 } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -49,13 +51,22 @@ import {
 import { ElementType } from '../../utils/elementType';
 import { useFileValue } from './field-hook';
 import { keyGenerator } from '../../utils/functions.js';
+import { Divider, Grid } from '@mui/material';
+import { useImportExportParams } from '@gridsuite/commons-ui';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     addIcon: {
         fontSize: '64px',
     },
     addButtonArea: {
         height: '136px',
+    },
+    paramDivider: {
+        marginTop: theme.spacing(2),
+    },
+    advancedParameterButton: {
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(1),
     },
 }));
 
@@ -151,14 +162,40 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
 
+    const [formatWithParameters, setFormatWithParameters] = useState([]);
+
     const [triggerReset, setTriggerReset] = React.useState(true);
+
+    const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
+
+    const handleShowParametersClick = () => {
+        setIsParamsDisplayed((oldValue) => !oldValue);
+    };
+
+    const [currentParameters, paramsComponent, resetImportParamsToDefault] =
+        useImportExportParams(formatWithParameters);
 
     //Inits the dialog
     useEffect(() => {
         if (open && providedCase) {
-            setStudyName(providedCase?.elementName);
+            setStudyName(providedCase.elementName);
             setCaseExist(true);
-            dispatch(selectCase(providedCase?.elementUuid));
+            dispatch(selectCase(providedCase.elementUuid));
+            getCaseImportParameters(providedCase.elementUuid)
+                .then((result) => {
+                    // sort possible values alphabetically to display select options sorted
+                    result.parameters = result.parameters?.map((p) => {
+                        let sortedPossibleValue = p.possibleValues?.sort(
+                            (a, b) => a.localeCompare(b)
+                        );
+                        p.possibleValues = sortedPossibleValue;
+                        return p;
+                    });
+                    setFormatWithParameters(result.parameters);
+                })
+                .catch(() => {
+                    setFormatWithParameters([]);
+                });
         }
     }, [open, dispatch, selectedDirectory?.elementName, providedCase]);
 
@@ -182,6 +219,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     const handleCloseDialog = () => {
         onClose();
+        resetImportParamsToDefault();
         resetDialog();
     };
 
@@ -192,6 +230,32 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const handleStudyNameChanges = (e) => {
         const name = e.target.value;
         setStudyName(name);
+    };
+
+    const AdvancedParameterButton = ({
+        showOpenIcon,
+        label,
+        callback,
+        disabled = false,
+    }) => {
+        return (
+            <>
+                <Grid item xs={12} className={classes.advancedParameterButton}>
+                    <Button
+                        startIcon={<SettingsIcon />}
+                        endIcon={
+                            showOpenIcon && (
+                                <CheckIcon style={{ color: 'green' }} />
+                            )
+                        }
+                        onClick={callback}
+                        disabled={disabled}
+                    >
+                        <FormattedMessage id={label} />
+                    </Button>
+                </Grid>
+            </>
+        );
     };
 
     useEffect(() => {
@@ -319,6 +383,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             setCreateStudyErr(intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
         }
+
         const uploadingStudy = {
             id: keyGenerator(),
             elementName: studyName,
@@ -333,7 +398,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             studyDescription,
             caseName,
             selectedFile,
-            activeDirectory
+            activeDirectory,
+            currentParameters && isParamsDisplayed
+                ? JSON.stringify(currentParameters)
+                : ''
         )
             .then()
             .catch((message) => {
@@ -415,47 +483,65 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                             FileField
                         )
                     ) : (
-                        <div
-                            style={{
-                                marginTop: '10px',
-                            }}
-                        >
-                            <Button
-                                onClick={handleSelectFolder}
-                                variant="contained"
+                        <>
+                            <div
                                 style={{
-                                    paddingLeft: '30px',
-                                    paddingRight: '30px',
-                                }}
-                                color="primary"
-                                component="label"
-                            >
-                                <FormattedMessage id="showSelectDirectoryDialog" />
-                            </Button>
-                            <span
-                                style={{
-                                    marginLeft: '10px',
-                                    fontWeight: 'bold',
+                                    marginTop: '10px',
                                 }}
                             >
-                                {activeDirectoryName}
-                            </span>
+                                <Button
+                                    onClick={handleSelectFolder}
+                                    variant="contained"
+                                    style={{
+                                        paddingLeft: '30px',
+                                        paddingRight: '30px',
+                                    }}
+                                    color="primary"
+                                    component="label"
+                                >
+                                    <FormattedMessage id="showSelectDirectoryDialog" />
+                                </Button>
+                                <span
+                                    style={{
+                                        marginLeft: '10px',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    {activeDirectoryName}
+                                </span>
 
-                            <DirectorySelector
-                                open={folderSelectorOpen}
-                                onClose={handleSelectedDirectoryToCreateStudy}
-                                types={[ElementType.DIRECTORY]}
-                                title={intl.formatMessage({
-                                    id: 'selectDirectoryDialogTitle',
-                                })}
-                                validationButtonText={intl.formatMessage({
-                                    id: 'confirmDirectoryDialog',
-                                })}
-                                contentText={intl.formatMessage({
-                                    id: 'moveItemContentText',
-                                })}
-                            />
-                        </div>
+                                <DirectorySelector
+                                    open={folderSelectorOpen}
+                                    onClose={
+                                        handleSelectedDirectoryToCreateStudy
+                                    }
+                                    types={[ElementType.DIRECTORY]}
+                                    title={intl.formatMessage({
+                                        id: 'selectDirectoryDialogTitle',
+                                    })}
+                                    validationButtonText={intl.formatMessage({
+                                        id: 'confirmDirectoryDialog',
+                                    })}
+                                    contentText={intl.formatMessage({
+                                        id: 'moveItemContentText',
+                                    })}
+                                />
+                            </div>
+                            <Divider className={classes.paramDivider} />
+                            <div
+                                style={{
+                                    marginTop: '10px',
+                                }}
+                            >
+                                <AdvancedParameterButton
+                                    showOpenIcon={isParamsDisplayed}
+                                    label={'importParameters'}
+                                    callback={handleShowParametersClick}
+                                    disabled={formatWithParameters.length === 0}
+                                />
+                                {isParamsDisplayed && paramsComponent}
+                            </div>
+                        </>
                     )}
                     {createStudyErr !== '' && (
                         <Alert

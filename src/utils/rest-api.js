@@ -20,6 +20,8 @@ const PREFIX_EXPLORE_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/explore';
 const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';
 const PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
+const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/network-conversion';
 const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
 const PREFIX_FILTERS_QUERIES =
@@ -295,7 +297,8 @@ export function createStudy(
     studyDescription,
     caseName,
     selectedFile,
-    parentDirectoryUuid
+    parentDirectoryUuid,
+    importParameters
 ) {
     console.info('Creating a new study...');
     let urlSearchParams = new URLSearchParams();
@@ -314,6 +317,8 @@ export function createStudy(
         console.debug(createStudyWithExistingCaseUrl);
         return backendFetch(createStudyWithExistingCaseUrl, {
             method: 'post',
+            body: importParameters,
+            headers: { 'Content-Type': 'application/json' },
         }).then((response) => handleResponse(response, false));
     } else {
         const createStudyWithNewCaseUrl =
@@ -786,5 +791,22 @@ export function fetchPath(elementUuid) {
         response.ok
             ? response.json()
             : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function getCaseImportParameters(caseUuid) {
+    console.info(`get import parameters for case '${caseUuid}' ...`);
+    const getExportFormatsUrl =
+        PREFIX_NETWORK_CONVERSION_SERVER_QUERIES +
+        '/v1/cases/' +
+        caseUuid +
+        '/import-parameters';
+    console.debug(getExportFormatsUrl);
+    return backendFetch(getExportFormatsUrl, {
+        method: 'get',
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.json().then((error) => Promise.reject(error))
     );
 }
