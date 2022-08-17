@@ -22,6 +22,7 @@
     "deleteStudyError": "Vous n'êtes pas le propriétaire de l'étude",
     "deleteElementsFailure": "Problème à la destruction {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {détruit} other {détruits}} : {problematic}",
     "moveElementsFailure": "Problème au déplacement {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {déplacé} other {déplacés}} : {problematic}",
+    "duplicateElementFailure": "Une erreur est survenue lors de la duplication de l'élément {itemName} : {errorMessage}",
     "caseName": "nom de la situation",
     "uploadCase": "télécharger la situation",
     "uploadErrorMsg": "Veuillez télécharger la situation",
@@ -41,6 +42,7 @@
 
     "ImportNewCase": "Importer une situation",
     "caseCreationError": "Une erreur est survenue lors de la création de la situation : {name}",
+    "importParameters": "Paramètres d'import",
     "CASE": "Situation",
     "validate": "Valider",
 
