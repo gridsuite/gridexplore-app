@@ -422,11 +422,10 @@ export function elementExists(directoryUuid, elementName, type) {
     console.debug(existsElementUrl);
     return backendFetch(existsElementUrl, { method: 'head' }).then(
         (response) => {
-            return response.ok
-                ? true
-                : response.status === 404
-                ? false
-                : Promise.reject(response.statusText);
+            if (response.ok) {
+                return response.status !== 204; // HTTP 204 : No-content
+            }
+            return Promise.reject(response.statusText);
         }
     );
 }
@@ -459,11 +458,10 @@ export function rootDirectoryExists(directoryName) {
 
     return backendFetch(existsRootDirectoryUrl, { method: 'head' }).then(
         (response) => {
-            return response.ok
-                ? true
-                : response.status === 404
-                ? false
-                : Promise.reject(response.statusText);
+            if (response.ok) {
+                return response.status !== 204; // HTTP 204 : No-content
+            }
+            return Promise.reject(response.statusText);
         }
     );
 }
