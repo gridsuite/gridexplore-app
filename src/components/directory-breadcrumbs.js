@@ -16,10 +16,11 @@ import Typography from '@mui/material/Typography';
 import { emphasize } from '@mui/material/styles/';
 import makeStyles from '@mui/styles/makeStyles';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import { Tooltip } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
     link: {
-        display: 'flex',
+        display: 'inline-grid',
         alignItems: 'center',
         textAlign: 'center',
         color: theme.link.color,
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     directory: {
-        display: 'flex',
+        display: 'inline-grid',
         alignItems: 'center',
         textAlign: 'center',
         fontWeight: 'bold',
@@ -50,12 +51,19 @@ const useStyles = makeStyles((theme) => ({
     },
     icon: {
         marginRight: theme.spacing(1),
-        width: '18px',
-        height: '18px',
+        width: theme.spacing(2.25),
+        height: theme.spacing(2.25),
+        position: 'relative',
+        top: theme.spacing(0.5),
     },
     breadcrumbs: {
         padding: theme.spacing(0.5, 0, 0.5),
         marginLeft: theme.spacing(1),
+    },
+    limitTextSize: {
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
     },
 }));
 
@@ -92,10 +100,14 @@ const DirectoryBreadcrumbs = () => {
                         }}
                         underline="hover"
                     >
-                        {index === 0 ? (
-                            <FolderOpenIcon className={classes.icon} />
-                        ) : null}
-                        {dir.elementName}
+                        <Tooltip title={dir.elementName}>
+                            <div className={classes.limitTextSize}>
+                                {index === 0 ? (
+                                    <FolderOpenIcon className={classes.icon} />
+                                ) : null}
+                                {dir.elementName}
+                            </div>
+                        </Tooltip>
                     </Link>
                 ));
         }
@@ -109,10 +121,16 @@ const DirectoryBreadcrumbs = () => {
         ) {
             return (
                 <Typography className={classes.directory} color="textPrimary">
-                    {currentPath.length === 1 && (
-                        <FolderOpenIcon className={classes.icon} />
-                    )}
-                    {currentPath[currentPath.length - 1].elementName}
+                    <Tooltip
+                        title={currentPath[currentPath.length - 1].elementName}
+                    >
+                        <div className={classes.limitTextSize}>
+                            {currentPath.length === 1 && (
+                                <FolderOpenIcon className={classes.icon} />
+                            )}
+                            {currentPath[currentPath.length - 1].elementName}
+                        </div>
+                    </Tooltip>
                 </Typography>
             );
         }

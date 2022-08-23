@@ -25,7 +25,7 @@ import {
     ElementType,
     FilterType,
 } from '../utils/elementType';
-import { DEFAULT_CELL_PADDING } from '@gridsuite/commons-ui';
+import { DEFAULT_CELL_PADDING, OverflowableText } from '@gridsuite/commons-ui';
 import { Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
@@ -58,6 +58,8 @@ const useStyles = makeStyles((theme) => ({
         flex: 1,
         height: '48px',
         padding: DEFAULT_CELL_PADDING,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
     },
     chip: {
         cursor: 'pointer',
@@ -83,6 +85,9 @@ const useStyles = makeStyles((theme) => ({
     },
     centeredCircularProgress: {
         alignSelf: 'center',
+    },
+    tooltip: {
+        maxWidth: '1000px',
     },
 }));
 
@@ -388,7 +393,10 @@ const DirectoryContent = () => {
                         childrenMetadata[elementUuid].subtype
                     )}
                 {/* Name */}
-                {<div>{getDisplayedElementName(cellData)}</div>}
+                <OverflowableText
+                    text={getDisplayedElementName(cellData)}
+                    tooltipStyle={classes.tooltip}
+                />
             </div>
         );
     };

@@ -15,6 +15,8 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress';
+import { OverflowableText } from '@gridsuite/commons-ui';
+import { makeStyles } from '@mui/styles';
 
 /**
  * Dialog to delete an element
@@ -26,6 +28,11 @@ import CircularProgress from '@mui/material/CircularProgress';
  * @param {String} simpleDeleteFormatMessageId Format message id for simple delete
  * @param {String} error Error message
  */
+const useStyles = makeStyles((theme) => ({
+    tooltip: {
+        maxWidth: '1000px',
+    },
+}));
 const DeleteDialog = ({
     open,
     onClose,
@@ -36,6 +43,8 @@ const DeleteDialog = ({
     error,
 }) => {
     const intl = useIntl();
+
+    const classes = useStyles();
 
     const [itemsState, setItemState] = useState([]);
 
@@ -79,7 +88,13 @@ const DeleteDialog = ({
             ? intl.formatMessage(
                   { id: 'deleteItemDialogTitle' },
                   {
-                      itemName: items[0].elementName,
+                      itemName: (
+                          <OverflowableText
+                              text={items[0].elementName}
+                              style={{ width: '100%' }}
+                              tooltipStyle={classes.tooltip}
+                          />
+                      ),
                   }
               )
             : intl.formatMessage(
@@ -109,7 +124,24 @@ const DeleteDialog = ({
                     </Grid>
                     {items.slice(0, 10).map((file) => (
                         <Grid item key={file.elementUuid}>
-                            <span> {file.elementName} </span>
+                            <span>
+                                {
+                                    <div
+                                        style={{
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                        }}
+                                    >
+                                        {
+                                            <OverflowableText
+                                                text={file.elementName}
+                                                style={{ width: '100%' }}
+                                                tooltipStyle={classes.tooltip}
+                                            />
+                                        }
+                                    </div>
+                                }
+                            </span>
                         </Grid>
                     ))}
                     {items.length > 10 && (
@@ -136,8 +168,15 @@ const DeleteDialog = ({
                                 {
                                     itemName: (
                                         <span style={{ fontWeight: 'bold' }}>
-                                            {items.length === 1 &&
-                                                items[0].elementName}
+                                            {items.length === 1 && (
+                                                <OverflowableText
+                                                    text={items[0].elementName}
+                                                    style={{ width: '100%' }}
+                                                    tooltipStyle={
+                                                        classes.tooltip
+                                                    }
+                                                />
+                                            )}
                                         </span>
                                     ),
                                 }
@@ -148,7 +187,6 @@ const DeleteDialog = ({
             ))
         );
     };
-
     return (
         <Dialog
             open={open}
