@@ -125,7 +125,6 @@ const DeleteDialog = ({
                     {items.slice(0, 10).map((file) => (
                         <Grid item key={file.elementUuid}>
                             <span>
-                                {' '}
                                 {
                                     <div
                                         style={{
@@ -141,7 +140,7 @@ const DeleteDialog = ({
                                             />
                                         }
                                     </div>
-                                }{' '}
+                                }
                             </span>
                         </Grid>
                     ))}
