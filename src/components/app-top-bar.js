@@ -13,12 +13,12 @@ import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAppsAndUrls } from '../utils/rest-api';
 import PropTypes from 'prop-types';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ReactComponent as GridExploreLogoLight } from '../images/GridExplore_logo_light.svg';
 import { ReactComponent as GridExploreLogoDark } from '../images/GridExplore_logo_dark.svg';
 import { setAppsAndUrls } from '../redux/actions';
 const AppTopBar = ({ user, userManager }) => {
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const dispatch = useDispatch();
 
@@ -46,7 +46,7 @@ const AppTopBar = ({ user, userManager }) => {
     }
 
     function onLogoClicked() {
-        history.replace('/');
+        navigate('/', { replace: true });
     }
 
     return (
