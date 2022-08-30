@@ -284,7 +284,10 @@ const App = () => {
                             <Route
                                 path="/sign-in-callback"
                                 element={
-                                    <Navigate replace to={getPreLoginPath() || '/'} />
+                                    <Navigate
+                                        replace
+                                        to={getPreLoginPath() || '/'}
+                                    />
                                 }
                             />
                             <Route
