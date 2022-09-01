@@ -27,7 +27,6 @@ import { ElementType, FilterType } from '../../utils/elementType';
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
 import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
-import FiltersEditor from './filters-editor';
 
 const useStyles = makeStyles((theme) => ({
     root: {
