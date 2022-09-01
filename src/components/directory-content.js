@@ -151,10 +151,7 @@ const DirectoryContent = () => {
                     setOpenScriptContingencyDialog(true);
                 }
             } else if (event.rowData.type === ElementType.FILTER) {
-                if (subtype === FilterType.SCRIPT) {
-                    setCurrentScriptId(event.rowData.elementUuid);
-                    setOpenScriptDialog(true);
-                } else if (subtype === FilterType.FORM) {
+                if (subtype === FilterType.FORM) {
                     setCurrentFilterId(event.rowData.elementUuid);
                     setOpenGenericFilterDialog(true);
                 }

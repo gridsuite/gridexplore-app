@@ -20,15 +20,14 @@ import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import TextField from '@mui/material/TextField';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Radio from '@mui/material/Radio';
 import { createFilter, elementExists } from '../../utils/rest-api';
 import Alert from '@mui/material/Alert';
 import { useSelector } from 'react-redux';
 import { ElementType, FilterType } from '../../utils/elementType';
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
+import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
+import FiltersEditor from './filters-editor';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -95,7 +94,7 @@ const CreateFilterDialog = ({
     customTextCancelBtn,
 }) => {
     const [newNameList, setNewListName] = useState('');
-    const [newListType, setNewListType] = useState(FilterType.SCRIPT);
+    const [newListType, setNewListType] = useState(FilterType.FORM);
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
@@ -168,7 +167,7 @@ const CreateFilterDialog = ({
 
     const resetDialog = () => {
         setNewListName('');
-        setNewListType(FilterType.SCRIPT);
+        setNewListType(FilterType.FORM);
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
         setFilterNameValid(false);
@@ -184,12 +183,11 @@ const CreateFilterDialog = ({
         if (!filterNameValid || loadingCheckFilterName) {
             return;
         }
-        const subtype = newListType === FilterType.SCRIPT ? null : 'LINE';
         createFilter(
             {
                 type: newListType,
                 equipmentFilterForm: {
-                    equipmentType: subtype,
+                    equipmentType: EQUIPMENT_TYPE.LINE.name,
                 },
                 transient: true,
             },
@@ -262,24 +260,6 @@ const CreateFilterDialog = ({
                     label={inputLabelText}
                 />
                 {renderFilterNameStatus()}
-                <RadioGroup
-                    aria-label="type"
-                    name="filterType"
-                    value={newListType}
-                    onChange={(e) => setNewListType(e.target.value)}
-                    row
-                >
-                    <FormControlLabel
-                        value="SCRIPT"
-                        control={<Radio />}
-                        label={<FormattedMessage id="SCRIPT" />}
-                    />
-                    <FormControlLabel
-                        value="FORM"
-                        control={<Radio />}
-                        label={<FormattedMessage id="FORM" />}
-                    />
-                </RadioGroup>
                 {createFilterErr !== '' && (
                     <Alert severity="error">{createFilterErr}</Alert>
                 )}
