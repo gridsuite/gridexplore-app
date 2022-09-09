@@ -155,7 +155,6 @@ const DirectoryContent = () => {
                     setCurrentScriptId(event.rowData.elementUuid);
                     setOpenScriptDialog(true);
                 } else if (subtype === FilterType.FORM) {
-                if (subtype === FilterType.FORM) {
                     setCurrentFilterId(event.rowData.elementUuid);
                     setOpenGenericFilterDialog(true);
                 }
