@@ -8,6 +8,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+    directoryUpdated,
     setActiveDirectory,
     setCurrentChildren,
     setCurrentPath,
@@ -15,7 +16,7 @@ import {
 } from '../redux/actions';
 
 import {
-    connectNotificationsWsUpdateStudies,
+    connectNotificationsWsUpdateDirectory,
     fetchDirectoryContent,
     fetchRootFolders,
 } from '../utils/rest-api';
@@ -78,7 +79,7 @@ function refreshedUpNodes(m, nn) {
     return [nn, ...refreshedUpNodes(m, nextParent)];
 }
 
-function mapFromRoots(roots) {
+export function mapFromRoots(roots) {
     return Object.fromEntries(
         Array.prototype
             .concat(
@@ -480,7 +481,7 @@ const TreeViewsContainer = () => {
 
     useEffect(() => {
         // create ws at mount event
-        wsRef.current = connectNotificationsWsUpdateStudies();
+        wsRef.current = connectNotificationsWsUpdateDirectory();
 
         wsRef.current.onclose = function () {
             console.error('Unexpected Notification WebSocket closed');
@@ -495,16 +496,17 @@ const TreeViewsContainer = () => {
         return () => {
             wsToClose.close();
         };
-    }, []);
+    }, [dispatch]);
 
     const onUpdateStudies = useCallback(
         (event) => {
             console.debug('Received Update Studies notification', event);
+
             let eventData = JSON.parse(event.data);
             if (!eventData.headers) {
                 return;
             }
-
+            dispatch(directoryUpdated(eventData));
             const notificationTypeH = eventData.headers['notificationType'];
             const isRootDirectory = eventData.headers['isRootDirectory'];
             const directoryUuid = eventData.headers['directoryUuid'];

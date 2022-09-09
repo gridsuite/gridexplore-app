@@ -11,6 +11,9 @@ import PropTypes from 'prop-types';
 import { fetchDirectoryContent, fetchRootFolders } from '../../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import { getFileIcon, elementType } from '@gridsuite/commons-ui';
+import { useSelector } from 'react-redux';
+import { notificationType } from '../../utils/notificationType';
+import { mapFromRoots } from '../tree-views-container';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -29,7 +32,16 @@ const DirectorySelector = (props) => {
     const nodeMap = useRef({});
     const classes = useStyles();
 
-    const contentFilter = new Set([elementType.DIRECTORY]);
+    const contentFilter = useCallback(
+        () => new Set([elementType.DIRECTORY]),
+        []
+    );
+
+    const dataRef = useRef([]);
+    dataRef.current = data;
+    const directoryUpdatedForce = useSelector(
+        (state) => state.directoryUpdated
+    );
 
     const directory2Tree = useCallback(
         (newData) => {
@@ -39,6 +51,10 @@ const DirectorySelector = (props) => {
                 icon: getFileIcon(newData.type, classes.icon),
                 children:
                     newData.type === elementType.DIRECTORY ? [] : undefined,
+                subdirectoriesCount:
+                    newData.type === elementType.DIRECTORY
+                        ? newData.subdirectoriesCount
+                        : undefined,
             };
             return (nodeMap.current[newNode.id] = newNode);
         },
@@ -61,11 +77,104 @@ const DirectorySelector = (props) => {
         [directory2Tree]
     );
 
+    const updateDirectoryTreeAndContent = useCallback(
+        (nodeId) => {
+            fetchDirectoryContent(nodeId)
+                .then((childrenToBeInserted) => {
+                    // update directory Content
+                    addToDirectory(
+                        nodeId,
+                        childrenToBeInserted.filter((item) =>
+                            contentFilter().has(item.type)
+                        )
+                    );
+                    setData([...dataRef.current]);
+                })
+                .catch((reason) => {
+                    console.warn(
+                        "Could not update subs (and content) of '" +
+                            nodeId +
+                            "' :" +
+                            reason
+                    );
+                });
+        },
+        [addToDirectory, contentFilter]
+    );
+
+    function getUnion(array1, array2) {
+        const difference = array1.filter(
+            (element) => !array2.includes(element)
+        );
+        //Find data that are in arrayObjOne but not in arrayObjTwo
+        // let uniqueResultArrayObjOne = array2.filter(function (objOne) {
+        //     return !array1.some(function (objTwo) {
+        //         return (
+        //             objOne.id === objTwo.id &&
+        //             objOne.name === objTwo.name &&
+        //             objOne.icon === objTwo.icon &&
+        //             objOne.subdirectoriesCount === objTwo.subdirectoriesCount
+        //         );
+        //     });
+        // });
+
+        return [...difference, ...array2];
+    }
+
+    useEffect(() => {
+        if (directoryUpdatedForce.eventData.headers) {
+            if (
+                Object.values(notificationType).includes(
+                    directoryUpdatedForce.eventData.headers['notificationType']
+                )
+            ) {
+                const filter = contentFilter();
+
+                if (
+                    !directoryUpdatedForce.eventData.headers['isRootDirectory']
+                ) {
+                    console.log('notif from other side', directoryUpdatedForce);
+                    updateDirectoryTreeAndContent(
+                        directoryUpdatedForce.eventData.headers['directoryUuid']
+                    );
+                } else {
+                    fetchRootFolders().then((roots) => {
+                        roots
+                            .filter((r) => r.subdirectoriesCount > 0)
+                            .forEach((element) => {
+                                fetchDirectoryContent(element.elementUuid).then(
+                                    (content) => {
+                                        addToDirectory(
+                                            content.elementUuid,
+                                            content.filter((item) =>
+                                                filter.has(item.type)
+                                            )
+                                        );
+                                    }
+                                );
+                                // let arr = [];
+                                // Object.values(nodeMap.current).map((el, key) =>
+                                //     arr.push(el)
+                                // );
+                                setData([...dataRef.current]);
+                            });
+                    });
+                }
+            }
+        }
+    }, [
+        addToDirectory,
+        contentFilter,
+        directory2Tree,
+        directoryUpdatedForce,
+        updateDirectoryTreeAndContent,
+    ]);
+
     const fetchDirectory = (nodeId) => {
         fetchDirectoryContent(nodeId).then((content) => {
             addToDirectory(
                 nodeId,
-                content.filter((item) => contentFilter.has(item.type))
+                content.filter((item) => contentFilter().has(item.type))
             );
             setData([...data]);
         });
