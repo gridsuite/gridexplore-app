@@ -13,7 +13,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import { getFileIcon, elementType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { notificationType } from '../../utils/notificationType';
-import { mapFromRoots } from '../tree-views-container';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -101,25 +100,6 @@ const DirectorySelector = (props) => {
         },
         [addToDirectory, contentFilter]
     );
-
-    function getUnion(array1, array2) {
-        const difference = array1.filter(
-            (element) => !array2.includes(element)
-        );
-        //Find data that are in arrayObjOne but not in arrayObjTwo
-        // let uniqueResultArrayObjOne = array2.filter(function (objOne) {
-        //     return !array1.some(function (objTwo) {
-        //         return (
-        //             objOne.id === objTwo.id &&
-        //             objOne.name === objTwo.name &&
-        //             objOne.icon === objTwo.icon &&
-        //             objOne.subdirectoriesCount === objTwo.subdirectoriesCount
-        //         );
-        //     });
-        // });
-
-        return [...difference, ...array2];
-    }
 
     useEffect(() => {
         if (directoryUpdatedForce.eventData.headers) {
