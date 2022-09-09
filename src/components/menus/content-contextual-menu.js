@@ -385,23 +385,6 @@ const ContentContextualMenu = (props) => {
         );
     }, [isUserAllowed, selectedElements]);
 
-    const allowsCopyFilterToScript = useCallback(() => {
-        return (
-            selectedElements.length === 1 &&
-            selectedElements[0].type === ElementType.FILTER &&
-            selectedElements[0].subtype !== FilterType.SCRIPT
-        );
-    }, [selectedElements]);
-
-    const allowsReplaceFilterWithScript = useCallback(() => {
-        return (
-            selectedElements.length === 1 &&
-            selectedElements[0].type === ElementType.FILTER &&
-            selectedElements[0].subtype !== FilterType.SCRIPT &&
-            isUserAllowed()
-        );
-    }, [isUserAllowed, selectedElements]);
-
     const getActiveContingencyScriptId = () => {
         if (
             activeElement?.type === ElementType.CONTINGENCY_LIST &&
@@ -523,27 +506,6 @@ const ContentContextualMenu = (props) => {
                     handleOpenDialog(
                         DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY
                     );
-                },
-                icon: <InsertDriveFileIcon fontSize="small" />,
-            });
-        }
-
-        if (allowsCopyFilterToScript()) {
-            menuItems.push({ isDivider: true });
-            menuItems.push({
-                messageDescriptorId: 'copyToScript',
-                callback: () => {
-                    handleOpenDialog(DialogsId.COPY_FILTER_TO_SCRIPT);
-                },
-                icon: <FileCopyIcon fontSize="small" />,
-            });
-        }
-
-        if (allowsReplaceFilterWithScript()) {
-            menuItems.push({
-                messageDescriptorId: 'replaceWithScript',
-                callback: () => {
-                    handleOpenDialog(DialogsId.REPLACE_FILTER_BY_SCRIPT);
                 },
                 icon: <InsertDriveFileIcon fontSize="small" />,
             });

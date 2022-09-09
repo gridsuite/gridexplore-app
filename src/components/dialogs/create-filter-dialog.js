@@ -29,6 +29,7 @@ import { useSelector } from 'react-redux';
 import { ElementType, FilterType } from '../../utils/elementType';
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
+import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -95,7 +96,7 @@ const CreateFilterDialog = ({
     customTextCancelBtn,
 }) => {
     const [newNameList, setNewListName] = useState('');
-    const [newListType, setNewListType] = useState(FilterType.SCRIPT);
+    const [newListType, setNewListType] = useState(FilterType.FORM);
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
@@ -168,7 +169,7 @@ const CreateFilterDialog = ({
 
     const resetDialog = () => {
         setNewListName('');
-        setNewListType(FilterType.SCRIPT);
+        setNewListType(FilterType.FORM);
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
         setFilterNameValid(false);
@@ -184,12 +185,11 @@ const CreateFilterDialog = ({
         if (!filterNameValid || loadingCheckFilterName) {
             return;
         }
-        const subtype = newListType === FilterType.SCRIPT ? null : 'LINE';
         createFilter(
             {
                 type: newListType,
                 equipmentFilterForm: {
-                    equipmentType: subtype,
+                    equipmentType: EQUIPMENT_TYPE.LINE.name,
                 },
                 transient: true,
             },
@@ -269,11 +269,6 @@ const CreateFilterDialog = ({
                     onChange={(e) => setNewListType(e.target.value)}
                     row
                 >
-                    <FormControlLabel
-                        value="SCRIPT"
-                        control={<Radio />}
-                        label={<FormattedMessage id="SCRIPT" />}
-                    />
                     <FormControlLabel
                         value="FORM"
                         control={<Radio />}
