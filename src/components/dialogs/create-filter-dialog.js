@@ -20,6 +20,9 @@ import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import TextField from '@mui/material/TextField';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
 import { createFilter, elementExists } from '../../utils/rest-api';
 import Alert from '@mui/material/Alert';
 import { useSelector } from 'react-redux';
@@ -259,6 +262,19 @@ const CreateFilterDialog = ({
                     label={inputLabelText}
                 />
                 {renderFilterNameStatus()}
+                <RadioGroup
+                    aria-label="type"
+                    name="filterType"
+                    value={newListType}
+                    onChange={(e) => setNewListType(e.target.value)}
+                    row
+                >
+                    <FormControlLabel
+                        value="FORM"
+                        control={<Radio />}
+                        label={<FormattedMessage id="FORM" />}
+                    />
+                </RadioGroup>
                 {createFilterErr !== '' && (
                     <Alert severity="error">{createFilterErr}</Alert>
                 )}
