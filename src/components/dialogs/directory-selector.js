@@ -36,6 +36,9 @@ const DirectorySelector = (props) => {
     const rootsRef = useRef([]);
     rootsRef.current = rootDirectories;
 
+    const openRef = useRef();
+    openRef.current = props.open;
+
     const contentFilter = useCallback(
         () => new Set([elementType.DIRECTORY]),
         []
@@ -48,7 +51,6 @@ const DirectorySelector = (props) => {
         (state) => state.directoryUpdated
     );
 
-    // TODO keep only one of both convert recursive function
     const convertChildren = useCallback(
         (children) => {
             let formattedChildren = children.map((e) => {
@@ -155,7 +157,7 @@ const DirectorySelector = (props) => {
     );
 
     useEffect(() => {
-        if (props.open && directoryUpdatedForce.eventData.headers) {
+        if (openRef.current && directoryUpdatedForce.eventData.headers) {
             if (
                 Object.values(notificationType).includes(
                     directoryUpdatedForce.eventData.headers['notificationType']
@@ -172,13 +174,7 @@ const DirectorySelector = (props) => {
                 }
             }
         }
-        // TODO this effect should not been proc if props.open, maybe use openRef here ? beurk
-    }, [
-        directoryUpdatedForce,
-        fetchDirectory,
-        props.open,
-        updateRootDirectories,
-    ]);
+    }, [directoryUpdatedForce, fetchDirectory, updateRootDirectories]);
 
     return (
         <TreeViewFinder
