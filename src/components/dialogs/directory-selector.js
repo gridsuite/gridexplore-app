@@ -13,6 +13,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { getFileIcon, elementType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { notificationType } from '../../utils/notificationType';
+import { updatedTree } from '../tree-views-container';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -27,9 +28,13 @@ function sortAlphabetically(a, b) {
 }
 
 const DirectorySelector = (props) => {
+    const [rootDirectories, setRootDirectories] = useState([]);
     const [data, setData] = useState([]);
     const nodeMap = useRef({});
     const classes = useStyles();
+
+    const rootsRef = useRef([]);
+    rootsRef.current = rootDirectories;
 
     const contentFilter = useCallback(
         () => new Set([elementType.DIRECTORY]),
@@ -43,38 +48,86 @@ const DirectorySelector = (props) => {
         (state) => state.directoryUpdated
     );
 
-    const directory2Tree = useCallback(
-        (newData) => {
-            const newNode = {
-                id: newData.elementUuid,
-                name: newData.elementName,
-                icon: getFileIcon(newData.type, classes.icon),
-                children:
-                    newData.type === elementType.DIRECTORY ? [] : undefined,
-                subdirectoriesCount:
-                    newData.type === elementType.DIRECTORY
-                        ? newData.subdirectoriesCount
-                        : undefined,
-            };
-            return (nodeMap.current[newNode.id] = newNode);
+    // TODO keep only one of both convert recursive function
+    const convertChildren = useCallback(
+        (children) => {
+            let formattedChildren = children.map((e) => {
+                return {
+                    id: e.elementUuid,
+                    name: e.elementName,
+                    icon: getFileIcon(e.type, classes.icon),
+                    children:
+                        e.type === elementType.DIRECTORY
+                            ? convertChildren(e.children)
+                            : undefined,
+                    childrenCount:
+                        e.type === elementType.DIRECTORY
+                            ? e.subdirectoriesCount
+                            : undefined,
+                };
+            });
+
+            return formattedChildren;
         },
-        [nodeMap, classes]
+        [classes.icon]
     );
+
+    const convertRoots = useCallback(
+        (newRoots) => {
+            return newRoots.map((e) => {
+                return {
+                    id: e.elementUuid,
+                    name: e.elementName,
+                    icon: getFileIcon(e.type, classes.icon),
+                    children:
+                        e.type === elementType.DIRECTORY
+                            ? convertChildren(
+                                  nodeMap.current[e.elementUuid].children
+                              )
+                            : undefined,
+                    childrenCount:
+                        e.type === elementType.DIRECTORY
+                            ? e.subdirectoriesCount
+                            : undefined,
+                };
+            });
+        },
+        [classes.icon, convertChildren]
+    );
+
+    const updateRootDirectories = useCallback(() => {
+        fetchRootFolders().then((data) => {
+            let [nrs, mdr] = updatedTree(
+                rootsRef.current,
+                nodeMap.current,
+                null,
+                data
+            );
+            setRootDirectories(nrs);
+            nodeMap.current = mdr;
+            setData(convertRoots(nrs));
+        });
+    }, [convertRoots]);
 
     useEffect(() => {
         if (props.open && data.length === 0) {
-            fetchRootFolders().then((roots) => {
-                setData(roots.map(directory2Tree));
-            });
+            updateRootDirectories();
         }
-    }, [props.open, data, directory2Tree]);
+    }, [props.open, data, updateRootDirectories]);
 
     const addToDirectory = useCallback(
         (nodeId, content) => {
-            const node = nodeMap.current[nodeId];
-            node.children = content.map(directory2Tree);
+            let [nrs, mdr] = updatedTree(
+                rootsRef.current,
+                nodeMap.current,
+                nodeId,
+                content
+            );
+            setRootDirectories(nrs);
+            nodeMap.current = mdr;
+            setData(convertRoots(nrs));
         },
-        [directory2Tree]
+        [convertRoots]
     );
 
     const fetchDirectory = useCallback(
@@ -88,7 +141,6 @@ const DirectorySelector = (props) => {
                             contentFilter().has(item.type)
                         )
                     );
-                    setData([...dataRef.current]);
                 })
                 .catch((reason) => {
                     console.warn(
@@ -103,7 +155,7 @@ const DirectorySelector = (props) => {
     );
 
     useEffect(() => {
-        if (directoryUpdatedForce.eventData.headers) {
+        if (props.open && directoryUpdatedForce.eventData.headers) {
             if (
                 Object.values(notificationType).includes(
                     directoryUpdatedForce.eventData.headers['notificationType']
@@ -116,18 +168,16 @@ const DirectorySelector = (props) => {
                         directoryUpdatedForce.eventData.headers['directoryUuid']
                     );
                 } else {
-                    fetchRootFolders().then((roots) => {
-                        setData(roots.map(directory2Tree));
-                    });
+                    updateRootDirectories();
                 }
             }
         }
+        // TODO this effect should not been proc if props.open, maybe use openRef here ? beurk
     }, [
-        addToDirectory,
-        contentFilter,
-        directory2Tree,
         directoryUpdatedForce,
         fetchDirectory,
+        props.open,
+        updateRootDirectories,
     ]);
 
     return (
