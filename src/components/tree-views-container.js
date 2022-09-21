@@ -79,7 +79,7 @@ function refreshedUpNodes(m, nn) {
     return [nn, ...refreshedUpNodes(m, nextParent)];
 }
 
-export function mapFromRoots(roots) {
+function mapFromRoots(roots) {
     return Object.fromEntries(
         Array.prototype
             .concat(

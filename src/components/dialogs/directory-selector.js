@@ -38,6 +38,7 @@ const DirectorySelector = (props) => {
 
     const dataRef = useRef([]);
     dataRef.current = data;
+
     const directoryUpdatedForce = useSelector(
         (state) => state.directoryUpdated
     );
@@ -76,7 +77,7 @@ const DirectorySelector = (props) => {
         [directory2Tree]
     );
 
-    const updateDirectoryTreeAndContent = useCallback(
+    const fetchDirectory = useCallback(
         (nodeId) => {
             fetchDirectoryContent(nodeId)
                 .then((childrenToBeInserted) => {
@@ -108,36 +109,15 @@ const DirectorySelector = (props) => {
                     directoryUpdatedForce.eventData.headers['notificationType']
                 )
             ) {
-                const filter = contentFilter();
-
                 if (
                     !directoryUpdatedForce.eventData.headers['isRootDirectory']
                 ) {
-                    console.log('notif from other side', directoryUpdatedForce);
-                    updateDirectoryTreeAndContent(
+                    fetchDirectory(
                         directoryUpdatedForce.eventData.headers['directoryUuid']
                     );
                 } else {
                     fetchRootFolders().then((roots) => {
-                        roots
-                            .filter((r) => r.subdirectoriesCount > 0)
-                            .forEach((element) => {
-                                fetchDirectoryContent(element.elementUuid).then(
-                                    (content) => {
-                                        addToDirectory(
-                                            content.elementUuid,
-                                            content.filter((item) =>
-                                                filter.has(item.type)
-                                            )
-                                        );
-                                    }
-                                );
-                                // let arr = [];
-                                // Object.values(nodeMap.current).map((el, key) =>
-                                //     arr.push(el)
-                                // );
-                                setData([...dataRef.current]);
-                            });
+                        setData(roots.map(directory2Tree));
                     });
                 }
             }
@@ -147,18 +127,8 @@ const DirectorySelector = (props) => {
         contentFilter,
         directory2Tree,
         directoryUpdatedForce,
-        updateDirectoryTreeAndContent,
+        fetchDirectory,
     ]);
-
-    const fetchDirectory = (nodeId) => {
-        fetchDirectoryContent(nodeId).then((content) => {
-            addToDirectory(
-                nodeId,
-                content.filter((item) => contentFilter().has(item.type))
-            );
-            setData([...data]);
-        });
-    };
 
     return (
         <TreeViewFinder
