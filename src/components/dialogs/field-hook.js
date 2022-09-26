@@ -21,6 +21,8 @@ import { UploadCase } from './upload-case';
 import makeStyles from '@mui/styles/makeStyles';
 import { removeSelectedFile } from '../../redux/actions';
 import { ElementType } from '../../utils/elementType';
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -242,4 +244,111 @@ export const useNameField = ({
             !error &&
             !checking,
     ];
+};
+
+export const useTableValues = ({
+    id,
+    tableHeadersIds,
+    Field,
+    inputForm,
+    defaultValues,
+    disabled = false,
+}) => {
+    const [values, setValues] = useState([]);
+    const classes = useStyles();
+
+    const handleAddValue = useCallback(() => {
+        setValues((oldValues) => [...oldValues, {}]);
+    }, []);
+
+    const checkValues = useCallback(() => {
+        if (defaultValues !== undefined && defaultValues.length !== 0) {
+            setValues([...defaultValues]);
+        } else {
+            setValues([]);
+            handleAddValue();
+        }
+    }, [defaultValues, handleAddValue]);
+
+    useEffect(() => {
+        checkValues();
+    }, [checkValues]);
+
+    const handleDeleteItem = useCallback(
+        (index) => {
+            setValues((oldValues) => {
+                let newValues = [...oldValues];
+                newValues.splice(index, 1);
+                return newValues;
+            });
+            inputForm.reset();
+        },
+        [inputForm]
+    );
+
+    const handleSetValue = useCallback((index, newValue) => {
+        setValues((oldValues) => {
+            let newValues = [...oldValues];
+            newValues[index] = newValue;
+            return newValues;
+        });
+    }, []);
+
+    const field = useMemo(() => {
+        return (
+            <Grid item container spacing={2}>
+                {tableHeadersIds.map((header) => (
+                    <Grid key={header} item xs={3}>
+                        <FormattedMessage id={header} />
+                    </Grid>
+                ))}
+                <Box sx={{ width: '100%' }} />
+                {values.map((value, idx) => (
+                    <Grid key={id + idx} container spacing={3} item>
+                        <Field
+                            defaultValue={value}
+                            onChange={handleSetValue}
+                            index={idx}
+                            inputForm={inputForm}
+                            disabled={disabled}
+                        />
+                        <Grid item xs={1}>
+                            <IconButton
+                                className={classes.icon}
+                                key={id + idx}
+                                onClick={() => handleDeleteItem(idx)}
+                                disabled={disabled}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </Grid>
+                        {idx === values.length - 1 && (
+                            <Grid item xs={1}>
+                                <IconButton
+                                    className={classes.icon}
+                                    key={id + idx}
+                                    onClick={() => handleAddValue()}
+                                    disabled={disabled}
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </Grid>
+                        )}
+                    </Grid>
+                ))}
+            </Grid>
+        );
+    }, [
+        values,
+        id,
+        classes.icon,
+        handleAddValue,
+        handleDeleteItem,
+        handleSetValue,
+        inputForm,
+        tableHeadersIds,
+        disabled,
+    ]);
+
+    return [values, field];
 };

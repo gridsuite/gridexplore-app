@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import withStyles from '@mui/styles/withStyles';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -30,6 +30,14 @@ import { ElementType, FilterType } from '../../utils/elementType';
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
 import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
+
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import { EquipmentTypes } from '../../utils/equipment-types';
+import { FormattedMessage, useIntl } from 'react-intl';
+import Autocomplete from '@mui/material/Autocomplete';
+import { Chip, Grid, InputLabel, MenuItem } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -96,9 +104,11 @@ const CreateFilterDialog = ({
     customTextCancelBtn,
 }) => {
     const [newNameList, setNewListName] = useState('');
-    const [newListType, setNewListType] = useState(FilterType.FORM);
+    const [newListType, setNewListType] = useState(FilterType.AUTOMATIC);
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
+    const [equipmentType, setEquipmentType] = useState();
+    const [isGeneratorOrLoad, setIsGeneratorOrLoad] = useState(null);
 
     const [filterNameValid, setFilterNameValid] = useState(false);
     const [loadingCheckFilterName, setLoadingCheckFilterName] =
@@ -169,10 +179,44 @@ const CreateFilterDialog = ({
 
     const resetDialog = () => {
         setNewListName('');
-        setNewListType(FilterType.FORM);
+        setNewListType(FilterType.AUTOMATIC);
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
         setFilterNameValid(false);
+    };
+
+    useEffect(() => {
+        setIsGeneratorOrLoad(equipmentType === "GENERATOR" || equipmentType === "LOAD");
+    }, [equipmentType]);
+
+    const handleValidate = () =>  {
+        if (newListType == FilterType.AUTOMATIC) {
+            handleSave();
+        } else if (newListType == FilterType.MANUAL) {
+            return <>
+                <FormControl fullWidth margin={"dense"}>
+                    <InputLabel>
+                        <FormattedMessage id="equipmentType" />
+                    </InputLabel>
+                    <Select
+                        style={{ width: '90%' }}
+                        id="demo-customized-select-native"
+                        label={<FormattedMessage id="equipmentType" />}
+                        value={equipmentType}
+                        onChange={(val) => setEquipmentType(val)}
+                    >
+                        {Object.values(EquipmentTypes).map((val) => (
+                            <MenuItem value={val} key={val}>
+                                {intl.formatMessage({ id: val })}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                {isGeneratorOrLoad && (
+
+                )}
+            </>
+        }
     };
 
     const handleSave = () => {
@@ -231,6 +275,10 @@ const CreateFilterDialog = ({
         );
     };
 
+    useEffect(() => {
+        console.log('test newListType : ', newListType);
+    }, [newListType]);
+
     const handleKeyPressed = (event) => {
         if (event.key === 'Enter') {
             handleSave();
@@ -270,9 +318,19 @@ const CreateFilterDialog = ({
                     row
                 >
                     <FormControlLabel
-                        value="FORM"
+                        value="Automatic"
                         control={<Radio />}
-                        label={<FormattedMessage id="FORM" />}
+                        label={<FormattedMessage id="Automatic" />}
+                    />
+                    <FormControlLabel
+                        value="Manual"
+                        control={<Radio />}
+                        label={<FormattedMessage id="Manual" />}
+                    />
+                    <FormControlLabel
+                        value="ImportCSV"
+                        control={<Radio />}
+                        label={<FormattedMessage id="ImportCSV" />}
                     />
                 </RadioGroup>
                 {createFilterErr !== '' && (

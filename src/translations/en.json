@@ -100,6 +100,9 @@
     "FORM_FILTER": "Filter (form)",
     "SCRIPT_CONTINGENCY_LIST": "Contingency list (script)",
     "FORM_CONTINGENCY_LIST": "Contingency list (form)",
+    "Automatic": "Automatic",
+    "Manual": "Manual",
+    "ImportCSV": "Import CSV",
 
     "LINE": "LINE",
     "TWO_WINDINGS_TRANSFORMER": "2W TRANSFORMER",

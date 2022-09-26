@@ -99,6 +99,9 @@
     "FORM_FILTER": "Filtre (formulaire)",
     "SCRIPT_CONTINGENCY_LIST": "Liste d'aléas (script)",
     "FORM_CONTINGENCY_LIST": "Liste d'aléas (formulaire)",
+    "Automatic": "Automatique",
+    "Manual": "Manuel",
+    "ImportCSV": "Import CSV",
 
     "LINE": "LIGNE",
     "TWO_WINDINGS_TRANSFORMER": "TRANSFO 2E",

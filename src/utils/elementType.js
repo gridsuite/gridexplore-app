@@ -14,8 +14,9 @@ export const ElementType = {
 };
 
 export const FilterType = {
-    FORM: 'FORM',
-    SCRIPT: 'SCRIPT',
+    AUTOMATIC: 'AUTOMATIC',
+    MANUAL: 'MANUAL',
+    IMPORT_CSV: 'IMPORT_CSV'
 };
 
 export const ContingencyListType = {
