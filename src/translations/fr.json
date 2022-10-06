@@ -9,6 +9,7 @@
     "private": "privé",
     "public": "public",
     "emptyDir": "Dossier vide",
+    "ID": "ID",
 
     "createNewStudy": "Créer une étude",
     "studyCreationError": "Erreur lors de la création de l'étude: {studyName}",
@@ -97,11 +98,18 @@
     "STUDY": "Étude",
     "SCRIPT_FILTER": "Filtre (script)",
     "FORM_FILTER": "Filtre (formulaire)",
+    "AUTOMATIC_FILTER": "Filtre (automatique)",
+    "MANUAL_FILTER": "Filtre (Manuel)",
     "SCRIPT_CONTINGENCY_LIST": "Liste d'aléas (script)",
     "FORM_CONTINGENCY_LIST": "Liste d'aléas (formulaire)",
     "Automatic": "Automatique",
     "Manual": "Manuel",
+    "UploadCSV": "Télécharger le csv",
+    "distributionKey": "distribution Key",
+    "GenerateCSV": "Générer le squelette",
+    "CSVFile": "Fichier csv",
     "ImportCSV": "Import CSV",
+    "CsvFileName": "Nom de fichier csv",
 
     "LINE": "LIGNE",
     "TWO_WINDINGS_TRANSFORMER": "TRANSFO 2E",
@@ -145,6 +153,7 @@
 
     "getAppLinkError": "Erreur lors de la récupération du lien vers l'application pour le type = {type}",
     "nameValidityCheckErrorMsg": "Erreur lors de la vérification de la validité du nom : ",
+    "multipleEquipmentTypeError": "Chaque filtre ne doit avoir qu'un seul type d'équipement",
 
     "moveItemTitle": "Déplacer élément vers un autre dossier",
     "moveItemValidate": "{nbElements, plural, =0 {Veuillez sélectionner un dossier} =1 {Déplacer l'élément} other {Déplacer # éléments}}",

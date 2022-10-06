@@ -16,18 +16,29 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/ControlPoint';
 import { useDispatch, useSelector } from 'react-redux';
 import { UploadCase } from './upload-case';
 import makeStyles from '@mui/styles/makeStyles';
 import { removeSelectedFile } from '../../redux/actions';
 import { ElementType } from '../../utils/elementType';
-import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
         margin: 0,
         marginTop: 4,
+    },
+    dragIcon: {
+        padding: theme.spacing(0),
+        border: theme.spacing(1),
+        borderRadius: theme.spacing(0),
+        zIndex: 90,
     },
 }));
 
@@ -252,7 +263,7 @@ export const useTableValues = ({
     Field,
     inputForm,
     defaultValues,
-    disabled = false,
+    isGeneratorOrLoad = false,
 }) => {
     const [values, setValues] = useState([]);
     const classes = useStyles();
@@ -303,21 +314,31 @@ export const useTableValues = ({
                     </Grid>
                 ))}
                 <Box sx={{ width: '100%' }} />
+                <Box sx={{ width: '100%' }} />
                 {values.map((value, idx) => (
-                    <Grid key={id + idx} container spacing={3} item>
+                    <Grid
+                        key={id + idx}
+                        container
+                        spacing={2}
+                        item
+                        draggable={true}
+                    >
+                        <Grid xs={1}>
+                            <IconButton size={'small'}>
+                                <DragIndicatorIcon edge="start" spacing={0} />
+                            </IconButton>
+                        </Grid>
                         <Field
                             defaultValue={value}
                             onChange={handleSetValue}
                             index={idx}
-                            inputForm={inputForm}
-                            disabled={disabled}
+                            isGeneratorOrLoad={isGeneratorOrLoad}
                         />
                         <Grid item xs={1}>
                             <IconButton
                                 className={classes.icon}
                                 key={id + idx}
                                 onClick={() => handleDeleteItem(idx)}
-                                disabled={disabled}
                             >
                                 <DeleteIcon />
                             </IconButton>
@@ -328,12 +349,12 @@ export const useTableValues = ({
                                     className={classes.icon}
                                     key={id + idx}
                                     onClick={() => handleAddValue()}
-                                    disabled={disabled}
                                 >
                                     <AddIcon />
                                 </IconButton>
                             </Grid>
                         )}
+                        <Box sx={{ width: '100%' }} />
                     </Grid>
                 ))}
             </Grid>
@@ -345,9 +366,134 @@ export const useTableValues = ({
         handleAddValue,
         handleDeleteItem,
         handleSetValue,
-        inputForm,
         tableHeadersIds,
-        disabled,
+        isGeneratorOrLoad,
+    ]);
+
+    return [values, field];
+};
+
+export const useEquipmentTableValues = ({
+    id,
+    tableHeadersIds,
+    Field,
+    inputForm,
+    defaultValues,
+    isGeneratorOrLoad = false,
+}) => {
+    const [values, setValues] = useState([]);
+
+    const handleAddValue = useCallback(() => {
+        setValues((oldValues) => [...oldValues, {}]);
+    }, []);
+
+    const checkValues = useCallback(() => {
+        if (defaultValues !== undefined && defaultValues.length !== 0) {
+            setValues([...defaultValues]);
+        } else {
+            setValues([]);
+            handleAddValue();
+        }
+    }, [defaultValues, handleAddValue]);
+
+    useEffect(() => {
+        checkValues();
+    }, [checkValues]);
+
+    const handleDeleteItem = useCallback(
+        (index) => {
+            setValues((oldValues) => {
+                let newValues = [...oldValues];
+                newValues.splice(index, 1);
+                return newValues;
+            });
+            inputForm.reset();
+        },
+        [inputForm]
+    );
+
+    const handleSetValue = useCallback((index, newValue) => {
+        setValues((oldValues) => {
+            let newValues = [...oldValues];
+            newValues[index] = newValue;
+            return newValues;
+        });
+    }, []);
+
+    const handleChangeOrder = useCallback(
+        (index, direction) => {
+            const res = [...values];
+            const [item] = res.splice(index, 1);
+            res.splice(index + direction, 0, item);
+            setValues(res);
+        },
+        [values]
+    );
+
+    const commit = useCallback(
+        ({ source, destination }) => {
+            if (destination === null || source.index === destination.index)
+                return;
+            const res = [...values];
+            const [item] = res.splice(source.index, 1);
+            res.splice(
+                destination ? destination.index : values.length,
+                0,
+                item
+            );
+            setValues(res);
+        },
+        [values]
+    );
+
+    const field = useMemo(() => {
+        return (
+            <DragDropContext onDragEnd={commit}>
+                <Droppable droppableId={'filterTable'}>
+                    {(provided) => (
+                        <div ref={provided.innerRef}>
+                            <Grid container>
+                                <Grid
+                                    container
+                                    xs={12}
+                                    style={{ borderBottom: '1px solid grey' }}
+                                >
+                                    <Grid xs={1} item />
+                                    {tableHeadersIds.map((header) => (
+                                        <Grid xs={4} item>
+                                            <FormattedMessage id={header} />
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                                {values.map((value, idx) => (
+                                    <Field
+                                        id={id}
+                                        value={value}
+                                        isLastValue={idx !== values.length - 1}
+                                        index={idx}
+                                        isGeneratorOrLoad={isGeneratorOrLoad}
+                                        handleAddValue={handleAddValue}
+                                        handleSetValue={handleSetValue}
+                                        handleChangeOrder={handleChangeOrder}
+                                        handleDeleteItem={handleDeleteItem}
+                                    />
+                                ))}
+                            </Grid>
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
+        );
+    }, [
+        values,
+        id,
+        handleAddValue,
+        handleDeleteItem,
+        handleSetValue,
+        handleChangeOrder,
+        tableHeadersIds,
+        commit,
+        isGeneratorOrLoad,
     ]);
 
     return [values, field];

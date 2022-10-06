@@ -9,6 +9,7 @@
     "private": "private",
     "public": "public",
     "emptyDir": "Empty directory",
+    "ID": "ID",
 
     "createNewStudy": "Create a study",
     "studyCreationError": "Error when creating study: {studyName}",
@@ -98,11 +99,18 @@
     "STUDY": "Study",
     "SCRIPT_FILTER": "Filter (script)",
     "FORM_FILTER": "Filter (form)",
+    "AUTOMATIC_FILTER": "Filter (automatic)",
+    "MANUAL_FILTER": "Filter (Manual)",
     "SCRIPT_CONTINGENCY_LIST": "Contingency list (script)",
     "FORM_CONTINGENCY_LIST": "Contingency list (form)",
     "Automatic": "Automatic",
     "Manual": "Manual",
+    "UploadCSV": "Upload CSV",
+    "distributionKey": "distribution Key",
+    "GenerateCSV": "Generate CSV skeleton",
+    "CSVFile": "CSV file",
     "ImportCSV": "Import CSV",
+    "CsvFileName": "CSV file name",
 
     "LINE": "LINE",
     "TWO_WINDINGS_TRANSFORMER": "2W TRANSFORMER",
@@ -146,6 +154,7 @@
 
     "getAppLinkError": "Error getting application link for type = {type}",
     "nameValidityCheckErrorMsg": "Error checking name validity : ",
+    "multipleEquipmentTypeError": "Every filter should have one equipment type only",
 
     "moveItemTitle": "Move element to another folder",
     "moveItemValidate": "{nbElements, plural, =0 {Please select a folder} =1 {Move element} other {Move # elements}}",

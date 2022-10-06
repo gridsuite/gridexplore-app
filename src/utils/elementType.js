@@ -16,7 +16,7 @@ export const ElementType = {
 export const FilterType = {
     AUTOMATIC: 'AUTOMATIC',
     MANUAL: 'MANUAL',
-    IMPORT_CSV: 'IMPORT_CSV'
+    IMPORT_CSV: 'IMPORT_CSV',
 };
 
 export const ContingencyListType = {

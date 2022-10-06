@@ -38,7 +38,9 @@ import {
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
 import { CreateCaseDialog } from '../dialogs/create-case-dialog';
-import { ElementType } from '../../utils/elementType';
+import { ElementType, FilterType } from '../../utils/elementType';
+import ManualFilterCreationDialog from '../dialogs/manual-filter-creation-dialog';
+import CsvImportFilterCreation from '../dialogs/csv-import-filter-creation';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
@@ -48,6 +50,9 @@ const DirectoryTreeContextualMenu = (props) => {
     const intl = useIntl();
 
     const [hideMenu, setHideMenu] = useState(false);
+
+    const [filterCreationType, setFilterCreationType] = useState(null);
+    const [filterName, setFilterName] = useState(null);
 
     const handleOpenDialog = (dialogId) => {
         setHideMenu(true);
@@ -293,10 +298,39 @@ const DirectoryTreeContextualMenu = (props) => {
                 inputLabelText={<FormattedMessage id="nameProperty" />}
                 customTextValidationBtn={<FormattedMessage id="validate" />}
                 customTextCancelBtn={<FormattedMessage id="cancel" />}
+                setFilterCreationType={setFilterCreationType}
+                setFilterName={setFilterName}
             />
             <CreateCaseDialog
                 open={openDialog === DialogsId.ADD_NEW_CASE}
                 onClose={handleCloseDialog}
+            />
+            <ManualFilterCreationDialog
+                open={
+                    filterCreationType &&
+                    filterCreationType.toUpperCase() === FilterType.MANUAL
+                }
+                title={<FormattedMessage id="createNewFilter" />}
+                name={filterName}
+                inputLabelText={<FormattedMessage id="nameProperty" />}
+                customTextValidationBtn={<FormattedMessage id="validate" />}
+                customTextCancelBtn={<FormattedMessage id="cancel" />}
+                OnClose={onClose}
+                setFilterCreationType={setFilterCreationType}
+            />
+            <CsvImportFilterCreation
+                id={'id import csv'}
+                label={'import csv'}
+                title={<FormattedMessage id="createNewFilter" />}
+                name={filterName}
+                OnClose={onClose}
+                open={
+                    filterCreationType &&
+                    filterCreationType.toUpperCase() === FilterType.IMPORT_CSV
+                }
+                customTextValidationBtn={<FormattedMessage id="validate" />}
+                customTextCancelBtn={<FormattedMessage id="cancel" />}
+                setFilterCreationType={setFilterCreationType}
             />
         </>
     );

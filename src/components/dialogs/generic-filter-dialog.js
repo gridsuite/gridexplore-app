@@ -50,9 +50,10 @@ const genericFields = {
     },
 };
 
-const equipmentsDefinition = {
+export const equipmentsDefinition = {
     LINE: {
         label: 'Lines',
+        type: 'LINE',
         fields: {
             countries: {
                 name: 'Countries',
@@ -73,6 +74,7 @@ const equipmentsDefinition = {
     },
     TWO_WINDINGS_TRANSFORMER: {
         label: 'TwoWindingsTransformers',
+        type: 'TWO_WINDINGS_TRANSFORMER',
         fields: {
             countries: {
                 name: 'Countries',
@@ -91,6 +93,7 @@ const equipmentsDefinition = {
     },
     THREE_WINDINGS_TRANSFORMER: {
         label: 'ThreeWindingsTransformers',
+        type: 'THREE_WINDINGS_TRANSFORMER',
         fields: {
             countries: {
                 name: 'Countries',
@@ -110,6 +113,7 @@ const equipmentsDefinition = {
     },
     GENERATOR: {
         label: 'Generators',
+        type: 'GENERATOR',
         fields: {
             countries: {
                 name: 'Countries',
@@ -127,6 +131,7 @@ const equipmentsDefinition = {
     },
     LOAD: {
         label: 'Loads',
+        type: 'LOAD',
         fields: {
             countries: {
                 name: 'Countries',
@@ -144,6 +149,7 @@ const equipmentsDefinition = {
     },
     BATTERY: {
         label: 'Batteries',
+        type: 'BATTERY',
         fields: {
             countries: {
                 name: 'Countries',
@@ -161,6 +167,7 @@ const equipmentsDefinition = {
     },
     SHUNT_COMPENSATOR: {
         label: 'ShuntCompensators',
+        type: 'SHUNT_COMPENSATOR',
         fields: {
             countries: {
                 name: 'Countries',
@@ -178,6 +185,7 @@ const equipmentsDefinition = {
     },
     STATIC_VAR_COMPENSATOR: {
         label: 'StaticVarCompensators',
+        type: 'STATIC_VAR_COMPENSATOR',
         fields: {
             countries: {
                 name: 'Countries',
@@ -195,6 +203,7 @@ const equipmentsDefinition = {
     },
     DANGLING_LINE: {
         label: 'DanglingLines',
+        type: 'DANGLING_LINE',
         fields: {
             countries: {
                 name: 'Countries',
@@ -212,6 +221,7 @@ const equipmentsDefinition = {
     },
     LCC_CONVERTER_STATION: {
         label: 'LccConverterStations',
+        type: 'LCC_CONVERTER_STATION',
         fields: {
             countries: {
                 name: 'Countries',
@@ -229,6 +239,7 @@ const equipmentsDefinition = {
     },
     VSC_CONVERTER_STATION: {
         label: 'VscConverterStations',
+        type: 'VSC_CONVERTER_STATION',
         fields: {
             countries: {
                 name: 'Countries',
@@ -246,6 +257,7 @@ const equipmentsDefinition = {
     },
     HVDC_LINE: {
         label: 'HvdcLines',
+        type: 'HVDC_LINE',
         fields: {
             countries: {
                 name: 'Countries',
@@ -349,7 +361,7 @@ export const FilterTypeSelection = ({ type, onChange, disabled }) => {
             >
                 <Switch />
             </Grid>
-            <Grid xs={2} item className={classes.idText}>
+            <Grid xs={4} item className={classes.idText}>
                 <Typography component="span" variant="body1">
                     <FormattedMessage id={'equipmentType'} />
                 </Typography>
@@ -359,6 +371,7 @@ export const FilterTypeSelection = ({ type, onChange, disabled }) => {
                     value={type === null ? '' : type}
                     onChange={(e) => onChange(e.target.value)}
                     disabled={disabled}
+                    fullWidth={true}
                 >
                     {Object.entries(equipmentsDefinition).map(
                         ([key, value]) => (
@@ -414,7 +427,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     function onChange(newVal) {
         currentFilter.current = {};
         currentFilter.current.id = id;
-        currentFilter.current.type = FilterType.FORM;
+        currentFilter.current.type = FilterType.AUTOMATIC;
         currentFilter.current.equipmentFilterForm = newVal;
         setBtnSaveListDisabled(false);
     }
