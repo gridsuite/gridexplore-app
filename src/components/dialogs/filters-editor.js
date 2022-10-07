@@ -8,11 +8,12 @@ import React from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
 import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { EquipmentTypes } from '../../utils/equipment-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Autocomplete from '@mui/material/Autocomplete';
-import { Chip, FormControl, Grid, InputLabel, MenuItem } from '@mui/material';
+import { Chip, Grid, InputLabel, MenuItem } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -86,7 +87,7 @@ const FiltersEditor = ({ filters, onChange }) => {
         });
     }
 
-    const nominalVoltageOperators = ['=', '>', '>=', '<', '<=', 'intervalle'];
+    const nominalVoltageOperators = ['=', '>', '>=', '<', '<='];
 
     return (
         <>
@@ -112,8 +113,8 @@ const FiltersEditor = ({ filters, onChange }) => {
                 <InputLabel className={classes.inputLegend}>
                     <FormattedMessage id="nominalVoltage" />
                 </InputLabel>
-                <Grid container spacing={0}>
-                    <Grid item>
+                <Grid container style={{ width: '90%' }} spacing={0}>
+                    <Grid item xs={2}>
                         <Select
                             fullWidth
                             style={{
@@ -129,23 +130,9 @@ const FiltersEditor = ({ filters, onChange }) => {
                             ))}
                         </Select>
                     </Grid>
-                    <Grid item>
+                    <Grid xs={10} item>
                         <TextField
-                            onChange={handleNominalVoltage}
-                            value={
-                                filters.nominalVoltage === -1
-                                    ? ''
-                                    : filters.nominalVoltage
-                            }
-                            InputProps={{
-                                style: {
-                                    borderRadius: '0 4px 4px 0',
-                                },
-                            }}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <TextField
+                            fullWidth
                             onChange={handleNominalVoltage}
                             value={
                                 filters.nominalVoltage === -1
