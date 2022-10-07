@@ -14,14 +14,9 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { useParameterState } from './parameters-dialog';
 import { getComputedLanguage } from '../../utils/language';
-import withStyles from '@mui/styles/withStyles';
 import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-        padding: '15px 40px',
-    },
     inputLegend: {
         backgroundImage:
             'linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))',
@@ -29,23 +24,6 @@ const useStyles = makeStyles((theme) => ({
         padding: '0 8px 0 8px',
     },
 }));
-
-const CustomTextField = withStyles(() => ({
-    root: {
-        width: '90%',
-    },
-}))(TextField);
-
-export const StringInput = ({ initialValue, onChange }) => {
-    return (
-        <TextField
-            onChange={(e) => {
-                onChange(e.target.value);
-            }}
-            defaultValue={initialValue}
-        />
-    );
-};
 
 export const CountriesSelection = ({
     initialValue,
@@ -83,7 +61,7 @@ export const CountriesSelection = ({
                     options={Object.keys(countriesList.object())}
                     getOptionLabel={(code) => countriesList.get(code)}
                     renderInput={(props) => (
-                        <CustomTextField
+                        <TextField
                             label={<FormattedMessage id={titleMessage} />}
                             {...props}
                         />
@@ -139,7 +117,16 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
                     <FormattedMessage id={titleMessage} />
                 </InputLabel>
                 <Grid container spacing={0}>
-                    <Grid item>
+                    <Grid
+                        item
+                        style={
+                            equalityType === RangeType.range
+                                ? {
+                                      flex: 'min-content',
+                                  }
+                                : {}
+                        }
+                    >
                         <Select
                             fullWidth
                             style={{
@@ -212,10 +199,6 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
 };
 
 export const filteredTypes = {
-    string: {
-        defaultValue: '',
-        renderer: StringInput,
-    },
     countries: {
         defaultValue: [],
         renderer: CountriesSelection,

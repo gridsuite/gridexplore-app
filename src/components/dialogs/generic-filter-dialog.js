@@ -248,7 +248,6 @@ export const FilterTypeSelection = ({ type, onChange }) => {
                 </InputLabel>
 
                 <Select
-                    style={{ width: '90%' }}
                     label={<FormattedMessage id={'equipmentType'} />}
                     value={type === null ? '' : type}
                     onChange={(e) => onChange(e.target.value)}
