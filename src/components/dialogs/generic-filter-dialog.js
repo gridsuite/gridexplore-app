@@ -216,30 +216,21 @@ function deepCopy(aObject) {
 }
 
 function generateDefaultValue(val, originalValue) {
-    if (originalValue != null) return { enabled: true, value: originalValue };
+    if (originalValue != null) return { value: originalValue };
     return {
-        enabled: true, // val == null, TODO rm toggle, all fields always enable
         value: deepCopy(val.defaultValue) || deepCopy(val.type.defaultValue),
     };
 }
 
 const SingleFilter = ({ filter, definition, onChange, sequence }) => {
-    const [enabled, setEnabled] = useState(filter.enabled);
-
     const localChange = (newVal) => {
         filter.value = newVal;
         onChange();
     };
 
-    const toggleFilter = () => {
-        filter.enabled = !enabled;
-        setEnabled(filter.enabled);
-        onChange();
-    };
     return definition.type.renderer({
         initialValue: filter.value,
         onChange: localChange,
-        disabled: !enabled,
         titleMessage: definition.displayName
             ? definition.displayName
             : sequence
@@ -248,7 +239,7 @@ const SingleFilter = ({ filter, definition, onChange, sequence }) => {
     });
 };
 
-export const FilterTypeSelection = ({ type, onChange, disabled }) => {
+export const FilterTypeSelection = ({ type, onChange }) => {
     return (
         <>
             <FormControl fullWidth margin="dense">
@@ -261,7 +252,6 @@ export const FilterTypeSelection = ({ type, onChange, disabled }) => {
                     label={<FormattedMessage id={'equipmentType'} />}
                     value={type === null ? '' : type}
                     onChange={(e) => onChange(e.target.value)}
-                    disabled={disabled}
                 >
                     {Object.entries(equipmentsDefinition).map(
                         ([key, value]) => (
@@ -280,7 +270,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [filterType, setFilterType] = useState(null);
     const [currentFormEdit, setCurrentFormEdit] = useState({
-        type: { enabled: true, value: filterType },
+        type: { value: filterType },
     });
     const currentFilter = useRef(null);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
@@ -293,14 +283,13 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
                 setFilterType(response.equipmentFilterForm.equipmentType);
                 setCurrentFormEdit({
                     equipmentType: {
-                        enabled: true,
                         value: response.equipmentFilterForm.equipmentType,
                     },
                 });
             });
         } else {
             setCurrentFormEdit({
-                equipmentType: { enabled: true, value: null },
+                equipmentType: { value: null },
             });
             currentFilter.current = null;
             setInitialFilter(null);
@@ -326,7 +315,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
         onClose();
         currentFilter.current = null;
         setCurrentFormEdit({
-            equipmentType: { enabled: true, value: null },
+            equipmentType: { value: null },
         });
         setInitialFilter(null);
         setFilterType(null);
@@ -357,7 +346,6 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
 
     const editDone = () => {
         let res = {};
-        console.info('DBR ', currentFormEdit);
         Object.entries(currentFormEdit).forEach(([key, obj]) => {
             if (
                 key.startsWith('nominalVoltage') && // dont send nominalVoltage with null values
@@ -365,7 +353,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
             ) {
                 res[key] = null;
             } else {
-                res[key] = obj.enabled ? obj.value : null;
+                res[key] = obj.value;
             }
         });
         onChange(res);
@@ -373,7 +361,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
 
     const changeFilterType = (newType) => {
         // TODO: should reset all fields in currentFormEdit
-        currentFormEdit.equipmentType = { enabled: true, value: newType };
+        currentFormEdit.equipmentType = { value: newType };
         setFilterType(newType);
         editDone();
     };
@@ -437,7 +425,6 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
                     {FilterTypeSelection({
                         type: filterType,
                         onChange: changeFilterType,
-                        disabled: false,
                     })}
                     {renderSpecific()}
                 </Grid>

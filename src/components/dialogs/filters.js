@@ -36,13 +36,12 @@ const CustomTextField = withStyles(() => ({
     },
 }))(TextField);
 
-export const StringInput = ({ initialValue, onChange, disabled }) => {
+export const StringInput = ({ initialValue, onChange }) => {
     return (
         <TextField
             onChange={(e) => {
                 onChange(e.target.value);
             }}
-            disabled={disabled}
             defaultValue={initialValue}
         />
     );
@@ -51,7 +50,6 @@ export const StringInput = ({ initialValue, onChange, disabled }) => {
 export const CountriesSelection = ({
     initialValue,
     onChange,
-    disabled,
     titleMessage,
 }) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
@@ -78,7 +76,6 @@ export const CountriesSelection = ({
                     id="select_countries"
                     value={value}
                     multiple={true}
-                    disabled={disabled}
                     onChange={(oldVal, newVal) => {
                         onChange(newVal);
                         setValue(newVal);
@@ -116,12 +113,7 @@ export const RangeType = {
     range: 'RANGE',
 };
 
-export const RangeSelection = ({
-    initialValue,
-    onChange,
-    disabled,
-    titleMessage,
-}) => {
+export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
     const [equalityType, setEqualityType] = useState(initialValue.type);
     const range = useRef(initialValue);
     const classes = useStyles();
@@ -168,7 +160,6 @@ export const RangeSelection = ({
                             onChange={(e) => {
                                 onSetNumber(0, e.target.value);
                             }}
-                            disabled={disabled}
                             defaultValue={range.current.value1}
                             InputProps={
                                 equalityType === RangeType.range
@@ -198,7 +189,6 @@ export const RangeSelection = ({
                                 onChange={(e) => {
                                     onSetNumber(1, e.target.value);
                                 }}
-                                disabled={disabled}
                                 defaultValue={range.current.value2}
                                 InputProps={{
                                     style: {
