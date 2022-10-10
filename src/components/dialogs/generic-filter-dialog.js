@@ -331,25 +331,21 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     };
 
     function validVoltageValues(obj) {
-        let value1 =
+        let value1NotNull =
             obj.value.hasOwnProperty('value1') && obj.value['value1'] !== null;
-        if (obj.value.type === 'RANGE') {
-            return (
-                value1 &&
-                obj.value.hasOwnProperty('value2') &&
-                obj.value['value2'] !== null
-            );
+        if (obj.value.type !== 'RANGE') {
+            return value1NotNull;
         }
-        return value1;
+        let value2NotNull =
+            obj.value.hasOwnProperty('value2') && obj.value['value2'] !== null;
+        return value1NotNull && value2NotNull;
     }
 
     const editDone = () => {
         let res = {};
         Object.entries(currentFormEdit).forEach(([key, obj]) => {
-            if (
-                key.startsWith('nominalVoltage') && // dont send nominalVoltage with null values
-                !validVoltageValues(obj)
-            ) {
+            if (key.startsWith('nominalVoltage') && !validVoltageValues(obj)) {
+                // dont send nominalVoltage with null value1/value2 properties
                 res[key] = null;
             } else {
                 res[key] = obj.value;
