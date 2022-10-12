@@ -95,6 +95,12 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
     const [equalityType, setEqualityType] = useState(initialValue.type);
     const range = useRef(initialValue);
     const classes = useStyles();
+    const [currentValue1, setCurrentValue1] = useState(
+        range.current.value1 ? range.current.value1 : ''
+    );
+    const [currentValue2, setCurrentValue2] = useState(
+        range.current.value2 ? range.current.value2 : ''
+    );
 
     function onSetEqualityType(e) {
         range.current.type = e.target.value;
@@ -103,9 +109,14 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
         setEqualityType(e.target.value);
     }
 
+    const regex = /^[0-9]*[.]?[0-9]*$/;
+
     function onSetNumber(index, value) {
-        range.current['value' + (index + 1)] = value === '' ? null : value;
-        onChange(range.current);
+        if (value === '' || regex.test(value)) {
+            index === 0 ? setCurrentValue1(value) : setCurrentValue2(value);
+            range.current['value' + (index + 1)] = value === '' ? null : value;
+            onChange(range.current);
+        }
     }
 
     const intl = useIntl();
@@ -147,7 +158,7 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
                             onChange={(e) => {
                                 onSetNumber(0, e.target.value);
                             }}
-                            defaultValue={range.current.value1}
+                            value={currentValue1}
                             InputProps={
                                 equalityType === RangeType.range
                                     ? {
@@ -161,8 +172,6 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
                                           },
                                       }
                             }
-                            inputMode={'numeric'}
-                            type="number"
                             placeholder={
                                 equalityType === RangeType.range
                                     ? intl.formatMessage({ id: 'Min' })
@@ -176,14 +185,12 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
                                 onChange={(e) => {
                                     onSetNumber(1, e.target.value);
                                 }}
-                                defaultValue={range.current.value2}
+                                value={currentValue2}
                                 InputProps={{
                                     style: {
                                         borderRadius: '0 4px 4px 0',
                                     },
                                 }}
-                                inputMode={'numeric'}
-                                type="number"
                                 placeholder={
                                     equalityType === RangeType.range
                                         ? intl.formatMessage({ id: 'Max' })
