@@ -15,6 +15,7 @@ import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { useParameterState } from './parameters-dialog';
 import { getComputedLanguage } from '../../utils/language';
 import makeStyles from '@mui/styles/makeStyles';
+import { useSnackMessage } from '../../utils/messages';
 
 const useStyles = makeStyles((theme) => ({
     inputLegend: {
@@ -101,6 +102,7 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
     const [currentValue2, setCurrentValue2] = useState(
         range.current.value2 ? range.current.value2 : ''
     );
+    const { snackInfo } = useSnackMessage();
 
     function onSetEqualityType(e) {
         range.current.type = e.target.value;
@@ -109,13 +111,29 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
         setEqualityType(e.target.value);
     }
 
-    const regex = /^[0-9]*[.]?[0-9]*$/;
+    // a nominal voltage is positive
+    const regex = /^[0-9]*[.,]?[0-9]*$/;
 
-    function onSetNumber(index, value) {
-        if (value === '' || regex.test(value)) {
+    function onSetNumber(index, newValue) {
+        if (newValue === '' || regex.test(newValue)) {
+            let value = newValue.replace(',', '.');
             index === 0 ? setCurrentValue1(value) : setCurrentValue2(value);
             range.current['value' + (index + 1)] = value === '' ? null : value;
             onChange(range.current);
+        }
+    }
+
+    function handlePaste(index, evt) {
+        let newValue = evt.clipboardData.getData('text');
+        if (newValue !== '' && !regex.test(newValue)) {
+            // the clipboard data is bad: clear input and display an info message
+            onSetNumber(index, '');
+            evt.preventDefault(); // dont call onChange after onPaste
+            snackInfo(
+                '"' + newValue + '"',
+                'cannotPasteTextAsNominalVoltage',
+                {}
+            );
         }
     }
 
@@ -155,6 +173,9 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
                     </Grid>
                     <Grid item>
                         <TextField
+                            onPaste={(e) => {
+                                handlePaste(0, e);
+                            }}
                             onChange={(e) => {
                                 onSetNumber(0, e.target.value);
                             }}
@@ -183,7 +204,7 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
                         <Grid item>
                             <TextField
                                 onChange={(e) => {
-                                    onSetNumber(1, e.target.value);
+                                    onSetNumber(1, e);
                                 }}
                                 value={currentValue2}
                                 InputProps={{

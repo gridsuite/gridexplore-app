@@ -68,3 +68,96 @@ export const useSnackbarMessage = () => {
     );
     return message;
 };
+
+function displayMessageWithSnackbar({
+    errorMessage,
+    enqueueSnackbar,
+    headerMessage: { headerMessageId, headerMessageValues, intlRef } = {},
+    level,
+    persistent,
+}) {
+    let message;
+    if (headerMessageId) {
+        let messageHeader = intlRef.current.formatMessage(
+            {
+                id: headerMessageId,
+            },
+            headerMessageValues
+        );
+        message =
+            messageHeader + (!errorMessage.empty ? '\n\n' + errorMessage : '');
+    } else {
+        message = errorMessage;
+    }
+    enqueueSnackbar(message, {
+        variant: level,
+        persist: persistent,
+        style: { whiteSpace: 'pre-line' },
+    });
+}
+
+// TODO messages.js from GridStudy must be set and used in commonUI
+
+export function displayInfoMessageWithSnackbar({ ...args }) {
+    displayMessageWithSnackbar({ ...args, level: 'info', persistent: false });
+}
+
+export function displayWarningMessageWithSnackbar({ ...args }) {
+    displayMessageWithSnackbar({
+        ...args,
+        level: 'warning',
+        persistent: true,
+    });
+}
+
+export function useSnackMessage() {
+    const intlRef = useIntlRef();
+    const { enqueueSnackbar } = useSnackbar();
+
+    const snackError = useCallback(
+        (msg, headerMessageId, headerValues) =>
+            displayErrorMessageWithSnackbar({
+                errorMessage: msg,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: headerMessageId,
+                    intlRef: intlRef,
+                    headerMessageValues: headerValues,
+                },
+            }),
+
+        [enqueueSnackbar, intlRef]
+    );
+
+    const snackInfo = useCallback(
+        (msg, headerMessageId, headerValues) =>
+            displayInfoMessageWithSnackbar({
+                errorMessage: msg,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: headerMessageId,
+                    intlRef: intlRef,
+                    headerMessageValues: headerValues,
+                },
+            }),
+
+        [enqueueSnackbar, intlRef]
+    );
+
+    const snackWarning = useCallback(
+        (msg, headerMessageId, headerValues) =>
+            displayWarningMessageWithSnackbar({
+                errorMessage: msg,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: headerMessageId,
+                    intlRef: intlRef,
+                    headerMessageValues: headerValues,
+                },
+            }),
+
+        [enqueueSnackbar, intlRef]
+    );
+
+    return { snackError, snackInfo, snackWarning };
+}
