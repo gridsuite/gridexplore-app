@@ -116,7 +116,7 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
 
     function onSetNumber(index, newValue) {
         if (newValue === '' || regex.test(newValue)) {
-            let value = newValue.replace(',', '.');
+            const value = newValue.replace(',', '.');
             index === 0 ? setCurrentValue1(value) : setCurrentValue2(value);
             range.current['value' + (index + 1)] = value === '' ? null : value;
             onChange(range.current);
@@ -124,17 +124,19 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
     }
 
     function handlePaste(index, evt) {
-        let newValue = evt.clipboardData.getData('text');
+        const newValue = evt.clipboardData.getData('text').trim(); // trim spaces in pasted value
         if (newValue !== '' && !regex.test(newValue)) {
             // the clipboard data is bad: clear input and display an info message
             onSetNumber(index, '');
-            evt.preventDefault(); // dont call onChange after onPaste
             snackInfo(
                 '"' + newValue + '"',
                 'cannotPasteTextAsNominalVoltage',
                 {}
             );
+        } else {
+            onSetNumber(index, newValue);
         }
+        evt.preventDefault(); // dont call onChange after onPaste
     }
 
     const intl = useIntl();
