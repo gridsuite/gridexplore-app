@@ -8,12 +8,17 @@ import React from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
 import TextField from '@mui/material/TextField';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import { EquipmentTypes } from '../../utils/equipment-types';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Autocomplete from '@mui/material/Autocomplete';
-import { Chip, Grid, InputLabel, MenuItem } from '@mui/material';
+import {
+    Autocomplete,
+    Chip,
+    FormControl,
+    Grid,
+    InputLabel,
+    MenuItem,
+    Select,
+} from '@mui/material';
+import { EquipmentTypes } from '../../utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -34,7 +39,7 @@ const CustomTextField = withStyles(() => ({
     },
 }))(TextField);
 
-const FiltersEditor = ({ filters, onChange }) => {
+const FiltersEditor = ({ filters, onChange, nbVoltage, nbCountry }) => {
     const classes = useStyles();
 
     let countriesList;
@@ -57,6 +62,7 @@ const FiltersEditor = ({ filters, onChange }) => {
             nominalVoltageOperator: event.target.value,
             nominalVoltage: filters.nominalVoltage,
             countries: filters.countries,
+            countries2: filters.countries2,
         });
     }
 
@@ -66,15 +72,21 @@ const FiltersEditor = ({ filters, onChange }) => {
             nominalVoltageOperator: filters.nominalVoltageOperator,
             nominalVoltage: filters.nominalVoltage,
             countries: filters.countries,
+            countries2:
+                event.target.value !== 'LINE' &&
+                event.target.value !== 'HVDC_LINE'
+                    ? []
+                    : filters.countries2,
         });
     }
 
-    function handleCountrySelection(newValue) {
+    function handleCountrySelection(index, newValue) {
         onChange({
             equipmentType: filters.equipmentType,
             nominalVoltageOperator: filters.nominalVoltageOperator,
             nominalVoltage: filters.nominalVoltage,
-            countries: newValue,
+            countries: index === 0 ? newValue : filters.countries,
+            countries2: index === 0 ? filters.countries2 : newValue,
         });
     }
 
@@ -84,10 +96,11 @@ const FiltersEditor = ({ filters, onChange }) => {
             nominalVoltageOperator: filters.nominalVoltageOperator,
             nominalVoltage: event.target.value,
             countries: filters.countries,
+            countries2: filters.countries2,
         });
     }
 
-    const nominalVoltageOperators = ['=', '>', '>=', '<', '<='];
+    const nominalVoltageOperators = ['=', '>', '>=', '<', '<=', 'range'];
 
     return (
         <>
@@ -109,74 +122,102 @@ const FiltersEditor = ({ filters, onChange }) => {
                     ))}
                 </Select>
             </FormControl>
-            <FormControl fullWidth margin="dense">
-                <InputLabel className={classes.inputLegend}>
-                    <FormattedMessage id="nominalVoltage" />
-                </InputLabel>
-                <Grid container style={{ width: '90%' }} spacing={0}>
-                    <Grid item xs={2}>
-                        <Select
-                            fullWidth
-                            style={{
-                                borderRadius: '4px 0 0 4px',
-                            }}
-                            value={filters.nominalVoltageOperator}
-                            onChange={handleOperator}
-                        >
-                            {nominalVoltageOperators.map((operator) => (
-                                <MenuItem key={operator} value={operator}>
-                                    {operator}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </Grid>
-                    <Grid xs={10} item>
-                        <TextField
-                            fullWidth
-                            onChange={handleNominalVoltage}
-                            value={
-                                filters.nominalVoltage === -1
-                                    ? ''
-                                    : filters.nominalVoltage
-                            }
-                            InputProps={{
-                                style: {
-                                    borderRadius: '0 4px 4px 0',
-                                },
-                            }}
-                        />
-                    </Grid>
-                </Grid>
-            </FormControl>
-
-            <FormControl fullWidth margin="dense">
-                <Autocomplete
-                    id="select_countries"
-                    value={filters.countries}
-                    multiple={true}
-                    onChange={(event, newValue) => {
-                        handleCountrySelection(newValue);
-                    }}
-                    options={Object.keys(countriesList.object())}
-                    getOptionLabel={(code) => countriesList.get(code)}
-                    renderInput={(props) => (
-                        <CustomTextField
-                            label={<FormattedMessage id="Countries" />}
-                            {...props}
-                        />
-                    )}
-                    renderTags={(val, getTagsProps) =>
-                        val.map((code, index) => (
-                            <Chip
-                                id={'chip_' + code}
-                                size={'small'}
-                                label={countriesList.get(code)}
-                                {...getTagsProps({ index })}
+            {[...Array(nbCountry).keys()].map((countryIndex) => (
+                <FormControl fullWidth margin="dense">
+                    <Autocomplete
+                        id={'select_countries_' + countryIndex}
+                        value={
+                            countryIndex === 0
+                                ? filters.countries
+                                : filters.countries2
+                        }
+                        multiple={true}
+                        onChange={(event, newValue) => {
+                            handleCountrySelection(countryIndex, newValue);
+                        }}
+                        options={Object.keys(countriesList.object())}
+                        getOptionLabel={(code) => countriesList.get(code)}
+                        renderInput={(props) => (
+                            <CustomTextField
+                                label={
+                                    nbCountry < 2 ? (
+                                        <FormattedMessage id="Countries" />
+                                    ) : (
+                                        <FormattedMessage
+                                            id={
+                                                'Countries' + (countryIndex + 1)
+                                            }
+                                        />
+                                    )
+                                }
+                                {...props}
                             />
-                        ))
-                    }
-                />
-            </FormControl>
+                        )}
+                        renderTags={(val, getTagsProps) =>
+                            val.map((code, index) => (
+                                <Chip
+                                    id={'chip_' + code}
+                                    size={'small'}
+                                    label={countriesList.get(code)}
+                                    {...getTagsProps({ index })}
+                                />
+                            ))
+                        }
+                    />
+                </FormControl>
+            ))}
+            {[...Array(nbVoltage).keys()].map((voltageIndex) => (
+                <FormControl fullWidth margin="dense">
+                    <InputLabel className={classes.inputLegend}>
+                        {nbVoltage < 2 ? (
+                            <FormattedMessage id="nominalVoltage" />
+                        ) : (
+                            <FormattedMessage
+                                id={'nominalVoltage' + (voltageIndex + 1)}
+                            />
+                        )}
+                    </InputLabel>
+                    <Grid container style={{ width: '90%' }} spacing={0}>
+                        <Grid item xs={2}>
+                            <Select
+                                fullWidth
+                                id={'select_voltage_operator_' + voltageIndex}
+                                style={{
+                                    borderRadius: '4px 0 0 4px',
+                                }}
+                                value={filters.nominalVoltageOperator}
+                                onChange={handleOperator}
+                            >
+                                {nominalVoltageOperators.map((operator) => (
+                                    <MenuItem
+                                        key={operator + '_' + voltageIndex}
+                                        value={operator}
+                                    >
+                                        {operator}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </Grid>
+                        <Grid xs={10} item>
+                            <TextField
+                                fullWidth
+                                id={'input_voltage_value_' + voltageIndex}
+                                onChange={handleNominalVoltage}
+                                value={
+                                    filters.nominalVoltage === -1
+                                        ? ''
+                                        : filters.nominalVoltage
+                                }
+                                InputProps={{
+                                    style: {
+                                        borderRadius: '0 4px 4px 0',
+                                    },
+                                }}
+                            />
+                        </Grid>
+                    </Grid>
+                </FormControl>
+            ))}
         </>
     );
 };

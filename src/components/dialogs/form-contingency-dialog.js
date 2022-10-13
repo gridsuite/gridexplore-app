@@ -26,6 +26,7 @@ const emptyFormContingency = {
     nominalVoltageOperator: '=',
     nominalVoltage: '',
     countries: [],
+    countries2: [],
 };
 
 const useStyles = makeStyles(() => ({
@@ -50,6 +51,8 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
     const [currentFormContingency, setCurrentFormContingency] = useState(null);
     const [newFormContingency, setNewFormContingency] =
         useState(emptyFormContingency);
+    const [voltageNumber, setVoltageNumber] = useState(1);
+    const [countryNumber, setCountryNumber] = useState(1);
 
     const handleClose = () => {
         handleCancel();
@@ -85,6 +88,7 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
                         if (data) {
                             setCurrentFormContingency(data);
                             setNewFormContingency(data);
+                            onEquipmentTypeChanged(data.equipmentType);
                         }
                     })
                     .catch((errorMessage) => {
@@ -99,6 +103,16 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
         // get contingency list
         getCurrentContingencyList(listId);
     }, [listId, getCurrentContingencyList]);
+
+    function onEquipmentTypeChanged(newEquipmentType) {
+        setVoltageNumber(1);
+        setCountryNumber(1);
+        if (newEquipmentType === 'LINE' || newEquipmentType === 'HVDC_LINE') {
+            setCountryNumber(2);
+        } else if (newEquipmentType === 'TWO_WINDINGS_TRANSFORMER') {
+            setVoltageNumber(2);
+        }
+    }
 
     function onChangeFiltersContingency(newFiltersContingency) {
         if (currentFormContingency !== null) {
@@ -119,6 +133,12 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
         } else {
             setBtnSaveListDisabled(false);
         }
+        if (
+            newFiltersContingency.equipmentType !==
+            newFormContingency.equipmentType
+        ) {
+            onEquipmentTypeChanged(newFiltersContingency.equipmentType);
+        }
         setNewFormContingency(newFiltersContingency);
     }
 
@@ -134,6 +154,8 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
                 <FiltersEditor
                     filters={newFormContingency}
                     onChange={onChangeFiltersContingency}
+                    nbVoltage={voltageNumber}
+                    nbCountry={countryNumber}
                 />
             </DialogContent>
             <DialogActions>
