@@ -203,8 +203,11 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
                     {equalityType === RangeType.range && (
                         <Grid item>
                             <TextField
+                                onPaste={(e) => {
+                                    handlePaste(1, e);
+                                }}
                                 onChange={(e) => {
-                                    onSetNumber(1, e);
+                                    onSetNumber(1, e.target.value);
                                 }}
                                 value={currentValue2}
                                 InputProps={{
