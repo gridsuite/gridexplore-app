@@ -161,6 +161,8 @@
     "nominalVoltage2": "Tension nominale 2",
     "nominalVoltage3": "Tension nominale 3",
     "cannotPasteTextAsNominalVoltage": "Le texte copié ne peut pas être utilisé pour un nombre positif :",
+    "cannotRetrieveContingencyList": "Erreur d'accès à la liste d'aléas :",
+    "cannotRetrievefilter": "Erreur d'accès au filtre :",
     "EQUAL": "=",
     "MORE_THAN": ">",
     "MORE_THAN_OR_EQUAL": ">=",

@@ -15,9 +15,18 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import { getFilterById, saveFilter } from '../../utils/rest-api';
-import { displayErrorMessageWithSnackbar } from '../../utils/messages';
-import { FilterType } from '../../utils/elementType';
+import {
+    getContingencyList,
+    getFilterById,
+    saveFilter,
+    saveFormContingencyList,
+} from '../../utils/rest-api';
+import { useSnackMessage } from '../../utils/messages';
+import {
+    ContingencyListType,
+    ElementType,
+    FilterType,
+} from '../../utils/elementType';
 
 const useStyles = makeStyles(() => ({
     controlItem: {
@@ -37,21 +46,22 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-export const equipmentsDefinition = {
+const filterEquipmentDefinition = {
     LINE: {
         label: 'Lines',
         type: 'LINE',
         fields: {
-            countries: {
-                name: 'Countries',
+            countries1: {
+                name: 'Countries1',
                 type: filteredTypes.countries,
-                occurs: 2,
             },
-            nominalVoltage: {
-                name: 'nominalVoltage',
+            countries2: {
+                name: 'Countries2',
+                type: filteredTypes.countries,
+            },
+            nominalVoltage1: {
+                name: 'nominalVoltage1',
                 type: filteredTypes.range,
-                occurs: 1,
-                displayName: 'nominalVoltage',
             },
         },
     },
@@ -201,10 +211,132 @@ export const equipmentsDefinition = {
         label: 'HvdcLines',
         type: 'HVDC_LINE',
         fields: {
+            countries1: {
+                name: 'Countries',
+                type: filteredTypes.countries,
+            },
+            countries2: {
+                name: 'Countries2',
+                type: filteredTypes.countries,
+            },
+            nominalVoltage: {
+                name: 'nominalVoltage',
+                type: filteredTypes.range,
+            },
+        },
+    },
+};
+
+const contingencyListEquipmentDefinition = {
+    LINE: {
+        label: 'Lines',
+        fields: {
+            countries: {
+                name: 'Countries1',
+                type: filteredTypes.countries,
+            },
+            countries2: {
+                name: 'Countries2',
+                type: filteredTypes.countries,
+            },
+            nominalVoltage1: {
+                name: 'nominalVoltage1',
+                type: filteredTypes.range,
+            },
+        },
+    },
+    TWO_WINDINGS_TRANSFORMER: {
+        label: 'TwoWindingsTransformers',
+        fields: {
             countries: {
                 name: 'Countries',
                 type: filteredTypes.countries,
-                occurs: 2,
+            },
+            nominalVoltage1: {
+                name: 'nominalVoltage1',
+                type: filteredTypes.range,
+            },
+            nominalVoltage2: {
+                name: 'nominalVoltage2',
+                type: filteredTypes.range,
+            },
+        },
+    },
+    GENERATOR: {
+        label: 'Generators',
+        fields: {
+            countries: {
+                name: 'Countries',
+                type: filteredTypes.countries,
+            },
+            nominalVoltage: {
+                name: 'nominalVoltage',
+                type: filteredTypes.range,
+            },
+        },
+    },
+    STATIC_VAR_COMPENSATOR: {
+        label: 'StaticVarCompensators',
+        fields: {
+            countries: {
+                name: 'Countries',
+                type: filteredTypes.countries,
+            },
+            nominalVoltage: {
+                name: 'nominalVoltage',
+                type: filteredTypes.range,
+            },
+        },
+    },
+    SHUNT_COMPENSATOR: {
+        label: 'ShuntCompensators',
+        fields: {
+            countries: {
+                name: 'Countries',
+                type: filteredTypes.countries,
+            },
+            nominalVoltage: {
+                name: 'nominalVoltage',
+                type: filteredTypes.range,
+            },
+        },
+    },
+    HVDC_LINE: {
+        label: 'HvdcLines',
+        fields: {
+            countries: {
+                name: 'Countries1',
+                type: filteredTypes.countries,
+            },
+            countries2: {
+                name: 'Countries2',
+                type: filteredTypes.countries,
+            },
+            nominalVoltage: {
+                name: 'nominalVoltage',
+                type: filteredTypes.range,
+            },
+        },
+    },
+    BUSBAR_SECTION: {
+        label: 'BUSBAR_SECTION',
+        fields: {
+            countries: {
+                name: 'Countries',
+                type: filteredTypes.countries,
+            },
+            nominalVoltage: {
+                name: 'nominalVoltage',
+                type: filteredTypes.range,
+            },
+        },
+    },
+    DANGLING_LINE: {
+        label: 'DanglingLines',
+        fields: {
+            countries: {
+                name: 'Countries',
+                type: filteredTypes.countries,
             },
             nominalVoltage: {
                 name: 'nominalVoltage',
@@ -234,24 +366,23 @@ function generateDefaultValue(val, originalValue) {
     };
 }
 
-const SingleFilter = ({ filter, definition, onChange, sequence }) => {
+const SingleFilter = ({ filter, definition, onChange }) => {
     const localChange = (newVal) => {
         filter.value = newVal;
         onChange();
     };
-
     return definition.type.renderer({
         initialValue: filter.value,
         onChange: localChange,
-        titleMessage: definition.displayName
-            ? definition.displayName
-            : sequence
-            ? definition.name + sequence
-            : definition.name,
+        titleMessage: definition.name,
     });
 };
 
-export const FilterTypeSelection = ({ type, onChange }) => {
+export const FilterTypeSelection = ({
+    type,
+    onChange,
+    equipmentDefinition,
+}) => {
     return (
         <>
             <FormControl fullWidth margin="dense">
@@ -264,13 +395,11 @@ export const FilterTypeSelection = ({ type, onChange }) => {
                     value={type === null ? '' : type}
                     onChange={(e) => onChange(e.target.value)}
                 >
-                    {Object.entries(equipmentsDefinition).map(
-                        ([key, value]) => (
-                            <MenuItem key={key} value={key}>
-                                <FormattedMessage id={value.label} />
-                            </MenuItem>
-                        )
-                    )}
+                    {Object.entries(equipmentDefinition).map(([key, value]) => (
+                        <MenuItem key={key} value={key}>
+                            <FormattedMessage id={value.label} />
+                        </MenuItem>
+                    ))}
                 </Select>
             </FormControl>
         </>
@@ -281,7 +410,9 @@ export const GenericFilterDialog = ({
     id,
     open,
     onClose,
+    onError,
     title,
+    contentType,
     isFilterCreation,
     handleFilterCreation,
 }) => {
@@ -293,20 +424,50 @@ export const GenericFilterDialog = ({
     const currentFilter = useRef(null);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const classes = useStyles();
+    const { snackError } = useSnackMessage();
     const openRef = useRef(null);
     openRef.current = open;
 
+    function getEquipmentsDefinition() {
+        return contentType === ElementType.FILTER
+            ? filterEquipmentDefinition
+            : contingencyListEquipmentDefinition;
+    }
+
     useEffect(() => {
         if (id !== null && openRef.current) {
-            getFilterById(id).then((response) => {
-                setInitialFilter(response);
-                setFilterType(response.equipmentFilterForm.equipmentType);
-                setCurrentFormEdit({
-                    equipmentType: {
-                        value: response.equipmentFilterForm.equipmentType,
-                    },
-                });
-            });
+            if (contentType === ElementType.FILTER) {
+                getFilterById(id)
+                    .then((response) => {
+                        setInitialFilter(response);
+                        setFilterType(
+                            response.equipmentFilterForm.equipmentType
+                        );
+                        setCurrentFormEdit({
+                            equipmentType: {
+                                value: response.equipmentFilterForm
+                                    .equipmentType,
+                            },
+                        });
+                    })
+                    .catch((errmsg) => {
+                        snackError(errmsg, 'cannotRetrieveFilter');
+                    });
+            } else if (contentType === ElementType.CONTINGENCY_LIST) {
+                getContingencyList(ContingencyListType.FORM, id)
+                    .then((response) => {
+                        setInitialFilter(response);
+                        setFilterType(response.equipmentType);
+                        setCurrentFormEdit({
+                            equipmentType: {
+                                value: response.equipmentType,
+                            },
+                        });
+                    })
+                    .catch((errmsg) => {
+                        snackError(errmsg, 'cannotRetrieveContingencyList');
+                    });
+            }
         } else {
             setCurrentFormEdit({
                 equipmentType: { value: null },
@@ -315,7 +476,7 @@ export const GenericFilterDialog = ({
             setInitialFilter(null);
             setFilterType(null);
         }
-    }, [id]);
+    }, [id, contentType, snackError]);
 
     useEffect(() => {
         if (initialFilter !== null) {
@@ -327,7 +488,11 @@ export const GenericFilterDialog = ({
         currentFilter.current = {};
         currentFilter.current.id = id;
         currentFilter.current.type = FilterType.AUTOMATIC;
-        currentFilter.current.equipmentFilterForm = newVal;
+        if (contentType === ElementType.FILTER) {
+            currentFilter.current.equipmentFilterForm = newVal;
+        } else {
+            for (const k in newVal) currentFilter.current[k] = newVal[k];
+        }
         setBtnSaveListDisabled(false);
     }
 
@@ -342,13 +507,21 @@ export const GenericFilterDialog = ({
         setBtnSaveListDisabled(true);
     };
 
-    const handleClick = () => {
+    const handleValidate = () => {
         if (!isFilterCreation) {
-            saveFilter(currentFilter.current)
-                .then()
-                .catch((error) => {
-                    displayErrorMessageWithSnackbar(error.message);
-                });
+            if (contentType === ElementType.FILTER) {
+                saveFilter(currentFilter.current)
+                    .then()
+                    .catch((errorMessage) => {
+                        onError(errorMessage);
+                    });
+            } else if (contentType === ElementType.CONTINGENCY_LIST) {
+                saveFormContingencyList(currentFilter.current)
+                    .then()
+                    .catch((errorMessage) => {
+                        onError(errorMessage);
+                    });
+            }
             handleCancel();
         } else {
             handleFilterCreation(currentFilter.current);
@@ -386,12 +559,14 @@ export const GenericFilterDialog = ({
         editDone();
     };
 
-    const renderFilter = (key, definition, sequence) => {
+    const renderFilter = (key, definition) => {
         if (initialFilter !== null) {
             if (currentFormEdit[key] === undefined) {
                 currentFormEdit[key] = generateDefaultValue(
                     definition,
-                    initialFilter.equipmentFilterForm[key]
+                    contentType === ElementType.FILTER
+                        ? initialFilter.equipmentFilterForm[key]
+                        : initialFilter[key]
                 );
             }
         } else {
@@ -403,30 +578,17 @@ export const GenericFilterDialog = ({
                 filter={currentFormEdit[key]}
                 definition={definition}
                 onChange={editDone}
-                sequence={sequence}
             />
         );
     };
 
     const renderSpecific = () => {
         if (filterType !== null) {
-            return Object.entries(equipmentsDefinition[filterType].fields).map(
-                ([key, definition]) => {
-                    if (definition.occurs) {
-                        return [
-                            ...Array.from(Array(definition.occurs).keys()),
-                        ].map((n) => {
-                            return renderFilter(
-                                key + (n + 1).toString(),
-                                definition,
-                                n + 1
-                            );
-                        });
-                    } else {
-                        return renderFilter(key, definition);
-                    }
-                }
-            );
+            return Object.entries(
+                getEquipmentsDefinition()[filterType].fields
+            ).map(([key, definition]) => {
+                return renderFilter(key, definition);
+            });
         }
     };
 
@@ -447,6 +609,7 @@ export const GenericFilterDialog = ({
                     {FilterTypeSelection({
                         type: filterType,
                         onChange: changeFilterType,
+                        equipmentDefinition: getEquipmentsDefinition(),
                     })}
                     {renderSpecific()}
                 </Grid>
@@ -456,7 +619,7 @@ export const GenericFilterDialog = ({
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button
-                    onClick={handleClick}
+                    onClick={handleValidate}
                     variant="outlined"
                     disabled={btnSaveListDisabled}
                 >
