@@ -162,6 +162,12 @@
     "nominalVoltage2": "Nominal Voltage 2",
     "nominalVoltage3": "Nominal Voltage 3",
     "cannotPasteTextAsNominalVoltage": "The clipboard text cannot be set as a positive number :",
+    "EQUAL": "=",
+    "MORE_THAN": ">",
+    "MORE_THAN_OR_EQUAL": ">=",
+    "LESS_THAN": "<",
+    "LESS_THAN_OR_EQUAL": "<=",
+    "RANGE": "range",
 
     "getAppLinkError": "Error getting application link for type = {type}",
     "nameValidityCheckErrorMsg": "Error checking name validity : ",

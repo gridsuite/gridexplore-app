@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
 import TextField from '@mui/material/TextField';
@@ -56,51 +55,126 @@ const FiltersEditor = ({ filters, onChange, nbVoltage, nbCountry }) => {
     }
     const intl = useIntl();
 
-    function handleOperator(event) {
+    function handleEquipmentType(evt) {
         onChange({
-            equipmentType: filters.equipmentType,
-            nominalVoltageOperator: event.target.value,
-            nominalVoltage: filters.nominalVoltage,
-            countries: filters.countries,
-            countries2: filters.countries2,
-        });
-    }
-
-    function handleEquipmentType(event) {
-        onChange({
-            equipmentType: event.target.value,
-            nominalVoltageOperator: filters.nominalVoltageOperator,
-            nominalVoltage: filters.nominalVoltage,
+            equipmentType: evt.target.value,
+            nominalVoltage1: filters.nominalVoltage1,
+            nominalVoltage2: filters.nominalVoltage2,
             countries: filters.countries,
             countries2:
-                event.target.value !== 'LINE' &&
-                event.target.value !== 'HVDC_LINE'
+                evt.target.value !== 'LINE' && evt.target.value !== 'HVDC_LINE'
                     ? []
                     : filters.countries2,
         });
     }
 
+    function getCountry(index) {
+        return index === 0 ? filters.countries : filters.countries2;
+    }
+
     function handleCountrySelection(index, newValue) {
         onChange({
             equipmentType: filters.equipmentType,
-            nominalVoltageOperator: filters.nominalVoltageOperator,
-            nominalVoltage: filters.nominalVoltage,
+            nominalVoltage1: filters.nominalVoltage1,
+            nominalVoltage2: filters.nominalVoltage2,
             countries: index === 0 ? newValue : filters.countries,
             countries2: index === 0 ? filters.countries2 : newValue,
         });
     }
 
-    function handleNominalVoltage(event) {
+    function getOperator(index) {
+        const op =
+            index === 0
+                ? filters.nominalVoltage1?.operator
+                : filters.nominalVoltage2?.operator;
+        return op ? op : '';
+    }
+
+    function handleOperator(index, newValue) {
         onChange({
             equipmentType: filters.equipmentType,
-            nominalVoltageOperator: filters.nominalVoltageOperator,
-            nominalVoltage: event.target.value,
+            nominalVoltage1: {
+                operator:
+                    index === 0 ? newValue : filters.nominalVoltage1.operator,
+                value1: filters?.nominalVoltage1?.value1,
+                value2: filters?.nominalVoltage1?.value2,
+            },
+            nominalVoltage2: {
+                operator:
+                    index === 1 ? newValue : filters?.nominalVoltage2?.operator,
+                value1: filters?.nominalVoltage2?.value1,
+                value2: filters?.nominalVoltage2?.value2,
+            },
+            nominalVoltage: filters.nominalVoltage,
             countries: filters.countries,
             countries2: filters.countries2,
         });
     }
 
-    const nominalVoltageOperators = ['=', '>', '>=', '<', '<=', 'range'];
+    function getNominalVoltageValue1(index) {
+        const value =
+            index === 0
+                ? filters.nominalVoltage1?.value1
+                : filters.nominalVoltage2?.value1;
+        return value ? value : '';
+    }
+
+    function handleNominalVoltageValue1(index, newValue) {
+        onChange({
+            equipmentType: filters.equipmentType,
+            nominalVoltageOperator: filters.nominalVoltageOperator,
+            nominalVoltage1: {
+                operator: filters.nominalVoltage1.operator,
+                value1: index === 0 ? newValue : filters.nominalVoltage1.value1,
+                value2: filters.nominalVoltage1.value2,
+            },
+            nominalVoltage2: {
+                operator: filters?.nominalVoltage2?.operator,
+                value1:
+                    index === 1 ? newValue : filters?.nominalVoltage2?.value1,
+                value2: filters?.nominalVoltage2?.value2,
+            },
+            countries: filters.countries,
+            countries2: filters.countries2,
+        });
+    }
+
+    function getNominalVoltageValue2(index) {
+        const value =
+            index === 0
+                ? filters.nominalVoltage1?.value2
+                : filters.nominalVoltage2?.value2;
+        return value ? value : '';
+    }
+
+    function handleNominalVoltageValue2(index, newValue) {
+        onChange({
+            equipmentType: filters.equipmentType,
+            nominalVoltageOperator: filters.nominalVoltageOperator,
+            nominalVoltage1: {
+                operator: filters.nominalVoltage1.operator,
+                value1: filters.nominalVoltage1.value1,
+                value2: index === 0 ? newValue : filters.nominalVoltage1.value2,
+            },
+            nominalVoltage2: {
+                operator: filters?.nominalVoltage2?.operator,
+                value1: filters?.nominalVoltage2?.value1,
+                value2:
+                    index === 1 ? newValue : filters?.nominalVoltage2?.value2,
+            },
+            countries: filters.countries,
+            countries2: filters.countries2,
+        });
+    }
+
+    const nominalVoltageOperators = [
+        'EQUAL',
+        'MORE_THAN',
+        'MORE_THAN_OR_EQUAL',
+        'LESS_THAN',
+        'LESS_THAN_OR_EQUAL',
+        'RANGE',
+    ];
 
     return (
         <>
@@ -123,14 +197,10 @@ const FiltersEditor = ({ filters, onChange, nbVoltage, nbCountry }) => {
                 </Select>
             </FormControl>
             {[...Array(nbCountry).keys()].map((countryIndex) => (
-                <FormControl fullWidth margin="dense">
+                <FormControl fullWidth margin="dense" key={'fc_country_' + countryIndex}>
                     <Autocomplete
                         id={'select_countries_' + countryIndex}
-                        value={
-                            countryIndex === 0
-                                ? filters.countries
-                                : filters.countries2
-                        }
+                        value={getCountry(countryIndex)}
                         multiple={true}
                         onChange={(event, newValue) => {
                             handleCountrySelection(countryIndex, newValue);
@@ -167,7 +237,7 @@ const FiltersEditor = ({ filters, onChange, nbVoltage, nbCountry }) => {
                 </FormControl>
             ))}
             {[...Array(nbVoltage).keys()].map((voltageIndex) => (
-                <FormControl fullWidth margin="dense">
+                <FormControl fullWidth margin="dense" key={'fc_voltage_' + voltageIndex}>
                     <InputLabel className={classes.inputLegend}>
                         {nbVoltage < 2 ? (
                             <FormattedMessage id="nominalVoltage" />
@@ -185,15 +255,20 @@ const FiltersEditor = ({ filters, onChange, nbVoltage, nbCountry }) => {
                                 style={{
                                     borderRadius: '4px 0 0 4px',
                                 }}
-                                value={filters.nominalVoltageOperator}
-                                onChange={handleOperator}
+                                value={getOperator(voltageIndex)}
+                                onChange={(e) => {
+                                    handleOperator(
+                                        voltageIndex,
+                                        e.target.value
+                                    );
+                                }}
                             >
                                 {nominalVoltageOperators.map((operator) => (
                                     <MenuItem
                                         key={operator + '_' + voltageIndex}
                                         value={operator}
                                     >
-                                        {operator}
+                                        <FormattedMessage id={operator} />
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -202,12 +277,13 @@ const FiltersEditor = ({ filters, onChange, nbVoltage, nbCountry }) => {
                             <TextField
                                 fullWidth
                                 id={'input_voltage_value_' + voltageIndex}
-                                onChange={handleNominalVoltage}
-                                value={
-                                    filters.nominalVoltage === -1
-                                        ? ''
-                                        : filters.nominalVoltage
-                                }
+                                onChange={(e) => {
+                                    handleNominalVoltageValue1(
+                                        voltageIndex,
+                                        e.target.value
+                                    );
+                                }}
+                                value={getNominalVoltageValue1(voltageIndex)}
                                 InputProps={{
                                     style: {
                                         borderRadius: '0 4px 4px 0',

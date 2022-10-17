@@ -161,6 +161,12 @@
     "nominalVoltage2": "Tension nominale 2",
     "nominalVoltage3": "Tension nominale 3",
     "cannotPasteTextAsNominalVoltage": "Le texte copié ne peut pas être utilisé pour un nombre positif :",
+    "EQUAL": "=",
+    "MORE_THAN": ">",
+    "MORE_THAN_OR_EQUAL": ">=",
+    "LESS_THAN": "<",
+    "LESS_THAN_OR_EQUAL": "<=",
+    "RANGE": "intervalle",
 
     "getAppLinkError": "Erreur lors de la récupération du lien vers l'application pour le type = {type}",
     "nameValidityCheckErrorMsg": "Erreur lors de la vérification de la validité du nom : ",

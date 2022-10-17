@@ -23,8 +23,16 @@ import { ContingencyListType } from '../../utils/elementType';
 
 const emptyFormContingency = {
     equipmentType: EquipmentTypes.LINE,
-    nominalVoltageOperator: '=',
-    nominalVoltage: '',
+    nominalVoltage1: {
+        operator: 'EQUAL',
+        value1: null,
+        value2: null,
+    },
+    nominalVoltage2: {
+        operator: 'EQUAL',
+        value1: null,
+        value2: null,
+    },
     countries: [],
     countries2: [],
 };
@@ -114,24 +122,49 @@ const FormContingencyDialog = ({ listId, open, onClose, onError, title }) => {
         }
     }
 
+    function areDifferent(newFiltersContingency, currentFormContingency) {
+        // make copies of objects with relevant data, sort countries, and compare
+        const newData = {
+            equipmentType: newFiltersContingency?.equipmentType,
+            nominalVoltage1: {
+                operator: newFiltersContingency?.nominalVoltage1?.operator,
+                value1: newFiltersContingency?.nominalVoltage1?.value1?.toString(), // to avoid '56' vs 56
+                value2: newFiltersContingency?.nominalVoltage1?.value2?.toString(),
+            },
+            nominalVoltage2: {
+                operator: newFiltersContingency?.nominalVoltage2?.operator,
+                value1: newFiltersContingency?.nominalVoltage2?.value1?.toString(), // to avoid '56' vs 56
+                value2: newFiltersContingency?.nominalVoltage2?.value2?.toString(),
+            },
+            countries: newFiltersContingency?.countries.sort().join(','),
+            countries2: newFiltersContingency?.countries2.sort().join(','),
+        };
+        const currentData = {
+            equipmentType: currentFormContingency?.equipmentType,
+            nominalVoltage1: {
+                operator: currentFormContingency?.nominalVoltage1?.operator,
+                value1: currentFormContingency?.nominalVoltage1?.value1?.toString(),
+                value2: currentFormContingency?.nominalVoltage1?.value2?.toString(),
+            },
+            nominalVoltage2: {
+                operator: currentFormContingency?.nominalVoltage2?.operator,
+                value1: currentFormContingency?.nominalVoltage2?.value1?.toString(),
+                value2: currentFormContingency?.nominalVoltage2?.value2?.toString(),
+            },
+            countries: currentFormContingency?.countries.sort().join(','),
+            countries2: currentFormContingency?.countries2.sort().join(','),
+        };
+        return JSON.stringify(newData) !== JSON.stringify(currentData);
+    }
+
     function onChangeFiltersContingency(newFiltersContingency) {
-        if (currentFormContingency !== null) {
-            if (
-                newFiltersContingency.equipmentType !==
-                    currentFormContingency.equipmentType ||
-                newFiltersContingency.nominalVoltageOperator !==
-                    currentFormContingency.nominalVoltageOperator ||
-                newFiltersContingency.nominalVoltage !==
-                    currentFormContingency.nominalVoltage + '' ||
-                newFiltersContingency.countries.sort().join(',') !==
-                    currentFormContingency.countries.sort().join(',')
-            ) {
-                setBtnSaveListDisabled(false);
-            } else {
-                setBtnSaveListDisabled(true);
-            }
-        } else {
+        if (
+            currentFormContingency === null ||
+            areDifferent(newFiltersContingency, currentFormContingency)
+        ) {
             setBtnSaveListDisabled(false);
+        } else {
+            setBtnSaveListDisabled(true);
         }
         if (
             newFiltersContingency.equipmentType !==
