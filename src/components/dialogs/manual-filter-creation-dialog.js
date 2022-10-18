@@ -243,7 +243,6 @@ const ManualFilterCreationDialog = ({
 
     const handleCreateFilter = () => {
         if (
-            createFilterErr === '' &&
             tableValues.every((el) => {
                 if (!el?.equipmentID) {
                     setCreateFilterErr(
