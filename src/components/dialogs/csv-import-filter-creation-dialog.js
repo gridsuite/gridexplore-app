@@ -11,7 +11,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { useCSVReader } from 'react-papaparse';
 import Button from '@mui/material/Button';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CsvDownloader from 'react-csv-downloader';
@@ -80,10 +80,7 @@ const CsvImportFilterCreationDialog = ({
     };
 
     const validateCsvFile = (rows, equipmentType) => {
-        console.log('results : ', rows);
         for (let i = 0; i < rows.length; i++) {
-            console.log('here 1', rows[i]);
-
             // Check if equipment type is specified in the row
             if (!rows[i][1]) {
                 setCreateFilterErr(
@@ -132,10 +129,6 @@ const CsvImportFilterCreationDialog = ({
             };
         });
     };
-
-    useEffect(() => {
-        console.log('createFilterErr : ', createFilterErr);
-    }, [createFilterErr]);
 
     const handleCreateFilter = () => {
         if (value.length !== 0) {

@@ -88,7 +88,6 @@ const ContentContextualMenu = (props) => {
     );
 
     const handleOpenDialog = (dialogId) => {
-        console.log('lenaaa');
         setHideMenu(true);
         setOpenDialog(dialogId);
     };

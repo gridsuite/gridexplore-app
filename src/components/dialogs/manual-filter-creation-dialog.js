@@ -206,10 +206,8 @@ const ManualFilterCreationDialog = ({
     };
 
     useEffect(() => {
-        console.log('id : ', id);
         if (id) {
             getFilterById(id).then((response) => {
-                console.log('response : ', response);
                 setDefaultValues(response);
                 setEquipmentType(response?.equipmentType);
             });

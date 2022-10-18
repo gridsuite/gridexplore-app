@@ -37,18 +37,6 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-
-const genericFields = {
-    equipmentID: {
-        name: 'equipmentID',
-        type: filteredTypes.string,
-    },
-    equipmentName: {
-        name: 'equipmentName',
-        type: filteredTypes.string,
-    },
-};
-
 export const equipmentsDefinition = {
     LINE: {
         label: 'Lines',
@@ -247,78 +235,25 @@ function generateDefaultValue(val, originalValue) {
 }
 
 const SingleFilter = ({ filter, definition, onChange, sequence }) => {
-    const classes = useStyles();
-    const [enabled, setEnabled] = useState(filter.enabled);
-    const [initialValue, setInitialValue] = useState(filter.value);
-
     const localChange = (newVal) => {
         filter.value = newVal;
         onChange();
     };
 
-    useEffect(() => {
-        setEnabled(filter.enabled);
-        setInitialValue(filter.value);
-    }, [filter]);
-
-    const toggleFilter = () => {
-        filter.enabled = !enabled;
-        setEnabled(filter.enabled);
-        onChange();
-    };
-    return (
-        <Grid container item direction="row" key={definition.name + '-cont'}>
-            <Grid
-                item
-                className={classes.controlItem}
-                key={definition.name + '-sw'}
-            >
-                <Switch
-                    checked={enabled}
-                    value="checked"
-                    inputProps={{ 'aria-label': 'primary checkbox' }}
-                    onChange={() => {
-                        toggleFilter();
-                    }}
-                />
-            </Grid>
-            <Grid
-                item
-                xs={2}
-                className={classes.idText}
-                key={definition.name + '-label'}
-            >
-                <Typography component="span" variant="body1">
-                    <FormattedMessage id={definition.name} />{' '}
-                    {sequence ? sequence : ''}
-                </Typography>
-            </Grid>
-            <Grid item xs key={definition.name + '-value'}>
-                {definition.type.renderer({
-                    initialValue: initialValue,
-                    onChange: localChange,
-                    disabled: !enabled,
-                })}
-            </Grid>
-        </Grid>
-    );
+    return definition.type.renderer({
+        initialValue: filter.value,
+        onChange: localChange,
+        titleMessage: definition.displayName
+            ? definition.displayName
+            : sequence
+            ? definition.name + sequence
+            : definition.name,
+    });
 };
 
 export const FilterTypeSelection = ({ type, onChange }) => {
     return (
         <>
-            <Grid container item>
-                <Grid
-                    item
-                    style={{ visibility: 'hidden' }}
-                    className={classes.controlItem}
-                >
-                    <Switch />
-                </Grid>
-                <Grid xs={4} item className={classes.idText}>
-                    <Typography component="span" variant="body1"/>
-                </Grid>
-            </Grid>
             <FormControl fullWidth margin="dense">
                 <InputLabel>
                     <FormattedMessage id={'equipmentType'} />
@@ -328,8 +263,6 @@ export const FilterTypeSelection = ({ type, onChange }) => {
                     label={<FormattedMessage id={'equipmentType'} />}
                     value={type === null ? '' : type}
                     onChange={(e) => onChange(e.target.value)}
-                    disabled={disabled}
-                    fullWidth={true}
                 >
                     {Object.entries(equipmentsDefinition).map(
                         ([key, value]) => (
@@ -459,74 +392,35 @@ export const GenericFilterDialog = ({
                     initialFilter.equipmentFilterForm[key]
                 );
             }
-            console.log('filter : ', currentFormEdit);
-            return (
-                <SingleFilter
-                    key={key}
-                    filter={currentFormEdit[key]}
-                    definition={definition}
-                    onChange={editDone}
-                    sequence={sequence}
-                />
-            );
         } else {
             currentFormEdit[key] = generateDefaultValue(definition, null);
-            return (
-                <SingleFilter
-                    key={key}
-                    filter={currentFormEdit[key]}
-                    definition={definition}
-                    onChange={editDone}
-                    sequence={sequence}
-                />
-            );
         }
+        return (
+            <SingleFilter
+                key={key}
+                filter={currentFormEdit[key]}
+                definition={definition}
+                onChange={editDone}
+                sequence={sequence}
+            />
+        );
     };
 
     const renderSpecific = () => {
-        console.log('generic filter type : ', filterType);
         if (filterType !== null) {
             return Object.entries(equipmentsDefinition[filterType].fields).map(
                 ([key, definition]) => {
                     if (definition.occurs) {
-                        console.log('spec');
-                        return (
-                            <Grid
-                                container
-                                item
-                                direction={
-                                    definition.direction === undefined
-                                        ? 'row'
-                                        : definition.direction
-                                }
-                                key={key}
-                                spacing={1}
-                            >
-                                {[
-                                    ...Array.from(
-                                        Array(definition.occurs).keys()
-                                    ),
-                                ].map((n) => {
-                                    return (
-                                        <Grid
-                                            item
-                                            xs
-                                            key={
-                                                definition.label + n.toString()
-                                            }
-                                            style={{}}
-                                        >
-                                            {renderFilter(
-                                                key + (n + 1).toString(),
-                                                definition,
-                                                n + 1
-                                            )}
-                                        </Grid>
-                                    );
-                                })}
-                            </Grid>
-                        );
-                    }  else {
+                        return [
+                            ...Array.from(Array(definition.occurs).keys()),
+                        ].map((n) => {
+                            return renderFilter(
+                                key + (n + 1).toString(),
+                                definition,
+                                n + 1
+                            );
+                        });
+                    } else {
                         return renderFilter(key, definition);
                     }
                 }

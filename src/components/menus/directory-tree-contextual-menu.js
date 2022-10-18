@@ -55,7 +55,6 @@ const DirectoryTreeContextualMenu = (props) => {
     };
 
     const handleCloseDialog = (e, nextSelectedDirectoryId = null) => {
-        console.log('testing : ', e, nextSelectedDirectoryId);
         onClose(e, nextSelectedDirectoryId);
         setOpenDialog(DialogsId.NONE);
         setHideMenu(false);

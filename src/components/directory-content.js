@@ -152,13 +152,10 @@ const DirectoryContent = () => {
                     setOpenScriptContingencyDialog(true);
                 }
             } else if (event.rowData.type === ElementType.FILTER) {
-                console.log('subType : ', subtype);
                 if (subtype === FilterType.MANUAL) {
-                    console.log('here');
                     setCurrentManualFilterId(event.rowData.elementUuid);
                     setOpenEditManualFilterDialog(true);
                 } else if (subtype === FilterType.AUTOMATIC) {
-                    console.log('NOOOOOOOOOOOO here');
                     setCurrentAutomaticFilterId(event.rowData.elementUuid);
                     setOpenGenericFilterDialog(true);
                 }
@@ -684,10 +681,6 @@ const DirectoryContent = () => {
         // Finally if we have elements then render the table
         return renderTableContent();
     };
-
-    useEffect(() => {
-        console.log('dialog :', openGenericFilterDialog);
-    }, [openGenericFilterDialog]);
 
     return (
         <>
