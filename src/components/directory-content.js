@@ -42,6 +42,7 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
+import ManualFilterCreationDialog from "./dialogs/manual-filter-creation-dialog";
 
 const circularProgressSize = '70px';
 
@@ -151,11 +152,14 @@ const DirectoryContent = () => {
                     setOpenScriptContingencyDialog(true);
                 }
             } else if (event.rowData.type === ElementType.FILTER) {
-                if (subtype === FilterType.SCRIPT) {
-                    setCurrentScriptId(event.rowData.elementUuid);
-                    setOpenScriptDialog(true);
+                console.log('subType : ', subtype);
+                if (subtype === FilterType.MANUAL) {
+                    console.log('here');
+                    setCurrentManualFilterId(event.rowData.elementUuid);
+                    setOpenEditManualFilterDialog(true);
                 } else if (subtype === FilterType.AUTOMATIC) {
-                    setCurrentFilterId(event.rowData.elementUuid);
+                    console.log('NOOOOOOOOOOOO here');
+                    setCurrentAutomaticFilterId(event.rowData.elementUuid);
                     setOpenGenericFilterDialog(true);
                 }
             }
@@ -178,25 +182,36 @@ const DirectoryContent = () => {
     };
 
     /**
-     * Filters dialog: window status value to edit filters
+     * Filters dialog: window status value to edit automatics filters
      */
     const [openGenericFilterDialog, setOpenGenericFilterDialog] =
         React.useState(false);
     const handleCloseGenericFilterDialog = () => {
         setOpenGenericFilterDialog(false);
-        setCurrentFilterId(null);
+        setCurrentAutomaticFilterId(null);
         setActiveElement(null);
     };
 
-    const [currentFilterId, setCurrentFilterId] = React.useState(null);
+    /**
+     * Filters dialog: window status value to edit manual filters
+     */
+    const[openEditManualFilterDialog, setOpenEditManualFilterDialog] = useState(false);
+    const handleCloseManualFilterDialog = () => {
+        setOpenEditManualFilterDialog(false);
+        setCurrentAutomaticFilterId(null);
+        setActiveElement(null);
+    };
+
+    const [currentAutomaticFilterId, setCurrentAutomaticFilterId] = useState(null);
+    const [currentManualFilterId, setCurrentManualFilterId] = useState(null);
 
     /**
      * Script contingency list dialog: window status value for editing a script contingency list
      */
     const [openScriptContingencyDialog, setOpenScriptContingencyDialog] =
-        React.useState(false);
+        useState(false);
     const [currentScriptContingencyListId, setCurrentScriptContingencyListId] =
-        React.useState(null);
+        useState(null);
     const handleCloseScriptContingency = () => {
         setOpenScriptContingencyDialog(false);
         setActiveElement(null);
@@ -206,8 +221,8 @@ const DirectoryContent = () => {
     /**
      * Filter script dialog: window status value for editing a filter script
      */
-    const [openScriptDialog, setOpenScriptDialog] = React.useState(false);
-    const [currentScriptId, setCurrentScriptId] = React.useState(null);
+    const [openScriptDialog, setOpenScriptDialog] = useState(false);
+    const [currentScriptId, setCurrentScriptId] = useState(null);
     const handleCloseScriptDialog = () => {
         setOpenScriptDialog(false);
         setActiveElement(null);
@@ -217,8 +232,8 @@ const DirectoryContent = () => {
     /**
      * Contextual Menus
      */
-    const [openDirectoryMenu, setOpenDirectoryMenu] = React.useState(false);
-    const [openContentMenu, setOpenContentMenu] = React.useState(false);
+    const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
+    const [openContentMenu, setOpenContentMenu] = useState(false);
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
 
     const handleOpenContentMenu = (event) => {
@@ -668,6 +683,10 @@ const DirectoryContent = () => {
         return renderTableContent();
     };
 
+    useEffect(() => {
+        console.log('dialog :', openGenericFilterDialog);
+    }, [openGenericFilterDialog]);
+
     return (
         <>
             <div
@@ -753,8 +772,16 @@ const DirectoryContent = () => {
                 title={useIntl().formatMessage({ id: 'editFilterScript' })}
                 type={ElementType.FILTER}
             />
+            <ManualFilterCreationDialog
+                id={currentManualFilterId}
+                open={openEditManualFilterDialog}
+                onClose={handleCloseManualFilterDialog}
+                onError={handleError}
+                title={useIntl().formatMessage({ id: 'editFilter' })}
+                isFilterCreation={false}
+            />
             <GenericFilterDialog
-                id={currentFilterId}
+                id={currentAutomaticFilterId}
                 open={openGenericFilterDialog}
                 onClose={handleCloseGenericFilterDialog}
                 onError={handleError}

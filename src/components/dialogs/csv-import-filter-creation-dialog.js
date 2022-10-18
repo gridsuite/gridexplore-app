@@ -11,10 +11,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { useCSVReader } from 'react-papaparse';
 import Button from '@mui/material/Button';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage, useIntl } from 'react-intl';
-import TextField from '@mui/material/TextField';
 import CsvDownloader from 'react-csv-downloader';
 import { createFilter } from '../../utils/rest-api';
 import { FilterType } from '../../utils/elementType';
@@ -23,7 +22,7 @@ import Alert from '@mui/material/Alert';
 import { equipmentsDefinition } from './generic-filter-dialog';
 import PropTypes from 'prop-types';
 
-const CsvImportFilterCreation = ({
+const CsvImportFilterCreationDialog = ({
     id,
     label,
     name,
@@ -40,76 +39,130 @@ const CsvImportFilterCreation = ({
     const [value, setValue] = useState([]);
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    const getSupportedEquipmentComment = () => {
-        const equipmentType = Object.entries(equipmentsDefinition).map(
-            ([key, value]) => {
-                return value.type;
-            }
-        );
-        return [...['# Supported Equipments Types : '], ...equipmentType];
-    };
-
     const data = [
-        [getSupportedEquipmentComment()],
         [
-            '#' + intl.formatMessage({ id: 'equipmentID' }),
+            intl.formatMessage({ id: 'equipmentID' }),
             intl.formatMessage({ id: 'equipmentType' }),
             intl.formatMessage({ id: 'distributionKey' }),
         ],
     ];
 
+    const csvData = () => {
+        let newData = [...data];
+        for (let i = 0; i < 10; i++) {
+            newData = [...newData, ...[[]]];
+        }
+        newData = [
+            ...newData,
+            ...[
+                [
+                    intl.formatMessage({ id: 'CSVFileComment' }),
+                    equipmentsDefinition.LINE.type,
+                ],
+            ],
+        ];
+        Object.entries(equipmentsDefinition)
+            .filter((val) => val.label !== equipmentsDefinition.LINE.label)
+            .forEach((value) => {
+                newData = [...newData, ...[['', value[0]]]];
+            });
+        return newData;
+    };
+
     const resetDialog = () => {
         setValue([]);
         setCreateFilterErr('');
-        setFilterCreationType(FilterType.AUTOMATIC);
     };
 
     const handleClose = () => {
+        onClose();
         resetDialog();
     };
+
+    const validateCsvFile = (rows, equipmentType) => {
+        console.log('results : ', rows);
+        for (let i = 0; i < rows.length; i++) {
+            console.log('here 1', rows[i]);
+
+            // Check if equipment type is specified in the row
+            if (!rows[i][1]) {
+                setCreateFilterErr(
+                    intl.formatMessage({
+                        id: 'noEquipmentTypeFoundInCSVError',
+                    })
+                );
+                return false;
+            }
+
+            if (!equipmentType) {
+                equipmentType = rows[i][1];
+            }
+
+            // Check if multiple equipment type are specified
+            if (rows[i][1] !== equipmentType) {
+                setCreateFilterErr(
+                    intl.formatMessage({
+                        id: 'multipleEquipmentTypeError',
+                    })
+                );
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const getEquipmentsAttributes = (rows, equipmentType) => {
+        let isEquipmentWithDK = !rows.every((row) => !row[2]);
+        return rows.map((val, idx) => {
+            let dKey;
+
+            // if the equipment is generator or load and the distribution key is set in one row,
+            // the other distribution keys in other rows will be set to 0 if it is null
+            if (
+                equipmentType === equipmentsDefinition.GENERATOR.type ||
+                equipmentType === equipmentsDefinition.LOAD.type
+            ) {
+                if (isEquipmentWithDK && !val[2]) dKey = 0;
+                if (isEquipmentWithDK && val[2]) dKey = val[2];
+            }
+
+            return {
+                equipmentID: val[0],
+                distributionKey: dKey,
+            };
+        });
+    };
+
+    useEffect(() => {
+        console.log('createFilterErr : ', createFilterErr);
+    }, [createFilterErr]);
 
     const handleCreateFilter = () => {
         if (value.length !== 0) {
             value.splice(0, 1);
             let equipmentType = '';
-            const result = value
-                .filter((val) => !val[0].startsWith('#') && !!val[0])
-                .map((val, idx) => {
-                    if (
-                        equipmentType &&
-                        val[1] &&
-                        val[1] !== equipmentType &&
-                        !createFilterErr
-                    ) {
-                        setCreateFilterErr(
-                            intl.formatMessage({
-                                id: 'multipleEquipmentTypeError',
-                            })
-                        );
-                    }
+            let csvCommentStart = false;
+            const result = value.filter((val) => {
+                if (val[0].startsWith('#')) csvCommentStart = true;
+                return !csvCommentStart && !!val[0];
+            });
 
-                    if (!equipmentType) {
-                        equipmentType = val[1];
-                    }
-
-                    return {
-                        equipmentId: val[0],
-                        distributionKey: val[2],
-                    };
-                });
-
-            if (!createFilterErr) {
+            if (validateCsvFile(result, equipmentType)) {
+                equipmentType = result[0][1];
                 createFilter(
                     {
                         type: FilterType.MANUAL,
                         equipmentType: equipmentType,
-                        filterEquipmentsAttributes: result,
+                        filterEquipmentsAttributes: getEquipmentsAttributes(
+                            result,
+                            equipmentType
+                        ),
                     },
                     name,
                     activeDirectory
                 )
                     .then(() => {
-                        setFilterCreationType(FilterType.AUTOMATIC);
+                        handleClose();
                         resetDialog();
                     })
                     .catch((message) => {
@@ -131,9 +184,9 @@ const CsvImportFilterCreation = ({
             <DialogContent>
                 <div>
                     <Grid container>
-                        <Grid xs={6}>
+                        <Grid xs={5}>
                             <CsvDownloader
-                                datas={data}
+                                datas={csvData()}
                                 filename={'filter creation'}
                             >
                                 <Button>
@@ -151,23 +204,20 @@ const CsvImportFilterCreation = ({
                         >
                             {({ getRootProps, acceptedFile }) => (
                                 <>
-                                    <Grid xs={4} item>
+                                    <Grid item>
                                         <Button {...getRootProps()}>
                                             <FormattedMessage id="UploadCSV" />
                                         </Button>
-                                    </Grid>
-                                    <Grid xs={8} item>
-                                        <TextField
-                                            label={
-                                                <FormattedMessage id="CsvFileName" />
-                                            }
-                                            InputProps={{ readOnly: true }}
-                                            value={
-                                                acceptedFile
-                                                    ? acceptedFile.name
-                                                    : ''
-                                            }
-                                        />
+                                        <span
+                                            style={{
+                                                marginLeft: '10px',
+                                                fontWeight: 'bold',
+                                            }}
+                                        >
+                                            {acceptedFile
+                                                ? acceptedFile.name
+                                                : ''}
+                                        </span>
                                     </Grid>
                                 </>
                             )}
@@ -180,16 +230,18 @@ const CsvImportFilterCreation = ({
                 </div>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>{customTextCancelBtn}</Button>
+                <Button onClick={handleClose}>
+                    <FormattedMessage id="cancel" />
+                </Button>
                 <Button variant="outlined" onClick={handleCreateFilter}>
-                    {customTextValidationBtn}
+                    <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
         </Dialog>
     );
 };
 
-CsvImportFilterCreation.prototype = {
+CsvImportFilterCreationDialog.prototype = {
     id: PropTypes.string.isRequired,
     label: PropTypes.string,
     name: PropTypes.string,
@@ -200,4 +252,4 @@ CsvImportFilterCreation.prototype = {
     customTextValidationBtn: PropTypes.string,
 };
 
-export default CsvImportFilterCreation;
+export default CsvImportFilterCreationDialog;

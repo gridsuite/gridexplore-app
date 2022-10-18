@@ -301,11 +301,17 @@ function generateDefaultValue(val, originalValue) {
 const SingleFilter = ({ filter, definition, onChange, sequence }) => {
     const classes = useStyles();
     const [enabled, setEnabled] = useState(filter.enabled);
+    const [initialValue, setInitialValue] = useState(filter.value);
 
     const localChange = (newVal) => {
         filter.value = newVal;
         onChange();
     };
+
+    useEffect(() => {
+        setEnabled(filter.enabled);
+        setInitialValue(filter.value);
+    }, [filter]);
 
     const toggleFilter = () => {
         filter.enabled = !enabled;
@@ -321,6 +327,7 @@ const SingleFilter = ({ filter, definition, onChange, sequence }) => {
             >
                 <Switch
                     checked={enabled}
+                    value="checked"
                     inputProps={{ 'aria-label': 'primary checkbox' }}
                     onChange={() => {
                         toggleFilter();
@@ -340,7 +347,7 @@ const SingleFilter = ({ filter, definition, onChange, sequence }) => {
             </Grid>
             <Grid item xs key={definition.name + '-value'}>
                 {definition.type.renderer({
-                    initialValue: filter.value,
+                    initialValue: initialValue,
                     onChange: localChange,
                     disabled: !enabled,
                 })}
@@ -386,7 +393,14 @@ export const FilterTypeSelection = ({ type, onChange, disabled }) => {
     );
 };
 
-export const GenericFilterDialog = ({ id, open, onClose, title }) => {
+export const GenericFilterDialog = ({
+    id,
+    open,
+    onClose,
+    title,
+    isFilterCreation,
+    handleFilterCreation,
+}) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [filterType, setFilterType] = useState(null);
     const [currentFormEdit, setCurrentFormEdit] = useState({
@@ -444,12 +458,16 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     };
 
     const handleClick = () => {
-        saveFilter(currentFilter.current)
-            .then()
-            .catch((error) => {
-                displayErrorMessageWithSnackbar(error.message);
-            });
-        onClose();
+        if (!isFilterCreation) {
+            saveFilter(currentFilter.current)
+                .then()
+                .catch((error) => {
+                    displayErrorMessageWithSnackbar(error.message);
+                });
+            onClose();
+        } else {
+            handleFilterCreation(currentFilter.current);
+        }
     };
 
     const editDone = () => {
@@ -474,6 +492,18 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
                     initialFilter.equipmentFilterForm[key]
                 );
             }
+            console.log('filter : ', currentFormEdit);
+            return (
+                <SingleFilter
+                    key={key}
+                    filter={currentFormEdit[key]}
+                    definition={definition}
+                    onChange={editDone}
+                    sequence={sequence}
+                />
+            );
+        } else {
+            currentFormEdit[key] = generateDefaultValue(definition, null);
             return (
                 <SingleFilter
                     key={key}
@@ -493,10 +523,14 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     };
 
     const renderSpecific = () => {
+        console.log('generic filter type : ', filterType);
         if (filterType !== null) {
             return Object.entries(equipmentsDefinition[filterType].fields).map(
                 ([key, definition]) => {
-                    if (definition.occurs)
+                    console.log('definition.occurs : ', key, definition);
+                    console.log('keys : ', Array(definition.occurs).keys());
+                    if (definition.occurs) {
+                        console.log('spec');
                         return (
                             <Grid
                                 container
@@ -533,7 +567,10 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
                                 })}
                             </Grid>
                         );
-                    else return renderFilter(key, definition);
+                    } else {
+                        console.log('no spec');
+                        return renderFilter(key, definition);
+                    }
                 }
             );
         }

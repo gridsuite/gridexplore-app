@@ -29,6 +29,8 @@ export const DialogsId = {
     ADD_DIRECTORY: 'add_directory',
     ADD_NEW_CONTINGENCY_LIST: 'add_new_contingency_list',
     ADD_NEW_FILTER: 'add_new_filter',
+    ADD_NEW_MANUAL_FILTER: 'add_new_manual_filter',
+    ADD_NEW_FILTER_FROM_CSV: 'add_new_filter_from_csv',
     ADD_NEW_CASE: 'add_new_case',
     ACCESS_RIGHTS: 'access_rights',
     RENAME_DIRECTORY: 'rename_directory',

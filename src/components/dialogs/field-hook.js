@@ -380,6 +380,9 @@ export const useEquipmentTableValues = ({
     inputForm,
     defaultValues,
     isGeneratorOrLoad = false,
+    equipmentType,
+    defaultTableValues,
+    defaultEquipmentType,
 }) => {
     const [values, setValues] = useState([]);
 
@@ -388,13 +391,13 @@ export const useEquipmentTableValues = ({
     }, []);
 
     const checkValues = useCallback(() => {
-        if (defaultValues !== undefined && defaultValues.length !== 0) {
-            setValues([...defaultValues]);
+        if (defaultTableValues !== undefined && defaultTableValues.length !== 0) {
+            setValues([...defaultTableValues]);
         } else {
             setValues([]);
             handleAddValue();
         }
-    }, [defaultValues, handleAddValue]);
+    }, [defaultTableValues, handleAddValue]);
 
     useEffect(() => {
         checkValues();
@@ -448,41 +451,44 @@ export const useEquipmentTableValues = ({
 
     const field = useMemo(() => {
         return (
-            <DragDropContext onDragEnd={commit}>
-                <Droppable droppableId={'filterTable'}>
-                    {(provided) => (
-                        <div ref={provided.innerRef}>
-                            <Grid container>
-                                <Grid
-                                    container
-                                    xs={12}
-                                    style={{ borderBottom: '1px solid grey' }}
-                                >
-                                    <Grid xs={1} item />
-                                    {tableHeadersIds.map((header) => (
-                                        <Grid xs={4} item>
-                                            <FormattedMessage id={header} />
-                                        </Grid>
+            <Grid container item xs={12}>
+                <DragDropContext onDragEnd={commit}>
+                    <Droppable droppableId={id}
+                    >
+                        {(provided) => (
+                            <div ref={provided.innerRef} {...provided.droppableProps} >
+                                <Grid key={id+'ff'} container item xs={12}>
+                                    <Grid
+                                        container
+                                        xs={12}
+                                        key={id + 'rr'}
+                                    >
+                                        <Grid xs={1} item key={id}/>
+                                        {tableHeadersIds.map((value, index) => (
+                                            <Grid xs={value === "ID" ? isGeneratorOrLoad ? 4 : 7 : 3} item key={index} style={{ borderBottom: '1px solid grey' }}>
+                                                <FormattedMessage id={value} />
+                                            </Grid>
+                                        ))}
+                                    </Grid>
+                                    {values.map((value, index) => (
+                                        <Field
+                                            id={id}
+                                            value={value}
+                                            isLastValue={index !== values.length - 1}
+                                            index={index}
+                                            isGeneratorOrLoad={isGeneratorOrLoad}
+                                            handleAddValue={handleAddValue}
+                                            handleSetValue={handleSetValue}
+                                            handleChangeOrder={handleChangeOrder}
+                                            handleDeleteItem={handleDeleteItem}
+                                        />
                                     ))}
                                 </Grid>
-                                {values.map((value, idx) => (
-                                    <Field
-                                        id={id}
-                                        value={value}
-                                        isLastValue={idx !== values.length - 1}
-                                        index={idx}
-                                        isGeneratorOrLoad={isGeneratorOrLoad}
-                                        handleAddValue={handleAddValue}
-                                        handleSetValue={handleSetValue}
-                                        handleChangeOrder={handleChangeOrder}
-                                        handleDeleteItem={handleDeleteItem}
-                                    />
-                                ))}
-                            </Grid>
-                        </div>
-                    )}
-                </Droppable>
-            </DragDropContext>
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
+            </Grid>
         );
     }, [
         values,
