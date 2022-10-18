@@ -42,7 +42,7 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
-import ManualFilterCreationDialog from "./dialogs/manual-filter-creation-dialog";
+import ManualFilterCreationDialog from './dialogs/manual-filter-creation-dialog';
 
 const circularProgressSize = '70px';
 
@@ -195,14 +195,16 @@ const DirectoryContent = () => {
     /**
      * Filters dialog: window status value to edit manual filters
      */
-    const[openEditManualFilterDialog, setOpenEditManualFilterDialog] = useState(false);
+    const [openEditManualFilterDialog, setOpenEditManualFilterDialog] =
+        useState(false);
     const handleCloseManualFilterDialog = () => {
         setOpenEditManualFilterDialog(false);
         setCurrentAutomaticFilterId(null);
         setActiveElement(null);
     };
 
-    const [currentAutomaticFilterId, setCurrentAutomaticFilterId] = useState(null);
+    const [currentAutomaticFilterId, setCurrentAutomaticFilterId] =
+        useState(null);
     const [currentManualFilterId, setCurrentManualFilterId] = useState(null);
 
     /**
