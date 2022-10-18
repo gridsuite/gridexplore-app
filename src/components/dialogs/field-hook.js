@@ -391,7 +391,10 @@ export const useEquipmentTableValues = ({
     }, []);
 
     const checkValues = useCallback(() => {
-        if (defaultTableValues !== undefined && defaultTableValues.length !== 0) {
+        if (
+            defaultTableValues !== undefined &&
+            defaultTableValues.length !== 0
+        ) {
             setValues([...defaultTableValues]);
         } else {
             setValues([]);
@@ -453,19 +456,40 @@ export const useEquipmentTableValues = ({
         return (
             <Grid container item xs={12}>
                 <DragDropContext onDragEnd={commit}>
-                    <Droppable droppableId={id}
-                    >
+                    <Droppable droppableId={id}>
                         {(provided) => (
-                            <div ref={provided.innerRef} {...provided.droppableProps} >
-                                <Grid key={id+'ff'} container item xs={12}>
+                            <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                            >
+                                <Grid
+                                    key={id + 'containerItem'}
+                                    container
+                                    item
+                                    xs={12}
+                                >
                                     <Grid
                                         container
                                         xs={12}
-                                        key={id + 'rr'}
+                                        key={id + 'container'}
                                     >
-                                        <Grid xs={1} item key={id}/>
+                                        <Grid xs={1} item key={id} />
                                         {tableHeadersIds.map((value, index) => (
-                                            <Grid xs={value === "ID" ? isGeneratorOrLoad ? 4 : 7 : 3} item key={index} style={{ borderBottom: '1px solid grey' }}>
+                                            <Grid
+                                                xs={
+                                                    value === 'ID'
+                                                        ? isGeneratorOrLoad
+                                                            ? 4
+                                                            : 7
+                                                        : 3
+                                                }
+                                                item
+                                                key={index}
+                                                style={{
+                                                    borderBottom:
+                                                        '1px solid grey',
+                                                }}
+                                            >
                                                 <FormattedMessage id={value} />
                                             </Grid>
                                         ))}
@@ -474,12 +498,18 @@ export const useEquipmentTableValues = ({
                                         <Field
                                             id={id}
                                             value={value}
-                                            isLastValue={index !== values.length - 1}
+                                            isLastValue={
+                                                index !== values.length - 1
+                                            }
                                             index={index}
-                                            isGeneratorOrLoad={isGeneratorOrLoad}
+                                            isGeneratorOrLoad={
+                                                isGeneratorOrLoad
+                                            }
                                             handleAddValue={handleAddValue}
                                             handleSetValue={handleSetValue}
-                                            handleChangeOrder={handleChangeOrder}
+                                            handleChangeOrder={
+                                                handleChangeOrder
+                                            }
                                             handleDeleteItem={handleDeleteItem}
                                         />
                                     ))}
