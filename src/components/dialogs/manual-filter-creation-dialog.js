@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
         minWidth: '800px',
         minHeight: '400px',
         margin: 'auto',
-    }
+    },
 }));
 
 const ManualFilterTable = ({
@@ -49,7 +49,6 @@ const ManualFilterTable = ({
     handleChangeOrder,
     handleDeleteItem,
 }) => {
-    const classes =useStyles();
     const intl = useIntl();
     function isNumber(val) {
         return /^-?[0-9]*[.,]?[0-9]*$/.test(val);
@@ -63,34 +62,34 @@ const ManualFilterTable = ({
         <Draggable draggableId={index + id} index={index}>
             {(provided) => (
                 <div
-                    draggable='true'
+                    draggable="true"
                     key={index + id}
-                    style={{width: '100%'}}
+                    style={{ width: '100%' }}
                 >
                     <Grid
                         container
                         item
                         spacing={2}
-                        sx={{width: '100%', height: '50%'}}
+                        sx={{ width: '100%', height: '50%' }}
                         xs={12}
-                        justifyContent='space-between'
-                        draggable='true'
+                        draggable="true"
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                     >
                         <Grid xs={1} item key={id + index + 'drag'}>
-                            <IconButton
-                                {...provided.dragHandleProps}
-                            >
+                            <IconButton {...provided.dragHandleProps}>
                                 <DragIndicatorIcon spacing={0} />
                             </IconButton>
                         </Grid>
-                        <Grid xs={getXs()} item key={id + index + 'equipmentID' } flexGrow={"inherit"}>
+                        <Grid
+                            xs={getXs()}
+                            item
+                            key={id + index + 'equipmentID'}
+                        >
                             <Input
                                 id={id + index}
                                 value={value?.equipmentID ?? ''}
-                                classes={isGeneratorOrLoad ? classes.inputField : classes.idInput}
                                 fullWidth={true}
                                 placeholder={intl.formatMessage({
                                     id: 'ID',
@@ -106,7 +105,12 @@ const ManualFilterTable = ({
                             />
                         </Grid>
                         {isGeneratorOrLoad && (
-                            <Grid xs={3} item key={id + index + 'dKey'} justifyContent="flex-end">
+                            <Grid
+                                xs={3}
+                                item
+                                key={id + index + 'dKey'}
+                                justifyContent="flex-end"
+                            >
                                 <Input
                                     id={id + index}
                                     value={value?.distributionKey ?? ''}
@@ -118,10 +122,9 @@ const ManualFilterTable = ({
                                     onChange={(event) => {
                                         if (isNumber(event.target.value)) {
                                             handleSetValue(index, {
-                                                equipmentID:
-                                                value?.equipmentID,
+                                                equipmentID: value?.equipmentID,
                                                 distributionKey:
-                                                event.target.value,
+                                                    event.target.value,
                                             });
                                         }
                                     }}
@@ -131,7 +134,12 @@ const ManualFilterTable = ({
                                 />
                             </Grid>
                         )}
-                        <Grid xs={0.5} item key={id + index + 'delete'} justifyContent="flex-end">
+                        <Grid
+                            xs={0.5}
+                            item
+                            key={id + index + 'delete'}
+                            justifyContent="flex-end"
+                        >
                             <IconButton
                                 onClick={() => handleDeleteItem(index)}
                                 disabled={index === 0}
@@ -139,7 +147,12 @@ const ManualFilterTable = ({
                                 <DeleteIcon />
                             </IconButton>
                         </Grid>
-                        <Grid xs={0.5} item key={id + index + 'up'} justifyContent="flex-end">
+                        <Grid
+                            xs={0.5}
+                            item
+                            key={id + index + 'up'}
+                            justifyContent="flex-end"
+                        >
                             <IconButton
                                 onClick={() => {
                                     if (index !== 0) {
@@ -150,7 +163,12 @@ const ManualFilterTable = ({
                                 <ArrowCircleUp />
                             </IconButton>
                         </Grid>
-                        <Grid xs={0.5} item key={id + index + 'down'} justifyContent="flex-end">
+                        <Grid
+                            xs={0.5}
+                            item
+                            key={id + index + 'down'}
+                            justifyContent="flex-end"
+                        >
                             <IconButton
                                 onClick={() => {
                                     if (!isLastValue) {
@@ -161,7 +179,12 @@ const ManualFilterTable = ({
                                 <ArrowCircleDown />
                             </IconButton>
                         </Grid>
-                        <Grid xs={0.5} item key={id + index + 'add'} justifyContent="flex-end">
+                        <Grid
+                            xs={0.5}
+                            item
+                            key={id + index + 'add'}
+                            justifyContent="flex-end"
+                        >
                             {isLastValue && (
                                 <IconButton onClick={() => handleAddValue()}>
                                     <AddIcon />
@@ -169,7 +192,7 @@ const ManualFilterTable = ({
                             )}
                         </Grid>
                     </Grid>
-                    <Grid item width={"inherit"} xs={12} />
+                    <Grid item xs={12} />
                 </div>
             )}
         </Draggable>
@@ -322,7 +345,7 @@ const ManualFilterCreationDialog = ({
             <DialogTitle onClose={onClose}>{title}</DialogTitle>
             <DialogContent>
                 <div>
-                    <Grid container  spacing={2}>
+                    <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <FilterTypeSelection
                                 type={equipmentType}
@@ -330,10 +353,12 @@ const ManualFilterCreationDialog = ({
                                 onChange={handleEquipmentTypeChange}
                             />
                         </Grid>
-                        <Grid item width={"inherit"} xs={12} />
+                        <Grid item xs={12} />
                         {equipmentType && tableValuesField}
                         {createFilterErr !== '' && (
-                            <Alert style={{flexGrow: 1}} severity="error">{createFilterErr}</Alert>
+                            <Alert style={{ flexGrow: 1 }} severity="error">
+                                {createFilterErr}
+                            </Alert>
                         )}
                     </Grid>
                 </div>
@@ -345,7 +370,9 @@ const ManualFilterCreationDialog = ({
                 <Button
                     variant="outlined"
                     onClick={handleCreateFilter}
-                    disabled={tableValues.length === 0 || createFilterErr !== ''}
+                    disabled={
+                        tableValues.length === 0 || createFilterErr !== ''
+                    }
                 >
                     <FormattedMessage id="validate" />
                 </Button>

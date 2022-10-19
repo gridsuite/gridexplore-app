@@ -22,12 +22,7 @@ import Alert from '@mui/material/Alert';
 import { equipmentsDefinition } from './generic-filter-dialog';
 import PropTypes from 'prop-types';
 
-const CsvImportFilterCreationDialog = ({
-    name,
-    onClose,
-    open,
-    title,
-}) => {
+const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const intl = useIntl();
     const { CSVReader } = useCSVReader();

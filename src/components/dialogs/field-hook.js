@@ -16,17 +16,13 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/ControlPoint';
 import { useDispatch, useSelector } from 'react-redux';
 import { UploadCase } from './upload-case';
 import makeStyles from '@mui/styles/makeStyles';
 import { removeSelectedFile } from '../../redux/actions';
 import { ElementType } from '../../utils/elementType';
 import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 const useStyles = makeStyles((theme) => ({
@@ -297,17 +293,20 @@ export const useEquipmentTableValues = ({
             });
             setCreateFilterErr('');
         },
-        []
+        [setCreateFilterErr]
     );
 
-    const handleSetValue = useCallback((index, newValue) => {
-        setValues((oldValues) => {
-            let newValues = [...oldValues];
-            newValues[index] = newValue;
-            return newValues;
-        });
-        setCreateFilterErr('');
-    }, []);
+    const handleSetValue = useCallback(
+        (index, newValue) => {
+            setValues((oldValues) => {
+                let newValues = [...oldValues];
+                newValues[index] = newValue;
+                return newValues;
+            });
+            setCreateFilterErr('');
+        },
+        [setCreateFilterErr]
+    );
 
     const handleChangeOrder = useCallback(
         (index, direction) => {
@@ -335,10 +334,6 @@ export const useEquipmentTableValues = ({
         [values]
     );
 
-    const getXs = (val) => {
-        return isGeneratorOrLoad ? val === 'ID' ? 6 : 3 : 9
-    };
-
     const field = useMemo(() => {
         return (
             <Box sx={{ flexGrow: 1 }}>
@@ -354,16 +349,21 @@ export const useEquipmentTableValues = ({
                                     key={id + 'container'}
                                     spacing={isGeneratorOrLoad ? 2 : 0}
                                 >
-                                    <Grid item xs={1}/>
+                                    <Grid item xs={1} />
                                     {tableHeadersIds.map((value, index) => (
                                         <Grid
-                                            xs = {getXs(value)}
+                                            xs={
+                                                isGeneratorOrLoad
+                                                    ? value === 'ID'
+                                                        ? 6
+                                                        : 3
+                                                    : 9
+                                            }
                                             item
                                             key={index}
                                             style={{
                                                 width: '100%',
-                                                borderBottom:
-                                                    '3px solid grey',
+                                                borderBottom: '3px solid grey',
                                             }}
                                         >
                                             <span>
@@ -381,14 +381,10 @@ export const useEquipmentTableValues = ({
                                             index === values.length - 1
                                         }
                                         index={index}
-                                        isGeneratorOrLoad={
-                                            isGeneratorOrLoad
-                                        }
+                                        isGeneratorOrLoad={isGeneratorOrLoad}
                                         handleAddValue={handleAddValue}
                                         handleSetValue={handleSetValue}
-                                        handleChangeOrder={
-                                            handleChangeOrder
-                                        }
+                                        handleChangeOrder={handleChangeOrder}
                                         handleDeleteItem={handleDeleteItem}
                                     />
                                 ))}
