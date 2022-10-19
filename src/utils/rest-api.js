@@ -73,11 +73,11 @@ export function fetchAccess(user) {
         PREFIX_USER_ADMIN_SERVER_QUERIES + `/v1/users/${user?.profile?.sub}`;
     console.debug(CheckAccessUrl);
 
-    const init = Object.assign({}, { method: 'head' });
-    init.headers = new Headers(init.headers || {});
-    init.headers.append('Authorization', 'Bearer ' + user?.id_token);
+    const options = { method: 'head' };
+    options.headers = new Headers();
+    options.headers.append('Authorization', 'Bearer ' + user?.id_token);
 
-    return fetch(CheckAccessUrl, init).then((response) => {
+    return fetch(CheckAccessUrl, options).then((response) => {
         if (response.ok) {
             return response.status !== 204; // HTTP 204 : No-content
         }
