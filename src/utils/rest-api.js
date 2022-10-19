@@ -67,17 +67,27 @@ function backendFetch(url, init) {
     return fetch(url, initCopy);
 }
 
-export function fetchAccess(user) {
+export function fetchValidateUser(user) {
+    if (!user)
+        return Promise.reject(
+            new Error('Error : Fetching access for missing user : ' + user)
+        );
+
     console.info(`Fetching access for user...`);
     const CheckAccessUrl =
         PREFIX_USER_ADMIN_SERVER_QUERIES + `/v1/users/${user?.profile?.sub}`;
     console.debug(CheckAccessUrl);
 
-    const options = { method: 'head' };
-    options.headers = new Headers();
-    options.headers.append('Authorization', 'Bearer ' + user?.id_token);
-    return fetch(CheckAccessUrl, options).then((response) => {
-        return response.ok ? response.status !== 204 : false;
+    return fetch(CheckAccessUrl, {
+        method: 'head',
+        headers: {
+            Authorization: 'Bearer ' + user?.id_token,
+        },
+    }).then((response) => {
+        if (response.status === 200) return true;
+        else if (response.status === 204 || response.status === 403)
+            return false;
+        else throw new Error(response.status + ' ' + response.statusText);
     });
 }
 
