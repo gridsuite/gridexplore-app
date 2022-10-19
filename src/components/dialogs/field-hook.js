@@ -257,122 +257,6 @@ export const useNameField = ({
     ];
 };
 
-export const useTableValues = ({
-    id,
-    tableHeadersIds,
-    Field,
-    inputForm,
-    defaultValues,
-    isGeneratorOrLoad = false,
-}) => {
-    const [values, setValues] = useState([]);
-    const classes = useStyles();
-
-    const handleAddValue = useCallback(() => {
-        setValues((oldValues) => [...oldValues, {}]);
-    }, []);
-
-    const checkValues = useCallback(() => {
-        if (defaultValues !== undefined && defaultValues.length !== 0) {
-            setValues([...defaultValues]);
-        } else {
-            setValues([]);
-            handleAddValue();
-        }
-    }, [defaultValues, handleAddValue]);
-
-    useEffect(() => {
-        checkValues();
-    }, [checkValues]);
-
-    const handleDeleteItem = useCallback(
-        (index) => {
-            setValues((oldValues) => {
-                let newValues = [...oldValues];
-                newValues.splice(index, 1);
-                return newValues;
-            });
-            inputForm.reset();
-        },
-        [inputForm]
-    );
-
-    const handleSetValue = useCallback((index, newValue) => {
-        setValues((oldValues) => {
-            let newValues = [...oldValues];
-            newValues[index] = newValue;
-            return newValues;
-        });
-    }, []);
-
-    const field = useMemo(() => {
-        return (
-            <Grid item container spacing={2}>
-                {tableHeadersIds.map((header) => (
-                    <Grid key={header} item xs={3}>
-                        <FormattedMessage id={header} />
-                    </Grid>
-                ))}
-                <Box sx={{ width: '100%' }} />
-                <Box sx={{ width: '100%' }} />
-                {values.map((value, idx) => (
-                    <Grid
-                        key={id + idx}
-                        container
-                        spacing={2}
-                        item
-                        draggable={true}
-                    >
-                        <Grid xs={1}>
-                            <IconButton size={'small'}>
-                                <DragIndicatorIcon edge="start" spacing={0} />
-                            </IconButton>
-                        </Grid>
-                        <Field
-                            defaultValue={value}
-                            onChange={handleSetValue}
-                            index={idx}
-                            isGeneratorOrLoad={isGeneratorOrLoad}
-                        />
-                        <Grid item xs={1}>
-                            <IconButton
-                                className={classes.icon}
-                                key={id + idx}
-                                onClick={() => handleDeleteItem(idx)}
-                            >
-                                <DeleteIcon />
-                            </IconButton>
-                        </Grid>
-                        {idx === values.length - 1 && (
-                            <Grid item xs={1}>
-                                <IconButton
-                                    className={classes.icon}
-                                    key={id + idx}
-                                    onClick={() => handleAddValue()}
-                                >
-                                    <AddIcon />
-                                </IconButton>
-                            </Grid>
-                        )}
-                        <Box sx={{ width: '100%' }} />
-                    </Grid>
-                ))}
-            </Grid>
-        );
-    }, [
-        values,
-        id,
-        classes.icon,
-        handleAddValue,
-        handleDeleteItem,
-        handleSetValue,
-        tableHeadersIds,
-        isGeneratorOrLoad,
-    ]);
-
-    return [values, field];
-};
-
 export const useEquipmentTableValues = ({
     id,
     tableHeadersIds,
@@ -380,6 +264,7 @@ export const useEquipmentTableValues = ({
     inputForm,
     isGeneratorOrLoad = false,
     defaultTableValues,
+    setCreateFilterErr,
 }) => {
     const [values, setValues] = useState([]);
 
@@ -410,9 +295,9 @@ export const useEquipmentTableValues = ({
                 newValues.splice(index, 1);
                 return newValues;
             });
-            inputForm.reset();
+            setCreateFilterErr('');
         },
-        [inputForm]
+        []
     );
 
     const handleSetValue = useCallback((index, newValue) => {
@@ -421,6 +306,7 @@ export const useEquipmentTableValues = ({
             newValues[index] = newValue;
             return newValues;
         });
+        setCreateFilterErr('');
     }, []);
 
     const handleChangeOrder = useCallback(
@@ -450,28 +336,25 @@ export const useEquipmentTableValues = ({
     );
 
     const getXs = (val) => {
-        return isGeneratorOrLoad ? val === 'ID' ? 6 : 2.5 : 8.5
+        return isGeneratorOrLoad ? val === 'ID' ? 6 : 3 : 9
     };
 
     const field = useMemo(() => {
         return (
-            <Grid container item xs={12} width={'100%'}>
+            <Box sx={{ flexGrow: 1 }}>
                 <DragDropContext onDragEnd={commit}>
                     <Droppable droppableId={id}>
                         {(provided) => (
                             <div
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
-                                width={'100%'}
                             >
                                 <Grid
                                     container
-                                    xs={12}
                                     key={id + 'container'}
-                                    width={'100%'}
                                     spacing={isGeneratorOrLoad ? 2 : 0}
                                 >
-                                    <Grid item xs={0.5}/>
+                                    <Grid item xs={1}/>
                                     {tableHeadersIds.map((value, index) => (
                                         <Grid
                                             xs = {getXs(value)}
@@ -482,8 +365,6 @@ export const useEquipmentTableValues = ({
                                                 borderBottom:
                                                     '3px solid grey',
                                             }}
-                                            direction="row"
-                                            justifyContent='flex-end'
                                         >
                                             <span>
                                                 <FormattedMessage id={value} />
@@ -511,11 +392,12 @@ export const useEquipmentTableValues = ({
                                         handleDeleteItem={handleDeleteItem}
                                     />
                                 ))}
+                                {provided.placeholder}
                             </div>
                         )}
                     </Droppable>
                 </DragDropContext>
-            </Grid>
+            </Box>
         );
     }, [
         values,

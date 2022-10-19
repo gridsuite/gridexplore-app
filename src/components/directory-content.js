@@ -771,7 +771,6 @@ const DirectoryContent = () => {
                 id={currentManualFilterId}
                 open={openEditManualFilterDialog}
                 onClose={handleCloseManualFilterDialog}
-                onError={handleError}
                 title={useIntl().formatMessage({ id: 'editFilter' })}
                 isFilterCreation={false}
             />

@@ -324,11 +324,8 @@ const CreateFilterDialog = ({
                     isValidated &&
                     newListType?.toUpperCase() === FilterType.IMPORT_CSV
                 }
-                id={newNameList}
-                label={'import csv'}
                 title={title}
                 name={newNameList}
-                setFilterCreationType={setFilterCreationType}
                 onClose={handleClose}
             />
             <GenericFilterDialog

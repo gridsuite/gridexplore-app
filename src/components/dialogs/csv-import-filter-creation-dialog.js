@@ -23,15 +23,10 @@ import { equipmentsDefinition } from './generic-filter-dialog';
 import PropTypes from 'prop-types';
 
 const CsvImportFilterCreationDialog = ({
-    id,
-    label,
     name,
     onClose,
     open,
     title,
-    customTextCancelBtn,
-    customTextValidationBtn,
-    setFilterCreationType,
 }) => {
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const intl = useIntl();
@@ -62,7 +57,7 @@ const CsvImportFilterCreationDialog = ({
             ],
         ];
         Object.entries(equipmentsDefinition)
-            .filter((val) => val.label !== equipmentsDefinition.LINE.label)
+            .filter((val) => val[0] !== equipmentsDefinition.LINE.type)
             .forEach((value) => {
                 newData = [...newData, ...[['', value[0]]]];
             });
@@ -180,7 +175,7 @@ const CsvImportFilterCreationDialog = ({
                         <Grid xs={5}>
                             <CsvDownloader
                                 datas={csvData()}
-                                filename={'filter creation'}
+                                filename={'filterCreation'}
                             >
                                 <Button>
                                     <FormattedMessage id="GenerateCSV" />
@@ -235,14 +230,10 @@ const CsvImportFilterCreationDialog = ({
 };
 
 CsvImportFilterCreationDialog.prototype = {
-    id: PropTypes.string.isRequired,
-    label: PropTypes.string,
     name: PropTypes.string,
     onClose: PropTypes.func,
     open: PropTypes.bool,
     title: PropTypes.string,
-    customTextCancelBtn: PropTypes.string,
-    customTextValidationBtn: PropTypes.string,
 };
 
 export default CsvImportFilterCreationDialog;
