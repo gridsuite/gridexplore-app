@@ -55,7 +55,7 @@ export function connectNotificationsWsUpdateConfig() {
     return reconnectingWebSocket;
 }
 
-function backendFetch(url, init, token) {
+function backendFetch(url, init) {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError(
             'Argument 2 of backendFetch is not an object' + typeof init
@@ -63,11 +63,7 @@ function backendFetch(url, init, token) {
     }
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
-    if (token) {
-        initCopy.headers.append('Authorization', 'Bearer ' + token);
-    } else {
-        initCopy.headers.append('Authorization', 'Bearer ' + getToken());
-    }
+    initCopy.headers.append('Authorization', 'Bearer ' + getToken());
     return fetch(url, initCopy);
 }
 
@@ -76,11 +72,12 @@ export function fetchAccess(user) {
     const CheckAccessUrl =
         PREFIX_USER_ADMIN_SERVER_QUERIES + `/v1/users/${user?.profile?.sub}`;
     console.debug(CheckAccessUrl);
-    return backendFetch(
-        CheckAccessUrl,
-        { method: 'head' },
-        user?.id_token
-    ).then((response) => {
+
+    const init = Object.assign({}, { method: 'head' });
+    init.headers = new Headers(init.headers || {});
+    init.headers.append('Authorization', 'Bearer ' + user?.id_token);
+
+    return fetch(CheckAccessUrl, init).then((response) => {
         if (response.ok) {
             return response.status !== 204; // HTTP 204 : No-content
         }
