@@ -37,6 +37,7 @@ import {
     USER,
     SIGNIN_CALLBACK_ERROR,
     UNAUTHORIZED_USER_INFO,
+    SHOW_AUTH_INFO_LOGIN,
 } from '@gridsuite/commons-ui';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 
@@ -54,6 +55,7 @@ const initialState = {
     user: null,
     signInCallbackError: null,
     unauthorizedUserInfo: null,
+    showAuthenticationRouterLogin: false,
     appsAndUrls: [],
     cases: [],
     selectedCase: null,
@@ -83,6 +85,11 @@ export const reducer = createReducer(initialState, {
 
     [UNAUTHORIZED_USER_INFO]: (state, action) => {
         state.unauthorizedUserInfo = action.unauthorizedUserInfo;
+    },
+
+    [SHOW_AUTH_INFO_LOGIN]: (state, action) => {
+        state.showAuthenticationRouterLogin =
+            action.showAuthenticationRouterLogin;
     },
 
     [SELECT_COMPUTED_LANGUAGE]: (state, action) => {
