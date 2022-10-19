@@ -106,6 +106,7 @@
     "Manual": "Manuel",
     "UploadCSV": "Télécharger le CSV",
     "distributionKey": "Clé de répartition",
+    "key": "Clé",
     "GenerateCSV": "Générer le squelette CSV",
     "CSVFile": "Fichier CSV",
     "ImportCSV": "Import CSV",

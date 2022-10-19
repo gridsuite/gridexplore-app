@@ -32,10 +32,20 @@ import { Input } from '@mui/material';
 const useStyles = makeStyles((theme) => ({
     dialogPaper: {
         width: 'auto',
-        minWidth: '1600px',
-        minHeight: '600px',
+        minWidth: '800px',
+        minHeight: 'auto',
         margin: 'auto',
     },
+    idInput: {
+        border: 'hidden',
+        backgroundColor: 'inherit',
+        width: '150%',
+    },
+    inputField: {
+        border: 'hidden',
+        backgroundColor: 'inherit',
+        width: '150%',
+    }
 }));
 
 const ManualFilterTable = ({
@@ -49,10 +59,15 @@ const ManualFilterTable = ({
     handleChangeOrder,
     handleDeleteItem,
 }) => {
+    const classes =useStyles();
     const intl = useIntl();
     function isNumber(val) {
         return /^-?[0-9]*[.,]?[0-9]*$/.test(val);
     }
+
+    const getXs = (val) => {
+        return isGeneratorOrLoad ? 8 : 5;
+    };
 
     return (
         <Draggable draggableId={index + id} index={index}>
@@ -67,27 +82,28 @@ const ManualFilterTable = ({
                     <Grid
                         container
                         item
-                        xs={12}
-                        justifyContent="space-between"
-                        width={'inherit'}
-                        spacing={2}
+                        spacing={5}
+                        sx={{width: '100%', height: '50%'}}
+
                     >
-                        <Grid xs={1} item key={id + index + 'drag'}>
+                        <Grid xs={0.5} item key={id + index + 'drag'}>
                             <IconButton>
                                 <DragIndicatorIcon />
                             </IconButton>
                         </Grid>
-                        <Grid xs={7} item container>
-                            <Grid xs item key={id + index + 'equipmentID'}>
+                        <Grid
+                            xs
+                            item
+                            container
+                            spacing={3}
+                        >
+                            <Grid xs item key={id + index + 'equipmentID' } classes={isGeneratorOrLoad ? classes.inputField : classes.idInput}
+                            >
                                 <Input
                                     id={id + index}
                                     value={value?.equipmentID ?? ''}
-                                    style={{
-                                        border: 'hidden',
-                                        backgroundColor: 'inherit',
-                                        height: '100%',
-                                        width: '100%',
-                                    }}
+                                    classes={isGeneratorOrLoad ? classes.inputField : classes.idInput}
+                                    fullWidth={true}
                                     placeholder={intl.formatMessage({
                                         id: 'ID',
                                     })}
@@ -102,36 +118,35 @@ const ManualFilterTable = ({
                                     required
                                 />
                             </Grid>
-                            {isGeneratorOrLoad && (
-                                <Grid xs={5} item key={id + index + 'dKey'}>
+                            <Grid xs={isGeneratorOrLoad ? 3 : 0} item key={id + index + 'dKey'} justifyContent="flex-end">
+                                {isGeneratorOrLoad && (
                                     <Input
                                         id={id + index}
                                         value={value?.distributionKey ?? ''}
                                         style={{
                                             border: 'hidden',
                                             backgroundColor: 'inherit',
-                                            height: '100%',
                                             width: '100%',
                                         }}
                                         onChange={(event) => {
                                             if (isNumber(event.target.value)) {
                                                 handleSetValue(index, {
                                                     equipmentID:
-                                                        value?.equipmentID,
+                                                    value?.equipmentID,
                                                     distributionKey:
-                                                        event.target.value,
+                                                    event.target.value,
                                                 });
                                             }
                                         }}
                                         placeholder={intl.formatMessage({
-                                            id: 'distributionKey',
+                                            id: 'key',
                                         })}
                                     />
-                                </Grid>
-                            )}
+                                )}
+                            </Grid>
                         </Grid>
-                        <Grid item container xs={4} spacing={5}>
-                            <Grid xs={1} item key={id + index + 'delete'}>
+                        <Grid item container xs={isGeneratorOrLoad ? 3 : 4} spacing={5} justifyContent="flex-end">
+                            <Grid xs={0.5} item key={id + index + 'delete'}>
                                 <IconButton
                                     onClick={() => handleDeleteItem(index)}
                                     disabled={index === 0}
@@ -139,7 +154,7 @@ const ManualFilterTable = ({
                                     <DeleteIcon />
                                 </IconButton>
                             </Grid>
-                            <Grid xs={1} item key={id + index + 'up'}>
+                            <Grid xs={0.5} item key={id + index + 'up'}>
                                 <IconButton
                                     onClick={() => {
                                         if (index !== 0) {
@@ -150,10 +165,10 @@ const ManualFilterTable = ({
                                     <ArrowCircleUp />
                                 </IconButton>
                             </Grid>
-                            <Grid xs={1} item key={id + index + 'down'}>
+                            <Grid xs={0.5} item key={id + index + 'down'}>
                                 <IconButton
                                     onClick={() => {
-                                        if (isLastValue) {
+                                        if (!isLastValue) {
                                             handleChangeOrder(index, 1);
                                         }
                                     }}
@@ -161,13 +176,16 @@ const ManualFilterTable = ({
                                     <ArrowCircleDown />
                                 </IconButton>
                             </Grid>
-                            <Grid xs={1} item key={id + index + 'add'}>
-                                <IconButton onClick={() => handleAddValue()}>
-                                    <AddIcon />
-                                </IconButton>
+                            <Grid xs={0.5} item key={id + index + 'add'}>
+                                {isLastValue && (
+                                    <IconButton onClick={() => handleAddValue()}>
+                                        <AddIcon visibility={isLastValue}/>
+                                    </IconButton>
+                                )}
                             </Grid>
                         </Grid>
                     </Grid>
+                    <Grid item width={"inherit"} xs={12} />
                 </div>
             )}
         </Draggable>
@@ -314,7 +332,7 @@ const ManualFilterCreationDialog = ({
 
     return (
         <Dialog
-            classes={classes.dialogPaper}
+            classes={{ paper: classes.dialogPaper }}
             fullWidth={true}
             open={open}
             onClose={onClose}
@@ -322,7 +340,7 @@ const ManualFilterCreationDialog = ({
             <DialogTitle onClose={onClose}>{title}</DialogTitle>
             <DialogContent>
                 <div>
-                    <Grid container spacing={2}>
+                    <Grid container  spacing={2}>
                         <Grid item xs={12}>
                             <FilterTypeSelection
                                 type={equipmentType}
@@ -330,7 +348,7 @@ const ManualFilterCreationDialog = ({
                                 onChange={handleEquipmentTypeChange}
                             />
                         </Grid>
-                        <Grid item xs={12} />
+                        <Grid item width={"inherit"} xs={12} />
                         {equipmentType && tableValuesField}
                         {createFilterErr !== '' && (
                             <Alert severity="error">{createFilterErr}</Alert>
