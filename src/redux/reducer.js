@@ -33,7 +33,11 @@ import {
     REMOVE_UPLOADING_ELEMENT,
 } from './actions';
 
-import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
+import {
+    USER,
+    SIGNIN_CALLBACK_ERROR,
+    UNAUTHORIZED_USER_INFO,
+} from '@gridsuite/commons-ui';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 
 const paramsInitialState = {
@@ -49,6 +53,7 @@ const initialState = {
     currentPath: [],
     user: null,
     signInCallbackError: null,
+    unauthorizedUserInfo: null,
     appsAndUrls: [],
     cases: [],
     selectedCase: null,
@@ -74,6 +79,10 @@ export const reducer = createReducer(initialState, {
 
     [SIGNIN_CALLBACK_ERROR]: (state, action) => {
         state.signInCallbackError = action.signInCallbackError;
+    },
+
+    [UNAUTHORIZED_USER_INFO]: (state, action) => {
+        state.unauthorizedUserInfo = action.unauthorizedUserInfo;
     },
 
     [SELECT_COMPUTED_LANGUAGE]: (state, action) => {

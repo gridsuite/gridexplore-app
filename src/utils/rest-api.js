@@ -11,6 +11,8 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 import { EquipmentTypes } from './equipment-types';
 import { ContingencyListType } from './elementType';
 
+const PREFIX_USER_ADMIN_SERVER_QUERIES =
+    process.env.REACT_APP_WS_GATEWAY + '/user-admin';
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
 const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
@@ -53,7 +55,7 @@ export function connectNotificationsWsUpdateConfig() {
     return reconnectingWebSocket;
 }
 
-function backendFetch(url, init) {
+function backendFetch(url, init, token) {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError(
             'Argument 2 of backendFetch is not an object' + typeof init
@@ -61,8 +63,29 @@ function backendFetch(url, init) {
     }
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
-    initCopy.headers.append('Authorization', 'Bearer ' + getToken());
+    if (token) {
+        initCopy.headers.append('Authorization', 'Bearer ' + token);
+    } else {
+        initCopy.headers.append('Authorization', 'Bearer ' + getToken());
+    }
     return fetch(url, initCopy);
+}
+
+export function fetchAccess(user) {
+    console.info(`Fetching access for user...`);
+    const CheckAccessUrl =
+        PREFIX_USER_ADMIN_SERVER_QUERIES + `/v1/users/${user?.profile?.sub}`;
+    console.debug(CheckAccessUrl);
+    return backendFetch(
+        CheckAccessUrl,
+        { method: 'head' },
+        user?.id_token
+    ).then((response) => {
+        if (response.ok) {
+            return response.status !== 204; // HTTP 204 : No-content
+        }
+        return Promise.reject(response.statusText);
+    });
 }
 
 export function fetchAppsAndUrls() {

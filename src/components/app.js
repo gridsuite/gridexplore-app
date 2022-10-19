@@ -37,6 +37,7 @@ import {
     connectNotificationsWsUpdateConfig,
     fetchConfigParameter,
     fetchConfigParameters,
+    fetchAccess,
 } from '../utils/rest-api';
 import {
     APP_NAME,
@@ -55,6 +56,19 @@ import DirectoryBreadcrumbs from './directory-breadcrumbs';
 
 const noUserManager = { instance: null, error: null };
 
+const validateUser = (user) => {
+    if (user !== null) {
+        return fetchAccess(user)
+            .then((data) => {
+                return true;
+            })
+            .catch((errorMessage) => {
+                return false;
+            });
+    }
+    return Promise.resolve(false);
+};
+
 const App = () => {
     const intlRef = useIntlRef();
 
@@ -64,6 +78,9 @@ const App = () => {
 
     const signInCallbackError = useSelector(
         (state) => state.signInCallbackError
+    );
+    const unauthorizedUserInfo = useSelector(
+        (state) => state.unauthorizedUserInfo
     );
 
     const [userManager, setUserManager] = useState(noUserManager);
@@ -144,6 +161,7 @@ const App = () => {
     useEffect(() => {
         initializeAuthenticationProd(
             dispatch,
+            validateUser,
             initialMatchSilentRenewCallbackUrl != null,
             fetch('idpSettings.json')
         )
@@ -312,6 +330,7 @@ const App = () => {
                         <AuthenticationRouter
                             userManager={userManager}
                             signInCallbackError={signInCallbackError}
+                            unauthorizedUserInfo={unauthorizedUserInfo}
                             dispatch={dispatch}
                             navigate={navigate}
                             location={location}
