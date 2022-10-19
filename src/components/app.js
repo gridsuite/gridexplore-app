@@ -57,16 +57,7 @@ import DirectoryBreadcrumbs from './directory-breadcrumbs';
 const noUserManager = { instance: null, error: null };
 
 const validateUser = (user) => {
-    if (user !== null) {
-        return fetchAccess(user)
-            .then((data) => {
-                return true;
-            })
-            .catch((errorMessage) => {
-                return false;
-            });
-    }
-    return Promise.resolve(false);
+    return user !== null ? fetchAccess(user) : Promise.resolve(false);
 };
 
 const App = () => {

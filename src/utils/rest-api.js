@@ -76,12 +76,8 @@ export function fetchAccess(user) {
     const options = { method: 'head' };
     options.headers = new Headers();
     options.headers.append('Authorization', 'Bearer ' + user?.id_token);
-
     return fetch(CheckAccessUrl, options).then((response) => {
-        if (response.ok) {
-            return response.status !== 204; // HTTP 204 : No-content
-        }
-        return Promise.reject(response.statusText);
+        return response.ok ? response.status !== 204 : false;
     });
 }
 
