@@ -32,6 +32,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import ManualFilterCreationDialog from './manual-filter-creation-dialog';
 import CsvImportFilterCreationDialog from './csv-import-filter-creation-dialog';
 import GenericFilterDialog from './generic-filter-dialog';
+import { DialogsId } from "../../utils/UIconstants";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -96,8 +97,7 @@ const CreateFilterDialog = ({
     title,
     customTextValidationBtn,
     customTextCancelBtn,
-    setFilterCreationType,
-    setFilterName,
+    openDialog,
     setOpenDialog,
 }) => {
     const [newNameList, setNewListName] = useState('');
@@ -193,6 +193,20 @@ const CreateFilterDialog = ({
             return;
         }
 
+        switch (newListType?.toUpperCase()) {
+            case FilterType.MANUAL:
+                setOpenDialog(DialogsId.ADD_NEW_MANUAL_FILTER);
+                break;
+            case FilterType.IMPORT_CSV:
+                setOpenDialog(DialogsId.ADD_NEW_FILTER_FROM_CSV);
+                break;
+            case FilterType.AUTOMATIC:
+                setOpenDialog(DialogsId.GENERIC_FILTER);
+                break;
+            default:
+                setCreateFilterErr('error');
+                break;
+        }
         setIsValidated(true);
     };
 
@@ -243,7 +257,7 @@ const CreateFilterDialog = ({
         <>
             <Dialog
                 fullWidth={true}
-                open={!isValidated && open}
+                open={open}
                 onClose={handleClose}
                 onKeyPress={handleKeyPressed}
             >
@@ -310,29 +324,20 @@ const CreateFilterDialog = ({
             </Dialog>
             <ManualFilterCreationDialog
                 id={newNameList}
-                open={
-                    isValidated &&
-                    newListType?.toUpperCase() === FilterType.MANUAL
-                }
+                open={openDialog === DialogsId.ADD_NEW_MANUAL_FILTER}
                 title={title}
                 onClose={handleClose}
                 name={newNameList}
                 isFilterCreation={true}
             />
             <CsvImportFilterCreationDialog
-                open={
-                    isValidated &&
-                    newListType?.toUpperCase() === FilterType.IMPORT_CSV
-                }
+                open={openDialog === DialogsId.ADD_NEW_FILTER_FROM_CSV}
                 title={title}
                 name={newNameList}
                 onClose={handleClose}
             />
             <GenericFilterDialog
-                open={
-                    isValidated &&
-                    newListType?.toUpperCase() === FilterType.AUTOMATIC
-                }
+                open={openDialog === DialogsId.GENERIC_FILTER}
                 onClose={handleClose}
                 title={title}
                 isFilterCreation={true}
