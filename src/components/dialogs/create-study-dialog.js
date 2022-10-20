@@ -576,7 +576,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                             </div>
                         </>
                     )}
-
                     {createStudyErr !== '' && (
                         <Alert
                             style={{

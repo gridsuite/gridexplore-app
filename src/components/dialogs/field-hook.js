@@ -83,7 +83,9 @@ export const useFileValue = ({ triggerReset, fileExceedsLimitMessage }) => {
     const dispatch = useDispatch();
     const [isFileOk, setIsFileOk] = useState(false);
     const [fileError, setFileError] = useState();
-    const formatInvalidMsgError = useSelector((state) => state.formatInvalidMsgError);
+    const formatInvalidMsgError = useSelector(
+        (state) => state.formatInvalidMsgError
+    );
 
     const field = <UploadCase />;
     useEffect(() => {

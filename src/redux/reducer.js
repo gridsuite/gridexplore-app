@@ -145,10 +145,6 @@ export const reducer = createReducer(initialState, {
         state.formatCaseWithParams = action.formatCaseWithParams;
     },
 
-    [SET_FORMAT_WITH_PARAMS]: (state, action) => {
-        state.formatCaseWithParams = action.formatCaseWithParams;
-    },
-
     [SET_TEMP_CASE_UUID]: (state, action) => {
         state.tempCaseUuid = action.tempCaseUuid;
     },
