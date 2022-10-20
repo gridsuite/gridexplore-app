@@ -232,10 +232,12 @@ const ManualFilterCreationDialog = ({
 
     useEffect(() => {
         if (id) {
-            getFilterById(id).then((response) => {
-                setDefaultValues(response);
-                setEquipmentType(response?.equipmentType);
-            });
+            getFilterById(id)
+                .then((response) => {
+                    setDefaultValues(response);
+                    setEquipmentType(response?.equipmentType);
+                })
+                .catch((error) => setCreateFilterErr(error));
             setWindowClose(false);
         }
     }, [id, windowClosed]);

@@ -167,6 +167,7 @@
     "multipleEquipmentTypeError": "Chaque filtre ne doit avoir qu'un seul type d'équipement",
     "missingEquipmentsIdsError": "L'ID est un champ obligatoire pour tous les équipements",
     "noEquipmentTypeFoundInCSVError": "Le type d'équipement est un champ obligatoire",
+    "noDataInCsvFile": "Aucune donnée trouvée dans ce fichier",
 
     "moveItemTitle": "Déplacer élément vers un autre dossier",
     "moveItemValidate": "{nbElements, plural, =0 {Veuillez sélectionner un dossier} =1 {Déplacer l'élément} other {Déplacer # éléments}}",

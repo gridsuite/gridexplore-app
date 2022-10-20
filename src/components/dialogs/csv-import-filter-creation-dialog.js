@@ -70,6 +70,10 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
     };
 
     const validateCsvFile = (rows, equipmentType) => {
+        if (rows.length === 0) {
+            setCreateFilterErr(intl.formatMessage({ id: 'noDataInCsvFile' }));
+            return false;
+        }
         for (let i = 0; i < rows.length; i++) {
             // Check if equipment type is specified in the row
             if (!rows[i][1]) {
@@ -152,6 +156,8 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
                         setCreateFilterErr(message);
                     });
             }
+        } else {
+            setCreateFilterErr(intl.formatMessage({ id: 'noDataInCsvFile' }));
         }
     };
 
@@ -216,7 +222,11 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
                 <Button onClick={handleClose}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button variant="outlined" onClick={handleCreateFilter}>
+                <Button
+                    variant="outlined"
+                    onClick={handleCreateFilter}
+                    disabled={createFilterErr !== ''}
+                >
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>

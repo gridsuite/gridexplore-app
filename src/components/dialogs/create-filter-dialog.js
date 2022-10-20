@@ -32,7 +32,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import ManualFilterCreationDialog from './manual-filter-creation-dialog';
 import CsvImportFilterCreationDialog from './csv-import-filter-creation-dialog';
 import GenericFilterDialog from './generic-filter-dialog';
-import { DialogsId } from "../../utils/UIconstants";
+import { DialogsId } from '../../utils/UIconstants';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -112,7 +112,6 @@ const CreateFilterDialog = ({
     const intl = useIntl();
     const timer = React.useRef();
     const [newListType, setNewListType] = useState('Automatic');
-    const [isValidated, setIsValidated] = useState(false);
 
     /**
      * on change input popup check if name already exist
@@ -176,7 +175,6 @@ const CreateFilterDialog = ({
     const resetDialog = () => {
         setNewListName('');
         setNewListType('Automatic');
-        setIsValidated(false);
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
         setFilterNameValid(false);
@@ -207,7 +205,6 @@ const CreateFilterDialog = ({
                 setCreateFilterErr('error');
                 break;
         }
-        setIsValidated(true);
     };
 
     const handleSave = (filter) => {
