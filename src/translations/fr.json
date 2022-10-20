@@ -158,5 +158,6 @@
     "moveElementNotFoundError": "L'élément ou le dossier cible n'a pas été trouvé",
     "moveElementNotAllowedError": "Vous ne pouvez pas déplacer cet élément dans le dossier cible. Action non autorisée",
     "notElementCreator": "Vous n'êtes pas le créateur de l'élément",
-    "uploadingElement": "Téléversement en cours : pas d'opération autorisée"
+    "uploadingElement": "Téléversement en cours : pas d'opération autorisée",
+    "invalidFormat" : "Format invalide"
 }

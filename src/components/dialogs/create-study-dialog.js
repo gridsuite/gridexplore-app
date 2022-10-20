@@ -40,6 +40,8 @@ import {
     setActiveDirectory,
     addUploadingElement,
     removeUploadingElement,
+    setFormatCaseWithParams,
+    setUploadFileMsgError,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
@@ -158,18 +160,26 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const selectedCase = useSelector((state) => state.selectedCase);
+    const tempCaseUuid = useSelector((state) => state.tempCaseUuid);
 
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
 
-    const [formatWithParameters, setFormatWithParameters] = useState([]);
+    const formatWithParameters = useSelector(
+        (state) => state?.formatCaseWithParams ?? []
+    );
 
     const [triggerReset, setTriggerReset] = React.useState(true);
 
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
+    const [isParamsCaseFileDisplayed, setIsParamsCaseFileDisplayed] =
+        useState(false);
 
     const handleShowParametersClick = () => {
         setIsParamsDisplayed((oldValue) => !oldValue);
+    };
+    const handleShowParametersForCaseFileClick = () => {
+        setIsParamsCaseFileDisplayed((oldValue) => !oldValue);
     };
 
     const [currentParameters, paramsComponent, resetImportParamsToDefault] =
@@ -191,10 +201,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         p.possibleValues = sortedPossibleValue;
                         return p;
                     });
-                    setFormatWithParameters(result.parameters);
+                    dispatch(setFormatCaseWithParams(result.parameters));
                 })
                 .catch(() => {
-                    setFormatWithParameters([]);
+                    dispatch(setFormatCaseWithParams([]));
                 });
         }
     }, [open, dispatch, selectedDirectory?.elementName, providedCase]);
@@ -215,6 +225,9 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         dispatch(removeSelectedCase());
         setTriggerReset((oldVal) => !oldVal);
+        dispatch(setFormatCaseWithParams([]));
+        setIsParamsCaseFileDisplayed(false);
+        dispatch(setUploadFileMsgError(null));
     };
 
     const handleCloseDialog = () => {
@@ -393,13 +406,12 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             uploading: true,
         };
         createStudy(
-            caseExist,
             studyName,
             studyDescription,
-            caseName,
-            selectedFile,
+            caseName ?? tempCaseUuid,
             activeDirectory,
-            currentParameters && isParamsDisplayed
+            currentParameters &&
+                (isParamsDisplayed || isParamsCaseFileDisplayed)
                 ? JSON.stringify(currentParameters)
                 : ''
         )
@@ -480,7 +492,28 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         caseExist ? (
                             <SelectCase />
                         ) : (
-                            FileField
+                            <>
+                                {FileField}
+                                <Divider className={classes.paramDivider} />
+                                <div
+                                    style={{
+                                        marginTop: '10px',
+                                    }}
+                                >
+                                    <AdvancedParameterButton
+                                        showOpenIcon={isParamsCaseFileDisplayed}
+                                        label={'importParameters'}
+                                        callback={
+                                            handleShowParametersForCaseFileClick
+                                        }
+                                        disabled={
+                                            formatWithParameters.length === 0
+                                        }
+                                    />
+                                    {isParamsCaseFileDisplayed &&
+                                        paramsComponent}
+                                </div>
+                            </>
                         )
                     ) : (
                         <>
@@ -543,6 +576,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                             </div>
                         </>
                     )}
+
                     {createStudyErr !== '' && (
                         <Alert
                             style={{

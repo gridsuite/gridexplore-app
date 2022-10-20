@@ -292,11 +292,9 @@ export function fetchElementsInfos(ids) {
 }
 
 export function createStudy(
-    caseExist,
     studyName,
     studyDescription,
     caseName,
-    selectedFile,
     parentDirectoryUuid,
     importParameters
 ) {
@@ -305,37 +303,20 @@ export function createStudy(
     urlSearchParams.append('description', studyDescription);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
-    if (caseExist) {
-        const createStudyWithExistingCaseUrl =
-            PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore/studies/' +
-            encodeURIComponent(studyName) +
-            '/cases/' +
-            encodeURIComponent(caseName) +
-            '?' +
-            urlSearchParams.toString();
-        console.debug(createStudyWithExistingCaseUrl);
-        return backendFetch(createStudyWithExistingCaseUrl, {
-            method: 'post',
-            body: importParameters,
-            headers: { 'Content-Type': 'application/json' },
-        }).then((response) => handleResponse(response, false));
-    } else {
-        const createStudyWithNewCaseUrl =
-            PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore/studies/' +
-            encodeURIComponent(studyName) +
-            '?' +
-            urlSearchParams.toString();
-        const formData = new FormData();
-        formData.append('caseFile', selectedFile);
-        console.debug(createStudyWithNewCaseUrl);
-
-        return backendFetch(createStudyWithNewCaseUrl, {
-            method: 'post',
-            body: formData,
-        }).then((response) => handleResponse(response, false));
-    }
+    const createStudyWithExistingCaseUrl =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/studies/' +
+        encodeURIComponent(studyName) +
+        '/cases/' +
+        encodeURIComponent(caseName) +
+        '?' +
+        urlSearchParams.toString();
+    console.debug(createStudyWithExistingCaseUrl);
+    return backendFetch(createStudyWithExistingCaseUrl, {
+        method: 'post',
+        body: importParameters,
+        headers: { 'Content-Type': 'application/json' },
+    }).then((response) => handleResponse(response, false));
 }
 
 export function duplicateStudy(
@@ -802,6 +783,23 @@ export function getCaseImportParameters(caseUuid) {
     console.debug(getExportFormatsUrl);
     return backendFetch(getExportFormatsUrl, {
         method: 'get',
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.json().then((error) => Promise.reject(error))
+    );
+}
+
+export function getCaseUuidWhenUploadFile(selectedFile) {
+    const getImportParametersForFileUrl =
+        PREFIX_NETWORK_CONVERSION_SERVER_QUERIES + '/v1/cases/get-uuid';
+    const formData = new FormData();
+    formData.append('caseFile', selectedFile);
+    console.debug(getImportParametersForFileUrl);
+
+    return backendFetch(getImportParametersForFileUrl, {
+        method: 'post',
+        body: formData,
     }).then((response) =>
         response.ok
             ? response.json()

@@ -117,3 +117,29 @@ export function removeUploadingElement(uploadingElement) {
         uploadingElement: uploadingElement,
     };
 }
+
+export const SET_FORMAT_CASE_WITH_PARAMS = 'SET_FORMAT_CASE_WITH_PARAMS';
+
+export function setFormatCaseWithParams(formatCaseWithParams) {
+    return {
+        type: SET_FORMAT_CASE_WITH_PARAMS,
+        formatCaseWithParams: formatCaseWithParams,
+    };
+}
+
+export const SET_TEMP_CASE_UUID = 'SET_TEMP_CASE_UUID';
+
+export function setTempCaseUuid(tempCaseUuid) {
+    return {
+        type: SET_TEMP_CASE_UUID,
+        tempCaseUuid: tempCaseUuid,
+    };
+}
+
+export const SET_UPLOAD_CASE_FILE_ERROR = 'SET_UPLOAD_CASE_FILE_ERROR';
+export function setUploadFileMsgError(uploadFileMsgError) {
+    return {
+        type: SET_UPLOAD_CASE_FILE_ERROR,
+        uploadFileMsgError: uploadFileMsgError,
+    };
+}

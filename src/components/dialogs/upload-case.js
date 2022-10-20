@@ -6,20 +6,63 @@
  */
 
 import { useDispatch, useSelector } from 'react-redux';
-import { selectFile } from '../../redux/actions';
+import {
+    selectFile,
+    setFormatCaseWithParams,
+    setTempCaseUuid,
+    setUploadFileMsgError,
+} from '../../redux/actions';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
-import React from 'react';
-
+import React, { useState } from 'react';
+import {
+    getCaseImportParameters,
+    getCaseUuidWhenUploadFile,
+} from '../../utils/rest-api';
+import CircularProgress from '@mui/material/CircularProgress';
 export const UploadCase = () => {
     const dispatch = useDispatch();
     const selectedFile = useSelector((state) => state.selectedFile);
-
+    const [loadingUploadFile, setLoadingUploadFile] = useState(false);
+    const INVALID_FORMAT = 'Invalid format';
     const handleFileUpload = (e) => {
         e.preventDefault();
         let files = e.target.files;
         if (files.size === 0) dispatch(selectFile(null));
-        else dispatch(selectFile(files[0]));
+        else {
+            setLoadingUploadFile(true);
+            getCaseUuidWhenUploadFile(files[0])
+                .then((caseUuid) => {
+                    if (caseUuid) {
+                        dispatch(setUploadFileMsgError(null));
+                        dispatch(selectFile(files[0]));
+                        setLoadingUploadFile(false);
+                        dispatch(setTempCaseUuid(caseUuid));
+                        getCaseImportParameters(caseUuid)
+                            .then((result) => {
+                                result.parameters = result.parameters?.map(
+                                    (p) => {
+                                        let sortedPossibleValue =
+                                            p.possibleValues?.sort((a, b) =>
+                                                a.localeCompare(b)
+                                            );
+                                        p.possibleValues = sortedPossibleValue;
+                                        return p;
+                                    }
+                                );
+                                dispatch(
+                                    setFormatCaseWithParams(result.parameters)
+                                );
+                            })
+                            .catch(() => dispatch(setFormatCaseWithParams([])));
+                    }
+                })
+                .catch(() => {
+                    dispatch(setUploadFileMsgError(INVALID_FORMAT));
+                    dispatch(selectFile(null));
+                    setLoadingUploadFile(false);
+                });
+        }
     };
 
     return (
@@ -45,6 +88,8 @@ export const UploadCase = () => {
                         <p>
                             {selectedFile?.name === undefined ? (
                                 <FormattedMessage id="uploadMessage" />
+                            ) : loadingUploadFile ? (
+                                <CircularProgress size="1rem" />
                             ) : (
                                 selectedFile.name
                             )}
