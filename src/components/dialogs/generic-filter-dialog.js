@@ -8,9 +8,7 @@
 import { FormattedMessage } from 'react-intl';
 import React, { useEffect, useRef, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
-import Grid from '@mui/material/Grid';
-import { Divider, MenuItem, Select, Switch } from '@mui/material';
-import Typography from '@mui/material/Typography';
+import { MenuItem, Grid, Select, FormControl, InputLabel } from '@mui/material';
 import { filteredTypes } from './filters';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -21,7 +19,7 @@ import { getFilterById, saveFilter } from '../../utils/rest-api';
 import { displayErrorMessageWithSnackbar } from '../../utils/messages';
 import { FilterType } from '../../utils/elementType';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     controlItem: {
         justifyContent: 'flex-end',
     },
@@ -29,8 +27,8 @@ const useStyles = makeStyles((theme) => ({
         padding: 8,
     },
     dialogPaper: {
-        minWidth: '1200px',
-        minHeight: '600px',
+        minWidth: '705px',
+        minHeight: '500px',
         margin: 'auto',
     },
     filtersEditor: {
@@ -38,17 +36,6 @@ const useStyles = makeStyles((theme) => ({
         margin: 'auto',
     },
 }));
-
-const genericFields = {
-    equipmentID: {
-        name: 'equipmentID',
-        type: filteredTypes.string,
-    },
-    equipmentName: {
-        name: 'equipmentName',
-        type: filteredTypes.string,
-    },
-};
 
 const equipmentsDefinition = {
     LINE: {
@@ -62,12 +49,8 @@ const equipmentsDefinition = {
             nominalVoltage: {
                 name: 'nominalVoltage',
                 type: filteredTypes.range,
-                occurs: 2,
-            },
-            substationName: {
-                name: 'substationName',
-                type: filteredTypes.string,
-                occurs: 2,
+                occurs: 1,
+                displayName: 'nominalVoltage',
             },
         },
     },
@@ -83,10 +66,6 @@ const equipmentsDefinition = {
                 type: filteredTypes.range,
                 occurs: 2,
             },
-            substationName: {
-                name: 'substationName',
-                type: filteredTypes.string,
-            },
         },
     },
     THREE_WINDINGS_TRANSFORMER: {
@@ -100,11 +79,6 @@ const equipmentsDefinition = {
                 name: 'nominalVoltage',
                 type: filteredTypes.range,
                 occurs: 3,
-                direction: 'column',
-            },
-            substationName: {
-                name: 'substationName',
-                type: filteredTypes.string,
             },
         },
     },
@@ -119,10 +93,6 @@ const equipmentsDefinition = {
                 name: 'nominalVoltage',
                 type: filteredTypes.range,
             },
-            substationName: {
-                name: 'substationName',
-                type: filteredTypes.string,
-            },
         },
     },
     LOAD: {
@@ -135,10 +105,6 @@ const equipmentsDefinition = {
             nominalVoltage: {
                 name: 'nominalVoltage',
                 type: filteredTypes.range,
-            },
-            substationName: {
-                name: 'substationName',
-                type: filteredTypes.string,
             },
         },
     },
@@ -153,10 +119,6 @@ const equipmentsDefinition = {
                 name: 'nominalVoltage',
                 type: filteredTypes.range,
             },
-            substationName: {
-                name: 'substationName',
-                type: filteredTypes.string,
-            },
         },
     },
     SHUNT_COMPENSATOR: {
@@ -169,10 +131,6 @@ const equipmentsDefinition = {
             nominalVoltage: {
                 name: 'nominalVoltage',
                 type: filteredTypes.range,
-            },
-            substationName: {
-                name: 'substationName',
-                type: filteredTypes.string,
             },
         },
     },
@@ -187,10 +145,6 @@ const equipmentsDefinition = {
                 name: 'nominalVoltage',
                 type: filteredTypes.range,
             },
-            substationName: {
-                name: 'substationName',
-                type: filteredTypes.string,
-            },
         },
     },
     DANGLING_LINE: {
@@ -203,10 +157,6 @@ const equipmentsDefinition = {
             nominalVoltage: {
                 name: 'nominalVoltage',
                 type: filteredTypes.range,
-            },
-            substationName: {
-                name: 'substationName',
-                type: filteredTypes.string,
             },
         },
     },
@@ -221,10 +171,6 @@ const equipmentsDefinition = {
                 name: 'nominalVoltage',
                 type: filteredTypes.range,
             },
-            substationName: {
-                name: 'substationName',
-                type: filteredTypes.string,
-            },
         },
     },
     VSC_CONVERTER_STATION: {
@@ -237,10 +183,6 @@ const equipmentsDefinition = {
             nominalVoltage: {
                 name: 'nominalVoltage',
                 type: filteredTypes.range,
-            },
-            substationName: {
-                name: 'substationName',
-                type: filteredTypes.string,
             },
         },
     },
@@ -255,11 +197,6 @@ const equipmentsDefinition = {
             nominalVoltage: {
                 name: 'nominalVoltage',
                 type: filteredTypes.range,
-            },
-            substationName: {
-                name: 'substationName',
-                type: filteredTypes.string,
-                occurs: 2,
             },
         },
     },
@@ -279,86 +216,41 @@ function deepCopy(aObject) {
 }
 
 function generateDefaultValue(val, originalValue) {
-    if (originalValue != null) return { enabled: true, value: originalValue };
+    if (originalValue != null) return { value: originalValue };
     return {
-        enabled: val == null,
         value: deepCopy(val.defaultValue) || deepCopy(val.type.defaultValue),
     };
 }
 
 const SingleFilter = ({ filter, definition, onChange, sequence }) => {
-    const classes = useStyles();
-    const [enabled, setEnabled] = useState(filter.enabled);
-
     const localChange = (newVal) => {
         filter.value = newVal;
         onChange();
     };
 
-    const toggleFilter = () => {
-        filter.enabled = !enabled;
-        setEnabled(filter.enabled);
-        onChange();
-    };
-    return (
-        <Grid container item direction="row" key={definition.name + '-cont'}>
-            <Grid
-                item
-                className={classes.controlItem}
-                key={definition.name + '-sw'}
-            >
-                <Switch
-                    checked={enabled}
-                    inputProps={{ 'aria-label': 'primary checkbox' }}
-                    onChange={() => {
-                        toggleFilter();
-                    }}
-                />
-            </Grid>
-            <Grid
-                item
-                xs={2}
-                className={classes.idText}
-                key={definition.name + '-label'}
-            >
-                <Typography component="span" variant="body1">
-                    <FormattedMessage id={definition.name} />{' '}
-                    {sequence ? sequence : ''}
-                </Typography>
-            </Grid>
-            <Grid item xs key={definition.name + '-value'}>
-                {definition.type.renderer({
-                    initialValue: filter.value,
-                    onChange: localChange,
-                    disabled: !enabled,
-                })}
-            </Grid>
-        </Grid>
-    );
+    return definition.type.renderer({
+        initialValue: filter.value,
+        onChange: localChange,
+        titleMessage: definition.displayName
+            ? definition.displayName
+            : sequence
+            ? definition.name + sequence
+            : definition.name,
+    });
 };
 
-export const FilterTypeSelection = ({ type, onChange, disabled }) => {
-    const classes = useStyles();
-
+export const FilterTypeSelection = ({ type, onChange }) => {
     return (
-        <Grid container item>
-            <Grid
-                item
-                style={{ visibility: 'hidden' }}
-                className={classes.controlItem}
-            >
-                <Switch />
-            </Grid>
-            <Grid xs={2} item className={classes.idText}>
-                <Typography component="span" variant="body1">
+        <>
+            <FormControl fullWidth margin="dense">
+                <InputLabel>
                     <FormattedMessage id={'equipmentType'} />
-                </Typography>
-            </Grid>
-            <Grid xs item>
+                </InputLabel>
+
                 <Select
+                    label={<FormattedMessage id={'equipmentType'} />}
                     value={type === null ? '' : type}
                     onChange={(e) => onChange(e.target.value)}
-                    disabled={disabled}
                 >
                     {Object.entries(equipmentsDefinition).map(
                         ([key, value]) => (
@@ -368,8 +260,8 @@ export const FilterTypeSelection = ({ type, onChange, disabled }) => {
                         )
                     )}
                 </Select>
-            </Grid>
-        </Grid>
+            </FormControl>
+        </>
     );
 };
 
@@ -377,7 +269,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [filterType, setFilterType] = useState(null);
     const [currentFormEdit, setCurrentFormEdit] = useState({
-        type: { enabled: true, value: filterType },
+        type: { value: filterType },
     });
     const currentFilter = useRef(null);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
@@ -390,14 +282,13 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
                 setFilterType(response.equipmentFilterForm.equipmentType);
                 setCurrentFormEdit({
                     equipmentType: {
-                        enabled: true,
                         value: response.equipmentFilterForm.equipmentType,
                     },
                 });
             });
         } else {
             setCurrentFormEdit({
-                equipmentType: { enabled: true, value: null },
+                equipmentType: { value: null },
             });
             currentFilter.current = null;
             setInitialFilter(null);
@@ -423,7 +314,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
         onClose();
         currentFilter.current = null;
         setCurrentFormEdit({
-            equipmentType: { enabled: true, value: null },
+            equipmentType: { value: null },
         });
         setInitialFilter(null);
         setFilterType(null);
@@ -439,16 +330,33 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
         onClose();
     };
 
+    function validVoltageValues(obj) {
+        let value1NotNull =
+            obj.value.hasOwnProperty('value1') && obj.value['value1'] !== null;
+        if (obj.value.type !== 'RANGE') {
+            return value1NotNull;
+        }
+        let value2NotNull =
+            obj.value.hasOwnProperty('value2') && obj.value['value2'] !== null;
+        return value1NotNull && value2NotNull;
+    }
+
     const editDone = () => {
         let res = {};
-        Object.entries(currentFormEdit).forEach(([key, value]) => {
-            res[key] = value.enabled ? value.value : null;
+        Object.entries(currentFormEdit).forEach(([key, obj]) => {
+            if (key.startsWith('nominalVoltage') && !validVoltageValues(obj)) {
+                // dont send nominalVoltage with null value1/value2 properties
+                res[key] = null;
+            } else {
+                res[key] = obj.value;
+            }
         });
         onChange(res);
     };
 
     const changeFilterType = (newType) => {
-        currentFormEdit.equipmentType = { enabled: true, value: newType };
+        // TODO: should reset all fields in currentFormEdit
+        currentFormEdit.equipmentType = { value: newType };
         setFilterType(newType);
         editDone();
     };
@@ -473,54 +381,23 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
         }
     };
 
-    const RenderGeneric = () => {
-        return Object.entries(genericFields).map(([key, definition]) =>
-            renderFilter(key, definition)
-        );
-    };
-
     const renderSpecific = () => {
         if (filterType !== null) {
             return Object.entries(equipmentsDefinition[filterType].fields).map(
                 ([key, definition]) => {
-                    if (definition.occurs)
-                        return (
-                            <Grid
-                                container
-                                item
-                                direction={
-                                    definition.direction === undefined
-                                        ? 'row'
-                                        : definition.direction
-                                }
-                                key={key}
-                                spacing={1}
-                            >
-                                {[
-                                    ...Array.from(
-                                        Array(definition.occurs).keys()
-                                    ),
-                                ].map((n) => {
-                                    return (
-                                        <Grid
-                                            item
-                                            xs
-                                            key={
-                                                definition.label + n.toString()
-                                            }
-                                            style={{}}
-                                        >
-                                            {renderFilter(
-                                                key + (n + 1).toString(),
-                                                definition,
-                                                n + 1
-                                            )}
-                                        </Grid>
-                                    );
-                                })}
-                            </Grid>
-                        );
-                    else return renderFilter(key, definition);
+                    if (definition.occurs) {
+                        return [
+                            ...Array.from(Array(definition.occurs).keys()),
+                        ].map((n) => {
+                            return renderFilter(
+                                key + (n + 1).toString(),
+                                definition,
+                                n + 1
+                            );
+                        });
+                    } else {
+                        return renderFilter(key, definition);
+                    }
                 }
             );
         }
@@ -543,12 +420,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
                     {FilterTypeSelection({
                         type: filterType,
                         onChange: changeFilterType,
-                        disabled: false,
                     })}
-                    {RenderGeneric()}
-                    <Grid item xs={12}>
-                        <Divider variant={'middle'} style={{ margin: 20 }} />
-                    </Grid>
                     {renderSpecific()}
                 </Grid>
             </DialogContent>
