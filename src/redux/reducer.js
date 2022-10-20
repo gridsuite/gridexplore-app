@@ -58,9 +58,9 @@ const initialState = {
     selectedFile: null,
     uploadingElements: {},
     ...paramsInitialState,
-    formatCaseWithParams: [],
+    formatWithParams: [],
     tempCaseUuid: null,
-    fileUploadMsgError: null,
+    formatInvalidMsgError: null,
 };
 
 export const reducer = createReducer(initialState, {
@@ -142,7 +142,7 @@ export const reducer = createReducer(initialState, {
     },
 
     [SET_FORMAT_WITH_PARAMS]: (state, action) => {
-        state.formatCaseWithParams = action.formatCaseWithParams;
+        state.formatWithParams = action.formatWithParams;
     },
 
     [SET_TEMP_CASE_UUID]: (state, action) => {

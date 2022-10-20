@@ -166,7 +166,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
 
     const formatWithParameters = useSelector(
-        (state) => state?.formatCaseWithParams ?? []
+        (state) => state?.formatWithParams
     );
 
     const [triggerReset, setTriggerReset] = React.useState(true);

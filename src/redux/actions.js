@@ -120,10 +120,10 @@ export function removeUploadingElement(uploadingElement) {
 
 export const SET_FORMAT_WITH_PARAMS = 'SET_FORMAT_WITH_PARAMS';
 
-export function setFormatWithParameters(formatCaseWithParams) {
+export function setFormatWithParameters(formatWithParams) {
     return {
         type: SET_FORMAT_WITH_PARAMS,
-        formatCaseWithParams: formatCaseWithParams,
+        formatWithParams: formatWithParams,
     };
 }
 
