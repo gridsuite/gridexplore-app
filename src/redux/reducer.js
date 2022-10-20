@@ -31,9 +31,9 @@ import {
     ACTIVE_DIRECTORY,
     ADD_UPLOADING_ELEMENT,
     REMOVE_UPLOADING_ELEMENT,
-    SET_FORMAT_CASE_WITH_PARAMS,
+    SET_FORMAT_WITH_PARAMS,
     SET_TEMP_CASE_UUID,
-    SET_UPLOAD_CASE_FILE_ERROR,
+    SET_FORMAT_INVALID_ERROR,
 } from './actions';
 
 import { USER, SIGNIN_CALLBACK_ERROR } from '@gridsuite/commons-ui';
@@ -141,11 +141,11 @@ export const reducer = createReducer(initialState, {
         state.uploadingElements = newUploadingElements;
     },
 
-    [SET_FORMAT_CASE_WITH_PARAMS]: (state, action) => {
+    [SET_FORMAT_WITH_PARAMS]: (state, action) => {
         state.formatCaseWithParams = action.formatCaseWithParams;
     },
 
-    [SET_FORMAT_CASE_WITH_PARAMS]: (state, action) => {
+    [SET_FORMAT_WITH_PARAMS]: (state, action) => {
         state.formatCaseWithParams = action.formatCaseWithParams;
     },
 
@@ -153,7 +153,7 @@ export const reducer = createReducer(initialState, {
         state.tempCaseUuid = action.tempCaseUuid;
     },
 
-    [SET_UPLOAD_CASE_FILE_ERROR]: (state, action) => {
-        state.uploadFileMsgError = action.uploadFileMsgError;
+    [SET_FORMAT_INVALID_ERROR]: (state, action) => {
+        state.formatInvalidMsgError = action.formatInvalidMsgError;
     },
 });

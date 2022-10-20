@@ -8,9 +8,9 @@
 import { useDispatch, useSelector } from 'react-redux';
 import {
     selectFile,
-    setFormatCaseWithParams,
+    setFormatWithParameters,
     setTempCaseUuid,
-    setUploadFileMsgError,
+    setformatInvalidMsgError,
 } from '../../redux/actions';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
@@ -34,7 +34,7 @@ export const UploadCase = () => {
             getCaseUuidWhenUploadFile(files[0])
                 .then((caseUuid) => {
                     if (caseUuid) {
-                        dispatch(setUploadFileMsgError(null));
+                        dispatch(setformatInvalidMsgError(null));
                         dispatch(selectFile(files[0]));
                         setLoadingUploadFile(false);
                         dispatch(setTempCaseUuid(caseUuid));
@@ -51,14 +51,14 @@ export const UploadCase = () => {
                                     }
                                 );
                                 dispatch(
-                                    setFormatCaseWithParams(result.parameters)
+                                    setFormatWithParameters(result.parameters)
                                 );
                             })
-                            .catch(() => dispatch(setFormatCaseWithParams([])));
+                            .catch(() => dispatch(setFormatWithParameters([])));
                     }
                 })
                 .catch(() => {
-                    dispatch(setUploadFileMsgError(INVALID_FORMAT));
+                    dispatch(setformatInvalidMsgError(INVALID_FORMAT));
                     dispatch(selectFile(null));
                     setLoadingUploadFile(false);
                 });

@@ -40,8 +40,8 @@ import {
     setActiveDirectory,
     addUploadingElement,
     removeUploadingElement,
-    setFormatCaseWithParams,
-    setUploadFileMsgError,
+    setFormatWithParameters,
+    setformatInvalidMsgError,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
@@ -201,10 +201,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         p.possibleValues = sortedPossibleValue;
                         return p;
                     });
-                    dispatch(setFormatCaseWithParams(result.parameters));
+                    dispatch(setFormatWithParameters(result.parameters));
                 })
                 .catch(() => {
-                    dispatch(setFormatCaseWithParams([]));
+                    dispatch(setFormatWithParameters([]));
                 });
         }
     }, [open, dispatch, selectedDirectory?.elementName, providedCase]);
@@ -225,9 +225,9 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         dispatch(removeSelectedCase());
         setTriggerReset((oldVal) => !oldVal);
-        dispatch(setFormatCaseWithParams([]));
+        dispatch(setFormatWithParameters([]));
         setIsParamsCaseFileDisplayed(false);
-        dispatch(setUploadFileMsgError(null));
+        dispatch(setformatInvalidMsgError(null));
     };
 
     const handleCloseDialog = () => {

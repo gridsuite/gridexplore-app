@@ -118,11 +118,11 @@ export function removeUploadingElement(uploadingElement) {
     };
 }
 
-export const SET_FORMAT_CASE_WITH_PARAMS = 'SET_FORMAT_CASE_WITH_PARAMS';
+export const SET_FORMAT_WITH_PARAMS = 'SET_FORMAT_WITH_PARAMS';
 
-export function setFormatCaseWithParams(formatCaseWithParams) {
+export function setFormatWithParameters(formatCaseWithParams) {
     return {
-        type: SET_FORMAT_CASE_WITH_PARAMS,
+        type: SET_FORMAT_WITH_PARAMS,
         formatCaseWithParams: formatCaseWithParams,
     };
 }
@@ -136,10 +136,10 @@ export function setTempCaseUuid(tempCaseUuid) {
     };
 }
 
-export const SET_UPLOAD_CASE_FILE_ERROR = 'SET_UPLOAD_CASE_FILE_ERROR';
-export function setUploadFileMsgError(uploadFileMsgError) {
+export const SET_FORMAT_INVALID_ERROR = 'SET_FORMAT_INVALID_ERROR';
+export function setformatInvalidMsgError(formatInvalidMsgError) {
     return {
-        type: SET_UPLOAD_CASE_FILE_ERROR,
-        uploadFileMsgError: uploadFileMsgError,
+        type: SET_FORMAT_INVALID_ERROR,
+        formatInvalidMsgError: formatInvalidMsgError,
     };
 }
