@@ -14,6 +14,11 @@ import { getFileIcon, elementType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { notificationType } from '../../utils/notificationType';
 import { updatedTree } from '../tree-views-container';
+import {
+    displayWarningMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -50,6 +55,9 @@ const DirectorySelector = (props) => {
     const directoryUpdatedForce = useSelector(
         (state) => state.directoryUpdated
     );
+
+    const { enqueueSnackbar } = useSnackbar();
+    const intlRef = useIntlRef();
 
     const convertChildren = useCallback(
         (children) => {
@@ -132,28 +140,37 @@ const DirectorySelector = (props) => {
         [convertRoots]
     );
 
+    const fetchDirectoryWarn = useCallback(
+        (directoryUuid, msg) =>
+            displayWarningMessageWithSnackbar({
+                errorMessage: msg,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: 'directoryUpdateWarning',
+                    intlRef: intlRef,
+                    headerMessageValues: { directoryUuid },
+                },
+            }),
+        [enqueueSnackbar, intlRef]
+    );
+
     const fetchDirectory = useCallback(
-        (nodeId) => {
-            fetchDirectoryContent(nodeId)
+        (directoryUuid) => {
+            fetchDirectoryContent(directoryUuid)
                 .then((childrenToBeInserted) => {
                     // update directory Content
                     addToDirectory(
-                        nodeId,
+                        directoryUuid,
                         childrenToBeInserted.filter((item) =>
                             contentFilter().has(item.type)
                         )
                     );
                 })
                 .catch((reason) => {
-                    console.warn(
-                        "Could not update subs (and content) of '" +
-                            nodeId +
-                            "' :" +
-                            reason
-                    );
+                    fetchDirectoryWarn(directoryUuid, reason);
                 });
         },
-        [addToDirectory, contentFilter]
+        [addToDirectory, contentFilter, fetchDirectoryWarn]
     );
 
     useEffect(() => {

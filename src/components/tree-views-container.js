@@ -214,6 +214,9 @@ const TreeViewsContainer = () => {
 
     const { enqueueSnackbar } = useSnackbar();
 
+    const directoryUpdatedEvent = useSelector(
+        (state) => state.directoryUpdated
+    );
     /**
      * Contextual Menus
      */
@@ -496,22 +499,32 @@ const TreeViewsContainer = () => {
         return () => {
             wsToClose.close();
         };
-    }, [dispatch]);
+    }, []);
 
-    const onUpdateStudies = useCallback(
+    const onUpdateDirectories = useCallback(
         (event) => {
-            console.debug('Received Update Studies notification', event);
+            console.debug('Received Update directories notification', event);
 
             let eventData = JSON.parse(event.data);
             if (!eventData.headers) {
                 return;
             }
             dispatch(directoryUpdated(eventData));
-            const notificationTypeH = eventData.headers['notificationType'];
-            const isRootDirectory = eventData.headers['isRootDirectory'];
-            const directoryUuid = eventData.headers['directoryUuid'];
-            const error = eventData.headers['error'];
-            const elementName = eventData.headers['elementName'];
+        },
+        [dispatch]
+    );
+
+    useEffect(() => {
+        if (directoryUpdatedEvent.eventData?.headers) {
+            const notificationTypeH =
+                directoryUpdatedEvent.eventData.headers['notificationType'];
+            const isRootDirectory =
+                directoryUpdatedEvent.eventData.headers['isRootDirectory'];
+            const directoryUuid =
+                directoryUpdatedEvent.eventData.headers['directoryUuid'];
+            const error = directoryUpdatedEvent.eventData.headers['error'];
+            const elementName =
+                directoryUpdatedEvent.eventData.headers['elementName'];
 
             displayErrorIfExist(error, elementName);
 
@@ -541,22 +554,22 @@ const TreeViewsContainer = () => {
                 }
                 updateDirectoryTree(directoryUuid);
             }
-        },
-        [
-            dispatch,
-            displayErrorIfExist,
-            updateDirectoryTree,
-            updateDirectoryTreeAndContent,
-            updateRootDirectories,
-        ]
-    );
+        }
+    }, [
+        directoryUpdatedEvent,
+        dispatch,
+        displayErrorIfExist,
+        updateDirectoryTree,
+        updateDirectoryTreeAndContent,
+        updateRootDirectories,
+    ]);
 
     useEffect(() => {
         if (!wsRef.current) return;
 
         // Update onmessage of ws when needed.
-        wsRef.current.onmessage = onUpdateStudies;
-    }, [onUpdateStudies]);
+        wsRef.current.onmessage = onUpdateDirectories;
+    }, [onUpdateDirectories]);
 
     /* Handle components synchronization */
     useEffect(() => {

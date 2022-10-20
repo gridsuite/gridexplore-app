@@ -634,7 +634,7 @@ export function newScriptFromFiltersContingencyList(
 }
 
 /**
- * Function will be called to connect with notification websocket to update the studies list
+ * Function will be called to connect with notification websocket to update directories list
  * @returns {ReconnectingWebSocket}
  */
 export function connectNotificationsWsUpdateDirectory() {

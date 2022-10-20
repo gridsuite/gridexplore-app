@@ -12,6 +12,7 @@
 
     "createNewStudy": "Créer une étude",
     "studyCreationError": "Erreur lors de la création de l'étude: {studyName}",
+    "directoryUpdateWarning": "Impossible de mettre à jour les sous-dossiers (et le contenu) de: {directoryUuid}",
     "renameElement": "Renommer l'élément",
     "renameElementMsg": "Nouveau nom de l'élément",
     "renameElementNotAllowedError": "Vous ne pouvez pas renommer un élément dont vous n'êtes pas propriétaire",
