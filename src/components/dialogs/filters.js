@@ -97,10 +97,10 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
     const range = useRef(initialValue);
     const classes = useStyles();
     const [currentValue1, setCurrentValue1] = useState(
-        range.current.value1 ? range.current.value1 : ''
+        range.current.value1 !== undefined ? range.current.value1 : ''
     );
     const [currentValue2, setCurrentValue2] = useState(
-        range.current.value2 ? range.current.value2 : ''
+        range.current.value2 !== undefined ? range.current.value2 : ''
     );
     const { snackInfo } = useSnackMessage();
 

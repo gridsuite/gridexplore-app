@@ -9,7 +9,6 @@ import { FormattedMessage } from 'react-intl';
 import React, { useEffect, useRef, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import { MenuItem, Grid, Select, FormControl, InputLabel } from '@mui/material';
-import { filteredTypes } from './filters';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
@@ -27,6 +26,10 @@ import {
     ElementType,
     FilterType,
 } from '../../utils/elementType';
+import {
+    contingencyListEquipmentDefinition,
+    filterEquipmentDefinition,
+} from '../../utils/equipment-types';
 
 const useStyles = makeStyles(() => ({
     controlItem: {
@@ -49,7 +52,6 @@ const useStyles = makeStyles(() => ({
 const filterEquipmentDefinition = {
     LINE: {
         label: 'Lines',
-        type: 'LINE',
         fields: {
             countries1: {
                 name: 'Countries1',
@@ -67,37 +69,44 @@ const filterEquipmentDefinition = {
     },
     TWO_WINDINGS_TRANSFORMER: {
         label: 'TwoWindingsTransformers',
-        type: 'TWO_WINDINGS_TRANSFORMER',
         fields: {
             countries: {
                 name: 'Countries',
                 type: filteredTypes.countries,
             },
-            nominalVoltage: {
-                name: 'nominalVoltage',
+            nominalVoltage1: {
+                name: 'nominalVoltage1',
                 type: filteredTypes.range,
-                occurs: 2,
+            },
+            nominalVoltage2: {
+                name: 'nominalVoltage2',
+                type: filteredTypes.range,
             },
         },
     },
     THREE_WINDINGS_TRANSFORMER: {
         label: 'ThreeWindingsTransformers',
-        type: 'THREE_WINDINGS_TRANSFORMER',
         fields: {
             countries: {
                 name: 'Countries',
                 type: filteredTypes.countries,
             },
-            nominalVoltage: {
-                name: 'nominalVoltage',
+            nominalVoltage1: {
+                name: 'nominalVoltage1',
                 type: filteredTypes.range,
-                occurs: 3,
+            },
+            nominalVoltage2: {
+                name: 'nominalVoltage2',
+                type: filteredTypes.range,
+            },
+            nominalVoltage3: {
+                name: 'nominalVoltage3',
+                type: filteredTypes.range,
             },
         },
     },
     GENERATOR: {
         label: 'Generators',
-        type: 'GENERATOR',
         fields: {
             countries: {
                 name: 'Countries',
@@ -111,7 +120,6 @@ const filterEquipmentDefinition = {
     },
     LOAD: {
         label: 'Loads',
-        type: 'LOAD',
         fields: {
             countries: {
                 name: 'Countries',
@@ -125,7 +133,6 @@ const filterEquipmentDefinition = {
     },
     BATTERY: {
         label: 'Batteries',
-        type: 'BATTERY',
         fields: {
             countries: {
                 name: 'Countries',
@@ -139,7 +146,6 @@ const filterEquipmentDefinition = {
     },
     SHUNT_COMPENSATOR: {
         label: 'ShuntCompensators',
-        type: 'SHUNT_COMPENSATOR',
         fields: {
             countries: {
                 name: 'Countries',
@@ -153,7 +159,6 @@ const filterEquipmentDefinition = {
     },
     STATIC_VAR_COMPENSATOR: {
         label: 'StaticVarCompensators',
-        type: 'STATIC_VAR_COMPENSATOR',
         fields: {
             countries: {
                 name: 'Countries',
@@ -167,7 +172,6 @@ const filterEquipmentDefinition = {
     },
     DANGLING_LINE: {
         label: 'DanglingLines',
-        type: 'DANGLING_LINE',
         fields: {
             countries: {
                 name: 'Countries',
@@ -181,7 +185,6 @@ const filterEquipmentDefinition = {
     },
     LCC_CONVERTER_STATION: {
         label: 'LccConverterStations',
-        type: 'LCC_CONVERTER_STATION',
         fields: {
             countries: {
                 name: 'Countries',
@@ -195,7 +198,6 @@ const filterEquipmentDefinition = {
     },
     VSC_CONVERTER_STATION: {
         label: 'VscConverterStations',
-        type: 'VSC_CONVERTER_STATION',
         fields: {
             countries: {
                 name: 'Countries',
@@ -209,7 +211,6 @@ const filterEquipmentDefinition = {
     },
     HVDC_LINE: {
         label: 'HvdcLines',
-        type: 'HVDC_LINE',
         fields: {
             countries1: {
                 name: 'Countries',
@@ -489,6 +490,7 @@ export const GenericFilterDialog = ({
         currentFilter.current.id = id;
         currentFilter.current.type = FilterType.AUTOMATIC;
         if (contentType === ElementType.FILTER) {
+            // data model is not the same: filter has a sub-object 'equipmentFilterForm'
             currentFilter.current.equipmentFilterForm = newVal;
         } else {
             for (const k in newVal) currentFilter.current[k] = newVal[k];
