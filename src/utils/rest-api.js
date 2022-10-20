@@ -12,7 +12,7 @@ import { EquipmentTypes } from './equipment-types';
 import { ContingencyListType } from './elementType';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
-    process.env.REACT_APP_WS_GATEWAY + '/user-admin';
+    process.env.REACT_APP_API_GATEWAY + '/user-admin';
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
 const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
