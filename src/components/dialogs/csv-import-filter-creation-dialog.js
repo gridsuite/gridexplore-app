@@ -117,7 +117,6 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
                 if (isEquipmentWithDK && val[2]) dKey = val[2];
             }
 
-            console.log('equipment id :', val[0].trim());
             return {
                 equipmentID: val[0].trim(),
                 distributionKey: dKey,
