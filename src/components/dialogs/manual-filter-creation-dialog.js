@@ -292,12 +292,8 @@ const ManualFilterCreationDialog = ({
             if (isGeneratorOrLoad) {
                 // we check if all the distribution keys are null.
                 // If one is set, all the distribution keys that are null take 0 as value
-                let isAllKeysNull = false;
+                let isAllKeysNull = tableValues.every((row) => !row.distributionKey);
                 tableValues.forEach((val, index) => {
-                    if (val.distributionKey) {
-                        isAllKeysNull = false;
-                    }
-
                     if (!isAllKeysNull && !val.distributionKey) {
                         tableValues[index] = {
                             equipmentID: val.equipmentID,

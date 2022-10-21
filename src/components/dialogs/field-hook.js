@@ -377,7 +377,7 @@ export const useEquipmentTableValues = ({
                                 </Grid>
                                 {values.map((value, index) => (
                                     <Row
-                                        id={id + name + index}
+                                        id={name + index + id}
                                         value={value}
                                         isLastValue={
                                             index === values.length - 1
