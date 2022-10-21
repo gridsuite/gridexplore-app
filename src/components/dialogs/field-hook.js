@@ -256,11 +256,12 @@ export const useNameField = ({
 export const useEquipmentTableValues = ({
     id,
     tableHeadersIds,
-    Field,
+    Row,
     inputForm,
     isGeneratorOrLoad = false,
     defaultTableValues,
     setCreateFilterErr,
+    name,
 }) => {
     const [values, setValues] = useState([]);
 
@@ -338,15 +339,16 @@ export const useEquipmentTableValues = ({
         return (
             <Box sx={{ flexGrow: 1 }}>
                 <DragDropContext onDragEnd={commit}>
-                    <Droppable droppableId={id}>
+                    <Droppable droppableId={id + name}>
                         {(provided) => (
                             <div
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
+                                key={id + name}
                             >
                                 <Grid
                                     container
-                                    key={id + 'container'}
+                                    key={name + 'container'}
                                     spacing={isGeneratorOrLoad ? 2 : 0}
                                 >
                                     <Grid item xs={1} />
@@ -360,13 +362,13 @@ export const useEquipmentTableValues = ({
                                                     : 9
                                             }
                                             item
-                                            key={index}
+                                            key={index + name + value}
                                             style={{
                                                 width: '100%',
                                                 borderBottom: '3px solid grey',
                                             }}
                                         >
-                                            <span>
+                                            <span key={'header' + name + index}>
                                                 <FormattedMessage id={value} />
                                             </span>
                                         </Grid>
@@ -374,8 +376,8 @@ export const useEquipmentTableValues = ({
                                     <Grid xs={3} item />
                                 </Grid>
                                 {values.map((value, index) => (
-                                    <Field
-                                        id={id}
+                                    <Row
+                                        id={id + name + index}
                                         value={value}
                                         isLastValue={
                                             index === values.length - 1
@@ -405,6 +407,7 @@ export const useEquipmentTableValues = ({
         tableHeadersIds,
         commit,
         isGeneratorOrLoad,
+        name,
     ]);
 
     return [values, field];

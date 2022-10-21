@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ManualFilterTable = ({
+const ManualFilterRow = ({
     id,
     index,
     isGeneratorOrLoad,
@@ -63,22 +63,25 @@ const ManualFilterTable = ({
             {(provided) => (
                 <div
                     draggable="true"
-                    key={index + id}
+                    ref={provided.innerRef}
                     style={{ width: '100%' }}
                 >
                     <Grid
                         container
                         item
                         spacing={2}
+                        key={index + id + 'container item'}
                         sx={{ width: '100%', height: '50%' }}
-                        xs={12}
                         draggable="true"
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                     >
-                        <Grid xs={1} item key={id + index + 'drag'}>
-                            <IconButton {...provided.dragHandleProps}>
+                        <Grid xs={1} item>
+                            <IconButton
+                                {...provided.dragHandleProps}
+                                key={id + index + 'drag'}
+                            >
                                 <DragIndicatorIcon spacing={0} />
                             </IconButton>
                         </Grid>
@@ -142,6 +145,7 @@ const ManualFilterTable = ({
                         >
                             <IconButton
                                 onClick={() => handleDeleteItem(index)}
+                                key={id + index + 'deleteButton'}
                                 disabled={index === 0}
                             >
                                 <DeleteIcon />
@@ -154,6 +158,7 @@ const ManualFilterTable = ({
                             justifyContent="flex-end"
                         >
                             <IconButton
+                                key={id + index + 'upButton'}
                                 onClick={() => {
                                     if (index !== 0) {
                                         handleChangeOrder(index, -1);
@@ -175,6 +180,7 @@ const ManualFilterTable = ({
                                         handleChangeOrder(index, 1);
                                     }
                                 }}
+                                key={id + index + 'downButton'}
                             >
                                 <ArrowCircleDown />
                             </IconButton>
@@ -186,13 +192,15 @@ const ManualFilterTable = ({
                             justifyContent="flex-end"
                         >
                             {isLastValue && (
-                                <IconButton onClick={() => handleAddValue()}>
+                                <IconButton
+                                    onClick={() => handleAddValue()}
+                                    key={id + index + 'addButton'}
+                                >
                                     <AddIcon />
                                 </IconButton>
                             )}
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} />
                 </div>
             )}
         </Draggable>
@@ -231,7 +239,7 @@ const ManualFilterCreationDialog = ({
     };
 
     useEffect(() => {
-        if (id) {
+        if (id && open) {
             getFilterById(id)
                 .then((response) => {
                     setDefaultValues(response);
@@ -240,14 +248,15 @@ const ManualFilterCreationDialog = ({
                 .catch((error) => setCreateFilterErr(error));
             setWindowClose(false);
         }
-    }, [id, windowClosed]);
+    }, [id, windowClosed, open]);
 
     const [tableValues, tableValuesField] = useEquipmentTableValues({
         id: id ?? 'editFilterTable',
+        name: name,
         tableHeadersIds: isGeneratorOrLoad
             ? generatorOrLoadHeadersId
             : headersId,
-        Field: ManualFilterTable,
+        Row: ManualFilterRow,
         isGeneratorOrLoad: isGeneratorOrLoad,
         defaultTableValues: defaultValues?.filterEquipmentsAttributes,
         setCreateFilterErr: setCreateFilterErr,

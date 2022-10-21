@@ -773,6 +773,7 @@ const DirectoryContent = () => {
                 onClose={handleCloseManualFilterDialog}
                 title={useIntl().formatMessage({ id: 'editFilter' })}
                 isFilterCreation={false}
+                name={currentManualFilterId}
             />
             <GenericFilterDialog
                 id={currentAutomaticFilterId}

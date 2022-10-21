@@ -320,7 +320,6 @@ const CreateFilterDialog = ({
                 </DialogActions>
             </Dialog>
             <ManualFilterCreationDialog
-                id={newNameList}
                 open={openDialog === DialogsId.ADD_NEW_MANUAL_FILTER}
                 title={title}
                 onClose={handleClose}

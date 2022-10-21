@@ -295,7 +295,7 @@ export const GenericFilterDialog = ({
     const classes = useStyles();
 
     useEffect(() => {
-        if (id !== null) {
+        if (id !== null && open) {
             getFilterById(id).then((response) => {
                 setInitialFilter(response);
                 setFilterType(response.equipmentFilterForm.equipmentType);
@@ -313,7 +313,7 @@ export const GenericFilterDialog = ({
             setInitialFilter(null);
             setFilterType(null);
         }
-    }, [id]);
+    }, [id, open]);
 
     useEffect(() => {
         if (initialFilter !== null) {

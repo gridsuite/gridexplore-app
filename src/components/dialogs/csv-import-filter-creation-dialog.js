@@ -117,6 +117,7 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
                 if (isEquipmentWithDK && val[2]) dKey = val[2];
             }
 
+            console.log('equipment type :', equipmentType);
             return {
                 equipmentID: val[0],
                 distributionKey: dKey,
@@ -135,7 +136,7 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
             });
 
             if (validateCsvFile(result, equipmentType)) {
-                equipmentType = result[0][1];
+                equipmentType = result[0][1].trim();
                 createFilter(
                     {
                         type: FilterType.MANUAL,
@@ -163,56 +164,56 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth>
-            <DialogTitle>
-                <Grid xs={12} container justifyContent={'space-between'}>
-                    <Grid item xs={12}>
-                        {title}
-                    </Grid>
-                </Grid>
-            </DialogTitle>
+            <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <div>
-                    <Grid container>
-                        <Grid xs={5}>
-                            <CsvDownloader
-                                datas={csvData()}
-                                filename={'filterCreation'}
+                    <Grid container spacing={2}>
+                        <Grid container item>
+                            <Grid item xs={5}>
+                                <CsvDownloader
+                                    datas={csvData()}
+                                    filename={'filterCreation'}
+                                >
+                                    <Button variant={'contained'}>
+                                        <FormattedMessage id="GenerateCSV" />
+                                    </Button>
+                                </CsvDownloader>
+                            </Grid>
+                        </Grid>
+                        <Grid container item spacing={3}>
+                            <CSVReader
+                                onUploadAccepted={(results) => {
+                                    setValue([...results.data]);
+                                    setCreateFilterErr('');
+                                }}
                             >
-                                <Button>
-                                    <FormattedMessage id="GenerateCSV" />
-                                </Button>
-                            </CsvDownloader>
+                                {({ getRootProps, acceptedFile }) => (
+                                    <>
+                                        <Grid item>
+                                            <Button
+                                                {...getRootProps()}
+                                                variant={'contained'}
+                                            >
+                                                <FormattedMessage id="UploadCSV" />
+                                            </Button>
+                                            <span
+                                                style={{
+                                                    marginLeft: '10px',
+                                                    fontWeight: 'bold',
+                                                }}
+                                            >
+                                                {acceptedFile
+                                                    ? acceptedFile.name
+                                                    : intl.formatMessage({
+                                                          id: 'uploadMessage',
+                                                      })}
+                                            </span>
+                                        </Grid>
+                                    </>
+                                )}
+                            </CSVReader>
                         </Grid>
                     </Grid>
-                    <Grid container spacing={3}>
-                        <CSVReader
-                            onUploadAccepted={(results) => {
-                                setValue([...results.data]);
-                                setCreateFilterErr('');
-                            }}
-                        >
-                            {({ getRootProps, acceptedFile }) => (
-                                <>
-                                    <Grid item>
-                                        <Button {...getRootProps()}>
-                                            <FormattedMessage id="UploadCSV" />
-                                        </Button>
-                                        <span
-                                            style={{
-                                                marginLeft: '10px',
-                                                fontWeight: 'bold',
-                                            }}
-                                        >
-                                            {acceptedFile
-                                                ? acceptedFile.name
-                                                : ''}
-                                        </span>
-                                    </Grid>
-                                </>
-                            )}
-                        </CSVReader>
-                    </Grid>
-
                     {createFilterErr !== '' && (
                         <Alert severity="error">{createFilterErr}</Alert>
                     )}
