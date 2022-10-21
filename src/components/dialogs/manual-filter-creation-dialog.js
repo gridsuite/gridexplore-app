@@ -48,7 +48,6 @@ const ManualFilterRow = ({
     handleSetValue,
     handleChangeOrder,
     handleDeleteItem,
-    ...props
 }) => {
     const intl = useIntl();
     function isNumber(val) {
@@ -60,7 +59,7 @@ const ManualFilterRow = ({
     };
 
     return (
-        <Draggable draggableId={id} index={index} key={props.key}>
+        <Draggable draggableId={id} index={index} key={id + value + index}>
             {(provided) => (
                 <div
                     draggable="true"
@@ -240,7 +239,7 @@ const ManualFilterCreationDialog = ({
     };
 
     useEffect(() => {
-        if (id && open) {
+        if (id && open && !isFilterCreation) {
             getFilterById(id)
                 .then((response) => {
                     setDefaultValues(response);
@@ -249,7 +248,7 @@ const ManualFilterCreationDialog = ({
                 .catch((error) => setCreateFilterErr(error));
             setWindowClose(false);
         }
-    }, [id, windowClosed, open]);
+    }, [id, windowClosed, open, isFilterCreation]);
 
     const [tableValues, tableValuesField] = useEquipmentTableValues({
         id: id ?? 'editFilterTable',
