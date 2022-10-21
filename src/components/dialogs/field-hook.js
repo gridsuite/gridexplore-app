@@ -339,7 +339,7 @@ export const useEquipmentTableValues = ({
         return (
             <Box sx={{ flexGrow: 1 }}>
                 <DragDropContext onDragEnd={commit}>
-                    <Droppable droppableId={id + name}>
+                    <Droppable droppableId={id + name} key={id + name}>
                         {(provided) => (
                             <div
                                 ref={provided.innerRef}
@@ -377,7 +377,7 @@ export const useEquipmentTableValues = ({
                                 </Grid>
                                 {values.map((value, index) => (
                                     <Row
-                                        id={name + index + id}
+                                        id={index + value?.equipmentID + id}
                                         value={value}
                                         isLastValue={
                                             index === values.length - 1
@@ -388,6 +388,7 @@ export const useEquipmentTableValues = ({
                                         handleSetValue={handleSetValue}
                                         handleChangeOrder={handleChangeOrder}
                                         handleDeleteItem={handleDeleteItem}
+                                        key={id + value?.equipmentID + name}
                                     />
                                 ))}
                                 {provided.placeholder}

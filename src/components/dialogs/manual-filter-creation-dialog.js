@@ -48,6 +48,7 @@ const ManualFilterRow = ({
     handleSetValue,
     handleChangeOrder,
     handleDeleteItem,
+    ...props
 }) => {
     const intl = useIntl();
     function isNumber(val) {
@@ -59,7 +60,7 @@ const ManualFilterRow = ({
     };
 
     return (
-        <Draggable draggableId={index + id} index={index}>
+        <Draggable draggableId={id} index={index} key={props.key}>
             {(provided) => (
                 <div
                     draggable="true"
