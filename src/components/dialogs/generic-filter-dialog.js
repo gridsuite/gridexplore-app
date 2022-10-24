@@ -293,9 +293,11 @@ export const GenericFilterDialog = ({
     const currentFilter = useRef(null);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const classes = useStyles();
+    const openRef = useRef(null);
+    openRef.current = open;
 
     useEffect(() => {
-        if (id !== null && open) {
+        if (id !== null && openRef.current) {
             getFilterById(id).then((response) => {
                 setInitialFilter(response);
                 setFilterType(response.equipmentFilterForm.equipmentType);
@@ -313,7 +315,7 @@ export const GenericFilterDialog = ({
             setInitialFilter(null);
             setFilterType(null);
         }
-    }, [id, open]);
+    }, [id]);
 
     useEffect(() => {
         if (initialFilter !== null) {

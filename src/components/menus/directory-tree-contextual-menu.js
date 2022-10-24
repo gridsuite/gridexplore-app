@@ -293,8 +293,6 @@ const DirectoryTreeContextualMenu = (props) => {
                 inputLabelText={<FormattedMessage id="nameProperty" />}
                 customTextValidationBtn={<FormattedMessage id="validate" />}
                 customTextCancelBtn={<FormattedMessage id="cancel" />}
-                setOpenDialog={setOpenDialog}
-                openDialog={openDialog}
             />
             <CreateCaseDialog
                 open={openDialog === DialogsId.ADD_NEW_CASE}

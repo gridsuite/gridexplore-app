@@ -32,7 +32,6 @@ import CheckIcon from '@mui/icons-material/Check';
 import ManualFilterCreationDialog from './manual-filter-creation-dialog';
 import CsvImportFilterCreationDialog from './csv-import-filter-creation-dialog';
 import GenericFilterDialog from './generic-filter-dialog';
-import { DialogsId } from '../../utils/UIconstants';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -97,8 +96,6 @@ const CreateFilterDialog = ({
     title,
     customTextValidationBtn,
     customTextCancelBtn,
-    openDialog,
-    setOpenDialog,
 }) => {
     const [newNameList, setNewListName] = useState('');
     const [createFilterErr, setCreateFilterErr] = React.useState('');
@@ -112,6 +109,7 @@ const CreateFilterDialog = ({
     const intl = useIntl();
     const timer = React.useRef();
     const [newListType, setNewListType] = useState(FilterType.AUTOMATIC);
+    const [filterType, setFilterType] = useState('');
 
     /**
      * on change input popup check if name already exist
@@ -175,6 +173,7 @@ const CreateFilterDialog = ({
     const resetDialog = () => {
         setNewListName('');
         setNewListType(FilterType.AUTOMATIC);
+        setFilterType('');
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
         setFilterNameValid(false);
@@ -191,29 +190,13 @@ const CreateFilterDialog = ({
             return;
         }
 
-        switch (newListType) {
-            case FilterType.MANUAL:
-                setOpenDialog(DialogsId.ADD_NEW_MANUAL_FILTER);
-                break;
-            case FilterType.IMPORT_CSV:
-                setOpenDialog(DialogsId.ADD_NEW_FILTER_FROM_CSV);
-                break;
-            case FilterType.AUTOMATIC:
-                setOpenDialog(DialogsId.GENERIC_FILTER);
-                break;
-            default:
-                setCreateFilterErr(
-                    intl.formatMessage({ id: 'noFilterTypeSelected' })
-                );
-                break;
-        }
+        setFilterType(newListType);
     };
 
     const handleSave = (filter) => {
         createFilter(filter, newNameList, activeDirectory)
             .then(() => {
-                onClose();
-                resetDialog();
+                handleClose();
             })
             .catch((message) => {
                 setCreateFilterErr(message);
@@ -256,11 +239,11 @@ const CreateFilterDialog = ({
         <>
             <Dialog
                 fullWidth={true}
-                open={open}
+                open={open && !filterType}
                 onClose={handleClose}
                 onKeyPress={handleKeyPressed}
             >
-                <DialogTitle onClose={handleClose}>{title}</DialogTitle>
+                <DialogTitle>{title}</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
@@ -322,20 +305,20 @@ const CreateFilterDialog = ({
                 </DialogActions>
             </Dialog>
             <ManualFilterCreationDialog
-                open={openDialog === DialogsId.ADD_NEW_MANUAL_FILTER}
+                open={open && filterType === FilterType.MANUAL}
                 title={title}
                 onClose={handleClose}
                 name={newNameList}
                 isFilterCreation={true}
             />
             <CsvImportFilterCreationDialog
-                open={openDialog === DialogsId.ADD_NEW_FILTER_FROM_CSV}
+                open={open && filterType === FilterType.IMPORT_CSV}
                 title={title}
                 name={newNameList}
                 onClose={handleClose}
             />
             <GenericFilterDialog
-                open={openDialog === DialogsId.GENERIC_FILTER}
+                open={open && filterType === FilterType.AUTOMATIC}
                 onClose={handleClose}
                 title={title}
                 isFilterCreation={true}

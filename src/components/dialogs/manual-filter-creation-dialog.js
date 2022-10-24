@@ -38,6 +38,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function isNumber(val) {
+    return /^-?[0-9]*[.,]?[0-9]*$/.test(val);
+}
+
 const ManualFilterRow = ({
     id,
     index,
@@ -50,9 +54,6 @@ const ManualFilterRow = ({
     handleDeleteItem,
 }) => {
     const intl = useIntl();
-    function isNumber(val) {
-        return /^-?[0-9]*[.,]?[0-9]*$/.test(val);
-    }
 
     const getXs = () => {
         return isGeneratorOrLoad ? 6 : 9;

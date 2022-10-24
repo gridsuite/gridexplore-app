@@ -170,6 +170,7 @@
     "noEquipmentTypeFoundInCSVError": "Equipment type is required field",
     "noDataInCsvFile": "No data found in this file",
     "noFilterTypeSelected": "Filter type selection is required",
+    "wrongCsvHeadersError": "This CSV file has the wrong headers. Use Generate CSV Skeleton button to get supported CSV format",
 
     "moveItemTitle": "Move element to another folder",
     "moveItemValidate": "{nbElements, plural, =0 {Please select a folder} =1 {Move element} other {Move # elements}}",

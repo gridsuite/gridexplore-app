@@ -181,6 +181,8 @@ const DirectoryContent = () => {
     /**
      * Filters dialog: window status value to edit automatics filters
      */
+    const [currentAutomaticFilterId, setCurrentAutomaticFilterId] =
+        useState(null);
     const [openGenericFilterDialog, setOpenGenericFilterDialog] =
         React.useState(false);
     const handleCloseGenericFilterDialog = () => {
@@ -196,12 +198,9 @@ const DirectoryContent = () => {
         useState(false);
     const handleCloseManualFilterDialog = () => {
         setOpenEditManualFilterDialog(false);
-        setCurrentAutomaticFilterId(null);
+        setCurrentManualFilterId(null);
         setActiveElement(null);
     };
-
-    const [currentAutomaticFilterId, setCurrentAutomaticFilterId] =
-        useState(null);
     const [currentManualFilterId, setCurrentManualFilterId] = useState(null);
 
     /**
