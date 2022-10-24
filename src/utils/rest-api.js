@@ -791,13 +791,13 @@ export function getCaseImportParameters(caseUuid) {
 }
 
 export function getCaseUuidWhenUploadFile(selectedFile) {
-    const getImportParametersForFileUrl =
-        PREFIX_NETWORK_CONVERSION_SERVER_QUERIES + '/v1/cases/get-uuid';
+    const getCaseUuidForUploadedFileUrl =
+        PREFIX_CASE_QUERIES + '/v1/cases/private';
     const formData = new FormData();
-    formData.append('caseFile', selectedFile);
-    console.debug(getImportParametersForFileUrl);
+    formData.append('file', selectedFile);
+    console.debug(getCaseUuidForUploadedFileUrl);
 
-    return backendFetch(getImportParametersForFileUrl, {
+    return backendFetch(getCaseUuidForUploadedFileUrl, {
         method: 'post',
         body: formData,
     }).then((response) =>
@@ -805,4 +805,11 @@ export function getCaseUuidWhenUploadFile(selectedFile) {
             ? response.json()
             : response.json().then((error) => Promise.reject(error))
     );
+}
+
+export function deleteCaseByCaseUuid(caseUuid) {
+    const deleteCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases/' + caseUuid;
+    return backendFetch(deleteCaseUrl, {
+        method: 'delete',
+    });
 }

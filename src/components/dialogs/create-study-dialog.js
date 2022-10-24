@@ -25,6 +25,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import DirectorySelector from './directory-selector.js';
 import {
     createStudy,
+    deleteCaseByCaseUuid,
     elementExists,
     fetchCases,
     fetchPath,
@@ -42,6 +43,7 @@ import {
     removeUploadingElement,
     setFormatWithParameters,
     setformatInvalidMsgError,
+    setTempCaseUuid,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
@@ -228,6 +230,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         dispatch(setFormatWithParameters([]));
         setIsParamsCaseFileDisplayed(false);
         dispatch(setformatInvalidMsgError(null));
+        if (tempCaseUuid !== null) {
+            deleteCaseByCaseUuid(tempCaseUuid);
+            dispatch(setTempCaseUuid(null));
+        }
     };
 
     const handleCloseDialog = () => {

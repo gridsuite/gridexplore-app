@@ -16,6 +16,7 @@ import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import React, { useState } from 'react';
 import {
+    deleteCaseByCaseUuid,
     getCaseImportParameters,
     getCaseUuidWhenUploadFile,
 } from '../../utils/rest-api';
@@ -23,13 +24,18 @@ import CircularProgress from '@mui/material/CircularProgress';
 export const UploadCase = () => {
     const dispatch = useDispatch();
     const selectedFile = useSelector((state) => state.selectedFile);
+    const tempCaseUuid = useSelector((state) => state.tempCaseUuid);
     const [loadingUploadFile, setLoadingUploadFile] = useState(false);
     const INVALID_FORMAT = 'Invalid format';
     const handleFileUpload = (e) => {
+        console.log('event:', e);
         e.preventDefault();
         let files = e.target.files;
         if (files.size === 0) dispatch(selectFile(null));
         else {
+            if (tempCaseUuid != null) {
+                deleteCaseByCaseUuid(tempCaseUuid);
+            }
             setLoadingUploadFile(true);
             getCaseUuidWhenUploadFile(files[0])
                 .then((caseUuid) => {
