@@ -377,7 +377,7 @@ export const useEquipmentTableValues = ({
                                 </Grid>
                                 {values.map((value, index) => (
                                     <Row
-                                        id={index + value?.equipmentID + id}
+                                        id={index + id}
                                         value={value}
                                         isLastValue={
                                             index === values.length - 1
@@ -388,7 +388,7 @@ export const useEquipmentTableValues = ({
                                         handleSetValue={handleSetValue}
                                         handleChangeOrder={handleChangeOrder}
                                         handleDeleteItem={handleDeleteItem}
-                                        key={id + value?.equipmentID + name}
+                                        key={name + index}
                                     />
                                 ))}
                                 {provided.placeholder}

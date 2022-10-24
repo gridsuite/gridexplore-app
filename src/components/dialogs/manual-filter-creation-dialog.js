@@ -91,7 +91,7 @@ const ManualFilterRow = ({
                             key={id + index + 'equipmentID'}
                         >
                             <Input
-                                id={id + index}
+                                id={id + index + 'IdInput'}
                                 value={value?.equipmentID ?? ''}
                                 fullWidth={true}
                                 placeholder={intl.formatMessage({
@@ -105,7 +105,6 @@ const ManualFilterRow = ({
                                 }
                                 error={value?.equipmentID === ''}
                                 required
-                                autoFocus={true}
                             />
                         </Grid>
                         {isGeneratorOrLoad && (
@@ -116,7 +115,7 @@ const ManualFilterRow = ({
                                 justifyContent="flex-end"
                             >
                                 <Input
-                                    id={id + index}
+                                    id={id + index + 'dKeyInput'}
                                     value={value?.distributionKey ?? ''}
                                     style={{
                                         border: 'hidden',
