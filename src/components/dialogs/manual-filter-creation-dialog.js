@@ -105,6 +105,7 @@ const ManualFilterRow = ({
                                 }
                                 error={value?.equipmentID === ''}
                                 required
+                                autoFocus={true}
                             />
                         </Grid>
                         {isGeneratorOrLoad && (
@@ -380,7 +381,9 @@ const ManualFilterCreationDialog = ({
                     variant="outlined"
                     onClick={handleCreateFilter}
                     disabled={
-                        tableValues.length === 0 || createFilterErr !== ''
+                        tableValues.length === 0 ||
+                        createFilterErr !== '' ||
+                        !equipmentType
                     }
                 >
                     <FormattedMessage id="validate" />
