@@ -111,7 +111,7 @@ const CreateFilterDialog = ({
     const classes = useStyles();
     const intl = useIntl();
     const timer = React.useRef();
-    const [newListType, setNewListType] = useState('Automatic');
+    const [newListType, setNewListType] = useState(FilterType.AUTOMATIC);
 
     /**
      * on change input popup check if name already exist
@@ -174,7 +174,7 @@ const CreateFilterDialog = ({
 
     const resetDialog = () => {
         setNewListName('');
-        setNewListType('Automatic');
+        setNewListType(FilterType.AUTOMATIC);
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
         setFilterNameValid(false);
@@ -191,7 +191,7 @@ const CreateFilterDialog = ({
             return;
         }
 
-        switch (newListType?.toUpperCase()) {
+        switch (newListType) {
             case FilterType.MANUAL:
                 setOpenDialog(DialogsId.ADD_NEW_MANUAL_FILTER);
                 break;
@@ -202,7 +202,9 @@ const CreateFilterDialog = ({
                 setOpenDialog(DialogsId.GENERIC_FILTER);
                 break;
             default:
-                setCreateFilterErr('error');
+                setCreateFilterErr(
+                    intl.formatMessage({ id: 'noFilterTypeSelected' })
+                );
                 break;
         }
     };
@@ -246,7 +248,7 @@ const CreateFilterDialog = ({
 
     const handleKeyPressed = (event) => {
         if (event.key === 'Enter') {
-            handleSave();
+            handleValidation();
         }
     };
 
@@ -280,22 +282,22 @@ const CreateFilterDialog = ({
                         aria-label="type"
                         name="filterType"
                         value={newListType}
-                        defaultValue="Automatic"
+                        defaultValue={FilterType.AUTOMATIC}
                         onChange={(e) => setNewListType(e.target.value)}
                         row
                     >
                         <FormControlLabel
-                            value="Automatic"
+                            value={FilterType.AUTOMATIC}
                             control={<Radio />}
                             label={<FormattedMessage id="Automatic" />}
                         />
                         <FormControlLabel
-                            value="Manual"
+                            value={FilterType.MANUAL}
                             control={<Radio />}
                             label={<FormattedMessage id="Manual" />}
                         />
                         <FormControlLabel
-                            value="Import_CSV"
+                            value={FilterType.IMPORT_CSV}
                             control={<Radio />}
                             label={<FormattedMessage id="ImportCSV" />}
                         />

@@ -169,6 +169,7 @@
     "missingEquipmentsIdsError": "ID is required field for all equipments",
     "noEquipmentTypeFoundInCSVError": "Equipment type is required field",
     "noDataInCsvFile": "No data found in this file",
+    "noFilterTypeSelected": "Filter type selection is required",
 
     "moveItemTitle": "Move element to another folder",
     "moveItemValidate": "{nbElements, plural, =0 {Please select a folder} =1 {Move element} other {Move # elements}}",
