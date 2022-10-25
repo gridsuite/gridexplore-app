@@ -11,6 +11,8 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 import { EquipmentTypes } from './equipment-types';
 import { ContingencyListType } from './elementType';
 
+const PREFIX_USER_ADMIN_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/user-admin';
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
 const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
@@ -63,6 +65,33 @@ function backendFetch(url, init) {
     initCopy.headers = new Headers(initCopy.headers || {});
     initCopy.headers.append('Authorization', 'Bearer ' + getToken());
     return fetch(url, initCopy);
+}
+
+export function fetchValidateUser(user) {
+    const sub = user?.profile?.sub;
+    if (!sub)
+        return Promise.reject(
+            new Error(
+                'Error : Fetching access for missing user.profile.sub : ' + user
+            )
+        );
+
+    console.info(`Fetching access for user...`);
+    const CheckAccessUrl =
+        PREFIX_USER_ADMIN_SERVER_QUERIES + `/v1/users/${sub}`;
+    console.debug(CheckAccessUrl);
+
+    return fetch(CheckAccessUrl, {
+        method: 'head',
+        headers: {
+            Authorization: 'Bearer ' + user?.id_token,
+        },
+    }).then((response) => {
+        if (response.status === 200) return true;
+        else if (response.status === 204 || response.status === 403)
+            return false;
+        else throw new Error(response.status + ' ' + response.statusText);
+    });
 }
 
 export function fetchAppsAndUrls() {
