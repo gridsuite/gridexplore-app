@@ -421,7 +421,7 @@ const ContentContextualMenu = (props) => {
     const getActiveFilterFormId = () => {
         if (
             activeElement?.type === ElementType.FILTER &&
-            activeElement?.subtype === FilterType.FORM
+            activeElement?.subtype === FilterType.AUTOMATIC
         ) {
             return activeElement.elementUuid;
         } else {

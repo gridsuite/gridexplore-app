@@ -29,7 +29,9 @@ import { useSelector } from 'react-redux';
 import { ElementType, FilterType } from '../../utils/elementType';
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
-import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
+import ManualFilterCreationDialog from './manual-filter-creation-dialog';
+import CsvImportFilterCreationDialog from './csv-import-filter-creation-dialog';
+import GenericFilterDialog from './generic-filter-dialog';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -96,7 +98,6 @@ const CreateFilterDialog = ({
     customTextCancelBtn,
 }) => {
     const [newNameList, setNewListName] = useState('');
-    const [newListType, setNewListType] = useState(FilterType.FORM);
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
@@ -107,6 +108,8 @@ const CreateFilterDialog = ({
     const classes = useStyles();
     const intl = useIntl();
     const timer = React.useRef();
+    const [newListType, setNewListType] = useState(FilterType.AUTOMATIC);
+    const [filterType, setFilterType] = useState('');
 
     /**
      * on change input popup check if name already exist
@@ -169,13 +172,14 @@ const CreateFilterDialog = ({
 
     const resetDialog = () => {
         setNewListName('');
-        setNewListType(FilterType.FORM);
+        setNewListType(FilterType.AUTOMATIC);
+        setFilterType('');
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
         setFilterNameValid(false);
     };
 
-    const handleSave = () => {
+    const handleValidation = () => {
         //To manage the case when we never tried to enter a name
         if (newNameList === '') {
             setCreateFilterErr(intl.formatMessage({ id: 'nameEmpty' }));
@@ -185,20 +189,14 @@ const CreateFilterDialog = ({
         if (!filterNameValid || loadingCheckFilterName) {
             return;
         }
-        createFilter(
-            {
-                type: newListType,
-                equipmentFilterForm: {
-                    equipmentType: EQUIPMENT_TYPE.LINE.name,
-                },
-                transient: true,
-            },
-            newNameList,
-            activeDirectory
-        )
+
+        setFilterType(newListType);
+    };
+
+    const handleSave = (filter) => {
+        createFilter(filter, newNameList, activeDirectory)
             .then(() => {
-                onClose();
-                resetDialog();
+                handleClose();
             })
             .catch((message) => {
                 setCreateFilterErr(message);
@@ -233,67 +231,100 @@ const CreateFilterDialog = ({
 
     const handleKeyPressed = (event) => {
         if (event.key === 'Enter') {
-            handleSave();
+            handleValidation();
         }
     };
 
     return (
-        <Dialog
-            fullWidth={true}
-            open={open}
-            onClose={handleClose}
-            onKeyPress={handleKeyPressed}
-        >
-            <DialogTitle onClose={handleClose}>{title}</DialogTitle>
-            <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    type="text"
-                    style={{ width: '90%' }}
-                    onChange={(event) =>
-                        handleFilterNameChanges(event.target.value)
-                    }
-                    error={
-                        newNameList !== '' &&
-                        !filterNameValid &&
-                        !loadingCheckFilterName
-                    }
-                    label={inputLabelText}
-                />
-                {renderFilterNameStatus()}
-                <RadioGroup
-                    aria-label="type"
-                    name="filterType"
-                    value={newListType}
-                    onChange={(e) => setNewListType(e.target.value)}
-                    row
-                >
-                    <FormControlLabel
-                        value="FORM"
-                        control={<Radio />}
-                        label={<FormattedMessage id="FORM" />}
+        <>
+            <Dialog
+                fullWidth={true}
+                open={open && !filterType}
+                onClose={handleClose}
+                onKeyPress={handleKeyPressed}
+            >
+                <DialogTitle>{title}</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        type="text"
+                        style={{ width: '90%' }}
+                        onChange={(event) =>
+                            handleFilterNameChanges(event.target.value)
+                        }
+                        error={
+                            newNameList !== '' &&
+                            !filterNameValid &&
+                            !loadingCheckFilterName
+                        }
+                        label={inputLabelText}
                     />
-                </RadioGroup>
-                {createFilterErr !== '' && (
-                    <Alert severity="error">{createFilterErr}</Alert>
-                )}
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleClose}>{customTextCancelBtn}</Button>
-                <Button
-                    variant="outlined"
-                    onClick={handleSave}
-                    disabled={
-                        newNameList === '' ||
-                        !filterNameValid ||
-                        loadingCheckFilterName
-                    }
-                >
-                    {customTextValidationBtn}
-                </Button>
-            </DialogActions>
-        </Dialog>
+                    {renderFilterNameStatus()}
+                    <RadioGroup
+                        aria-label="type"
+                        name="filterType"
+                        value={newListType}
+                        defaultValue={FilterType.AUTOMATIC}
+                        onChange={(e) => setNewListType(e.target.value)}
+                        row
+                    >
+                        <FormControlLabel
+                            value={FilterType.AUTOMATIC}
+                            control={<Radio />}
+                            label={<FormattedMessage id="Automatic" />}
+                        />
+                        <FormControlLabel
+                            value={FilterType.MANUAL}
+                            control={<Radio />}
+                            label={<FormattedMessage id="Manual" />}
+                        />
+                        <FormControlLabel
+                            value={FilterType.IMPORT_CSV}
+                            control={<Radio />}
+                            label={<FormattedMessage id="ImportCSV" />}
+                        />
+                    </RadioGroup>
+                    {createFilterErr !== '' && (
+                        <Alert severity="error">{createFilterErr}</Alert>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>{customTextCancelBtn}</Button>
+                    <Button
+                        variant="outlined"
+                        onClick={handleValidation}
+                        disabled={
+                            newNameList === '' ||
+                            !filterNameValid ||
+                            loadingCheckFilterName
+                        }
+                    >
+                        {customTextValidationBtn}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <ManualFilterCreationDialog
+                open={open && filterType === FilterType.MANUAL}
+                title={title}
+                onClose={handleClose}
+                name={newNameList}
+                isFilterCreation={true}
+            />
+            <CsvImportFilterCreationDialog
+                open={open && filterType === FilterType.IMPORT_CSV}
+                title={title}
+                name={newNameList}
+                onClose={handleClose}
+            />
+            <GenericFilterDialog
+                open={open && filterType === FilterType.AUTOMATIC}
+                onClose={handleClose}
+                title={title}
+                isFilterCreation={true}
+                handleFilterCreation={handleSave}
+            />
+        </>
     );
 };
 
