@@ -177,7 +177,7 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
     };
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth>
+        <Dialog open={open} onClose={handleClose} fullWidth>
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <div>

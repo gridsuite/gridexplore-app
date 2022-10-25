@@ -345,7 +345,7 @@ const ManualFilterCreationDialog = ({
             classes={{ paper: classes.dialogPaper }}
             fullWidth={true}
             open={open}
-            onClose={onClose}
+            onClose={handleClose}
         >
             <DialogTitle onClose={onClose}>{title}</DialogTitle>
             <DialogContent>
