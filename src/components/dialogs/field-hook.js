@@ -290,7 +290,7 @@ export const useEquipmentTableValues = ({
             setValues((oldValues) => {
                 let newValues = [...oldValues];
                 newValues.splice(index, 1);
-                return newValues;
+                return newValues.length === 0 ? [{}] : newValues;
             });
             setCreateFilterErr('');
         },

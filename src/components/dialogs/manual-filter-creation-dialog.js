@@ -10,7 +10,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FilterTypeSelection } from './generic-filter-dialog';
 import Grid from '@mui/material/Grid';
 import { useEquipmentTableValues } from './field-hook';
@@ -147,7 +147,6 @@ const ManualFilterRow = ({
                             <IconButton
                                 onClick={() => handleDeleteItem(index)}
                                 key={id + index + 'deleteButton'}
-                                disabled={index === 0}
                             >
                                 <DeleteIcon />
                             </IconButton>
@@ -226,8 +225,8 @@ const ManualFilterCreationDialog = ({
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const [defaultValues, setDefaultValues] = useState(null);
 
-    // this value is to make sur to have the correct data  when we close and open the same filter
-    const [windowClosed, setWindowClose] = useState(false);
+    const fetchFilter = useRef(null);
+    fetchFilter.current = open && !isFilterCreation;
 
     const resetDialog = () => {
         setEquipmentType('');
@@ -236,20 +235,18 @@ const ManualFilterCreationDialog = ({
             filterEquipmentsAttributes: [],
             equipmentType: equipmentType,
         });
-        setWindowClose(true);
     };
 
     useEffect(() => {
-        if (id && open && !isFilterCreation) {
+        if (id && fetchFilter.current) {
             getFilterById(id)
                 .then((response) => {
                     setDefaultValues(response);
                     setEquipmentType(response?.equipmentType);
                 })
                 .catch((error) => setCreateFilterErr(error));
-            setWindowClose(false);
         }
-    }, [id, windowClosed, open, isFilterCreation]);
+    }, [id]);
 
     const [tableValues, tableValuesField] = useEquipmentTableValues({
         id: id ?? 'editFilterTable',
@@ -317,7 +314,6 @@ const ManualFilterCreationDialog = ({
                 )
                     .then(() => {
                         handleClose();
-                        resetDialog();
                     })
                     .catch((message) => {
                         setCreateFilterErr(message);
@@ -331,7 +327,6 @@ const ManualFilterCreationDialog = ({
                 })
                     .then(() => {
                         handleClose();
-                        resetDialog();
                     })
                     .catch((message) => {
                         setCreateFilterErr(message);
