@@ -37,9 +37,10 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const equipmentsDefinition = {
+export const equipmentsDefinition = {
     LINE: {
         label: 'Lines',
+        type: 'LINE',
         fields: {
             countries: {
                 name: 'Countries',
@@ -56,6 +57,7 @@ const equipmentsDefinition = {
     },
     TWO_WINDINGS_TRANSFORMER: {
         label: 'TwoWindingsTransformers',
+        type: 'TWO_WINDINGS_TRANSFORMER',
         fields: {
             countries: {
                 name: 'Countries',
@@ -70,6 +72,7 @@ const equipmentsDefinition = {
     },
     THREE_WINDINGS_TRANSFORMER: {
         label: 'ThreeWindingsTransformers',
+        type: 'THREE_WINDINGS_TRANSFORMER',
         fields: {
             countries: {
                 name: 'Countries',
@@ -84,6 +87,7 @@ const equipmentsDefinition = {
     },
     GENERATOR: {
         label: 'Generators',
+        type: 'GENERATOR',
         fields: {
             countries: {
                 name: 'Countries',
@@ -97,6 +101,7 @@ const equipmentsDefinition = {
     },
     LOAD: {
         label: 'Loads',
+        type: 'LOAD',
         fields: {
             countries: {
                 name: 'Countries',
@@ -110,6 +115,7 @@ const equipmentsDefinition = {
     },
     BATTERY: {
         label: 'Batteries',
+        type: 'BATTERY',
         fields: {
             countries: {
                 name: 'Countries',
@@ -123,6 +129,7 @@ const equipmentsDefinition = {
     },
     SHUNT_COMPENSATOR: {
         label: 'ShuntCompensators',
+        type: 'SHUNT_COMPENSATOR',
         fields: {
             countries: {
                 name: 'Countries',
@@ -136,6 +143,7 @@ const equipmentsDefinition = {
     },
     STATIC_VAR_COMPENSATOR: {
         label: 'StaticVarCompensators',
+        type: 'STATIC_VAR_COMPENSATOR',
         fields: {
             countries: {
                 name: 'Countries',
@@ -149,6 +157,7 @@ const equipmentsDefinition = {
     },
     DANGLING_LINE: {
         label: 'DanglingLines',
+        type: 'DANGLING_LINE',
         fields: {
             countries: {
                 name: 'Countries',
@@ -162,6 +171,7 @@ const equipmentsDefinition = {
     },
     LCC_CONVERTER_STATION: {
         label: 'LccConverterStations',
+        type: 'LCC_CONVERTER_STATION',
         fields: {
             countries: {
                 name: 'Countries',
@@ -175,6 +185,7 @@ const equipmentsDefinition = {
     },
     VSC_CONVERTER_STATION: {
         label: 'VscConverterStations',
+        type: 'VSC_CONVERTER_STATION',
         fields: {
             countries: {
                 name: 'Countries',
@@ -188,6 +199,7 @@ const equipmentsDefinition = {
     },
     HVDC_LINE: {
         label: 'HvdcLines',
+        type: 'HVDC_LINE',
         fields: {
             countries: {
                 name: 'Countries',
@@ -265,7 +277,14 @@ export const FilterTypeSelection = ({ type, onChange }) => {
     );
 };
 
-export const GenericFilterDialog = ({ id, open, onClose, title }) => {
+export const GenericFilterDialog = ({
+    id,
+    open,
+    onClose,
+    title,
+    isFilterCreation,
+    handleFilterCreation,
+}) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [filterType, setFilterType] = useState(null);
     const [currentFormEdit, setCurrentFormEdit] = useState({
@@ -274,9 +293,11 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     const currentFilter = useRef(null);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const classes = useStyles();
+    const openRef = useRef(null);
+    openRef.current = open;
 
     useEffect(() => {
-        if (id !== null) {
+        if (id !== null && openRef.current) {
             getFilterById(id).then((response) => {
                 setInitialFilter(response);
                 setFilterType(response.equipmentFilterForm.equipmentType);
@@ -305,7 +326,7 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     function onChange(newVal) {
         currentFilter.current = {};
         currentFilter.current.id = id;
-        currentFilter.current.type = FilterType.FORM;
+        currentFilter.current.type = FilterType.AUTOMATIC;
         currentFilter.current.equipmentFilterForm = newVal;
         setBtnSaveListDisabled(false);
     }
@@ -322,12 +343,16 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
     };
 
     const handleClick = () => {
-        saveFilter(currentFilter.current)
-            .then()
-            .catch((error) => {
-                displayErrorMessageWithSnackbar(error.message);
-            });
-        onClose();
+        if (!isFilterCreation) {
+            saveFilter(currentFilter.current)
+                .then()
+                .catch((error) => {
+                    displayErrorMessageWithSnackbar(error.message);
+                });
+            handleCancel();
+        } else {
+            handleFilterCreation(currentFilter.current);
+        }
     };
 
     function validVoltageValues(obj) {
@@ -369,16 +394,18 @@ export const GenericFilterDialog = ({ id, open, onClose, title }) => {
                     initialFilter.equipmentFilterForm[key]
                 );
             }
-            return (
-                <SingleFilter
-                    key={key}
-                    filter={currentFormEdit[key]}
-                    definition={definition}
-                    onChange={editDone}
-                    sequence={sequence}
-                />
-            );
+        } else {
+            currentFormEdit[key] = generateDefaultValue(definition, null);
         }
+        return (
+            <SingleFilter
+                key={key}
+                filter={currentFormEdit[key]}
+                definition={definition}
+                onChange={editDone}
+                sequence={sequence}
+            />
+        );
     };
 
     const renderSpecific = () => {
