@@ -666,7 +666,7 @@ export function newScriptFromFiltersContingencyList(
  * Function will be called to connect with notification websocket to update directories list
  * @returns {ReconnectingWebSocket}
  */
-export function connectNotificationsWsUpdateDirectory() {
+export function connectNotificationsWsUpdateDirectories() {
     const webSocketBaseUrl = document.baseURI
         .replace(/^http:\/\//, 'ws://')
         .replace(/^https:\/\//, 'wss://');

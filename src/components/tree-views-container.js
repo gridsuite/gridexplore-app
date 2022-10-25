@@ -16,7 +16,7 @@ import {
 } from '../redux/actions';
 
 import {
-    connectNotificationsWsUpdateDirectory,
+    connectNotificationsWsUpdateDirectories,
     fetchDirectoryContent,
     fetchRootFolders,
 } from '../utils/rest-api';
@@ -484,7 +484,7 @@ const TreeViewsContainer = () => {
 
     useEffect(() => {
         // create ws at mount event
-        wsRef.current = connectNotificationsWsUpdateDirectory();
+        wsRef.current = connectNotificationsWsUpdateDirectories();
 
         wsRef.current.onclose = function () {
             console.error('Unexpected Notification WebSocket closed');
