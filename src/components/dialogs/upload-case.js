@@ -28,7 +28,6 @@ export const UploadCase = () => {
     const [loadingUploadFile, setLoadingUploadFile] = useState(false);
     const INVALID_FORMAT = 'Invalid format';
     const handleFileUpload = (e) => {
-        console.log('event:', e);
         e.preventDefault();
         let files = e.target.files;
         if (files.size === 0) dispatch(selectFile(null));

@@ -421,13 +421,15 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 ? JSON.stringify(currentParameters)
                 : ''
         )
-            .then()
+            .then(() => {
+                dispatch(setTempCaseUuid(null));
+                handleCloseDialog();
+            })
             .catch((message) => {
                 studyCreationError(studyName, message);
             })
             .finally(() => dispatch(removeUploadingElement(uploadingStudy)));
         dispatch(addUploadingElement(uploadingStudy));
-        handleCloseDialog();
     };
 
     const handleKeyPressed = (event) => {

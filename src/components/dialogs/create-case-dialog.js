@@ -85,13 +85,15 @@ export function CreateCaseDialog({ onClose, open }) {
             file,
             parentDirectoryUuid: activeDirectory,
         })
-            .then()
+            .then(() => {
+                dispatch(setTempCaseUuid(null));
+                handleCloseDialog();
+            })
             .catch((message) => {
                 snackbarMessage(message, 'caseCreationError', { name });
             })
             .finally(() => dispatch(removeUploadingElement(uploadingCase)));
         dispatch(addUploadingElement(uploadingCase));
-        handleCloseDialog();
     };
 
     const handleKeyPressed = (event) => {
