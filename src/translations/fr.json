@@ -169,7 +169,7 @@
     "noEquipmentTypeFoundInCSVError": "Le type d'équipement est un champ obligatoire",
     "noDataInCsvFile": "Aucune donnée trouvée dans ce fichier",
     "noFilterTypeSelected": "La sélection du type de filtre est obligatoire",
-    "wrongCsvHeadersError": "Ce fichier CSV à les mauvais en-têtes. Utilisez le bouton Générer le squelette CSV pour obtenir le format CSV pris en charge",
+    "wrongCsvHeadersError": "Les en-têtes du fichier CSV sont incorrects. Utilisez le bouton Générer le squelette CSV pour obtenir le format CSV pris en charge",
 
     "moveItemTitle": "Déplacer élément vers un autre dossier",
     "moveItemValidate": "{nbElements, plural, =0 {Veuillez sélectionner un dossier} =1 {Déplacer l'élément} other {Déplacer # éléments}}",

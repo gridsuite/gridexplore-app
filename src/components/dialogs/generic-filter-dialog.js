@@ -349,7 +349,7 @@ export const GenericFilterDialog = ({
                 .catch((error) => {
                     displayErrorMessageWithSnackbar(error.message);
                 });
-            onClose();
+            handleCancel();
         } else {
             handleFilterCreation(currentFilter.current);
         }
