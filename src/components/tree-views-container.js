@@ -437,11 +437,11 @@ const TreeViewsContainer = () => {
         (nodeId, isClose = false) => {
             // quite rare occasion to clean up
             if (isClose) {
-                if (rootDirectories.some((n) => n.elementUuid === nodeId)) {
-                    const newMap = mapFromRoots(rootDirectories);
+                if (rootsRef.current.some((n) => n.elementUuid === nodeId)) {
+                    const newMap = mapFromRoots(rootsRef.current);
                     if (
                         Object.entries(newMap).length !==
-                        Object.entries(mapData).length
+                        Object.entries(mapDataRef.current).length
                     ) {
                         setMapData(newMap);
                     }
@@ -461,7 +461,7 @@ const TreeViewsContainer = () => {
                     updateMapData(nodeId, []);
                 });
         },
-        [updateMapData, rootDirectories, mapData]
+        [updateMapData]
     );
 
     /* Manage Studies updating with Web Socket */
