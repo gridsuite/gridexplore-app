@@ -30,8 +30,8 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
     const fileHeaders = [
-        intl.formatMessage({ id: 'equipmentID' }),
         intl.formatMessage({ id: 'equipmentType' }),
+        intl.formatMessage({ id: 'equipmentID' }),
         intl.formatMessage({ id: 'distributionKey' }),
     ];
 
@@ -82,7 +82,7 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
 
         for (let i = 1; i < rows.length; i++) {
             // Check if equipment type is specified in the row
-            if (!rows[i][1]) {
+            if (!rows[i][0]) {
                 setCreateFilterErr(
                     intl.formatMessage({
                         id: 'noEquipmentTypeFoundInCSVError',
@@ -92,14 +92,24 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
             }
 
             if (!equipmentType) {
-                equipmentType = rows[i][1];
+                equipmentType = rows[i][0];
             }
 
             // Check if multiple equipment type are specified
-            if (rows[i][1] !== equipmentType) {
+            if (rows[i][0] !== equipmentType) {
                 setCreateFilterErr(
                     intl.formatMessage({
                         id: 'multipleEquipmentTypeError',
+                    })
+                );
+                return false;
+            }
+
+            // Check if every row has equipment id
+            if (!rows[i][1]) {
+                setCreateFilterErr(
+                    intl.formatMessage({
+                        id: 'missingEquipmentsIdsError',
                     })
                 );
                 return false;
@@ -124,7 +134,7 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
             }
 
             return {
-                equipmentID: val[0].trim(),
+                equipmentID: val[1].trim(),
                 distributionKey: dKey,
             };
         });
@@ -132,17 +142,16 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
 
     const handleCreateFilter = () => {
         if (value.length !== 0) {
-            //value.splice(0, 1);
             let equipmentType = '';
             let csvCommentStart = false;
             const result = value.filter((val) => {
                 if (val[0].startsWith('#')) csvCommentStart = true;
-                return !csvCommentStart && !!val[0];
+                return !csvCommentStart && !!val[0] && !!val[1];
             });
 
             if (validateCsvFile(result, equipmentType)) {
                 result.splice(0, 1);
-                equipmentType = result[0][1].trim();
+                equipmentType = result[0][0].trim();
                 createFilter(
                     {
                         type: FilterType.MANUAL,
