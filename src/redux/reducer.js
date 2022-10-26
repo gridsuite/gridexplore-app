@@ -34,6 +34,7 @@ import {
     SET_FORMAT_WITH_PARAMS,
     SET_TEMP_CASE_UUID,
     SET_FORMAT_INVALID_ERROR,
+    DIRECTORY_UPDATED,
 } from './actions';
 
 import {
@@ -64,6 +65,7 @@ const initialState = {
     selectedCase: null,
     selectedFile: null,
     uploadingElements: {},
+    directoryUpdated: { force: 0, eventData: {} },
     ...paramsInitialState,
     formatWithParams: [],
     tempCaseUuid: null,
@@ -167,5 +169,12 @@ export const reducer = createReducer(initialState, {
 
     [SET_FORMAT_INVALID_ERROR]: (state, action) => {
         state.formatInvalidMsgError = action.formatInvalidMsgError;
+    },
+
+    [DIRECTORY_UPDATED]: (state, action) => {
+        state.directoryUpdated = {
+            force: 1 - state.directoryUpdated.force,
+            eventData: action.eventData,
+        };
     },
 });
