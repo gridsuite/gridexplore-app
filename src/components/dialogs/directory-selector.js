@@ -120,7 +120,7 @@ const DirectorySelector = (props) => {
     }, [convertRoots]);
 
     useEffect(() => {
-        if (props.open && data.length === 0) {
+        if (props.open) {
             updateRootDirectories();
         }
     }, [props.open, data, updateRootDirectories]);
