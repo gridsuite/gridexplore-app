@@ -61,7 +61,7 @@ const DirectorySelector = (props) => {
 
     const convertChildren = useCallback(
         (children) => {
-            let formattedChildren = children.map((e) => {
+            return children.map((e) => {
                 return {
                     id: e.elementUuid,
                     name: e.elementName,
@@ -76,8 +76,6 @@ const DirectorySelector = (props) => {
                             : undefined,
                 };
             });
-
-            return formattedChildren;
         },
         [classes.icon]
     );
@@ -123,7 +121,7 @@ const DirectorySelector = (props) => {
         if (props.open) {
             updateRootDirectories();
         }
-    }, [props.open, data, updateRootDirectories]);
+    }, [props.open, updateRootDirectories]);
 
     const addToDirectory = useCallback(
         (nodeId, content) => {
