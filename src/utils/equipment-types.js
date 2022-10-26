@@ -10,6 +10,7 @@ import { filteredTypes } from '../components/dialogs/filters';
 export const filterEquipmentDefinition = {
     LINE: {
         label: 'Lines',
+        type: 'LINE',
         fields: {
             countries1: {
                 name: 'Countries1',
@@ -27,6 +28,7 @@ export const filterEquipmentDefinition = {
     },
     TWO_WINDINGS_TRANSFORMER: {
         label: 'TwoWindingsTransformers',
+        type: 'TWO_WINDINGS_TRANSFORMER',
         fields: {
             countries: {
                 name: 'Countries',
@@ -44,6 +46,7 @@ export const filterEquipmentDefinition = {
     },
     THREE_WINDINGS_TRANSFORMER: {
         label: 'ThreeWindingsTransformers',
+        type: 'THREE_WINDINGS_TRANSFORMER',
         fields: {
             countries: {
                 name: 'Countries',
@@ -65,6 +68,7 @@ export const filterEquipmentDefinition = {
     },
     GENERATOR: {
         label: 'Generators',
+        type: 'GENERATOR',
         fields: {
             countries: {
                 name: 'Countries',
@@ -78,6 +82,7 @@ export const filterEquipmentDefinition = {
     },
     LOAD: {
         label: 'Loads',
+        type: 'LOAD',
         fields: {
             countries: {
                 name: 'Countries',
@@ -91,6 +96,7 @@ export const filterEquipmentDefinition = {
     },
     BATTERY: {
         label: 'Batteries',
+        type: 'BATTERY',
         fields: {
             countries: {
                 name: 'Countries',
@@ -104,6 +110,7 @@ export const filterEquipmentDefinition = {
     },
     SHUNT_COMPENSATOR: {
         label: 'ShuntCompensators',
+        type: 'SHUNT_COMPENSATOR',
         fields: {
             countries: {
                 name: 'Countries',
@@ -117,6 +124,7 @@ export const filterEquipmentDefinition = {
     },
     STATIC_VAR_COMPENSATOR: {
         label: 'StaticVarCompensators',
+        type: 'STATIC_VAR_COMPENSATOR',
         fields: {
             countries: {
                 name: 'Countries',
@@ -130,6 +138,7 @@ export const filterEquipmentDefinition = {
     },
     DANGLING_LINE: {
         label: 'DanglingLines',
+        type: 'DANGLING_LINE',
         fields: {
             countries: {
                 name: 'Countries',
@@ -143,6 +152,7 @@ export const filterEquipmentDefinition = {
     },
     LCC_CONVERTER_STATION: {
         label: 'LccConverterStations',
+        type: 'LCC_CONVERTER_STATION',
         fields: {
             countries: {
                 name: 'Countries',
@@ -156,6 +166,7 @@ export const filterEquipmentDefinition = {
     },
     VSC_CONVERTER_STATION: {
         label: 'VscConverterStations',
+        type: 'VSC_CONVERTER_STATION',
         fields: {
             countries: {
                 name: 'Countries',
@@ -169,6 +180,7 @@ export const filterEquipmentDefinition = {
     },
     HVDC_LINE: {
         label: 'HvdcLines',
+        type: 'HVDC_LINE',
         fields: {
             countries1: {
                 name: 'Countries1',

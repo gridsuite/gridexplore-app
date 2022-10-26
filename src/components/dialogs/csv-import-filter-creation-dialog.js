@@ -19,7 +19,7 @@ import { createFilter } from '../../utils/rest-api';
 import { FilterType } from '../../utils/elementType';
 import { useSelector } from 'react-redux';
 import Alert from '@mui/material/Alert';
-import { equipmentsDefinition } from './generic-filter-dialog';
+import { filterEquipmentDefinition } from '../../utils/equipment-types';
 import PropTypes from 'prop-types';
 
 const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
@@ -44,10 +44,10 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
         }
         newData.push([
             intl.formatMessage({ id: 'CSVFileComment' }),
-            equipmentsDefinition.LINE.type,
+            filterEquipmentDefinition.LINE.type,
         ]);
-        Object.entries(equipmentsDefinition)
-            .filter((val) => val[0] !== equipmentsDefinition.LINE.type)
+        Object.entries(filterEquipmentDefinition)
+            .filter((val) => val[0] !== filterEquipmentDefinition.LINE.type)
             .forEach((value) => {
                 newData.push(['', value[0]]);
             });
@@ -126,8 +126,8 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
             // if the equipment is generator or load and the distribution key is set in one row,
             // the other distribution keys in other rows will be set to 0 if it is null
             if (
-                equipmentType === equipmentsDefinition.GENERATOR.type ||
-                equipmentType === equipmentsDefinition.LOAD.type
+                equipmentType === filterEquipmentDefinition.GENERATOR.type ||
+                equipmentType === filterEquipmentDefinition.LOAD.type
             ) {
                 if (isEquipmentWithDK && !val[2]) dKey = 0;
                 if (isEquipmentWithDK && val[2]) dKey = val[2];

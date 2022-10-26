@@ -28,6 +28,7 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import { Draggable } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
 import { Input } from '@mui/material';
+import { filterEquipmentDefinition } from '../../utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     dialogPaper: {
@@ -356,6 +357,7 @@ const ManualFilterCreationDialog = ({
                                 type={equipmentType}
                                 disabled={false}
                                 onChange={handleEquipmentTypeChange}
+                                equipmentDefinition={filterEquipmentDefinition}
                             />
                         </Grid>
                         <Grid item xs={12} />
