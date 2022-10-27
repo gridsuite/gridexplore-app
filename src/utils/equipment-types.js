@@ -203,7 +203,7 @@ export const contingencyListEquipmentDefinition = {
         name: 'LINE',
         label: 'Lines',
         fields: {
-            countries: {
+            countries1: {
                 name: 'Countries1',
                 type: filteredTypes.countries,
             },
@@ -220,7 +220,7 @@ export const contingencyListEquipmentDefinition = {
     TWO_WINDINGS_TRANSFORMER: {
         label: 'TwoWindingsTransformers',
         fields: {
-            countries: {
+            countries1: {
                 name: 'Countries',
                 type: filteredTypes.countries,
             },
@@ -237,7 +237,7 @@ export const contingencyListEquipmentDefinition = {
     GENERATOR: {
         label: 'Generators',
         fields: {
-            countries: {
+            countries1: {
                 name: 'Countries',
                 type: filteredTypes.countries,
             },
@@ -250,7 +250,7 @@ export const contingencyListEquipmentDefinition = {
     STATIC_VAR_COMPENSATOR: {
         label: 'StaticVarCompensators',
         fields: {
-            countries: {
+            countries1: {
                 name: 'Countries',
                 type: filteredTypes.countries,
             },
@@ -263,7 +263,7 @@ export const contingencyListEquipmentDefinition = {
     SHUNT_COMPENSATOR: {
         label: 'ShuntCompensators',
         fields: {
-            countries: {
+            countries1: {
                 name: 'Countries',
                 type: filteredTypes.countries,
             },
@@ -276,7 +276,7 @@ export const contingencyListEquipmentDefinition = {
     HVDC_LINE: {
         label: 'HvdcLines',
         fields: {
-            countries: {
+            countries1: {
                 name: 'Countries1',
                 type: filteredTypes.countries,
             },
@@ -293,7 +293,7 @@ export const contingencyListEquipmentDefinition = {
     BUSBAR_SECTION: {
         label: 'BusBarSections',
         fields: {
-            countries: {
+            countries1: {
                 name: 'Countries',
                 type: filteredTypes.countries,
             },
@@ -306,7 +306,7 @@ export const contingencyListEquipmentDefinition = {
     DANGLING_LINE: {
         label: 'DanglingLines',
         fields: {
-            countries: {
+            countries1: {
                 name: 'Countries',
                 type: filteredTypes.countries,
             },
