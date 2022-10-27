@@ -117,3 +117,9 @@ export function removeUploadingElement(uploadingElement) {
         uploadingElement: uploadingElement,
     };
 }
+
+export const DIRECTORY_UPDATED = 'DIRECTORY_UPDATED';
+
+export function directoryUpdated(eventData) {
+    return { type: DIRECTORY_UPDATED, eventData };
+}

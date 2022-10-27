@@ -13,6 +13,7 @@
 
     "createNewStudy": "Create a study",
     "studyCreationError": "Error when creating study: {studyName}",
+    "directoryUpdateWarning": "Could not update subs (and content) of: {directoryUuid}",
     "renameElement": "Rename the element",
     "renameElementMsg": "Element new name",
     "renameElementNotAllowedError": "Cannot rename the element if you are not the owner",

@@ -31,6 +31,7 @@ import {
     ACTIVE_DIRECTORY,
     ADD_UPLOADING_ELEMENT,
     REMOVE_UPLOADING_ELEMENT,
+    DIRECTORY_UPDATED,
 } from './actions';
 
 import {
@@ -61,6 +62,7 @@ const initialState = {
     selectedCase: null,
     selectedFile: null,
     uploadingElements: {},
+    directoryUpdated: { force: 0, eventData: {} },
     ...paramsInitialState,
 };
 
@@ -149,5 +151,12 @@ export const reducer = createReducer(initialState, {
         let newUploadingElements = { ...state.uploadingElements };
         delete newUploadingElements[action.uploadingElement.id];
         state.uploadingElements = newUploadingElements;
+    },
+
+    [DIRECTORY_UPDATED]: (state, action) => {
+        state.directoryUpdated = {
+            force: 1 - state.directoryUpdated.force,
+            eventData: action.eventData,
+        };
     },
 });

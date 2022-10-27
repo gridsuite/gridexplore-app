@@ -11,6 +11,14 @@ import PropTypes from 'prop-types';
 import { fetchDirectoryContent, fetchRootFolders } from '../../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import { getFileIcon, elementType } from '@gridsuite/commons-ui';
+import { useSelector } from 'react-redux';
+import { notificationType } from '../../utils/notificationType';
+import { updatedTree } from '../tree-views-container';
+import {
+    displayWarningMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -25,51 +33,163 @@ function sortAlphabetically(a, b) {
 }
 
 const DirectorySelector = (props) => {
+    const [rootDirectories, setRootDirectories] = useState([]);
     const [data, setData] = useState([]);
     const nodeMap = useRef({});
     const classes = useStyles();
 
-    const contentFilter = new Set([elementType.DIRECTORY]);
+    const rootsRef = useRef([]);
+    rootsRef.current = rootDirectories;
 
-    const directory2Tree = useCallback(
-        (newData) => {
-            const newNode = {
-                id: newData.elementUuid,
-                name: newData.elementName,
-                icon: getFileIcon(newData.type, classes.icon),
-                children:
-                    newData.type === elementType.DIRECTORY ? [] : undefined,
-            };
-            return (nodeMap.current[newNode.id] = newNode);
-        },
-        [nodeMap, classes]
+    const openRef = useRef();
+    openRef.current = props.open;
+
+    const contentFilter = useCallback(
+        () => new Set([elementType.DIRECTORY]),
+        []
     );
 
-    useEffect(() => {
-        if (props.open && data.length === 0) {
-            fetchRootFolders().then((roots) => {
-                setData(roots.map(directory2Tree));
+    const dataRef = useRef([]);
+    dataRef.current = data;
+
+    const directoryUpdatedForce = useSelector(
+        (state) => state.directoryUpdated
+    );
+
+    const { enqueueSnackbar } = useSnackbar();
+    const intlRef = useIntlRef();
+
+    const convertChildren = useCallback(
+        (children) => {
+            return children.map((e) => {
+                return {
+                    id: e.elementUuid,
+                    name: e.elementName,
+                    icon: getFileIcon(e.type, classes.icon),
+                    children:
+                        e.type === elementType.DIRECTORY
+                            ? convertChildren(e.children)
+                            : undefined,
+                    childrenCount:
+                        e.type === elementType.DIRECTORY
+                            ? e.subdirectoriesCount
+                            : undefined,
+                };
             });
+        },
+        [classes.icon]
+    );
+
+    const convertRoots = useCallback(
+        (newRoots) => {
+            return newRoots.map((e) => {
+                return {
+                    id: e.elementUuid,
+                    name: e.elementName,
+                    icon: getFileIcon(e.type, classes.icon),
+                    children:
+                        e.type === elementType.DIRECTORY
+                            ? convertChildren(
+                                  nodeMap.current[e.elementUuid].children
+                              )
+                            : undefined,
+                    childrenCount:
+                        e.type === elementType.DIRECTORY
+                            ? e.subdirectoriesCount
+                            : undefined,
+                };
+            });
+        },
+        [classes.icon, convertChildren]
+    );
+
+    const updateRootDirectories = useCallback(() => {
+        fetchRootFolders().then((data) => {
+            let [nrs, mdr] = updatedTree(
+                rootsRef.current,
+                nodeMap.current,
+                null,
+                data
+            );
+            setRootDirectories(nrs);
+            nodeMap.current = mdr;
+            setData(convertRoots(nrs));
+        });
+    }, [convertRoots]);
+
+    useEffect(() => {
+        if (props.open) {
+            updateRootDirectories();
         }
-    }, [props.open, data, directory2Tree]);
+    }, [props.open, updateRootDirectories]);
 
     const addToDirectory = useCallback(
         (nodeId, content) => {
-            const node = nodeMap.current[nodeId];
-            node.children = content.map(directory2Tree);
+            let [nrs, mdr] = updatedTree(
+                rootsRef.current,
+                nodeMap.current,
+                nodeId,
+                content
+            );
+            setRootDirectories(nrs);
+            nodeMap.current = mdr;
+            setData(convertRoots(nrs));
         },
-        [directory2Tree]
+        [convertRoots]
     );
 
-    const fetchDirectory = (nodeId) => {
-        fetchDirectoryContent(nodeId).then((content) => {
-            addToDirectory(
-                nodeId,
-                content.filter((item) => contentFilter.has(item.type))
-            );
-            setData([...data]);
-        });
-    };
+    const fetchDirectoryWarn = useCallback(
+        (directoryUuid, msg) =>
+            displayWarningMessageWithSnackbar({
+                errorMessage: msg,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: 'directoryUpdateWarning',
+                    intlRef: intlRef,
+                    headerMessageValues: { directoryUuid },
+                },
+            }),
+        [enqueueSnackbar, intlRef]
+    );
+
+    const fetchDirectory = useCallback(
+        (directoryUuid) => {
+            fetchDirectoryContent(directoryUuid)
+                .then((childrenToBeInserted) => {
+                    // update directory Content
+                    addToDirectory(
+                        directoryUuid,
+                        childrenToBeInserted.filter((item) =>
+                            contentFilter().has(item.type)
+                        )
+                    );
+                })
+                .catch((reason) => {
+                    fetchDirectoryWarn(directoryUuid, reason);
+                });
+        },
+        [addToDirectory, contentFilter, fetchDirectoryWarn]
+    );
+
+    useEffect(() => {
+        if (openRef.current && directoryUpdatedForce.eventData.headers) {
+            if (
+                Object.values(notificationType).includes(
+                    directoryUpdatedForce.eventData.headers['notificationType']
+                )
+            ) {
+                if (
+                    !directoryUpdatedForce.eventData.headers['isRootDirectory']
+                ) {
+                    fetchDirectory(
+                        directoryUpdatedForce.eventData.headers['directoryUuid']
+                    );
+                } else {
+                    updateRootDirectories();
+                }
+            }
+        }
+    }, [directoryUpdatedForce, fetchDirectory, updateRootDirectories]);
 
     return (
         <TreeViewFinder
