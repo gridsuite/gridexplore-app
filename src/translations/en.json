@@ -154,7 +154,7 @@
     "nominalVoltage1": "Nominal Voltage 1",
     "nominalVoltage2": "Nominal Voltage 2",
     "nominalVoltage3": "Nominal Voltage 3",
-    "cannotPasteTextAsNominalVoltage": "The clipboard text cannot be set as a positive number :",
+    "cannotPasteTextAsNominalVoltage": "The clipboard text cannot be set as a positive number: ",
     "cannotRetrieveContingencyList": "Could not retrieve contingency list: ",
     "cannotRetrievefilter": "Could not retrieve filter: ",
 

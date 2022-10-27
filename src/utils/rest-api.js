@@ -9,7 +9,6 @@ import { APP_NAME, getAppName } from './config-params';
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { ContingencyListType } from './elementType';
-import { contingencyListEquipmentDefinition } from './equipment-types';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -524,7 +523,7 @@ export function createContingencyList(
     let body = {};
     if (contingencyListType === ContingencyListType.FORM) {
         // default form: empty LINE
-        body.equipmentType = contingencyListEquipmentDefinition.LINE.name;
+        body.equipmentType = 'LINE';
         body.nominalVoltage1 = null;
     }
     return backendFetch(createContingencyListUrl, {

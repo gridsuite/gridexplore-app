@@ -1,5 +1,3 @@
-import { filteredTypes } from '../components/dialogs/filters';
-
 /**
  * Copyright (c) 2021, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -7,59 +5,91 @@ import { filteredTypes } from '../components/dialogs/filters';
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { filteredTypes } from '../components/dialogs/filters';
+
+const Countries = {
+    countries: {
+        name: 'Countries',
+        type: filteredTypes.countries,
+    },
+};
+const Countries1 = {
+    countries1: {
+        name: 'Countries1',
+        type: filteredTypes.countries,
+    },
+};
+const Countries2 = {
+    countries2: {
+        name: 'Countries2',
+        type: filteredTypes.countries,
+    },
+};
+const NominalVoltage = {
+    nominalVoltage: {
+        name: 'nominalVoltage',
+        type: filteredTypes.range,
+    },
+};
+const NominalVoltage1 = {
+    nominalVoltage1: {
+        name: 'nominalVoltage1',
+        type: filteredTypes.range,
+    },
+};
+const NominalVoltage2 = {
+    nominalVoltage2: {
+        name: 'nominalVoltage2',
+        type: filteredTypes.range,
+    },
+};
+const Line = { label: 'Lines', type: 'LINE' };
+const Generator = { label: 'Generators', type: 'GENERATOR' };
+const Load = { label: 'Loads', type: 'LOAD' };
+const Battery = { label: 'Batteries', type: 'BATTERY' };
+const SVC = { label: 'StaticVarCompensators', type: 'STATIC_VAR_COMPENSATOR' };
+const DanglingLine = { label: 'DanglingLines', type: 'DANGLING_LINE' };
+const LCC = { label: 'LccConverterStations', type: 'LCC_CONVERTER_STATION' };
+const VSC = { label: 'VscConverterStations', type: 'VSC_CONVERTER_STATION' };
+const Hvdc = { label: 'HvdcLines', type: 'HVDC_LINE' };
+const BusBar = { label: 'BusBarSections', type: 'BUSBAR_SECTION' };
+const TwoWindingTransfo = {
+    label: 'TwoWindingsTransformers',
+    type: 'TWO_WINDINGS_TRANSFORMER',
+};
+const ThreeWindingTransfo = {
+    label: 'ThreeWindingsTransformers',
+    type: 'THREE_WINDINGS_TRANSFORMER',
+};
+const ShuntCompensator = {
+    label: 'ShuntCompensators',
+    type: 'SHUNT_COMPENSATOR',
+};
+
+// Filter supported types
 export const filterEquipmentDefinition = {
     LINE: {
-        label: 'Lines',
-        type: 'LINE',
+        ...Line,
         fields: {
-            countries1: {
-                name: 'Countries1',
-                type: filteredTypes.countries,
-            },
-            countries2: {
-                name: 'Countries2',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage1: {
-                name: 'nominalVoltage1',
-                type: filteredTypes.range,
-            },
+            ...Countries1,
+            ...Countries2,
+            ...NominalVoltage1,
         },
     },
     TWO_WINDINGS_TRANSFORMER: {
-        label: 'TwoWindingsTransformers',
-        type: 'TWO_WINDINGS_TRANSFORMER',
+        ...TwoWindingTransfo,
         fields: {
-            countries: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage1: {
-                name: 'nominalVoltage1',
-                type: filteredTypes.range,
-            },
-            nominalVoltage2: {
-                name: 'nominalVoltage2',
-                type: filteredTypes.range,
-            },
+            ...Countries,
+            ...NominalVoltage1,
+            ...NominalVoltage2,
         },
     },
     THREE_WINDINGS_TRANSFORMER: {
-        label: 'ThreeWindingsTransformers',
-        type: 'THREE_WINDINGS_TRANSFORMER',
+        ...ThreeWindingTransfo,
         fields: {
-            countries: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage1: {
-                name: 'nominalVoltage1',
-                type: filteredTypes.range,
-            },
-            nominalVoltage2: {
-                name: 'nominalVoltage2',
-                type: filteredTypes.range,
-            },
+            ...Countries,
+            ...NominalVoltage1,
+            ...NominalVoltage2,
             nominalVoltage3: {
                 name: 'nominalVoltage3',
                 type: filteredTypes.range,
@@ -67,253 +97,130 @@ export const filterEquipmentDefinition = {
         },
     },
     GENERATOR: {
-        label: 'Generators',
-        type: 'GENERATOR',
+        ...Generator,
         fields: {
-            countries: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries,
+            ...NominalVoltage,
         },
     },
     LOAD: {
-        label: 'Loads',
-        type: 'LOAD',
+        ...Load,
         fields: {
-            countries: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries,
+            ...NominalVoltage,
         },
     },
     BATTERY: {
-        label: 'Batteries',
-        type: 'BATTERY',
+        ...Battery,
         fields: {
-            countries: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries,
+            ...NominalVoltage,
         },
     },
     SHUNT_COMPENSATOR: {
-        label: 'ShuntCompensators',
-        type: 'SHUNT_COMPENSATOR',
+        ...ShuntCompensator,
         fields: {
-            countries: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries,
+            ...NominalVoltage,
         },
     },
     STATIC_VAR_COMPENSATOR: {
-        label: 'StaticVarCompensators',
-        type: 'STATIC_VAR_COMPENSATOR',
+        ...SVC,
         fields: {
-            countries: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries,
+            ...NominalVoltage,
         },
     },
     DANGLING_LINE: {
-        label: 'DanglingLines',
-        type: 'DANGLING_LINE',
+        ...DanglingLine,
         fields: {
-            countries: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries,
+            ...NominalVoltage,
         },
     },
     LCC_CONVERTER_STATION: {
-        label: 'LccConverterStations',
-        type: 'LCC_CONVERTER_STATION',
+        ...LCC,
         fields: {
-            countries: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries,
+            ...NominalVoltage,
         },
     },
     VSC_CONVERTER_STATION: {
-        label: 'VscConverterStations',
-        type: 'VSC_CONVERTER_STATION',
+        ...VSC,
         fields: {
-            countries: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries,
+            ...NominalVoltage,
         },
     },
     HVDC_LINE: {
-        label: 'HvdcLines',
-        type: 'HVDC_LINE',
+        ...Hvdc,
         fields: {
-            countries1: {
-                name: 'Countries1',
-                type: filteredTypes.countries,
-            },
-            countries2: {
-                name: 'Countries2',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries1,
+            ...Countries2,
+            ...NominalVoltage,
         },
     },
 };
 
+// Contingency List supported types
 export const contingencyListEquipmentDefinition = {
     LINE: {
-        name: 'LINE',
-        label: 'Lines',
+        ...Line,
         fields: {
-            countries1: {
-                name: 'Countries1',
-                type: filteredTypes.countries,
-            },
-            countries2: {
-                name: 'Countries2',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage1: {
-                name: 'nominalVoltage1',
-                type: filteredTypes.range,
-            },
+            ...Countries1,
+            ...Countries2,
+            ...NominalVoltage1,
         },
     },
     TWO_WINDINGS_TRANSFORMER: {
-        label: 'TwoWindingsTransformers',
+        ...TwoWindingTransfo,
         fields: {
-            countries1: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage1: {
-                name: 'nominalVoltage1',
-                type: filteredTypes.range,
-            },
-            nominalVoltage2: {
-                name: 'nominalVoltage2',
-                type: filteredTypes.range,
-            },
+            ...Countries1,
+            ...NominalVoltage1,
+            ...NominalVoltage2,
         },
     },
     GENERATOR: {
-        label: 'Generators',
+        ...Generator,
         fields: {
-            countries1: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage1: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries1,
+            ...NominalVoltage1,
         },
     },
     STATIC_VAR_COMPENSATOR: {
-        label: 'StaticVarCompensators',
+        ...SVC,
         fields: {
-            countries1: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage1: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries1,
+            ...NominalVoltage1,
         },
     },
     SHUNT_COMPENSATOR: {
-        label: 'ShuntCompensators',
+        ...ShuntCompensator,
         fields: {
-            countries1: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage1: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries1,
+            ...NominalVoltage1,
         },
     },
     HVDC_LINE: {
-        label: 'HvdcLines',
+        ...Hvdc,
         fields: {
-            countries1: {
-                name: 'Countries1',
-                type: filteredTypes.countries,
-            },
-            countries2: {
-                name: 'Countries2',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage1: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries1,
+            ...Countries2,
+            ...NominalVoltage1,
         },
     },
     BUSBAR_SECTION: {
-        label: 'BusBarSections',
+        ...BusBar,
         fields: {
-            countries1: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage1: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries1,
+            ...NominalVoltage1,
         },
     },
     DANGLING_LINE: {
-        label: 'DanglingLines',
+        ...DanglingLine,
         fields: {
-            countries1: {
-                name: 'Countries',
-                type: filteredTypes.countries,
-            },
-            nominalVoltage1: {
-                name: 'nominalVoltage',
-                type: filteredTypes.range,
-            },
+            ...Countries1,
+            ...NominalVoltage1,
         },
     },
 };
