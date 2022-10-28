@@ -5,20 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TreeViewFinder } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
-import { fetchDirectoryContent, fetchRootFolders } from '../../utils/rest-api';
+import { fetchDirectoryContent } from '../../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import { getFileIcon, elementType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { notificationType } from '../../utils/notificationType';
 import { updatedTree } from '../tree-views-container';
 import {
     displayWarningMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
+import { useDispatch } from 'react-redux';
+import { setTreeMapData, setTreeRootDirectories } from '../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -33,31 +34,20 @@ function sortAlphabetically(a, b) {
 }
 
 const DirectorySelector = (props) => {
-    const [rootDirectories, setRootDirectories] = useState([]);
     const [data, setData] = useState([]);
-    const nodeMap = useRef({});
     const classes = useStyles();
-
-    const rootsRef = useRef([]);
-    rootsRef.current = rootDirectories;
-
-    const openRef = useRef();
-    openRef.current = props.open;
-
     const contentFilter = useCallback(
         () => new Set([elementType.DIRECTORY]),
         []
     );
 
-    const dataRef = useRef([]);
-    dataRef.current = data;
-
-    const directoryUpdatedForce = useSelector(
-        (state) => state.directoryUpdated
-    );
-
     const { enqueueSnackbar } = useSnackbar();
     const intlRef = useIntlRef();
+    const treeMapData = useSelector((state) => state.treeMapData);
+    const treeRootDirectories = useSelector(
+        (state) => state.treeRootDirectories
+    );
+    const dispatch = useDispatch();
 
     const convertChildren = useCallback(
         (children) => {
@@ -90,7 +80,7 @@ const DirectorySelector = (props) => {
                     children:
                         e.type === elementType.DIRECTORY
                             ? convertChildren(
-                                  nodeMap.current[e.elementUuid].children
+                                  treeMapData[e.elementUuid].children
                               )
                             : undefined,
                     childrenCount:
@@ -100,42 +90,27 @@ const DirectorySelector = (props) => {
                 };
             });
         },
-        [classes.icon, convertChildren]
+        [classes.icon, convertChildren, treeMapData]
     );
 
-    const updateRootDirectories = useCallback(() => {
-        fetchRootFolders().then((data) => {
-            let [nrs, mdr] = updatedTree(
-                rootsRef.current,
-                nodeMap.current,
-                null,
-                data
-            );
-            setRootDirectories(nrs);
-            nodeMap.current = mdr;
-            setData(convertRoots(nrs));
-        });
-    }, [convertRoots]);
-
     useEffect(() => {
-        if (props.open) {
-            updateRootDirectories();
+        if (treeRootDirectories !== null) {
+            setData(convertRoots(treeRootDirectories));
         }
-    }, [props.open, updateRootDirectories]);
+    }, [convertRoots, treeRootDirectories]);
 
     const addToDirectory = useCallback(
         (nodeId, content) => {
             let [nrs, mdr] = updatedTree(
-                rootsRef.current,
-                nodeMap.current,
+                treeRootDirectories,
+                treeMapData,
                 nodeId,
                 content
             );
-            setRootDirectories(nrs);
-            nodeMap.current = mdr;
-            setData(convertRoots(nrs));
+            dispatch(setTreeRootDirectories(nrs));
+            dispatch(setTreeMapData(mdr));
         },
-        [convertRoots]
+        [dispatch, treeMapData, treeRootDirectories]
     );
 
     const fetchDirectoryWarn = useCallback(
@@ -170,26 +145,6 @@ const DirectorySelector = (props) => {
         },
         [addToDirectory, contentFilter, fetchDirectoryWarn]
     );
-
-    useEffect(() => {
-        if (openRef.current && directoryUpdatedForce.eventData.headers) {
-            if (
-                Object.values(notificationType).includes(
-                    directoryUpdatedForce.eventData.headers['notificationType']
-                )
-            ) {
-                if (
-                    !directoryUpdatedForce.eventData.headers['isRootDirectory']
-                ) {
-                    fetchDirectory(
-                        directoryUpdatedForce.eventData.headers['directoryUuid']
-                    );
-                } else {
-                    updateRootDirectories();
-                }
-            }
-        }
-    }, [directoryUpdatedForce, fetchDirectory, updateRootDirectories]);
 
     return (
         <TreeViewFinder

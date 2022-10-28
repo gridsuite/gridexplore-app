@@ -32,6 +32,8 @@ import {
     ADD_UPLOADING_ELEMENT,
     REMOVE_UPLOADING_ELEMENT,
     DIRECTORY_UPDATED,
+    TREE_MAP_DATA,
+    TREE_ROOT_DIRECTORIES,
 } from './actions';
 
 import {
@@ -63,6 +65,8 @@ const initialState = {
     selectedFile: null,
     uploadingElements: {},
     directoryUpdated: { force: 0, eventData: {} },
+    treeMapData: null,
+    treeRootDirectories: null,
     ...paramsInitialState,
 };
 
@@ -158,5 +162,11 @@ export const reducer = createReducer(initialState, {
             force: 1 - state.directoryUpdated.force,
             eventData: action.eventData,
         };
+    },
+    [TREE_MAP_DATA]: (state, action) => {
+        state.treeMapData = action.treeMapData;
+    },
+    [TREE_ROOT_DIRECTORIES]: (state, action) => {
+        state.treeRootDirectories = action.treeRootDirectories;
     },
 });

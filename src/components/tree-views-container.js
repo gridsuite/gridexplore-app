@@ -13,6 +13,8 @@ import {
     setCurrentChildren,
     setCurrentPath,
     setSelectedDirectory,
+    setTreeMapData,
+    setTreeRootDirectories,
 } from '../redux/actions';
 
 import {
@@ -280,11 +282,13 @@ const TreeViewsContainer = () => {
                 );
                 setRootDirectories(nrs);
                 setMapData(mdr);
+                dispatch(setTreeRootDirectories(nrs));
+                dispatch(setTreeMapData(mdr));
             })
             .catch((reason) => {
                 console.warn('Could not fetch roots ' + reason);
             });
-    }, []);
+    }, [dispatch]);
 
     /* rootDirectories initialization */
     useEffect(() => {
@@ -316,8 +320,10 @@ const TreeViewsContainer = () => {
             );
             setRootDirectories(nrs);
             setMapData(mdr);
+            dispatch(setTreeRootDirectories(nrs));
+            dispatch(setTreeMapData(mdr));
         },
-        [mapDataRef]
+        [dispatch]
     );
 
     const updateMapData = useCallback(
@@ -444,6 +450,7 @@ const TreeViewsContainer = () => {
                         Object.entries(mapDataRef.current).length
                     ) {
                         setMapData(newMap);
+                        dispatch(setTreeMapData(newMap));
                     }
                 }
                 return;
@@ -461,7 +468,7 @@ const TreeViewsContainer = () => {
                     updateMapData(nodeId, []);
                 });
         },
-        [updateMapData]
+        [dispatch, updateMapData]
     );
 
     /* Manage Studies updating with Web Socket */

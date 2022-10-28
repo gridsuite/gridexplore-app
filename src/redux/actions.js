@@ -123,3 +123,21 @@ export const DIRECTORY_UPDATED = 'DIRECTORY_UPDATED';
 export function directoryUpdated(eventData) {
     return { type: DIRECTORY_UPDATED, eventData };
 }
+
+export const TREE_MAP_DATA = 'TREE_MAP_DATA';
+
+export function setTreeMapData(treeMapData) {
+    return {
+        type: TREE_MAP_DATA,
+        treeMapData: treeMapData,
+    };
+}
+
+export const TREE_ROOT_DIRECTORIES = 'TREE_ROOT_DIRECTORIES';
+
+export function setTreeRootDirectories(treeRootDirectories) {
+    return {
+        type: TREE_ROOT_DIRECTORIES,
+        treeRootDirectories: treeRootDirectories,
+    };
+}
