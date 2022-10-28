@@ -66,6 +66,8 @@ const ManualFilterRow = ({
                     draggable="true"
                     ref={provided.innerRef}
                     style={{ width: '100%' }}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
                 >
                     <Grid
                         container
@@ -73,12 +75,9 @@ const ManualFilterRow = ({
                         spacing={2}
                         key={index + id + 'container item'}
                         sx={{ width: '100%', height: '50%' }}
-                        draggable="true"
                         ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
                     >
-                        <Grid xs={1} item>
+                        <Grid xs={1} item draggable="true">
                             <IconButton
                                 {...provided.dragHandleProps}
                                 key={id + index + 'drag'}
@@ -106,6 +105,7 @@ const ManualFilterRow = ({
                                 }
                                 error={value?.equipmentID === ''}
                                 required
+                                draggable="false"
                             />
                         </Grid>
                         {isGeneratorOrLoad && (
