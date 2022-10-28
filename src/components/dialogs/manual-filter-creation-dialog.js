@@ -64,9 +64,9 @@ const ManualFilterRow = ({
         <Draggable draggableId={id} index={index} key={id + value + index}>
             {(provided) => (
                 <div
-                    draggable="true"
-                    ref={provided.innerRef}
                     style={{ width: '100%' }}
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
                 >
                     <Grid
                         container
@@ -74,10 +74,6 @@ const ManualFilterRow = ({
                         spacing={2}
                         key={index + id + 'container item'}
                         sx={{ width: '100%', height: '50%' }}
-                        draggable="true"
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
                     >
                         <Grid xs={1} item>
                             <IconButton
