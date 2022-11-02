@@ -17,7 +17,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { ElementType } from '../../utils/elementType';
 import { useFileValue, useNameField, useTextValue } from './field-hook';
-import { createCase, deleteCaseByCaseUuid } from '../../utils/rest-api';
+import { createCase, deleteCase } from '../../utils/rest-api';
 import { useSnackbarMessage } from '../../utils/messages';
 import {
     addUploadingElement,
@@ -106,7 +106,9 @@ export function CreateCaseDialog({ onClose, open }) {
         setTriggerReset((oldVal) => !oldVal);
         dispatch(setformatInvalidMsgError(null));
         if (tempCaseUuid !== null) {
-            deleteCaseByCaseUuid(tempCaseUuid);
+            deleteCase(tempCaseUuid).catch((message) =>
+                snackbarMessage(message, 'caseCreationError')
+            );
             dispatch(setTempCaseUuid(null));
         }
         onClose();

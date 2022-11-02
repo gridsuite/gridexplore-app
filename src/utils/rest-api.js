@@ -332,7 +332,7 @@ export function createStudy(
     urlSearchParams.append('description', studyDescription);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
-    const createStudyWithExistingCaseUrl =
+    const createStudyUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/studies/' +
         encodeURIComponent(studyName) +
@@ -340,8 +340,8 @@ export function createStudy(
         encodeURIComponent(caseName) +
         '?' +
         urlSearchParams.toString();
-    console.debug(createStudyWithExistingCaseUrl);
-    return backendFetch(createStudyWithExistingCaseUrl, {
+    console.debug(createStudyUrl);
+    return backendFetch(createStudyUrl, {
         method: 'post',
         body: importParameters,
         headers: { 'Content-Type': 'application/json' },
@@ -819,14 +819,13 @@ export function getCaseImportParameters(caseUuid) {
     );
 }
 
-export function getCaseUuidWhenUploadFile(selectedFile) {
-    const getCaseUuidForUploadedFileUrl =
-        PREFIX_CASE_QUERIES + '/v1/cases/private';
+export function createPrivateCase(selectedFile) {
+    const createPrivateCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases/private';
     const formData = new FormData();
     formData.append('file', selectedFile);
-    console.debug(getCaseUuidForUploadedFileUrl);
+    console.debug(createPrivateCaseUrl);
 
-    return backendFetch(getCaseUuidForUploadedFileUrl, {
+    return backendFetch(createPrivateCaseUrl, {
         method: 'post',
         body: formData,
     }).then((response) =>
@@ -836,9 +835,13 @@ export function getCaseUuidWhenUploadFile(selectedFile) {
     );
 }
 
-export function deleteCaseByCaseUuid(caseUuid) {
+export function deleteCase(caseUuid) {
     const deleteCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases/' + caseUuid;
     return backendFetch(deleteCaseUrl, {
         method: 'delete',
-    });
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
 }

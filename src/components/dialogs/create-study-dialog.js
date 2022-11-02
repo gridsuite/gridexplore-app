@@ -25,7 +25,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import DirectorySelector from './directory-selector.js';
 import {
     createStudy,
-    deleteCaseByCaseUuid,
+    deleteCase,
     elementExists,
     fetchCases,
     fetchPath,
@@ -231,7 +231,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setIsParamsCaseFileDisplayed(false);
         dispatch(setformatInvalidMsgError(null));
         if (tempCaseUuid !== null) {
-            deleteCaseByCaseUuid(tempCaseUuid);
+            deleteCase(tempCaseUuid).catch(() => setCreateStudyErr(''));
             dispatch(setTempCaseUuid(null));
         }
     };
