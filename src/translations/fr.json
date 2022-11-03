@@ -179,5 +179,5 @@
     "moveElementNotAllowedError": "Vous ne pouvez pas déplacer cet élément dans le dossier cible. Action non autorisée",
     "notElementCreator": "Vous n'êtes pas le créateur de l'élément",
     "uploadingElement": "Téléversement en cours : pas d'opération autorisée",
-    "caseCreationErrorMessage":"L'extension de nom du fichier importé n'est pas prise en charge"
+    "fileExtensionError":"L'extension de nom du fichier importé n'est pas prise en charge"
 }

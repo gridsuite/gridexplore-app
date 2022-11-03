@@ -84,14 +84,16 @@ export function CreateCaseDialog({ onClose, open }) {
             parentDirectoryUuid: activeDirectory,
         })
             .then()
-            .catch(() => {
-                snackbarMessage(
-                    intl.formatMessage({
-                        id: 'caseCreationErrorMessage',
-                    }),
-                    'caseCreationError',
-                    { name }
-                );
+            .catch((message) => {
+                message.trim().startsWith('422')
+                    ? snackbarMessage(
+                          intl.formatMessage({
+                              id: 'fileExtensionError',
+                          }),
+                          'caseCreationError',
+                          { name }
+                      )
+                    : snackbarMessage(message, 'caseCreationError', { name });
             })
             .finally(() => dispatch(removeUploadingElement(uploadingCase)));
         dispatch(addUploadingElement(uploadingCase));
