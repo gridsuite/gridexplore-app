@@ -86,17 +86,18 @@ export const useTextValue = ({
     return [value, field];
 };
 
-export const useFileValue = ({ triggerReset, fileExceedsLimitMessage }) => {
+export const useFileValue = ({
+    triggerReset,
+    fileExceedsLimitMessage,
+    isLoading,
+}) => {
     const selectedFile = useSelector((state) => state.selectedFile);
     const intl = useIntl();
     const dispatch = useDispatch();
     const [isFileOk, setIsFileOk] = useState(false);
     const [fileError, setFileError] = useState();
-    const formatInvalidMsgError = useSelector(
-        (state) => state.formatInvalidMsgError
-    );
 
-    const field = <UploadCase />;
+    const field = <UploadCase isLoading={isLoading} />;
     useEffect(() => {
         dispatch(removeSelectedFile());
     }, [dispatch, triggerReset]);
@@ -104,14 +105,8 @@ export const useFileValue = ({ triggerReset, fileExceedsLimitMessage }) => {
     useEffect(() => {
         const MAX_FILE_SIZE_IN_MO = 100;
         const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
-        if (!selectedFile || formatInvalidMsgError !== null) {
-            formatInvalidMsgError
-                ? setFileError(
-                      intl.formatMessage({
-                          id: 'invalidFormat',
-                      })
-                  )
-                : setFileError();
+        if (!selectedFile) {
+            setFileError();
             setIsFileOk(false);
         } else if (selectedFile.size <= MAX_FILE_SIZE_IN_BYTES) {
             setFileError();
@@ -132,7 +127,7 @@ export const useFileValue = ({ triggerReset, fileExceedsLimitMessage }) => {
             );
             setIsFileOk(false);
         }
-    }, [selectedFile, fileExceedsLimitMessage, intl, formatInvalidMsgError]);
+    }, [selectedFile, fileExceedsLimitMessage, intl]);
     return [selectedFile, field, fileError, isFileOk];
 };
 

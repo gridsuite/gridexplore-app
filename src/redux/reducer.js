@@ -31,9 +31,6 @@ import {
     ACTIVE_DIRECTORY,
     ADD_UPLOADING_ELEMENT,
     REMOVE_UPLOADING_ELEMENT,
-    SET_FORMAT_WITH_PARAMS,
-    SET_TEMP_CASE_UUID,
-    SET_FORMAT_INVALID_ERROR,
     DIRECTORY_UPDATED,
 } from './actions';
 
@@ -67,9 +64,6 @@ const initialState = {
     uploadingElements: {},
     directoryUpdated: { force: 0, eventData: {} },
     ...paramsInitialState,
-    formatWithParams: [],
-    tempCaseUuid: null,
-    formatInvalidMsgError: null,
 };
 
 export const reducer = createReducer(initialState, {
@@ -157,18 +151,6 @@ export const reducer = createReducer(initialState, {
         let newUploadingElements = { ...state.uploadingElements };
         delete newUploadingElements[action.uploadingElement.id];
         state.uploadingElements = newUploadingElements;
-    },
-
-    [SET_FORMAT_WITH_PARAMS]: (state, action) => {
-        state.formatWithParams = action.formatWithParams;
-    },
-
-    [SET_TEMP_CASE_UUID]: (state, action) => {
-        state.tempCaseUuid = action.tempCaseUuid;
-    },
-
-    [SET_FORMAT_INVALID_ERROR]: (state, action) => {
-        state.formatInvalidMsgError = action.formatInvalidMsgError;
     },
 
     [DIRECTORY_UPDATED]: (state, action) => {

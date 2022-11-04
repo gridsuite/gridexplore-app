@@ -6,68 +6,22 @@
  */
 
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    selectFile,
-    setFormatWithParameters,
-    setTempCaseUuid,
-    setformatInvalidMsgError,
-} from '../../redux/actions';
+import { selectFile } from '../../redux/actions';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
-import React, { useState } from 'react';
-import {
-    createPrivateCase,
-    deleteCase,
-    getCaseImportParameters,
-} from '../../utils/rest-api';
+import React from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-export const UploadCase = () => {
+import { makeStyles } from '@mui/styles';
+const useStyles = makeStyles(() => ({}));
+export const UploadCase = ({ isLoading }) => {
+    const classes = useStyles();
     const dispatch = useDispatch();
     const selectedFile = useSelector((state) => state.selectedFile);
-    const tempCaseUuid = useSelector((state) => state.tempCaseUuid);
-    const [loadingUploadFile, setLoadingUploadFile] = useState(false);
-    const INVALID_FORMAT = 'Invalid format';
     const handleFileUpload = (e) => {
         e.preventDefault();
         let files = e.target.files;
         if (files.size === 0) dispatch(selectFile(null));
-        else {
-            if (tempCaseUuid != null) {
-                deleteCase(tempCaseUuid);
-            }
-            setLoadingUploadFile(true);
-            createPrivateCase(files[0])
-                .then((caseUuid) => {
-                    if (caseUuid) {
-                        dispatch(setformatInvalidMsgError(null));
-                        dispatch(selectFile(files[0]));
-                        setLoadingUploadFile(false);
-                        dispatch(setTempCaseUuid(caseUuid));
-                        getCaseImportParameters(caseUuid)
-                            .then((result) => {
-                                result.parameters = result.parameters?.map(
-                                    (p) => {
-                                        let sortedPossibleValue =
-                                            p.possibleValues?.sort((a, b) =>
-                                                a.localeCompare(b)
-                                            );
-                                        p.possibleValues = sortedPossibleValue;
-                                        return p;
-                                    }
-                                );
-                                dispatch(
-                                    setFormatWithParameters(result.parameters)
-                                );
-                            })
-                            .catch(() => dispatch(setFormatWithParameters([])));
-                    }
-                })
-                .catch(() => {
-                    dispatch(setformatInvalidMsgError(INVALID_FORMAT));
-                    dispatch(selectFile(null));
-                    setLoadingUploadFile(false);
-                });
-        }
+        else dispatch(selectFile(files[0]));
     };
 
     return (
@@ -93,8 +47,11 @@ export const UploadCase = () => {
                         <p>
                             {selectedFile?.name === undefined ? (
                                 <FormattedMessage id="uploadMessage" />
-                            ) : loadingUploadFile ? (
-                                <CircularProgress size="1rem" />
+                            ) : isLoading ? (
+                                <CircularProgress
+                                    className={classes.progress}
+                                    size="1rem"
+                                />
                             ) : (
                                 selectedFile.name
                             )}

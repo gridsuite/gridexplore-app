@@ -118,31 +118,6 @@ export function removeUploadingElement(uploadingElement) {
     };
 }
 
-export const SET_FORMAT_WITH_PARAMS = 'SET_FORMAT_WITH_PARAMS';
-
-export function setFormatWithParameters(formatWithParams) {
-    return {
-        type: SET_FORMAT_WITH_PARAMS,
-        formatWithParams: formatWithParams,
-    };
-}
-
-export const SET_TEMP_CASE_UUID = 'SET_TEMP_CASE_UUID';
-
-export function setTempCaseUuid(tempCaseUuid) {
-    return {
-        type: SET_TEMP_CASE_UUID,
-        tempCaseUuid: tempCaseUuid,
-    };
-}
-
-export const SET_FORMAT_INVALID_ERROR = 'SET_FORMAT_INVALID_ERROR';
-export function setformatInvalidMsgError(formatInvalidMsgError) {
-    return {
-        type: SET_FORMAT_INVALID_ERROR,
-        formatInvalidMsgError: formatInvalidMsgError,
-    };
-}
 export const DIRECTORY_UPDATED = 'DIRECTORY_UPDATED';
 
 export function directoryUpdated(eventData) {

@@ -24,6 +24,7 @@ import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import DirectorySelector from './directory-selector.js';
 import {
+    createPrivateCase,
     createStudy,
     deleteCase,
     elementExists,
@@ -41,9 +42,6 @@ import {
     setActiveDirectory,
     addUploadingElement,
     removeUploadingElement,
-    setFormatWithParameters,
-    setformatInvalidMsgError,
-    setTempCaseUuid,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
@@ -162,21 +160,20 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const selectedCase = useSelector((state) => state.selectedCase);
-    const tempCaseUuid = useSelector((state) => state.tempCaseUuid);
 
+    const [tempCaseUuid, setTempCaseUuid] = useState(false);
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
 
-    const formatWithParameters = useSelector(
-        (state) => state?.formatWithParams
-    );
+    const [formatWithParameters, setFormatWithParameters] = useState([]);
 
     const [triggerReset, setTriggerReset] = React.useState(true);
 
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
     const [isParamsCaseFileDisplayed, setIsParamsCaseFileDisplayed] =
         useState(false);
-
+    const [isUploadingFileInProgress, setUploadingFileInProgress] =
+        useState(false);
     const handleShowParametersClick = () => {
         setIsParamsDisplayed((oldValue) => !oldValue);
     };
@@ -187,35 +184,52 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const [currentParameters, paramsComponent, resetImportParamsToDefault] =
         useImportExportParams(formatWithParameters);
 
+    const [selectedFile, FileField, selectedFileError, isSelectedFileOk] =
+        useFileValue({
+            label: 'Case',
+            triggerReset,
+            isLoading: isUploadingFileInProgress,
+        });
     //Inits the dialog
     useEffect(() => {
         if (open && providedCase) {
             setStudyName(providedCase.elementName);
             setCaseExist(true);
             dispatch(selectCase(providedCase.elementUuid));
-            getCaseImportParameters(providedCase.elementUuid)
-                .then((result) => {
-                    // sort possible values alphabetically to display select options sorted
-                    result.parameters = result.parameters?.map((p) => {
-                        let sortedPossibleValue = p.possibleValues?.sort(
-                            (a, b) => a.localeCompare(b)
+            handleCaseImportParams(
+                providedCase.elementUuid,
+                setFormatWithParameters
+            );
+        } else if (open && isSelectedFileOk) {
+            setUploadingFileInProgress(true);
+            createPrivateCase(selectedFile)
+                .then((caseUuid) => {
+                    setUploadingFileInProgress(false);
+                    if (caseUuid) {
+                        setTempCaseUuid(caseUuid);
+                        handleCaseImportParams(
+                            caseUuid,
+                            setFormatWithParameters
                         );
-                        p.possibleValues = sortedPossibleValue;
-                        return p;
-                    });
-                    dispatch(setFormatWithParameters(result.parameters));
+                    }
                 })
-                .catch(() => {
-                    dispatch(setFormatWithParameters([]));
+                .catch((message) => {
+                    console.log('message', message);
+                    setUploadingFileInProgress(false);
+                    setCreateStudyErr(
+                        intl.formatMessage({ id: 'invalidFormat' })
+                    );
                 });
         }
-    }, [open, dispatch, selectedDirectory?.elementName, providedCase]);
-
-    const [selectedFile, FileField, selectedFileError, isSelectedFileOk] =
-        useFileValue({
-            label: 'Case',
-            triggerReset,
-        });
+    }, [
+        open,
+        dispatch,
+        selectedDirectory?.elementName,
+        providedCase,
+        isSelectedFileOk,
+        selectedFile,
+        intl,
+    ]);
 
     const resetDialog = () => {
         setCreateStudyErr('');
@@ -227,12 +241,11 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         dispatch(removeSelectedCase());
         setTriggerReset((oldVal) => !oldVal);
-        dispatch(setFormatWithParameters([]));
+        setFormatWithParameters([]);
         setIsParamsCaseFileDisplayed(false);
-        dispatch(setformatInvalidMsgError(null));
         if (tempCaseUuid !== null) {
             deleteCase(tempCaseUuid).catch(() => setCreateStudyErr(''));
-            dispatch(setTempCaseUuid(null));
+            setTempCaseUuid(null);
         }
     };
 
@@ -422,7 +435,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 : ''
         )
             .then(() => {
-                dispatch(setTempCaseUuid(null));
+                setTempCaseUuid(null);
                 handleCloseDialog();
             })
             .catch((message) => {
@@ -456,6 +469,24 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             loadingCheckStudyName ||
             (!providedCase && !isSelectedFileOk)
         );
+    };
+
+    const handleCaseImportParams = (caseUuid, setFormatWithParameters) => {
+        getCaseImportParameters(caseUuid)
+            .then((result) => {
+                // sort possible values alphabetically to display select options sorted
+                result.parameters = result.parameters?.map((p) => {
+                    let sortedPossibleValue = p.possibleValues?.sort((a, b) =>
+                        a.localeCompare(b)
+                    );
+                    p.possibleValues = sortedPossibleValue;
+                    return p;
+                });
+                setFormatWithParameters(result.parameters);
+            })
+            .catch(() => {
+                setFormatWithParameters([]);
+            });
     };
 
     return (

@@ -17,13 +17,11 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { ElementType } from '../../utils/elementType';
 import { useFileValue, useNameField, useTextValue } from './field-hook';
-import { createCase, deleteCase } from '../../utils/rest-api';
+import { createCase } from '../../utils/rest-api';
 import { useSnackbarMessage } from '../../utils/messages';
 import {
     addUploadingElement,
     removeUploadingElement,
-    setformatInvalidMsgError,
-    setTempCaseUuid,
 } from '../../redux/actions';
 import { keyGenerator } from '../../utils/functions';
 
@@ -36,7 +34,6 @@ export function CreateCaseDialog({ onClose, open }) {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
     const dispatch = useDispatch();
-    const tempCaseUuid = useSelector((state) => state.tempCaseUuid);
     const [triggerReset, setTriggerReset] = useState(true);
 
     const [name, NameField, nameError, nameOk] = useNameField({
@@ -85,15 +82,13 @@ export function CreateCaseDialog({ onClose, open }) {
             file,
             parentDirectoryUuid: activeDirectory,
         })
-            .then(() => {
-                dispatch(setTempCaseUuid(null));
-                handleCloseDialog();
-            })
+            .then()
             .catch((message) => {
                 snackbarMessage(message, 'caseCreationError', { name });
             })
             .finally(() => dispatch(removeUploadingElement(uploadingCase)));
         dispatch(addUploadingElement(uploadingCase));
+        handleCloseDialog();
     };
 
     const handleKeyPressed = (event) => {
@@ -104,13 +99,6 @@ export function CreateCaseDialog({ onClose, open }) {
 
     const handleCloseDialog = () => {
         setTriggerReset((oldVal) => !oldVal);
-        dispatch(setformatInvalidMsgError(null));
-        if (tempCaseUuid !== null) {
-            deleteCase(tempCaseUuid).catch((message) =>
-                snackbarMessage(message, 'caseCreationError')
-            );
-            dispatch(setTempCaseUuid(null));
-        }
         onClose();
     };
 
