@@ -13,8 +13,7 @@ import {
     setCurrentChildren,
     setCurrentPath,
     setSelectedDirectory,
-    setTreeMapData,
-    setTreeRootDirectories,
+    setTreeData,
 } from '../redux/actions';
 
 import {
@@ -215,17 +214,10 @@ const TreeViewsContainer = () => {
      */
     const [openDirectoryMenu, setOpenDirectoryMenu] = React.useState(false);
 
-    const treeMapData = useSelector((state) => state.treeMapData);
+    const treeData = useSelector((state) => state.treeData);
 
-    const treeMapDataRef = useRef();
-    treeMapDataRef.current = treeMapData;
-
-    const treeRootDirectories = useSelector(
-        (state) => state.treeRootDirectories
-    );
-
-    const treeRootDirectoriesRef = useRef();
-    treeRootDirectoriesRef.current = treeRootDirectories;
+    const treeDataRef = useRef();
+    treeDataRef.current = treeData;
 
     const handleOpenDirectoryMenu = (event) => {
         setOpenDirectoryMenu(true);
@@ -235,12 +227,12 @@ const TreeViewsContainer = () => {
         setOpenDirectoryMenu(false);
         if (
             nextSelectedDirectoryId !== null &&
-            treeMapDataRef.current &&
-            treeMapDataRef.current[nextSelectedDirectoryId]
+            treeDataRef.current.mapData &&
+            treeDataRef.current.mapData[nextSelectedDirectoryId]
         ) {
             dispatch(
                 setSelectedDirectory(
-                    treeMapDataRef.current[nextSelectedDirectoryId]
+                    treeDataRef.current.mapData[nextSelectedDirectoryId]
                 )
             );
         }
@@ -278,13 +270,17 @@ const TreeViewsContainer = () => {
         fetchRootFolders()
             .then((data) => {
                 let [nrs, mdr] = updatedTree(
-                    treeRootDirectoriesRef.current,
-                    treeMapDataRef.current,
+                    treeDataRef.current.rootDirectories,
+                    treeDataRef.current.mapData,
                     null,
                     data
                 );
-                dispatch(setTreeRootDirectories(nrs));
-                dispatch(setTreeMapData(mdr));
+                dispatch(
+                    setTreeData({
+                        rootDirectories: nrs,
+                        mapData: mdr,
+                    })
+                );
             })
             .catch((reason) => {
                 console.warn('Could not fetch roots ' + reason);
@@ -301,26 +297,30 @@ const TreeViewsContainer = () => {
     /* Manage current path data */
     const updatePath = useCallback(
         (nodeId) => {
-            let path = buildPathToFromMap(nodeId, treeMapData);
+            let path = buildPathToFromMap(nodeId, treeData.mapData);
             dispatch(setCurrentPath(path));
         },
-        [dispatch, treeMapData]
+        [dispatch, treeData.mapData]
     );
 
     useEffect(() => {
         updatePath(selectedDirectoryRef.current?.elementUuid);
-    }, [treeMapData, updatePath, selectedDirectory]);
+    }, [treeData.mapData, updatePath, selectedDirectory]);
 
     const insertContent = useCallback(
         (nodeId, childrenToBeInserted) => {
             let [nrs, mdr] = updatedTree(
-                treeRootDirectoriesRef.current,
-                treeMapDataRef.current,
+                treeDataRef.current.rootDirectories,
+                treeDataRef.current.mapData,
                 nodeId,
                 childrenToBeInserted
             );
-            dispatch(setTreeRootDirectories(nrs));
-            dispatch(setTreeMapData(mdr));
+            dispatch(
+                setTreeData({
+                    rootDirectories: nrs,
+                    mapData: mdr,
+                })
+            );
         },
         [dispatch]
     );
@@ -333,7 +333,7 @@ const TreeViewsContainer = () => {
 
             let prevPath = buildPathToFromMap(
                 selectedDirectoryRef.current?.elementUuid,
-                treeMapDataRef.current
+                treeDataRef.current.mapData
             );
 
             let prevSubInPath = prevPath.find((n) => n.parentUuid === nodeId);
@@ -348,10 +348,12 @@ const TreeViewsContainer = () => {
                 // if selected directory (possibly via ancestor)
                 // is deleted by another user
                 // we should select (closest still existing) parent directory
-                dispatch(setSelectedDirectory(treeMapDataRef.current[nodeId]));
+                dispatch(
+                    setSelectedDirectory(treeDataRef.current.mapData[nodeId])
+                );
             }
         },
-        [insertContent, selectedDirectoryRef, dispatch, treeMapDataRef]
+        [insertContent, selectedDirectoryRef, dispatch]
     );
 
     const mergeCurrentAndUploading = useCallback(
@@ -443,16 +445,18 @@ const TreeViewsContainer = () => {
             // quite rare occasion to clean up
             if (isClose) {
                 if (
-                    treeRootDirectoriesRef.current.some(
+                    treeDataRef.current.rootDirectories.some(
                         (n) => n.elementUuid === nodeId
                     )
                 ) {
-                    const newMap = mapFromRoots(treeRootDirectoriesRef.current);
+                    const newMap = mapFromRoots(
+                        treeDataRef.current.rootDirectories
+                    );
                     if (
                         Object.entries(newMap).length !==
-                        Object.entries(treeMapDataRef.current).length
+                        Object.entries(treeDataRef.current.mapData).length
                     ) {
-                        dispatch(setTreeMapData(newMap));
+                        dispatch(setTreeData(newMap));
                     }
                 }
                 return;
@@ -592,8 +596,11 @@ const TreeViewsContainer = () => {
     }, [selectedDirectory, updateDirectoryTreeAndContent]);
 
     const getActiveDirectory = () => {
-        if (treeMapDataRef.current && treeMapDataRef.current[activeDirectory]) {
-            return treeMapDataRef.current[activeDirectory];
+        if (
+            treeDataRef.current.mapData &&
+            treeDataRef.current.mapData[activeDirectory]
+        ) {
+            return treeDataRef.current.mapData[activeDirectory];
         } else {
             return null;
         }
@@ -610,12 +617,12 @@ const TreeViewsContainer = () => {
                 }}
                 onContextMenu={(e) => onContextMenu(e, null)}
             >
-                {treeMapDataRef.current &&
-                    treeRootDirectories.map((rootDirectory) => (
+                {treeDataRef.current.mapData &&
+                    treeData.rootDirectories.map((rootDirectory) => (
                         <DirectoryTreeView
                             key={rootDirectory.elementUuid}
                             treeViewUuid={rootDirectory.elementUuid}
-                            mapData={treeMapDataRef.current}
+                            mapData={treeDataRef.current.mapData}
                             onContextMenu={onContextMenu}
                             onDirectoryUpdate={updateDirectoryTree}
                         />

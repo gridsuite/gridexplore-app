@@ -19,7 +19,7 @@ import {
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import { useDispatch } from 'react-redux';
-import { setTreeMapData, setTreeRootDirectories } from '../../redux/actions';
+import { setTreeData } from '../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -43,10 +43,7 @@ const DirectorySelector = (props) => {
 
     const { enqueueSnackbar } = useSnackbar();
     const intlRef = useIntlRef();
-    const treeMapData = useSelector((state) => state.treeMapData);
-    const treeRootDirectories = useSelector(
-        (state) => state.treeRootDirectories
-    );
+    const treeData = useSelector((state) => state.treeData);
     const dispatch = useDispatch();
 
     const convertChildren = useCallback(
@@ -80,7 +77,7 @@ const DirectorySelector = (props) => {
                     children:
                         e.type === elementType.DIRECTORY
                             ? convertChildren(
-                                  treeMapData[e.elementUuid].children
+                                  treeData.mapData[e.elementUuid].children
                               )
                             : undefined,
                     childrenCount:
@@ -90,27 +87,31 @@ const DirectorySelector = (props) => {
                 };
             });
         },
-        [classes.icon, convertChildren, treeMapData]
+        [classes.icon, convertChildren, treeData.mapData]
     );
 
     useEffect(() => {
-        if (treeRootDirectories.length > 0) {
-            setData(convertRoots(treeRootDirectories));
+        if (treeData.rootDirectories.length > 0) {
+            setData(convertRoots(treeData.rootDirectories));
         }
-    }, [convertRoots, treeRootDirectories]);
+    }, [convertRoots, treeData.rootDirectories]);
 
     const addToDirectory = useCallback(
         (nodeId, content) => {
             let [nrs, mdr] = updatedTree(
-                treeRootDirectories,
-                treeMapData,
+                treeData.rootDirectories,
+                treeData.mapData,
                 nodeId,
                 content
             );
-            dispatch(setTreeRootDirectories(nrs));
-            dispatch(setTreeMapData(mdr));
+            dispatch(
+                setTreeData({
+                    rootDirectories: nrs,
+                    mapData: mdr,
+                })
+            );
         },
-        [dispatch, treeMapData, treeRootDirectories]
+        [dispatch, treeData.mapData, treeData.rootDirectories]
     );
 
     const fetchDirectoryWarn = useCallback(
