@@ -110,7 +110,7 @@ const DirectorySelector = (props) => {
                 })
             );
         },
-        [dispatch, treeData.mapData, treeData.rootDirectories]
+        [dispatch, treeData]
     );
 
     const fetchDirectoryWarn = useCallback(
