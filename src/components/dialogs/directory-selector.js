@@ -94,7 +94,7 @@ const DirectorySelector = (props) => {
     );
 
     useEffect(() => {
-        if (treeRootDirectories !== null) {
+        if (treeRootDirectories.length > 0) {
             setData(convertRoots(treeRootDirectories));
         }
     }, [convertRoots, treeRootDirectories]);

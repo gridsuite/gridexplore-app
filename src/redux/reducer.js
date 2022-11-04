@@ -65,8 +65,8 @@ const initialState = {
     selectedFile: null,
     uploadingElements: {},
     directoryUpdated: { force: 0, eventData: {} },
-    treeMapData: null,
-    treeRootDirectories: null,
+    treeMapData: {},
+    treeRootDirectories: [],
     ...paramsInitialState,
 };
 
