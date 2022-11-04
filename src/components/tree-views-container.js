@@ -456,7 +456,13 @@ const TreeViewsContainer = () => {
                         Object.entries(newMap).length !==
                         Object.entries(treeDataRef.current.mapData).length
                     ) {
-                        dispatch(setTreeData(newMap));
+                        dispatch(
+                            setTreeData({
+                                rootDirectories:
+                                    treeDataRef.current.rootDirectories,
+                                mapData: newMap,
+                            })
+                        );
                     }
                 }
                 return;
@@ -617,7 +623,7 @@ const TreeViewsContainer = () => {
                 }}
                 onContextMenu={(e) => onContextMenu(e, null)}
             >
-                {treeDataRef.current.mapData &&
+                {treeData.mapData &&
                     treeData.rootDirectories.map((rootDirectory) => (
                         <DirectoryTreeView
                             key={rootDirectory.elementUuid}
