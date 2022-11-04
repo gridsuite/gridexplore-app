@@ -36,7 +36,7 @@ export function CreateCaseDialog({ onClose, open }) {
     const dispatch = useDispatch();
     const intl = useIntl();
     const [triggerReset, setTriggerReset] = useState(true);
-
+    const UNPROCESSABLE_ENTITY_STATUS = '422';
     const [name, NameField, nameError, nameOk] = useNameField({
         label: 'nameProperty',
         autoFocus: true,
@@ -85,7 +85,7 @@ export function CreateCaseDialog({ onClose, open }) {
         })
             .then()
             .catch((message) => {
-                message.trim().startsWith('422')
+                message.includes(UNPROCESSABLE_ENTITY_STATUS)
                     ? snackbarMessage(
                           intl.formatMessage({
                               id: 'fileExtensionError',
