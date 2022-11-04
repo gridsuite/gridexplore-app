@@ -147,6 +147,8 @@
     "VscConverterStations": "Stations de conversion VSC",
     "HvdcLines": "Lignes HVDC",
     "BusBarSections": "Sections de barre",
+    "VoltageLevels": "Postes",
+    "Substations": "Sites",
     "Countries": "Pays",
     "Countries1": "Pays 1",
     "Countries2": "Pays 2",

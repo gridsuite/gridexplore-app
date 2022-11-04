@@ -212,6 +212,30 @@ export const equipmentsDefinition = {
             },
         },
     },
+    VOLTAGE_LEVEL: {
+        label: 'VoltageLevels',
+        type: 'VOLTAGE_LEVEL',
+        fields: {
+            countries: {
+                name: 'Countries',
+                type: filteredTypes.countries,
+            },
+            nominalVoltage: {
+                name: 'nominalVoltage',
+                type: filteredTypes.range,
+            },
+        },
+    },
+    SUBSTATION: {
+        label: 'Substations',
+        type: 'SUBSTATION',
+        fields: {
+            countries: {
+                name: 'Countries',
+                type: filteredTypes.countries,
+            },
+        },
+    },
 };
 
 function deepCopy(aObject) {
