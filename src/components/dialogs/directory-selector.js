@@ -11,14 +11,13 @@ import PropTypes from 'prop-types';
 import { fetchDirectoryContent } from '../../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import { getFileIcon, elementType } from '@gridsuite/commons-ui';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { updatedTree } from '../tree-views-container';
 import {
     displayWarningMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
-import { useDispatch } from 'react-redux';
 import { setTreeData } from '../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
