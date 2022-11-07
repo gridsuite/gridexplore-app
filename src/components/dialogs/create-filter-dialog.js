@@ -323,6 +323,7 @@ const CreateFilterDialog = ({
                 title={title}
                 isFilterCreation={true}
                 handleFilterCreation={handleSave}
+                contentType={ElementType.FILTER}
             />
         </>
     );
