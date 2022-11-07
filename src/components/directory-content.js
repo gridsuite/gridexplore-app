@@ -30,7 +30,6 @@ import { Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
 
-import FormContingencyDialog from './dialogs/form-contingency-dialog';
 import ScriptDialog from './dialogs/script-dialog';
 import { useSnackbar } from 'notistack';
 import GenericFilterDialog from './dialogs/generic-filter-dialog';
@@ -742,13 +741,13 @@ const DirectoryContent = () => {
                     }
                 />
             </div>
-
-            <FormContingencyDialog
-                listId={currentFiltersContingencyListId}
+            <GenericFilterDialog
+                id={currentFiltersContingencyListId}
                 open={openFiltersContingencyDialog}
                 onClose={handleCloseFiltersContingency}
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'editContingencyList' })}
+                contentType={ElementType.CONTINGENCY_LIST}
             />
             <ScriptDialog
                 id={currentScriptContingencyListId}
@@ -780,6 +779,7 @@ const DirectoryContent = () => {
                 onClose={handleCloseGenericFilterDialog}
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'editFilter' })}
+                contentType={ElementType.FILTER}
             />
         </>
     );

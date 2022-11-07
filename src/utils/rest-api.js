@@ -8,7 +8,6 @@
 import { APP_NAME, getAppName } from './config-params';
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { EquipmentTypes } from './equipment-types';
 import { ContingencyListType } from './elementType';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
@@ -47,7 +46,7 @@ export function connectNotificationsWsUpdateConfig() {
     const reconnectingWebSocket = new ReconnectingWebSocket(
         () => webSocketUrl + '&access_token=' + getToken()
     );
-    reconnectingWebSocket.onopen = function (event) {
+    reconnectingWebSocket.onopen = function () {
         console.info(
             'Connected Websocket update config ui ' + webSocketUrl + ' ...'
         );
@@ -523,9 +522,9 @@ export function createContingencyList(
 
     let body = {};
     if (contingencyListType === ContingencyListType.FORM) {
-        body.equipmentType = EquipmentTypes.LINE;
-        body.nominalVoltage = -1;
-        body.nominalVoltageOperator = '=';
+        // default form: empty LINE
+        body.equipmentType = 'LINE';
+        body.nominalVoltage1 = null;
     }
     return backendFetch(createContingencyListUrl, {
         method: 'post',
@@ -678,7 +677,7 @@ export function connectNotificationsWsUpdateDirectories() {
     const reconnectingWebSocket = new ReconnectingWebSocket(
         () => webSocketUrl + '&access_token=' + getToken()
     );
-    reconnectingWebSocket.onopen = function (event) {
+    reconnectingWebSocket.onopen = function () {
         console.info(
             'Connected Websocket update studies ' + webSocketUrl + ' ...'
         );
