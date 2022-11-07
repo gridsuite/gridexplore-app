@@ -20,7 +20,6 @@ import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
 
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
-import FormContingencyDialog from '../dialogs/form-contingency-dialog';
 import ScriptDialog from '../dialogs/script-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
@@ -577,12 +576,13 @@ const ContentContextualMenu = (props) => {
                 }}
                 items={selectedElements}
             />
-            <FormContingencyDialog
-                listId={getActiveContingencyFormId()}
+            <GenericFilterDialog
+                id={getActiveContingencyFormId()}
                 open={openDialog === DialogsId.FILTERS_CONTINGENCY}
                 onClose={handleCloseDialog}
                 onError={handleLastError}
                 title={useIntl().formatMessage({ id: 'editContingencyList' })}
+                contentType={ElementType.CONTINGENCY_LIST}
             />
             <ScriptDialog
                 id={getActiveContingencyScriptId()}
@@ -664,6 +664,7 @@ const ContentContextualMenu = (props) => {
                 onClose={handleCloseDialog}
                 onError={handleLastError}
                 title={useIntl().formatMessage({ id: 'editFilter' })}
+                contentType={ElementType.FILTER}
             />
 
             <CreateStudyDialog
