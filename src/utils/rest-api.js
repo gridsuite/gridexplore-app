@@ -831,7 +831,7 @@ export function createPrivateCase(selectedFile) {
     }).then((response) =>
         response.ok
             ? response.json()
-            : response.json().then((error) => Promise.reject(error))
+            : response.text().then((error) => Promise.reject(error))
     );
 }
 

@@ -180,5 +180,5 @@
     "moveElementNotAllowedError": "You cannot move this element to the targeted folder. Unauthorized action",
     "notElementCreator": "You are not the element's creator",
     "uploadingElement": "Upload in progress: no operation permitted",
-    "invalidFormat" : "Invalid format"
+    "invalidFormatOrName" : "Invalid format or name"
 }

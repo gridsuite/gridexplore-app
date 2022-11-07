@@ -161,7 +161,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const selectedCase = useSelector((state) => state.selectedCase);
 
-    const [tempCaseUuid, setTempCaseUuid] = useState(false);
+    const [tempCaseUuid, setTempCaseUuid] = useState(null);
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
 
@@ -213,11 +213,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         );
                     }
                 })
-                .catch((message) => {
-                    console.log('message', message);
+                .catch(() => {
                     setUploadingFileInProgress(false);
                     setCreateStudyErr(
-                        intl.formatMessage({ id: 'invalidFormat' })
+                        intl.formatMessage({ id: 'invalidFormatOrName' })
                     );
                 });
         }
