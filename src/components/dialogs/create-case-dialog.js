@@ -88,7 +88,7 @@ export function CreateCaseDialog({ onClose, open }) {
                 message.includes(UNPROCESSABLE_ENTITY_STATUS)
                     ? snackbarMessage(
                           intl.formatMessage({
-                              id: 'fileExtensionError',
+                              id: 'incorrectFileError',
                           }),
                           'caseCreationError',
                           { name }
