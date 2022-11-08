@@ -42,6 +42,7 @@ import {
     setActiveDirectory,
     addUploadingElement,
     removeUploadingElement,
+    selectFile,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
@@ -55,6 +56,9 @@ import { useFileValue } from './field-hook';
 import { keyGenerator } from '../../utils/functions.js';
 import { Divider, Grid } from '@mui/material';
 import { useImportExportParams } from '@gridsuite/commons-ui';
+
+const UNPROCESSABLE_ENTITY_STATUS = 422;
+const CONNECTION_FAILED_MESSAGE = 'failed: Connection refused';
 
 const useStyles = makeStyles((theme) => ({
     addIcon: {
@@ -200,24 +204,24 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 providedCase.elementUuid,
                 setFormatWithParameters
             );
-        } else if (open && isSelectedFileOk) {
+        } else if (open && selectedFile && isSelectedFileOk) {
             setUploadingFileInProgress(true);
             createPrivateCase(selectedFile)
-                .then((caseUuid) => {
+                .then((response) => {
                     setUploadingFileInProgress(false);
-                    if (caseUuid) {
-                        setTempCaseUuid(caseUuid);
+                    if (response) {
+                        setTempCaseUuid(response);
                         handleCaseImportParams(
-                            caseUuid,
+                            response,
                             setFormatWithParameters
                         );
+                        setCreateStudyErr('');
                     }
                 })
-                .catch(() => {
+                .catch((error) => {
+                    handleFileUploadError(error, setCreateStudyErr, intl);
                     setUploadingFileInProgress(false);
-                    setCreateStudyErr(
-                        intl.formatMessage({ id: 'invalidFormatOrName' })
-                    );
+                    dispatch(selectFile(null));
                 });
         }
     }, [
@@ -229,6 +233,20 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         selectedFile,
         intl,
     ]);
+
+    const handleFileUploadError = (error, setCreateStudyErr, intl) => {
+        if (error?.status === UNPROCESSABLE_ENTITY_STATUS) {
+            setCreateStudyErr(
+                intl.formatMessage({ id: 'invalidFormatOrName' })
+            );
+        } else if (error?.message?.includes(CONNECTION_FAILED_MESSAGE)) {
+            setCreateStudyErr(
+                intl.formatMessage({ id: 'serverConnectionFailed' })
+            );
+        } else {
+            setCreateStudyErr(error?.message);
+        }
+    };
 
     const resetDialog = () => {
         setCreateStudyErr('');
