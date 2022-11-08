@@ -43,6 +43,12 @@ const NominalVoltage2 = {
         type: filteredTypes.range,
     },
 };
+const SingleNominalVoltage1 = {
+    nominalVoltage1: {
+        name: 'nominalVoltage',
+        type: filteredTypes.range,
+    },
+};
 const Line = { label: 'Lines', type: 'LINE' };
 const Generator = { label: 'Generators', type: 'GENERATOR' };
 const Load = { label: 'Loads', type: 'LOAD' };
@@ -81,7 +87,7 @@ export const filterEquipmentDefinition = {
         fields: {
             ...Countries1,
             ...Countries2,
-            ...NominalVoltage1,
+            ...NominalVoltage,
         },
     },
     TWO_WINDINGS_TRANSFORMER: {
@@ -190,7 +196,7 @@ export const contingencyListEquipmentDefinition = {
         fields: {
             ...Countries1,
             ...Countries2,
-            ...NominalVoltage1,
+            ...SingleNominalVoltage1,
         },
     },
     TWO_WINDINGS_TRANSFORMER: {
@@ -205,21 +211,21 @@ export const contingencyListEquipmentDefinition = {
         ...Generator,
         fields: {
             ...Countries1,
-            ...NominalVoltage1,
+            ...SingleNominalVoltage1,
         },
     },
     STATIC_VAR_COMPENSATOR: {
         ...SVC,
         fields: {
             ...Countries1,
-            ...NominalVoltage1,
+            ...SingleNominalVoltage1,
         },
     },
     SHUNT_COMPENSATOR: {
         ...ShuntCompensator,
         fields: {
             ...Countries1,
-            ...NominalVoltage1,
+            ...SingleNominalVoltage1,
         },
     },
     HVDC_LINE: {
@@ -227,21 +233,21 @@ export const contingencyListEquipmentDefinition = {
         fields: {
             ...Countries1,
             ...Countries2,
-            ...NominalVoltage1,
+            ...SingleNominalVoltage1,
         },
     },
     BUSBAR_SECTION: {
         ...BusBar,
         fields: {
             ...Countries1,
-            ...NominalVoltage1,
+            ...SingleNominalVoltage1,
         },
     },
     DANGLING_LINE: {
         ...DanglingLine,
         fields: {
             ...Countries1,
-            ...NominalVoltage1,
+            ...SingleNominalVoltage1,
         },
     },
 };
