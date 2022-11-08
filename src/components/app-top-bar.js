@@ -61,9 +61,7 @@ const AppTopBar = ({ user, userManager }) => {
                         <GridExploreLogoDark />
                     )
                 }
-                onLogoutClick={() =>
-                    logout(dispatch, user, userManager.instance)
-                }
+                onLogoutClick={() => logout(dispatch, userManager.instance)}
                 onLogoClick={() => onLogoClicked()}
                 user={user}
                 appsAndUrls={appsAndUrls}
