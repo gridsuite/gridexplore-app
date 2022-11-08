@@ -65,6 +65,14 @@ const ShuntCompensator = {
     label: 'ShuntCompensators',
     type: 'SHUNT_COMPENSATOR',
 };
+const VoltageLevel = {
+    label: 'VoltageLevels',
+    type: 'VOLTAGE_LEVEL',
+};
+const Substation = {
+    label: 'Substations',
+    type: 'SUBSTATION',
+};
 
 // Filter supported types
 export const filterEquipmentDefinition = {
@@ -158,6 +166,19 @@ export const filterEquipmentDefinition = {
             ...Countries1,
             ...Countries2,
             ...NominalVoltage,
+        },
+    },
+    VOLTAGE_LEVEL: {
+        ...VoltageLevel,
+        fields: {
+            ...Countries,
+            ...NominalVoltage,
+        },
+    },
+    SUBSTATION: {
+        ...Substation,
+        fields: {
+            ...Countries,
         },
     },
 };
