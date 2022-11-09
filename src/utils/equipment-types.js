@@ -87,7 +87,8 @@ export const filterEquipmentDefinition = {
         fields: {
             ...Countries1,
             ...Countries2,
-            ...NominalVoltage,
+            ...NominalVoltage1,
+            ...NominalVoltage2,
         },
     },
     TWO_WINDINGS_TRANSFORMER: {
