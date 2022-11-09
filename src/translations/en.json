@@ -175,5 +175,6 @@
     "moveElementNotFoundError": "The element or the targeted folder was not found",
     "moveElementNotAllowedError": "You cannot move this element to the targeted folder. Unauthorized action",
     "notElementCreator": "You are not the element's creator",
-    "uploadingElement": "Upload in progress : no operation permitted"
+    "uploadingElement": "Upload in progress: no operation permitted",
+    "incorrectFileError":"Imported file name or format invalid"
 }
