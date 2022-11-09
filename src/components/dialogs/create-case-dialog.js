@@ -36,7 +36,7 @@ export function CreateCaseDialog({ onClose, open }) {
     const dispatch = useDispatch();
     const intl = useIntl();
     const [triggerReset, setTriggerReset] = useState(true);
-    const UNPROCESSABLE_ENTITY_STATUS = '422';
+    const UNPROCESSABLE_ENTITY_STATUS = 422;
     const [name, NameField, nameError, nameOk] = useNameField({
         label: 'nameProperty',
         autoFocus: true,
@@ -84,16 +84,20 @@ export function CreateCaseDialog({ onClose, open }) {
             parentDirectoryUuid: activeDirectory,
         })
             .then()
-            .catch((message) => {
-                message.includes(UNPROCESSABLE_ENTITY_STATUS)
-                    ? snackbarMessage(
-                          intl.formatMessage({
-                              id: 'incorrectFileError',
-                          }),
-                          'caseCreationError',
-                          { name }
-                      )
-                    : snackbarMessage(message, 'caseCreationError', { name });
+            .catch((err) => {
+                if (err?.status === UNPROCESSABLE_ENTITY_STATUS) {
+                    snackbarMessage(
+                        intl.formatMessage({
+                            id: 'incorrectFileError',
+                        }),
+                        'caseCreationError',
+                        { name }
+                    );
+                } else {
+                    snackbarMessage(err, 'caseCreationError', {
+                        name,
+                    });
+                }
             })
             .finally(() => dispatch(removeUploadingElement(uploadingCase)));
         dispatch(addUploadingElement(uploadingCase));

@@ -409,7 +409,13 @@ export function createCase({ name, description, file, parentDirectoryUuid }) {
     return backendFetch(url, {
         method: 'post',
         body: formData,
-    }).then((response) => handleResponse(response, false));
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.status === 422
+            ? response.text().then(() => Promise.reject(response))
+            : response.text().then((text) => Promise.reject(text))
+    );
 }
 
 export function duplicateCase(
@@ -432,7 +438,9 @@ export function duplicateCase(
 
     return backendFetch(url, {
         method: 'post',
-    }).then((response) => handleResponse(response, false));
+    })
+        .then((response) => response)
+        .catch((err) => console.log('err', err));
 }
 
 export function fetchCases() {
