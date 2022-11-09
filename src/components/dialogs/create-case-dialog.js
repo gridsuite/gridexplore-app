@@ -94,7 +94,7 @@ export function CreateCaseDialog({ onClose, open }) {
                         { name }
                     );
                 } else {
-                    snackbarMessage(err, 'caseCreationError', {
+                    snackbarMessage(err?.message, 'caseCreationError', {
                         name,
                     });
                 }
