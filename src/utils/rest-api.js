@@ -390,7 +390,16 @@ export function createCase({ name, description, file, parentDirectoryUuid }) {
     return backendFetch(url, {
         method: 'post',
         body: formData,
-    }).then((response) => handleResponse(response, false));
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) =>
+                  Promise.reject({
+                      status: response.status,
+                      message: text,
+                  })
+              )
+    );
 }
 
 export function duplicateCase(
