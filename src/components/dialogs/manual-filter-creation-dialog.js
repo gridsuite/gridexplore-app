@@ -302,7 +302,7 @@ const ManualFilterCreationDialog = ({
             if (isFilterCreation) {
                 createFilter(
                     {
-                        type: FilterType.MANUAL,
+                        type: FilterType.EXPLICIT_NAMING,
                         equipmentType: equipmentType,
                         filterEquipmentsAttributes: tableValues,
                     },
@@ -318,7 +318,7 @@ const ManualFilterCreationDialog = ({
             } else {
                 saveFilter({
                     id: id,
-                    type: FilterType.MANUAL,
+                    type: FilterType.EXPLICIT_NAMING,
                     equipmentType: equipmentType,
                     filterEquipmentsAttributes: tableValues,
                 })

@@ -154,7 +154,7 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
                 equipmentType = result[0][0].trim();
                 createFilter(
                     {
-                        type: FilterType.MANUAL,
+                        type: FilterType.EXPLICIT_NAMING,
                         equipmentType: equipmentType,
                         filterEquipmentsAttributes: getEquipmentsAttributes(
                             result,

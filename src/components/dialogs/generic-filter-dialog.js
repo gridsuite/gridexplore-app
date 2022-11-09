@@ -190,7 +190,7 @@ export const GenericFilterDialog = ({
     function onChange(newVal) {
         currentFilter.current = {};
         currentFilter.current.id = id;
-        currentFilter.current.type = FilterType.AUTOMATIC;
+        currentFilter.current.type = FilterType.CRITERIA_BASED;
         if (contentType === ElementType.FILTER) {
             // data model is not the same: filter has a sub-object 'equipmentFilterForm'
             currentFilter.current.equipmentFilterForm = newVal;

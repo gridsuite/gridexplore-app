@@ -108,7 +108,7 @@ const CreateFilterDialog = ({
     const classes = useStyles();
     const intl = useIntl();
     const timer = React.useRef();
-    const [newListType, setNewListType] = useState(FilterType.AUTOMATIC);
+    const [newListType, setNewListType] = useState(FilterType.CRITERIA_BASED);
     const [filterType, setFilterType] = useState('');
 
     /**
@@ -172,7 +172,7 @@ const CreateFilterDialog = ({
 
     const resetDialog = () => {
         setNewListName('');
-        setNewListType(FilterType.AUTOMATIC);
+        setNewListType(FilterType.CRITERIA_BASED);
         setFilterType('');
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
@@ -265,24 +265,19 @@ const CreateFilterDialog = ({
                         aria-label="type"
                         name="filterType"
                         value={newListType}
-                        defaultValue={FilterType.AUTOMATIC}
+                        defaultValue={FilterType.CRITERIA_BASED}
                         onChange={(e) => setNewListType(e.target.value)}
                         row
                     >
                         <FormControlLabel
-                            value={FilterType.AUTOMATIC}
+                            value={FilterType.CRITERIA_BASED}
                             control={<Radio />}
-                            label={<FormattedMessage id="Automatic" />}
+                            label={<FormattedMessage id="CriteriaBased" />}
                         />
                         <FormControlLabel
-                            value={FilterType.MANUAL}
+                            value={FilterType.EXPLICIT_NAMING}
                             control={<Radio />}
-                            label={<FormattedMessage id="Manual" />}
-                        />
-                        <FormControlLabel
-                            value={FilterType.IMPORT_CSV}
-                            control={<Radio />}
-                            label={<FormattedMessage id="ImportCSV" />}
+                            label={<FormattedMessage id="ExplicitNaming" />}
                         />
                     </RadioGroup>
                     {createFilterErr !== '' && (
@@ -305,7 +300,7 @@ const CreateFilterDialog = ({
                 </DialogActions>
             </Dialog>
             <ManualFilterCreationDialog
-                open={open && filterType === FilterType.MANUAL}
+                open={open && filterType === FilterType.EXPLICIT_NAMING}
                 title={title}
                 onClose={handleClose}
                 name={newNameList}
@@ -318,7 +313,7 @@ const CreateFilterDialog = ({
                 onClose={handleClose}
             />
             <GenericFilterDialog
-                open={open && filterType === FilterType.AUTOMATIC}
+                open={open && filterType === FilterType.CRITERIA_BASED}
                 onClose={handleClose}
                 title={title}
                 isFilterCreation={true}
