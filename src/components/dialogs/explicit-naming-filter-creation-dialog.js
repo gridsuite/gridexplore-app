@@ -11,7 +11,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import React, { useEffect, useRef, useState } from 'react';
-import { FilterTypeSelection } from './generic-filter-dialog';
+import { FilterTypeSelection } from './criteria-based-filter-dialog';
 import Grid from '@mui/material/Grid';
 import { useEquipmentTableValues } from './field-hook';
 import makeStyles from '@mui/styles/makeStyles';
@@ -43,7 +43,7 @@ function isNumber(val) {
     return /^-?[0-9]*[.,]?[0-9]*$/.test(val);
 }
 
-const ManualFilterRow = ({
+const ExplicitNamingFilterRow = ({
     id,
     index,
     isGeneratorOrLoad,
@@ -204,7 +204,7 @@ const ManualFilterRow = ({
     );
 };
 
-const ManualFilterCreationDialog = ({
+const ExplicitNamingCreationDialog = ({
     id,
     open,
     onClose,
@@ -251,7 +251,7 @@ const ManualFilterCreationDialog = ({
         tableHeadersIds: isGeneratorOrLoad
             ? generatorOrLoadHeadersId
             : headersId,
-        Row: ManualFilterRow,
+        Row: ExplicitNamingFilterRow,
         isGeneratorOrLoad: isGeneratorOrLoad,
         defaultTableValues: defaultValues?.filterEquipmentsAttributes,
         setCreateFilterErr: setCreateFilterErr,
@@ -386,7 +386,7 @@ const ManualFilterCreationDialog = ({
     );
 };
 
-ManualFilterCreationDialog.prototype = {
+ExplicitNamingCreationDialog.prototype = {
     id: PropTypes.string,
     name: PropTypes.string,
     onClose: PropTypes.func.isRequired,
@@ -395,4 +395,4 @@ ManualFilterCreationDialog.prototype = {
     isFilterCreation: PropTypes.bool,
 };
 
-export default ManualFilterCreationDialog;
+export default ExplicitNamingCreationDialog;

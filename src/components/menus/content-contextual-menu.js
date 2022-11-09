@@ -23,7 +23,7 @@ import DeleteDialog from '../dialogs/delete-dialog';
 import ScriptDialog from '../dialogs/script-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
-import GenericFilterDialog from '../dialogs/generic-filter-dialog';
+import GenericFilterDialog from '../dialogs/criteria-based-filter-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog';
 
 import { DialogsId } from '../../utils/UIconstants';
@@ -420,7 +420,7 @@ const ContentContextualMenu = (props) => {
     const getActiveFilterFormId = () => {
         if (
             activeElement?.type === ElementType.FILTER &&
-            activeElement?.subtype === FilterType.AUTOMATIC
+            activeElement?.subtype === FilterType.CRITERIA_BASED
         ) {
             return activeElement.elementUuid;
         } else {

@@ -29,9 +29,9 @@ import { useSelector } from 'react-redux';
 import { ElementType, FilterType } from '../../utils/elementType';
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
-import ManualFilterCreationDialog from './manual-filter-creation-dialog';
+import ExplicitNamingCreationDialog from './explicit-naming-filter-creation-dialog';
 import CsvImportFilterCreationDialog from './csv-import-filter-creation-dialog';
-import GenericFilterDialog from './generic-filter-dialog';
+import CriteriaBasedFilterDialog from './criteria-based-filter-dialog';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -299,20 +299,20 @@ const CreateFilterDialog = ({
                     </Button>
                 </DialogActions>
             </Dialog>
-            <ManualFilterCreationDialog
+            <ExplicitNamingCreationDialog
                 open={open && filterType === FilterType.EXPLICIT_NAMING}
                 title={title}
                 onClose={handleClose}
                 name={newNameList}
                 isFilterCreation={true}
             />
-            <CsvImportFilterCreationDialog
+            {/* <CsvImportFilterCreationDialog
                 open={open && filterType === FilterType.IMPORT_CSV}
                 title={title}
                 name={newNameList}
                 onClose={handleClose}
-            />
-            <GenericFilterDialog
+            /> */}
+            <CriteriaBasedFilterDialog
                 open={open && filterType === FilterType.CRITERIA_BASED}
                 onClose={handleClose}
                 title={title}

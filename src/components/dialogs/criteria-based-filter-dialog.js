@@ -109,7 +109,7 @@ export const FilterTypeSelection = ({
     );
 };
 
-export const GenericFilterDialog = ({
+export const CriteriaBasedFilterDialog = ({
     id,
     open,
     onClose,
@@ -334,4 +334,4 @@ export const GenericFilterDialog = ({
     );
 };
 
-export default GenericFilterDialog;
+export default CriteriaBasedFilterDialog;
