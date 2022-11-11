@@ -429,7 +429,9 @@ export function fetchCases() {
     console.info('Fetching cases...');
     const fetchCasesUrl = PREFIX_CASE_QUERIES + '/v1/cases';
     console.debug(fetchCasesUrl);
-    return backendFetch(fetchCasesUrl).then((response) => response.json());
+    return backendFetch(fetchCasesUrl).then((response) =>
+        handleJsonResponse(response)
+    );
 }
 
 export function elementExists(directoryUuid, elementName, type) {
@@ -839,9 +841,12 @@ export function createPrivateCase(selectedFile) {
     }).then((response) =>
         response.ok
             ? response.json()
-            : response.status === 500
-            ? response.json().then((res) => Promise.reject(res))
-            : response.text().then(() => Promise.reject(response))
+            : response.text().then((text) =>
+                  Promise.reject({
+                      status: response.status,
+                      message: text,
+                  })
+              )
     );
 }
 

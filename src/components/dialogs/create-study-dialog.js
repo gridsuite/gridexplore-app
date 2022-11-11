@@ -27,6 +27,7 @@ import {
     createPrivateCase,
     createStudy,
     deleteCase,
+    //deleteCase,
     elementExists,
     fetchCases,
     fetchPath,
@@ -57,8 +58,8 @@ import { keyGenerator } from '../../utils/functions.js';
 import { Divider, Grid } from '@mui/material';
 import { useImportExportParams } from '@gridsuite/commons-ui';
 
-const UNPROCESSABLE_ENTITY_STATUS = 422;
-const CONNECTION_FAILED_MESSAGE = 'failed: Connection refused';
+export const HTTP_UNPROCESSABLE_ENTITY_STATUS = 422;
+const HTTP_CONNECTION_FAILED_MESSAGE = 'failed: Connection refused';
 
 const useStyles = makeStyles((theme) => ({
     addIcon: {
@@ -194,34 +195,60 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             triggerReset,
             isLoading: isUploadingFileInProgress,
         });
+    const [isParamsWellRecupered, setIsParamsWellRecupered] = useState(true);
+
+    const getCaseImportParams = (caseUuid, setFormatWithParameters, intl) => {
+        getCaseImportParameters(caseUuid)
+            .then((result) => {
+                // sort possible values alphabetically to display select options sorted
+                result.parameters = result.parameters?.map((p) => {
+                    let sortedPossibleValue = p.possibleValues?.sort((a, b) =>
+                        a.localeCompare(b)
+                    );
+                    p.possibleValues = sortedPossibleValue;
+                    return p;
+                });
+                setFormatWithParameters(result.parameters);
+                setIsParamsWellRecupered(true);
+            })
+            .catch(() => {
+                setFormatWithParameters([]);
+                setIsParamsWellRecupered(false);
+                setCreateStudyErr(
+                    intl.formatMessage({ id: 'parameterLoadingProblem' })
+                );
+            });
+    };
+
     //Inits the dialog
     useEffect(() => {
         if (open && providedCase) {
             setStudyName(providedCase.elementName);
             setCaseExist(true);
             dispatch(selectCase(providedCase.elementUuid));
-            handleCaseImportParams(
+            getCaseImportParams(
                 providedCase.elementUuid,
-                setFormatWithParameters
+                setFormatWithParameters,
+                intl
             );
-        } else if (open && selectedFile && isSelectedFileOk) {
+        } else if (open && selectedFile) {
             setUploadingFileInProgress(true);
             createPrivateCase(selectedFile)
-                .then((response) => {
+                .then((caseUuid) => {
                     setUploadingFileInProgress(false);
-                    if (response) {
-                        setTempCaseUuid(response);
-                        handleCaseImportParams(
-                            response,
-                            setFormatWithParameters
-                        );
-                        setCreateStudyErr('');
-                    }
+                    setTempCaseUuid(caseUuid);
+                    getCaseImportParams(
+                        caseUuid,
+                        setFormatWithParameters,
+                        intl
+                    );
+                    setCreateStudyErr('');
                 })
                 .catch((error) => {
                     handleFileUploadError(error, setCreateStudyErr, intl);
                     setUploadingFileInProgress(false);
                     dispatch(selectFile(null));
+                    setFormatWithParameters([]);
                 });
         }
     }, [
@@ -229,22 +256,21 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         dispatch,
         selectedDirectory?.elementName,
         providedCase,
-        isSelectedFileOk,
         selectedFile,
         intl,
     ]);
 
     const handleFileUploadError = (error, setCreateStudyErr, intl) => {
-        if (error?.status === UNPROCESSABLE_ENTITY_STATUS) {
+        if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
             setCreateStudyErr(
                 intl.formatMessage({ id: 'invalidFormatOrName' })
             );
-        } else if (error?.message?.includes(CONNECTION_FAILED_MESSAGE)) {
+        } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
             setCreateStudyErr(
                 intl.formatMessage({ id: 'serverConnectionFailed' })
             );
         } else {
-            setCreateStudyErr(error?.message);
+            setCreateStudyErr(error.message);
         }
     };
 
@@ -261,7 +287,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setFormatWithParameters([]);
         setIsParamsCaseFileDisplayed(false);
         if (tempCaseUuid !== null) {
-            deleteCase(tempCaseUuid).catch(() => setCreateStudyErr(''));
+            deleteCase(tempCaseUuid).catch((error) => console.error(error));
             setTempCaseUuid(null);
         }
     };
@@ -318,14 +344,16 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         ElementType.STUDY
                     )
                         .then((data) => {
-                            setStudyFormState(
-                                data
-                                    ? intl.formatMessage({
-                                          id: 'studyNameAlreadyUsed',
-                                      })
-                                    : '',
-                                !data
-                            );
+                            if (isParamsWellRecupered) {
+                                setStudyFormState(
+                                    data
+                                        ? intl.formatMessage({
+                                              id: 'studyNameAlreadyUsed',
+                                          })
+                                        : '',
+                                    !data
+                                );
+                            }
                         })
                         .catch((error) => {
                             setStudyFormState(
@@ -358,7 +386,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         timer.current = setTimeout(() => {
             updateStudyFormState(studyName);
         }, 700);
-    }, [activeDirectory, intl, studyName]);
+    }, [activeDirectory, intl, isParamsWellRecupered, studyName]);
 
     //Updates the path display
     useEffect(() => {
@@ -488,23 +516,31 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         );
     };
 
-    const handleCaseImportParams = (caseUuid, setFormatWithParameters) => {
-        getCaseImportParameters(caseUuid)
-            .then((result) => {
-                // sort possible values alphabetically to display select options sorted
-                result.parameters = result.parameters?.map((p) => {
-                    let sortedPossibleValue = p.possibleValues?.sort((a, b) =>
-                        a.localeCompare(b)
-                    );
-                    p.possibleValues = sortedPossibleValue;
-                    return p;
-                });
-                setFormatWithParameters(result.parameters);
-            })
-            .catch(() => {
-                setFormatWithParameters([]);
-            });
-    };
+    const importParametersSection = (
+        AdvancedParameterButton,
+        isParamsCaseFileDisplayed,
+        handleShowParametersForCaseFileClick,
+        formatWithParameters,
+        paramsComponent,
+        paramDivider
+    ) => (
+        <>
+            <Divider className={paramDivider} />
+            <div
+                style={{
+                    marginTop: '10px',
+                }}
+            >
+                <AdvancedParameterButton
+                    showOpenIcon={isParamsCaseFileDisplayed}
+                    label={'importParameters'}
+                    callback={handleShowParametersForCaseFileClick}
+                    disabled={formatWithParameters.length === 0}
+                />
+                {isParamsCaseFileDisplayed && paramsComponent}
+            </div>
+        </>
+    );
 
     return (
         <div>
@@ -550,25 +586,14 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         ) : (
                             <>
                                 {FileField}
-                                <Divider className={classes.paramDivider} />
-                                <div
-                                    style={{
-                                        marginTop: '10px',
-                                    }}
-                                >
-                                    <AdvancedParameterButton
-                                        showOpenIcon={isParamsCaseFileDisplayed}
-                                        label={'importParameters'}
-                                        callback={
-                                            handleShowParametersForCaseFileClick
-                                        }
-                                        disabled={
-                                            formatWithParameters.length === 0
-                                        }
-                                    />
-                                    {isParamsCaseFileDisplayed &&
-                                        paramsComponent}
-                                </div>
+                                {importParametersSection(
+                                    AdvancedParameterButton,
+                                    isParamsCaseFileDisplayed,
+                                    handleShowParametersForCaseFileClick,
+                                    formatWithParameters,
+                                    paramsComponent,
+                                    classes.paramDivider
+                                )}
                             </>
                         )
                     ) : (
@@ -616,20 +641,14 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                                     })}
                                 />
                             </div>
-                            <Divider className={classes.paramDivider} />
-                            <div
-                                style={{
-                                    marginTop: '10px',
-                                }}
-                            >
-                                <AdvancedParameterButton
-                                    showOpenIcon={isParamsDisplayed}
-                                    label={'importParameters'}
-                                    callback={handleShowParametersClick}
-                                    disabled={formatWithParameters.length === 0}
-                                />
-                                {isParamsDisplayed && paramsComponent}
-                            </div>
+                            {importParametersSection(
+                                AdvancedParameterButton,
+                                isParamsDisplayed,
+                                handleShowParametersClick,
+                                formatWithParameters,
+                                paramsComponent,
+                                classes.paramDivider
+                            )}
                         </>
                     )}
                     {createStudyErr !== '' && (

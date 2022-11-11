@@ -175,7 +175,7 @@
     "moveElementNotAllowedError": "Vous ne pouvez pas déplacer cet élément dans le dossier cible. Action non autorisée",
     "notElementCreator": "Vous n'êtes pas le créateur de l'élément",
     "uploadingElement": "Téléversement en cours : pas d'opération autorisée",
-    "invalidFormatOrName" : "Format ou nom invalide",
     "serverConnectionFailed" : "Echec de connexion avec le serveur. Veuillez réessayer ultérieurement",
-    "incorrectFileError":"Format ou nom du fichier importé non valide"
+    "invalidFormatOrName":"Format ou nom du fichier importé non valide",
+    "parameterLoadingProblem":"Probléme de chargement des paramétres"
 }

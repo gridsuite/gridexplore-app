@@ -176,7 +176,7 @@
     "moveElementNotAllowedError": "You cannot move this element to the targeted folder. Unauthorized action",
     "notElementCreator": "You are not the element's creator",
     "uploadingElement": "Upload in progress: no operation permitted",
-    "invalidFormatOrName" : "Invalid format or name",
     "serverConnectionFailed" : "Failed to connect to server. Please retry later.",
-    "incorrectFileError":"Imported file name or format invalid"
+    "invalidFormatOrName":"Imported file name or format invalid",
+    "parameterLoadingProblem":"problem of loading parameters"
 }

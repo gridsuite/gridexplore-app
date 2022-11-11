@@ -24,6 +24,7 @@ import {
     removeUploadingElement,
 } from '../../redux/actions';
 import { keyGenerator } from '../../utils/functions';
+import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from './create-study-dialog';
 
 /**
  * Dialog to create a case
@@ -36,7 +37,6 @@ export function CreateCaseDialog({ onClose, open }) {
     const dispatch = useDispatch();
     const intl = useIntl();
     const [triggerReset, setTriggerReset] = useState(true);
-    const UNPROCESSABLE_ENTITY_STATUS = 422;
     const [name, NameField, nameError, nameOk] = useNameField({
         label: 'nameProperty',
         autoFocus: true,
@@ -85,10 +85,10 @@ export function CreateCaseDialog({ onClose, open }) {
         })
             .then()
             .catch((err) => {
-                if (err?.status === UNPROCESSABLE_ENTITY_STATUS) {
+                if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                     snackbarMessage(
                         intl.formatMessage({
-                            id: 'incorrectFileError',
+                            id: 'invalidFormatOrName',
                         }),
                         'caseCreationError',
                         { name }
