@@ -24,7 +24,7 @@ import {
     removeUploadingElement,
 } from '../../redux/actions';
 import { keyGenerator } from '../../utils/functions';
-import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from './create-study-dialog';
+import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../utils/UIconstants';
 
 /**
  * Dialog to create a case

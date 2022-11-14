@@ -56,9 +56,10 @@ import { useFileValue } from './field-hook';
 import { keyGenerator } from '../../utils/functions.js';
 import { Divider, Grid } from '@mui/material';
 import { useImportExportParams } from '@gridsuite/commons-ui';
-
-export const HTTP_UNPROCESSABLE_ENTITY_STATUS = 422;
-const HTTP_CONNECTION_FAILED_MESSAGE = 'failed: Connection refused';
+import {
+    HTTP_CONNECTION_FAILED_MESSAGE,
+    HTTP_UNPROCESSABLE_ENTITY_STATUS,
+} from '../../utils/UIconstants.js';
 
 const useStyles = makeStyles((theme) => ({
     addIcon: {
@@ -194,7 +195,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             triggerReset,
             isLoading: isUploadingFileInProgress,
         });
-    const [isParamsWellRecupered, setIsParamsWellRecupered] = useState(true);
+    const [isParamsOk, setIsParamsOk] = useState(true);
 
     const getCaseImportParams = (caseUuid, setFormatWithParameters, intl) => {
         getCaseImportParameters(caseUuid)
@@ -208,11 +209,11 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                     return p;
                 });
                 setFormatWithParameters(result.parameters);
-                setIsParamsWellRecupered(true);
+                setIsParamsOk(true);
             })
             .catch(() => {
                 setFormatWithParameters([]);
-                setIsParamsWellRecupered(false);
+                setIsParamsOk(false);
                 setCreateStudyErr(
                     intl.formatMessage({ id: 'parameterLoadingProblem' })
                 );
@@ -343,7 +344,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         ElementType.STUDY
                     )
                         .then((data) => {
-                            if (isParamsWellRecupered) {
+                            if (isParamsOk) {
                                 setStudyFormState(
                                     data
                                         ? intl.formatMessage({
@@ -385,7 +386,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         timer.current = setTimeout(() => {
             updateStudyFormState(studyName);
         }, 700);
-    }, [activeDirectory, intl, isParamsWellRecupered, studyName]);
+    }, [activeDirectory, intl, isParamsOk, studyName]);
 
     //Updates the path display
     useEffect(() => {
