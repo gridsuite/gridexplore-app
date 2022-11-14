@@ -43,11 +43,7 @@ import {
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
-import { useSnackbar } from 'notistack';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ElementType } from '../../utils/elementType';
 import { useFileValue } from './field-hook';
 import { keyGenerator } from '../../utils/functions.js';
@@ -135,7 +131,7 @@ const SelectCase = () => {
 export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const [caseExist, setCaseExist] = React.useState(false);
 
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const [studyName, setStudyName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
@@ -151,7 +147,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     const classes = useStyles();
     const intl = useIntl();
-    const intlRef = useIntlRef();
     const dispatch = useDispatch();
 
     const caseName = useSelector((state) => state.selectedCase);
@@ -353,16 +348,11 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     const studyCreationError = useCallback(
         (studyName, msg) =>
-            displayErrorMessageWithSnackbar({
-                errorMessage: msg,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: 'studyCreationError',
-                    intlRef: intlRef,
-                    headerMessageValues: { studyName },
-                },
-            }),
-        [enqueueSnackbar, intlRef]
+            snackError({
+                messageTxt: msg,
+                headerId: 'studyCreationError',
+                headerValues: { studyName },
+            })[snackError]
     );
 
     const handleCreateNewStudy = () => {

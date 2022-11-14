@@ -15,7 +15,7 @@ import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { useParameterState } from './parameters-dialog';
 import { getComputedLanguage } from '../../utils/language';
 import makeStyles from '@mui/styles/makeStyles';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     inputLegend: {
@@ -128,11 +128,10 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
         if (newValue !== '' && !regex.test(newValue)) {
             // the clipboard data is bad: clear input and display an info message
             onSetNumber(index, '');
-            snackInfo(
-                '"' + newValue + '"',
-                'cannotPasteTextAsNominalVoltage',
-                {}
-            );
+            snackInfo({
+                messageTxt: '"' + newValue + '"',
+                headerId: 'cannotPasteTextAsNominalVoltage',
+            });
         } else {
             onSetNumber(index, newValue);
         }

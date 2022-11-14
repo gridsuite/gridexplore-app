@@ -13,11 +13,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { getFileIcon, elementType } from '@gridsuite/commons-ui';
 import { useSelector, useDispatch } from 'react-redux';
 import { updatedTree } from '../tree-views-container';
-import {
-    displayWarningMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { setTreeData } from '../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
@@ -40,8 +36,7 @@ const DirectorySelector = (props) => {
         []
     );
 
-    const { enqueueSnackbar } = useSnackbar();
-    const intlRef = useIntlRef();
+    const { snackError } = useSnackMessage();
     const treeData = useSelector((state) => state.treeData);
     const dispatch = useDispatch();
 
@@ -115,16 +110,11 @@ const DirectorySelector = (props) => {
 
     const fetchDirectoryWarn = useCallback(
         (directoryUuid, msg) =>
-            displayWarningMessageWithSnackbar({
-                errorMessage: msg,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: 'directoryUpdateWarning',
-                    intlRef: intlRef,
-                    headerMessageValues: { directoryUuid },
-                },
-            }),
-        [enqueueSnackbar, intlRef]
+            snackError({
+                messageTxt: msg,
+                headerId: 'directoryUpdateWarning',
+                headerValues: { directoryUuid },
+            })[snackError]
     );
 
     const fetchDirectory = useCallback(
