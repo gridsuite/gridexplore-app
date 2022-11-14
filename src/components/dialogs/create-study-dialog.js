@@ -27,7 +27,6 @@ import {
     createPrivateCase,
     createStudy,
     deleteCase,
-    //deleteCase,
     elementExists,
     fetchCases,
     fetchPath,
