@@ -43,7 +43,7 @@ function isNumber(val) {
     return /^-?[0-9]*[.,]?[0-9]*$/.test(val);
 }
 
-const ExplicitNamingFilterRow = ({
+const ManualFilterRow = ({
     id,
     index,
     isGeneratorOrLoad,
@@ -251,7 +251,7 @@ const ExplicitNamingCreationDialog = ({
         tableHeadersIds: isGeneratorOrLoad
             ? generatorOrLoadHeadersId
             : headersId,
-        Row: ExplicitNamingFilterRow,
+        Row: ManualFilterRow,
         isGeneratorOrLoad: isGeneratorOrLoad,
         defaultTableValues: defaultValues?.filterEquipmentsAttributes,
         setCreateFilterErr: setCreateFilterErr,
@@ -337,7 +337,7 @@ const ExplicitNamingCreationDialog = ({
         resetDialog();
     };
 
-    return (
+    return open ? (
         <Dialog
             classes={{ paper: classes.dialogPaper }}
             fullWidth={true}
@@ -346,25 +346,12 @@ const ExplicitNamingCreationDialog = ({
         >
             <DialogTitle onClose={onClose}>{title}</DialogTitle>
             <DialogContent>
-                <div>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <FilterTypeSelection
-                                type={equipmentType}
-                                disabled={false}
-                                onChange={handleEquipmentTypeChange}
-                                equipmentDefinition={filterEquipmentDefinition}
-                            />
-                        </Grid>
-                        <Grid item xs={12} />
-                        {equipmentType && tableValuesField}
-                        {createFilterErr !== '' && (
-                            <Alert style={{ flexGrow: 1 }} severity="error">
-                                {createFilterErr}
-                            </Alert>
-                        )}
-                    </Grid>
-                </div>
+                {renderDialogContent(
+                    equipmentType,
+                    handleEquipmentTypeChange,
+                    tableValuesField,
+                    createFilterErr
+                )}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>
@@ -383,6 +370,13 @@ const ExplicitNamingCreationDialog = ({
                 </Button>
             </DialogActions>
         </Dialog>
+    ) : (
+        renderDialogContent(
+            equipmentType,
+            handleEquipmentTypeChange,
+            tableValuesField,
+            createFilterErr
+        )
     );
 };
 
@@ -396,3 +390,31 @@ ExplicitNamingCreationDialog.prototype = {
 };
 
 export default ExplicitNamingCreationDialog;
+function renderDialogContent(
+    equipmentType,
+    handleEquipmentTypeChange,
+    tableValuesField,
+    createFilterErr
+) {
+    return (
+        <div>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <FilterTypeSelection
+                        type={equipmentType}
+                        disabled={false}
+                        onChange={handleEquipmentTypeChange}
+                        equipmentDefinition={filterEquipmentDefinition}
+                    />
+                </Grid>
+                <Grid item xs={12} />
+                {equipmentType && tableValuesField}
+                {createFilterErr !== '' && (
+                    <Alert style={{ flexGrow: 1 }} severity="error">
+                        {createFilterErr}
+                    </Alert>
+                )}
+            </Grid>
+        </div>
+    );
+}

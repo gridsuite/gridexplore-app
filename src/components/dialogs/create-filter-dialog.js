@@ -108,7 +108,7 @@ const CreateFilterDialog = ({
     const classes = useStyles();
     const intl = useIntl();
     const timer = React.useRef();
-    const [newListType, setNewListType] = useState(FilterType.CRITERIA_BASED);
+    const [newListType, setNewListType] = useState(FilterType.CRITERIA);
     const [filterType, setFilterType] = useState('');
 
     /**
@@ -172,7 +172,7 @@ const CreateFilterDialog = ({
 
     const resetDialog = () => {
         setNewListName('');
-        setNewListType(FilterType.CRITERIA_BASED);
+        setNewListType(FilterType.CRITERIA);
         setFilterType('');
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
@@ -265,12 +265,12 @@ const CreateFilterDialog = ({
                         aria-label="type"
                         name="filterType"
                         value={newListType}
-                        defaultValue={FilterType.CRITERIA_BASED}
+                        defaultValue={FilterType.CRITERIA}
                         onChange={(e) => setNewListType(e.target.value)}
                         row
                     >
                         <FormControlLabel
-                            value={FilterType.CRITERIA_BASED}
+                            value={FilterType.CRITERIA}
                             control={<Radio />}
                             label={<FormattedMessage id="CriteriaBased" />}
                         />
@@ -282,6 +282,25 @@ const CreateFilterDialog = ({
                     </RadioGroup>
                     {createFilterErr !== '' && (
                         <Alert severity="error">{createFilterErr}</Alert>
+                    )}
+                    {filterType === FilterType.CRITERIA ? (
+                        <CriteriaBasedFilterDialog
+                            open={false && filterType === FilterType.CRITERIA}
+                            onClose={handleClose}
+                            isFilterCreation={true}
+                            handleFilterCreation={handleSave}
+                            contentType={ElementType.FILTER}
+                        />
+                    ) : (
+                        <ExplicitNamingCreationDialog
+                            open={
+                                false &&
+                                filterType === FilterType.EXPLICIT_NAMING
+                            }
+                            onClose={handleClose}
+                            name={newNameList}
+                            isFilterCreation={true}
+                        />
                     )}
                 </DialogContent>
                 <DialogActions>
@@ -299,27 +318,13 @@ const CreateFilterDialog = ({
                     </Button>
                 </DialogActions>
             </Dialog>
-            <ExplicitNamingCreationDialog
-                open={open && filterType === FilterType.EXPLICIT_NAMING}
-                title={title}
-                onClose={handleClose}
-                name={newNameList}
-                isFilterCreation={true}
-            />
+
             {/* <CsvImportFilterCreationDialog
                 open={open && filterType === FilterType.IMPORT_CSV}
                 title={title}
                 name={newNameList}
                 onClose={handleClose}
             /> */}
-            <CriteriaBasedFilterDialog
-                open={open && filterType === FilterType.CRITERIA_BASED}
-                onClose={handleClose}
-                title={title}
-                isFilterCreation={true}
-                handleFilterCreation={handleSave}
-                contentType={ElementType.FILTER}
-            />
         </>
     );
 };

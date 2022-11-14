@@ -14,7 +14,7 @@ export const ElementType = {
 };
 
 export const FilterType = {
-    CRITERIA_BASED: 'CRITERIA_BASED',
+    CRITERIA: 'CRITERIA',
     EXPLICIT_NAMING: 'EXPLICIT_NAMING',
 };
 

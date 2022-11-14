@@ -154,7 +154,7 @@ const DirectoryContent = () => {
                 if (subtype === FilterType.EXPLICIT_NAMING) {
                     setCurrentExplicitNamingFilterId(event.rowData.elementUuid);
                     setOpenEditExplicitNamingFilterDialog(true);
-                } else if (subtype === FilterType.CRITERIA_BASED) {
+                } else if (subtype === FilterType.CRITERIA) {
                     setCurrentCriteriaBasedFilterId(event.rowData.elementUuid);
                     setOpenCriteriaBasedFilterDialog(true);
                 }

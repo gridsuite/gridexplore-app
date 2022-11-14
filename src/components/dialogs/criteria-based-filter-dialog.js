@@ -296,7 +296,7 @@ export const CriteriaBasedFilterDialog = ({
         }
     };
 
-    return (
+    return open ? (
         <Dialog
             classes={{ paper: classes.dialogPaper }}
             open={open}
@@ -305,18 +305,12 @@ export const CriteriaBasedFilterDialog = ({
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <Grid
-                    container
-                    spacing={1}
-                    style={{ width: '100%', padding: 10, paddingRight: 20 }}
-                >
-                    {FilterTypeSelection({
-                        type: filterType,
-                        onChange: changeFilterType,
-                        equipmentDefinition: getEquipmentsDefinition(),
-                    })}
-                    {renderSpecific()}
-                </Grid>
+                {renderDialogContent(
+                    filterType,
+                    changeFilterType,
+                    getEquipmentsDefinition,
+                    renderSpecific
+                )}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCancel}>
@@ -331,7 +325,35 @@ export const CriteriaBasedFilterDialog = ({
                 </Button>
             </DialogActions>
         </Dialog>
+    ) : (
+        renderDialogContent(
+            filterType,
+            changeFilterType,
+            getEquipmentsDefinition,
+            renderSpecific
+        )
     );
 };
 
 export default CriteriaBasedFilterDialog;
+function renderDialogContent(
+    filterType,
+    changeFilterType,
+    getEquipmentsDefinition,
+    renderSpecific
+) {
+    return (
+        <Grid
+            container
+            spacing={1}
+            style={{ width: '100%', padding: 10, paddingRight: 20 }}
+        >
+            {FilterTypeSelection({
+                type: filterType,
+                onChange: changeFilterType,
+                equipmentDefinition: getEquipmentsDefinition(),
+            })}
+            {renderSpecific()}
+        </Grid>
+    );
+}
