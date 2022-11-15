@@ -222,8 +222,9 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     useEffect(() => {
         if (!open && tempCaseUuid !== null) {
-            deleteCase(tempCaseUuid).catch((error) => console.error(error));
-            setTempCaseUuid(null);
+            deleteCase(tempCaseUuid)
+                .then((res) => setTempCaseUuid(null))
+                .catch((error) => console.error(error));
         }
     }, [open, tempCaseUuid]);
 
