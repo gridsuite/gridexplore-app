@@ -220,6 +220,13 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             });
     };
 
+    useEffect(() => {
+        if (!open && tempCaseUuid !== null) {
+            deleteCase(tempCaseUuid).catch((error) => console.error(error));
+            setTempCaseUuid(null);
+        }
+    }, [open, tempCaseUuid]);
+
     //Inits the dialog
     useEffect(() => {
         if (open && providedCase) {
@@ -286,10 +293,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setTriggerReset((oldVal) => !oldVal);
         setFormatWithParameters([]);
         setIsParamsCaseFileDisplayed(false);
-        if (tempCaseUuid !== null) {
-            deleteCase(tempCaseUuid).catch((error) => console.error(error));
-            setTempCaseUuid(null);
-        }
     };
 
     const handleCloseDialog = () => {
