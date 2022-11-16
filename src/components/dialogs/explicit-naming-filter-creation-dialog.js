@@ -337,7 +337,7 @@ const ExplicitNamingCreationDialog = ({
         resetDialog();
     };
 
-    return open ? (
+    return (
         <Dialog
             classes={{ paper: classes.dialogPaper }}
             fullWidth={true}
@@ -369,15 +369,17 @@ const ExplicitNamingCreationDialog = ({
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
-        </Dialog>
-    ) : (
-        renderDialogContent(
-            equipmentType,
-            handleEquipmentTypeChange,
-            tableValuesField,
-            createFilterErr
-        )
-    );
+        </Dialog>)
+    // ) : open ? (
+    //     renderDialogContent(
+    //         equipmentType,
+    //         handleEquipmentTypeChange,
+    //         tableValuesField,
+    //         createFilterErr
+    //     )
+    // ) : (
+    //     <></>
+    // );
 };
 
 ExplicitNamingCreationDialog.prototype = {

@@ -15,7 +15,7 @@ export const ElementType = {
 
 export const FilterType = {
     CRITERIA: 'CRITERIA',
-    EXPLICIT_NAMING: 'EXPLICIT_NAMING',
+    EXPLICIT_NAMING: 'IDENTIFIER_LIST',
 };
 
 export const ContingencyListType = {

@@ -30,7 +30,6 @@ import {
     contingencyListEquipmentDefinition,
     filterEquipmentDefinition,
 } from '../../utils/equipment-types';
-import CriteriaFilterDialogContent from './criteria-filter-dialog-content';
 
 const useStyles = makeStyles(() => ({
     controlItem: {
@@ -110,7 +109,7 @@ export const FilterTypeSelection = ({
     );
 };
 
-export const CriteriaBasedFilterDialog = ({
+export const CriteriaFilterDialogContent = ({
     id,
     open,
     onClose,
@@ -289,6 +288,7 @@ export const CriteriaBasedFilterDialog = ({
     };
 
     const renderSpecific = () => {
+        console.log('enter here', filterType);
         if (filterType !== null) {
             return Object.entries(
                 getEquipmentsDefinition()[filterType].fields
@@ -299,30 +299,42 @@ export const CriteriaBasedFilterDialog = ({
     };
 
     return (
-        <Dialog
-            classes={{ paper: classes.dialogPaper }}
-            open={open}
-            onClose={onClose}
-            aria-labelledby="dialog-title-filters-contingency-edit"
+        <Grid
+            container
+            spacing={1}
+            style={{ width: '100%', padding: 10, paddingRight: 20 }}
         >
-            <DialogTitle>{title}</DialogTitle>
-            <DialogContent>
-                <CriteriaFilterDialogContent contentType={contentType} />
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCancel}>
-                    <FormattedMessage id="cancel" />
-                </Button>
-                <Button
-                    onClick={handleValidate}
-                    variant="outlined"
-                    disabled={btnSaveListDisabled}
-                >
-                    <FormattedMessage id="validate" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+            {FilterTypeSelection({
+                type: filterType,
+                onChange: changeFilterType,
+                equipmentDefinition: getEquipmentsDefinition(),
+            })}
+            {renderSpecific()}
+        </Grid>
+        //  <Dialog
+        //      classes={{ paper: classes.dialogPaper }}
+        //      open={open}
+        //      onClose={onClose}
+        //      aria-labelledby="dialog-title-filters-contingency-edit"
+        //  >
+        //      <DialogTitle>{title}</DialogTitle>
+        //      <DialogContent>
+        //          <CriteriaFilterDialogContent />
+        //      </DialogContent>
+        //      <DialogActions>
+        //          <Button onClick={handleCancel}>
+        //              <FormattedMessage id="cancel" />
+        //          </Button>
+        //          <Button
+        //              onClick={handleValidate}
+        //              variant="outlined"
+        //              disabled={btnSaveListDisabled}
+        //          >
+        //              <FormattedMessage id="validate" />
+        //          </Button>
+        //      </DialogActions>
+        //  </Dialog>
     );
 };
 
-export default CriteriaBasedFilterDialog;
+export default CriteriaFilterDialogContent;

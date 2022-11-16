@@ -100,7 +100,7 @@
     "SCRIPT_FILTER": "Filtre (script)",
     "FORM_FILTER": "Filtre (formulaire)",
     "CRITERIA_FILTER": "Filtre (Par critère)",
-    "EXPLICIT_NAMING_FILTER": "Filtre (Par nommage)",
+    "IDENTIFIER_LIST_FILTER": "Filtre (Par nommage)",
     "SCRIPT_CONTINGENCY_LIST": "Liste d'aléas (script)",
     "FORM_CONTINGENCY_LIST": "Liste d'aléas (formulaire)",
     "CriteriaBased": "Par critère",

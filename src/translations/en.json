@@ -101,7 +101,7 @@
     "SCRIPT_FILTER": "Filter (script)",
     "FORM_FILTER": "Filter (form)",
     "CRITERIA_FILTER": "Filtre (Criteria based)",
-    "EXPLICIT_NAMING_FILTER": "Filtre (Explicit naming)",
+    "IDENTIFIER_LIST_FILTER": "Filtre (Explicit naming)",
     "SCRIPT_CONTINGENCY_LIST": "Contingency list (script)",
     "FORM_CONTINGENCY_LIST": "Contingency list (form)",
     "CriteriaBased": "Criteria based",

@@ -32,6 +32,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import ExplicitNamingCreationDialog from './explicit-naming-filter-creation-dialog';
 import CsvImportFilterCreationDialog from './csv-import-filter-creation-dialog';
 import CriteriaBasedFilterDialog from './criteria-based-filter-dialog';
+import CriteriaFilterDialogContent from './criteria-filter-dialog-content';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -283,25 +284,14 @@ const CreateFilterDialog = ({
                     {createFilterErr !== '' && (
                         <Alert severity="error">{createFilterErr}</Alert>
                     )}
-                    {filterType === FilterType.CRITERIA ? (
-                        <CriteriaBasedFilterDialog
-                            open={false && filterType === FilterType.CRITERIA}
-                            onClose={handleClose}
-                            isFilterCreation={true}
-                            handleFilterCreation={handleSave}
-                            contentType={ElementType.FILTER}
-                        />
-                    ) : (
-                        <ExplicitNamingCreationDialog
-                            open={
-                                false &&
-                                filterType === FilterType.EXPLICIT_NAMING
-                            }
-                            onClose={handleClose}
-                            name={newNameList}
-                            isFilterCreation={true}
-                        />
-                    )}
+                    <CriteriaFilterDialogContent
+                        open={open && filterType === FilterType.CRITERIA}
+                        onClose={handleClose}
+                        title={title}
+                        isFilterCreation={true}
+                        handleFilterCreation={handleSave}
+                        contentType={ElementType.FILTER}
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>{customTextCancelBtn}</Button>
@@ -318,6 +308,21 @@ const CreateFilterDialog = ({
                     </Button>
                 </DialogActions>
             </Dialog>
+            <CriteriaBasedFilterDialog
+                open={open && filterType === FilterType.CRITERIA}
+                onClose={handleClose}
+                title={title}
+                isFilterCreation={true}
+                handleFilterCreation={handleSave}
+                contentType={ElementType.FILTER}
+            />
+            <ExplicitNamingCreationDialog
+                open={open && filterType === FilterType.EXPLICIT_NAMING}
+                title={title}
+                onClose={handleClose}
+                name={newNameList}
+                isFilterCreation={true}
+            />
 
             {/* <CsvImportFilterCreationDialog
                 open={open && filterType === FilterType.IMPORT_CSV}
