@@ -661,17 +661,18 @@ export function connectNotificationsWsUpdateDirectories() {
     const webSocketBaseUrl = document.baseURI
         .replace(/^http:\/\//, 'ws://')
         .replace(/^https:\/\//, 'wss://');
-    const webSocketUrl =
-        webSocketBaseUrl +
-        PREFIX_NOTIFICATION_WS +
-        '/notify?updateType=directories';
+    const webSocketUrl = webSocketBaseUrl + PREFIX_NOTIFICATION_WS + '/notify';
 
     const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => webSocketUrl + '&access_token=' + getToken()
+        () => webSocketUrl + '?access_token=' + getToken()
     );
     reconnectingWebSocket.onopen = function () {
+        const filters = {
+            updateType: 'directories',
+        };
+        reconnectingWebSocket.send(JSON.stringify(filters));
         console.info(
-            'Connected Websocket update studies ' + webSocketUrl + ' ...'
+            'Connected Websocket update directories ' + webSocketUrl + ' ...'
         );
     };
     return reconnectingWebSocket;
