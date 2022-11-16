@@ -654,14 +654,18 @@ export function connectNotificationsWsUpdateDirectories() {
     const webSocketUrl =
         webSocketBaseUrl +
         PREFIX_NOTIFICATION_WS +
-        '/notify?updateType=directories';
+        '/notify';
 
     const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => webSocketUrl + '&access_token=' + getToken()
+        () => webSocketUrl + '?access_token=' + getToken()
     );
     reconnectingWebSocket.onopen = function (event) {
+        const filters = {
+            updateType: "directories",
+        };
+        reconnectingWebSocket.send(JSON.stringify(filters));
         console.info(
-            'Connected Websocket update studies ' + webSocketUrl + ' ...'
+            'Connected Websocket update directories ' + webSocketUrl + ' ...'
         );
     };
     return reconnectingWebSocket;
