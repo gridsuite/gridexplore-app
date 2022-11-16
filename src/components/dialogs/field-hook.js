@@ -86,14 +86,18 @@ export const useTextValue = ({
     return [value, field];
 };
 
-export const useFileValue = ({ triggerReset, fileExceedsLimitMessage }) => {
+export const useFileValue = ({
+    triggerReset,
+    fileExceedsLimitMessage,
+    isLoading,
+}) => {
     const selectedFile = useSelector((state) => state.selectedFile);
     const intl = useIntl();
     const dispatch = useDispatch();
     const [isFileOk, setIsFileOk] = useState(false);
     const [fileError, setFileError] = useState();
 
-    const field = <UploadCase />;
+    const field = <UploadCase isLoading={isLoading} />;
     useEffect(() => {
         dispatch(removeSelectedFile());
     }, [dispatch, triggerReset]);
