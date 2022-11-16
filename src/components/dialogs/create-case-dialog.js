@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -37,7 +37,7 @@ export function CreateCaseDialog({ onClose, open }) {
 
     const [triggerReset, setTriggerReset] = useState(true);
 
-    const [name, NameField, nameError, nameOk] = useNameField({
+    const [name, NameField, nameError, nameOk, setCaseName] = useNameField({
         label: 'nameProperty',
         autoFocus: true,
         elementType: ElementType.CASE,
@@ -64,6 +64,18 @@ export function CreateCaseDialog({ onClose, open }) {
     function validate() {
         return file && nameOk && isFileOk;
     }
+
+    const nameRef = useRef(name);
+
+    useEffect(() => {
+        nameRef.current = name;
+    }, [name]);
+
+    useEffect(() => {
+        if (nameRef.current.trim().length === 0 && file != null) {
+            setCaseName(file.name.substr(0, file.name.indexOf('.')));
+        }
+    }, [file, setCaseName]);
 
     const snackbarMessage = useSnackbarMessage();
 

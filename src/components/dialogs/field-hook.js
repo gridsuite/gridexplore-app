@@ -54,6 +54,10 @@ export const useTextValue = ({
         setValue(event.target.value);
     }, []);
 
+    const handleExternalNameChange = useCallback((value) => {
+        setValue(value);
+    }, []);
+
     const field = useMemo(() => {
         return (
             <TextField
@@ -83,7 +87,7 @@ export const useTextValue = ({
 
     useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
 
-    return [value, field];
+    return [value, field, handleExternalNameChange];
 };
 
 export const useFileValue = ({ triggerReset, fileExceedsLimitMessage }) => {
@@ -216,7 +220,7 @@ export const useNameField = ({
             );
     }, [checking, error]);
 
-    const [name, field] = useTextValue({
+    const [name, field, setName] = useTextValue({
         ...props,
         triggerReset,
         error: !!error,
@@ -250,6 +254,7 @@ export const useNameField = ({
             name.replace(/ /g, '') !== '' &&
             !error &&
             !checking,
+        setName,
     ];
 };
 

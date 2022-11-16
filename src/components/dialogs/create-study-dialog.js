@@ -149,6 +149,8 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     const timer = React.useRef();
 
+    const studyNameRef = React.useRef(studyName);
+
     const classes = useStyles();
     const intl = useIntl();
     const intlRef = useIntlRef();
@@ -229,6 +231,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     const handleStudyNameChanges = (e) => {
         const name = e.target.value;
+        studyNameRef.current = name;
         setStudyName(name);
     };
 
@@ -324,6 +327,16 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             });
         }
     }, [activeDirectory]);
+
+    useEffect(() => {
+        if (studyNameRef.current.trim().length === 0 && selectedFile != null) {
+            setStudyName(
+                selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
+            );
+        } else if (selectedFile == null) {
+            setStudyName('');
+        }
+    }, [selectedFile]);
 
     const renderStudyNameStatus = () => {
         const showOk =
