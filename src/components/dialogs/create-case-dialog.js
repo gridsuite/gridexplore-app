@@ -74,6 +74,8 @@ export function CreateCaseDialog({ onClose, open }) {
     useEffect(() => {
         if (nameRef.current.trim().length === 0 && file != null) {
             setCaseName(file.name.substr(0, file.name.indexOf('.')));
+        } else if (file == null) {
+            setCaseName('');
         }
     }, [file, setCaseName]);
 
