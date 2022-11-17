@@ -175,5 +175,8 @@
     "moveElementNotFoundError": "The element or the targeted folder was not found",
     "moveElementNotAllowedError": "You cannot move this element to the targeted folder. Unauthorized action",
     "notElementCreator": "You are not the element's creator",
-    "uploadingElement": "Upload in progress : no operation permitted"
+    "uploadingElement": "Upload in progress: no operation permitted",
+    "serverConnectionFailed" : "Failed to connect to server. Please retry later.",
+    "invalidFormatOrName":"Imported file name or format invalid",
+    "parameterLoadingProblem":"problem of loading parameters"
 }

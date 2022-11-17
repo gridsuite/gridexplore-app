@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import Dialog from '@mui/material//Dialog';
@@ -29,6 +29,7 @@ import {
     removeUploadingElement,
 } from '../../redux/actions';
 import { keyGenerator } from '../../utils/functions';
+import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../utils/UIconstants';
 
 /**
  * Dialog to create a case
@@ -39,9 +40,8 @@ export function CreateCaseDialog({ onClose, open }) {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
     const dispatch = useDispatch();
-
+    const intl = useIntl();
     const [triggerReset, setTriggerReset] = useState(true);
-
     const [name, NameField, nameError, nameOk, setCaseName] = useNameField({
         label: 'nameProperty',
         autoFocus: true,
@@ -101,8 +101,20 @@ export function CreateCaseDialog({ onClose, open }) {
             parentDirectoryUuid: activeDirectory,
         })
             .then()
-            .catch((message) => {
-                snackbarMessage(message, 'caseCreationError', { name });
+            .catch((err) => {
+                if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
+                    snackbarMessage(
+                        intl.formatMessage({
+                            id: 'invalidFormatOrName',
+                        }),
+                        'caseCreationError',
+                        { name }
+                    );
+                } else {
+                    snackbarMessage(err?.message, 'caseCreationError', {
+                        name,
+                    });
+                }
             })
             .finally(() => dispatch(removeUploadingElement(uploadingCase)));
         dispatch(addUploadingElement(uploadingCase));
