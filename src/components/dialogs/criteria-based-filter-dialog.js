@@ -50,37 +50,37 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-function deepCopy(aObject) {
-    if (!aObject) {
-        return aObject;
-    }
-    let v;
-    let bObject = Array.isArray(aObject) ? [] : {};
-    for (const k in aObject) {
-        v = aObject[k];
-        bObject[k] = typeof v === 'object' ? deepCopy(v) : v;
-    }
-    return bObject;
-}
+// function deepCopy(aObject) {
+//     if (!aObject) {
+//         return aObject;
+//     }
+//     let v;
+//     let bObject = Array.isArray(aObject) ? [] : {};
+//     for (const k in aObject) {
+//         v = aObject[k];
+//         bObject[k] = typeof v === 'object' ? deepCopy(v) : v;
+//     }
+//     return bObject;
+// }
 
-function generateDefaultValue(val, originalValue) {
-    if (originalValue != null) return { value: originalValue };
-    return {
-        value: deepCopy(val.defaultValue) || deepCopy(val.type.defaultValue),
-    };
-}
+// function generateDefaultValue(val, originalValue) {
+//     if (originalValue != null) return { value: originalValue };
+//     return {
+//         value: deepCopy(val.defaultValue) || deepCopy(val.type.defaultValue),
+//     };
+// }
 
-const SingleFilter = ({ filter, definition, onChange }) => {
-    const localChange = (newVal) => {
-        filter.value = newVal;
-        onChange();
-    };
-    return definition.type.renderer({
-        initialValue: filter.value,
-        onChange: localChange,
-        titleMessage: definition.name,
-    });
-};
+// const SingleFilter = ({ filter, definition, onChange }) => {
+//     const localChange = (newVal) => {
+//         filter.value = newVal;
+//         onChange();
+//     };
+//     return definition.type.renderer({
+//         initialValue: filter.value,
+//         onChange: localChange,
+//         titleMessage: definition.name,
+//     });
+// };
 
 export const FilterTypeSelection = ({
     type,
@@ -121,10 +121,10 @@ export const CriteriaBasedFilterDialog = ({
     handleFilterCreation,
 }) => {
     const [initialFilter, setInitialFilter] = useState(null);
-    const [filterType, setFilterType] = useState(null);
-    const [currentFormEdit, setCurrentFormEdit] = useState({
-        type: { value: filterType },
-    });
+    //const [filterType, setFilterType] = useState(null);
+    // const [currentFormEdit, setCurrentFormEdit] = useState({
+    //     type: { value: filterType },
+    // });
     const currentFilter = useRef(null);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const classes = useStyles();
@@ -132,56 +132,56 @@ export const CriteriaBasedFilterDialog = ({
     const openRef = useRef(null);
     openRef.current = open;
 
-    function getEquipmentsDefinition() {
-        return contentType === ElementType.FILTER
-            ? filterEquipmentDefinition
-            : contingencyListEquipmentDefinition;
-    }
+    // function getEquipmentsDefinition() {
+    //     return contentType === ElementType.FILTER
+    //         ? filterEquipmentDefinition
+    //         : contingencyListEquipmentDefinition;
+    // }
 
-    useEffect(() => {
-        console.log('from criteria dialog useeffect');
-        if (id !== null && openRef.current) {
-            if (contentType === ElementType.FILTER) {
-                // getFilterById(id)
-                //     .then((response) => {
-                //         setInitialFilter(response);
-                //         setFilterType(
-                //             response.equipmentFilterForm.equipmentType
-                //         );
-                //         setCurrentFormEdit({
-                //             equipmentType: {
-                //                 value: response.equipmentFilterForm
-                //                     .equipmentType,
-                //             },
-                //         });
-                //     })
-                //     .catch((errmsg) => {
-                //         snackError(errmsg, 'cannotRetrieveFilter');
-                //     });
-            } else if (contentType === ElementType.CONTINGENCY_LIST) {
-                getContingencyList(ContingencyListType.FORM, id)
-                    .then((response) => {
-                        setInitialFilter(response);
-                        setFilterType(response.equipmentType);
-                        setCurrentFormEdit({
-                            equipmentType: {
-                                value: response.equipmentType,
-                            },
-                        });
-                    })
-                    .catch((errmsg) => {
-                        snackError(errmsg, 'cannotRetrieveContingencyList');
-                    });
-            }
-        } else {
-            setCurrentFormEdit({
-                equipmentType: { value: null },
-            });
-            currentFilter.current = null;
-            setInitialFilter(null);
-            setFilterType(null);
-        }
-    }, [id, contentType, snackError]);
+    // useEffect(() => {
+    //     console.log('from criteria dialog useeffect');
+    //     if (id !== null && openRef.current) {
+    //         if (contentType === ElementType.FILTER) {
+    //             getFilterById(id)
+    //                 .then((response) => {
+    //                     setInitialFilter(response);
+    //                     setFilterType(
+    //                         response.equipmentFilterForm.equipmentType
+    //                     );
+    //                     setCurrentFormEdit({
+    //                         equipmentType: {
+    //                             value: response.equipmentFilterForm
+    //                                 .equipmentType,
+    //                         },
+    //                     });
+    //                 })
+    //                 .catch((errmsg) => {
+    //                     snackError(errmsg, 'cannotRetrieveFilter');
+    //                 });
+    //         } else if (contentType === ElementType.CONTINGENCY_LIST) {
+    //             getContingencyList(ContingencyListType.FORM, id)
+    //                 .then((response) => {
+    //                     setInitialFilter(response);
+    //                     setFilterType(response.equipmentType);
+    //                     setCurrentFormEdit({
+    //                         equipmentType: {
+    //                             value: response.equipmentType,
+    //                         },
+    //                     });
+    //                 })
+    //                 .catch((errmsg) => {
+    //                     snackError(errmsg, 'cannotRetrieveContingencyList');
+    //                 });
+    //         }
+    //     } else {
+    //         setCurrentFormEdit({
+    //             equipmentType: { value: null },
+    //         });
+    //         currentFilter.current = null;
+    //         setInitialFilter(null);
+    //         setFilterType(null);
+    //     }
+    // }, [id, contentType, snackError]);
 
     useEffect(() => {
         console.log('from criteria dialog useeffect initialFilter', initialFilter);
@@ -190,29 +190,29 @@ export const CriteriaBasedFilterDialog = ({
         }
     }, [initialFilter]);
 
-    function onChange(newVal) {
-        console.log('from criteria dialog on change');
-        currentFilter.current = {};
-        currentFilter.current.id = id;
-        currentFilter.current.type = FilterType.CRITERIA;
-        if (contentType === ElementType.FILTER) {
-            // data model is not the same: filter has a sub-object 'equipmentFilterForm'
-            currentFilter.current.equipmentFilterForm = newVal;
-        } else {
-            for (const k in newVal) currentFilter.current[k] = newVal[k];
-        }
-        setBtnSaveListDisabled(false);
-    }
+    // function onChange(newVal) {
+    //     console.log('from criteria dialog on change');
+    //     currentFilter.current = {};
+    //     currentFilter.current.id = id;
+    //     currentFilter.current.type = FilterType.CRITERIA;
+    //     if (contentType === ElementType.FILTER) {
+    //         // data model is not the same: filter has a sub-object 'equipmentFilterForm'
+    //         currentFilter.current.equipmentFilterForm = newVal;
+    //     } else {
+    //         for (const k in newVal) currentFilter.current[k] = newVal[k];
+    //     }
+    //     setBtnSaveListDisabled(false);
+    // }
 
     const handleCancel = () => {
         console.log('from criteria dialog handleCancel');
         onClose();
         currentFilter.current = null;
-        setCurrentFormEdit({
-            equipmentType: { value: null },
-        });
+        // setCurrentFormEdit({
+        //     equipmentType: { value: null },
+        // });
         setInitialFilter(null);
-        setFilterType(null);
+        //setFilterType(null);
         setBtnSaveListDisabled(true);
     };
 
@@ -238,72 +238,72 @@ export const CriteriaBasedFilterDialog = ({
         }
     };
 
-    function validVoltageValues(obj) {
-        console.log('from criteria dialog validVoltageValues');
-        let value1NotNull =
-            obj.value.hasOwnProperty('value1') && obj.value['value1'] !== null;
-        if (obj.value.type !== 'RANGE') {
-            return value1NotNull;
-        }
-        let value2NotNull =
-            obj.value.hasOwnProperty('value2') && obj.value['value2'] !== null;
-        return value1NotNull && value2NotNull;
-    }
+    // function validVoltageValues(obj) {
+    //     console.log('from criteria dialog validVoltageValues');
+    //     let value1NotNull =
+    //         obj.value.hasOwnProperty('value1') && obj.value['value1'] !== null;
+    //     if (obj.value.type !== 'RANGE') {
+    //         return value1NotNull;
+    //     }
+    //     let value2NotNull =
+    //         obj.value.hasOwnProperty('value2') && obj.value['value2'] !== null;
+    //     return value1NotNull && value2NotNull;
+    // }
 
-    const editDone = () => {
-        console.log('from criteria dialog editDone');
-        let res = {};
-        Object.entries(currentFormEdit).forEach(([key, obj]) => {
-            if (key.startsWith('nominalVoltage') && !validVoltageValues(obj)) {
-                // dont send nominalVoltage with null value1/value2 properties
-                res[key] = null;
-            } else {
-                res[key] = obj.value;
-            }
-        });
-        onChange(res);
-    };
+    // const editDone = () => {
+    //     console.log('from criteria dialog editDone');
+    //     let res = {};
+    //     Object.entries(currentFormEdit).forEach(([key, obj]) => {
+    //         if (key.startsWith('nominalVoltage') && !validVoltageValues(obj)) {
+    //             // dont send nominalVoltage with null value1/value2 properties
+    //             res[key] = null;
+    //         } else {
+    //             res[key] = obj.value;
+    //         }
+    //     });
+    //    // onChange(res);
+    // };
 
-    const changeFilterType = (newType) => {
-        // TODO: should reset all fields in currentFormEdit
-        currentFormEdit.equipmentType = { value: newType };
-        setFilterType(newType);
-        editDone();
-    };
+    // const changeFilterType = (newType) => {
+    //     // TODO: should reset all fields in currentFormEdit
+    //     currentFormEdit.equipmentType = { value: newType };
+    //     setFilterType(newType);
+    //     editDone();
+    // };
 
-    const renderFilter = (key, definition) => {
+    // const renderFilter = (key, definition) => {
 
-        if (initialFilter !== null) {
-            if (currentFormEdit[key] === undefined) {
-                currentFormEdit[key] = generateDefaultValue(
-                    definition,
-                    contentType === ElementType.FILTER
-                        ? initialFilter.equipmentFilterForm[key]
-                        : initialFilter[key]
-                );
-            }
-        } else {
-            currentFormEdit[key] = generateDefaultValue(definition, null);
-        }
-        return (
-            <SingleFilter
-                key={key}
-                filter={currentFormEdit[key]}
-                definition={definition}
-                onChange={editDone}
-            />
-        );
-    };
+    //     if (initialFilter !== null) {
+    //         if (currentFormEdit[key] === undefined) {
+    //             currentFormEdit[key] = generateDefaultValue(
+    //                 definition,
+    //                 contentType === ElementType.FILTER
+    //                     ? initialFilter.equipmentFilterForm[key]
+    //                     : initialFilter[key]
+    //             );
+    //         }
+    //     } else {
+    //         currentFormEdit[key] = generateDefaultValue(definition, null);
+    //     }
+    //     return (
+    //         <SingleFilter
+    //             key={key}
+    //             filter={currentFormEdit[key]}
+    //             definition={definition}
+    //             onChange={editDone}
+    //         />
+    //     );
+    // };
 
-    const renderSpecific = () => {
-        if (filterType !== null) {
-            return Object.entries(
-                getEquipmentsDefinition()[filterType].fields
-            ).map(([key, definition]) => {
-                return renderFilter(key, definition);
-            });
-        }
-    };
+    // const renderSpecific = () => {
+    //     if (filterType !== null) {
+    //         return Object.entries(
+    //             getEquipmentsDefinition()[filterType].fields
+    //         ).map(([key, definition]) => {
+    //             return renderFilter(key, definition);
+    //         });
+    //     }
+    // };
 
     return (
         <Dialog
@@ -317,9 +317,6 @@ export const CriteriaBasedFilterDialog = ({
                 <CriteriaFilterDialogContent
                     id={id}
                     open={open}
-                    onClose={onClose}
-                    onError={onError}
-                    title={title}
                     contentType={contentType}
                 />
             </DialogContent>

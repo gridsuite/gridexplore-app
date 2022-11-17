@@ -118,6 +118,12 @@ const CreateFilterDialog = ({
         FilterType.CRITERIA
     );
 
+    // const [currentFilter] = CriteriaFilterDialogContent({
+    //     id: null,
+    //     open: open && filterType === FilterType.CRITERIA,
+    //     contentType: ElementType.FILTER,
+    // });
+
     /**
      * on change input popup check if name already exist
      * @param name
@@ -190,6 +196,7 @@ const CreateFilterDialog = ({
 
     const handleValidation = () => {
         console.log('handleValidation in create filter dialog', newListType);
+        //console.log('handleValidation in create filter dialog currentFilter', currentFilter);
         //To manage the case when we never tried to enter a name
         if (newNameList === '') {
             setCreateFilterErr(intl.formatMessage({ id: 'nameEmpty' }));
@@ -204,7 +211,7 @@ const CreateFilterDialog = ({
     };
 
     const handleSave = (filter) => {
-        console.log('enter handleSave in create filter dialog');
+        console.log('enter handleSave in create filter dialog', filter);
         createFilter(filter, newNameList, activeDirectory)
             .then(() => {
                 handleClose();
@@ -336,10 +343,10 @@ const CreateFilterDialog = ({
                     {newListType === FilterType.CRITERIA ? (
                         <CriteriaFilterDialogContent
                             open={open && filterType === FilterType.CRITERIA}
-                            onClose={handleClose}
-                            title={title}
+                            //onClose={handleClose}
+                            //title={title}
                             isFilterCreation={true}
-                            handleFilterCreation={handleSave}
+                           // handleFilterCreation={handleSave}
                             contentType={ElementType.FILTER}
                         />
                     ) : (

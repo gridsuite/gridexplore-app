@@ -109,15 +109,7 @@ export const FilterTypeSelection = ({
     );
 };
 
-export const CriteriaFilterDialogContent = ({
-    id,
-    open,
-    onClose,
-    onError,
-    contentType,
-    isFilterCreation,
-    handleFilterCreation,
-}) => {
+export const CriteriaFilterDialogContent = ({ id, open, contentType }) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [filterType, setFilterType] = useState(null);
     const [currentFormEdit, setCurrentFormEdit] = useState({
@@ -137,7 +129,7 @@ export const CriteriaFilterDialogContent = ({
     }
 
     useEffect(() => {
-        console.log('criteria content useefect', contentType);
+        console.log('criteria dialog content useefect', contentType);
         if (id !== null && openRef.current) {
             if (contentType === ElementType.FILTER) {
                 getFilterById(id)
@@ -182,12 +174,14 @@ export const CriteriaFilterDialogContent = ({
     }, [id, contentType, snackError]);
 
     useEffect(() => {
+        console.log('criteria dialog content useefect initialFilter', initialFilter);
         if (initialFilter !== null) {
             setBtnSaveListDisabled(initialFilter.transient !== true);
         }
     }, [initialFilter]);
 
     function onChange(newVal) {
+        console.log('from criteria dialog content onchange', newVal);
         currentFilter.current = {};
         currentFilter.current.id = id;
         currentFilter.current.type = FilterType.CRITERIA;
@@ -257,6 +251,7 @@ export const CriteriaFilterDialogContent = ({
     };
 
     const changeFilterType = (newType) => {
+        console.log('from criteria dialog content changeFilterType', newType);
         // TODO: should reset all fields in currentFormEdit
         currentFormEdit.equipmentType = { value: newType };
         setFilterType(newType);
