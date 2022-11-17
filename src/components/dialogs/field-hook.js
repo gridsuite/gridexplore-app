@@ -54,10 +54,6 @@ export const useTextValue = ({
         setValue(event.target.value);
     }, []);
 
-    const handleExternalNameChange = useCallback((value) => {
-        setValue(value);
-    }, []);
-
     const field = useMemo(() => {
         return (
             <TextField
@@ -87,7 +83,7 @@ export const useTextValue = ({
 
     useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
 
-    return [value, field, handleExternalNameChange];
+    return [value, field, setValue];
 };
 
 export const useFileValue = ({ triggerReset, fileExceedsLimitMessage }) => {
@@ -260,20 +256,18 @@ export const useNameField = ({
 
 export const usePrefillNameField = ({ nameRef, selectedFile, setValue }) => {
     useEffect(() => {
-        if (
-            nameRef !== undefined &&
-            nameRef.current.trim().length === 0 &&
-            selectedFile != null
-        ) {
-            setValue(
-                selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
-            );
-        } else if (
-            selectedFile == null &&
-            setValue != null &&
-            setValue !== undefined
-        ) {
-            setValue('');
+        if (setValue) {
+            if (
+                nameRef !== undefined &&
+                nameRef.current.trim().length === 0 &&
+                selectedFile != null
+            ) {
+                setValue(
+                    selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
+                );
+            } else if (selectedFile == null) {
+                setValue('');
+            }
         }
     }, [nameRef, selectedFile, setValue]);
 };
