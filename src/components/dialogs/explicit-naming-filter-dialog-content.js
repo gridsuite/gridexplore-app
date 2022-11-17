@@ -29,7 +29,6 @@ import { Draggable } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
 import { Input } from '@mui/material';
 import { filterEquipmentDefinition } from '../../utils/equipment-types';
-import ExplicitNamingFilterDialogContent from './explicit-naming-filter-dialog-content';
 
 const useStyles = makeStyles((theme) => ({
     dialogPaper: {
@@ -205,7 +204,7 @@ const ManualFilterRow = ({
     );
 };
 
-const ExplicitNamingCreationDialog = ({
+const ExplicitNamingFilterDialogContent = ({
     id,
     open,
     onClose,
@@ -236,14 +235,14 @@ const ExplicitNamingCreationDialog = ({
     };
 
     useEffect(() => {
-        console.log('from naming dialog');
+        console.log('from naming dialog content');
         if (id && fetchFilter.current) {
-            // getFilterById(id)
-            //     .then((response) => {
-            //         setDefaultValues(response);
-            //         setEquipmentType(response?.equipmentType);
-            //     })
-            //     .catch((error) => setCreateFilterErr(error));
+            getFilterById(id)
+                .then((response) => {
+                    setDefaultValues(response);
+                    setEquipmentType(response?.equipmentType);
+                })
+                .catch((error) => setCreateFilterErr(error));
         }
     }, [id]);
 
@@ -340,24 +339,25 @@ const ExplicitNamingCreationDialog = ({
     };
 
     return (
-        <Dialog
-            classes={{ paper: classes.dialogPaper }}
-            fullWidth={true}
-            open={open}
-            onClose={handleClose}
-        >
-            <DialogTitle onClose={onClose}>{title}</DialogTitle>
-            <DialogContent>
-                <ExplicitNamingFilterDialogContent
-                    id={id}
-                    open={open}
-                    title={title}
-                    onClose={onClose}
-                    name={name}
-                    isFilterCreation={isFilterCreation}
-                />
-            </DialogContent>
-            <DialogActions>
+        <div>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <FilterTypeSelection
+                        type={equipmentType}
+                        disabled={false}
+                        onChange={handleEquipmentTypeChange}
+                        equipmentDefinition={filterEquipmentDefinition}
+                    />
+                </Grid>
+                <Grid item xs={12} />
+                {equipmentType && tableValuesField}
+                {createFilterErr !== '' && (
+                    <Alert style={{ flexGrow: 1 }} severity="error">
+                        {createFilterErr}
+                    </Alert>
+                )}
+            </Grid>
+            {/* <Grid container>
                 <Button onClick={handleClose}>
                     <FormattedMessage id="cancel" />
                 </Button>
@@ -372,12 +372,12 @@ const ExplicitNamingCreationDialog = ({
                 >
                     <FormattedMessage id="validate" />
                 </Button>
-            </DialogActions>
-        </Dialog>
+            </Grid> */}
+        </div>
     );
 };
 
-ExplicitNamingCreationDialog.prototype = {
+ExplicitNamingFilterDialogContent.prototype = {
     id: PropTypes.string,
     name: PropTypes.string,
     onClose: PropTypes.func.isRequired,
@@ -386,4 +386,4 @@ ExplicitNamingCreationDialog.prototype = {
     isFilterCreation: PropTypes.bool,
 };
 
-export default ExplicitNamingCreationDialog;
+export default ExplicitNamingFilterDialogContent;

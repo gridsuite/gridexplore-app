@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import withStyles from '@mui/styles/withStyles';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -33,6 +33,8 @@ import ExplicitNamingCreationDialog from './explicit-naming-filter-creation-dial
 import CsvImportFilterCreationDialog from './csv-import-filter-creation-dialog';
 import CriteriaBasedFilterDialog from './criteria-based-filter-dialog';
 import CriteriaFilterDialogContent from './criteria-filter-dialog-content';
+import ExplicitNamingFilterDialogContent from './explicit-naming-filter-dialog-content';
+import { DialogContentText } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -111,6 +113,10 @@ const CreateFilterDialog = ({
     const timer = React.useRef();
     const [newListType, setNewListType] = useState(FilterType.CRITERIA);
     const [filterType, setFilterType] = useState('');
+    const [openConfirmationPopup, setopenConfirmationPopup] = useState(false);
+    const [choosedFilterType, setChoosedFilterType] = useState(
+        FilterType.CRITERIA
+    );
 
     /**
      * on change input popup check if name already exist
@@ -178,9 +184,12 @@ const CreateFilterDialog = ({
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
         setFilterNameValid(false);
+        setopenConfirmationPopup(false);
+        setChoosedFilterType(FilterType.CRITERIA);
     };
 
     const handleValidation = () => {
+        console.log('handleValidation in create filter dialog', newListType);
         //To manage the case when we never tried to enter a name
         if (newNameList === '') {
             setCreateFilterErr(intl.formatMessage({ id: 'nameEmpty' }));
@@ -195,6 +204,7 @@ const CreateFilterDialog = ({
     };
 
     const handleSave = (filter) => {
+        console.log('enter handleSave in create filter dialog');
         createFilter(filter, newNameList, activeDirectory)
             .then(() => {
                 handleClose();
@@ -236,6 +246,48 @@ const CreateFilterDialog = ({
         }
     };
 
+    const handleRadioButtonClick = (event) => {
+        setopenConfirmationPopup(true);
+        setChoosedFilterType(event.target.value);
+    };
+
+    const handlePopupConfirmation = () => {
+        setopenConfirmationPopup(false);
+        setNewListType(choosedFilterType);
+    };
+
+    const renderchangeFilterTypePopup = () => {
+        return (
+            <div>
+                <Dialog
+                    open={openConfirmationPopup}
+                    aria-labelledby="dialog-title-change-filter-type"
+                    onKeyPress={() => handlePopupConfirmation(false)}
+                >
+                    <DialogTitle id={'dialog-title-change-filter-type'}>
+                        {'confirmation'}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            voulez-vous change le type ?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setopenConfirmationPopup(false)}>
+                            <FormattedMessage id="cancel" />
+                        </Button>
+                        <Button
+                            onClick={() => handlePopupConfirmation()}
+                            variant="outlined"
+                        >
+                            <FormattedMessage id="validate" />
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        );
+    };
+
     return (
         <>
             <Dialog
@@ -267,7 +319,7 @@ const CreateFilterDialog = ({
                         name="filterType"
                         value={newListType}
                         defaultValue={FilterType.CRITERIA}
-                        onChange={(e) => setNewListType(e.target.value)}
+                        onChange={(e) => handleRadioButtonClick(e)}
                         row
                     >
                         <FormControlLabel
@@ -281,17 +333,30 @@ const CreateFilterDialog = ({
                             label={<FormattedMessage id="ExplicitNaming" />}
                         />
                     </RadioGroup>
+                    {newListType === FilterType.CRITERIA ? (
+                        <CriteriaFilterDialogContent
+                            open={open && filterType === FilterType.CRITERIA}
+                            onClose={handleClose}
+                            title={title}
+                            isFilterCreation={true}
+                            handleFilterCreation={handleSave}
+                            contentType={ElementType.FILTER}
+                        />
+                    ) : (
+                        <ExplicitNamingFilterDialogContent
+                            open={
+                                open &&
+                                filterType === FilterType.EXPLICIT_NAMING
+                            }
+                            title={title}
+                            onClose={handleClose}
+                            name={newNameList}
+                            isFilterCreation={true}
+                        />
+                    )}
                     {createFilterErr !== '' && (
                         <Alert severity="error">{createFilterErr}</Alert>
                     )}
-                    <CriteriaFilterDialogContent
-                        open={open && filterType === FilterType.CRITERIA}
-                        onClose={handleClose}
-                        title={title}
-                        isFilterCreation={true}
-                        handleFilterCreation={handleSave}
-                        contentType={ElementType.FILTER}
-                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>{customTextCancelBtn}</Button>
@@ -308,21 +373,7 @@ const CreateFilterDialog = ({
                     </Button>
                 </DialogActions>
             </Dialog>
-            <CriteriaBasedFilterDialog
-                open={open && filterType === FilterType.CRITERIA}
-                onClose={handleClose}
-                title={title}
-                isFilterCreation={true}
-                handleFilterCreation={handleSave}
-                contentType={ElementType.FILTER}
-            />
-            <ExplicitNamingCreationDialog
-                open={open && filterType === FilterType.EXPLICIT_NAMING}
-                title={title}
-                onClose={handleClose}
-                name={newNameList}
-                isFilterCreation={true}
-            />
+            {renderchangeFilterTypePopup()}
 
             {/* <CsvImportFilterCreationDialog
                 open={open && filterType === FilterType.IMPORT_CSV}

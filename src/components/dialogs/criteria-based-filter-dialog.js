@@ -139,24 +139,25 @@ export const CriteriaBasedFilterDialog = ({
     }
 
     useEffect(() => {
+        console.log('from criteria dialog useeffect');
         if (id !== null && openRef.current) {
             if (contentType === ElementType.FILTER) {
-                getFilterById(id)
-                    .then((response) => {
-                        setInitialFilter(response);
-                        setFilterType(
-                            response.equipmentFilterForm.equipmentType
-                        );
-                        setCurrentFormEdit({
-                            equipmentType: {
-                                value: response.equipmentFilterForm
-                                    .equipmentType,
-                            },
-                        });
-                    })
-                    .catch((errmsg) => {
-                        snackError(errmsg, 'cannotRetrieveFilter');
-                    });
+                // getFilterById(id)
+                //     .then((response) => {
+                //         setInitialFilter(response);
+                //         setFilterType(
+                //             response.equipmentFilterForm.equipmentType
+                //         );
+                //         setCurrentFormEdit({
+                //             equipmentType: {
+                //                 value: response.equipmentFilterForm
+                //                     .equipmentType,
+                //             },
+                //         });
+                //     })
+                //     .catch((errmsg) => {
+                //         snackError(errmsg, 'cannotRetrieveFilter');
+                //     });
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
                 getContingencyList(ContingencyListType.FORM, id)
                     .then((response) => {
@@ -183,12 +184,14 @@ export const CriteriaBasedFilterDialog = ({
     }, [id, contentType, snackError]);
 
     useEffect(() => {
+        console.log('from criteria dialog useeffect initialFilter', initialFilter);
         if (initialFilter !== null) {
             setBtnSaveListDisabled(initialFilter.transient !== true);
         }
     }, [initialFilter]);
 
     function onChange(newVal) {
+        console.log('from criteria dialog on change');
         currentFilter.current = {};
         currentFilter.current.id = id;
         currentFilter.current.type = FilterType.CRITERIA;
@@ -202,6 +205,7 @@ export const CriteriaBasedFilterDialog = ({
     }
 
     const handleCancel = () => {
+        console.log('from criteria dialog handleCancel');
         onClose();
         currentFilter.current = null;
         setCurrentFormEdit({
@@ -213,7 +217,7 @@ export const CriteriaBasedFilterDialog = ({
     };
 
     const handleValidate = () => {
-        console.log('currentFilter.current', currentFilter.current);
+        console.log('enter handleValidate in criteria dialog', isFilterCreation);
         if (!isFilterCreation) {
             if (contentType === ElementType.FILTER) {
                 saveFilter(currentFilter.current)
@@ -235,6 +239,7 @@ export const CriteriaBasedFilterDialog = ({
     };
 
     function validVoltageValues(obj) {
+        console.log('from criteria dialog validVoltageValues');
         let value1NotNull =
             obj.value.hasOwnProperty('value1') && obj.value['value1'] !== null;
         if (obj.value.type !== 'RANGE') {
@@ -246,6 +251,7 @@ export const CriteriaBasedFilterDialog = ({
     }
 
     const editDone = () => {
+        console.log('from criteria dialog editDone');
         let res = {};
         Object.entries(currentFormEdit).forEach(([key, obj]) => {
             if (key.startsWith('nominalVoltage') && !validVoltageValues(obj)) {
@@ -266,6 +272,7 @@ export const CriteriaBasedFilterDialog = ({
     };
 
     const renderFilter = (key, definition) => {
+
         if (initialFilter !== null) {
             if (currentFormEdit[key] === undefined) {
                 currentFormEdit[key] = generateDefaultValue(
@@ -307,7 +314,14 @@ export const CriteriaBasedFilterDialog = ({
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <CriteriaFilterDialogContent contentType={contentType} />
+                <CriteriaFilterDialogContent
+                    id={id}
+                    open={open}
+                    onClose={onClose}
+                    onError={onError}
+                    title={title}
+                    contentType={contentType}
+                />
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCancel}>

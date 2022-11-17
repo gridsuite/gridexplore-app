@@ -114,7 +114,6 @@ export const CriteriaFilterDialogContent = ({
     open,
     onClose,
     onError,
-    title,
     contentType,
     isFilterCreation,
     handleFilterCreation,
@@ -138,6 +137,7 @@ export const CriteriaFilterDialogContent = ({
     }
 
     useEffect(() => {
+        console.log('criteria content useefect', contentType);
         if (id !== null && openRef.current) {
             if (contentType === ElementType.FILTER) {
                 getFilterById(id)
@@ -200,38 +200,37 @@ export const CriteriaFilterDialogContent = ({
         setBtnSaveListDisabled(false);
     }
 
-    const handleCancel = () => {
-        onClose();
-        currentFilter.current = null;
-        setCurrentFormEdit({
-            equipmentType: { value: null },
-        });
-        setInitialFilter(null);
-        setFilterType(null);
-        setBtnSaveListDisabled(true);
-    };
+    // const handleCancel = () => {
+    //     onClose();
+    //     currentFilter.current = null;
+    //     setCurrentFormEdit({
+    //         equipmentType: { value: null },
+    //     });
+    //     setInitialFilter(null);
+    //     setFilterType(null);
+    //     setBtnSaveListDisabled(true);
+    // };
 
-    const handleValidate = () => {
-        console.log('currentFilter.current', currentFilter.current);
-        if (!isFilterCreation) {
-            if (contentType === ElementType.FILTER) {
-                saveFilter(currentFilter.current)
-                    .then()
-                    .catch((errorMessage) => {
-                        onError(errorMessage);
-                    });
-            } else if (contentType === ElementType.CONTINGENCY_LIST) {
-                saveFormContingencyList(currentFilter.current)
-                    .then()
-                    .catch((errorMessage) => {
-                        onError(errorMessage);
-                    });
-            }
-            handleCancel();
-        } else {
-            handleFilterCreation(currentFilter.current);
-        }
-    };
+    // const handleValidate = () => {
+    //     if (!isFilterCreation) {
+    //         if (contentType === ElementType.FILTER) {
+    //             saveFilter(currentFilter.current)
+    //                 .then()
+    //                 .catch((errorMessage) => {
+    //                     onError(errorMessage);
+    //                 });
+    //         } else if (contentType === ElementType.CONTINGENCY_LIST) {
+    //             saveFormContingencyList(currentFilter.current)
+    //                 .then()
+    //                 .catch((errorMessage) => {
+    //                     onError(errorMessage);
+    //                 });
+    //         }
+    //         handleCancel();
+    //     } else {
+    //         handleFilterCreation(currentFilter.current);
+    //     }
+    // };
 
     function validVoltageValues(obj) {
         let value1NotNull =
@@ -288,7 +287,6 @@ export const CriteriaFilterDialogContent = ({
     };
 
     const renderSpecific = () => {
-        console.log('enter here', filterType);
         if (filterType !== null) {
             return Object.entries(
                 getEquipmentsDefinition()[filterType].fields
@@ -299,18 +297,32 @@ export const CriteriaFilterDialogContent = ({
     };
 
     return (
-        <Grid
-            container
-            spacing={1}
-            style={{ width: '100%', padding: 10, paddingRight: 20 }}
-        >
-            {FilterTypeSelection({
-                type: filterType,
-                onChange: changeFilterType,
-                equipmentDefinition: getEquipmentsDefinition(),
-            })}
-            {renderSpecific()}
-        </Grid>
+        <>
+            <Grid
+                container
+                spacing={1}
+                style={{ width: '100%', padding: 10, paddingRight: 20 }}
+            >
+                {FilterTypeSelection({
+                    type: filterType,
+                    onChange: changeFilterType,
+                    equipmentDefinition: getEquipmentsDefinition(),
+                })}
+                {renderSpecific()}
+            </Grid>
+            {/* <Grid container justifyContent={'flex-end'}>
+                <Button onClick={handleCancel}>
+                    <FormattedMessage id="cancel" />
+                </Button>
+                <Button
+                    onClick={handleValidate}
+                    variant="outlined"
+                    disabled={btnSaveListDisabled}
+                >
+                    <FormattedMessage id="validate" />
+                </Button>
+            </Grid> */}
+        </>
         //  <Dialog
         //      classes={{ paper: classes.dialogPaper }}
         //      open={open}
