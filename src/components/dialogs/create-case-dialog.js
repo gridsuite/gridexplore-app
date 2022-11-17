@@ -16,7 +16,12 @@ import Alert from '@mui/material/Alert';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { ElementType } from '../../utils/elementType';
-import { useFileValue, useNameField, useTextValue } from './field-hook';
+import {
+    useFileValue,
+    useNameField,
+    useTextValue,
+    usePrefillNameField,
+} from './field-hook';
 import { createCase } from '../../utils/rest-api';
 import { useSnackbarMessage } from '../../utils/messages';
 import {
@@ -71,13 +76,11 @@ export function CreateCaseDialog({ onClose, open }) {
         nameRef.current = name;
     }, [name]);
 
-    useEffect(() => {
-        if (nameRef.current.trim().length === 0 && file != null) {
-            setCaseName(file.name.substr(0, file.name.indexOf('.')));
-        } else if (file == null) {
-            setCaseName('');
-        }
-    }, [file, setCaseName]);
+    usePrefillNameField({
+        nameRef,
+        selectedFile: file,
+        setValue: setCaseName,
+    });
 
     const snackbarMessage = useSnackbarMessage();
 
@@ -108,7 +111,7 @@ export function CreateCaseDialog({ onClose, open }) {
 
     const handleKeyPressed = (event) => {
         if (event.key === 'Enter') {
-            handleCreateNewCase(name, file);
+            handleCreateNewCase();
         }
     };
 

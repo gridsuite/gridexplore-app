@@ -258,6 +258,26 @@ export const useNameField = ({
     ];
 };
 
+export const usePrefillNameField = ({ nameRef, selectedFile, setValue }) => {
+    useEffect(() => {
+        if (
+            nameRef !== undefined &&
+            nameRef.current.trim().length === 0 &&
+            selectedFile != null
+        ) {
+            setValue(
+                selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
+            );
+        } else if (
+            selectedFile == null &&
+            setValue != null &&
+            setValue !== undefined
+        ) {
+            setValue('');
+        }
+    }, [nameRef, selectedFile, setValue]);
+};
+
 export const useEquipmentTableValues = ({
     id,
     tableHeadersIds,

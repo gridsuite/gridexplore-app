@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -21,11 +20,9 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
 import DirectorySelector from './directory-selector.js';
 import {
     createStudy,
-    elementExists,
     fetchCases,
     fetchPath,
     getCaseImportParameters,
@@ -43,13 +40,14 @@ import {
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
-import { useSnackbar } from 'notistack';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
+import { useSnackbarMessage } from '../../utils/messages';
 import { ElementType } from '../../utils/elementType';
-import { useFileValue } from './field-hook';
+import {
+    useFileValue,
+    useNameField,
+    useTextValue,
+    usePrefillNameField,
+} from './field-hook';
 import { keyGenerator } from '../../utils/functions.js';
 import { Divider, Grid } from '@mui/material';
 import { useImportExportParams } from '@gridsuite/commons-ui';
@@ -135,25 +133,12 @@ const SelectCase = () => {
 export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const [caseExist, setCaseExist] = React.useState(false);
 
-    const { enqueueSnackbar } = useSnackbar();
-
-    const [studyName, setStudyName] = React.useState('');
-    const [studyDescription, setStudyDescription] = React.useState('');
     const [createStudyErr, setCreateStudyErr] = React.useState('');
-
-    const [loadingCheckStudyName, setLoadingCheckStudyName] =
-        React.useState(false);
-    const [studyNameValid, setStudyNameValid] = useState(false);
 
     const userId = useSelector((state) => state.user.profile.sub);
 
-    const timer = React.useRef();
-
-    const studyNameRef = React.useRef(studyName);
-
     const classes = useStyles();
     const intl = useIntl();
-    const intlRef = useIntlRef();
     const dispatch = useDispatch();
 
     const caseName = useSelector((state) => state.selectedCase);
@@ -169,6 +154,47 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const [triggerReset, setTriggerReset] = React.useState(true);
 
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
+
+    const [studyName, NameField, nameError, nameOk, setStudyName] =
+        useNameField({
+            label: 'nameProperty',
+            autoFocus: true,
+            elementType: ElementType.STUDY,
+            parentDirectoryId: activeDirectory,
+            triggerReset,
+            active: open,
+            style: {
+                width: '90%',
+            },
+        });
+
+    const [description, DescriptionField] = useTextValue({
+        label: 'descriptionProperty',
+        triggerReset,
+        style: {
+            width: '90%',
+        },
+    });
+
+    const [selectedFile, FileField, selectedFileError, isSelectedFileOk] =
+        useFileValue({
+            label: 'Case',
+            triggerReset,
+        });
+
+    const snackbarMessage = useSnackbarMessage();
+
+    const studyNameRef = React.useRef(studyName);
+
+    useEffect(() => {
+        studyNameRef.current = studyName;
+    }, [studyName]);
+
+    usePrefillNameField({
+        nameRef: studyNameRef,
+        selectedFile,
+        setValue: setStudyName,
+    });
 
     const handleShowParametersClick = () => {
         setIsParamsDisplayed((oldValue) => !oldValue);
@@ -199,20 +225,17 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                     setFormatWithParameters([]);
                 });
         }
-    }, [open, dispatch, selectedDirectory?.elementName, providedCase]);
-
-    const [selectedFile, FileField, selectedFileError, isSelectedFileOk] =
-        useFileValue({
-            label: 'Case',
-            triggerReset,
-        });
+    }, [
+        open,
+        dispatch,
+        selectedDirectory?.elementName,
+        providedCase,
+        setStudyName,
+    ]);
 
     const resetDialog = () => {
         setCreateStudyErr('');
         setStudyName('');
-        setStudyDescription('');
-        setLoadingCheckStudyName(false);
-        setStudyNameValid(false);
         setActiveDirectoryName(selectedDirectory?.elementName);
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         dispatch(removeSelectedCase());
@@ -223,16 +246,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         onClose();
         resetImportParamsToDefault();
         resetDialog();
-    };
-
-    const handleStudyDescriptionChanges = (e) => {
-        setStudyDescription(e.target.value);
-    };
-
-    const handleStudyNameChanges = (e) => {
-        const name = e.target.value;
-        studyNameRef.current = name;
-        setStudyName(name);
     };
 
     const AdvancedParameterButton = ({
@@ -261,59 +274,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         );
     };
 
-    useEffect(() => {
-        const updateStudyFormState = (inputValue) => {
-            if (inputValue !== '' && activeDirectory) {
-                //If the name is not only white spaces
-                if (inputValue.replace(/ /g, '') !== '') {
-                    elementExists(
-                        activeDirectory,
-                        inputValue,
-                        ElementType.STUDY
-                    )
-                        .then((data) => {
-                            setStudyFormState(
-                                data
-                                    ? intl.formatMessage({
-                                          id: 'studyNameAlreadyUsed',
-                                      })
-                                    : '',
-                                !data
-                            );
-                        })
-                        .catch((error) => {
-                            setStudyFormState(
-                                intl.formatMessage({
-                                    id: 'nameValidityCheckErrorMsg',
-                                }) + error,
-                                false
-                            );
-                        })
-                        .finally(() => {
-                            setLoadingCheckStudyName(false);
-                        });
-                } else {
-                    setStudyFormState(
-                        intl.formatMessage({ id: 'nameEmpty' }),
-                        false
-                    );
-                    setLoadingCheckStudyName(false);
-                }
-            } else {
-                setStudyFormState('', false);
-                setLoadingCheckStudyName(false);
-            }
-        };
-
-        setLoadingCheckStudyName(true);
-
-        //Reset the timer so we only call update on the last input
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => {
-            updateStudyFormState(studyName);
-        }, 700);
-    }, [activeDirectory, intl, studyName]);
-
     //Updates the path display
     useEffect(() => {
         if (activeDirectory) {
@@ -328,56 +288,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         }
     }, [activeDirectory]);
 
-    useEffect(() => {
-        if (studyNameRef.current.trim().length === 0 && selectedFile != null) {
-            setStudyName(
-                selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
-            );
-        } else if (selectedFile == null) {
-            setStudyName('');
-        }
-    }, [selectedFile]);
-
-    const renderStudyNameStatus = () => {
-        const showOk =
-            studyName !== '' && !loadingCheckStudyName && studyNameValid;
-        return (
-            <div
-                style={{
-                    display: 'inline-block',
-                    verticalAlign: 'bottom',
-                }}
-            >
-                {loadingCheckStudyName && (
-                    <CircularProgress
-                        className={classes.progress}
-                        size="1rem"
-                    />
-                )}
-                {showOk && <CheckIcon style={{ color: 'green' }} />}
-            </div>
-        );
-    };
-
-    const setStudyFormState = (errorMessage, isNameValid) => {
-        setCreateStudyErr(errorMessage);
-        setStudyNameValid(isNameValid);
-    };
-
-    const studyCreationError = useCallback(
-        (studyName, msg) =>
-            displayErrorMessageWithSnackbar({
-                errorMessage: msg,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: 'studyCreationError',
-                    intlRef: intlRef,
-                    headerMessageValues: { studyName },
-                },
-            }),
-        [enqueueSnackbar, intlRef]
-    );
-
     const handleCreateNewStudy = () => {
         //To manage the case when we never tried to enter a name
         if (studyName === '') {
@@ -385,7 +295,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             return;
         }
         //We don't do anything if the checks are not over or the name is not valid
-        if (!studyNameValid || loadingCheckStudyName) {
+        if (!nameOk) {
             return;
         }
         if (caseExist && caseName === null) {
@@ -408,7 +318,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         createStudy(
             caseExist,
             studyName,
-            studyDescription,
+            description,
             caseName,
             selectedFile,
             activeDirectory,
@@ -418,7 +328,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         )
             .then()
             .catch((message) => {
-                studyCreationError(studyName, message);
+                snackbarMessage(message, 'studyCreationError', { studyName });
             })
             .finally(() => dispatch(removeUploadingElement(uploadingStudy)));
         dispatch(addUploadingElement(uploadingStudy));
@@ -445,8 +355,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const isCreationAllowed = () => {
         return !(
             studyName === '' ||
-            !studyNameValid ||
-            loadingCheckStudyName ||
+            !nameOk ||
             (!providedCase && !isSelectedFileOk)
         );
     };
@@ -464,31 +373,9 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                     <FormattedMessage id="createNewStudy" />
                 </DialogTitle>
                 <DialogContent>
-                    <div>
-                        <TextField
-                            onChange={(e) => handleStudyNameChanges(e)}
-                            autoFocus
-                            margin="dense"
-                            value={studyName}
-                            type="text"
-                            error={
-                                studyName !== '' &&
-                                !studyNameValid &&
-                                !loadingCheckStudyName
-                            }
-                            style={{ width: '90%' }}
-                            label={<FormattedMessage id="nameProperty" />}
-                        />
-                        {renderStudyNameStatus()}
-                    </div>
-                    <TextField
-                        onChange={(e) => handleStudyDescriptionChanges(e)}
-                        margin="dense"
-                        value={studyDescription}
-                        type="text"
-                        style={{ width: '90%' }}
-                        label={<FormattedMessage id="descriptionProperty" />}
-                    />
+                    {NameField}
+                    {DescriptionField}
+                    {nameError && <Alert severity="error">{nameError}</Alert>}
                     {!selectedCase ? (
                         caseExist ? (
                             <SelectCase />
