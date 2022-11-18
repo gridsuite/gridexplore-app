@@ -161,6 +161,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     const [triggerReset, setTriggerReset] = React.useState(true);
 
+    const [isParamsOk, setIsParamsOk] = useState(true);
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
     const [isParamsCaseFileDisplayed, setIsParamsCaseFileDisplayed] =
         useState(false);
@@ -224,9 +225,11 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                     return p;
                 });
                 setFormatWithParameters(result.parameters);
+                setIsParamsOk(true);
             })
             .catch(() => {
                 setFormatWithParameters([]);
+                setIsParamsOk(false);
                 setCreateStudyErr(
                     intl.formatMessage({ id: 'parameterLoadingProblem' })
                 );
@@ -428,6 +431,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         return !(
             studyName === '' ||
             !nameOk ||
+            !isParamsOk ||
             (!providedCase && !isSelectedFileOk)
         );
     };
