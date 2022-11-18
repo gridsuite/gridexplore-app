@@ -259,7 +259,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     useEffect(() => {
         oldTempCaseUuid.current = tempCaseUuid;
     }, [tempCaseUuid]);
-    
+
     usePrefillNameField({
         nameRef: studyNameRef,
         selectedFile,
