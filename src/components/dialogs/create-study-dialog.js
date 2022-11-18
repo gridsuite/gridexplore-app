@@ -237,7 +237,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 console.log('enter delete case', oldTempCaseUuid);
                 deleteCase(oldTempCaseUuid)
                     .then((res) => {
-                        setTempCaseUuid(null);
                         setoldTempCaseUuid(null);
                     })
                     .catch((error) => console.error(error));
