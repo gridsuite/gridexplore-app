@@ -21,16 +21,7 @@ export const UploadCase = ({ isLoading }) => {
         e.preventDefault();
         let files = e.target.files;
         if (files.size === 0) dispatch(selectFile(null));
-        else {
-            if (selectedFile == null) {
-                dispatch(selectFile(files[0]));
-            } else if (
-                selectedFile &&
-                selectedFile.lastModified !== files[0].lastModified
-            ) {
-                dispatch(selectFile(files[0]));
-            }
-        }
+        else dispatch(selectFile(files[0]));
     };
 
     return (

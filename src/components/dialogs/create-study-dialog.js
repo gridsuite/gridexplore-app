@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
@@ -197,7 +197,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         });
     const [isParamsOk, setIsParamsOk] = useState(true);
 
-    const [oldTempCaseUuid, setoldTempCaseUuid] = useState(null);
+    const oldTempCaseUuid = useRef(null);
 
     const getCaseImportParams = (caseUuid, setFormatWithParameters, intl) => {
         getCaseImportParameters(caseUuid)
@@ -227,22 +227,22 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             deleteCase(tempCaseUuid)
                 .then((res) => setTempCaseUuid(null))
                 .catch((error) => console.error(error));
-        } else if (open) {
-            console.log('oldTempCaseUuid', oldTempCaseUuid);
-            console.log('tempCaseUuid', tempCaseUuid);
-            if (oldTempCaseUuid === null && tempCaseUuid !== null) {
-                console.log('return');
-                return;
-            } else if (open && tempCaseUuid !== null) {
-                console.log('enter delete case', oldTempCaseUuid);
-                deleteCase(oldTempCaseUuid)
-                    .then((res) => {
-                        setoldTempCaseUuid(null);
-                    })
-                    .catch((error) => console.error(error));
-            }
+        } else if (
+            open &&
+            oldTempCaseUuid.current === null &&
+            tempCaseUuid !== null
+        ) {
+            return;
+        } else if (open && tempCaseUuid !== null) {
+            deleteCase(oldTempCaseUuid.current)
+                .then()
+                .catch((error) => console.error(error));
         }
-    }, [oldTempCaseUuid, open, tempCaseUuid]);
+    }, [open, tempCaseUuid]);
+
+    useEffect(() => {
+        oldTempCaseUuid.current = tempCaseUuid;
+    }, [tempCaseUuid]);
 
     //Inits the dialog
     useEffect(() => {
@@ -260,7 +260,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             createPrivateCase(selectedFile)
                 .then((caseUuid) => {
                     setUploadingFileInProgress(false);
-                    setoldTempCaseUuid(tempCaseUuid);
                     setTempCaseUuid(caseUuid);
                     getCaseImportParams(
                         caseUuid,
