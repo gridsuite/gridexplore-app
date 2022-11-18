@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,7 +16,12 @@ import Alert from '@mui/material/Alert';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { ElementType } from '../../utils/elementType';
-import { useFileValue, useNameField, useTextValue } from './field-hook';
+import {
+    useFileValue,
+    useNameField,
+    useTextValue,
+    usePrefillNameField,
+} from './field-hook';
 import { createCase } from '../../utils/rest-api';
 import { useSnackbarMessage } from '../../utils/messages';
 import {
@@ -37,7 +42,7 @@ export function CreateCaseDialog({ onClose, open }) {
     const dispatch = useDispatch();
     const intl = useIntl();
     const [triggerReset, setTriggerReset] = useState(true);
-    const [name, NameField, nameError, nameOk] = useNameField({
+    const [name, NameField, nameError, nameOk, setCaseName] = useNameField({
         label: 'nameProperty',
         autoFocus: true,
         elementType: ElementType.CASE,
@@ -64,6 +69,18 @@ export function CreateCaseDialog({ onClose, open }) {
     function validate() {
         return file && nameOk && isFileOk;
     }
+
+    const nameRef = useRef(name);
+
+    useEffect(() => {
+        nameRef.current = name;
+    }, [name]);
+
+    usePrefillNameField({
+        nameRef,
+        selectedFile: file,
+        setValue: setCaseName,
+    });
 
     const snackbarMessage = useSnackbarMessage();
 
@@ -106,7 +123,7 @@ export function CreateCaseDialog({ onClose, open }) {
 
     const handleKeyPressed = (event) => {
         if (event.key === 'Enter') {
-            handleCreateNewCase(name, file);
+            handleCreateNewCase();
         }
     };
 
