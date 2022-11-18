@@ -197,6 +197,8 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         });
     const [isParamsOk, setIsParamsOk] = useState(true);
 
+    const [oldTempCaseUuid, setoldTempCaseUuid] = useState(null);
+
     const getCaseImportParams = (caseUuid, setFormatWithParameters, intl) => {
         getCaseImportParameters(caseUuid)
             .then((result) => {
@@ -225,8 +227,23 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             deleteCase(tempCaseUuid)
                 .then((res) => setTempCaseUuid(null))
                 .catch((error) => console.error(error));
+        } else if (open) {
+            console.log('oldTempCaseUuid', oldTempCaseUuid);
+            console.log('tempCaseUuid', tempCaseUuid);
+            if (oldTempCaseUuid === null && tempCaseUuid !== null) {
+                console.log('return');
+                return;
+            } else if (open && tempCaseUuid !== null) {
+                console.log('enter delete case');
+                deleteCase(tempCaseUuid)
+                    .then((res) => {
+                        setTempCaseUuid(null);
+                        setoldTempCaseUuid(null);
+                    })
+                    .catch((error) => console.error(error));
+            }
         }
-    }, [open, tempCaseUuid]);
+    }, [oldTempCaseUuid, open, tempCaseUuid]);
 
     //Inits the dialog
     useEffect(() => {
@@ -244,6 +261,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             createPrivateCase(selectedFile)
                 .then((caseUuid) => {
                     setUploadingFileInProgress(false);
+                    setoldTempCaseUuid(tempCaseUuid);
                     setTempCaseUuid(caseUuid);
                     getCaseImportParams(
                         caseUuid,
