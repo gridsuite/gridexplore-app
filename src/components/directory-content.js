@@ -356,6 +356,23 @@ const DirectoryContent = () => {
         );
     }
 
+    function createdCellRender(cellData) {
+        const created = new Date(cellData.rowData[cellData.dataKey]);
+        const date = created.toLocaleDateString(intl.locale);
+        const fullDate = new Intl.DateTimeFormat(intl.locale, {
+            dateStyle: 'long',
+            timeStyle: 'long',
+        }).format(created);
+
+        return (
+            <div className={classes.cell}>
+                <Tooltip title={fullDate} placement="right">
+                    <span>{date}</span>
+                </Tooltip>
+            </div>
+        );
+    }
+
     function getElementIcon(objectType, objectSubtype) {
         if (objectType === ElementType.STUDY) {
             return <PhotoLibraryIcon className={classes.icon} />;
@@ -577,6 +594,7 @@ const DirectoryContent = () => {
     };
 
     const getCurrentChildrenWithNotClickableRows = () => {
+        console.log(currentChildren);
         return currentChildren.map((child) => {
             return {
                 ...child,
@@ -657,6 +675,14 @@ const DirectoryContent = () => {
                             }),
                             dataKey: 'owner',
                             cellRenderer: creatorCellRender,
+                        },
+                        {
+                            width: 50,
+                            label: intl.formatMessage({
+                                id: 'created',
+                            }),
+                            dataKey: 'creationDate',
+                            cellRenderer: createdCellRender,
                         },
                     ]}
                     sortable={true}
