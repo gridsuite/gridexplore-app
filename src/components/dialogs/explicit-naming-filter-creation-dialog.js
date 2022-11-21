@@ -11,7 +11,6 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import React, { useEffect, useRef, useState } from 'react';
-import { FilterTypeSelection } from './criteria-based-filter-dialog';
 import Grid from '@mui/material/Grid';
 import { useEquipmentTableValues } from './field-hook';
 import makeStyles from '@mui/styles/makeStyles';
@@ -265,13 +264,19 @@ const ExplicitNamingCreationDialog = ({
         );
     }, [equipmentType]);
 
-    const handleEquipmentTypeChange = (type) => {
-        setEquipmentType(type);
-        setDefaultValues({
-            filterEquipmentsAttributes: [],
-            equipmentType: equipmentType,
-        });
-    };
+    // const handleEquipmentTypeChange = (type) => {
+    //     setEquipmentType(type);
+    //     setDefaultValues({
+    //         filterEquipmentsAttributes: [],
+    //         equipmentType: equipmentType,
+    //     });
+    // };
+
+    const handleEditCallback = (childData, childData2, childData3) =>{
+        console.log('enter childData', childData);
+        console.log('enter childData22', childData2);
+        console.log('enter childData33', childData3);
+    }
 
     const handleCreateFilter = () => {
         if (
@@ -355,6 +360,7 @@ const ExplicitNamingCreationDialog = ({
                     onClose={onClose}
                     name={name}
                     isFilterCreation={isFilterCreation}
+                    handleSendData={handleEditCallback}
                 />
             </DialogContent>
             <DialogActions>

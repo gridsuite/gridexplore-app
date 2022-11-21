@@ -118,11 +118,12 @@ const CreateFilterDialog = ({
         FilterType.CRITERIA
     );
 
-    // const [currentFilter] = CriteriaFilterDialogContent({
-    //     id: null,
-    //     open: open && filterType === FilterType.CRITERIA,
-    //     contentType: ElementType.FILTER,
-    // });
+    const [filterToSave, setFilterToSave] = useState(null);
+
+    const handleCallback = (childData) =>{
+        console.log('enter childData', childData);
+        setFilterToSave(childData);
+    }
 
     /**
      * on change input popup check if name already exist
@@ -194,10 +195,18 @@ const CreateFilterDialog = ({
         setChoosedFilterType(FilterType.CRITERIA);
     };
 
+
+    const handleNamingFilterCallBack = () => {
+        console.log('handleNamingFilterCallBack');
+    }
+
     const handleValidation = () => {
         console.log('handleValidation in create filter dialog', newListType);
         //console.log('handleValidation in create filter dialog currentFilter', currentFilter);
         //To manage the case when we never tried to enter a name
+
+        
+
         if (newNameList === '') {
             setCreateFilterErr(intl.formatMessage({ id: 'nameEmpty' }));
             return;
@@ -207,7 +216,14 @@ const CreateFilterDialog = ({
             return;
         }
 
+        if(newListType === FilterType.EXPLICIT_NAMING){
+
+            return;
+        }
+
         setFilterType(newListType);
+        console.log('filter to save ', filterToSave);
+        handleSave(filterToSave);
     };
 
     const handleSave = (filter) => {
@@ -346,7 +362,7 @@ const CreateFilterDialog = ({
                             //onClose={handleClose}
                             //title={title}
                             isFilterCreation={true}
-                           // handleFilterCreation={handleSave}
+                            handleFilterCreation={handleCallback}
                             contentType={ElementType.FILTER}
                         />
                     ) : (
@@ -359,6 +375,7 @@ const CreateFilterDialog = ({
                             onClose={handleClose}
                             name={newNameList}
                             isFilterCreation={true}
+                            onClickValidate={handleNamingFilterCallBack}
                         />
                     )}
                     {createFilterErr !== '' && (

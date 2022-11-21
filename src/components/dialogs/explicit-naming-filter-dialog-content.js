@@ -10,8 +10,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import React, { useEffect, useRef, useState } from 'react';
-import { FilterTypeSelection } from './criteria-based-filter-dialog';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+
 import Grid from '@mui/material/Grid';
 import { useEquipmentTableValues } from './field-hook';
 import makeStyles from '@mui/styles/makeStyles';
@@ -29,6 +29,7 @@ import { Draggable } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
 import { Input } from '@mui/material';
 import { filterEquipmentDefinition } from '../../utils/equipment-types';
+import { FilterTypeSelection } from './criteria-filter-dialog-content';
 
 const useStyles = makeStyles((theme) => ({
     dialogPaper: {
@@ -211,6 +212,8 @@ const ExplicitNamingFilterDialogContent = ({
     name,
     title,
     isFilterCreation,
+    handleSendData,
+    onClickValidate,
 }) => {
     const intl = useIntl();
     const classes = useStyles();
@@ -225,6 +228,7 @@ const ExplicitNamingFilterDialogContent = ({
     const fetchFilter = useRef(null);
     fetchFilter.current = open && !isFilterCreation;
 
+
     const resetDialog = () => {
         setEquipmentType('');
         setCreateFilterErr('');
@@ -233,6 +237,8 @@ const ExplicitNamingFilterDialogContent = ({
             equipmentType: equipmentType,
         });
     };
+
+    
 
     useEffect(() => {
         console.log('from naming dialog content');
@@ -264,15 +270,25 @@ const ExplicitNamingFilterDialogContent = ({
         );
     }, [equipmentType]);
 
+
     const handleEquipmentTypeChange = (type) => {
         setEquipmentType(type);
         setDefaultValues({
             filterEquipmentsAttributes: [],
             equipmentType: equipmentType,
         });
+        console.log('before handle send data naming');
+        console.log(tableValues, equipmentType, tableValuesField);
+       // handleSendData(tableValues, equipmentType, tableValuesField);
     };
 
+    useCallback(() => {
+        console.log('execute', onClickValidate);
+       // handleCreateFilter();
+    }, [onClickValidate]);
+
     const handleCreateFilter = () => {
+        console.log('enter handleCreateFilter');
         if (
             tableValues.every((el) => {
                 if (!el?.equipmentID) {

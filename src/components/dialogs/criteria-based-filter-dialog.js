@@ -82,33 +82,33 @@ const useStyles = makeStyles(() => ({
 //     });
 // };
 
-export const FilterTypeSelection = ({
-    type,
-    onChange,
-    equipmentDefinition,
-}) => {
-    return (
-        <>
-            <FormControl fullWidth margin="dense">
-                <InputLabel>
-                    <FormattedMessage id={'equipmentType'} />
-                </InputLabel>
+// export const FilterTypeSelection = ({
+//     type,
+//     onChange,
+//     equipmentDefinition,
+// }) => {
+//     return (
+//         <>
+//             <FormControl fullWidth margin="dense">
+//                 <InputLabel>
+//                     <FormattedMessage id={'equipmentType'} />
+//                 </InputLabel>
 
-                <Select
-                    label={<FormattedMessage id={'equipmentType'} />}
-                    value={type === null ? '' : type}
-                    onChange={(e) => onChange(e.target.value)}
-                >
-                    {Object.entries(equipmentDefinition).map(([key, value]) => (
-                        <MenuItem key={key} value={key}>
-                            <FormattedMessage id={value.label} />
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-        </>
-    );
-};
+//                 <Select
+//                     label={<FormattedMessage id={'equipmentType'} />}
+//                     value={type === null ? '' : type}
+//                     onChange={(e) => onChange(e.target.value)}
+//                 >
+//                     {Object.entries(equipmentDefinition).map(([key, value]) => (
+//                         <MenuItem key={key} value={key}>
+//                             <FormattedMessage id={value.label} />
+//                         </MenuItem>
+//                     ))}
+//                 </Select>
+//             </FormControl>
+//         </>
+//     );
+// };
 
 export const CriteriaBasedFilterDialog = ({
     id,
@@ -203,6 +203,12 @@ export const CriteriaBasedFilterDialog = ({
     //     }
     //     setBtnSaveListDisabled(false);
     // }
+
+    const handleEditCallback = (childData) =>{
+        console.log('enter childData', childData);
+        currentFilter.current = childData;
+        setBtnSaveListDisabled(false);
+    }
 
     const handleCancel = () => {
         console.log('from criteria dialog handleCancel');
@@ -318,6 +324,7 @@ export const CriteriaBasedFilterDialog = ({
                     id={id}
                     open={open}
                     contentType={contentType}
+                    handleFilterCreation={handleEditCallback}
                 />
             </DialogContent>
             <DialogActions>

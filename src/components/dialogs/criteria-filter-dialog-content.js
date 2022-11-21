@@ -109,7 +109,7 @@ export const FilterTypeSelection = ({
     );
 };
 
-export const CriteriaFilterDialogContent = ({ id, open, contentType }) => {
+export const CriteriaFilterDialogContent = ({ id, open, contentType, handleFilterCreation }) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [filterType, setFilterType] = useState(null);
     const [currentFormEdit, setCurrentFormEdit] = useState({
@@ -180,6 +180,11 @@ export const CriteriaFilterDialogContent = ({ id, open, contentType }) => {
         }
     }, [initialFilter]);
 
+    const sendData = () =>{
+        console.log('enter send data');
+        handleFilterCreation(currentFilter.current);
+    }
+
     function onChange(newVal) {
         console.log('from criteria dialog content onchange', newVal);
         currentFilter.current = {};
@@ -192,6 +197,9 @@ export const CriteriaFilterDialogContent = ({ id, open, contentType }) => {
             for (const k in newVal) currentFilter.current[k] = newVal[k];
         }
         setBtnSaveListDisabled(false);
+        console.log('just before handleFilterCreation', currentFilter.current);
+        sendData();
+        //handleFilterCreation(currentFilter.current);
     }
 
     // const handleCancel = () => {
