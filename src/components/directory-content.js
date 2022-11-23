@@ -358,19 +358,21 @@ const DirectoryContent = () => {
 
     function createdCellRender(cellData) {
         const created = new Date(cellData.rowData[cellData.dataKey]);
-        const date = created.toLocaleDateString(intl.locale);
-        const fullDate = new Intl.DateTimeFormat(intl.locale, {
-            dateStyle: 'long',
-            timeStyle: 'long',
-        }).format(created);
+        if (created instanceof Date && !isNaN(created)) {
+            const date = created.toLocaleDateString(intl.locale);
+            const fullDate = new Intl.DateTimeFormat(intl.locale, {
+                dateStyle: 'long',
+                timeStyle: 'long',
+            }).format(created);
 
-        return (
-            <div className={classes.cell}>
-                <Tooltip title={fullDate} placement="right">
-                    <span>{date}</span>
-                </Tooltip>
-            </div>
-        );
+            return (
+                <div className={classes.cell}>
+                    <Tooltip title={fullDate} placement="right">
+                        <span>{date}</span>
+                    </Tooltip>
+                </div>
+            );
+        }
     }
 
     function getElementIcon(objectType, objectSubtype) {
@@ -594,7 +596,6 @@ const DirectoryContent = () => {
     };
 
     const getCurrentChildrenWithNotClickableRows = () => {
-        console.log(currentChildren);
         return currentChildren.map((child) => {
             return {
                 ...child,
