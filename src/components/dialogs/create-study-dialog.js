@@ -192,8 +192,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         },
     });
 
-    const snackbarMessage = useSnackbarMessage();
-
     const studyNameRef = React.useRef(studyName);
 
     useEffect(() => {
@@ -422,7 +420,13 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 handleCloseDialog();
             })
             .catch((message) => {
-                snackbarMessage(message, 'studyCreationError', { studyName });
+                snackError({
+                    messageTxt: message,
+                    headerId: 'studyCreationError',
+                    headerValues: {
+                        studyName,
+                    },
+                });
             })
             .finally(() => dispatch(removeUploadingElement(uploadingStudy)));
         dispatch(addUploadingElement(uploadingStudy));
