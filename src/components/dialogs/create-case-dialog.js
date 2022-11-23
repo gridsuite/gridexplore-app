@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,7 +16,12 @@ import Alert from '@mui/material/Alert';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { ElementType } from '../../utils/elementType';
-import { useFileValue, useNameField, useTextValue } from './field-hook';
+import {
+    useFileValue,
+    useNameField,
+    useTextValue,
+    usePrefillNameField,
+} from './field-hook';
 import { createCase } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
@@ -24,6 +29,7 @@ import {
     removeUploadingElement,
 } from '../../redux/actions';
 import { keyGenerator } from '../../utils/functions';
+import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../utils/UIconstants';
 
 /**
  * Dialog to create a case
@@ -35,8 +41,7 @@ export function CreateCaseDialog({ onClose, open }) {
     const userId = useSelector((state) => state.user.profile.sub);
     const dispatch = useDispatch();
     const [triggerReset, setTriggerReset] = useState(true);
-    const UNPROCESSABLE_ENTITY_STATUS = 422;
-    const [name, NameField, nameError, nameOk] = useNameField({
+    const [name, NameField, nameError, nameOk, setCaseName] = useNameField({
         label: 'nameProperty',
         autoFocus: true,
         elementType: ElementType.CASE,
@@ -65,6 +70,18 @@ export function CreateCaseDialog({ onClose, open }) {
     }
 
     const { snackError } = useSnackMessage();
+    
+    const nameRef = useRef(name);
+
+    useEffect(() => {
+        nameRef.current = name;
+    }, [name]);
+
+    usePrefillNameField({
+        nameRef,
+        selectedFile: file,
+        setValue: setCaseName,
+    });
 
     const handleCreateNewCase = () => {
         if (!validate()) return;
@@ -84,9 +101,9 @@ export function CreateCaseDialog({ onClose, open }) {
         })
             .then()
             .catch((err) => {
-                if (err?.status === UNPROCESSABLE_ENTITY_STATUS) {
+                if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                     snackError({
-                        messageId: 'incorrectFileError',
+                        messageId: 'invalidFormatOrName',
                         headerId: 'caseCreationError',
                         headerValues: { name },
                     });
@@ -105,7 +122,7 @@ export function CreateCaseDialog({ onClose, open }) {
 
     const handleKeyPressed = (event) => {
         if (event.key === 'Enter') {
-            handleCreateNewCase(name, file);
+            handleCreateNewCase();
         }
     };
 

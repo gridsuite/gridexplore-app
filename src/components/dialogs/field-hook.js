@@ -83,17 +83,21 @@ export const useTextValue = ({
 
     useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
 
-    return [value, field];
+    return [value, field, setValue];
 };
 
-export const useFileValue = ({ triggerReset, fileExceedsLimitMessage }) => {
+export const useFileValue = ({
+    triggerReset,
+    fileExceedsLimitMessage,
+    isLoading,
+}) => {
     const selectedFile = useSelector((state) => state.selectedFile);
     const intl = useIntl();
     const dispatch = useDispatch();
     const [isFileOk, setIsFileOk] = useState(false);
     const [fileError, setFileError] = useState();
 
-    const field = <UploadCase />;
+    const field = <UploadCase isLoading={isLoading} />;
     useEffect(() => {
         dispatch(removeSelectedFile());
     }, [dispatch, triggerReset]);
@@ -216,7 +220,7 @@ export const useNameField = ({
             );
     }, [checking, error]);
 
-    const [name, field] = useTextValue({
+    const [name, field, setName] = useTextValue({
         ...props,
         triggerReset,
         error: !!error,
@@ -250,7 +254,26 @@ export const useNameField = ({
             name.replace(/ /g, '') !== '' &&
             !error &&
             !checking,
+        setName,
     ];
+};
+
+export const usePrefillNameField = ({ nameRef, selectedFile, setValue }) => {
+    useEffect(() => {
+        if (setValue) {
+            if (
+                nameRef !== undefined &&
+                nameRef.current.trim().length === 0 &&
+                selectedFile != null
+            ) {
+                setValue(
+                    selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
+                );
+            } else if (selectedFile == null) {
+                setValue('');
+            }
+        }
+    }, [nameRef, selectedFile, setValue]);
 };
 
 export const useEquipmentTableValues = ({

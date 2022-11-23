@@ -320,11 +320,9 @@ export function fetchElementsInfos(ids) {
 }
 
 export function createStudy(
-    caseExist,
     studyName,
     studyDescription,
     caseName,
-    selectedFile,
     parentDirectoryUuid,
     importParameters
 ) {
@@ -333,37 +331,20 @@ export function createStudy(
     urlSearchParams.append('description', studyDescription);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
-    if (caseExist) {
-        const createStudyWithExistingCaseUrl =
-            PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore/studies/' +
-            encodeURIComponent(studyName) +
-            '/cases/' +
-            encodeURIComponent(caseName) +
-            '?' +
-            urlSearchParams.toString();
-        console.debug(createStudyWithExistingCaseUrl);
-        return backendFetch(createStudyWithExistingCaseUrl, {
-            method: 'post',
-            body: importParameters,
-            headers: { 'Content-Type': 'application/json' },
-        }).then((response) => handleResponse(response, false));
-    } else {
-        const createStudyWithNewCaseUrl =
-            PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore/studies/' +
-            encodeURIComponent(studyName) +
-            '?' +
-            urlSearchParams.toString();
-        const formData = new FormData();
-        formData.append('caseFile', selectedFile);
-        console.debug(createStudyWithNewCaseUrl);
-
-        return backendFetch(createStudyWithNewCaseUrl, {
-            method: 'post',
-            body: formData,
-        }).then((response) => handleResponse(response, false));
-    }
+    const createStudyUrl =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/studies/' +
+        encodeURIComponent(studyName) +
+        '/cases/' +
+        encodeURIComponent(caseName) +
+        '?' +
+        urlSearchParams.toString();
+    console.debug(createStudyUrl);
+    return backendFetch(createStudyUrl, {
+        method: 'post',
+        body: importParameters,
+        headers: { 'Content-Type': 'application/json' },
+    }).then((response) => handleResponse(response, false));
 }
 
 export function duplicateStudy(
@@ -448,7 +429,9 @@ export function fetchCases() {
     console.info('Fetching cases...');
     const fetchCasesUrl = PREFIX_CASE_QUERIES + '/v1/cases';
     console.debug(fetchCasesUrl);
-    return backendFetch(fetchCasesUrl).then((response) => response.json());
+    return backendFetch(fetchCasesUrl).then((response) =>
+        handleJsonResponse(response)
+    );
 }
 
 export function elementExists(directoryUuid, elementName, type) {
@@ -843,5 +826,37 @@ export function getCaseImportParameters(caseUuid) {
         response.ok
             ? response.json()
             : response.json().then((error) => Promise.reject(error))
+    );
+}
+
+export function createPrivateCase(selectedFile) {
+    const createPrivateCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases/private';
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    console.debug(createPrivateCaseUrl);
+
+    return backendFetch(createPrivateCaseUrl, {
+        method: 'post',
+        body: formData,
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) =>
+                  Promise.reject({
+                      status: response.status,
+                      message: text,
+                  })
+              )
+    );
+}
+
+export function deleteCase(caseUuid) {
+    const deleteCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases/' + caseUuid;
+    return backendFetch(deleteCaseUrl, {
+        method: 'delete',
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
     );
 }

@@ -35,3 +35,5 @@ export const DialogsId = {
     DELETE_DIRECTORY: 'delete_directory',
     NONE: 'none',
 };
+export const HTTP_UNPROCESSABLE_ENTITY_STATUS = 422;
+export const HTTP_CONNECTION_FAILED_MESSAGE = 'failed: Connection refused';

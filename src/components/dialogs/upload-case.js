@@ -10,11 +10,13 @@ import { selectFile } from '../../redux/actions';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
-
-export const UploadCase = () => {
+import CircularProgress from '@mui/material/CircularProgress';
+import { makeStyles } from '@mui/styles';
+const useStyles = makeStyles(() => ({}));
+export const UploadCase = ({ isLoading }) => {
+    const classes = useStyles();
     const dispatch = useDispatch();
     const selectedFile = useSelector((state) => state.selectedFile);
-
     const handleFileUpload = (e) => {
         e.preventDefault();
         let files = e.target.files;
@@ -45,6 +47,11 @@ export const UploadCase = () => {
                         <p>
                             {selectedFile?.name === undefined ? (
                                 <FormattedMessage id="uploadMessage" />
+                            ) : isLoading ? (
+                                <CircularProgress
+                                    className={classes.progress}
+                                    size="1rem"
+                                />
                             ) : (
                                 selectedFile.name
                             )}

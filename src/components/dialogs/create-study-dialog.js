@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -21,11 +20,11 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
 import DirectorySelector from './directory-selector.js';
 import {
+    createPrivateCase,
     createStudy,
-    elementExists,
+    deleteCase,
     fetchCases,
     fetchPath,
     getCaseImportParameters,
@@ -40,15 +39,25 @@ import {
     setActiveDirectory,
     addUploadingElement,
     removeUploadingElement,
+    selectFile,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ElementType } from '../../utils/elementType';
-import { useFileValue } from './field-hook';
+import {
+    useFileValue,
+    useNameField,
+    useTextValue,
+    usePrefillNameField,
+} from './field-hook';
 import { keyGenerator } from '../../utils/functions.js';
 import { Divider, Grid } from '@mui/material';
 import { useImportExportParams } from '@gridsuite/commons-ui';
+import {
+    HTTP_CONNECTION_FAILED_MESSAGE,
+    HTTP_UNPROCESSABLE_ENTITY_STATUS,
+} from '../../utils/UIconstants.js';
 
 const useStyles = makeStyles((theme) => ({
     addIcon: {
@@ -132,18 +141,9 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const [caseExist, setCaseExist] = React.useState(false);
 
     const { snackError } = useSnackMessage();
-
-    const [studyName, setStudyName] = React.useState('');
-    const [studyDescription, setStudyDescription] = React.useState('');
     const [createStudyErr, setCreateStudyErr] = React.useState('');
 
-    const [loadingCheckStudyName, setLoadingCheckStudyName] =
-        React.useState(false);
-    const [studyNameValid, setStudyNameValid] = useState(false);
-
     const userId = useSelector((state) => state.user.profile.sub);
-
-    const timer = React.useRef();
 
     const classes = useStyles();
     const intl = useIntl();
@@ -154,6 +154,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const selectedCase = useSelector((state) => state.selectedCase);
 
+    const [tempCaseUuid, setTempCaseUuid] = useState(null);
+
+    const oldTempCaseUuid = useRef(null);
+
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
 
@@ -161,22 +165,61 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     const [triggerReset, setTriggerReset] = React.useState(true);
 
+    const [isParamsOk, setIsParamsOk] = useState(true);
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
+    const [isParamsCaseFileDisplayed, setIsParamsCaseFileDisplayed] =
+        useState(false);
+    const [isUploadingFileInProgress, setUploadingFileInProgress] =
+        useState(false);
+    const [studyName, NameField, nameError, nameOk, setStudyName] =
+        useNameField({
+            label: 'nameProperty',
+            autoFocus: true,
+            elementType: ElementType.STUDY,
+            parentDirectoryId: activeDirectory,
+            triggerReset,
+            active: open,
+            style: {
+                width: '90%',
+            },
+        });
+
+    const [description, DescriptionField] = useTextValue({
+        label: 'descriptionProperty',
+        triggerReset,
+        style: {
+            width: '90%',
+        },
+    });
+
+    const snackbarMessage = useSnackbarMessage();
+
+    const studyNameRef = React.useRef(studyName);
+
+    useEffect(() => {
+        studyNameRef.current = studyName;
+    }, [studyName]);
 
     const handleShowParametersClick = () => {
         setIsParamsDisplayed((oldValue) => !oldValue);
+    };
+    const handleShowParametersForCaseFileClick = () => {
+        setIsParamsCaseFileDisplayed((oldValue) => !oldValue);
     };
 
     const [currentParameters, paramsComponent, resetImportParamsToDefault] =
         useImportExportParams(formatWithParameters);
 
-    //Inits the dialog
-    useEffect(() => {
-        if (open && providedCase) {
-            setStudyName(providedCase.elementName);
-            setCaseExist(true);
-            dispatch(selectCase(providedCase.elementUuid));
-            getCaseImportParameters(providedCase.elementUuid)
+    const [selectedFile, FileField, selectedFileError, isSelectedFileOk] =
+        useFileValue({
+            label: 'Case',
+            triggerReset,
+            isLoading: isUploadingFileInProgress,
+        });
+
+    const getCaseImportParams = useCallback(
+        (caseUuid, setFormatWithParameters) => {
+            getCaseImportParameters(caseUuid)
                 .then((result) => {
                     // sort possible values alphabetically to display select options sorted
                     result.parameters = result.parameters?.map((p) => {
@@ -187,44 +230,114 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         return p;
                     });
                     setFormatWithParameters(result.parameters);
+                    setIsParamsOk(true);
                 })
                 .catch(() => {
                     setFormatWithParameters([]);
+                    setIsParamsOk(false);
+                    setCreateStudyErr(
+                        intl.formatMessage({ id: 'parameterLoadingProblem' })
+                    );
+                });
+        },
+        [intl]
+    );
+
+    const handleFileUploadError = useCallback(
+        (error, setCreateStudyErr) => {
+            if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
+                setCreateStudyErr(
+                    intl.formatMessage({ id: 'invalidFormatOrName' })
+                );
+            } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
+                setCreateStudyErr(
+                    intl.formatMessage({ id: 'serverConnectionFailed' })
+                );
+            } else {
+                setCreateStudyErr(error.message);
+            }
+        },
+        [intl]
+    );
+
+    useEffect(() => {
+        if (!open) {
+            setTempCaseUuid(null);
+        }
+    }, [open]);
+
+    useEffect(() => {
+        if (oldTempCaseUuid.current !== tempCaseUuid) {
+            if (oldTempCaseUuid.current) {
+                deleteCase(oldTempCaseUuid.current)
+                    .then()
+                    .catch((error) =>
+                        handleFileUploadError(error, setCreateStudyErr)
+                    );
+            }
+            oldTempCaseUuid.current = tempCaseUuid;
+        }
+    }, [tempCaseUuid, handleFileUploadError]);
+
+    usePrefillNameField({
+        nameRef: studyNameRef,
+        selectedFile,
+        setValue: setStudyName,
+    });
+
+    //Inits the dialog
+    useEffect(() => {
+        if (open && providedCase) {
+            setStudyName(providedCase.elementName);
+            setCaseExist(true);
+            dispatch(selectCase(providedCase.elementUuid));
+            getCaseImportParams(
+                providedCase.elementUuid,
+                setFormatWithParameters
+            );
+        } else if (open && selectedFile) {
+            setUploadingFileInProgress(true);
+            createPrivateCase(selectedFile)
+                .then((caseUuid) => {
+                    setUploadingFileInProgress(false);
+                    setTempCaseUuid(caseUuid);
+                    getCaseImportParams(caseUuid, setFormatWithParameters);
+                    setCreateStudyErr('');
+                })
+                .catch((error) => {
+                    setTempCaseUuid(null);
+                    handleFileUploadError(error, setCreateStudyErr);
+                    setUploadingFileInProgress(false);
+                    dispatch(selectFile(null));
+                    setFormatWithParameters([]);
                 });
         }
-    }, [open, dispatch, selectedDirectory?.elementName, providedCase]);
-
-    const [selectedFile, FileField, selectedFileError, isSelectedFileOk] =
-        useFileValue({
-            label: 'Case',
-            triggerReset,
-        });
+    }, [
+        open,
+        dispatch,
+        selectedDirectory?.elementName,
+        providedCase,
+        selectedFile,
+        getCaseImportParams,
+        handleFileUploadError,
+        setStudyName,
+    ]);
 
     const resetDialog = () => {
         setCreateStudyErr('');
         setStudyName('');
-        setStudyDescription('');
-        setLoadingCheckStudyName(false);
-        setStudyNameValid(false);
         setActiveDirectoryName(selectedDirectory?.elementName);
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         dispatch(removeSelectedCase());
         setTriggerReset((oldVal) => !oldVal);
+        setFormatWithParameters([]);
+        setIsParamsCaseFileDisplayed(false);
     };
 
     const handleCloseDialog = () => {
         onClose();
         resetImportParamsToDefault();
         resetDialog();
-    };
-
-    const handleStudyDescriptionChanges = (e) => {
-        setStudyDescription(e.target.value);
-    };
-
-    const handleStudyNameChanges = (e) => {
-        const name = e.target.value;
-        setStudyName(name);
     };
 
     const AdvancedParameterButton = ({
@@ -253,59 +366,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         );
     };
 
-    useEffect(() => {
-        const updateStudyFormState = (inputValue) => {
-            if (inputValue !== '' && activeDirectory) {
-                //If the name is not only white spaces
-                if (inputValue.replace(/ /g, '') !== '') {
-                    elementExists(
-                        activeDirectory,
-                        inputValue,
-                        ElementType.STUDY
-                    )
-                        .then((data) => {
-                            setStudyFormState(
-                                data
-                                    ? intl.formatMessage({
-                                          id: 'studyNameAlreadyUsed',
-                                      })
-                                    : '',
-                                !data
-                            );
-                        })
-                        .catch((error) => {
-                            setStudyFormState(
-                                intl.formatMessage({
-                                    id: 'nameValidityCheckErrorMsg',
-                                }) + error,
-                                false
-                            );
-                        })
-                        .finally(() => {
-                            setLoadingCheckStudyName(false);
-                        });
-                } else {
-                    setStudyFormState(
-                        intl.formatMessage({ id: 'nameEmpty' }),
-                        false
-                    );
-                    setLoadingCheckStudyName(false);
-                }
-            } else {
-                setStudyFormState('', false);
-                setLoadingCheckStudyName(false);
-            }
-        };
-
-        setLoadingCheckStudyName(true);
-
-        //Reset the timer so we only call update on the last input
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => {
-            updateStudyFormState(studyName);
-        }, 700);
-    }, [activeDirectory, intl, studyName]);
-
     //Updates the path display
     useEffect(() => {
         if (activeDirectory) {
@@ -320,41 +380,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         }
     }, [activeDirectory]);
 
-    const renderStudyNameStatus = () => {
-        const showOk =
-            studyName !== '' && !loadingCheckStudyName && studyNameValid;
-        return (
-            <div
-                style={{
-                    display: 'inline-block',
-                    verticalAlign: 'bottom',
-                }}
-            >
-                {loadingCheckStudyName && (
-                    <CircularProgress
-                        className={classes.progress}
-                        size="1rem"
-                    />
-                )}
-                {showOk && <CheckIcon style={{ color: 'green' }} />}
-            </div>
-        );
-    };
-
-    const setStudyFormState = (errorMessage, isNameValid) => {
-        setCreateStudyErr(errorMessage);
-        setStudyNameValid(isNameValid);
-    };
-
-    const studyCreationError = useCallback(
-        (studyName, msg) =>
-            snackError({
-                messageTxt: msg,
-                headerId: 'studyCreationError',
-                headerValues: { studyName },
-            })[snackError]
-    );
-
     const handleCreateNewStudy = () => {
         //To manage the case when we never tried to enter a name
         if (studyName === '') {
@@ -362,7 +387,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             return;
         }
         //We don't do anything if the checks are not over or the name is not valid
-        if (!studyNameValid || loadingCheckStudyName) {
+        if (!nameOk) {
             return;
         }
         if (caseExist && caseName === null) {
@@ -383,23 +408,24 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             uploading: true,
         };
         createStudy(
-            caseExist,
             studyName,
-            studyDescription,
-            caseName,
-            selectedFile,
+            description,
+            caseName ?? tempCaseUuid,
             activeDirectory,
-            currentParameters && isParamsDisplayed
+            currentParameters &&
+                (isParamsDisplayed || isParamsCaseFileDisplayed)
                 ? JSON.stringify(currentParameters)
                 : ''
         )
-            .then()
+            .then(() => {
+                oldTempCaseUuid.current = null;
+                handleCloseDialog();
+            })
             .catch((message) => {
-                studyCreationError(studyName, message);
+                snackbarMessage(message, 'studyCreationError', { studyName });
             })
             .finally(() => dispatch(removeUploadingElement(uploadingStudy)));
         dispatch(addUploadingElement(uploadingStudy));
-        handleCloseDialog();
     };
 
     const handleKeyPressed = (event) => {
@@ -422,11 +448,37 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const isCreationAllowed = () => {
         return !(
             studyName === '' ||
-            !studyNameValid ||
-            loadingCheckStudyName ||
+            !nameOk ||
+            !isParamsOk ||
             (!providedCase && !isSelectedFileOk)
         );
     };
+
+    const importParametersSection = (
+        AdvancedParameterButton,
+        isParamsCaseFileDisplayed,
+        handleShowParametersForCaseFileClick,
+        formatWithParameters,
+        paramsComponent,
+        paramDivider
+    ) => (
+        <>
+            <Divider className={paramDivider} />
+            <div
+                style={{
+                    marginTop: '10px',
+                }}
+            >
+                <AdvancedParameterButton
+                    showOpenIcon={isParamsCaseFileDisplayed}
+                    label={'importParameters'}
+                    callback={handleShowParametersForCaseFileClick}
+                    disabled={formatWithParameters.length === 0}
+                />
+                {isParamsCaseFileDisplayed && paramsComponent}
+            </div>
+        </>
+    );
 
     return (
         <div>
@@ -441,36 +493,24 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                     <FormattedMessage id="createNewStudy" />
                 </DialogTitle>
                 <DialogContent>
-                    <div>
-                        <TextField
-                            onChange={(e) => handleStudyNameChanges(e)}
-                            autoFocus
-                            margin="dense"
-                            value={studyName}
-                            type="text"
-                            error={
-                                studyName !== '' &&
-                                !studyNameValid &&
-                                !loadingCheckStudyName
-                            }
-                            style={{ width: '90%' }}
-                            label={<FormattedMessage id="nameProperty" />}
-                        />
-                        {renderStudyNameStatus()}
-                    </div>
-                    <TextField
-                        onChange={(e) => handleStudyDescriptionChanges(e)}
-                        margin="dense"
-                        value={studyDescription}
-                        type="text"
-                        style={{ width: '90%' }}
-                        label={<FormattedMessage id="descriptionProperty" />}
-                    />
+                    {NameField}
+                    {DescriptionField}
+                    {nameError && <Alert severity="error">{nameError}</Alert>}
                     {!selectedCase ? (
                         caseExist ? (
                             <SelectCase />
                         ) : (
-                            FileField
+                            <>
+                                {FileField}
+                                {importParametersSection(
+                                    AdvancedParameterButton,
+                                    isParamsCaseFileDisplayed,
+                                    handleShowParametersForCaseFileClick,
+                                    formatWithParameters,
+                                    paramsComponent,
+                                    classes.paramDivider
+                                )}
+                            </>
                         )
                     ) : (
                         <>
@@ -517,20 +557,14 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                                     })}
                                 />
                             </div>
-                            <Divider className={classes.paramDivider} />
-                            <div
-                                style={{
-                                    marginTop: '10px',
-                                }}
-                            >
-                                <AdvancedParameterButton
-                                    showOpenIcon={isParamsDisplayed}
-                                    label={'importParameters'}
-                                    callback={handleShowParametersClick}
-                                    disabled={formatWithParameters.length === 0}
-                                />
-                                {isParamsDisplayed && paramsComponent}
-                            </div>
+                            {importParametersSection(
+                                AdvancedParameterButton,
+                                isParamsDisplayed,
+                                handleShowParametersClick,
+                                formatWithParameters,
+                                paramsComponent,
+                                classes.paramDivider
+                            )}
                         </>
                     )}
                     {createStudyErr !== '' && (
