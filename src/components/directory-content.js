@@ -342,27 +342,27 @@ const DirectoryContent = () => {
         );
     }
 
-    function creatorCellRender(cellData) {
-        const creator = cellData.rowData[cellData.dataKey];
+    function userCellRender(cellData) {
+        const user = cellData.rowData[cellData.dataKey];
         return (
             <div className={classes.cell}>
-                <Tooltip title={creator} placement="right">
+                <Tooltip title={user} placement="right">
                     <Chip
                         className={classes.chip}
-                        label={abbreviationFromUserName(creator)}
+                        label={abbreviationFromUserName(user)}
                     />
                 </Tooltip>
             </div>
         );
     }
 
-    function createdCellRender(cellData) {
-        const created = new Date(cellData.rowData[cellData.dataKey]);
-        const date = created.toLocaleDateString(intl.locale);
+    function dateCellRender(cellData) {
+        const dateData = new Date(cellData.rowData[cellData.dataKey]);
+        const date = dateData.toLocaleDateString(intl.locale);
         const fullDate = new Intl.DateTimeFormat(intl.locale, {
             dateStyle: 'long',
             timeStyle: 'long',
-        }).format(created);
+        }).format(dateData);
 
         return (
             <div className={classes.cell}>
@@ -674,7 +674,7 @@ const DirectoryContent = () => {
                                 id: 'creator',
                             }),
                             dataKey: 'owner',
-                            cellRenderer: creatorCellRender,
+                            cellRenderer: userCellRender,
                         },
                         {
                             width: 50,
@@ -682,7 +682,23 @@ const DirectoryContent = () => {
                                 id: 'created',
                             }),
                             dataKey: 'creationDate',
-                            cellRenderer: createdCellRender,
+                            cellRenderer: dateCellRender,
+                        },
+                        {
+                            width: 50,
+                            label: intl.formatMessage({
+                                id: 'modifiedBy',
+                            }),
+                            dataKey: 'lastModifiedBy',
+                            cellRenderer: userCellRender,
+                        },
+                        {
+                            width: 50,
+                            label: intl.formatMessage({
+                                id: 'modified',
+                            }),
+                            dataKey: 'lastModificationDate',
+                            cellRenderer: dateCellRender,
                         },
                     ]}
                     sortable={true}

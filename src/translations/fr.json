@@ -7,6 +7,8 @@
     "creator": "Créé par",
     "type": "Type",
     "created": "Créé",
+    "modified": "Modifié",
+    "modifiedBy": "Modifié par",
     "private": "privé",
     "public": "public",
     "emptyDir": "Dossier vide",
@@ -176,7 +178,7 @@
     "moveElementNotAllowedError": "Vous ne pouvez pas déplacer cet élément dans le dossier cible. Action non autorisée",
     "notElementCreator": "Vous n'êtes pas le créateur de l'élément",
     "uploadingElement": "Téléversement en cours : pas d'opération autorisée",
-    "serverConnectionFailed" : "Echec de connexion avec le serveur. Veuillez réessayer ultérieurement",
-    "invalidFormatOrName":"Format ou nom du fichier importé non valide",
-    "parameterLoadingProblem":"Probléme de chargement des paramétres"
+    "serverConnectionFailed": "Echec de connexion avec le serveur. Veuillez réessayer ultérieurement",
+    "invalidFormatOrName": "Format ou nom du fichier importé non valide",
+    "parameterLoadingProblem": "Probléme de chargement des paramétres"
 }
