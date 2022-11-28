@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
@@ -154,6 +154,9 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const selectedCase = useSelector((state) => state.selectedCase);
 
     const [tempCaseUuid, setTempCaseUuid] = useState(null);
+
+    const oldTempCaseUuid = useRef(null);
+
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
 
@@ -213,36 +216,67 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             isLoading: isUploadingFileInProgress,
         });
 
-    const getCaseImportParams = (caseUuid, setFormatWithParameters, intl) => {
-        getCaseImportParameters(caseUuid)
-            .then((result) => {
-                // sort possible values alphabetically to display select options sorted
-                result.parameters = result.parameters?.map((p) => {
-                    let sortedPossibleValue = p.possibleValues?.sort((a, b) =>
-                        a.localeCompare(b)
+    const getCaseImportParams = useCallback(
+        (caseUuid, setFormatWithParameters) => {
+            getCaseImportParameters(caseUuid)
+                .then((result) => {
+                    // sort possible values alphabetically to display select options sorted
+                    result.parameters = result.parameters?.map((p) => {
+                        let sortedPossibleValue = p.possibleValues?.sort(
+                            (a, b) => a.localeCompare(b)
+                        );
+                        p.possibleValues = sortedPossibleValue;
+                        return p;
+                    });
+                    setFormatWithParameters(result.parameters);
+                    setIsParamsOk(true);
+                })
+                .catch(() => {
+                    setFormatWithParameters([]);
+                    setIsParamsOk(false);
+                    setCreateStudyErr(
+                        intl.formatMessage({ id: 'parameterLoadingProblem' })
                     );
-                    p.possibleValues = sortedPossibleValue;
-                    return p;
                 });
-                setFormatWithParameters(result.parameters);
-                setIsParamsOk(true);
-            })
-            .catch(() => {
-                setFormatWithParameters([]);
-                setIsParamsOk(false);
+        },
+        [intl]
+    );
+
+    const handleFileUploadError = useCallback(
+        (error, setCreateStudyErr) => {
+            if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                 setCreateStudyErr(
-                    intl.formatMessage({ id: 'parameterLoadingProblem' })
+                    intl.formatMessage({ id: 'invalidFormatOrName' })
                 );
-            });
-    };
+            } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
+                setCreateStudyErr(
+                    intl.formatMessage({ id: 'serverConnectionFailed' })
+                );
+            } else {
+                setCreateStudyErr(error.message);
+            }
+        },
+        [intl]
+    );
 
     useEffect(() => {
-        if (!open && tempCaseUuid !== null) {
-            deleteCase(tempCaseUuid)
-                .then((res) => setTempCaseUuid(null))
-                .catch((error) => console.error(error));
+        if (!open) {
+            setTempCaseUuid(null);
         }
-    }, [open, tempCaseUuid]);
+    }, [open]);
+
+    useEffect(() => {
+        if (oldTempCaseUuid.current !== tempCaseUuid) {
+            if (oldTempCaseUuid.current) {
+                deleteCase(oldTempCaseUuid.current)
+                    .then()
+                    .catch((error) =>
+                        handleFileUploadError(error, setCreateStudyErr)
+                    );
+            }
+            oldTempCaseUuid.current = tempCaseUuid;
+        }
+    }, [tempCaseUuid, handleFileUploadError]);
 
     usePrefillNameField({
         nameRef: studyNameRef,
@@ -258,8 +292,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             dispatch(selectCase(providedCase.elementUuid));
             getCaseImportParams(
                 providedCase.elementUuid,
-                setFormatWithParameters,
-                intl
+                setFormatWithParameters
             );
         } else if (open && selectedFile) {
             setUploadingFileInProgress(true);
@@ -267,15 +300,12 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 .then((caseUuid) => {
                     setUploadingFileInProgress(false);
                     setTempCaseUuid(caseUuid);
-                    getCaseImportParams(
-                        caseUuid,
-                        setFormatWithParameters,
-                        intl
-                    );
+                    getCaseImportParams(caseUuid, setFormatWithParameters);
                     setCreateStudyErr('');
                 })
                 .catch((error) => {
-                    handleFileUploadError(error, setCreateStudyErr, intl);
+                    setTempCaseUuid(null);
+                    handleFileUploadError(error, setCreateStudyErr);
                     setUploadingFileInProgress(false);
                     dispatch(selectFile(null));
                     setFormatWithParameters([]);
@@ -287,23 +317,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         selectedDirectory?.elementName,
         providedCase,
         selectedFile,
-        intl,
+        getCaseImportParams,
+        handleFileUploadError,
         setStudyName,
     ]);
-
-    const handleFileUploadError = (error, setCreateStudyErr, intl) => {
-        if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
-            setCreateStudyErr(
-                intl.formatMessage({ id: 'invalidFormatOrName' })
-            );
-        } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
-            setCreateStudyErr(
-                intl.formatMessage({ id: 'serverConnectionFailed' })
-            );
-        } else {
-            setCreateStudyErr(error.message);
-        }
-    };
 
     const resetDialog = () => {
         setCreateStudyErr('');
@@ -400,7 +417,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 : ''
         )
             .then(() => {
-                setTempCaseUuid(null);
+                oldTempCaseUuid.current = null;
                 handleCloseDialog();
             })
             .catch((message) => {
