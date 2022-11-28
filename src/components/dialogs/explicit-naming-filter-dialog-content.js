@@ -18,11 +18,11 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 import { Draggable } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
-import { Checkbox, Input, Tooltip } from '@mui/material';
+import { Alert, Checkbox, Input, Tooltip } from '@mui/material';
 import { filterEquipmentDefinition } from '../../utils/equipment-types';
 import { FilterTypeSelection } from './criteria-filter-dialog-content';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     dialogPaper: {
         width: 'auto',
         minWidth: '800px',
@@ -149,9 +149,7 @@ export const ExplicitNamingFilterRow = ({
 const ExplicitNamingFilterDialogContent = ({
     id,
     open,
-    onClose,
     name,
-    title,
     isFilterCreation,
     handleFilterCreation,
 }) => {
@@ -240,6 +238,9 @@ const ExplicitNamingFilterDialogContent = ({
                 <Grid item xs={12} />
                 {equipmentType && tableValuesField}
             </Grid>
+            {createFilterErr !== '' && (
+                <Alert severity="error">{createFilterErr}</Alert>
+            )}
         </div>
     );
 };

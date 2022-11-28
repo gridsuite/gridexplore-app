@@ -466,8 +466,6 @@ const CreateFilterDialog = ({
                                 open &&
                                 filterType === FilterType.EXPLICIT_NAMING
                             }
-                            title={title}
-                            onClose={handleClose}
                             name={newNameList}
                             isFilterCreation={true}
                             handleFilterCreation={handleNamingFilterCallBack}

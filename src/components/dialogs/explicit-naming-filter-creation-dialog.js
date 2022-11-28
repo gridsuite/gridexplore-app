@@ -156,8 +156,6 @@ const ExplicitNamingCreationDialog = ({
                 <ExplicitNamingFilterDialogContent
                     id={id}
                     open={open}
-                    title={title}
-                    onClose={onClose}
                     name={name}
                     isFilterCreation={isFilterCreation}
                     handleFilterCreation={handleEditCallback}
