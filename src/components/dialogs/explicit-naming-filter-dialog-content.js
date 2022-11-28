@@ -35,7 +35,7 @@ function isNumber(val) {
     return /^-?[0-9]*[.,]?[0-9]*$/.test(val);
 }
 
-export const ManualFilterRow = ({
+export const ExplicitNamingFilterRow = ({
     id,
     index,
     isGeneratorOrLoad,
@@ -182,7 +182,7 @@ const ExplicitNamingFilterDialogContent = ({
         tableHeadersIds: isGeneratorOrLoad
             ? generatorOrLoadHeadersId
             : headersId,
-        Row: ManualFilterRow,
+        Row: ExplicitNamingFilterRow,
         isGeneratorOrLoad: isGeneratorOrLoad,
         defaultTableValues: defaultValues?.filterEquipmentsAttributes,
         setCreateFilterErr: setCreateFilterErr,

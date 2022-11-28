@@ -11,26 +11,15 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import React, { useEffect, useRef, useState } from 'react';
-import Grid from '@mui/material/Grid';
-import { useEquipmentTableValues } from './field-hook';
 import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { createFilter, getFilterById, saveFilter } from '../../utils/rest-api';
+import { createFilter, saveFilter } from '../../utils/rest-api';
 import { FilterType } from '../../utils/elementType';
 import { useSelector } from 'react-redux';
 import Alert from '@mui/material/Alert';
-import IconButton from '@mui/material/IconButton';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
-import AddIcon from '@mui/icons-material/ControlPoint';
-import { Draggable } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
-import { Input } from '@mui/material';
-import { filterEquipmentDefinition } from '../../utils/equipment-types';
-import ExplicitNamingFilterDialogContent, {
-    ManualFilterRow,
-} from './explicit-naming-filter-dialog-content';
+
+import ExplicitNamingFilterDialogContent from './explicit-naming-filter-dialog-content';
 
 const useStyles = makeStyles((theme) => ({
     dialogPaper: {
