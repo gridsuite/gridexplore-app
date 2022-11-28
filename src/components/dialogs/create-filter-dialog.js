@@ -23,15 +23,12 @@ import TextField from '@mui/material/TextField';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
-import { createFilter, elementExists } from '../../utils/rest-api';
+import { createFilter, elementExists, saveFilter } from '../../utils/rest-api';
 import Alert from '@mui/material/Alert';
 import { useSelector } from 'react-redux';
 import { ElementType, FilterType } from '../../utils/elementType';
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
-import ExplicitNamingCreationDialog from './explicit-naming-filter-creation-dialog';
-import CsvImportFilterCreationDialog from './csv-import-filter-creation-dialog';
-import CriteriaBasedFilterDialog from './criteria-based-filter-dialog';
 import CriteriaFilterDialogContent from './criteria-filter-dialog-content';
 import ExplicitNamingFilterDialogContent from './explicit-naming-filter-dialog-content';
 import { DialogContentText } from '@mui/material';
@@ -112,7 +109,7 @@ const CreateFilterDialog = ({
     const intl = useIntl();
     const timer = React.useRef();
     const [newListType, setNewListType] = useState(FilterType.CRITERIA);
-    const [filterType, setFilterType] = useState('');
+    const [filterType, setFilterType] = useState(null);
     const [openConfirmationPopup, setopenConfirmationPopup] = useState(false);
     const [choosedFilterType, setChoosedFilterType] = useState(
         FilterType.CRITERIA
@@ -120,10 +117,24 @@ const CreateFilterDialog = ({
 
     const [filterToSave, setFilterToSave] = useState(null);
 
-    const handleCallback = (childData) =>{
-        console.log('enter childData', childData);
-        setFilterToSave(childData);
-    }
+    const [tableValues, setTableValues] = useState([]);
+
+    const [isGeneratorOrLoad, setIsGeneratorOrLoad] = useState(false);
+
+    const [isFilterCreation, setIsFilterCreation] = useState(false);
+
+    const [equipmentType, setEquipmentType] = useState(null);
+
+    const [name, setName] = useState('');
+
+    const [id, setId] = useState('');
+
+    const handleCallback = (criteriaFilter) => {
+        setFilterToSave(criteriaFilter);
+        setEquipmentType(
+            criteriaFilter['equipmentFilterForm']['equipmentType']
+        );
+    };
 
     /**
      * on change input popup check if name already exist
@@ -193,19 +204,99 @@ const CreateFilterDialog = ({
         setFilterNameValid(false);
         setopenConfirmationPopup(false);
         setChoosedFilterType(FilterType.CRITERIA);
+        setEquipmentType(null);
     };
 
+    const handleNamingFilterCallBack = (
+        tableValues,
+        isGeneratorOrLoad,
+        isFilterCreation,
+        equipmentType,
+        name,
+        id
+    ) => {
+        setIsGeneratorOrLoad(isGeneratorOrLoad);
+        setIsFilterCreation(isFilterCreation);
+        setEquipmentType(equipmentType);
+        setName(name);
+        setId(id);
+        setTableValues(tableValues);
+    };
 
-    const handleNamingFilterCallBack = () => {
-        console.log('handleNamingFilterCallBack');
-    }
+    const handleCreateFilter = (
+        tableValues,
+        isGeneratorOrLoad,
+        isFilterCreation,
+        equipmentType,
+        name,
+        id
+    ) => {
+        if (
+            tableValues.every((el) => {
+                if (!el?.equipmentID) {
+                    setCreateFilterErr(
+                        intl.formatMessage({
+                            id: 'missingEquipmentsIdsError',
+                        })
+                    );
+                }
+                return el.equipmentID;
+            })
+        ) {
+            if (isGeneratorOrLoad) {
+                // we check if all the distribution keys are null.
+                // If one is set, all the distribution keys that are null take 0 as value
+                let isAllKeysNull = tableValues.every(
+                    (row) => !row.distributionKey
+                );
+                tableValues.forEach((val, index) => {
+                    if (!isAllKeysNull && !val.distributionKey) {
+                        tableValues[index] = {
+                            equipmentID: val.equipmentID,
+                            distributionKey: 0,
+                        };
+                    }
+                });
+            }
+            if (isFilterCreation) {
+                createFilter(
+                    {
+                        type: FilterType.EXPLICIT_NAMING,
+                        equipmentType: equipmentType,
+                        filterEquipmentsAttributes: tableValues,
+                    },
+                    name,
+                    activeDirectory
+                )
+                    .then(() => {
+                        handleClose();
+                    })
+                    .catch((message) => {
+                        setCreateFilterErr(message);
+                    });
+            } else {
+                saveFilter({
+                    id: id,
+                    type: FilterType.EXPLICIT_NAMING,
+                    equipmentType: equipmentType,
+                    filterEquipmentsAttributes: tableValues,
+                })
+                    .then(() => {
+                        handleClose();
+                    })
+                    .catch((message) => {
+                        setCreateFilterErr(message);
+                    });
+            }
+        }
+    };
+
+    useEffect(() => {
+        setCreateFilterErr('');
+    }, [tableValues]);
 
     const handleValidation = () => {
-        console.log('handleValidation in create filter dialog', newListType);
-        //console.log('handleValidation in create filter dialog currentFilter', currentFilter);
         //To manage the case when we never tried to enter a name
-
-        
 
         if (newNameList === '') {
             setCreateFilterErr(intl.formatMessage({ id: 'nameEmpty' }));
@@ -216,18 +307,23 @@ const CreateFilterDialog = ({
             return;
         }
 
-        if(newListType === FilterType.EXPLICIT_NAMING){
-
+        if (newListType === FilterType.EXPLICIT_NAMING) {
+            handleCreateFilter(
+                tableValues,
+                isGeneratorOrLoad,
+                isFilterCreation,
+                equipmentType,
+                name,
+                id
+            );
             return;
         }
 
         setFilterType(newListType);
-        console.log('filter to save ', filterToSave);
         handleSave(filterToSave);
     };
 
     const handleSave = (filter) => {
-        console.log('enter handleSave in create filter dialog', filter);
         createFilter(filter, newNameList, activeDirectory)
             .then(() => {
                 handleClose();
@@ -277,6 +373,7 @@ const CreateFilterDialog = ({
     const handlePopupConfirmation = () => {
         setopenConfirmationPopup(false);
         setNewListType(choosedFilterType);
+        setEquipmentType(null);
     };
 
     const renderchangeFilterTypePopup = () => {
@@ -292,7 +389,7 @@ const CreateFilterDialog = ({
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            voulez-vous change le type ?
+                            {intl.formatMessage({ id: 'changeTypeMessage' })}
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -359,8 +456,6 @@ const CreateFilterDialog = ({
                     {newListType === FilterType.CRITERIA ? (
                         <CriteriaFilterDialogContent
                             open={open && filterType === FilterType.CRITERIA}
-                            //onClose={handleClose}
-                            //title={title}
                             isFilterCreation={true}
                             handleFilterCreation={handleCallback}
                             contentType={ElementType.FILTER}
@@ -375,7 +470,7 @@ const CreateFilterDialog = ({
                             onClose={handleClose}
                             name={newNameList}
                             isFilterCreation={true}
-                            onClickValidate={handleNamingFilterCallBack}
+                            handleFilterCreation={handleNamingFilterCallBack}
                         />
                     )}
                     {createFilterErr !== '' && (
@@ -390,7 +485,8 @@ const CreateFilterDialog = ({
                         disabled={
                             newNameList === '' ||
                             !filterNameValid ||
-                            loadingCheckFilterName
+                            loadingCheckFilterName ||
+                            equipmentType === null
                         }
                     >
                         {customTextValidationBtn}
@@ -398,13 +494,6 @@ const CreateFilterDialog = ({
                 </DialogActions>
             </Dialog>
             {renderchangeFilterTypePopup()}
-
-            {/* <CsvImportFilterCreationDialog
-                open={open && filterType === FilterType.IMPORT_CSV}
-                title={title}
-                name={newNameList}
-                onClose={handleClose}
-            /> */}
         </>
     );
 };

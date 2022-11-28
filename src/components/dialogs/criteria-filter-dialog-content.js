@@ -7,19 +7,8 @@
 
 import { FormattedMessage } from 'react-intl';
 import React, { useEffect, useRef, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import { MenuItem, Grid, Select, FormControl, InputLabel } from '@mui/material';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import {
-    getContingencyList,
-    getFilterById,
-    saveFilter,
-    saveFormContingencyList,
-} from '../../utils/rest-api';
+import { getContingencyList, getFilterById } from '../../utils/rest-api';
 import { useSnackMessage } from '../../utils/messages';
 import {
     ContingencyListType,
@@ -30,24 +19,6 @@ import {
     contingencyListEquipmentDefinition,
     filterEquipmentDefinition,
 } from '../../utils/equipment-types';
-
-const useStyles = makeStyles(() => ({
-    controlItem: {
-        justifyContent: 'flex-end',
-    },
-    idText: {
-        padding: 8,
-    },
-    dialogPaper: {
-        minWidth: '705px',
-        minHeight: '500px',
-        margin: 'auto',
-    },
-    filtersEditor: {
-        minWidth: '570px',
-        margin: 'auto',
-    },
-}));
 
 function deepCopy(aObject) {
     if (!aObject) {
@@ -109,15 +80,19 @@ export const FilterTypeSelection = ({
     );
 };
 
-export const CriteriaFilterDialogContent = ({ id, open, contentType, handleFilterCreation }) => {
+export const CriteriaFilterDialogContent = ({
+    id,
+    open,
+    contentType,
+    handleFilterCreation,
+}) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [filterType, setFilterType] = useState(null);
     const [currentFormEdit, setCurrentFormEdit] = useState({
         type: { value: filterType },
     });
     const currentFilter = useRef(null);
-    const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
-    const classes = useStyles();
+
     const { snackError } = useSnackMessage();
     const openRef = useRef(null);
     openRef.current = open;
@@ -129,7 +104,6 @@ export const CriteriaFilterDialogContent = ({ id, open, contentType, handleFilte
     }
 
     useEffect(() => {
-        console.log('criteria dialog content useefect', contentType);
         if (id !== null && openRef.current) {
             if (contentType === ElementType.FILTER) {
                 getFilterById(id)
@@ -173,20 +147,11 @@ export const CriteriaFilterDialogContent = ({ id, open, contentType, handleFilte
         }
     }, [id, contentType, snackError]);
 
-    useEffect(() => {
-        console.log('criteria dialog content useefect initialFilter', initialFilter);
-        if (initialFilter !== null) {
-            setBtnSaveListDisabled(initialFilter.transient !== true);
-        }
-    }, [initialFilter]);
-
-    const sendData = () =>{
-        console.log('enter send data');
+    const handleFilterData = () => {
         handleFilterCreation(currentFilter.current);
-    }
+    };
 
     function onChange(newVal) {
-        console.log('from criteria dialog content onchange', newVal);
         currentFilter.current = {};
         currentFilter.current.id = id;
         currentFilter.current.type = FilterType.CRITERIA;
@@ -196,43 +161,8 @@ export const CriteriaFilterDialogContent = ({ id, open, contentType, handleFilte
         } else {
             for (const k in newVal) currentFilter.current[k] = newVal[k];
         }
-        setBtnSaveListDisabled(false);
-        console.log('just before handleFilterCreation', currentFilter.current);
-        sendData();
-        //handleFilterCreation(currentFilter.current);
+        handleFilterData();
     }
-
-    // const handleCancel = () => {
-    //     onClose();
-    //     currentFilter.current = null;
-    //     setCurrentFormEdit({
-    //         equipmentType: { value: null },
-    //     });
-    //     setInitialFilter(null);
-    //     setFilterType(null);
-    //     setBtnSaveListDisabled(true);
-    // };
-
-    // const handleValidate = () => {
-    //     if (!isFilterCreation) {
-    //         if (contentType === ElementType.FILTER) {
-    //             saveFilter(currentFilter.current)
-    //                 .then()
-    //                 .catch((errorMessage) => {
-    //                     onError(errorMessage);
-    //                 });
-    //         } else if (contentType === ElementType.CONTINGENCY_LIST) {
-    //             saveFormContingencyList(currentFilter.current)
-    //                 .then()
-    //                 .catch((errorMessage) => {
-    //                     onError(errorMessage);
-    //                 });
-    //         }
-    //         handleCancel();
-    //     } else {
-    //         handleFilterCreation(currentFilter.current);
-    //     }
-    // };
 
     function validVoltageValues(obj) {
         let value1NotNull =
@@ -259,7 +189,6 @@ export const CriteriaFilterDialogContent = ({ id, open, contentType, handleFilte
     };
 
     const changeFilterType = (newType) => {
-        console.log('from criteria dialog content changeFilterType', newType);
         // TODO: should reset all fields in currentFormEdit
         currentFormEdit.equipmentType = { value: newType };
         setFilterType(newType);
@@ -313,42 +242,7 @@ export const CriteriaFilterDialogContent = ({ id, open, contentType, handleFilte
                 })}
                 {renderSpecific()}
             </Grid>
-            {/* <Grid container justifyContent={'flex-end'}>
-                <Button onClick={handleCancel}>
-                    <FormattedMessage id="cancel" />
-                </Button>
-                <Button
-                    onClick={handleValidate}
-                    variant="outlined"
-                    disabled={btnSaveListDisabled}
-                >
-                    <FormattedMessage id="validate" />
-                </Button>
-            </Grid> */}
         </>
-        //  <Dialog
-        //      classes={{ paper: classes.dialogPaper }}
-        //      open={open}
-        //      onClose={onClose}
-        //      aria-labelledby="dialog-title-filters-contingency-edit"
-        //  >
-        //      <DialogTitle>{title}</DialogTitle>
-        //      <DialogContent>
-        //          <CriteriaFilterDialogContent />
-        //      </DialogContent>
-        //      <DialogActions>
-        //          <Button onClick={handleCancel}>
-        //              <FormattedMessage id="cancel" />
-        //          </Button>
-        //          <Button
-        //              onClick={handleValidate}
-        //              variant="outlined"
-        //              disabled={btnSaveListDisabled}
-        //          >
-        //              <FormattedMessage id="validate" />
-        //          </Button>
-        //      </DialogActions>
-        //  </Dialog>
     );
 };
 

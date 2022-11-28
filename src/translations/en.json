@@ -178,5 +178,8 @@
     "uploadingElement": "Upload in progress: no operation permitted",
     "serverConnectionFailed" : "Failed to connect to server. Please retry later.",
     "invalidFormatOrName":"Imported file name or format invalid",
-    "parameterLoadingProblem":"problem of loading parameters"
+    "parameterLoadingProblem":"problem of loading parameters",
+    "dragAndDrop": "drag and drop",
+    "changeTypeMessage": "Do you want to change the type?",
+    "keepCSVDataMessage": "Do you want to add the criteria or replace the existing ones?"
 }

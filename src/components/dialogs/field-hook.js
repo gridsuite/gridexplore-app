@@ -14,7 +14,14 @@ import React, {
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
-import { CircularProgress, InputAdornment, TextField } from '@mui/material';
+import {
+    Checkbox,
+    CircularProgress,
+    IconButton,
+    InputAdornment,
+    TextField,
+    Tooltip,
+} from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { useDispatch, useSelector } from 'react-redux';
 import { UploadCase } from './upload-case';
@@ -24,6 +31,11 @@ import { ElementType } from '../../utils/elementType';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { ArrowCircleDown, ArrowCircleUp, Upload } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/ControlPoint';
+import CsvImportFilterCreationDialog from './csv-import-filter-creation-dialog';
+import { LIGHT_THEME } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -35,6 +47,9 @@ const useStyles = makeStyles((theme) => ({
         border: theme.spacing(1),
         borderRadius: theme.spacing(0),
         zIndex: 90,
+    },
+    iconColor: {
+        color: theme === LIGHT_THEME ? '#90caf9' : '#1976d2',
     },
 }));
 
@@ -285,9 +300,11 @@ export const useEquipmentTableValues = ({
     defaultTableValues,
     setCreateFilterErr,
     name,
+    equipmentType,
 }) => {
+    const classes = useStyles();
     const [values, setValues] = useState([]);
-
+    const intl = useIntl();
     const handleAddValue = useCallback(() => {
         setValues((oldValues) => [...oldValues, {}]);
     }, []);
@@ -307,18 +324,23 @@ export const useEquipmentTableValues = ({
     useEffect(() => {
         checkValues();
     }, [checkValues]);
-
-    const handleDeleteItem = useCallback(
-        (index) => {
-            setValues((oldValues) => {
-                let newValues = [...oldValues];
+    const [openCSVImportDialog, setOpenCSVImportDialog] = useState(false);
+    const [selectedIds, setSelectedIds] = useState(new Set());
+    const handleDeleteItem = useCallback(() => {
+        setValues((oldValues) => {
+            let newValues = [...oldValues];
+            if (selectedIds.size === newValues.length) {
+                setSelectedIds(new Set());
+                return [{}];
+            }
+            selectedIds.forEach((index) => {
                 newValues.splice(index, 1);
-                return newValues.length === 0 ? [{}] : newValues;
             });
-            setCreateFilterErr('');
-        },
-        [setCreateFilterErr]
-    );
+            setSelectedIds(new Set());
+            return newValues.length === 0 ? [{}] : newValues;
+        });
+        setCreateFilterErr('');
+    }, [selectedIds, setCreateFilterErr]);
 
     const handleSetValue = useCallback(
         (index, newValue) => {
@@ -333,13 +355,38 @@ export const useEquipmentTableValues = ({
     );
 
     const handleChangeOrder = useCallback(
-        (index, direction) => {
+        (direction) => {
             const res = [...values];
-            const [item] = res.splice(index, 1);
-            res.splice(index + direction, 0, item);
+            const result = [...selectedIds];
+            result.sort();
+
+            let isContigue = true;
+            for (let i = 0; i < result.length - 1; i++) {
+                if (result[i + 1] - result[i] !== 1) {
+                    isContigue = false;
+                    break;
+                }
+            }
+
+            if (isContigue) {
+                if (direction === -1) {
+                    const [item] = res.splice(result[0] - 1, 1);
+                    res.splice(result[result.length - 1], 0, item);
+                } else {
+                    const [item] = res.splice(result[result.length - 1] + 1, 1);
+                    res.splice(result[0], 0, item);
+                }
+            } else {
+                selectedIds.forEach((elem) => {
+                    const [item] = res.splice(elem, 1);
+                    res.splice(elem + direction, 0, item);
+                });
+            }
+
+            setSelectedIds(new Set());
             setValues(res);
         },
-        [values]
+        [selectedIds, values]
     );
 
     const commit = useCallback(
@@ -354,6 +401,62 @@ export const useEquipmentTableValues = ({
                 item
             );
             setValues(res);
+        },
+        [values]
+    );
+
+    const toggleSelection = useCallback(
+        (val) => {
+            let newSelection = new Set(selectedIds);
+            if (!newSelection?.has(val)) {
+                newSelection.add(val);
+            } else {
+                newSelection.delete(val);
+            }
+            setSelectedIds(newSelection);
+        },
+        [selectedIds]
+    );
+
+    const toggleSelectAll = useCallback(() => {
+        if (selectedIds.size === 0) {
+            selectAllItems();
+        } else if (selectedIds.size === values.length) {
+            setSelectedIds(new Set());
+        } else {
+            selectAllItems();
+        }
+
+        function selectAllItems() {
+            let array = [];
+            for (let i = 0; i < values.length; i++) {
+                array[i] = i;
+            }
+            setSelectedIds(new Set(array));
+        }
+    }, [selectedIds.size, values.length]);
+
+    const updateTableValues = useCallback(
+        (csvData, keepTableValues) => {
+            if (csvData) {
+                if (!keepTableValues) {
+                    while (values.length !== 0) {
+                        values.pop();
+                    }
+                }
+                let objects = Object.keys(csvData).map(function (key) {
+                    return {
+                        equipmentID: csvData[key][0],
+                        distributionKey:
+                            csvData[key][1] !== ''
+                                ? csvData[key][1]
+                                : undefined,
+                    };
+                });
+                objects.forEach((elem) => {
+                    values.push(elem);
+                });
+            }
         },
         [values]
     );
@@ -374,7 +477,21 @@ export const useEquipmentTableValues = ({
                                     key={name + 'container'}
                                     spacing={isGeneratorOrLoad ? 2 : 0}
                                 >
-                                    <Grid item xs={1} />
+                                    <Grid item xs={1}></Grid>
+                                    <Grid item xs={1}>
+                                        <Checkbox
+                                            onClick={(e) => {
+                                                toggleSelectAll();
+                                                e.stopPropagation();
+                                            }}
+                                            checked={selectedIds?.size > 0}
+                                            indeterminate={
+                                                selectedIds.size !== 0 &&
+                                                selectedIds.size !==
+                                                    values.length
+                                            }
+                                        ></Checkbox>
+                                    </Grid>
                                     {tableHeadersIds.map((value, index) => (
                                         <Grid
                                             xs={
@@ -407,10 +524,9 @@ export const useEquipmentTableValues = ({
                                         }
                                         index={index}
                                         isGeneratorOrLoad={isGeneratorOrLoad}
-                                        handleAddValue={handleAddValue}
                                         handleSetValue={handleSetValue}
-                                        handleChangeOrder={handleChangeOrder}
-                                        handleDeleteItem={handleDeleteItem}
+                                        selectedIds={selectedIds}
+                                        handleSelection={toggleSelection}
                                         key={name + index}
                                     />
                                 ))}
@@ -419,19 +535,93 @@ export const useEquipmentTableValues = ({
                         )}
                     </Droppable>
                 </DragDropContext>
+                <Grid container>
+                    <Grid item xs justifyContent={'flex-end'} spacing={2}>
+                        <IconButton
+                            className={classes.iconColor}
+                            onClick={() => setOpenCSVImportDialog(true)}
+                        >
+                            <Tooltip
+                                title={intl.formatMessage({ id: 'ImportCSV' })}
+                                placement="bottom"
+                            >
+                                <Upload />
+                            </Tooltip>
+                        </IconButton>
+                    </Grid>
+                    <Grid item justifyContent={'flex-end'}>
+                        <IconButton
+                            className={classes.iconColor}
+                            onClick={() => handleAddValue()}
+                        >
+                            <AddIcon />
+                        </IconButton>
+
+                        <IconButton
+                            className={classes.iconColor}
+                            onClick={() => handleDeleteItem()}
+                            disabled={selectedIds.size === 0}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                        <IconButton
+                            key={id + name + 'upButton'}
+                            disabled={
+                                selectedIds.size === 0 || selectedIds.has(0)
+                            }
+                            onClick={() => {
+                                handleChangeOrder(-1);
+                            }}
+                            className={classes.iconColor}
+                        >
+                            <ArrowCircleUp />
+                        </IconButton>
+                        <IconButton
+                            key={id + name + 'downButton'}
+                            disabled={
+                                selectedIds.size === 0 ||
+                                selectedIds.has(values.length - 1)
+                            }
+                            onClick={() => {
+                                handleChangeOrder(id, 1);
+                            }}
+                            className={classes.iconColor}
+                        >
+                            <ArrowCircleDown />
+                        </IconButton>
+                    </Grid>
+                </Grid>
+                <CsvImportFilterCreationDialog
+                    open={openCSVImportDialog}
+                    title={'choisir un fichier CSV'}
+                    name={name}
+                    onClose={() => setOpenCSVImportDialog(false)}
+                    equipmentType={equipmentType}
+                    handleValidateCSV={(csvData, keepTableValues) =>
+                        updateTableValues(csvData, keepTableValues)
+                    }
+                />
             </Box>
         );
     }, [
-        values,
+        commit,
         id,
+        name,
+        intl,
+        classes,
+        selectedIds,
+        values,
+        openCSVImportDialog,
+        equipmentType,
+        isGeneratorOrLoad,
+        tableHeadersIds,
+        toggleSelectAll,
+        handleSetValue,
+        toggleSelection,
         handleAddValue,
         handleDeleteItem,
-        handleSetValue,
         handleChangeOrder,
-        tableHeadersIds,
-        commit,
-        isGeneratorOrLoad,
-        name,
+        updateTableValues,
     ]);
 
     return [values, field];

@@ -177,5 +177,8 @@
     "uploadingElement": "Téléversement en cours : pas d'opération autorisée",
     "serverConnectionFailed" : "Echec de connexion avec le serveur. Veuillez réessayer ultérieurement",
     "invalidFormatOrName":"Format ou nom du fichier importé non valide",
-    "parameterLoadingProblem":"Probléme de chargement des paramétres"
+    "parameterLoadingProblem":"Probléme de chargement des paramétres",
+    "dragAndDrop": "glisser déposer",
+    "changeTypeMessage": "Voulez-vous change le type ?",
+    "keepCSVDataMessage": "Voulez-vous ajouter les critères ou remplacer ceux existants ?"
 }

@@ -28,7 +28,9 @@ import { Draggable } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
 import { Input } from '@mui/material';
 import { filterEquipmentDefinition } from '../../utils/equipment-types';
-import ExplicitNamingFilterDialogContent from './explicit-naming-filter-dialog-content';
+import ExplicitNamingFilterDialogContent, {
+    ManualFilterRow,
+} from './explicit-naming-filter-dialog-content';
 
 const useStyles = makeStyles((theme) => ({
     dialogPaper: {
@@ -38,171 +40,6 @@ const useStyles = makeStyles((theme) => ({
         margin: 'auto',
     },
 }));
-
-function isNumber(val) {
-    return /^-?[0-9]*[.,]?[0-9]*$/.test(val);
-}
-
-const ManualFilterRow = ({
-    id,
-    index,
-    isGeneratorOrLoad,
-    value,
-    isLastValue,
-    handleAddValue,
-    handleSetValue,
-    handleChangeOrder,
-    handleDeleteItem,
-}) => {
-    const intl = useIntl();
-
-    const getXs = () => {
-        return isGeneratorOrLoad ? 6 : 9;
-    };
-
-    return (
-        <Draggable draggableId={id} index={index} key={id + value + index}>
-            {(provided) => (
-                <div
-                    style={{ width: '100%' }}
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                >
-                    <Grid
-                        container
-                        item
-                        spacing={2}
-                        key={index + id + 'container item'}
-                        sx={{ width: '100%', height: '50%' }}
-                    >
-                        <Grid xs={1} item>
-                            <IconButton
-                                {...provided.dragHandleProps}
-                                key={id + index + 'drag'}
-                            >
-                                <DragIndicatorIcon spacing={0} />
-                            </IconButton>
-                        </Grid>
-                        <Grid
-                            xs={getXs()}
-                            item
-                            key={id + index + 'equipmentID'}
-                        >
-                            <Input
-                                id={id + index + 'IdInput'}
-                                value={value?.equipmentID ?? ''}
-                                fullWidth={true}
-                                placeholder={intl.formatMessage({
-                                    id: 'ID',
-                                })}
-                                onChange={(event) =>
-                                    handleSetValue(index, {
-                                        equipmentID: event.target.value,
-                                        distributionKey: value?.distributionKey,
-                                    })
-                                }
-                                error={value?.equipmentID === ''}
-                                required
-                            />
-                        </Grid>
-                        {isGeneratorOrLoad && (
-                            <Grid
-                                xs={3}
-                                item
-                                key={id + index + 'dKey'}
-                                justifyContent="flex-end"
-                            >
-                                <Input
-                                    id={id + index + 'dKeyInput'}
-                                    value={value?.distributionKey ?? ''}
-                                    style={{
-                                        border: 'hidden',
-                                        backgroundColor: 'inherit',
-                                        width: '100%',
-                                    }}
-                                    onChange={(event) => {
-                                        if (isNumber(event.target.value)) {
-                                            handleSetValue(index, {
-                                                equipmentID: value?.equipmentID,
-                                                distributionKey:
-                                                    event.target.value,
-                                            });
-                                        }
-                                    }}
-                                    placeholder={intl.formatMessage({
-                                        id: 'key',
-                                    })}
-                                />
-                            </Grid>
-                        )}
-                        <Grid
-                            xs={0.5}
-                            item
-                            key={id + index + 'delete'}
-                            justifyContent="flex-end"
-                        >
-                            <IconButton
-                                onClick={() => handleDeleteItem(index)}
-                                key={id + index + 'deleteButton'}
-                            >
-                                <DeleteIcon />
-                            </IconButton>
-                        </Grid>
-                        <Grid
-                            xs={0.5}
-                            item
-                            key={id + index + 'up'}
-                            justifyContent="flex-end"
-                        >
-                            <IconButton
-                                key={id + index + 'upButton'}
-                                onClick={() => {
-                                    if (index !== 0) {
-                                        handleChangeOrder(index, -1);
-                                    }
-                                }}
-                            >
-                                <ArrowCircleUp />
-                            </IconButton>
-                        </Grid>
-                        <Grid
-                            xs={0.5}
-                            item
-                            key={id + index + 'down'}
-                            justifyContent="flex-end"
-                        >
-                            <IconButton
-                                onClick={() => {
-                                    if (!isLastValue) {
-                                        handleChangeOrder(index, 1);
-                                    }
-                                }}
-                                key={id + index + 'downButton'}
-                            >
-                                <ArrowCircleDown />
-                            </IconButton>
-                        </Grid>
-                        <Grid
-                            xs={0.5}
-                            item
-                            key={id + index + 'add'}
-                            justifyContent="flex-end"
-                        >
-                            {isLastValue && (
-                                <IconButton
-                                    onClick={() => handleAddValue()}
-                                    key={id + index + 'addButton'}
-                                >
-                                    <AddIcon />
-                                </IconButton>
-                            )}
-                        </Grid>
-                    </Grid>
-                </div>
-            )}
-        </Draggable>
-    );
-};
 
 const ExplicitNamingCreationDialog = ({
     id,
@@ -216,11 +53,11 @@ const ExplicitNamingCreationDialog = ({
     const classes = useStyles();
     const [isGeneratorOrLoad, setIsGeneratorOrLoad] = useState(false);
     const [equipmentType, setEquipmentType] = useState(null);
-    const headersId = ['ID'];
-    const generatorOrLoadHeadersId = ['ID', 'distributionKey'];
+
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
-    const [defaultValues, setDefaultValues] = useState(null);
+
+    const [tableValues, setTablesValues] = useState([]);
 
     const fetchFilter = useRef(null);
     fetchFilter.current = open && !isFilterCreation;
@@ -228,35 +65,7 @@ const ExplicitNamingCreationDialog = ({
     const resetDialog = () => {
         setEquipmentType('');
         setCreateFilterErr('');
-        setDefaultValues({
-            filterEquipmentsAttributes: [],
-            equipmentType: equipmentType,
-        });
     };
-
-    useEffect(() => {
-        console.log('from naming dialog');
-        if (id && fetchFilter.current) {
-            // getFilterById(id)
-            //     .then((response) => {
-            //         setDefaultValues(response);
-            //         setEquipmentType(response?.equipmentType);
-            //     })
-            //     .catch((error) => setCreateFilterErr(error));
-        }
-    }, [id]);
-
-    const [tableValues, tableValuesField] = useEquipmentTableValues({
-        id: id ?? 'editFilterTable',
-        name: name,
-        tableHeadersIds: isGeneratorOrLoad
-            ? generatorOrLoadHeadersId
-            : headersId,
-        Row: ManualFilterRow,
-        isGeneratorOrLoad: isGeneratorOrLoad,
-        defaultTableValues: defaultValues?.filterEquipmentsAttributes,
-        setCreateFilterErr: setCreateFilterErr,
-    });
 
     useEffect(() => {
         setIsGeneratorOrLoad(
@@ -264,19 +73,21 @@ const ExplicitNamingCreationDialog = ({
         );
     }, [equipmentType]);
 
-    // const handleEquipmentTypeChange = (type) => {
-    //     setEquipmentType(type);
-    //     setDefaultValues({
-    //         filterEquipmentsAttributes: [],
-    //         equipmentType: equipmentType,
-    //     });
-    // };
+    const handleEditCallback = (
+        tableValues,
+        isGeneratorOrLoad,
+        isFilterCreation,
+        equipmentType,
+        name,
+        id
+    ) => {
+        setEquipmentType(equipmentType);
+        setTablesValues(tableValues);
+    };
 
-    const handleEditCallback = (childData, childData2, childData3) =>{
-        console.log('enter childData', childData);
-        console.log('enter childData22', childData2);
-        console.log('enter childData33', childData3);
-    }
+    useEffect(() => {
+        setCreateFilterErr('');
+    }, [tableValues]);
 
     const handleCreateFilter = () => {
         if (
@@ -360,8 +171,11 @@ const ExplicitNamingCreationDialog = ({
                     onClose={onClose}
                     name={name}
                     isFilterCreation={isFilterCreation}
-                    handleSendData={handleEditCallback}
+                    handleFilterCreation={handleEditCallback}
                 />
+                {createFilterErr !== '' && (
+                    <Alert severity="error">{createFilterErr}</Alert>
+                )}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>
