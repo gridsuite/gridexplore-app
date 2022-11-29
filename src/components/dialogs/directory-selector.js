@@ -139,8 +139,8 @@ const DirectorySelector = (props) => {
                         )
                     );
                 })
-                .catch((reason) => {
-                    fetchDirectoryWarn(directoryUuid, reason);
+                .catch((error) => {
+                    fetchDirectoryWarn(directoryUuid, error.message);
                 });
         },
         [addToDirectory, contentFilter, fetchDirectoryWarn]

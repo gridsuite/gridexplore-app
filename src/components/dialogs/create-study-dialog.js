@@ -420,8 +420,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 oldTempCaseUuid.current = null;
                 handleCloseDialog();
             })
-            .catch((message) => {
-                snackbarMessage(message, 'studyCreationError', { studyName });
+            .catch((error) => {
+                snackbarMessage(error.message, 'studyCreationError', {
+                    studyName,
+                });
             })
             .finally(() => dispatch(removeUploadingElement(uploadingStudy)));
         dispatch(addUploadingElement(uploadingStudy));

@@ -61,10 +61,10 @@ export function useParameterState(paramName) {
     const handleChangeParamLocalState = useCallback(
         (value) => {
             setParamLocalState(value);
-            updateConfigParameter(paramName, value).catch((errorMessage) => {
+            updateConfigParameter(paramName, value).catch((error) => {
                 setParamLocalState(paramGlobalState);
                 displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
+                    errorMessage: error.message,
                     enqueueSnackbar: enqueueSnackbar,
                     headerMessage: {
                         headerMessageId: 'paramsChangingError',

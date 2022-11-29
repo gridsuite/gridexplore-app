@@ -122,8 +122,7 @@ export const useDeferredFetch = (
                     }
                 }
             } catch (error) {
-                handleError(null, args);
-                throw error;
+                handleError(error, args);
             }
         },
         [fetchFunction, onSuccess, handleError, hasResult]

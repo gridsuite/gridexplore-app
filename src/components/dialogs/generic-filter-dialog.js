@@ -153,8 +153,8 @@ export const GenericFilterDialog = ({
                             },
                         });
                     })
-                    .catch((errmsg) => {
-                        snackError(errmsg, 'cannotRetrieveFilter');
+                    .catch((error) => {
+                        snackError(error.message, 'cannotRetrieveFilter');
                     });
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
                 getContingencyList(ContingencyListType.FORM, id)
@@ -167,8 +167,11 @@ export const GenericFilterDialog = ({
                             },
                         });
                     })
-                    .catch((errmsg) => {
-                        snackError(errmsg, 'cannotRetrieveContingencyList');
+                    .catch((error) => {
+                        snackError(
+                            error.message,
+                            'cannotRetrieveContingencyList'
+                        );
                     });
             }
         } else {
@@ -216,14 +219,14 @@ export const GenericFilterDialog = ({
             if (contentType === ElementType.FILTER) {
                 saveFilter(currentFilter.current)
                     .then()
-                    .catch((errorMessage) => {
-                        onError(errorMessage);
+                    .catch((error) => {
+                        onError(error.message);
                     });
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
                 saveFormContingencyList(currentFilter.current)
                     .then()
-                    .catch((errorMessage) => {
-                        onError(errorMessage);
+                    .catch((error) => {
+                        onError(error.message);
                     });
             }
             handleCancel();

@@ -97,8 +97,8 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
             };
             saveScriptContingencyList(newScript)
                 .then(() => {})
-                .catch((errorMessage) => {
-                    onError(errorMessage);
+                .catch((error) => {
+                    onError(error.message);
                 });
         } else {
             newScript = {
@@ -110,8 +110,8 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
             };
             saveFilter(newScript)
                 .then(() => {})
-                .catch((errorMessage) => {
-                    onError(errorMessage);
+                .catch((error) => {
+                    onError(error.message);
                 });
         }
         setBtnSaveListDisabled(true);
@@ -144,8 +144,8 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                                 setDescription(data.description);
                             }
                         })
-                        .catch((errorMessage) => {
-                            onError(errorMessage);
+                        .catch((error) => {
+                            onError(error.message);
                         });
                 } else if (type === ElementType.FILTER) {
                     getFilterById(currentItemId)
@@ -159,8 +159,8 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                                 setDescription(data.description);
                             }
                         })
-                        .catch((errorMessage) => {
-                            onError(errorMessage);
+                        .catch((error) => {
+                            onError(error.message);
                         });
                 }
             }

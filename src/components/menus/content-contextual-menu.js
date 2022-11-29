@@ -123,8 +123,8 @@ const ContentContextualMenu = (props) => {
                                     .then(() => {
                                         handleCloseDialog();
                                     })
-                                    .catch((message) => {
-                                        handleDuplicateError(message);
+                                    .catch((error) => {
+                                        handleDuplicateError(error.message);
                                     });
                                 break;
                             case ElementType.CONTINGENCY_LIST:
@@ -136,12 +136,12 @@ const ContentContextualMenu = (props) => {
                                             activeElement.description,
                                             activeElement.elementUuid,
                                             selectedDirectory.elementUuid
-                                        ).catch((message) => {
-                                            handleDuplicateError(message);
+                                        ).catch((error) => {
+                                            handleDuplicateError(error.message);
                                         });
                                     })
-                                    .catch((message) => {
-                                        handleLastError(message);
+                                    .catch((error) => {
+                                        handleLastError(error.message);
                                     })
                                     .finally(() => {
                                         handleCloseDialog();
@@ -158,8 +158,8 @@ const ContentContextualMenu = (props) => {
                                     .then(() => {
                                         handleCloseDialog();
                                     })
-                                    .catch((message) => {
-                                        handleDuplicateError(message);
+                                    .catch((error) => {
+                                        handleDuplicateError(error.message);
                                     });
                                 break;
                             case ElementType.FILTER:
@@ -172,8 +172,8 @@ const ContentContextualMenu = (props) => {
                                     .then(() => {
                                         handleCloseDialog();
                                     })
-                                    .catch((message) => {
-                                        handleDuplicateError(message);
+                                    .catch((error) => {
+                                        handleDuplicateError(error.message);
                                     });
                                 break;
                             default:
@@ -192,7 +192,7 @@ const ContentContextualMenu = (props) => {
                     }
                 })
                 .catch((error) => {
-                    handleDuplicateError(error);
+                    handleDuplicateError(error.message);
                 });
         }
     };
