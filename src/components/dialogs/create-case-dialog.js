@@ -70,7 +70,7 @@ export function CreateCaseDialog({ onClose, open }) {
     }
 
     const { snackError } = useSnackMessage();
-    
+
     const nameRef = useRef(name);
 
     useEffect(() => {

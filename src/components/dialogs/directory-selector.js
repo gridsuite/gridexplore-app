@@ -108,14 +108,15 @@ const DirectorySelector = (props) => {
         [dispatch, treeData]
     );
 
-    const fetchDirectoryWarn = useCallback(
-        (directoryUuid, msg) =>
-            snackError({
-                messageTxt: msg,
-                headerId: 'directoryUpdateWarning',
-                headerValues: { directoryUuid },
-            })[snackError]
-    );
+  const fetchDirectoryWarn = useCallback(
+      (directoryUuid, msg) =>
+          snackError({
+              messageTxt: msg,
+              headerId: 'directoryUpdateWarning',
+              headerValues: { directoryUuid },
+          }),
+      [snackError]
+  );
 
     const fetchDirectory = useCallback(
         (directoryUuid) => {
