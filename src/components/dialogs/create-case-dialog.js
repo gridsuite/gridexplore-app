@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import Dialog from '@mui/material//Dialog';
@@ -23,7 +23,7 @@ import {
     usePrefillNameField,
 } from './field-hook';
 import { createCase } from '../../utils/rest-api';
-import { useSnackbarMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     addUploadingElement,
     removeUploadingElement,
@@ -40,7 +40,6 @@ export function CreateCaseDialog({ onClose, open }) {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
     const dispatch = useDispatch();
-    const intl = useIntl();
     const [triggerReset, setTriggerReset] = useState(true);
     const [name, NameField, nameError, nameOk, setCaseName] = useNameField({
         label: 'nameProperty',
@@ -70,6 +69,8 @@ export function CreateCaseDialog({ onClose, open }) {
         return file && nameOk && isFileOk;
     }
 
+    const { snackError } = useSnackMessage();
+
     const nameRef = useRef(name);
 
     useEffect(() => {
@@ -81,8 +82,6 @@ export function CreateCaseDialog({ onClose, open }) {
         selectedFile: file,
         setValue: setCaseName,
     });
-
-    const snackbarMessage = useSnackbarMessage();
 
     const handleCreateNewCase = () => {
         if (!validate()) return;
@@ -103,16 +102,16 @@ export function CreateCaseDialog({ onClose, open }) {
             .then()
             .catch((err) => {
                 if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
-                    snackbarMessage(
-                        intl.formatMessage({
-                            id: 'invalidFormatOrName',
-                        }),
-                        'caseCreationError',
-                        { name }
-                    );
+                    snackError({
+                        messageId: 'invalidFormatOrName',
+                        headerId: 'caseCreationError',
+                        headerValues: { name },
+                    });
                 } else {
-                    snackbarMessage(err?.message, 'caseCreationError', {
-                        name,
+                    snackError({
+                        messageTxt: err?.message,
+                        headerId: 'caseCreationError',
+                        headerValues: { name },
                     });
                 }
             })

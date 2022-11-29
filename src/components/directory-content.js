@@ -31,8 +31,8 @@ import { Checkbox } from '@mui/material';
 import { fetchElementsInfos } from '../utils/rest-api';
 
 import ScriptDialog from './dialogs/script-dialog';
-import { useSnackbar } from 'notistack';
 import CriteriaBasedFilterDialog from './dialogs/criteria-based-filter-dialog';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
@@ -97,7 +97,7 @@ const initialMousePosition = {
 };
 
 const DirectoryContent = () => {
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
     const [childrenMetadata, setChildrenMetadata] = useState({});
@@ -290,11 +290,11 @@ const DirectoryContent = () => {
 
     const handleError = useCallback(
         (message) => {
-            enqueueSnackbar(message, {
-                variant: 'error',
+            snackError({
+                messageTxt: message,
             });
         },
-        [enqueueSnackbar]
+        [snackError]
     );
 
     function getLink(elementUuid, objectType) {
