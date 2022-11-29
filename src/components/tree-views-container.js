@@ -24,8 +24,7 @@ import {
 
 import DirectoryTreeView from './directory-tree-view';
 
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ElementType } from '../utils/elementType';
 import { notificationType } from '../utils/notificationType';
 
@@ -184,7 +183,6 @@ function updatedTree(prevRoots, prevMap, nodeId, children) {
 }
 
 const TreeViewsContainer = () => {
-    const intlRef = useIntlRef();
     const dispatch = useDispatch();
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
@@ -204,7 +202,7 @@ const TreeViewsContainer = () => {
 
     const wsRef = useRef();
 
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const directoryUpdatedEvent = useSelector(
         (state) => state.directoryUpdated
@@ -487,18 +485,14 @@ const TreeViewsContainer = () => {
     const displayErrorIfExist = useCallback(
         (error, studyName) => {
             if (error) {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: error,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'studyCreatingError',
-                        headerMessageValues: { studyName: studyName },
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: error,
+                    headerId: 'studyCreatingError',
+                    headerValues: { studyName: studyName },
                 });
             }
         },
-        [enqueueSnackbar, intlRef]
+        [snackError]
     );
 
     useEffect(() => {

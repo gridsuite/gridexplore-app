@@ -20,7 +20,7 @@ import {
     saveFilter,
     saveFormContingencyList,
 } from '../../utils/rest-api';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     ContingencyListType,
     ElementType,
@@ -154,7 +154,10 @@ export const GenericFilterDialog = ({
                         });
                     })
                     .catch((errmsg) => {
-                        snackError(errmsg, 'cannotRetrieveFilter');
+                        snackError({
+                            messageTxt: errmsg,
+                            headerId: 'cannotRetrieveFilter',
+                        });
                     });
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
                 getContingencyList(ContingencyListType.FORM, id)
@@ -168,7 +171,10 @@ export const GenericFilterDialog = ({
                         });
                     })
                     .catch((errmsg) => {
-                        snackError(errmsg, 'cannotRetrieveContingencyList');
+                        snackError({
+                            messageTxt: errmsg,
+                            headerId: 'cannotRetrieveContingencyList',
+                        });
                     });
             }
         } else {
