@@ -55,7 +55,7 @@ import {
     useDeferredFetch,
     useMultipleDeferredFetch,
 } from '../../utils/custom-hooks';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 
 const ContentContextualMenu = (props) => {
@@ -70,7 +70,7 @@ const ContentContextualMenu = (props) => {
     } = props;
     const userId = useSelector((state) => state.user.profile.sub);
     const intl = useIntl();
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const DownloadIframe = 'downloadIframe';
 
@@ -79,11 +79,11 @@ const ContentContextualMenu = (props) => {
 
     const handleLastError = useCallback(
         (message) => {
-            enqueueSnackbar(message, {
-                variant: 'error',
+            snackError({
+                messageTxt: message,
             });
         },
-        [enqueueSnackbar]
+        [snackError]
     );
 
     const handleOpenDialog = (dialogId) => {
