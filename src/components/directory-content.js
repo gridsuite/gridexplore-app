@@ -122,40 +122,33 @@ const DirectoryContent = () => {
     const [mousePosition, setMousePosition] =
         React.useState(initialMousePosition);
 
-    const handleRowClick = (event) => {
-        if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
-            const subtype = childrenMetadata[event.rowData.elementUuid].subtype;
-            if (event.rowData.type === ElementType.STUDY) {
-                let url = getLink(
-                    event.rowData.elementUuid,
-                    event.rowData.type
-                );
+    const handleRowClick = (event, index, data) => {
+        if (childrenMetadata[data.elementUuid] !== undefined) {
+            const subtype = childrenMetadata[data.elementUuid].subtype;
+            if (data.type === ElementType.STUDY) {
+                let url = getLink(data.elementUuid, data.type);
                 url
                     ? window.open(url, '_blank')
                     : handleError(
                           intl.formatMessage(
                               { id: 'getAppLinkError' },
-                              { type: event.rowData.type }
+                              { type: data.type }
                           )
                       );
-            } else if (event.rowData.type === ElementType.CONTINGENCY_LIST) {
+            } else if (data.type === ElementType.CONTINGENCY_LIST) {
                 if (subtype === ContingencyListType.FORM) {
-                    setCurrentFiltersContingencyListId(
-                        event.rowData.elementUuid
-                    );
+                    setCurrentFiltersContingencyListId(data.elementUuid);
                     setOpenFiltersContingencyDialog(true);
                 } else if (subtype === ContingencyListType.SCRIPT) {
-                    setCurrentScriptContingencyListId(
-                        event.rowData.elementUuid
-                    );
+                    setCurrentScriptContingencyListId(data.elementUuid);
                     setOpenScriptContingencyDialog(true);
                 }
-            } else if (event.rowData.type === ElementType.FILTER) {
+            } else if (data.type === ElementType.FILTER) {
                 if (subtype === FilterType.MANUAL) {
-                    setCurrentManualFilterId(event.rowData.elementUuid);
+                    setCurrentManualFilterId(data.elementUuid);
                     setOpenEditManualFilterDialog(true);
                 } else if (subtype === FilterType.AUTOMATIC) {
-                    setCurrentAutomaticFilterId(event.rowData.elementUuid);
+                    setCurrentAutomaticFilterId(data.elementUuid);
                     setOpenGenericFilterDialog(true);
                 }
             }
