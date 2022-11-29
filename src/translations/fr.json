@@ -176,10 +176,13 @@
     "moveElementNotAllowedError": "Vous ne pouvez pas déplacer cet élément dans le dossier cible. Action non autorisée",
     "notElementCreator": "Vous n'êtes pas le créateur de l'élément",
     "uploadingElement": "Téléversement en cours : pas d'opération autorisée",
-    "serverConnectionFailed" : "Echec de connexion avec le serveur. Veuillez réessayer ultérieurement",
+    "serverConnectionFailed" : "Échec de connexion avec le serveur. Veuillez réessayer ultérieurement",
     "invalidFormatOrName":"Format ou nom du fichier importé non valide",
-    "parameterLoadingProblem":"Probléme de chargement des paramétres",
+    "parameterLoadingProblem":"Problème de chargement des paramètres",
     "dragAndDrop": "glisser déposer",
-    "changeTypeMessage": "Voulez-vous change le type ?",
-    "keepCSVDataMessage": "Voulez-vous ajouter les critères ou remplacer ceux existants ?"
+    "changeTypeMessage": "Voulez-vous changer le type ?",
+    "keepCSVDataMessage": "Voulez-vous  remplacer ou ajouter vos identifiants ?",
+    "chooseCSVFile" : "Choisir un fichier CSV",
+    "add" : "Ajouter",
+    "replace": "Remplacer"
 }

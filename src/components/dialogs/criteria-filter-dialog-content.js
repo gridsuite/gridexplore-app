@@ -9,18 +9,6 @@ import { FormattedMessage } from 'react-intl';
 import React, { useEffect, useRef, useState } from 'react';
 import { MenuItem, Grid, Select, FormControl, InputLabel } from '@mui/material';
 import { getContingencyList, getFilterById } from '../../utils/rest-api';
-import { useSnackMessage } from '../../utils/messages';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import {
-    getContingencyList,
-    getFilterById,
-    saveFilter,
-    saveFormContingencyList,
-} from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     ContingencyListType,

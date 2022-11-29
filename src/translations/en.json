@@ -182,5 +182,8 @@
     "parameterLoadingProblem":"problem of loading parameters",
     "dragAndDrop": "drag and drop",
     "changeTypeMessage": "Do you want to change the type?",
-    "keepCSVDataMessage": "Do you want to add the criteria or replace the existing ones?"
+    "keepCSVDataMessage": "Do you want to add the criteria or replace the existing ones?",
+    "chooseCSVFile" : "Choose a csv file",
+    "add" : "Add",
+    "replace": "Replace"
 }

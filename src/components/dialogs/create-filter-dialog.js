@@ -110,25 +110,18 @@ const CreateFilterDialog = ({
     const timer = React.useRef();
     const [newListType, setNewListType] = useState(FilterType.CRITERIA);
     const [filterType, setFilterType] = useState(null);
-    const [openConfirmationPopup, setopenConfirmationPopup] = useState(false);
+    const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [choosedFilterType, setChoosedFilterType] = useState(
         FilterType.CRITERIA
     );
 
     const [filterToSave, setFilterToSave] = useState(null);
-
     const [tableValues, setTableValues] = useState([]);
-
     const [isGeneratorOrLoad, setIsGeneratorOrLoad] = useState(false);
-
     const [isFilterCreation, setIsFilterCreation] = useState(false);
-
     const [equipmentType, setEquipmentType] = useState(null);
-
     const [name, setName] = useState('');
-
     const [id, setId] = useState('');
-
     const handleCallback = (criteriaFilter) => {
         setFilterToSave(criteriaFilter);
         setEquipmentType(
@@ -202,7 +195,7 @@ const CreateFilterDialog = ({
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
         setFilterNameValid(false);
-        setopenConfirmationPopup(false);
+        setOpenConfirmationPopup(false);
         setChoosedFilterType(FilterType.CRITERIA);
         setEquipmentType(null);
     };
@@ -365,22 +358,22 @@ const CreateFilterDialog = ({
         }
     };
 
-    const handleRadioButtonClick = (event) => {
-        setopenConfirmationPopup(true);
+    const onFilterTypeChange = (event) => {
+        setOpenConfirmationPopup(true);
         setChoosedFilterType(event.target.value);
     };
 
     const handlePopupConfirmation = () => {
-        setopenConfirmationPopup(false);
+        setOpenConfirmationPopup(false);
         setNewListType(choosedFilterType);
         setEquipmentType(null);
     };
 
-    const renderchangeFilterTypePopup = () => {
+    const renderChangeFilterTypePopup = () => {
         return (
             <div>
                 <Dialog
-                    open={openConfirmationPopup}
+                    open={isConfirmationPopupOpen}
                     aria-labelledby="dialog-title-change-filter-type"
                     onKeyPress={() => handlePopupConfirmation(false)}
                 >
@@ -393,7 +386,7 @@ const CreateFilterDialog = ({
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => setopenConfirmationPopup(false)}>
+                        <Button onClick={() => setOpenConfirmationPopup(false)}>
                             <FormattedMessage id="cancel" />
                         </Button>
                         <Button
@@ -439,7 +432,7 @@ const CreateFilterDialog = ({
                         name="filterType"
                         value={newListType}
                         defaultValue={FilterType.CRITERIA}
-                        onChange={(e) => handleRadioButtonClick(e)}
+                        onChange={(e) => onFilterTypeChange(e)}
                         row
                     >
                         <FormControlLabel
@@ -491,7 +484,7 @@ const CreateFilterDialog = ({
                     </Button>
                 </DialogActions>
             </Dialog>
-            {renderchangeFilterTypePopup()}
+            {renderChangeFilterTypePopup()}
         </>
     );
 };

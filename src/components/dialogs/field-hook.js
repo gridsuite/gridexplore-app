@@ -35,7 +35,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { ArrowCircleDown, ArrowCircleUp, Upload } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import CsvImportFilterCreationDialog from './csv-import-filter-creation-dialog';
-import { LIGHT_THEME } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -49,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 90,
     },
     iconColor: {
-        color: theme === LIGHT_THEME ? '#90caf9' : '#1976d2',
+        color: theme.palette.primary.main,
     },
 }));
 
@@ -593,13 +592,13 @@ export const useEquipmentTableValues = ({
                 </Grid>
                 <CsvImportFilterCreationDialog
                     open={openCSVImportDialog}
-                    title={'choisir un fichier CSV'}
-                    name={name}
+                    title={intl.formatMessage({ id: 'chooseCSVFile' })}
                     onClose={() => setOpenCSVImportDialog(false)}
                     equipmentType={equipmentType}
                     handleValidateCSV={(csvData, keepTableValues) =>
                         updateTableValues(csvData, keepTableValues)
                     }
+                    tableValues={values}
                 />
             </Box>
         );
