@@ -118,7 +118,7 @@ const CreateFilterDialog = ({
     const [filterToSave, setFilterToSave] = useState(null);
     const [tableValues, setTableValues] = useState([]);
     const [isGeneratorOrLoad, setIsGeneratorOrLoad] = useState(false);
-    const [isFilterCreation, setIsFilterCreation] = useState(false);
+    const [isCreation, setIsFilterCreation] = useState(false);
     const [equipmentType, setEquipmentType] = useState(null);
     const [name, setName] = useState('');
     const [id, setId] = useState('');
@@ -203,13 +203,13 @@ const CreateFilterDialog = ({
     const handleNamingFilterCallBack = (
         tableValues,
         isGeneratorOrLoad,
-        isFilterCreation,
+        isCreation,
         equipmentType,
         name,
         id
     ) => {
         setIsGeneratorOrLoad(isGeneratorOrLoad);
-        setIsFilterCreation(isFilterCreation);
+        setIsFilterCreation(isCreation);
         setEquipmentType(equipmentType);
         setName(name);
         setId(id);
@@ -219,7 +219,7 @@ const CreateFilterDialog = ({
     const handleCreateFilter = (
         tableValues,
         isGeneratorOrLoad,
-        isFilterCreation,
+        isCreation,
         equipmentType,
         name,
         id
@@ -251,7 +251,7 @@ const CreateFilterDialog = ({
                     }
                 });
             }
-            if (isFilterCreation) {
+            if (isCreation) {
                 createFilter(
                     {
                         type: FilterType.EXPLICIT_NAMING,
@@ -304,7 +304,7 @@ const CreateFilterDialog = ({
             handleCreateFilter(
                 tableValues,
                 isGeneratorOrLoad,
-                isFilterCreation,
+                isCreation,
                 equipmentType,
                 name,
                 id
@@ -378,7 +378,7 @@ const CreateFilterDialog = ({
                     onKeyPress={() => handlePopupConfirmation(false)}
                 >
                     <DialogTitle id={'dialog-title-change-filter-type'}>
-                        {'confirmation'}
+                        {'Confirmation'}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>
