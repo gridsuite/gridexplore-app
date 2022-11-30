@@ -27,7 +27,7 @@ import {
     deleteCase,
     fetchCases,
     fetchPath,
-    getCaseImportParameters
+    getCaseImportParameters,
 } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 
