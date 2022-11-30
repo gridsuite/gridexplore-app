@@ -454,7 +454,8 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             studyName === '' ||
             !nameOk ||
             !isParamsOk ||
-            (!providedCase && !isSelectedFileOk)
+            (!providedCase && !isSelectedFileOk) ||
+            isUploadingFileInProgress
         );
     };
 
