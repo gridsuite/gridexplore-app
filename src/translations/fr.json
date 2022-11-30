@@ -181,7 +181,7 @@
     "parameterLoadingProblem":"Problème de chargement des paramètres",
     "dragAndDrop": "glisser déposer",
     "changeTypeMessage": "Voulez-vous changer le type ?",
-    "keepCSVDataMessage": "Voulez-vous  remplacer ou ajouter vos identifiants ?",
+    "keepCSVDataMessage": "Voulez-vous remplacer ou ajouter vos identifiants ?",
     "chooseCSVFile" : "Choisir un fichier CSV",
     "add" : "Ajouter",
     "replace": "Remplacer"

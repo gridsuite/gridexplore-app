@@ -224,18 +224,14 @@ const CreateFilterDialog = ({
         name,
         id
     ) => {
-        if (
-            tableValues.every((el) => {
-                if (!el?.equipmentID) {
-                    setCreateFilterErr(
-                        intl.formatMessage({
-                            id: 'missingEquipmentsIdsError',
-                        })
-                    );
-                }
-                return el.equipmentID;
-            })
-        ) {
+        let hasMissingId = tableValues.some((el) => !el?.equipmentID);
+        if (hasMissingId) {
+            setCreateFilterErr(
+                intl.formatMessage({
+                    id: 'missingEquipmentsIdsError',
+                })
+            );
+        } else {
             if (isGeneratorOrLoad) {
                 // we check if all the distribution keys are null.
                 // If one is set, all the distribution keys that are null take 0 as value
@@ -244,10 +240,7 @@ const CreateFilterDialog = ({
                 );
                 tableValues.forEach((val, index) => {
                     if (!isAllKeysNull && !val.distributionKey) {
-                        tableValues[index] = {
-                            equipmentID: val.equipmentID,
-                            distributionKey: 0,
-                        };
+                        tableValues[index]['distributionKey'] = 0;
                     }
                 });
             }
