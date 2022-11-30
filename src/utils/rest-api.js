@@ -829,8 +829,8 @@ export function getCaseImportParameters(caseUuid) {
     );
 }
 
-export function createPrivateCase(selectedFile) {
-    const createPrivateCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases/private';
+export function createCaseWithoutDirectoryElementCreation(selectedFile) {
+    const createPrivateCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases';
     const formData = new FormData();
     formData.append('file', selectedFile);
     console.debug(createPrivateCaseUrl);
