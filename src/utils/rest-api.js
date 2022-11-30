@@ -68,7 +68,7 @@ function handleResponse(response, expectsJson) {
     }
 }
 
-function backendFetch(url, expectsJson, init, withAuth = true) {
+function prepareRequest(init, token) {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError(
             'Argument 2 of backendFetch is not an object' + typeof init
@@ -76,12 +76,22 @@ function backendFetch(url, expectsJson, init, withAuth = true) {
     }
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
-    if (withAuth) {
-        initCopy.headers.append('Authorization', 'Bearer ' + getToken());
-    }
+    const tokenCopy = token ? token : getToken();
+    initCopy.headers.append('Authorization', 'Bearer ' + tokenCopy);
+    return initCopy;
+}
 
+function backendFetch(url, init, token) {
+    const initCopy = prepareRequest(init, token);
     return fetch(url, initCopy).then((response) =>
-        handleResponse(response, expectsJson)
+        handleResponse(response, false)
+    );
+}
+
+function backendFetchJson(url, init) {
+    const initCopy = prepareRequest(init);
+    return fetch(url, initCopy).then((response) =>
+        handleResponse(response, true)
     );
 }
 
@@ -101,14 +111,10 @@ export function fetchValidateUser(user) {
 
     return backendFetch(
         CheckAccessUrl,
-        false,
         {
             method: 'head',
-            headers: {
-                Authorization: 'Bearer ' + user?.id_token,
-            },
         },
-        false
+        user?.id_token
     )
         .then((response) => {
             //if the response is ok, the responseCode will be either 200 or 204 otherwise it's an error and it will be caught
@@ -122,21 +128,22 @@ export function fetchValidateUser(user) {
 
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
-    return backendFetch('env.json', true).then((res) => {
-        return backendFetch(
-            res.appsMetadataServerUrl + '/apps-metadata.json',
-            true,
-            undefined,
-            false
-        );
-    });
+    return fetch('env.json')
+        .then((res) => res.json())
+        .then((res) => {
+            return fetch(
+                res.appsMetadataServerUrl + '/apps-metadata.json'
+            ).then((response) => {
+                return response.json();
+            });
+        });
 }
 
 export function fetchConfigParameters(appName) {
     console.info('Fetching UI configuration params for app : ' + appName);
     const fetchParams =
         PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters`;
-    return backendFetch(fetchParams, true);
+    return backendFetchJson(fetchParams);
 }
 
 export function fetchConfigParameter(name) {
@@ -149,7 +156,7 @@ export function fetchConfigParameter(name) {
     const fetchParams =
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}`;
-    return backendFetch(fetchParams, true);
+    return backendFetchJson(fetchParams);
 }
 
 export function fetchDirectoryContent(directoryUuid) {
@@ -157,14 +164,14 @@ export function fetchDirectoryContent(directoryUuid) {
     const fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${directoryUuid}/elements`;
-    return backendFetch(fetchDirectoryContentUrl, true);
+    return backendFetchJson(fetchDirectoryContentUrl);
 }
 
 export function deleteElement(elementUuid) {
     console.info("Deleting element %s'", elementUuid);
     const fetchParams =
         PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/${elementUuid}`;
-    return backendFetch(fetchParams, false, {
+    return backendFetch(fetchParams, {
         method: 'delete',
     });
 }
@@ -178,7 +185,7 @@ export function moveElementToDirectory(elementUuid, directoryUuid) {
     const fetchParams =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/elements/${elementUuid}?newDirectory=${directoryUuid}`;
-    return backendFetch(fetchParams, false, {
+    return backendFetch(fetchParams, {
         method: 'PUT',
     });
 }
@@ -192,7 +199,7 @@ export function updateAccessRights(elementUuid, isPrivate) {
     );
     const updateAccessRightUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${elementUuid}`;
-    return backendFetch(updateAccessRightUrl, false, {
+    return backendFetch(updateAccessRightUrl, {
         method: 'put',
         headers: {
             Accept: 'application/json',
@@ -209,7 +216,7 @@ export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
     const insertDirectoryUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${parentUuid}/elements`;
-    return backendFetch(insertDirectoryUrl, true, {
+    return backendFetchJson(insertDirectoryUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -229,7 +236,7 @@ export function insertRootDirectory(directoryName, isPrivate, owner) {
     console.info("Inserting a new root folder '%s'", directoryName);
     const insertRootDirectoryUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories/`;
-    return backendFetch(insertRootDirectoryUrl, true, {
+    return backendFetchJson(insertRootDirectoryUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -248,7 +255,7 @@ export function renameElement(elementUuid, newElementName) {
     const renameElementUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${elementUuid}`;
     console.debug(renameElementUrl);
-    return backendFetch(renameElementUrl, false, {
+    return backendFetch(renameElementUrl, {
         method: 'put',
         headers: {
             Accept: 'application/json',
@@ -264,7 +271,7 @@ export function fetchRootFolders() {
     console.info('Fetching Root Directories');
     const fetchRootFoldersUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
-    return backendFetch(fetchRootFoldersUrl, true);
+    return backendFetchJson(fetchRootFoldersUrl);
 }
 
 export function updateConfigParameter(name, value) {
@@ -279,7 +286,7 @@ export function updateConfigParameter(name, value) {
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}?value=` +
         encodeURIComponent(value);
-    return backendFetch(updateParams, false, { method: 'put' });
+    return backendFetch(updateParams, { method: 'put' });
 }
 
 function getElementsIdsListsQueryParams(ids) {
@@ -297,7 +304,7 @@ export function fetchElementsInfos(ids) {
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/elements/metadata' +
         getElementsIdsListsQueryParams(ids);
-    return backendFetch(fetchElementsInfosUrl, true);
+    return backendFetchJson(fetchElementsInfosUrl);
 }
 
 export function createStudy(
@@ -321,7 +328,7 @@ export function createStudy(
         '?' +
         urlSearchParams.toString();
     console.debug(createStudyUrl);
-    return backendFetch(createStudyUrl, false, {
+    return backendFetch(createStudyUrl, {
         method: 'post',
         body: importParameters,
         headers: { 'Content-Type': 'application/json' },
@@ -347,7 +354,7 @@ export function duplicateStudy(
         urlSearchParams.toString();
     console.debug(duplicateStudyUrl);
 
-    return backendFetch(duplicateStudyUrl, false, {
+    return backendFetch(duplicateStudyUrl, {
         method: 'post',
     });
 }
@@ -368,7 +375,7 @@ export function createCase({ name, description, file, parentDirectoryUuid }) {
     formData.append('caseFile', file);
     console.debug(url);
 
-    return backendFetch(url, false, {
+    return backendFetch(url, {
         method: 'post',
         body: formData,
     });
@@ -392,7 +399,7 @@ export function duplicateCase(
         urlSearchParams.toString();
     console.debug(url);
 
-    return backendFetch(url, false, {
+    return backendFetch(url, {
         method: 'post',
     });
 }
@@ -401,7 +408,7 @@ export function fetchCases() {
     console.info('Fetching cases...');
     const fetchCasesUrl = PREFIX_CASE_QUERIES + '/v1/cases';
     console.debug(fetchCasesUrl);
-    return backendFetch(fetchCasesUrl, true);
+    return backendFetchJson(fetchCasesUrl);
 }
 
 export function elementExists(directoryUuid, elementName, type) {
@@ -410,7 +417,7 @@ export function elementExists(directoryUuid, elementName, type) {
         `/v1/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
 
     console.debug(existsElementUrl);
-    return backendFetch(existsElementUrl, false, { method: 'head' }).then(
+    return backendFetch(existsElementUrl, { method: 'head' }).then(
         (response) => {
             return response.status !== 204; // HTTP 204 : No-content
         }
@@ -437,7 +444,7 @@ export function rootDirectoryExists(directoryName) {
 
     console.debug(existsRootDirectoryUrl);
 
-    return backendFetch(existsRootDirectoryUrl, false, { method: 'head' }).then(
+    return backendFetch(existsRootDirectoryUrl, { method: 'head' }).then(
         (response) => {
             return response.status !== 204; // HTTP 204 : No-content
         }
@@ -476,7 +483,7 @@ export function createContingencyList(
         body.equipmentType = 'LINE';
         body.nominalVoltage1 = null;
     }
-    return backendFetch(createContingencyListUrl, false, {
+    return backendFetch(createContingencyListUrl, {
         method: 'post',
         body: JSON.stringify(body),
     });
@@ -509,7 +516,7 @@ export function duplicateContingencyList(
         urlSearchParams.toString();
     console.debug(url);
 
-    return backendFetch(url, false, {
+    return backendFetch(url, {
         method: 'post',
     });
 }
@@ -527,7 +534,7 @@ export function getContingencyList(type, id) {
     }
     url += id;
 
-    return backendFetch(url, true);
+    return backendFetchJson(url);
 }
 
 /**
@@ -538,7 +545,7 @@ export function saveFormContingencyList(form) {
     const { nominalVoltage, ...rest } = form;
     const url =
         PREFIX_ACTIONS_QUERIES + '/v1/form-contingency-lists/' + form.id;
-    return backendFetch(url, false, {
+    return backendFetch(url, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -557,7 +564,7 @@ export function saveScriptContingencyList(scriptContingencyList) {
         PREFIX_ACTIONS_QUERIES +
         '/v1/script-contingency-lists/' +
         scriptContingencyList.id;
-    return backendFetch(url, false, {
+    return backendFetch(url, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(scriptContingencyList),
@@ -580,7 +587,7 @@ export function replaceFormContingencyListWithScript(id, parentDirectoryUuid) {
         '?' +
         urlSearchParams.toString();
 
-    return backendFetch(url, false, {
+    return backendFetch(url, {
         method: 'post',
     });
 }
@@ -606,7 +613,7 @@ export function newScriptFromFiltersContingencyList(
         '?' +
         urlSearchParams.toString();
 
-    return backendFetch(url, false, {
+    return backendFetch(url, {
         method: 'post',
     });
 }
@@ -648,7 +655,6 @@ export function createFilter(newFilter, name, parentDirectoryUuid) {
         PREFIX_EXPLORE_SERVER_QUERIES +
             '/v1/explore/filters?' +
             urlSearchParams.toString(),
-        false,
         {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
@@ -675,7 +681,7 @@ export function duplicateFilter(
         urlSearchParams.toString();
     console.debug(url);
 
-    return backendFetch(url, false, {
+    return backendFetch(url, {
         method: 'post',
     });
 }
@@ -685,7 +691,7 @@ export function duplicateFilter(
  * @returns {Promise<Response>}
  */
 export function getFilters() {
-    return backendFetch(PREFIX_FILTERS_QUERIES, true).then((res) =>
+    return backendFetchJson(PREFIX_FILTERS_QUERIES).then((res) =>
         res.sort((a, b) => a.name.localeCompare(b.name))
     );
 }
@@ -696,7 +702,7 @@ export function getFilters() {
  */
 export function getFilterById(id) {
     const url = PREFIX_FILTERS_QUERIES + '/' + id;
-    return backendFetch(url, true);
+    return backendFetchJson(url);
 }
 
 /**
@@ -715,7 +721,7 @@ export function replaceFiltersWithScript(id, parentDirectoryUuid) {
         '?' +
         urlSearchParams.toString();
 
-    return backendFetch(url, false, {
+    return backendFetch(url, {
         method: 'post',
     });
 }
@@ -736,7 +742,7 @@ export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
         '?' +
         urlSearchParams.toString();
 
-    return backendFetch(url, false, {
+    return backendFetch(url, {
         method: 'post',
     });
 }
@@ -745,7 +751,7 @@ export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
  * Save Filter
  */
 export function saveFilter(filter) {
-    return backendFetch(PREFIX_FILTERS_QUERIES + '/' + filter.id, false, {
+    return backendFetch(PREFIX_FILTERS_QUERIES + '/' + filter.id, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(filter),
@@ -764,7 +770,7 @@ export function fetchPath(elementUuid) {
         encodeURIComponent(elementUuid) +
         `/path`;
     console.debug(fetchPathUrl);
-    return backendFetch(fetchPathUrl, true);
+    return backendFetchJson(fetchPathUrl);
 }
 
 export function getCaseImportParameters(caseUuid) {
@@ -775,7 +781,7 @@ export function getCaseImportParameters(caseUuid) {
         caseUuid +
         '/import-parameters';
     console.debug(getExportFormatsUrl);
-    return backendFetch(getExportFormatsUrl, true);
+    return backendFetchJson(getExportFormatsUrl);
 }
 
 export function createPrivateCase(selectedFile) {
@@ -784,7 +790,7 @@ export function createPrivateCase(selectedFile) {
     formData.append('file', selectedFile);
     console.debug(createPrivateCaseUrl);
 
-    return backendFetch(createPrivateCaseUrl, true, {
+    return backendFetchJson(createPrivateCaseUrl, {
         method: 'post',
         body: formData,
     });
@@ -792,7 +798,7 @@ export function createPrivateCase(selectedFile) {
 
 export function deleteCase(caseUuid) {
     const deleteCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases/' + caseUuid;
-    return backendFetch(deleteCaseUrl, false, {
+    return backendFetch(deleteCaseUrl, {
         method: 'delete',
     });
 }
