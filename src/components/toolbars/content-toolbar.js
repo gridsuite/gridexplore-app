@@ -18,7 +18,7 @@ import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar from './common-toolbar';
 
 import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { ElementType } from '../../utils/elementType';
 
@@ -31,7 +31,7 @@ const DialogsId = {
 const ContentToolbar = (props) => {
     const { selectedElements, ...others } = props;
     const userId = useSelector((state) => state.user.profile.sub);
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
     const intl = useIntl();
 
     const [openDialog, setOpenDialog] = useState(null);
@@ -39,11 +39,11 @@ const ContentToolbar = (props) => {
 
     const handleLastError = useCallback(
         (message) => {
-            enqueueSnackbar(message, {
-                variant: 'error',
+            snackError({
+                messageTxt: message,
             });
         },
-        [enqueueSnackbar]
+        [snackError]
     );
 
     const handleOpenDialog = (DialogId) => {

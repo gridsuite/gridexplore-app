@@ -43,7 +43,7 @@ import {
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
-import { useSnackbarMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ElementType } from '../../utils/elementType';
 import {
     useFileValue,
@@ -140,6 +140,7 @@ const SelectCase = () => {
 export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const [caseExist, setCaseExist] = React.useState(false);
 
+    const { snackError } = useSnackMessage();
     const [createStudyErr, setCreateStudyErr] = React.useState('');
 
     const userId = useSelector((state) => state.user.profile.sub);
@@ -190,8 +191,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             width: '90%',
         },
     });
-
-    const snackbarMessage = useSnackbarMessage();
 
     const studyNameRef = React.useRef(studyName);
 
@@ -421,7 +420,13 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 handleCloseDialog();
             })
             .catch((message) => {
-                snackbarMessage(message, 'studyCreationError', { studyName });
+                snackError({
+                    messageTxt: message,
+                    headerId: 'studyCreationError',
+                    headerValues: {
+                        studyName,
+                    },
+                });
             })
             .finally(() => dispatch(removeUploadingElement(uploadingStudy)));
         dispatch(addUploadingElement(uploadingStudy));
@@ -449,7 +454,8 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             studyName === '' ||
             !nameOk ||
             !isParamsOk ||
-            (!providedCase && !isSelectedFileOk)
+            (!providedCase && !isSelectedFileOk) ||
+            isUploadingFileInProgress
         );
     };
 
