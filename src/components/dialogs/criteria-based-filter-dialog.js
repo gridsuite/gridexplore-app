@@ -15,7 +15,6 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import { saveFilter, saveFormContingencyList } from '../../utils/rest-api';
 import { ElementType } from '../../utils/elementType';
-import {} from '../../utils/equipment-types';
 import CriteriaFilterDialogContent from './criteria-filter-dialog-content';
 
 const useStyles = makeStyles(() => ({
@@ -49,8 +48,9 @@ export const CriteriaBasedFilterDialog = ({
         }
     }, [initialFilter]);
 
-    const handleEditCallback = (childData) => {
-        currentFilter.current = childData;
+    const handleEditCallback = (filter) => {
+        console.log('handleEditCallback', filter);
+        if (isFilterCreation) currentFilter.current = filter;
         setBtnSaveListDisabled(false);
     };
 
@@ -62,6 +62,7 @@ export const CriteriaBasedFilterDialog = ({
     };
 
     const handleValidate = () => {
+        console.log('currentFilter.current', currentFilter.current);
         if (!isFilterCreation) {
             if (contentType === ElementType.FILTER) {
                 saveFilter(currentFilter.current)
@@ -70,6 +71,7 @@ export const CriteriaBasedFilterDialog = ({
                         onError(errorMessage);
                     });
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
+                console.log('saveFormContingencyList', currentFilter.current);
                 saveFormContingencyList(currentFilter.current)
                     .then()
                     .catch((errorMessage) => {

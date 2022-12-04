@@ -359,15 +359,15 @@ export const useEquipmentTableValues = ({
             const result = [...selectedIds];
             result.sort();
 
-            let isContigue = true;
+            let isContiguous = true;
             for (let i = 0; i < result.length - 1; i++) {
                 if (result[i + 1] - result[i] !== 1) {
-                    isContigue = false;
+                    isContiguous = false;
                     break;
                 }
             }
 
-            if (isContigue) {
+            if (isContiguous) {
                 if (direction === -1) {
                     const [item] = res.splice(result[0] - 1, 1);
                     res.splice(result[result.length - 1], 0, item);
@@ -535,7 +535,7 @@ export const useEquipmentTableValues = ({
                     </Droppable>
                 </DragDropContext>
                 <Grid container>
-                    <Grid item xs justifyContent={'flex-end'} spacing={2}>
+                    <Grid item xs justifyContent={'flex-end'}>
                         <IconButton
                             className={classes.iconColor}
                             onClick={() => setOpenCSVImportDialog(true)}
@@ -582,7 +582,7 @@ export const useEquipmentTableValues = ({
                                 selectedIds.has(values.length - 1)
                             }
                             onClick={() => {
-                                handleChangeOrder(id, 1);
+                                handleChangeOrder(1);
                             }}
                             className={classes.iconColor}
                         >

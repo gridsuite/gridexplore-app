@@ -6,7 +6,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { MenuItem, Grid, Select, FormControl, InputLabel } from '@mui/material';
 import { getContingencyList, getFilterById } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -42,6 +42,7 @@ function generateDefaultValue(val, originalValue) {
 
 const SingleFilter = ({ filter, definition, onChange }) => {
     const localChange = (newVal) => {
+        console.log('localchange', newVal);
         filter.value = newVal;
         onChange();
     };
@@ -85,6 +86,7 @@ export const CriteriaFilterDialogContent = ({
     open,
     contentType,
     handleFilterCreation,
+    handleEquipementChange,
 }) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [filterType, setFilterType] = useState(null);
@@ -92,7 +94,7 @@ export const CriteriaFilterDialogContent = ({
         type: { value: filterType },
     });
     const currentFilter = useRef(null);
-
+    const currentFilterToSend = useRef({});
     const { snackError } = useSnackMessage();
     const openRef = useRef(null);
     openRef.current = open;
@@ -153,10 +155,6 @@ export const CriteriaFilterDialogContent = ({
         }
     }, [id, contentType, snackError]);
 
-    const handleFilterData = () => {
-        handleFilterCreation(currentFilter.current);
-    };
-
     function onChange(newVal) {
         currentFilter.current = {};
         currentFilter.current.id = id;
@@ -167,7 +165,17 @@ export const CriteriaFilterDialogContent = ({
         } else {
             for (const k in newVal) currentFilter.current[k] = newVal[k];
         }
-        handleFilterData();
+
+        // console.log('currentFilter.current.equipmentFilterForm : ', currentFilter.current.equipmentFilterForm);
+        // if (contentType === ElementType.FILTER) {
+        //     handleFilterCreation({
+        //         id: id,
+        //         type: FilterType.CRITERIA,
+        //         equipmentFilterForm: {...currentFilter.current.equipmentFilterForm, newVal}
+        //     });
+        // } else {
+        //     handleFilterCreation({ ...newVal });
+        // }
     }
 
     function validVoltageValues(obj) {
@@ -192,12 +200,18 @@ export const CriteriaFilterDialogContent = ({
             }
         });
         onChange(res);
+        currentFilterToSend.current.id = id;
+        currentFilterToSend.current.type = FilterType.CRITERIA;
+        currentFilterToSend.current.equipmentFilterForm = { ...res };
+        handleFilterCreation(currentFilterToSend.current);
     };
 
     const changeFilterType = (newType) => {
         // TODO: should reset all fields in currentFormEdit
+        console.log('newType', newType);
         currentFormEdit.equipmentType = { value: newType };
         setFilterType(newType);
+        handleEquipementChange(newType);
         editDone();
     };
 

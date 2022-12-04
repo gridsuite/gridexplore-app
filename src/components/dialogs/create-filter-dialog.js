@@ -123,10 +123,14 @@ const CreateFilterDialog = ({
     const [name, setName] = useState('');
     const [id, setId] = useState('');
     const handleCallback = (criteriaFilter) => {
-        setFilterToSave(criteriaFilter);
-        setEquipmentType(
-            criteriaFilter['equipmentFilterForm']['equipmentType']
-        );
+        console.log('handleCallback', criteriaFilter);
+        if (criteriaFilter) {
+            setFilterToSave(criteriaFilter);
+        }
+    };
+
+    const handleEquipementChange = (equipmentType) => {
+        setEquipmentType(equipmentType);
     };
 
     /**
@@ -224,6 +228,7 @@ const CreateFilterDialog = ({
         name,
         id
     ) => {
+        console.log('enter handleCreateFilter in create filter dialog');
         let hasMissingId = tableValues.some((el) => !el?.equipmentID);
         if (hasMissingId) {
             setCreateFilterErr(
@@ -245,6 +250,7 @@ const CreateFilterDialog = ({
                 });
             }
             if (isCreation) {
+
                 createFilter(
                     {
                         type: FilterType.EXPLICIT_NAMING,
@@ -310,6 +316,7 @@ const CreateFilterDialog = ({
     };
 
     const handleSave = (filter) => {
+        console.log('handleSave', filter);
         createFilter(filter, newNameList, activeDirectory)
             .then(() => {
                 handleClose();
@@ -444,6 +451,7 @@ const CreateFilterDialog = ({
                             open={open && filterType === FilterType.CRITERIA}
                             isFilterCreation={true}
                             handleFilterCreation={handleCallback}
+                            handleEquipementChange={handleEquipementChange}
                             contentType={ElementType.FILTER}
                         />
                     ) : (
