@@ -6,7 +6,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MenuItem, Grid, Select, FormControl, InputLabel } from '@mui/material';
 import { getContingencyList, getFilterById } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';

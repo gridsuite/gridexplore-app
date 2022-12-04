@@ -50,7 +50,7 @@ export const CriteriaBasedFilterDialog = ({
 
     const handleEditCallback = (filter) => {
         if (contentType === ElementType.CONTINGENCY_LIST) {
-            currentFilter.current={};
+            currentFilter.current = {};
             currentFilter.current.id = filter.id;
             currentFilter.current.equipmentType =
                 filter.equipmentFilterForm.equipmentType;
