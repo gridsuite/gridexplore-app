@@ -577,7 +577,6 @@ export function getContingencyList(type, id) {
  * @returns {Promise<Response>}
  */
 export function saveFormContingencyList(form) {
-    console.log('enter saveFormContingencyList', form);
     const { nominalVoltage, ...rest } = form;
     const url =
         PREFIX_ACTIONS_QUERIES + '/v1/form-contingency-lists/' + form.id;

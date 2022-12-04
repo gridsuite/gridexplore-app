@@ -49,8 +49,22 @@ export const CriteriaBasedFilterDialog = ({
     }, [initialFilter]);
 
     const handleEditCallback = (filter) => {
-        console.log('handleEditCallback', filter);
-        if (isFilterCreation) currentFilter.current = filter;
+        if (contentType === ElementType.CONTINGENCY_LIST) {
+            currentFilter.current={};
+            currentFilter.current.id = filter.id;
+            currentFilter.current.equipmentType =
+                filter.equipmentFilterForm.equipmentType;
+            currentFilter.current.countries1 =
+                filter.equipmentFilterForm.countries1;
+            currentFilter.current.countries2 =
+                filter.equipmentFilterForm.countries2;
+            currentFilter.current.nominalVoltage1 =
+                filter.equipmentFilterForm.nominalVoltage1;
+            currentFilter.current.nominalVoltage2 =
+                filter.equipmentFilterForm.nominalVoltage2;
+        } else {
+            currentFilter.current = filter;
+        }
         setBtnSaveListDisabled(false);
     };
 
@@ -62,7 +76,6 @@ export const CriteriaBasedFilterDialog = ({
     };
 
     const handleValidate = () => {
-        console.log('currentFilter.current', currentFilter.current);
         if (!isFilterCreation) {
             if (contentType === ElementType.FILTER) {
                 saveFilter(currentFilter.current)
@@ -71,7 +84,6 @@ export const CriteriaBasedFilterDialog = ({
                         onError(errorMessage);
                     });
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
-                console.log('saveFormContingencyList', currentFilter.current);
                 saveFormContingencyList(currentFilter.current)
                     .then()
                     .catch((errorMessage) => {

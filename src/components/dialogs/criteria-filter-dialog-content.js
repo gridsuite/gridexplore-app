@@ -42,7 +42,6 @@ function generateDefaultValue(val, originalValue) {
 
 const SingleFilter = ({ filter, definition, onChange }) => {
     const localChange = (newVal) => {
-        console.log('localchange', newVal);
         filter.value = newVal;
         onChange();
     };
@@ -165,17 +164,6 @@ export const CriteriaFilterDialogContent = ({
         } else {
             for (const k in newVal) currentFilter.current[k] = newVal[k];
         }
-
-        // console.log('currentFilter.current.equipmentFilterForm : ', currentFilter.current.equipmentFilterForm);
-        // if (contentType === ElementType.FILTER) {
-        //     handleFilterCreation({
-        //         id: id,
-        //         type: FilterType.CRITERIA,
-        //         equipmentFilterForm: {...currentFilter.current.equipmentFilterForm, newVal}
-        //     });
-        // } else {
-        //     handleFilterCreation({ ...newVal });
-        // }
     }
 
     function validVoltageValues(obj) {
@@ -208,7 +196,6 @@ export const CriteriaFilterDialogContent = ({
 
     const changeFilterType = (newType) => {
         // TODO: should reset all fields in currentFormEdit
-        console.log('newType', newType);
         currentFormEdit.equipmentType = { value: newType };
         setFilterType(newType);
         handleEquipementChange(newType);
