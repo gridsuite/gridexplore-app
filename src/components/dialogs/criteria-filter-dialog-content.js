@@ -85,7 +85,7 @@ export const CriteriaFilterDialogContent = ({
     open,
     contentType,
     handleFilterCreation,
-    handleEquipementChange,
+    handleEquipementTypeChange,
 }) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [filterType, setFilterType] = useState(null);
@@ -199,7 +199,7 @@ export const CriteriaFilterDialogContent = ({
         currentFormEdit.equipmentType = { value: newType };
         setFilterType(newType);
         if (id == null && contentType === ElementType.FILTER)
-            handleEquipementChange(newType);
+            handleEquipementTypeChange(newType);
         editDone();
     };
 
