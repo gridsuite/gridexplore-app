@@ -128,7 +128,7 @@ const CreateFilterDialog = ({
         }
     };
 
-    const handleEquipementChange = (equipmentType) => {
+    const handleEquipmentChange = (equipmentType) => {
         setEquipmentType(equipmentType);
     };
 
@@ -447,7 +447,7 @@ const CreateFilterDialog = ({
                             open={open && filterType === FilterType.CRITERIA}
                             isFilterCreation={true}
                             handleFilterCreation={handleCallback}
-                            handleEquipementTypeChange={handleEquipementChange}
+                            handleEquipmentTypeChange={handleEquipmentChange}
                             contentType={ElementType.FILTER}
                         />
                     ) : (
