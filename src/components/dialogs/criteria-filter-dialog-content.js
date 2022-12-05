@@ -198,7 +198,8 @@ export const CriteriaFilterDialogContent = ({
         // TODO: should reset all fields in currentFormEdit
         currentFormEdit.equipmentType = { value: newType };
         setFilterType(newType);
-        handleEquipementChange(newType);
+        if (id == null && contentType === ElementType.FILTER)
+            handleEquipementChange(newType);
         editDone();
     };
 

@@ -31,7 +31,7 @@ import { Checkbox } from '@mui/material';
 import { fetchElementsInfos } from '../utils/rest-api';
 
 import ScriptDialog from './dialogs/script-dialog';
-import CriteriaBasedFilterDialog from './dialogs/criteria-based-filter-dialog';
+import CriteriaBasedFilterDialog from './dialogs/criteria-filter-dialog';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
 import ContentContextualMenu from './menus/content-contextual-menu';

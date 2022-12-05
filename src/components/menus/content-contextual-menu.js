@@ -23,7 +23,7 @@ import DeleteDialog from '../dialogs/delete-dialog';
 import ScriptDialog from '../dialogs/script-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
-import GenericFilterDialog from '../dialogs/criteria-based-filter-dialog';
+import GenericFilterDialog from '../dialogs/criteria-filter-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog';
 
 import { DialogsId } from '../../utils/UIconstants';
