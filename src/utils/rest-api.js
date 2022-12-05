@@ -64,7 +64,8 @@ function parseError(text) {
 
 function handleResponse(response, expectsJson) {
     if (response.ok) {
-        return expectsJson ? response.json() : response;
+        if (expectsJson === undefined) return response;
+        else return expectsJson ? response.json() : response.text();
     } else {
         return response.text().then((text) => {
             const errorJson = parseError(text);
@@ -98,7 +99,12 @@ function prepareRequest(init, token) {
     return initCopy;
 }
 
-function backendFetch(url, init, token) {
+export function backendFetch(url, init, token) {
+    const initCopy = prepareRequest(init, token);
+    return fetch(url, initCopy).then((response) => handleResponse(response));
+}
+
+export function backendFetchText(url, init, token) {
     const initCopy = prepareRequest(init, token);
     return fetch(url, initCopy).then((response) =>
         handleResponse(response, false)
@@ -447,8 +453,8 @@ export function getNameCandidate(directoryUuid, elementName, type) {
         `/v1/directories/${directoryUuid}/${elementName}/newNameCandidate?type=${type}`;
 
     console.debug(existsElementUrl);
-    return backendFetch(existsElementUrl).then((response) => {
-        return response.text();
+    return backendFetchText(existsElementUrl).catch((error) => {
+        return error.status === 404 ? false : error;
     });
 }
 export function rootDirectoryExists(directoryName) {
