@@ -221,6 +221,7 @@ const ManualFilterCreationDialog = ({
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const [defaultValues, setDefaultValues] = useState(null);
+    const [isEdited, setIsEdited] = useState(false);
 
     const fetchFilter = useRef(null);
     fetchFilter.current = open && !isFilterCreation;
@@ -232,6 +233,7 @@ const ManualFilterCreationDialog = ({
             filterEquipmentsAttributes: [],
             equipmentType: equipmentType,
         });
+        setIsEdited(false);
     };
 
     useEffect(() => {
@@ -255,6 +257,7 @@ const ManualFilterCreationDialog = ({
         isGeneratorOrLoad: isGeneratorOrLoad,
         defaultTableValues: defaultValues?.filterEquipmentsAttributes,
         setCreateFilterErr: setCreateFilterErr,
+        setIsEdited: setIsEdited,
     });
 
     useEffect(() => {
@@ -373,11 +376,7 @@ const ManualFilterCreationDialog = ({
                 <Button
                     variant="outlined"
                     onClick={handleCreateFilter}
-                    disabled={
-                        tableValues.length === 0 ||
-                        createFilterErr !== '' ||
-                        !equipmentType
-                    }
+                    disabled={createFilterErr !== '' || !isEdited}
                 >
                     <FormattedMessage id="validate" />
                 </Button>
