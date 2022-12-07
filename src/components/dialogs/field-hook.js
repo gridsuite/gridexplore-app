@@ -298,6 +298,7 @@ export const useEquipmentTableValues = ({
     isGeneratorOrLoad = false,
     defaultTableValues,
     setCreateFilterErr,
+    setIsEdited,
     name,
     equipmentType,
 }) => {
@@ -336,21 +337,23 @@ export const useEquipmentTableValues = ({
                 newValues.splice(index, 1);
             });
             setSelectedIds(new Set());
+            setIsEdited(true);
             return newValues.length === 0 ? [{}] : newValues;
         });
         setCreateFilterErr('');
-    }, [selectedIds, setCreateFilterErr]);
+    }, [selectedIds, setCreateFilterErr, setIsEdited]);
 
     const handleSetValue = useCallback(
         (index, newValue) => {
             setValues((oldValues) => {
                 let newValues = [...oldValues];
                 newValues[index] = newValue;
+                setIsEdited(true);
                 return newValues;
             });
             setCreateFilterErr('');
         },
-        [setCreateFilterErr]
+        [setCreateFilterErr, setIsEdited]
     );
 
     const handleChangeOrder = useCallback(
@@ -383,9 +386,10 @@ export const useEquipmentTableValues = ({
             }
 
             setSelectedIds(new Set());
+            setIsEdited(true);
             setValues(res);
         },
-        [selectedIds, values]
+        [selectedIds, values, setIsEdited]
     );
 
     const commit = useCallback(
