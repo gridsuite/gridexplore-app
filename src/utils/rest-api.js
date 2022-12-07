@@ -67,7 +67,7 @@ function handleError(response) {
         let error;
         const errorJson = parseError(text);
         if (errorJson) {
-            error = new Error(errorJson.message || error.statusText);
+            error = new Error(errorJson.message || response.statusText);
             error.status = errorJson.status;
             error.statusText = errorJson.error;
             throw error;
