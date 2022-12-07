@@ -596,7 +596,6 @@ const DirectoryContent = () => {
     };
 
     const getCurrentChildrenWithNotClickableRows = () => {
-        console.log(currentChildren);
         return currentChildren.map((child) => {
             return {
                 ...child,
