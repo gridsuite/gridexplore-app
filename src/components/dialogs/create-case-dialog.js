@@ -91,6 +91,7 @@ export function CreateCaseDialog({ onClose, open }) {
             directory: activeDirectory,
             type: 'CASE',
             owner: userId,
+            lastModifiedBy: userId,
             uploading: true,
         };
         createCase({

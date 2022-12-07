@@ -357,20 +357,22 @@ const DirectoryContent = () => {
     }
 
     function dateCellRender(cellData) {
-        const dateData = new Date(cellData.rowData[cellData.dataKey]);
-        const date = dateData.toLocaleDateString(intl.locale);
-        const fullDate = new Intl.DateTimeFormat(intl.locale, {
-            dateStyle: 'long',
-            timeStyle: 'long',
-        }).format(dateData);
+        const data = new Date(cellData.rowData[cellData.dataKey]);
+        if (data instanceof Date && !isNaN(data)) {
+            const date = data.toLocaleDateString(intl.locale);
+            const fullDate = new Intl.DateTimeFormat(intl.locale, {
+                dateStyle: 'long',
+                timeStyle: 'long',
+            }).format(data);
 
-        return (
-            <div className={classes.cell}>
-                <Tooltip title={fullDate} placement="right">
-                    <span>{date}</span>
-                </Tooltip>
-            </div>
-        );
+            return (
+                <div className={classes.cell}>
+                    <Tooltip title={fullDate} placement="right">
+                        <span>{date}</span>
+                    </Tooltip>
+                </div>
+            );
+        }
     }
 
     function getElementIcon(objectType, objectSubtype) {
