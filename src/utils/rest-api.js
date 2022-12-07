@@ -64,36 +64,32 @@ function parseError(text) {
 
 function handleError(response) {
     return response.text().then((text) => {
+        const errorName = 'HttpResponseError : ';
         let error;
         const errorJson = parseError(text);
-        if (errorJson) {
-            error = new Error(errorJson.message || response.statusText);
+        if (
+            errorJson &&
+            errorJson.status &&
+            errorJson.error &&
+            errorJson.message
+        ) {
+            error = new Error(
+                errorName +
+                    errorJson.status +
+                    ' ' +
+                    errorJson.error +
+                    ', message : ' +
+                    errorJson.message
+            );
             error.status = errorJson.status;
-            error.statusText = errorJson.error;
-            throw error;
         } else {
-            error = new Error(response.statusText);
+            error = new Error(
+                errorName + response.status + ' ' + response.statusText
+            );
             error.status = response.status;
-            error.statusText = response.statusText;
-            throw error;
         }
+        throw error;
     });
-}
-
-function handleResponseSync(response) {
-    if (response.ok) {
-        return response;
-    } else {
-        return handleError(response);
-    }
-}
-
-function handleResponse(response, expectsJson) {
-    if (response.ok) {
-        return expectsJson ? response.json() : response.text();
-    } else {
-        return handleError(response);
-    }
 }
 
 function prepareRequest(init, token) {
@@ -109,25 +105,25 @@ function prepareRequest(init, token) {
     return initCopy;
 }
 
+function safeFetch(url, initCopy) {
+    return fetch(url, initCopy).then((response) =>
+        response.ok ? response : handleError(response)
+    );
+}
+
 export function backendFetch(url, init, token) {
     const initCopy = prepareRequest(init, token);
-    return fetch(url, initCopy).then((response) =>
-        handleResponseSync(response)
-    );
+    return safeFetch(url, initCopy);
 }
 
 export function backendFetchText(url, init, token) {
     const initCopy = prepareRequest(init, token);
-    return fetch(url, initCopy).then((response) =>
-        handleResponse(response, false)
-    );
+    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.text());
 }
 
-function backendFetchJson(url, init) {
-    const initCopy = prepareRequest(init);
-    return fetch(url, initCopy).then((response) =>
-        handleResponse(response, true)
-    );
+export function backendFetchJson(url, init, token) {
+    const initCopy = prepareRequest(init, token);
+    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.json());
 }
 
 export function fetchValidateUser(user) {
@@ -152,12 +148,12 @@ export function fetchValidateUser(user) {
         user?.id_token
     )
         .then((response) => {
-            //if the response is ok, the responseCode will be either 200 or 204 otherwise it's an error and it will be caught
+            //if the response is ok, the responseCode will be either 200 or 204 otherwise it's a Http error and it will be caught
             return response.status === 200;
         })
         .catch((error) => {
             if (error.status === 403) return false;
-            else throw new Error(error.status + ' ' + error.statusText);
+            else throw error;
         });
 }
 
@@ -466,7 +462,11 @@ export function getNameCandidate(directoryUuid, elementName, type) {
 
     console.debug(existsElementUrl);
     return backendFetchText(existsElementUrl).catch((error) => {
-        return error.status === 404 ? false : error;
+        if (error.status === 404) {
+            return false;
+        } else {
+            throw error;
+        }
     });
 }
 export function rootDirectoryExists(directoryName) {
