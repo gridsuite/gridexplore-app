@@ -62,27 +62,37 @@ function parseError(text) {
     }
 }
 
+function handleError(response) {
+    return response.text().then((text) => {
+        let error;
+        const errorJson = parseError(text);
+        if (errorJson) {
+            error = new Error(errorJson.message || error.statusText);
+            error.status = errorJson.status;
+            error.statusText = errorJson.error;
+            throw error;
+        } else {
+            error = new Error(response.statusText);
+            error.status = response.status;
+            error.statusText = response.statusText;
+            throw error;
+        }
+    });
+}
+
+function handleResponseSync(response) {
+    if (response.ok) {
+        return response;
+    } else {
+        return handleError(response);
+    }
+}
+
 function handleResponse(response, expectsJson) {
     if (response.ok) {
-        if (expectsJson === undefined) return response;
-        else return expectsJson ? response.json() : response.text();
+        return expectsJson ? response.json() : response.text();
     } else {
-        return response.text().then((text) => {
-            const errorJson = parseError(text);
-            if (errorJson) {
-                return Promise.reject({
-                    status: errorJson.status,
-                    statusText: errorJson.error,
-                    message: errorJson.message || response.statusText,
-                });
-            } else {
-                return Promise.reject({
-                    status: response.status,
-                    statusText: response.statusText,
-                    message: response.statusText,
-                });
-            }
-        });
+        return handleError(response);
     }
 }
 
@@ -101,7 +111,9 @@ function prepareRequest(init, token) {
 
 export function backendFetch(url, init, token) {
     const initCopy = prepareRequest(init, token);
-    return fetch(url, initCopy).then((response) => handleResponse(response));
+    return fetch(url, initCopy).then((response) =>
+        handleResponseSync(response)
+    );
 }
 
 export function backendFetchText(url, init, token) {
