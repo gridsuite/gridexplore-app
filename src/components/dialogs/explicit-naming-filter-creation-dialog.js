@@ -47,7 +47,7 @@ const ExplicitNamingCreationDialog = ({
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
     const [tableValues, setTablesValues] = useState([]);
-
+    const [isEdited, setIsEdited] = useState(false);
     const fetchFilter = useRef(null);
     fetchFilter.current = open && !isFilterCreation;
 
@@ -68,10 +68,12 @@ const ExplicitNamingCreationDialog = ({
         isFilterCreation,
         equipmentType,
         name,
-        id
+        id,
+        isEdited
     ) => {
         setEquipmentType(equipmentType);
         setTablesValues(tableValues);
+        setIsEdited(isEdited);
     };
 
     useEffect(() => {
@@ -174,7 +176,8 @@ const ExplicitNamingCreationDialog = ({
                     disabled={
                         tableValues.length === 0 ||
                         createFilterErr !== '' ||
-                        !equipmentType
+                        !equipmentType ||
+                        !isEdited
                     }
                 >
                     <FormattedMessage id="validate" />

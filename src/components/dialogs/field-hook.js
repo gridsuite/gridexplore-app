@@ -298,9 +298,9 @@ export const useEquipmentTableValues = ({
     isGeneratorOrLoad = false,
     defaultTableValues,
     setCreateFilterErr,
-    setIsEdited,
     name,
     equipmentType,
+    setIsEdited,
 }) => {
     const classes = useStyles();
     const [values, setValues] = useState([]);
@@ -308,7 +308,6 @@ export const useEquipmentTableValues = ({
     const handleAddValue = useCallback(() => {
         setValues((oldValues) => [...oldValues, {}]);
     }, []);
-
     const checkValues = useCallback(() => {
         if (
             defaultTableValues !== undefined &&
@@ -348,10 +347,10 @@ export const useEquipmentTableValues = ({
             setValues((oldValues) => {
                 let newValues = [...oldValues];
                 newValues[index] = newValue;
-                setIsEdited(true);
                 return newValues;
             });
             setCreateFilterErr('');
+            setIsEdited(true);
         },
         [setCreateFilterErr, setIsEdited]
     );
@@ -384,12 +383,16 @@ export const useEquipmentTableValues = ({
                     res.splice(elem + direction, 0, item);
                 });
             }
-
-            setSelectedIds(new Set());
+            let array = [...selectedIds];
+            array.sort();
+            for (let i = 0; i < array.length; i++) {
+                array[i] = array[i] + direction;
+            }
+            setSelectedIds(new Set(array));
             setIsEdited(true);
             setValues(res);
         },
-        [selectedIds, values, setIsEdited]
+        [selectedIds, setIsEdited, values]
     );
 
     const commit = useCallback(
@@ -397,6 +400,14 @@ export const useEquipmentTableValues = ({
             if (destination === null || source.index === destination.index)
                 return;
             const res = [...values];
+            res.forEach((e) => {
+                e['isChecked'] = false;
+            });
+            selectedIds.forEach((e) => {
+                res[e].isChecked = true;
+            });
+            setSelectedIds(new Set());
+
             const [item] = res.splice(source.index, 1);
             res.splice(
                 destination ? destination.index : values.length,
@@ -404,8 +415,17 @@ export const useEquipmentTableValues = ({
                 item
             );
             setValues(res);
+            let array = [];
+            let j = 0;
+            for (let i = 0; i < res.length; i++) {
+                if (res[i].isChecked) {
+                    array[j] = i;
+                    j++;
+                }
+            }
+            setSelectedIds(new Set(array));
         },
-        [values]
+        [selectedIds, values]
     );
 
     const toggleSelection = useCallback(
@@ -570,7 +590,7 @@ export const useEquipmentTableValues = ({
                         <IconButton
                             key={id + name + 'upButton'}
                             disabled={
-                                selectedIds.size === 0 || selectedIds.has(0)
+                                selectedIds.size === 0 || selectedIds?.has(0)
                             }
                             onClick={() => {
                                 handleChangeOrder(-1);

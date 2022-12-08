@@ -159,7 +159,7 @@ const ExplicitNamingFilterDialogContent = ({
     const generatorOrLoadHeadersId = ['ID', 'distributionKey'];
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const [defaultValues, setDefaultValues] = useState(null);
-
+    const [isEdited, setIsEdited] = useState(false);
     const fetchFilter = useRef(null);
     fetchFilter.current = open && !isFilterCreation;
 
@@ -185,6 +185,7 @@ const ExplicitNamingFilterDialogContent = ({
         defaultTableValues: defaultValues?.filterEquipmentsAttributes,
         setCreateFilterErr: setCreateFilterErr,
         equipmentType: equipmentType,
+        setIsEdited: setIsEdited,
     });
 
     useEffect(() => {
@@ -208,12 +209,14 @@ const ExplicitNamingFilterDialogContent = ({
             isFilterCreation,
             equipmentType,
             name,
-            id
+            id,
+            isEdited
         );
     }, [
         equipmentType,
         handleFilterCreation,
         id,
+        isEdited,
         isFilterCreation,
         isGeneratorOrLoad,
         name,
