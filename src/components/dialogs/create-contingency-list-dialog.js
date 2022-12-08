@@ -102,7 +102,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                         setContingencyFormState(
                             intl.formatMessage({
                                 id: 'nameValidityCheckErrorMsg',
-                            }) + error,
+                            }) + error.message,
                             false
                         );
                     })
@@ -165,8 +165,8 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                 onClose();
                 resetDialog();
             })
-            .catch((message) => {
-                setCreateContingencyListErr(message);
+            .catch((error) => {
+                setCreateContingencyListErr(error.message);
             });
     };
 

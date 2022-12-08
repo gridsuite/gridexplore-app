@@ -153,9 +153,9 @@ export const GenericFilterDialog = ({
                             },
                         });
                     })
-                    .catch((errmsg) => {
+                    .catch((error) => {
                         snackError({
-                            messageTxt: errmsg,
+                            messageTxt: error.message,
                             headerId: 'cannotRetrieveFilter',
                         });
                     });
@@ -170,9 +170,9 @@ export const GenericFilterDialog = ({
                             },
                         });
                     })
-                    .catch((errmsg) => {
+                    .catch((error) => {
                         snackError({
-                            messageTxt: errmsg,
+                            messageTxt: error.message,
                             headerId: 'cannotRetrieveContingencyList',
                         });
                     });
@@ -222,14 +222,14 @@ export const GenericFilterDialog = ({
             if (contentType === ElementType.FILTER) {
                 saveFilter(currentFilter.current)
                     .then()
-                    .catch((errorMessage) => {
-                        onError(errorMessage);
+                    .catch((error) => {
+                        onError(error.message);
                     });
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
                 saveFormContingencyList(currentFilter.current)
                     .then()
-                    .catch((errorMessage) => {
-                        onError(errorMessage);
+                    .catch((error) => {
+                        onError(error.message);
                     });
             }
             handleCancel();

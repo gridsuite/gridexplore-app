@@ -280,8 +280,8 @@ const TreeViewsContainer = () => {
                     })
                 );
             })
-            .catch((reason) => {
-                console.warn('Could not fetch roots ' + reason);
+            .catch((error) => {
+                console.warn(`Could not fetch roots ${error.message}`);
             });
     }, [dispatch]);
 
@@ -417,12 +417,9 @@ const TreeViewsContainer = () => {
                     // Update Tree Map data
                     updateMapData(nodeId, childrenToBeInserted);
                 })
-                .catch((reason) => {
+                .catch((error) => {
                     console.warn(
-                        "Could not update subs (and content) of '" +
-                            nodeId +
-                            "' :" +
-                            reason
+                        `Could not update subs (and content) of '${nodeId}' : ${error.message}`
                     );
                     updateMapData(nodeId, []);
                 });
@@ -471,9 +468,9 @@ const TreeViewsContainer = () => {
                     // Update Tree Map data
                     updateMapData(nodeId, childrenToBeInserted);
                 })
-                .catch((reason) => {
+                .catch((error) => {
                     console.warn(
-                        "Could not update subs of '" + nodeId + "' :" + reason
+                        `Could not update subs of '${nodeId}' : ${error.message}`
                     );
                     updateMapData(nodeId, []);
                 });

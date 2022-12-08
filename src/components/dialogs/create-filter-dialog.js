@@ -134,7 +134,7 @@ const CreateFilterDialog = ({
                         setFilterFormState(
                             intl.formatMessage({
                                 id: 'nameValidityCheckErrorMsg',
-                            }) + error,
+                            }) + error.message,
                             false
                         );
                     })
@@ -198,8 +198,8 @@ const CreateFilterDialog = ({
             .then(() => {
                 handleClose();
             })
-            .catch((message) => {
-                setCreateFilterErr(message);
+            .catch((error) => {
+                setCreateFilterErr(error.message);
             });
     };
 

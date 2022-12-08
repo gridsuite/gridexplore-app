@@ -167,8 +167,8 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
                     .then(() => {
                         handleClose();
                     })
-                    .catch((message) => {
-                        setCreateFilterErr(message);
+                    .catch((error) => {
+                        setCreateFilterErr(error.message);
                     });
             }
         } else {

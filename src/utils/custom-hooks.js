@@ -73,19 +73,15 @@ export const useDeferredFetch = (
     }, initialState);
 
     const handleError = useCallback(
-        (response, paramsOnError) => {
-            const defaultErrorMessage = response
-                ? response.status.toString() + ' ' + response.statusText
-                : 'Exception';
+        (error, paramsOnError) => {
+            const defaultErrorMessage = error.message;
             let errorMessage = defaultErrorMessage;
-
-            if (response && errorToString) {
-                const providedErrorMessage = errorToString(response.status);
+            if (error && errorToString) {
+                const providedErrorMessage = errorToString(error.status);
                 if (providedErrorMessage && providedErrorMessage !== '') {
                     errorMessage = providedErrorMessage;
                 }
             }
-
             dispatch({
                 type: ActionType.ERROR,
                 payload: errorMessage,
@@ -115,15 +111,16 @@ export const useDeferredFetch = (
                     dispatch({
                         type: ActionType.SUCCESS,
                     });
-                    if (response.ok) {
-                        if (onSuccess) onSuccess(null, args);
-                    } else {
-                        handleError(response, args);
-                    }
+                    if (onSuccess) onSuccess(null, args);
                 }
             } catch (error) {
-                handleError(null, args);
-                throw error;
+                if (!error.status) {
+                    // an http error
+                    handleError(null, args);
+                    throw error;
+                } else {
+                    handleError(error, args);
+                }
             }
         },
         [fetchFunction, onSuccess, handleError, hasResult]
