@@ -114,7 +114,13 @@ export const useDeferredFetch = (
                     if (onSuccess) onSuccess(null, args);
                 }
             } catch (error) {
-                handleError(error, args);
+                if (!error.status) {
+                    // an http error
+                    handleError(null, args);
+                    throw error;
+                } else {
+                    handleError(error, args);
+                }
             }
         },
         [fetchFunction, onSuccess, handleError, hasResult]
