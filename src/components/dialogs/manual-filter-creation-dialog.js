@@ -243,7 +243,7 @@ const ManualFilterCreationDialog = ({
                     setDefaultValues(response);
                     setEquipmentType(response?.equipmentType);
                 })
-                .catch((error) => setCreateFilterErr(error));
+                .catch((error) => setCreateFilterErr(error.message));
         }
     }, [id]);
 
@@ -315,8 +315,8 @@ const ManualFilterCreationDialog = ({
                     .then(() => {
                         handleClose();
                     })
-                    .catch((message) => {
-                        setCreateFilterErr(message);
+                    .catch((error) => {
+                        setCreateFilterErr(error.message);
                     });
             } else {
                 saveFilter({
@@ -328,8 +328,8 @@ const ManualFilterCreationDialog = ({
                     .then(() => {
                         handleClose();
                     })
-                    .catch((message) => {
-                        setCreateFilterErr(message);
+                    .catch((error) => {
+                        setCreateFilterErr(error.message);
                     });
             }
         }

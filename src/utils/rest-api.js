@@ -54,7 +54,45 @@ export function connectNotificationsWsUpdateConfig() {
     return reconnectingWebSocket;
 }
 
-function backendFetch(url, init) {
+function parseError(text) {
+    try {
+        return JSON.parse(text);
+    } catch (err) {
+        return null;
+    }
+}
+
+function handleError(response) {
+    return response.text().then((text) => {
+        const errorName = 'HttpResponseError : ';
+        let error;
+        const errorJson = parseError(text);
+        if (
+            errorJson &&
+            errorJson.status &&
+            errorJson.error &&
+            errorJson.message
+        ) {
+            error = new Error(
+                errorName +
+                    errorJson.status +
+                    ' ' +
+                    errorJson.error +
+                    ', message : ' +
+                    errorJson.message
+            );
+            error.status = errorJson.status;
+        } else {
+            error = new Error(
+                errorName + response.status + ' ' + response.statusText
+            );
+            error.status = response.status;
+        }
+        throw error;
+    });
+}
+
+function prepareRequest(init, token) {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError(
             'Argument 2 of backendFetch is not an object' + typeof init
@@ -62,8 +100,30 @@ function backendFetch(url, init) {
     }
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
-    initCopy.headers.append('Authorization', 'Bearer ' + getToken());
-    return fetch(url, initCopy);
+    const tokenCopy = token ? token : getToken();
+    initCopy.headers.append('Authorization', 'Bearer ' + tokenCopy);
+    return initCopy;
+}
+
+function safeFetch(url, initCopy) {
+    return fetch(url, initCopy).then((response) =>
+        response.ok ? response : handleError(response)
+    );
+}
+
+export function backendFetch(url, init, token) {
+    const initCopy = prepareRequest(init, token);
+    return safeFetch(url, initCopy);
+}
+
+export function backendFetchText(url, init, token) {
+    const initCopy = prepareRequest(init, token);
+    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.text());
+}
+
+export function backendFetchJson(url, init, token) {
+    const initCopy = prepareRequest(init, token);
+    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.json());
 }
 
 export function fetchValidateUser(user) {
@@ -80,17 +140,21 @@ export function fetchValidateUser(user) {
         PREFIX_USER_ADMIN_SERVER_QUERIES + `/v1/users/${sub}`;
     console.debug(CheckAccessUrl);
 
-    return fetch(CheckAccessUrl, {
-        method: 'head',
-        headers: {
-            Authorization: 'Bearer ' + user?.id_token,
+    return backendFetch(
+        CheckAccessUrl,
+        {
+            method: 'head',
         },
-    }).then((response) => {
-        if (response.status === 200) return true;
-        else if (response.status === 204 || response.status === 403)
-            return false;
-        else throw new Error(response.status + ' ' + response.statusText);
-    });
+        user?.id_token
+    )
+        .then((response) => {
+            //if the response is ok, the responseCode will be either 200 or 204 otherwise it's a Http error and it will be caught
+            return response.status === 200;
+        })
+        .catch((error) => {
+            if (error.status === 403) return false;
+            else throw error;
+        });
 }
 
 export function fetchAppsAndUrls() {
@@ -110,11 +174,7 @@ export function fetchConfigParameters(appName) {
     console.info('Fetching UI configuration params for app : ' + appName);
     const fetchParams =
         PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters`;
-    return backendFetch(fetchParams).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
+    return backendFetchJson(fetchParams);
 }
 
 export function fetchConfigParameter(name) {
@@ -127,11 +187,7 @@ export function fetchConfigParameter(name) {
     const fetchParams =
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}`;
-    return backendFetch(fetchParams).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
+    return backendFetchJson(fetchParams);
 }
 
 export function fetchDirectoryContent(directoryUuid) {
@@ -139,11 +195,7 @@ export function fetchDirectoryContent(directoryUuid) {
     const fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${directoryUuid}/elements`;
-    return backendFetch(fetchDirectoryContentUrl).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
+    return backendFetchJson(fetchDirectoryContentUrl);
 }
 
 export function deleteElement(elementUuid) {
@@ -195,7 +247,7 @@ export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
     const insertDirectoryUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${parentUuid}/elements`;
-    return backendFetch(insertDirectoryUrl, {
+    return backendFetchJson(insertDirectoryUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -208,18 +260,14 @@ export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
             accessRights: { isPrivate: isPrivate },
             owner: owner,
         }),
-    }).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
+    });
 }
 
 export function insertRootDirectory(directoryName, isPrivate, owner) {
     console.info("Inserting a new root folder '%s'", directoryName);
     const insertRootDirectoryUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories/`;
-    return backendFetch(insertRootDirectoryUrl, {
+    return backendFetchJson(insertRootDirectoryUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -230,11 +278,7 @@ export function insertRootDirectory(directoryName, isPrivate, owner) {
             accessRights: { isPrivate: isPrivate },
             owner: owner,
         }),
-    }).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
+    });
 }
 
 export function renameElement(elementUuid, newElementName) {
@@ -258,11 +302,7 @@ export function fetchRootFolders() {
     console.info('Fetching Root Directories');
     const fetchRootFoldersUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
-    return backendFetch(fetchRootFoldersUrl).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
+    return backendFetchJson(fetchRootFoldersUrl);
 }
 
 export function updateConfigParameter(name, value) {
@@ -277,11 +317,7 @@ export function updateConfigParameter(name, value) {
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}?value=` +
         encodeURIComponent(value);
-    return backendFetch(updateParams, { method: 'put' }).then((response) =>
-        response.ok
-            ? response
-            : response.text().then((text) => Promise.reject(text))
-    );
+    return backendFetch(updateParams, { method: 'put' });
 }
 
 function getElementsIdsListsQueryParams(ids) {
@@ -293,30 +329,13 @@ function getElementsIdsListsQueryParams(ids) {
     return '';
 }
 
-function handleJsonResponse(response) {
-    return handleResponse(response, true);
-}
-function handleResponse(response, isJson) {
-    return response.ok
-        ? isJson
-            ? response.json()
-            : response
-        : response
-              .text()
-              .then((text) =>
-                  Promise.reject(text ? text : response.statusText)
-              );
-}
-
 export function fetchElementsInfos(ids) {
     console.info('Fetching elements metadata ... ');
     const fetchElementsInfosUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/elements/metadata' +
         getElementsIdsListsQueryParams(ids);
-    return backendFetch(fetchElementsInfosUrl, {
-        method: 'GET',
-    }).then((response) => handleJsonResponse(response));
+    return backendFetchJson(fetchElementsInfosUrl);
 }
 
 export function createStudy(
@@ -344,7 +363,7 @@ export function createStudy(
         method: 'post',
         body: importParameters,
         headers: { 'Content-Type': 'application/json' },
-    }).then((response) => handleResponse(response, false));
+    });
 }
 
 export function duplicateStudy(
@@ -368,7 +387,7 @@ export function duplicateStudy(
 
     return backendFetch(duplicateStudyUrl, {
         method: 'post',
-    }).then((response) => handleResponse(response, false));
+    });
 }
 
 export function createCase({ name, description, file, parentDirectoryUuid }) {
@@ -390,16 +409,7 @@ export function createCase({ name, description, file, parentDirectoryUuid }) {
     return backendFetch(url, {
         method: 'post',
         body: formData,
-    }).then((response) =>
-        response.ok
-            ? response
-            : response.text().then((text) =>
-                  Promise.reject({
-                      status: response.status,
-                      message: text,
-                  })
-              )
-    );
+    });
 }
 
 export function duplicateCase(
@@ -422,16 +432,14 @@ export function duplicateCase(
 
     return backendFetch(url, {
         method: 'post',
-    }).then((response) => handleResponse(response, false));
+    });
 }
 
 export function fetchCases() {
     console.info('Fetching cases...');
     const fetchCasesUrl = PREFIX_CASE_QUERIES + '/v1/cases';
     console.debug(fetchCasesUrl);
-    return backendFetch(fetchCasesUrl).then((response) =>
-        handleJsonResponse(response)
-    );
+    return backendFetchJson(fetchCasesUrl);
 }
 
 export function elementExists(directoryUuid, elementName, type) {
@@ -442,10 +450,7 @@ export function elementExists(directoryUuid, elementName, type) {
     console.debug(existsElementUrl);
     return backendFetch(existsElementUrl, { method: 'head' }).then(
         (response) => {
-            if (response.ok) {
-                return response.status !== 204; // HTTP 204 : No-content
-            }
-            return Promise.reject(response.statusText);
+            return response.status !== 204; // HTTP 204 : No-content
         }
     );
 }
@@ -456,15 +461,13 @@ export function getNameCandidate(directoryUuid, elementName, type) {
         `/v1/directories/${directoryUuid}/${elementName}/newNameCandidate?type=${type}`;
 
     console.debug(existsElementUrl);
-    return backendFetch(existsElementUrl, { method: 'GET' }).then(
-        (response) => {
-            return response.ok
-                ? response.text()
-                : response.status === 404
-                ? false
-                : Promise.reject(response.statusText);
+    return backendFetchText(existsElementUrl).catch((error) => {
+        if (error.status === 404) {
+            return false;
+        } else {
+            throw error;
         }
-    );
+    });
 }
 export function rootDirectoryExists(directoryName) {
     const existsRootDirectoryUrl =
@@ -478,10 +481,7 @@ export function rootDirectoryExists(directoryName) {
 
     return backendFetch(existsRootDirectoryUrl, { method: 'head' }).then(
         (response) => {
-            if (response.ok) {
-                return response.status !== 204; // HTTP 204 : No-content
-            }
-            return Promise.reject(response.statusText);
+            return response.status !== 204; // HTTP 204 : No-content
         }
     );
 }
@@ -521,7 +521,7 @@ export function createContingencyList(
     return backendFetch(createContingencyListUrl, {
         method: 'post',
         body: JSON.stringify(body),
-    }).then((response) => handleResponse(response, false));
+    });
 }
 
 export function duplicateContingencyList(
@@ -553,7 +553,7 @@ export function duplicateContingencyList(
 
     return backendFetch(url, {
         method: 'post',
-    }).then((response) => handleResponse(response, false));
+    });
 }
 
 /**
@@ -569,7 +569,7 @@ export function getContingencyList(type, id) {
     }
     url += id;
 
-    return backendFetch(url).then((response) => handleJsonResponse(response));
+    return backendFetchJson(url);
 }
 
 /**
@@ -587,7 +587,7 @@ export function saveFormContingencyList(form) {
             ...rest,
             nominalVoltage: nominalVoltage === '' ? -1 : nominalVoltage,
         }),
-    }).then((response) => handleResponse(response, false));
+    });
 }
 
 /**
@@ -603,7 +603,7 @@ export function saveScriptContingencyList(scriptContingencyList) {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(scriptContingencyList),
-    }).then((response) => handleResponse(response, false));
+    });
 }
 
 /**
@@ -695,7 +695,7 @@ export function createFilter(newFilter, name, parentDirectoryUuid) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newFilter),
         }
-    ).then((response) => handleResponse(response, false));
+    );
 }
 
 export function duplicateFilter(
@@ -718,7 +718,7 @@ export function duplicateFilter(
 
     return backendFetch(url, {
         method: 'post',
-    }).then((response) => handleResponse(response, false));
+    });
 }
 
 /**
@@ -726,9 +726,9 @@ export function duplicateFilter(
  * @returns {Promise<Response>}
  */
 export function getFilters() {
-    return backendFetch(PREFIX_FILTERS_QUERIES)
-        .then((response) => response.json())
-        .then((res) => res.sort((a, b) => a.name.localeCompare(b.name)));
+    return backendFetchJson(PREFIX_FILTERS_QUERIES).then((res) =>
+        res.sort((a, b) => a.name.localeCompare(b.name))
+    );
 }
 
 /**
@@ -737,7 +737,7 @@ export function getFilters() {
  */
 export function getFilterById(id) {
     const url = PREFIX_FILTERS_QUERIES + '/' + id;
-    return backendFetch(url).then((response) => handleJsonResponse(response));
+    return backendFetchJson(url);
 }
 
 /**
@@ -790,7 +790,7 @@ export function saveFilter(filter) {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(filter),
-    }).then((response) => handleResponse(response, false));
+    });
 }
 
 /**
@@ -805,11 +805,7 @@ export function fetchPath(elementUuid) {
         encodeURIComponent(elementUuid) +
         `/path`;
     console.debug(fetchPathUrl);
-    return backendFetch(fetchPathUrl).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
+    return backendFetchJson(fetchPathUrl);
 }
 
 export function getCaseImportParameters(caseUuid) {
@@ -820,13 +816,7 @@ export function getCaseImportParameters(caseUuid) {
         caseUuid +
         '/import-parameters';
     console.debug(getExportFormatsUrl);
-    return backendFetch(getExportFormatsUrl, {
-        method: 'get',
-    }).then((response) =>
-        response.ok
-            ? response.json()
-            : response.json().then((error) => Promise.reject(error))
-    );
+    return backendFetchJson(getExportFormatsUrl);
 }
 
 export function createPrivateCase(selectedFile) {
@@ -835,28 +825,15 @@ export function createPrivateCase(selectedFile) {
     formData.append('file', selectedFile);
     console.debug(createPrivateCaseUrl);
 
-    return backendFetch(createPrivateCaseUrl, {
+    return backendFetchJson(createPrivateCaseUrl, {
         method: 'post',
         body: formData,
-    }).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) =>
-                  Promise.reject({
-                      status: response.status,
-                      message: text,
-                  })
-              )
-    );
+    });
 }
 
 export function deleteCase(caseUuid) {
     const deleteCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases/' + caseUuid;
     return backendFetch(deleteCaseUrl, {
         method: 'delete',
-    }).then((response) =>
-        response.ok
-            ? response
-            : response.text().then((text) => Promise.reject(text))
-    );
+    });
 }

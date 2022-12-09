@@ -120,9 +120,9 @@ export const CriteriaFilterDialogContent = ({
                             },
                         });
                     })
-                    .catch((errmsg) => {
+                    .catch((error) => {
                         snackError({
-                            messageTxt: errmsg,
+                            messageTxt: error.message,
                             headerId: 'cannotRetrieveFilter',
                         });
                     });
@@ -137,9 +137,9 @@ export const CriteriaFilterDialogContent = ({
                             },
                         });
                     })
-                    .catch((errmsg) => {
+                    .catch((error) => {
                         snackError({
-                            messageTxt: errmsg,
+                            messageTxt: error.message,
                             headerId: 'cannotRetrieveContingencyList',
                         });
                     });

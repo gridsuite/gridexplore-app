@@ -205,7 +205,7 @@ export const useNameField = ({
                         setError(
                             intl.formatMessage({
                                 id: 'nameValidityCheckErrorMsg',
-                            }) + error
+                            }) + error.message
                         );
                     })
                     .finally(() => {

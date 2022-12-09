@@ -526,9 +526,9 @@ const DirectoryContent = () => {
                         };
                     });
                 })
-                .catch((reason) => {
+                .catch((error) => {
                     if (Object.keys(currentChildrenRef.current).length === 0) {
-                        handleError(reason);
+                        handleError(error.message);
                     }
                 })
                 .finally(() => {
