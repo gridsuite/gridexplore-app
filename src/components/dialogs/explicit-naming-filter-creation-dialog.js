@@ -81,18 +81,20 @@ const ExplicitNamingCreationDialog = ({
     }, [tableValues]);
 
     const handleCreateFilter = () => {
-        if (
-            tableValues.every((el) => {
-                if (!el?.equipmentID) {
-                    setCreateFilterErr(
-                        intl.formatMessage({
-                            id: 'missingEquipmentsIdsError',
-                        })
-                    );
-                }
-                return el.equipmentID;
-            })
-        ) {
+        tableValues.forEach((val, index) => {
+            tableValues[index] = {
+                equipmentID: val?.equipmentID.trim(),
+            };
+        });
+
+        let hasMissingId = tableValues.some((el) => !el?.equipmentID.trim());
+        if (hasMissingId) {
+            setCreateFilterErr(
+                intl.formatMessage({
+                    id: 'missingEquipmentsIdsError',
+                })
+            );
+        } else {
             if (isGeneratorOrLoad) {
                 // we check if all the distribution keys are null.
                 // If one is set, all the distribution keys that are null take 0 as value
@@ -102,7 +104,7 @@ const ExplicitNamingCreationDialog = ({
                 tableValues.forEach((val, index) => {
                     if (!isAllKeysNull && !val.distributionKey) {
                         tableValues[index] = {
-                            equipmentID: val.equipmentID,
+                            equipmentID: val.equipmentID.trim(),
                             distributionKey: 0,
                         };
                     }

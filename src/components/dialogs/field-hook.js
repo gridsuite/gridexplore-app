@@ -469,9 +469,9 @@ export const useEquipmentTableValues = ({
                 }
                 let objects = Object.keys(csvData).map(function (key) {
                     return {
-                        equipmentID: csvData[key][0],
+                        equipmentID: csvData[key][0].trim(),
                         distributionKey:
-                            csvData[key][1] !== ''
+                            csvData[key][1].trim() !== ''
                                 ? csvData[key][1]
                                 : undefined,
                     };

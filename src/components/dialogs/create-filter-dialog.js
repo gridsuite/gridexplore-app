@@ -227,7 +227,12 @@ const CreateFilterDialog = ({
         name,
         id
     ) => {
-        let hasMissingId = tableValues.some((el) => !el?.equipmentID);
+        tableValues.forEach((val, index) => {
+            tableValues[index] = {
+                equipmentID: val?.equipmentID.trim(),
+            };
+        });
+        let hasMissingId = tableValues.some((el) => !el?.equipmentID.trim());
         if (hasMissingId) {
             setCreateFilterErr(
                 intl.formatMessage({
