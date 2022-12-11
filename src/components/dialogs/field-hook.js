@@ -383,11 +383,9 @@ export const useEquipmentTableValues = ({
                     res.splice(elem + direction, 0, item);
                 });
             }
-            let array = [...selectedIds];
-            array.sort();
-            for (let i = 0; i < array.length; i++) {
-                array[i] = array[i] + direction;
-            }
+            const array = Array.from(selectedIds)
+                .sort()
+                .map((val) => val + direction);
             setSelectedIds(new Set(array));
             setIsEdited(true);
             setValues(res);
@@ -415,14 +413,12 @@ export const useEquipmentTableValues = ({
                 item
             );
             setValues(res);
-            let array = [];
-            let j = 0;
-            for (let i = 0; i < res.length; i++) {
-                if (res[i].isChecked) {
-                    array[j] = i;
-                    j++;
-                }
-            }
+
+            const array = res
+                .filter((val) => val.isChecked)
+                .map((val) => {
+                    return res.indexOf(val);
+                });
             setSelectedIds(new Set(array));
         },
         [selectedIds, values]
@@ -451,21 +447,16 @@ export const useEquipmentTableValues = ({
         }
 
         function selectAllItems() {
-            let array = [];
-            for (let i = 0; i < values.length; i++) {
-                array[i] = i;
-            }
+            const array = new Set(values.map((v, i) => i));
             setSelectedIds(new Set(array));
         }
-    }, [selectedIds.size, values.length]);
+    }, [selectedIds.size, values]);
 
     const updateTableValues = useCallback(
         (csvData, keepTableValues) => {
             if (csvData) {
                 if (!keepTableValues) {
-                    while (values.length !== 0) {
-                        values.pop();
-                    }
+                    values.splice(0);
                 }
                 let objects = Object.keys(csvData).map(function (key) {
                     return {
@@ -476,9 +467,7 @@ export const useEquipmentTableValues = ({
                                 : undefined,
                     };
                 });
-                objects.forEach((elem) => {
-                    values.push(elem);
-                });
+                values.push(...objects);
             }
         },
         [values]
@@ -590,7 +579,7 @@ export const useEquipmentTableValues = ({
                         <IconButton
                             key={id + name + 'upButton'}
                             disabled={
-                                selectedIds.size === 0 || selectedIds?.has(0)
+                                selectedIds?.size === 0 || selectedIds?.has(0)
                             }
                             onClick={() => {
                                 handleChangeOrder(-1);
@@ -602,7 +591,7 @@ export const useEquipmentTableValues = ({
                         <IconButton
                             key={id + name + 'downButton'}
                             disabled={
-                                selectedIds.size === 0 ||
+                                selectedIds?.size === 0 ||
                                 selectedIds.has(values.length - 1)
                             }
                             onClick={() => {

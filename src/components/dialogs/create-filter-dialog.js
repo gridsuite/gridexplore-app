@@ -130,6 +130,7 @@ const CreateFilterDialog = ({
 
     const handleEquipmentChange = (equipmentType) => {
         setEquipmentType(equipmentType);
+        setCreateFilterErr('');
     };
 
     /**
@@ -228,11 +229,13 @@ const CreateFilterDialog = ({
         id
     ) => {
         tableValues.forEach((val, index) => {
-            tableValues[index] = {
-                equipmentID: val?.equipmentID.trim(),
-            };
+            if (val && Object.keys(val).length > 0) {
+                tableValues[index] = {
+                    equipmentID: val?.equipmentID?.trim(),
+                };
+            }
         });
-        let hasMissingId = tableValues.some((el) => !el?.equipmentID.trim());
+        let hasMissingId = tableValues.some((el) => !el?.equipmentID?.trim());
         if (hasMissingId) {
             setCreateFilterErr(
                 intl.formatMessage({
@@ -368,6 +371,7 @@ const CreateFilterDialog = ({
         setOpenConfirmationPopup(false);
         setNewListType(choosedFilterType);
         setEquipmentType(null);
+        setCreateFilterErr('');
     };
 
     const renderChangeFilterTypePopup = () => {

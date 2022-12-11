@@ -82,12 +82,14 @@ const ExplicitNamingCreationDialog = ({
 
     const handleCreateFilter = () => {
         tableValues.forEach((val, index) => {
-            tableValues[index] = {
-                equipmentID: val?.equipmentID.trim(),
-            };
+            if (val && Object.keys(val).length > 0) {
+                tableValues[index] = {
+                    equipmentID: val?.equipmentID?.trim(),
+                };
+            }
         });
 
-        let hasMissingId = tableValues.some((el) => !el?.equipmentID.trim());
+        let hasMissingId = tableValues.some((el) => !el?.equipmentID?.trim());
         if (hasMissingId) {
             setCreateFilterErr(
                 intl.formatMessage({
@@ -104,7 +106,7 @@ const ExplicitNamingCreationDialog = ({
                 tableValues.forEach((val, index) => {
                     if (!isAllKeysNull && !val.distributionKey) {
                         tableValues[index] = {
-                            equipmentID: val.equipmentID.trim(),
+                            equipmentID: val.equipmentID?.trim(),
                             distributionKey: 0,
                         };
                     }
