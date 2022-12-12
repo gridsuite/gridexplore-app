@@ -89,15 +89,17 @@ const ExplicitNamingCreationDialog = ({
                 })
             );
         } else {
+            let isAllKeysNull = tableValues.every(
+                (row) => !row.distributionKey
+            );
             tableValues.forEach((val, index) => {
                 // we check if all the distribution keys are null.
                 // If one is set, all the distribution keys that are null take 0 as value
+                const isDKEmpty =
+                    isGeneratorOrLoad && !isAllKeysNull && !val.distributionKey;
                 tableValues[index] = {
                     equipmentID: val.equipmentID?.trim(),
-                    distributionKey:
-                        isGeneratorOrLoad && val?.distributionKey
-                            ? val?.distributionKey
-                            : 0,
+                    distributionKey: isDKEmpty ? 0 : val?.distributionKey,
                 };
             });
             if (isFilterCreation) {
