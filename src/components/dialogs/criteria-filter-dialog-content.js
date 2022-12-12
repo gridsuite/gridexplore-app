@@ -7,19 +7,8 @@
 
 import { FormattedMessage } from 'react-intl';
 import React, { useEffect, useRef, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import { MenuItem, Grid, Select, FormControl, InputLabel } from '@mui/material';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import {
-    getContingencyList,
-    getFilterById,
-    saveFilter,
-    saveFormContingencyList,
-} from '../../utils/rest-api';
+import { getContingencyList, getFilterById } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     ContingencyListType,
@@ -30,24 +19,6 @@ import {
     contingencyListEquipmentDefinition,
     filterEquipmentDefinition,
 } from '../../utils/equipment-types';
-
-const useStyles = makeStyles(() => ({
-    controlItem: {
-        justifyContent: 'flex-end',
-    },
-    idText: {
-        padding: 8,
-    },
-    dialogPaper: {
-        minWidth: '705px',
-        minHeight: '500px',
-        margin: 'auto',
-    },
-    filtersEditor: {
-        minWidth: '570px',
-        margin: 'auto',
-    },
-}));
 
 function deepCopy(aObject) {
     if (!aObject) {
@@ -109,15 +80,12 @@ export const FilterTypeSelection = ({
     );
 };
 
-export const GenericFilterDialog = ({
+export const CriteriaFilterDialogContent = ({
     id,
     open,
-    onClose,
-    onError,
-    title,
     contentType,
-    isFilterCreation,
     handleFilterCreation,
+    handleEquipmentTypeChange,
 }) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [filterType, setFilterType] = useState(null);
@@ -125,8 +93,7 @@ export const GenericFilterDialog = ({
         type: { value: filterType },
     });
     const currentFilter = useRef(null);
-    const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
-    const classes = useStyles();
+    const currentFilterToSend = useRef({});
     const { snackError } = useSnackMessage();
     const openRef = useRef(null);
     openRef.current = open;
@@ -187,56 +154,17 @@ export const GenericFilterDialog = ({
         }
     }, [id, contentType, snackError]);
 
-    useEffect(() => {
-        if (initialFilter !== null) {
-            setBtnSaveListDisabled(initialFilter.transient !== true);
-        }
-    }, [initialFilter]);
-
     function onChange(newVal) {
         currentFilter.current = {};
         currentFilter.current.id = id;
-        currentFilter.current.type = FilterType.AUTOMATIC;
+        currentFilter.current.type = FilterType.CRITERIA;
         if (contentType === ElementType.FILTER) {
             // data model is not the same: filter has a sub-object 'equipmentFilterForm'
             currentFilter.current.equipmentFilterForm = newVal;
         } else {
             for (const k in newVal) currentFilter.current[k] = newVal[k];
         }
-        setBtnSaveListDisabled(false);
     }
-
-    const handleCancel = () => {
-        onClose();
-        currentFilter.current = null;
-        setCurrentFormEdit({
-            equipmentType: { value: null },
-        });
-        setInitialFilter(null);
-        setFilterType(null);
-        setBtnSaveListDisabled(true);
-    };
-
-    const handleValidate = () => {
-        if (!isFilterCreation) {
-            if (contentType === ElementType.FILTER) {
-                saveFilter(currentFilter.current)
-                    .then()
-                    .catch((error) => {
-                        onError(error.message);
-                    });
-            } else if (contentType === ElementType.CONTINGENCY_LIST) {
-                saveFormContingencyList(currentFilter.current)
-                    .then()
-                    .catch((error) => {
-                        onError(error.message);
-                    });
-            }
-            handleCancel();
-        } else {
-            handleFilterCreation(currentFilter.current);
-        }
-    };
 
     function validVoltageValues(obj) {
         let value1NotNull =
@@ -260,12 +188,18 @@ export const GenericFilterDialog = ({
             }
         });
         onChange(res);
+        currentFilterToSend.current.id = id;
+        currentFilterToSend.current.type = FilterType.CRITERIA;
+        currentFilterToSend.current.equipmentFilterForm = { ...res };
+        handleFilterCreation(currentFilterToSend.current);
     };
 
     const changeFilterType = (newType) => {
         // TODO: should reset all fields in currentFormEdit
         currentFormEdit.equipmentType = { value: newType };
         setFilterType(newType);
+        if (id == null && contentType === ElementType.FILTER)
+            handleEquipmentTypeChange(newType);
         editDone();
     };
 
@@ -303,41 +237,21 @@ export const GenericFilterDialog = ({
     };
 
     return (
-        <Dialog
-            classes={{ paper: classes.dialogPaper }}
-            open={open}
-            onClose={onClose}
-            aria-labelledby="dialog-title-filters-contingency-edit"
-        >
-            <DialogTitle>{title}</DialogTitle>
-            <DialogContent>
-                <Grid
-                    container
-                    spacing={1}
-                    style={{ width: '100%', padding: 10, paddingRight: 20 }}
-                >
-                    {FilterTypeSelection({
-                        type: filterType,
-                        onChange: changeFilterType,
-                        equipmentDefinition: getEquipmentsDefinition(),
-                    })}
-                    {renderSpecific()}
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCancel}>
-                    <FormattedMessage id="cancel" />
-                </Button>
-                <Button
-                    onClick={handleValidate}
-                    variant="outlined"
-                    disabled={btnSaveListDisabled}
-                >
-                    <FormattedMessage id="validate" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <>
+            <Grid
+                container
+                spacing={1}
+                style={{ width: '100%', padding: 10, paddingRight: 20 }}
+            >
+                {FilterTypeSelection({
+                    type: filterType,
+                    onChange: changeFilterType,
+                    equipmentDefinition: getEquipmentsDefinition(),
+                })}
+                {renderSpecific()}
+            </Grid>
+        </>
     );
 };
 
-export default GenericFilterDialog;
+export default CriteriaFilterDialogContent;

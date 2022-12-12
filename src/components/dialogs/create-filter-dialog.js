@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import withStyles from '@mui/styles/withStyles';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -23,15 +23,15 @@ import TextField from '@mui/material/TextField';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
-import { createFilter, elementExists } from '../../utils/rest-api';
+import { createFilter, elementExists, saveFilter } from '../../utils/rest-api';
 import Alert from '@mui/material/Alert';
 import { useSelector } from 'react-redux';
 import { ElementType, FilterType } from '../../utils/elementType';
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
-import ManualFilterCreationDialog from './manual-filter-creation-dialog';
-import CsvImportFilterCreationDialog from './csv-import-filter-creation-dialog';
-import GenericFilterDialog from './generic-filter-dialog';
+import CriteriaFilterDialogContent from './criteria-filter-dialog-content';
+import ExplicitNamingFilterDialogContent from './explicit-naming-filter-dialog-content';
+import { DialogContentText } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -108,8 +108,30 @@ const CreateFilterDialog = ({
     const classes = useStyles();
     const intl = useIntl();
     const timer = React.useRef();
-    const [newListType, setNewListType] = useState(FilterType.AUTOMATIC);
-    const [filterType, setFilterType] = useState('');
+    const [newListType, setNewListType] = useState(FilterType.CRITERIA);
+    const [filterType, setFilterType] = useState(null);
+    const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
+    const [choosedFilterType, setChoosedFilterType] = useState(
+        FilterType.CRITERIA
+    );
+
+    const [filterToSave, setFilterToSave] = useState(null);
+    const [tableValues, setTableValues] = useState([]);
+    const [isGeneratorOrLoad, setIsGeneratorOrLoad] = useState(false);
+    const [isCreation, setIsFilterCreation] = useState(false);
+    const [equipmentType, setEquipmentType] = useState(null);
+    const [name, setName] = useState('');
+    const [id, setId] = useState('');
+    const handleCallback = (criteriaFilter) => {
+        if (criteriaFilter) {
+            setFilterToSave(criteriaFilter);
+        }
+    };
+
+    const handleEquipmentChange = (equipmentType) => {
+        setEquipmentType(equipmentType);
+        setCreateFilterErr('');
+    };
 
     /**
      * on change input popup check if name already exist
@@ -172,15 +194,102 @@ const CreateFilterDialog = ({
 
     const resetDialog = () => {
         setNewListName('');
-        setNewListType(FilterType.AUTOMATIC);
+        setNewListType(FilterType.CRITERIA);
         setFilterType('');
         setLoadingCheckFilterName(false);
         setCreateFilterErr('');
         setFilterNameValid(false);
+        setOpenConfirmationPopup(false);
+        setChoosedFilterType(FilterType.CRITERIA);
+        setEquipmentType(null);
     };
+
+    const handleNamingFilterCallBack = (
+        tableValues,
+        isGeneratorOrLoad,
+        isCreation,
+        equipmentType,
+        name,
+        id
+    ) => {
+        setIsGeneratorOrLoad(isGeneratorOrLoad);
+        setIsFilterCreation(isCreation);
+        setEquipmentType(equipmentType);
+        setName(name);
+        setId(id);
+        setTableValues(tableValues);
+    };
+
+    const handleCreateFilter = (
+        tableValues,
+        isGeneratorOrLoad,
+        isCreation,
+        equipmentType,
+        name,
+        id
+    ) => {
+        let hasMissingId = tableValues.some((el) => !el?.equipmentID?.trim());
+        if (hasMissingId) {
+            setCreateFilterErr(
+                intl.formatMessage({
+                    id: 'missingEquipmentsIdsError',
+                })
+            );
+        } else {
+            let isAllKeysNull = tableValues.every(
+                (row) => !row.distributionKey
+            );
+            tableValues.forEach((val, index) => {
+                // we check if all the distribution keys are null.
+                // If one is set, all the distribution keys that are null take 0 as value
+                const isDKEmpty =
+                    isGeneratorOrLoad && !isAllKeysNull && !val.distributionKey;
+                tableValues[index] = {
+                    equipmentID: val.equipmentID?.trim(),
+                    distributionKey: isDKEmpty ? 0 : val.distributionKey,
+                };
+            });
+
+            if (isCreation) {
+                createFilter(
+                    {
+                        type: FilterType.EXPLICIT_NAMING,
+                        equipmentType: equipmentType,
+                        filterEquipmentsAttributes: tableValues,
+                    },
+                    name,
+                    activeDirectory
+                )
+                    .then(() => {
+                        handleClose();
+                    })
+                    .catch((message) => {
+                        setCreateFilterErr(message);
+                    });
+            } else {
+                saveFilter({
+                    id: id,
+                    type: FilterType.EXPLICIT_NAMING,
+                    equipmentType: equipmentType,
+                    filterEquipmentsAttributes: tableValues,
+                })
+                    .then(() => {
+                        handleClose();
+                    })
+                    .catch((message) => {
+                        setCreateFilterErr(message);
+                    });
+            }
+        }
+    };
+
+    useEffect(() => {
+        setCreateFilterErr('');
+    }, [tableValues]);
 
     const handleValidation = () => {
         //To manage the case when we never tried to enter a name
+
         if (newNameList === '') {
             setCreateFilterErr(intl.formatMessage({ id: 'nameEmpty' }));
             return;
@@ -190,7 +299,20 @@ const CreateFilterDialog = ({
             return;
         }
 
+        if (newListType === FilterType.EXPLICIT_NAMING) {
+            handleCreateFilter(
+                tableValues,
+                isGeneratorOrLoad,
+                isCreation,
+                equipmentType,
+                name,
+                id
+            );
+            return;
+        }
+
         setFilterType(newListType);
+        handleSave(filterToSave);
     };
 
     const handleSave = (filter) => {
@@ -235,6 +357,50 @@ const CreateFilterDialog = ({
         }
     };
 
+    const onFilterTypeChange = (event) => {
+        setOpenConfirmationPopup(true);
+        setChoosedFilterType(event.target.value);
+    };
+
+    const handlePopupConfirmation = () => {
+        setOpenConfirmationPopup(false);
+        setNewListType(choosedFilterType);
+        setEquipmentType(null);
+        setCreateFilterErr('');
+    };
+
+    const renderChangeFilterTypePopup = () => {
+        return (
+            <div>
+                <Dialog
+                    open={isConfirmationPopupOpen}
+                    aria-labelledby="dialog-title-change-filter-type"
+                    onKeyPress={() => handlePopupConfirmation(false)}
+                >
+                    <DialogTitle id={'dialog-title-change-filter-type'}>
+                        {'Confirmation'}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {intl.formatMessage({ id: 'changeTypeMessage' })}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpenConfirmationPopup(false)}>
+                            <FormattedMessage id="cancel" />
+                        </Button>
+                        <Button
+                            onClick={() => handlePopupConfirmation()}
+                            variant="outlined"
+                        >
+                            <FormattedMessage id="validate" />
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        );
+    };
+
     return (
         <>
             <Dialog
@@ -265,26 +431,40 @@ const CreateFilterDialog = ({
                         aria-label="type"
                         name="filterType"
                         value={newListType}
-                        defaultValue={FilterType.AUTOMATIC}
-                        onChange={(e) => setNewListType(e.target.value)}
+                        defaultValue={FilterType.CRITERIA}
+                        onChange={(e) => onFilterTypeChange(e)}
                         row
                     >
                         <FormControlLabel
-                            value={FilterType.AUTOMATIC}
+                            value={FilterType.CRITERIA}
                             control={<Radio />}
-                            label={<FormattedMessage id="Automatic" />}
+                            label={<FormattedMessage id="CriteriaBased" />}
                         />
                         <FormControlLabel
-                            value={FilterType.MANUAL}
+                            value={FilterType.EXPLICIT_NAMING}
                             control={<Radio />}
-                            label={<FormattedMessage id="Manual" />}
-                        />
-                        <FormControlLabel
-                            value={FilterType.IMPORT_CSV}
-                            control={<Radio />}
-                            label={<FormattedMessage id="ImportCSV" />}
+                            label={<FormattedMessage id="ExplicitNaming" />}
                         />
                     </RadioGroup>
+                    {newListType === FilterType.CRITERIA ? (
+                        <CriteriaFilterDialogContent
+                            open={open && filterType === FilterType.CRITERIA}
+                            isFilterCreation={true}
+                            handleFilterCreation={handleCallback}
+                            handleEquipmentTypeChange={handleEquipmentChange}
+                            contentType={ElementType.FILTER}
+                        />
+                    ) : (
+                        <ExplicitNamingFilterDialogContent
+                            open={
+                                open &&
+                                filterType === FilterType.EXPLICIT_NAMING
+                            }
+                            name={newNameList}
+                            isFilterCreation={true}
+                            handleFilterCreation={handleNamingFilterCallBack}
+                        />
+                    )}
                     {createFilterErr !== '' && (
                         <Alert severity="error">{createFilterErr}</Alert>
                     )}
@@ -297,34 +477,15 @@ const CreateFilterDialog = ({
                         disabled={
                             newNameList === '' ||
                             !filterNameValid ||
-                            loadingCheckFilterName
+                            loadingCheckFilterName ||
+                            equipmentType === null
                         }
                     >
                         {customTextValidationBtn}
                     </Button>
                 </DialogActions>
             </Dialog>
-            <ManualFilterCreationDialog
-                open={open && filterType === FilterType.MANUAL}
-                title={title}
-                onClose={handleClose}
-                name={newNameList}
-                isFilterCreation={true}
-            />
-            <CsvImportFilterCreationDialog
-                open={open && filterType === FilterType.IMPORT_CSV}
-                title={title}
-                name={newNameList}
-                onClose={handleClose}
-            />
-            <GenericFilterDialog
-                open={open && filterType === FilterType.AUTOMATIC}
-                onClose={handleClose}
-                title={title}
-                isFilterCreation={true}
-                handleFilterCreation={handleSave}
-                contentType={ElementType.FILTER}
-            />
+            {renderChangeFilterTypePopup()}
         </>
     );
 };
