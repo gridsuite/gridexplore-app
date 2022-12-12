@@ -228,13 +228,6 @@ const CreateFilterDialog = ({
         name,
         id
     ) => {
-        tableValues.forEach((val, index) => {
-            if (val && Object.keys(val).length > 0) {
-                tableValues[index] = {
-                    equipmentID: val?.equipmentID?.trim(),
-                };
-            }
-        });
         let hasMissingId = tableValues.some((el) => !el?.equipmentID?.trim());
         if (hasMissingId) {
             setCreateFilterErr(
@@ -243,18 +236,18 @@ const CreateFilterDialog = ({
                 })
             );
         } else {
-            if (isGeneratorOrLoad) {
+            tableValues.forEach((val, index) => {
                 // we check if all the distribution keys are null.
                 // If one is set, all the distribution keys that are null take 0 as value
-                let isAllKeysNull = tableValues.every(
-                    (row) => !row.distributionKey
-                );
-                tableValues.forEach((val, index) => {
-                    if (!isAllKeysNull && !val.distributionKey) {
-                        tableValues[index]['distributionKey'] = 0;
-                    }
-                });
-            }
+                tableValues[index] = {
+                    equipmentID: val.equipmentID?.trim(),
+                    distributionKey:
+                        isGeneratorOrLoad && val?.distributionKey
+                            ? val.distributionKey
+                            : 0,
+                };
+            });
+
             if (isCreation) {
                 createFilter(
                     {
