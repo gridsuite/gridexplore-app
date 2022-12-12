@@ -49,6 +49,7 @@ const SingleFilter = ({ filter, definition, onChange }) => {
         initialValue: filter.value,
         onChange: localChange,
         titleMessage: definition.name,
+        enumValues: definition.enumValues,
     });
 };
 
