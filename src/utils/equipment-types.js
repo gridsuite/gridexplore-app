@@ -13,6 +13,20 @@ const Countries = {
         type: filteredTypes.countries,
     },
 };
+const EnergySource = {
+    energySource: {
+        name: 'EnergySourceText',
+        type: filteredTypes.enum,
+        enumValues: {
+            HYDRO: 'Hydro',
+            NUCLEAR: 'Nuclear',
+            WIND: 'Wind',
+            THERMAL: 'Thermal',
+            SOLAR: 'Solar',
+            OTHER: 'Other',
+        },
+    },
+};
 const Countries1 = {
     countries1: {
         name: 'Countries1',
@@ -121,6 +135,7 @@ export const filterEquipmentDefinition = {
         ...Generator,
         fields: {
             ...Countries,
+            ...EnergySource,
             ...NominalVoltage,
         },
     },
