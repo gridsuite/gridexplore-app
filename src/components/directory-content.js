@@ -31,8 +31,8 @@ import { Checkbox } from '@mui/material';
 import { fetchElementsInfos } from '../utils/rest-api';
 
 import ScriptDialog from './dialogs/script-dialog';
+import CriteriaBasedFilterDialog from './dialogs/criteria-filter-dialog';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import GenericFilterDialog from './dialogs/generic-filter-dialog';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
@@ -41,7 +41,7 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
-import ManualFilterCreationDialog from './dialogs/manual-filter-creation-dialog';
+import ExplicitNamingCreationDialog from './dialogs/explicit-naming-filter-creation-dialog';
 
 const circularProgressSize = '70px';
 
@@ -122,34 +122,41 @@ const DirectoryContent = () => {
     const [mousePosition, setMousePosition] =
         React.useState(initialMousePosition);
 
-    const handleRowClick = (event, index, data) => {
-        if (childrenMetadata[data.elementUuid] !== undefined) {
-            const subtype = childrenMetadata[data.elementUuid].subtype;
-            if (data.type === ElementType.STUDY) {
-                let url = getLink(data.elementUuid, data.type);
+    const handleRowClick = (event) => {
+        if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
+            const subtype = childrenMetadata[event.rowData.elementUuid].subtype;
+            if (event.rowData.type === ElementType.STUDY) {
+                let url = getLink(
+                    event.rowData.elementUuid,
+                    event.rowData.type
+                );
                 url
                     ? window.open(url, '_blank')
                     : handleError(
                           intl.formatMessage(
                               { id: 'getAppLinkError' },
-                              { type: data.type }
+                              { type: event.rowData.type }
                           )
                       );
-            } else if (data.type === ElementType.CONTINGENCY_LIST) {
+            } else if (event.rowData.type === ElementType.CONTINGENCY_LIST) {
                 if (subtype === ContingencyListType.FORM) {
-                    setCurrentFiltersContingencyListId(data.elementUuid);
+                    setCurrentFiltersContingencyListId(
+                        event.rowData.elementUuid
+                    );
                     setOpenFiltersContingencyDialog(true);
                 } else if (subtype === ContingencyListType.SCRIPT) {
-                    setCurrentScriptContingencyListId(data.elementUuid);
+                    setCurrentScriptContingencyListId(
+                        event.rowData.elementUuid
+                    );
                     setOpenScriptContingencyDialog(true);
                 }
-            } else if (data.type === ElementType.FILTER) {
-                if (subtype === FilterType.MANUAL) {
-                    setCurrentManualFilterId(data.elementUuid);
-                    setOpenEditManualFilterDialog(true);
-                } else if (subtype === FilterType.AUTOMATIC) {
-                    setCurrentAutomaticFilterId(data.elementUuid);
-                    setOpenGenericFilterDialog(true);
+            } else if (event.rowData.type === ElementType.FILTER) {
+                if (subtype === FilterType.EXPLICIT_NAMING) {
+                    setCurrentExplicitNamingFilterId(event.rowData.elementUuid);
+                    setOpenEditExplicitNamingFilterDialog(true);
+                } else if (subtype === FilterType.CRITERIA) {
+                    setCurrentCriteriaBasedFilterId(event.rowData.elementUuid);
+                    setOpenCriteriaBasedFilterDialog(true);
                 }
             }
         }
@@ -171,29 +178,32 @@ const DirectoryContent = () => {
     };
 
     /**
-     * Filters dialog: window status value to edit automatics filters
+     * Filters dialog: window status value to edit CriteriaBaseds filters
      */
-    const [currentAutomaticFilterId, setCurrentAutomaticFilterId] =
+    const [currentCriteriaBasedFilterId, setCurrentCriteriaBasedFilterId] =
         useState(null);
-    const [openGenericFilterDialog, setOpenGenericFilterDialog] =
+    const [openCriteriaBasedFilterDialog, setOpenCriteriaBasedFilterDialog] =
         React.useState(false);
     const handleCloseGenericFilterDialog = () => {
-        setOpenGenericFilterDialog(false);
-        setCurrentAutomaticFilterId(null);
+        setOpenCriteriaBasedFilterDialog(false);
+        setCurrentCriteriaBasedFilterId(null);
         setActiveElement(null);
     };
 
     /**
-     * Filters dialog: window status value to edit manual filters
+     * Filters dialog: window status value to edit ExplicitNaming filters
      */
-    const [openEditManualFilterDialog, setOpenEditManualFilterDialog] =
-        useState(false);
-    const handleCloseManualFilterDialog = () => {
-        setOpenEditManualFilterDialog(false);
-        setCurrentManualFilterId(null);
+    const [
+        openEditExplicitNamingFilterDialog,
+        setOpenEditExplicitNamingFilterDialog,
+    ] = useState(false);
+    const handleCloseExplicitNamingFilterDialog = () => {
+        setOpenEditExplicitNamingFilterDialog(false);
+        setCurrentExplicitNamingFilterId(null);
         setActiveElement(null);
     };
-    const [currentManualFilterId, setCurrentManualFilterId] = useState(null);
+    const [currentExplicitNamingFilterId, setCurrentExplicitNamingFilterId] =
+        useState(null);
 
     /**
      * Script contingency list dialog: window status value for editing a script contingency list
@@ -516,9 +526,9 @@ const DirectoryContent = () => {
                         };
                     });
                 })
-                .catch((reason) => {
+                .catch((error) => {
                     if (Object.keys(currentChildrenRef.current).length === 0) {
-                        handleError(reason);
+                        handleError(error.message);
                     }
                 })
                 .finally(() => {
@@ -761,7 +771,7 @@ const DirectoryContent = () => {
                     }
                 />
             </div>
-            <GenericFilterDialog
+            <CriteriaBasedFilterDialog
                 id={currentFiltersContingencyListId}
                 open={openFiltersContingencyDialog}
                 onClose={handleCloseFiltersContingency}
@@ -785,17 +795,17 @@ const DirectoryContent = () => {
                 title={useIntl().formatMessage({ id: 'editFilterScript' })}
                 type={ElementType.FILTER}
             />
-            <ManualFilterCreationDialog
-                id={currentManualFilterId}
-                open={openEditManualFilterDialog}
-                onClose={handleCloseManualFilterDialog}
+            <ExplicitNamingCreationDialog
+                id={currentExplicitNamingFilterId}
+                open={openEditExplicitNamingFilterDialog}
+                onClose={handleCloseExplicitNamingFilterDialog}
                 title={useIntl().formatMessage({ id: 'editFilter' })}
                 isFilterCreation={false}
-                name={currentManualFilterId}
+                name={currentExplicitNamingFilterId}
             />
-            <GenericFilterDialog
-                id={currentAutomaticFilterId}
-                open={openGenericFilterDialog}
+            <CriteriaBasedFilterDialog
+                id={currentCriteriaBasedFilterId}
+                open={openCriteriaBasedFilterDialog}
                 onClose={handleCloseGenericFilterDialog}
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'editFilter' })}

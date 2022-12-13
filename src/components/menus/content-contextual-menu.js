@@ -23,7 +23,7 @@ import DeleteDialog from '../dialogs/delete-dialog';
 import ScriptDialog from '../dialogs/script-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
-import GenericFilterDialog from '../dialogs/generic-filter-dialog';
+import GenericFilterDialog from '../dialogs/criteria-filter-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog';
 
 import { DialogsId } from '../../utils/UIconstants';
@@ -123,8 +123,8 @@ const ContentContextualMenu = (props) => {
                                     .then(() => {
                                         handleCloseDialog();
                                     })
-                                    .catch((message) => {
-                                        handleDuplicateError(message);
+                                    .catch((error) => {
+                                        handleDuplicateError(error.message);
                                     });
                                 break;
                             case ElementType.CONTINGENCY_LIST:
@@ -136,12 +136,12 @@ const ContentContextualMenu = (props) => {
                                             activeElement.description,
                                             activeElement.elementUuid,
                                             selectedDirectory.elementUuid
-                                        ).catch((message) => {
-                                            handleDuplicateError(message);
+                                        ).catch((error) => {
+                                            handleDuplicateError(error.message);
                                         });
                                     })
-                                    .catch((message) => {
-                                        handleLastError(message);
+                                    .catch((error) => {
+                                        handleLastError(error.message);
                                     })
                                     .finally(() => {
                                         handleCloseDialog();
@@ -158,8 +158,8 @@ const ContentContextualMenu = (props) => {
                                     .then(() => {
                                         handleCloseDialog();
                                     })
-                                    .catch((message) => {
-                                        handleDuplicateError(message);
+                                    .catch((error) => {
+                                        handleDuplicateError(error.message);
                                     });
                                 break;
                             case ElementType.FILTER:
@@ -172,8 +172,8 @@ const ContentContextualMenu = (props) => {
                                     .then(() => {
                                         handleCloseDialog();
                                     })
-                                    .catch((message) => {
-                                        handleDuplicateError(message);
+                                    .catch((error) => {
+                                        handleDuplicateError(error.message);
                                     });
                                 break;
                             default:
@@ -192,7 +192,7 @@ const ContentContextualMenu = (props) => {
                     }
                 })
                 .catch((error) => {
-                    handleDuplicateError(error);
+                    handleDuplicateError(error.message);
                 });
         }
     };
@@ -420,7 +420,7 @@ const ContentContextualMenu = (props) => {
     const getActiveFilterFormId = () => {
         if (
             activeElement?.type === ElementType.FILTER &&
-            activeElement?.subtype === FilterType.AUTOMATIC
+            activeElement?.subtype === FilterType.CRITERIA
         ) {
             return activeElement.elementUuid;
         } else {

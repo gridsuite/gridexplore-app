@@ -41,6 +41,7 @@ import {
     UNAUTHORIZED_USER_INFO,
     LOGOUT_ERROR,
     USER_VALIDATION_ERROR,
+    RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
 } from '@gridsuite/commons-ui';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
@@ -99,6 +100,10 @@ export const reducer = createReducer(initialState, {
 
     [USER_VALIDATION_ERROR]: (state, action) => {
         state.authenticationRouterError = action.authenticationRouterError;
+    },
+
+    [RESET_AUTHENTICATION_ROUTER_ERROR]: (state, action) => {
+        state.authenticationRouterError = null;
     },
 
     [SHOW_AUTH_INFO_LOGIN]: (state, action) => {

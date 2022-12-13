@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import { Chip, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
@@ -77,6 +77,66 @@ export const CountriesSelection = ({
                             />
                         ))
                     }
+                />
+            </FormControl>
+        </>
+    );
+};
+
+export const EnumSelection = ({
+    initialValue,
+    onChange,
+    titleMessage,
+    enumValues,
+}) => {
+    const [value, setValue] = useState(initialValue);
+    const intl = useIntl();
+    const options = useMemo(() => Object.keys(enumValues), [enumValues]);
+
+    const enumTranslations = useMemo(
+        () =>
+            Object.fromEntries(
+                Object.entries(enumValues).map(([k, v]) => [
+                    k,
+                    intl.formatMessage({ id: v }),
+                ])
+            ),
+        [intl, enumValues]
+    );
+
+    const getOptionLabel = useCallback(
+        (enumEntry) => enumTranslations[enumEntry] ?? '',
+        [enumTranslations]
+    );
+
+    // Note: we use Autocomplete because it has a convenient clear icon to set the enum to null (not defined).
+    // To make the field read-only, we disable the KeyDown event.
+
+    return (
+        <>
+            <FormControl fullWidth margin="dense">
+                <Autocomplete
+                    id={'select_' + titleMessage}
+                    defaultValue={initialValue}
+                    value={value}
+                    onChange={(oldVal, newVal) => {
+                        onChange(newVal);
+                        setValue(newVal);
+                    }}
+                    options={options}
+                    getOptionLabel={getOptionLabel}
+                    renderInput={(props) => (
+                        <TextField
+                            onKeyDown={(event) => {
+                                // We disable any user Key strike, except Tab for navigation
+                                if (event.code !== 'Tab') {
+                                    event.preventDefault();
+                                }
+                            }}
+                            label={<FormattedMessage id={titleMessage} />}
+                            {...props}
+                        />
+                    )}
                 />
             </FormControl>
         </>
@@ -241,5 +301,9 @@ export const filteredTypes = {
             type: RangeType.equality,
             value: [undefined, undefined],
         },
+    },
+    enum: {
+        defaultValue: null,
+        renderer: EnumSelection,
     },
 };
