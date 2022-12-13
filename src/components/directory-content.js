@@ -734,83 +734,97 @@ const DirectoryContent = () => {
                     }
                 }}
             >
-                <ContentContextualMenu
-                    activeElement={activeElement}
-                    selectedElements={getSelectedChildren()}
-                    open={openContentMenu}
-                    openDialog={openDialog}
-                    setOpenDialog={setOpenDialog}
-                    onClose={handleCloseContentMenu}
-                    anchorReference="anchorPosition"
-                    anchorPosition={
-                        mousePosition.mouseY !== null &&
-                        mousePosition.mouseX !== null
-                            ? {
-                                  top: mousePosition.mouseY,
-                                  left: mousePosition.mouseX,
-                              }
-                            : undefined
-                    }
-                />
+                {openContentMenu && (
+                    <ContentContextualMenu
+                        activeElement={activeElement}
+                        selectedElements={getSelectedChildren()}
+                        open={openContentMenu}
+                        openDialog={openDialog}
+                        setOpenDialog={setOpenDialog}
+                        onClose={handleCloseContentMenu}
+                        anchorReference="anchorPosition"
+                        anchorPosition={
+                            mousePosition.mouseY !== null &&
+                            mousePosition.mouseX !== null
+                                ? {
+                                      top: mousePosition.mouseY,
+                                      left: mousePosition.mouseX,
+                                  }
+                                : undefined
+                        }
+                    />
+                )}
 
-                <DirectoryTreeContextualMenu
-                    directory={selectedDirectory}
-                    open={openDirectoryMenu}
-                    openDialog={openDialog}
-                    setOpenDialog={setOpenDialog}
-                    onClose={handleCloseDirectoryMenu}
-                    anchorReference="anchorPosition"
-                    anchorPosition={
-                        mousePosition.mouseY !== null &&
-                        mousePosition.mouseX !== null
-                            ? {
-                                  top: mousePosition.mouseY,
-                                  left: mousePosition.mouseX,
-                              }
-                            : undefined
-                    }
-                />
+                {openDirectoryMenu && (
+                    <DirectoryTreeContextualMenu
+                        directory={selectedDirectory}
+                        open={openDirectoryMenu}
+                        openDialog={openDialog}
+                        setOpenDialog={setOpenDialog}
+                        onClose={handleCloseDirectoryMenu}
+                        anchorReference="anchorPosition"
+                        anchorPosition={
+                            mousePosition.mouseY !== null &&
+                            mousePosition.mouseX !== null
+                                ? {
+                                      top: mousePosition.mouseY,
+                                      left: mousePosition.mouseX,
+                                  }
+                                : undefined
+                        }
+                    />
+                )}
             </div>
-            <CriteriaBasedFilterDialog
-                id={currentFiltersContingencyListId}
-                open={openFiltersContingencyDialog}
-                onClose={handleCloseFiltersContingency}
-                onError={handleError}
-                title={useIntl().formatMessage({ id: 'editContingencyList' })}
-                contentType={ElementType.CONTINGENCY_LIST}
-            />
-            <ScriptDialog
-                id={currentScriptContingencyListId}
-                open={openScriptContingencyDialog}
-                onClose={handleCloseScriptContingency}
-                onError={handleError}
-                title={useIntl().formatMessage({ id: 'editContingencyList' })}
-                type={ElementType.CONTINGENCY_LIST}
-            />
-            <ScriptDialog
-                id={currentScriptId}
-                open={openScriptDialog}
-                onClose={handleCloseScriptDialog}
-                onError={handleError}
-                title={useIntl().formatMessage({ id: 'editFilterScript' })}
-                type={ElementType.FILTER}
-            />
-            <ExplicitNamingCreationDialog
-                id={currentExplicitNamingFilterId}
-                open={openEditExplicitNamingFilterDialog}
-                onClose={handleCloseExplicitNamingFilterDialog}
-                title={useIntl().formatMessage({ id: 'editFilter' })}
-                isFilterCreation={false}
-                name={currentExplicitNamingFilterId}
-            />
-            <CriteriaBasedFilterDialog
-                id={currentCriteriaBasedFilterId}
-                open={openCriteriaBasedFilterDialog}
-                onClose={handleCloseGenericFilterDialog}
-                onError={handleError}
-                title={useIntl().formatMessage({ id: 'editFilter' })}
-                contentType={ElementType.FILTER}
-            />
+            {openFiltersContingencyDialog && (
+                <CriteriaBasedFilterDialog
+                    id={currentFiltersContingencyListId}
+                    open={openFiltersContingencyDialog}
+                    onClose={handleCloseFiltersContingency}
+                    onError={handleError}
+                    title={intl.formatMessage({ id: 'editContingencyList' })}
+                    contentType={ElementType.CONTINGENCY_LIST}
+                />
+            )}
+            {openScriptContingencyDialog && (
+                <ScriptDialog
+                    id={currentScriptContingencyListId}
+                    open={openScriptContingencyDialog}
+                    onClose={handleCloseScriptContingency}
+                    onError={handleError}
+                    title={intl.formatMessage({ id: 'editContingencyList' })}
+                    type={ElementType.CONTINGENCY_LIST}
+                />
+            )}
+            {openScriptDialog && (
+                <ScriptDialog
+                    id={currentScriptId}
+                    open={openScriptDialog}
+                    onClose={handleCloseScriptDialog}
+                    onError={handleError}
+                    title={intl.formatMessage({ id: 'editFilterScript' })}
+                    type={ElementType.FILTER}
+                />
+            )}
+            {openEditExplicitNamingFilterDialog && (
+                <ExplicitNamingCreationDialog
+                    id={currentExplicitNamingFilterId}
+                    open={openEditExplicitNamingFilterDialog}
+                    onClose={handleCloseExplicitNamingFilterDialog}
+                    title={intl.formatMessage({ id: 'editFilter' })}
+                    isFilterCreation={false}
+                    name={currentExplicitNamingFilterId}
+                />
+            )}
+            {openCriteriaBasedFilterDialog && (
+                <CriteriaBasedFilterDialog
+                    id={currentCriteriaBasedFilterId}
+                    open={openCriteriaBasedFilterDialog}
+                    onClose={handleCloseGenericFilterDialog}
+                    onError={handleError}
+                    title={intl.formatMessage({ id: 'editFilter' })}
+                    contentType={ElementType.FILTER}
+                />
+            )}
         </>
     );
 };

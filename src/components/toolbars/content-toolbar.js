@@ -171,37 +171,44 @@ const ContentToolbar = (props) => {
     return (
         <>
             <CommonToolbar {...others} items={items} />
-            <DeleteDialog
-                open={openDialog === DialogsId.DELETE}
-                onClose={handleCloseDialog}
-                onClick={() =>
-                    deleteCB(
-                        selectedElements.map((e) => {
-                            return [e.elementUuid];
-                        })
-                    )
-                }
-                items={selectedElements}
-                multipleDeleteFormatMessageId={
-                    'deleteMultipleItemsDialogMessage'
-                }
-                simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
-                error={multipleDeleteError}
-            />
-            <MoveDialog
-                open={openDialog === DialogsId.MOVE}
-                onClose={(selectedDir) => {
-                    if (selectedDir.length > 0) {
-                        moveCB(
-                            selectedElements.map((element) => {
-                                return [element.elementUuid, selectedDir[0].id];
+            {openDialog === DialogsId.DELETE && (
+                <DeleteDialog
+                    open={true}
+                    onClose={handleCloseDialog}
+                    onClick={() =>
+                        deleteCB(
+                            selectedElements.map((e) => {
+                                return [e.elementUuid];
                             })
-                        );
+                        )
                     }
-                    handleCloseDialog();
-                }}
-                items={selectedElements}
-            />
+                    items={selectedElements}
+                    multipleDeleteFormatMessageId={
+                        'deleteMultipleItemsDialogMessage'
+                    }
+                    simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
+                    error={multipleDeleteError}
+                />
+            )}
+            {openDialog === DialogsId.MOVE && (
+                <MoveDialog
+                    open={true}
+                    onClose={(selectedDir) => {
+                        if (selectedDir.length > 0) {
+                            moveCB(
+                                selectedElements.map((element) => {
+                                    return [
+                                        element.elementUuid,
+                                        selectedDir[0].id,
+                                    ];
+                                })
+                            );
+                        }
+                        handleCloseDialog();
+                    }}
+                    items={selectedElements}
+                />
+            )}
         </>
     );
 };
