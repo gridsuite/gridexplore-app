@@ -420,9 +420,9 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 oldTempCaseUuid.current = null;
                 handleCloseDialog();
             })
-            .catch((message) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: message,
+                    messageTxt: error.message,
                     headerId: 'studyCreationError',
                     headerValues: {
                         studyName,

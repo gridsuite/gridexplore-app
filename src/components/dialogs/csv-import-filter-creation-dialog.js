@@ -15,24 +15,28 @@ import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CsvDownloader from 'react-csv-downloader';
-import { createFilter } from '../../utils/rest-api';
-import { FilterType } from '../../utils/elementType';
-import { useSelector } from 'react-redux';
 import Alert from '@mui/material/Alert';
-import { filterEquipmentDefinition } from '../../utils/equipment-types';
 import PropTypes from 'prop-types';
+import { DialogContentText } from '@mui/material';
 
-const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
+const CsvImportFilterCreationDialog = ({
+    onClose,
+    open,
+    title,
+    equipmentType,
+    handleValidateCSV,
+    tableValues,
+}) => {
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const intl = useIntl();
     const { CSVReader } = useCSVReader();
     const [value, setValue] = useState([]);
-    const activeDirectory = useSelector((state) => state.activeDirectory);
-
+    const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const fileHeaders = [
-        intl.formatMessage({ id: 'equipmentType' }),
         intl.formatMessage({ id: 'equipmentID' }),
-        intl.formatMessage({ id: 'distributionKey' }),
+        equipmentType === 'GENERATOR' || equipmentType === 'LOAD'
+            ? intl.formatMessage({ id: 'distributionKey' })
+            : '',
     ];
 
     const data = [...[fileHeaders]];
@@ -42,37 +46,23 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
         for (let i = 0; i < 10; i++) {
             newData.push([]);
         }
-        newData.push([
-            intl.formatMessage({ id: 'CSVFileComment' }),
-            filterEquipmentDefinition.LINE.type,
-        ]);
-        Object.entries(filterEquipmentDefinition)
-            .filter((val) => val[0] !== filterEquipmentDefinition.LINE.type)
-            .forEach((value) => {
-                newData.push(['', value[0]]);
-            });
         return newData;
-    };
-
-    const resetDialog = () => {
-        setValue([]);
-        setCreateFilterErr('');
     };
 
     const handleClose = () => {
         onClose();
-        resetDialog();
+        setCreateFilterErr('');
     };
 
-    const validateCsvFile = (rows, equipmentType) => {
+    const validateCsvFile = (rows) => {
         if (rows.length === 0) {
             setCreateFilterErr(intl.formatMessage({ id: 'noDataInCsvFile' }));
             return false;
         }
 
         // validate the headers
-        for (let i = 0; i < 3; i++) {
-            if (rows[0][i] !== fileHeaders[i]) {
+        for (let i = 0; i < fileHeaders.length; i++) {
+            if (fileHeaders[i] !== '' && rows[0][i] !== fileHeaders[i]) {
                 setCreateFilterErr(
                     intl.formatMessage({ id: 'wrongCsvHeadersError' })
                 );
@@ -81,32 +71,8 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
         }
 
         for (let i = 1; i < rows.length; i++) {
-            // Check if equipment type is specified in the row
-            if (!rows[i][0]) {
-                setCreateFilterErr(
-                    intl.formatMessage({
-                        id: 'noEquipmentTypeFoundInCSVError',
-                    })
-                );
-                return false;
-            }
-
-            if (!equipmentType) {
-                equipmentType = rows[i][0];
-            }
-
-            // Check if multiple equipment type are specified
-            if (rows[i][0] !== equipmentType) {
-                setCreateFilterErr(
-                    intl.formatMessage({
-                        id: 'multipleEquipmentTypeError',
-                    })
-                );
-                return false;
-            }
-
             // Check if every row has equipment id
-            if (!rows[i][1]) {
+            if (!rows[i][0]) {
                 setCreateFilterErr(
                     intl.formatMessage({
                         id: 'missingEquipmentsIdsError',
@@ -118,142 +84,165 @@ const CsvImportFilterCreationDialog = ({ name, onClose, open, title }) => {
         return true;
     };
 
-    const getEquipmentsAttributes = (rows, equipmentType) => {
-        let isEquipmentWithDK = !rows.every((row) => !row[2]);
-        return rows.map((val, idx) => {
-            let dKey;
-
-            // if the equipment is generator or load and the distribution key is set in one row,
-            // the other distribution keys in other rows will be set to 0 if it is null
-            if (
-                equipmentType === filterEquipmentDefinition.GENERATOR.type ||
-                equipmentType === filterEquipmentDefinition.LOAD.type
-            ) {
-                if (isEquipmentWithDK && !val[2]) dKey = 0;
-                if (isEquipmentWithDK && val[2]) dKey = val[2];
-            }
-
-            return {
-                equipmentID: val[1].trim(),
-                distributionKey: dKey,
-            };
-        });
-    };
-
-    const handleCreateFilter = () => {
+    const handleCreateFilter = (saveTableValues) => {
         if (value.length !== 0) {
-            let equipmentType = '';
-            let csvCommentStart = false;
             const result = value.filter((val) => {
-                if (val[0].startsWith('#')) csvCommentStart = true;
-                return !csvCommentStart && !!val[0] && !!val[1];
+                return !!val[0];
             });
 
-            if (validateCsvFile(result, equipmentType)) {
+            if (validateCsvFile(result)) {
                 result.splice(0, 1);
-                equipmentType = result[0][0].trim();
-                createFilter(
-                    {
-                        type: FilterType.MANUAL,
-                        equipmentType: equipmentType,
-                        filterEquipmentsAttributes: getEquipmentsAttributes(
-                            result,
-                            equipmentType
-                        ),
-                    },
-                    name,
-                    activeDirectory
-                )
-                    .then(() => {
-                        handleClose();
-                    })
-                    .catch((message) => {
-                        setCreateFilterErr(message);
-                    });
+                handleValidateCSV(result, saveTableValues);
+                handleClose();
             }
         } else {
             setCreateFilterErr(intl.formatMessage({ id: 'noDataInCsvFile' }));
         }
     };
 
+    const handleOpenCSVConfirmationDataDialog = () => {
+        const res = tableValues.filter(
+            (d) => !Object.values(d).every((v) => v == null)
+        ).length;
+        if (res === 0) {
+            setOpenConfirmationPopup(false);
+            handleCreateFilter(false);
+        } else {
+            setOpenConfirmationPopup(true);
+        }
+    };
+
+    const handleAddPopupConfirmation = () => {
+        handleCreateFilter(true);
+        setOpenConfirmationPopup(false);
+    };
+
+    const handleReplacePopupConfirmation = () => {
+        handleCreateFilter(false);
+        setOpenConfirmationPopup(false);
+    };
+
+    const handleCancelDialog = () => {
+        setOpenConfirmationPopup(false);
+    };
+    const renderConfirmationCsvData = () => {
+        return (
+            <div>
+                <Dialog
+                    open={isConfirmationPopupOpen}
+                    aria-labelledby="dialog-confirmation-csv-data"
+                    onKeyPress={() => handleAddPopupConfirmation()}
+                >
+                    <DialogTitle id={'dialog-confirmation-csv-data'}>
+                        {'Confirmation'}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {intl.formatMessage({ id: 'keepCSVDataMessage' })}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => handleCancelDialog()}>
+                            <FormattedMessage id="cancel" />
+                        </Button>
+                        <Button
+                            onClick={() => handleReplacePopupConfirmation()}
+                        >
+                            <FormattedMessage id="replace" />
+                        </Button>
+                        <Button
+                            onClick={() => handleAddPopupConfirmation()}
+                            variant="outlined"
+                        >
+                            <FormattedMessage id="add" />
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        );
+    };
+
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogContent>
-                <div>
-                    <Grid container spacing={2}>
-                        <Grid container item>
-                            <Grid item xs={6}>
-                                <CsvDownloader
-                                    datas={csvData()}
-                                    filename={'filterCreation'}
+        <>
+            <Dialog open={open} onClose={handleClose} fullWidth>
+                <DialogTitle>{title}</DialogTitle>
+                <DialogContent>
+                    <div>
+                        <Grid container spacing={2}>
+                            <Grid container item>
+                                <Grid item xs={6}>
+                                    <CsvDownloader
+                                        datas={csvData()}
+                                        filename={'filterCreation'}
+                                    >
+                                        <Button variant={'contained'}>
+                                            <FormattedMessage id="GenerateCSV" />
+                                        </Button>
+                                    </CsvDownloader>
+                                </Grid>
+                            </Grid>
+                            <Grid container item spacing={3}>
+                                <CSVReader
+                                    onUploadAccepted={(results) => {
+                                        setValue([...results.data]);
+                                        setCreateFilterErr('');
+                                    }}
                                 >
-                                    <Button variant={'contained'}>
-                                        <FormattedMessage id="GenerateCSV" />
-                                    </Button>
-                                </CsvDownloader>
+                                    {({ getRootProps, acceptedFile }) => (
+                                        <>
+                                            <Grid item>
+                                                <Button
+                                                    {...getRootProps()}
+                                                    variant={'contained'}
+                                                >
+                                                    <FormattedMessage id="UploadCSV" />
+                                                </Button>
+                                                <span
+                                                    style={{
+                                                        marginLeft: '10px',
+                                                        fontWeight: 'bold',
+                                                    }}
+                                                >
+                                                    {acceptedFile
+                                                        ? acceptedFile.name
+                                                        : intl.formatMessage({
+                                                              id: 'uploadMessage',
+                                                          })}
+                                                </span>
+                                            </Grid>
+                                        </>
+                                    )}
+                                </CSVReader>
                             </Grid>
                         </Grid>
-                        <Grid container item spacing={3}>
-                            <CSVReader
-                                onUploadAccepted={(results) => {
-                                    setValue([...results.data]);
-                                    setCreateFilterErr('');
-                                }}
-                            >
-                                {({ getRootProps, acceptedFile }) => (
-                                    <>
-                                        <Grid item>
-                                            <Button
-                                                {...getRootProps()}
-                                                variant={'contained'}
-                                            >
-                                                <FormattedMessage id="UploadCSV" />
-                                            </Button>
-                                            <span
-                                                style={{
-                                                    marginLeft: '10px',
-                                                    fontWeight: 'bold',
-                                                }}
-                                            >
-                                                {acceptedFile
-                                                    ? acceptedFile.name
-                                                    : intl.formatMessage({
-                                                          id: 'uploadMessage',
-                                                      })}
-                                            </span>
-                                        </Grid>
-                                    </>
-                                )}
-                            </CSVReader>
-                        </Grid>
-                    </Grid>
-                    {createFilterErr !== '' && (
-                        <Alert severity="error">{createFilterErr}</Alert>
-                    )}
-                </div>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleClose}>
-                    <FormattedMessage id="cancel" />
-                </Button>
-                <Button
-                    variant="outlined"
-                    onClick={handleCreateFilter}
-                    disabled={createFilterErr !== ''}
-                >
-                    <FormattedMessage id="validate" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+                        {createFilterErr !== '' && (
+                            <Alert severity="error">{createFilterErr}</Alert>
+                        )}
+                    </div>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>
+                        <FormattedMessage id="cancel" />
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        onClick={() => handleOpenCSVConfirmationDataDialog()}
+                        disabled={createFilterErr !== ''}
+                    >
+                        <FormattedMessage id="validate" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            {renderConfirmationCsvData()}
+        </>
     );
 };
 
 CsvImportFilterCreationDialog.prototype = {
-    name: PropTypes.string,
     onClose: PropTypes.func,
     open: PropTypes.bool,
     title: PropTypes.string,
+    equipmentType: PropTypes.any,
 };
 
 export default CsvImportFilterCreationDialog;

@@ -121,9 +121,9 @@ const App = () => {
             if (eventData.headers && eventData.headers['parameterName']) {
                 fetchConfigParameter(eventData.headers['parameterName'])
                     .then((param) => updateParams([param]))
-                    .catch((errorMessage) =>
+                    .catch((error) =>
                         snackError({
-                            messageTxt: errorMessage,
+                            messageTxt: error.message,
                             headerId: 'paramsRetrievingError',
                         })
                     );
@@ -187,18 +187,18 @@ const App = () => {
         if (user !== null) {
             fetchConfigParameters(COMMON_APP_NAME)
                 .then((params) => updateParams(params))
-                .catch((errorMessage) =>
+                .catch((error) =>
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'paramsRetrievingError',
                     })
                 );
 
             fetchConfigParameters(APP_NAME)
                 .then((params) => updateParams(params))
-                .catch((errorMessage) =>
+                .catch((error) =>
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'paramsRetrievingError',
                     })
                 );
