@@ -25,14 +25,17 @@ import {
     ElementType,
     FilterType,
 } from '../utils/elementType';
-import { DEFAULT_CELL_PADDING, OverflowableText } from '@gridsuite/commons-ui';
+import {
+    DEFAULT_CELL_PADDING,
+    OverflowableText,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
 
 import ScriptDialog from './dialogs/script-dialog';
 import CriteriaBasedFilterDialog from './dialogs/criteria-filter-dialog';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
@@ -122,6 +125,8 @@ const DirectoryContent = () => {
     const [mousePosition, setMousePosition] =
         React.useState(initialMousePosition);
 
+    const [dialogToOpen, setDialogToOpen] = useState(null);
+
     const handleRowClick = (event) => {
         if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
             const subtype = childrenMetadata[event.rowData.elementUuid].subtype;
@@ -143,20 +148,20 @@ const DirectoryContent = () => {
                     setCurrentFiltersContingencyListId(
                         event.rowData.elementUuid
                     );
-                    setOpenFiltersContingencyDialog(true);
+                    setDialogToOpen(subtype);
                 } else if (subtype === ContingencyListType.SCRIPT) {
                     setCurrentScriptContingencyListId(
                         event.rowData.elementUuid
                     );
-                    setOpenScriptContingencyDialog(true);
+                    setDialogToOpen(subtype);
                 }
             } else if (event.rowData.type === ElementType.FILTER) {
                 if (subtype === FilterType.EXPLICIT_NAMING) {
                     setCurrentExplicitNamingFilterId(event.rowData.elementUuid);
-                    setOpenEditExplicitNamingFilterDialog(true);
+                    setDialogToOpen(subtype);
                 } else if (subtype === FilterType.CRITERIA) {
                     setCurrentCriteriaBasedFilterId(event.rowData.elementUuid);
-                    setOpenCriteriaBasedFilterDialog(true);
+                    setDialogToOpen(subtype);
                 }
             }
         }
@@ -165,14 +170,12 @@ const DirectoryContent = () => {
     /**
      * Filters contingency list dialog: window status value for editing a filters contingency list
      */
-    const [openFiltersContingencyDialog, setOpenFiltersContingencyDialog] =
-        React.useState(false);
     const [
         currentFiltersContingencyListId,
         setCurrentFiltersContingencyListId,
     ] = React.useState(null);
     const handleCloseFiltersContingency = () => {
-        setOpenFiltersContingencyDialog(false);
+        setDialogToOpen(null);
         setActiveElement(null);
         setCurrentFiltersContingencyListId(null);
     };
@@ -182,10 +185,8 @@ const DirectoryContent = () => {
      */
     const [currentCriteriaBasedFilterId, setCurrentCriteriaBasedFilterId] =
         useState(null);
-    const [openCriteriaBasedFilterDialog, setOpenCriteriaBasedFilterDialog] =
-        React.useState(false);
     const handleCloseGenericFilterDialog = () => {
-        setOpenCriteriaBasedFilterDialog(false);
+        setDialogToOpen(null);
         setCurrentCriteriaBasedFilterId(null);
         setActiveElement(null);
     };
@@ -193,12 +194,8 @@ const DirectoryContent = () => {
     /**
      * Filters dialog: window status value to edit ExplicitNaming filters
      */
-    const [
-        openEditExplicitNamingFilterDialog,
-        setOpenEditExplicitNamingFilterDialog,
-    ] = useState(false);
     const handleCloseExplicitNamingFilterDialog = () => {
-        setOpenEditExplicitNamingFilterDialog(false);
+        setDialogToOpen(null);
         setCurrentExplicitNamingFilterId(null);
         setActiveElement(null);
     };
@@ -208,12 +205,10 @@ const DirectoryContent = () => {
     /**
      * Script contingency list dialog: window status value for editing a script contingency list
      */
-    const [openScriptContingencyDialog, setOpenScriptContingencyDialog] =
-        useState(false);
     const [currentScriptContingencyListId, setCurrentScriptContingencyListId] =
         useState(null);
     const handleCloseScriptContingency = () => {
-        setOpenScriptContingencyDialog(false);
+        setDialogToOpen(null);
         setActiveElement(null);
         setCurrentScriptContingencyListId(null);
     };
@@ -221,13 +216,14 @@ const DirectoryContent = () => {
     /**
      * Filter script dialog: window status value for editing a filter script
      */
-    const [openScriptDialog, setOpenScriptDialog] = useState(false);
+    // TODO: uncomment when filter script dialog is activated
+    /*const [openScriptDialog, setOpenScriptDialog] = useState(false);
     const [currentScriptId, setCurrentScriptId] = useState(null);
     const handleCloseScriptDialog = () => {
         setOpenScriptDialog(false);
         setActiveElement(null);
         setCurrentScriptId(null);
-    };
+    };*/
 
     /**
      * Contextual Menus
@@ -710,6 +706,73 @@ const DirectoryContent = () => {
         return renderTableContent();
     };
 
+    const renderDialog = () => {
+        switch (dialogToOpen) {
+            case ContingencyListType.FORM:
+                return (
+                    <CriteriaBasedFilterDialog
+                        id={currentFiltersContingencyListId}
+                        open={true}
+                        onClose={handleCloseFiltersContingency}
+                        onError={handleError}
+                        title={intl.formatMessage({
+                            id: 'editContingencyList',
+                        })}
+                        contentType={ElementType.CONTINGENCY_LIST}
+                    />
+                );
+            case ContingencyListType.SCRIPT:
+                return (
+                    <ScriptDialog
+                        id={currentScriptContingencyListId}
+                        open={true}
+                        onClose={handleCloseScriptContingency}
+                        onError={handleError}
+                        title={intl.formatMessage({
+                            id: 'editContingencyList',
+                        })}
+                        type={ElementType.CONTINGENCY_LIST}
+                    />
+                );
+            case FilterType.EXPLICIT_NAMING:
+                return (
+                    <ExplicitNamingCreationDialog
+                        id={currentExplicitNamingFilterId}
+                        open={true}
+                        onClose={handleCloseExplicitNamingFilterDialog}
+                        title={intl.formatMessage({ id: 'editFilter' })}
+                        isFilterCreation={false}
+                        name={currentExplicitNamingFilterId}
+                    />
+                );
+            case FilterType.CRITERIA:
+                return (
+                    <CriteriaBasedFilterDialog
+                        id={currentCriteriaBasedFilterId}
+                        open={true}
+                        onClose={handleCloseGenericFilterDialog}
+                        onError={handleError}
+                        title={intl.formatMessage({ id: 'editFilter' })}
+                        contentType={ElementType.FILTER}
+                    />
+                );
+            // TODO : Uncomment when filter script is activated
+            /*case FilterType.SCRIPT:
+                return (
+                    <ScriptDialog
+                        id={currentScriptId}
+                        open={true}
+                        onClose={handleCloseScriptDialog}
+                        onError={handleError}
+                        title={intl.formatMessage({ id: 'editFilterScript' })}
+                        type={ElementType.FILTER}
+                    />
+                );*/
+            default:
+                return null;
+        }
+    };
+
     return (
         <>
             <div
@@ -775,56 +838,7 @@ const DirectoryContent = () => {
                     />
                 )}
             </div>
-            {openFiltersContingencyDialog && (
-                <CriteriaBasedFilterDialog
-                    id={currentFiltersContingencyListId}
-                    open={openFiltersContingencyDialog}
-                    onClose={handleCloseFiltersContingency}
-                    onError={handleError}
-                    title={intl.formatMessage({ id: 'editContingencyList' })}
-                    contentType={ElementType.CONTINGENCY_LIST}
-                />
-            )}
-            {openScriptContingencyDialog && (
-                <ScriptDialog
-                    id={currentScriptContingencyListId}
-                    open={openScriptContingencyDialog}
-                    onClose={handleCloseScriptContingency}
-                    onError={handleError}
-                    title={intl.formatMessage({ id: 'editContingencyList' })}
-                    type={ElementType.CONTINGENCY_LIST}
-                />
-            )}
-            {openScriptDialog && (
-                <ScriptDialog
-                    id={currentScriptId}
-                    open={openScriptDialog}
-                    onClose={handleCloseScriptDialog}
-                    onError={handleError}
-                    title={intl.formatMessage({ id: 'editFilterScript' })}
-                    type={ElementType.FILTER}
-                />
-            )}
-            {openEditExplicitNamingFilterDialog && (
-                <ExplicitNamingCreationDialog
-                    id={currentExplicitNamingFilterId}
-                    open={openEditExplicitNamingFilterDialog}
-                    onClose={handleCloseExplicitNamingFilterDialog}
-                    title={intl.formatMessage({ id: 'editFilter' })}
-                    isFilterCreation={false}
-                    name={currentExplicitNamingFilterId}
-                />
-            )}
-            {openCriteriaBasedFilterDialog && (
-                <CriteriaBasedFilterDialog
-                    id={currentCriteriaBasedFilterId}
-                    open={openCriteriaBasedFilterDialog}
-                    onClose={handleCloseGenericFilterDialog}
-                    onError={handleError}
-                    title={intl.formatMessage({ id: 'editFilter' })}
-                    contentType={ElementType.FILTER}
-                />
-            )}
+            {renderDialog()}
         </>
     );
 };
