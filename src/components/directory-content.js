@@ -125,8 +125,7 @@ const DirectoryContent = () => {
     const [mousePosition, setMousePosition] =
         React.useState(initialMousePosition);
 
-    const [dialogToOpen, setDialogToOpen] = useState(null);
-
+    const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
     const handleRowClick = (event) => {
         if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
             const subtype = childrenMetadata[event.rowData.elementUuid].subtype;
@@ -148,20 +147,20 @@ const DirectoryContent = () => {
                     setCurrentFiltersContingencyListId(
                         event.rowData.elementUuid
                     );
-                    setDialogToOpen(subtype);
+                    setOpenDialog(subtype);
                 } else if (subtype === ContingencyListType.SCRIPT) {
                     setCurrentScriptContingencyListId(
                         event.rowData.elementUuid
                     );
-                    setDialogToOpen(subtype);
+                    setOpenDialog(subtype);
                 }
             } else if (event.rowData.type === ElementType.FILTER) {
                 if (subtype === FilterType.EXPLICIT_NAMING) {
                     setCurrentExplicitNamingFilterId(event.rowData.elementUuid);
-                    setDialogToOpen(subtype);
+                    setOpenDialog(subtype);
                 } else if (subtype === FilterType.CRITERIA) {
                     setCurrentCriteriaBasedFilterId(event.rowData.elementUuid);
-                    setDialogToOpen(subtype);
+                    setOpenDialog(subtype);
                 }
             }
         }
@@ -175,7 +174,7 @@ const DirectoryContent = () => {
         setCurrentFiltersContingencyListId,
     ] = React.useState(null);
     const handleCloseFiltersContingency = () => {
-        setDialogToOpen(null);
+        setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
         setCurrentFiltersContingencyListId(null);
     };
@@ -186,7 +185,7 @@ const DirectoryContent = () => {
     const [currentCriteriaBasedFilterId, setCurrentCriteriaBasedFilterId] =
         useState(null);
     const handleCloseGenericFilterDialog = () => {
-        setDialogToOpen(null);
+        setOpenDialog(constants.DialogsId.NONE);
         setCurrentCriteriaBasedFilterId(null);
         setActiveElement(null);
     };
@@ -195,7 +194,7 @@ const DirectoryContent = () => {
      * Filters dialog: window status value to edit ExplicitNaming filters
      */
     const handleCloseExplicitNamingFilterDialog = () => {
-        setDialogToOpen(null);
+        setOpenDialog(constants.DialogsId.NONE);
         setCurrentExplicitNamingFilterId(null);
         setActiveElement(null);
     };
@@ -208,29 +207,16 @@ const DirectoryContent = () => {
     const [currentScriptContingencyListId, setCurrentScriptContingencyListId] =
         useState(null);
     const handleCloseScriptContingency = () => {
-        setDialogToOpen(null);
+        setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
         setCurrentScriptContingencyListId(null);
     };
-
-    /**
-     * Filter script dialog: window status value for editing a filter script
-     */
-    // TODO: uncomment when filter script dialog is activated
-    /*const [openScriptDialog, setOpenScriptDialog] = useState(false);
-    const [currentScriptId, setCurrentScriptId] = useState(null);
-    const handleCloseScriptDialog = () => {
-        setOpenScriptDialog(false);
-        setActiveElement(null);
-        setCurrentScriptId(null);
-    };*/
 
     /**
      * Contextual Menus
      */
     const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
     const [openContentMenu, setOpenContentMenu] = useState(false);
-    const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
 
     const handleOpenContentMenu = (event) => {
         setOpenContentMenu(true);
@@ -707,7 +693,7 @@ const DirectoryContent = () => {
     };
 
     const renderDialog = () => {
-        switch (dialogToOpen) {
+        switch (openDialog) {
             case ContingencyListType.FORM:
                 return (
                     <CriteriaBasedFilterDialog
@@ -756,18 +742,6 @@ const DirectoryContent = () => {
                         contentType={ElementType.FILTER}
                     />
                 );
-            // TODO : Uncomment when filter script is activated
-            /*case FilterType.SCRIPT:
-                return (
-                    <ScriptDialog
-                        id={currentScriptId}
-                        open={true}
-                        onClose={handleCloseScriptDialog}
-                        onError={handleError}
-                        title={intl.formatMessage({ id: 'editFilterScript' })}
-                        type={ElementType.FILTER}
-                    />
-                );*/
             default:
                 return null;
         }
@@ -797,46 +771,42 @@ const DirectoryContent = () => {
                     }
                 }}
             >
-                {openContentMenu && (
-                    <ContentContextualMenu
-                        activeElement={activeElement}
-                        selectedElements={getSelectedChildren()}
-                        open={openContentMenu}
-                        openDialog={openDialog}
-                        setOpenDialog={setOpenDialog}
-                        onClose={handleCloseContentMenu}
-                        anchorReference="anchorPosition"
-                        anchorPosition={
-                            mousePosition.mouseY !== null &&
-                            mousePosition.mouseX !== null
-                                ? {
-                                      top: mousePosition.mouseY,
-                                      left: mousePosition.mouseX,
-                                  }
-                                : undefined
-                        }
-                    />
-                )}
+                <ContentContextualMenu
+                    activeElement={activeElement}
+                    selectedElements={getSelectedChildren()}
+                    open={openContentMenu}
+                    openDialog={openDialog}
+                    setOpenDialog={setOpenDialog}
+                    onClose={handleCloseContentMenu}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                        mousePosition.mouseY !== null &&
+                        mousePosition.mouseX !== null
+                            ? {
+                                  top: mousePosition.mouseY,
+                                  left: mousePosition.mouseX,
+                              }
+                            : undefined
+                    }
+                />
 
-                {openDirectoryMenu && (
-                    <DirectoryTreeContextualMenu
-                        directory={selectedDirectory}
-                        open={openDirectoryMenu}
-                        openDialog={openDialog}
-                        setOpenDialog={setOpenDialog}
-                        onClose={handleCloseDirectoryMenu}
-                        anchorReference="anchorPosition"
-                        anchorPosition={
-                            mousePosition.mouseY !== null &&
-                            mousePosition.mouseX !== null
-                                ? {
-                                      top: mousePosition.mouseY,
-                                      left: mousePosition.mouseX,
-                                  }
-                                : undefined
-                        }
-                    />
-                )}
+                <DirectoryTreeContextualMenu
+                    directory={selectedDirectory}
+                    open={openDirectoryMenu}
+                    openDialog={openDialog}
+                    setOpenDialog={setOpenDialog}
+                    onClose={handleCloseDirectoryMenu}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                        mousePosition.mouseY !== null &&
+                        mousePosition.mouseX !== null
+                            ? {
+                                  top: mousePosition.mouseY,
+                                  left: mousePosition.mouseX,
+                              }
+                            : undefined
+                    }
+                />
             </div>
             {renderDialog()}
         </>
