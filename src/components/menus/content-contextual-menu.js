@@ -23,7 +23,7 @@ import DeleteDialog from '../dialogs/delete-dialog';
 import ScriptDialog from '../dialogs/script-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
-import GenericFilterDialog from '../dialogs/criteria-filter-dialog';
+import CriteriaBasedFilterDialog from '../dialogs/criteria-based-filter-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog';
 
 import { DialogsId } from '../../utils/UIconstants';
@@ -584,7 +584,7 @@ const ContentContextualMenu = (props) => {
                 );
             case DialogsId.FILTERS_CONTINGENCY:
                 return (
-                    <GenericFilterDialog
+                    <CriteriaBasedFilterDialog
                         id={getActiveContingencyFormId()}
                         open={true}
                         onClose={handleCloseDialog}
@@ -694,7 +694,7 @@ const ContentContextualMenu = (props) => {
                 );
             case DialogsId.GENERIC_FILTER:
                 return (
-                    <GenericFilterDialog
+                    <CriteriaBasedFilterDialog
                         id={getActiveFilterFormId()}
                         open={true}
                         onClose={handleCloseDialog}
