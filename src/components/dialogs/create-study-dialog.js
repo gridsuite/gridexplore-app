@@ -403,6 +403,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             directory: activeDirectory,
             type: 'STUDY',
             owner: userId,
+            lastModifiedBy: userId,
             uploading: true,
         };
         createStudy(
