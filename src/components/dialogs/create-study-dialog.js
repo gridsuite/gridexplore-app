@@ -22,7 +22,7 @@ import FormControl from '@mui/material/FormControl';
 import Alert from '@mui/material/Alert';
 import DirectorySelector from './directory-selector.js';
 import {
-    createPrivateCase,
+    createCaseWithoutDirectoryElementCreation,
     createStudy,
     deleteCase,
     fetchCases,
@@ -295,7 +295,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             );
         } else if (open && selectedFile) {
             setUploadingFileInProgress(true);
-            createPrivateCase(selectedFile)
+            createCaseWithoutDirectoryElementCreation(selectedFile)
                 .then((caseUuid) => {
                     setUploadingFileInProgress(false);
                     setTempCaseUuid(caseUuid);
