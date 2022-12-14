@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ExplicitNamingCreationDialog = ({
+const ExplicitNamingFilterCreationDialog = ({
     id,
     open,
     onClose,
@@ -181,7 +181,7 @@ const ExplicitNamingCreationDialog = ({
     );
 };
 
-ExplicitNamingCreationDialog.prototype = {
+ExplicitNamingFilterCreationDialog.prototype = {
     id: PropTypes.string,
     name: PropTypes.string,
     onClose: PropTypes.func.isRequired,
@@ -190,4 +190,4 @@ ExplicitNamingCreationDialog.prototype = {
     isFilterCreation: PropTypes.bool,
 };
 
-export default ExplicitNamingCreationDialog;
+export default ExplicitNamingFilterCreationDialog;
