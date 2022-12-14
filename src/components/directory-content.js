@@ -25,14 +25,18 @@ import {
     ElementType,
     FilterType,
 } from '../utils/elementType';
-import { DEFAULT_CELL_PADDING, OverflowableText } from '@gridsuite/commons-ui';
+import {
+    DEFAULT_CELL_PADDING,
+    OverflowableText,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
 
 import ScriptDialog from './dialogs/script-dialog';
-import CriteriaBasedFilterDialog from './dialogs/criteria-filter-dialog';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import CriteriaBasedFilterDialog from './dialogs/criteria-based-filter-dialog';
+import ExplicitNamingFilterCreationDialog from './dialogs/explicit-naming-filter-creation-dialog';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
@@ -41,7 +45,6 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
-import ExplicitNamingCreationDialog from './dialogs/explicit-naming-filter-creation-dialog';
 
 const circularProgressSize = '70px';
 
@@ -184,7 +187,7 @@ const DirectoryContent = () => {
         useState(null);
     const [openCriteriaBasedFilterDialog, setOpenCriteriaBasedFilterDialog] =
         React.useState(false);
-    const handleCloseGenericFilterDialog = () => {
+    const handleCloseCriteriaBasedFilterDialog = () => {
         setOpenCriteriaBasedFilterDialog(false);
         setCurrentCriteriaBasedFilterId(null);
         setActiveElement(null);
@@ -795,7 +798,7 @@ const DirectoryContent = () => {
                 title={useIntl().formatMessage({ id: 'editFilterScript' })}
                 type={ElementType.FILTER}
             />
-            <ExplicitNamingCreationDialog
+            <ExplicitNamingFilterCreationDialog
                 id={currentExplicitNamingFilterId}
                 open={openEditExplicitNamingFilterDialog}
                 onClose={handleCloseExplicitNamingFilterDialog}
@@ -806,7 +809,7 @@ const DirectoryContent = () => {
             <CriteriaBasedFilterDialog
                 id={currentCriteriaBasedFilterId}
                 open={openCriteriaBasedFilterDialog}
-                onClose={handleCloseGenericFilterDialog}
+                onClose={handleCloseCriteriaBasedFilterDialog}
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'editFilter' })}
                 contentType={ElementType.FILTER}
