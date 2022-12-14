@@ -29,7 +29,7 @@ import { useSelector } from 'react-redux';
 import { ElementType, FilterType } from '../../utils/elementType';
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
-import CriteriaFilterDialogContent from './criteria-filter-dialog-content';
+import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
 import ExplicitNamingFilterDialogContent from './explicit-naming-filter-dialog-content';
 import { DialogContentText } from '@mui/material';
 
@@ -375,7 +375,7 @@ const CreateFilterDialog = ({
                 <Dialog
                     open={isConfirmationPopupOpen}
                     aria-labelledby="dialog-title-change-filter-type"
-                    onKeyPress={() => handlePopupConfirmation(false)}
+                    onKeyPress={() => handlePopupConfirmation()}
                 >
                     <DialogTitle id={'dialog-title-change-filter-type'}>
                         {'Confirmation'}
@@ -447,7 +447,7 @@ const CreateFilterDialog = ({
                         />
                     </RadioGroup>
                     {newListType === FilterType.CRITERIA ? (
-                        <CriteriaFilterDialogContent
+                        <CriteriaBasedFilterDialogContent
                             open={open && filterType === FilterType.CRITERIA}
                             isFilterCreation={true}
                             handleFilterCreation={handleCallback}
