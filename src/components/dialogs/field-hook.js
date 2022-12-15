@@ -460,9 +460,11 @@ export const useEquipmentTableValues = ({
                 }
                 let objects = Object.keys(csvData).map(function (key) {
                     return {
-                        equipmentID: csvData[key][0].trim(),
+                        equipmentID: isGeneratorOrLoad
+                            ? csvData[key][0]
+                            : csvData[key][0]?.trim(),
                         distributionKey:
-                            csvData[key][1].trim() !== ''
+                            csvData[key][1]?.trim() !== ''
                                 ? csvData[key][1]
                                 : undefined,
                     };
@@ -470,7 +472,7 @@ export const useEquipmentTableValues = ({
                 values.push(...objects);
             }
         },
-        [values]
+        [isGeneratorOrLoad, values]
     );
 
     const field = useMemo(() => {

@@ -358,8 +358,13 @@ const CreateFilterDialog = ({
     };
 
     const onFilterTypeChange = (event) => {
-        setOpenConfirmationPopup(true);
-        setChoosedFilterType(event.target.value);
+        if (equipmentType !== null) {
+            setOpenConfirmationPopup(true);
+            setChoosedFilterType(event.target.value);
+        } else {
+            handlePopupConfirmation();
+            setNewListType(event.target.value);
+        }
     };
 
     const handlePopupConfirmation = () => {
@@ -375,7 +380,7 @@ const CreateFilterDialog = ({
                 <Dialog
                     open={isConfirmationPopupOpen}
                     aria-labelledby="dialog-title-change-filter-type"
-                    onKeyPress={() => handlePopupConfirmation(false)}
+                    onKeyPress={handlePopupConfirmation}
                 >
                     <DialogTitle id={'dialog-title-change-filter-type'}>
                         {'Confirmation'}
@@ -390,7 +395,7 @@ const CreateFilterDialog = ({
                             <FormattedMessage id="cancel" />
                         </Button>
                         <Button
-                            onClick={() => handlePopupConfirmation()}
+                            onClick={handlePopupConfirmation}
                             variant="outlined"
                         >
                             <FormattedMessage id="validate" />
@@ -427,12 +432,13 @@ const CreateFilterDialog = ({
                         label={inputLabelText}
                     />
                     {renderFilterNameStatus()}
+
                     <RadioGroup
                         aria-label="type"
                         name="filterType"
                         value={newListType}
                         defaultValue={FilterType.CRITERIA}
-                        onChange={(e) => onFilterTypeChange(e)}
+                        onChange={onFilterTypeChange}
                         row
                     >
                         <FormControlLabel
@@ -446,6 +452,7 @@ const CreateFilterDialog = ({
                             label={<FormattedMessage id="ExplicitNaming" />}
                         />
                     </RadioGroup>
+
                     {newListType === FilterType.CRITERIA ? (
                         <CriteriaFilterDialogContent
                             open={open && filterType === FilterType.CRITERIA}

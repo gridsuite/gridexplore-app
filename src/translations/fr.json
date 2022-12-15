@@ -187,7 +187,7 @@
     "invalidFormatOrName":"Format ou nom du fichier importé non valide",
     "parameterLoadingProblem":"Problème de chargement des paramètres",
     "dragAndDrop": "glisser déposer",
-    "changeTypeMessage": "Voulez-vous changer le type ?",
+    "changeTypeMessage": "Voulez-vous changer le type ? La précédente configuration sera perdue",
     "keepCSVDataMessage": "Voulez-vous remplacer ou ajouter vos identifiants ?",
     "chooseCSVFile" : "Choisir un fichier CSV",
     "add" : "Ajouter",

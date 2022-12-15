@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useEquipmentTableValues } from './field-hook';
 import makeStyles from '@mui/styles/makeStyles';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { getFilterById } from '../../utils/rest-api';
 
 import IconButton from '@mui/material/IconButton';
@@ -18,7 +18,18 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 import { Draggable } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
-import { Alert, Checkbox, Input, Tooltip } from '@mui/material';
+import {
+    Alert,
+    Button,
+    Checkbox,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Input,
+    Tooltip,
+} from '@mui/material';
 import { filterEquipmentDefinition } from '../../utils/equipment-types';
 import { FilterTypeSelection } from './criteria-filter-dialog-content';
 
@@ -162,7 +173,9 @@ const ExplicitNamingFilterDialogContent = ({
     const [isEdited, setIsEdited] = useState(false);
     const fetchFilter = useRef(null);
     fetchFilter.current = open && !isFilterCreation;
-
+    const intl = useIntl();
+    const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
+    const [newEquipmentType, setnewEquipmentType] = useState(null);
     useEffect(() => {
         if (id && fetchFilter.current) {
             getFilterById(id)
@@ -194,8 +207,22 @@ const ExplicitNamingFilterDialogContent = ({
         );
     }, [equipmentType]);
 
-    const handleEquipmentTypeChange = (type) => {
-        setEquipmentType(type);
+    const handleEquipmentTypeChange = (type, isTableEdited) => {
+        if (isTableEdited) {
+            setnewEquipmentType(type);
+            setOpenConfirmationPopup(true);
+        } else {
+            setEquipmentType(type);
+            setDefaultValues({
+                filterEquipmentsAttributes: [],
+                equipmentType: equipmentType,
+            });
+        }
+    };
+
+    const handlePopupConfirmation = () => {
+        setOpenConfirmationPopup(false);
+        setEquipmentType(newEquipmentType);
         setDefaultValues({
             filterEquipmentsAttributes: [],
             equipmentType: equipmentType,
@@ -227,6 +254,38 @@ const ExplicitNamingFilterDialogContent = ({
         sendData();
     }, [sendData]);
 
+    const renderChangeEquipmentTypePopup = () => {
+        return (
+            <div>
+                <Dialog
+                    open={isConfirmationPopupOpen}
+                    aria-labelledby="dialog-title-change-equipment-type"
+                    onKeyPress={handlePopupConfirmation}
+                >
+                    <DialogTitle id={'dialog-title-change-equipment-type'}>
+                        {'Confirmation'}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {intl.formatMessage({ id: 'changeTypeMessage' })}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpenConfirmationPopup(false)}>
+                            <FormattedMessage id="cancel" />
+                        </Button>
+                        <Button
+                            onClick={handlePopupConfirmation}
+                            variant="outlined"
+                        >
+                            <FormattedMessage id="validate" />
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        );
+    };
+
     return (
         <div>
             <Grid container spacing={2}>
@@ -236,6 +295,7 @@ const ExplicitNamingFilterDialogContent = ({
                         disabled={false}
                         onChange={handleEquipmentTypeChange}
                         equipmentDefinition={filterEquipmentDefinition}
+                        isEdited={isEdited}
                     />
                 </Grid>
                 <Grid item xs={12} />
@@ -244,6 +304,7 @@ const ExplicitNamingFilterDialogContent = ({
             {createFilterErr !== '' && (
                 <Alert severity="error">{createFilterErr}</Alert>
             )}
+            {renderChangeEquipmentTypePopup()}
         </div>
     );
 };
