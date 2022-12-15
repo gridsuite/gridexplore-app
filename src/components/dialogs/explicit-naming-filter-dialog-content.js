@@ -69,6 +69,7 @@ export const ExplicitNamingFilterRow = ({
                     style={{ width: '100%' }}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
+                    {...provided.dragHandleProps}
                 >
                     <Grid
                         container
@@ -104,6 +105,8 @@ export const ExplicitNamingFilterRow = ({
                             ></Checkbox>
                         </Grid>
                         <Grid
+                            container
+                            alignItems="center"
                             xs={getXs()}
                             item
                             key={id + index + 'equipmentID'}
@@ -127,6 +130,8 @@ export const ExplicitNamingFilterRow = ({
                         </Grid>
                         {isGeneratorOrLoad && (
                             <Grid
+                                container
+                                alignItems="center"
                                 xs={3}
                                 item
                                 key={id + index + 'dKey'}
@@ -192,7 +197,7 @@ const ExplicitNamingFilterDialogContent = ({
         }
     }, [id]);
 
-    const [tableValues, tableValuesField] = useEquipmentTableValues({
+    const [tableValues, tableValuesField, isDragged] = useEquipmentTableValues({
         id: id ?? 'editFilterTable',
         name: name,
         tableHeadersIds: isGeneratorOrLoad
@@ -242,12 +247,14 @@ const ExplicitNamingFilterDialogContent = ({
             equipmentType,
             name,
             id,
-            isEdited
+            isEdited,
+            isDragged
         );
     }, [
         equipmentType,
         handleFilterCreation,
         id,
+        isDragged,
         isEdited,
         isFilterCreation,
         isGeneratorOrLoad,

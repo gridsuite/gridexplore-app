@@ -305,6 +305,7 @@ export const useEquipmentTableValues = ({
     const classes = useStyles();
     const [values, setValues] = useState([]);
     const intl = useIntl();
+    const [isDragged, setIsDragged] = useState(false);
     const handleAddValue = useCallback(() => {
         setValues((oldValues) => [...oldValues, {}]);
     }, []);
@@ -397,6 +398,7 @@ export const useEquipmentTableValues = ({
         ({ source, destination }) => {
             if (destination === null || source.index === destination.index)
                 return;
+            setIsDragged(true);
             const res = [...values];
             res.forEach((e) => {
                 e['isChecked'] = false;
@@ -481,11 +483,7 @@ export const useEquipmentTableValues = ({
                                 {...provided.droppableProps}
                                 key={id + name}
                             >
-                                <Grid
-                                    container
-                                    key={name + 'container'}
-                                    spacing={isGeneratorOrLoad ? 2 : 0}
-                                >
+                                <Grid container key={name + 'container'}>
                                     <Grid item xs={1}></Grid>
                                     <Grid item xs={1}>
                                         <Checkbox
@@ -503,6 +501,10 @@ export const useEquipmentTableValues = ({
                                     </Grid>
                                     {tableHeadersIds.map((value, index) => (
                                         <Grid
+                                            container
+                                            direction="row"
+                                            justifyContent="flex-start"
+                                            alignItems="flex-end"
                                             xs={
                                                 isGeneratorOrLoad
                                                     ? value === 'ID'
@@ -515,6 +517,8 @@ export const useEquipmentTableValues = ({
                                             style={{
                                                 width: '100%',
                                                 borderBottom: '3px solid grey',
+                                                marginBottom: 15,
+                                                paddingTop: 5,
                                             }}
                                         >
                                             <span key={'header' + name + index}>
@@ -634,5 +638,5 @@ export const useEquipmentTableValues = ({
         updateTableValues,
     ]);
 
-    return [values, field];
+    return [values, field, isDragged];
 };

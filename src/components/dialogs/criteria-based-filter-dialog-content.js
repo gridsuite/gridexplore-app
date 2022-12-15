@@ -209,12 +209,14 @@ export const CriteriaBasedFilterDialogContent = ({
         currentFilterToSend.current.type = FilterType.CRITERIA;
         currentFilterToSend.current.equipmentFilterForm = { ...res };
         handleFilterCreation(currentFilterToSend.current);
-        const hasEdition = Object.values().some(
-            (v) =>
-                (Array.isArray(v) && v.length > 0) ||
-                (typeof v === 'object' && Object.keys(v).length > 0)
+        const hasEdition = Object.values(res).some(
+            (val) =>
+                val !== undefined &&
+                val !== null &&
+                ((Array.isArray(val) && val.length > 0) ||
+                    (typeof val === 'object' && Object.keys(val).length > 0))
         );
-        if (hasEdition) setIsEdited(true);
+        setIsEdited(hasEdition);
     };
 
     const changeEquipmentType = (newType) => {
