@@ -185,7 +185,7 @@ const ExplicitNamingFilterDialogContent = ({
     fetchFilter.current = open && !isFilterCreation;
     const intl = useIntl();
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
-    const [newEquipmentType, setnewEquipmentType] = useState(null);
+    const [newEquipmentType, setNewEquipmentType] = useState(null);
     useEffect(() => {
         if (id && fetchFilter.current) {
             getFilterById(id)
@@ -219,7 +219,7 @@ const ExplicitNamingFilterDialogContent = ({
 
     const handleEquipmentTypeChange = (type, isTableEdited) => {
         if (isTableEdited) {
-            setnewEquipmentType(type);
+            setNewEquipmentType(type);
             setOpenConfirmationPopup(true);
         } else {
             setEquipmentType(type);
