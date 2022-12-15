@@ -31,7 +31,7 @@ import {
     Tooltip,
 } from '@mui/material';
 import { filterEquipmentDefinition } from '../../utils/equipment-types';
-import { FilterTypeSelection } from './criteria-filter-dialog-content';
+import { FilterTypeSelection } from './criteria-based-filter-dialog-content';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {

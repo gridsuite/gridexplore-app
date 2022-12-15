@@ -94,7 +94,7 @@ export const FilterTypeSelection = ({
     );
 };
 
-export const CriteriaFilterDialogContent = ({
+export const CriteriaBasedFilterDialogContent = ({
     id,
     open,
     contentType,
@@ -331,4 +331,4 @@ export const CriteriaFilterDialogContent = ({
     );
 };
 
-export default CriteriaFilterDialogContent;
+export default CriteriaBasedFilterDialogContent;

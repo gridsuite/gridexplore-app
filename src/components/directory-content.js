@@ -25,14 +25,18 @@ import {
     ElementType,
     FilterType,
 } from '../utils/elementType';
-import { DEFAULT_CELL_PADDING, OverflowableText } from '@gridsuite/commons-ui';
+import {
+    DEFAULT_CELL_PADDING,
+    OverflowableText,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
 
 import ScriptDialog from './dialogs/script-dialog';
-import CriteriaBasedFilterDialog from './dialogs/criteria-filter-dialog';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import CriteriaBasedFilterDialog from './dialogs/criteria-based-filter-dialog';
+import ExplicitNamingFilterCreationDialog from './dialogs/explicit-naming-filter-creation-dialog';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
@@ -41,7 +45,6 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
-import ExplicitNamingCreationDialog from './dialogs/explicit-naming-filter-creation-dialog';
 
 const circularProgressSize = '70px';
 
@@ -184,7 +187,7 @@ const DirectoryContent = () => {
         useState(null);
     const [openCriteriaBasedFilterDialog, setOpenCriteriaBasedFilterDialog] =
         React.useState(false);
-    const handleCloseGenericFilterDialog = () => {
+    const handleCloseCriteriaBasedFilterDialog = () => {
         setOpenCriteriaBasedFilterDialog(false);
         setCurrentCriteriaBasedFilterId(null);
         setActiveElement(null);
@@ -345,28 +348,28 @@ const DirectoryContent = () => {
         );
     }
 
-    function creatorCellRender(cellData) {
-        const creator = cellData.rowData[cellData.dataKey];
+    function userCellRender(cellData) {
+        const user = cellData.rowData[cellData.dataKey];
         return (
             <div className={classes.cell}>
-                <Tooltip title={creator} placement="right">
+                <Tooltip title={user} placement="right">
                     <Chip
                         className={classes.chip}
-                        label={abbreviationFromUserName(creator)}
+                        label={abbreviationFromUserName(user)}
                     />
                 </Tooltip>
             </div>
         );
     }
 
-    function createdCellRender(cellData) {
-        const created = new Date(cellData.rowData[cellData.dataKey]);
-        if (created instanceof Date && !isNaN(created)) {
-            const date = created.toLocaleDateString(intl.locale);
+    function dateCellRender(cellData) {
+        const data = new Date(cellData.rowData[cellData.dataKey]);
+        if (data instanceof Date && !isNaN(data)) {
+            const date = data.toLocaleDateString(intl.locale);
             const fullDate = new Intl.DateTimeFormat(intl.locale, {
                 dateStyle: 'long',
                 timeStyle: 'long',
-            }).format(created);
+            }).format(data);
 
             return (
                 <div className={classes.cell}>
@@ -678,7 +681,7 @@ const DirectoryContent = () => {
                                 id: 'creator',
                             }),
                             dataKey: 'owner',
-                            cellRenderer: creatorCellRender,
+                            cellRenderer: userCellRender,
                         },
                         {
                             width: 50,
@@ -686,7 +689,23 @@ const DirectoryContent = () => {
                                 id: 'created',
                             }),
                             dataKey: 'creationDate',
-                            cellRenderer: createdCellRender,
+                            cellRenderer: dateCellRender,
+                        },
+                        {
+                            width: 50,
+                            label: intl.formatMessage({
+                                id: 'modifiedBy',
+                            }),
+                            dataKey: 'lastModifiedBy',
+                            cellRenderer: userCellRender,
+                        },
+                        {
+                            width: 50,
+                            label: intl.formatMessage({
+                                id: 'modified',
+                            }),
+                            dataKey: 'lastModificationDate',
+                            cellRenderer: dateCellRender,
                         },
                     ]}
                     sortable={true}
@@ -795,7 +814,7 @@ const DirectoryContent = () => {
                 title={useIntl().formatMessage({ id: 'editFilterScript' })}
                 type={ElementType.FILTER}
             />
-            <ExplicitNamingCreationDialog
+            <ExplicitNamingFilterCreationDialog
                 id={currentExplicitNamingFilterId}
                 open={openEditExplicitNamingFilterDialog}
                 onClose={handleCloseExplicitNamingFilterDialog}
@@ -806,7 +825,7 @@ const DirectoryContent = () => {
             <CriteriaBasedFilterDialog
                 id={currentCriteriaBasedFilterId}
                 open={openCriteriaBasedFilterDialog}
-                onClose={handleCloseGenericFilterDialog}
+                onClose={handleCloseCriteriaBasedFilterDialog}
                 onError={handleError}
                 title={useIntl().formatMessage({ id: 'editFilter' })}
                 contentType={ElementType.FILTER}

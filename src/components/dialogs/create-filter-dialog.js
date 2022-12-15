@@ -29,7 +29,7 @@ import { useSelector } from 'react-redux';
 import { ElementType, FilterType } from '../../utils/elementType';
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
-import CriteriaFilterDialogContent from './criteria-filter-dialog-content';
+import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
 import ExplicitNamingFilterDialogContent from './explicit-naming-filter-dialog-content';
 import { DialogContentText } from '@mui/material';
 
@@ -454,7 +454,7 @@ const CreateFilterDialog = ({
                     </RadioGroup>
 
                     {newListType === FilterType.CRITERIA ? (
-                        <CriteriaFilterDialogContent
+                        <CriteriaBasedFilterDialogContent
                             open={open && filterType === FilterType.CRITERIA}
                             isFilterCreation={true}
                             handleFilterCreation={handleCallback}

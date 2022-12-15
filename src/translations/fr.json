@@ -7,6 +7,8 @@
     "creator": "Créé par",
     "type": "Type",
     "created": "Créé",
+    "modified": "Modifié",
+    "modifiedBy": "Modifié par",
     "private": "privé",
     "public": "public",
     "emptyDir": "Dossier vide",

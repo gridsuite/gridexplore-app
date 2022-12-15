@@ -15,7 +15,7 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import { saveFilter, saveFormContingencyList } from '../../utils/rest-api';
 import { ElementType } from '../../utils/elementType';
-import CriteriaFilterDialogContent from './criteria-filter-dialog-content';
+import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -105,7 +105,7 @@ export const CriteriaBasedFilterDialog = ({
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <CriteriaFilterDialogContent
+                <CriteriaBasedFilterDialogContent
                     id={id}
                     open={open}
                     contentType={contentType}
