@@ -523,7 +523,7 @@ const ContentContextualMenu = (props) => {
         return menuItems;
     };
 
-    const renderDialogs = () => {
+    const renderDialog = () => {
         switch (openDialog) {
             case DialogsId.RENAME:
                 return (
@@ -725,7 +725,7 @@ const ContentContextualMenu = (props) => {
                     onClose={onClose}
                 />
             )}
-            {renderDialogs()}
+            {renderDialog()}
 
             <iframe
                 id={DownloadIframe}
