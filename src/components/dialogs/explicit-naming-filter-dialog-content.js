@@ -54,6 +54,7 @@ export const ExplicitNamingFilterRow = ({
     handleSetValue,
     handleSelection,
     selectedIds,
+    tableLength,
 }) => {
     const intl = useIntl();
     const classes = useStyles();
@@ -77,19 +78,23 @@ export const ExplicitNamingFilterRow = ({
                         sx={{ width: '100%', height: '50%' }}
                     >
                         <Grid xs={1} item>
-                            <IconButton
-                                {...provided.dragHandleProps}
-                                key={id + index + 'drag'}
-                            >
-                                <Tooltip
-                                    title={intl.formatMessage({
-                                        id: 'dragAndDrop',
-                                    })}
-                                    placement="right"
+                            {tableLength !== 1 ? (
+                                <IconButton
+                                    {...provided.dragHandleProps}
+                                    key={id + index + 'drag'}
                                 >
-                                    <DragIndicatorIcon spacing={0} />
-                                </Tooltip>
-                            </IconButton>
+                                    <Tooltip
+                                        title={intl.formatMessage({
+                                            id: 'dragAndDrop',
+                                        })}
+                                        placement="right"
+                                    >
+                                        <DragIndicatorIcon spacing={0} />
+                                    </Tooltip>
+                                </IconButton>
+                            ) : (
+                                <></>
+                            )}
                         </Grid>
                         <Grid xs={1} item>
                             <Checkbox

@@ -537,6 +537,7 @@ export const useEquipmentTableValues = ({
                                         selectedIds={selectedIds}
                                         handleSelection={toggleSelection}
                                         key={name + index}
+                                        tableLength={values.length}
                                     />
                                 ))}
                                 {provided.placeholder}
