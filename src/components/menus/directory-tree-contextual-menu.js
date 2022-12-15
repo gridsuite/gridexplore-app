@@ -202,6 +202,130 @@ const DirectoryTreeContextualMenu = (props) => {
         return menuItems;
     };
 
+    const renderDialog = () => {
+        switch (openDialog) {
+            case DialogsId.ADD_NEW_STUDY:
+                return (
+                    <CreateStudyForm open={true} onClose={handleCloseDialog} />
+                );
+            case DialogsId.ADD_NEW_CONTINGENCY_LIST:
+                return (
+                    <CreateContingencyListDialog
+                        open={true}
+                        onClose={handleCloseDialog}
+                    />
+                );
+            case DialogsId.ADD_DIRECTORY:
+                return (
+                    <CreateDirectoryDialog
+                        open={true}
+                        onClick={(elementName, isPrivate) =>
+                            insertDirectoryCB(
+                                elementName,
+                                directory?.elementUuid,
+                                isPrivate,
+                                userId
+                            )
+                        }
+                        onClose={handleCloseDialog}
+                        title={intl.formatMessage({
+                            id: 'insertNewDirectoryDialogTitle',
+                        })}
+                        parentDirectory={directory?.elementUuid}
+                        error={insertDirectoryState?.errorMessage}
+                    />
+                );
+            case DialogsId.ADD_ROOT_DIRECTORY:
+                return (
+                    <CreateDirectoryDialog
+                        open={true}
+                        onClick={(elementName, isPrivate) =>
+                            insertRootDirectoryCB(
+                                elementName,
+                                isPrivate,
+                                userId
+                            )
+                        }
+                        onClose={handleCloseDialog}
+                        title={intl.formatMessage({
+                            id: 'insertNewRootDirectoryDialogTitle',
+                        })}
+                        error={insertRootDirectoryState?.errorMessage}
+                    />
+                );
+            case DialogsId.RENAME_DIRECTORY:
+                return (
+                    <RenameDialog
+                        message={'renameElementMsg'}
+                        currentName={directory?.elementName}
+                        open={true}
+                        onClick={(newName) =>
+                            renameCB(directory?.elementUuid, newName)
+                        }
+                        onClose={handleCloseDialog}
+                        title={intl.formatMessage({
+                            id: 'renameDirectoryDialogTitle',
+                        })}
+                        error={renameState.errorMessage}
+                        type={ElementType.DIRECTORY}
+                        parentDirectory={directory?.parentUuid}
+                    />
+                );
+            case DialogsId.DELETE_DIRECTORY:
+                return (
+                    <DeleteDialog
+                        items={directory ? [directory] : []}
+                        multipleDeleteFormatMessageId={
+                            'deleteMultipleDirectoriesDialogMessage'
+                        }
+                        simpleDeleteFormatMessageId={
+                            'deleteDirectoryDialogMessage'
+                        }
+                        open={true}
+                        onClick={() => deleteCB(directory?.elementUuid)}
+                        onClose={handleCloseDialog}
+                        error={deleteState.errorMessage}
+                    />
+                );
+            case DialogsId.ACCESS_RIGHTS:
+                return (
+                    <AccessRightsDialog
+                        isPrivate={directory?.accessRights?.isPrivate}
+                        open={true}
+                        onClick={(isPrivate) =>
+                            updateAccessRightsCB(
+                                directory?.elementUuid,
+                                isPrivate
+                            )
+                        }
+                        onClose={handleCloseDialog}
+                        title={intl.formatMessage({
+                            id: 'accessRights',
+                        })}
+                        error={updateAccessRightsState.errorMessage}
+                    />
+                );
+            case DialogsId.ADD_NEW_FILTER:
+                return (
+                    <CreateFilterDialog
+                        open={true}
+                        onClose={handleCloseDialog}
+                        title={<FormattedMessage id="createNewFilter" />}
+                        inputLabelText={<FormattedMessage id="nameProperty" />}
+                        customTextValidationBtn={
+                            <FormattedMessage id="validate" />
+                        }
+                        customTextCancelBtn={<FormattedMessage id="cancel" />}
+                    />
+                );
+            case DialogsId.ADD_NEW_CASE:
+                return (
+                    <CreateCaseDialog open={true} onClose={handleCloseDialog} />
+                );
+            default:
+                return null;
+        }
+    };
     return (
         <>
             {open && (
@@ -212,92 +336,7 @@ const DirectoryTreeContextualMenu = (props) => {
                     onClose={onClose}
                 />
             )}
-            {/** Dialogs **/}
-            <CreateStudyForm
-                open={openDialog === DialogsId.ADD_NEW_STUDY}
-                onClose={handleCloseDialog}
-            />
-            <CreateContingencyListDialog
-                open={openDialog === DialogsId.ADD_NEW_CONTINGENCY_LIST}
-                onClose={handleCloseDialog}
-            />
-            <CreateDirectoryDialog
-                open={openDialog === DialogsId.ADD_DIRECTORY}
-                onClick={(elementName, isPrivate) =>
-                    insertDirectoryCB(
-                        elementName,
-                        directory?.elementUuid,
-                        isPrivate,
-                        userId
-                    )
-                }
-                onClose={handleCloseDialog}
-                title={intl.formatMessage({
-                    id: 'insertNewDirectoryDialogTitle',
-                })}
-                parentDirectory={directory?.elementUuid}
-                error={insertDirectoryState?.errorMessage}
-            />
-            <CreateDirectoryDialog
-                open={openDialog === DialogsId.ADD_ROOT_DIRECTORY}
-                onClick={(elementName, isPrivate) =>
-                    insertRootDirectoryCB(elementName, isPrivate, userId)
-                }
-                onClose={handleCloseDialog}
-                title={intl.formatMessage({
-                    id: 'insertNewRootDirectoryDialogTitle',
-                })}
-                error={insertRootDirectoryState?.errorMessage}
-            />
-
-            <RenameDialog
-                message={'renameElementMsg'}
-                currentName={directory?.elementName}
-                open={openDialog === DialogsId.RENAME_DIRECTORY}
-                onClick={(newName) => renameCB(directory?.elementUuid, newName)}
-                onClose={handleCloseDialog}
-                title={intl.formatMessage({
-                    id: 'renameDirectoryDialogTitle',
-                })}
-                error={renameState.errorMessage}
-                type={ElementType.DIRECTORY}
-                parentDirectory={directory?.parentUuid}
-            />
-            <DeleteDialog
-                items={directory ? [directory] : []}
-                multipleDeleteFormatMessageId={
-                    'deleteMultipleDirectoriesDialogMessage'
-                }
-                simpleDeleteFormatMessageId={'deleteDirectoryDialogMessage'}
-                open={openDialog === DialogsId.DELETE_DIRECTORY}
-                onClick={() => deleteCB(directory?.elementUuid)}
-                onClose={handleCloseDialog}
-                error={deleteState.errorMessage}
-            />
-            <AccessRightsDialog
-                isPrivate={directory?.accessRights?.isPrivate}
-                open={openDialog === DialogsId.ACCESS_RIGHTS}
-                onClick={(isPrivate) =>
-                    updateAccessRightsCB(directory?.elementUuid, isPrivate)
-                }
-                onClose={handleCloseDialog}
-                title={intl.formatMessage({
-                    id: 'accessRights',
-                })}
-                error={updateAccessRightsState.errorMessage}
-            />
-            <CreateFilterDialog
-                open={openDialog === DialogsId.ADD_NEW_FILTER}
-                onClose={handleCloseDialog}
-                title={<FormattedMessage id="createNewFilter" />}
-                inputLabelText={<FormattedMessage id="nameProperty" />}
-                customTextValidationBtn={<FormattedMessage id="validate" />}
-                customTextCancelBtn={<FormattedMessage id="cancel" />}
-            />
-            <CreateCaseDialog
-                open={openDialog === DialogsId.ADD_NEW_CASE}
-                onClose={handleCloseDialog}
-            />
+            {renderDialog()}
         </>
     );
 };

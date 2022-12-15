@@ -168,40 +168,56 @@ const ContentToolbar = (props) => {
         setItems(itemsCopy);
     }, [allowsMove, allowsDelete, selectedElements]);
 
+    const renderDialog = () => {
+        switch (openDialog) {
+            case DialogsId.DELETE:
+                return (
+                    <DeleteDialog
+                        open={true}
+                        onClose={handleCloseDialog}
+                        onClick={() =>
+                            deleteCB(
+                                selectedElements.map((e) => {
+                                    return [e.elementUuid];
+                                })
+                            )
+                        }
+                        items={selectedElements}
+                        multipleDeleteFormatMessageId={
+                            'deleteMultipleItemsDialogMessage'
+                        }
+                        simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
+                        error={multipleDeleteError}
+                    />
+                );
+            case DialogsId.MOVE:
+                return (
+                    <MoveDialog
+                        open={true}
+                        onClose={(selectedDir) => {
+                            if (selectedDir.length > 0) {
+                                moveCB(
+                                    selectedElements.map((element) => {
+                                        return [
+                                            element.elementUuid,
+                                            selectedDir[0].id,
+                                        ];
+                                    })
+                                );
+                            }
+                            handleCloseDialog();
+                        }}
+                        items={selectedElements}
+                    />
+                );
+            default:
+                return null;
+        }
+    };
     return (
         <>
             <CommonToolbar {...others} items={items} />
-            <DeleteDialog
-                open={openDialog === DialogsId.DELETE}
-                onClose={handleCloseDialog}
-                onClick={() =>
-                    deleteCB(
-                        selectedElements.map((e) => {
-                            return [e.elementUuid];
-                        })
-                    )
-                }
-                items={selectedElements}
-                multipleDeleteFormatMessageId={
-                    'deleteMultipleItemsDialogMessage'
-                }
-                simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
-                error={multipleDeleteError}
-            />
-            <MoveDialog
-                open={openDialog === DialogsId.MOVE}
-                onClose={(selectedDir) => {
-                    if (selectedDir.length > 0) {
-                        moveCB(
-                            selectedElements.map((element) => {
-                                return [element.elementUuid, selectedDir[0].id];
-                            })
-                        );
-                    }
-                    handleCloseDialog();
-                }}
-                items={selectedElements}
-            />
+            {renderDialog()}
         </>
     );
 };

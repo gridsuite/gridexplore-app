@@ -522,6 +522,199 @@ const ContentContextualMenu = (props) => {
 
         return menuItems;
     };
+
+    const renderDialog = () => {
+        switch (openDialog) {
+            case DialogsId.RENAME:
+                return (
+                    <RenameDialog
+                        open={true}
+                        onClose={handleCloseDialog}
+                        onClick={(elementName) =>
+                            renameCB(activeElement?.elementUuid, elementName)
+                        }
+                        title={intl.formatMessage({ id: 'renameElement' })}
+                        message={'renameElementMsg'}
+                        currentName={
+                            activeElement ? activeElement.elementName : ''
+                        }
+                        type={activeElement ? activeElement.type : ''}
+                        error={renameState.errorMessage}
+                    />
+                );
+            case DialogsId.DELETE:
+                return (
+                    <DeleteDialog
+                        open={true}
+                        onClose={handleCloseDialog}
+                        onClick={() =>
+                            deleteCB(
+                                selectedElements.map((e) => {
+                                    return [e.elementUuid];
+                                })
+                            )
+                        }
+                        items={selectedElements}
+                        multipleDeleteFormatMessageId={
+                            'deleteMultipleItemsDialogMessage'
+                        }
+                        simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
+                        error={multipleDeleteError}
+                    />
+                );
+            case DialogsId.MOVE:
+                return (
+                    <MoveDialog
+                        open={true}
+                        onClose={(selectedDir) => {
+                            if (selectedDir.length > 0) {
+                                moveCB(
+                                    selectedElements.map((element) => {
+                                        return [
+                                            element.elementUuid,
+                                            selectedDir[0].id,
+                                        ];
+                                    })
+                                );
+                            }
+                            handleCloseDialog();
+                        }}
+                        items={selectedElements}
+                    />
+                );
+            case DialogsId.FILTERS_CONTINGENCY:
+                return (
+                    <CriteriaBasedFilterDialog
+                        id={getActiveContingencyFormId()}
+                        open={true}
+                        onClose={handleCloseDialog}
+                        onError={handleLastError}
+                        title={intl.formatMessage({
+                            id: 'editContingencyList',
+                        })}
+                        contentType={ElementType.CONTINGENCY_LIST}
+                    />
+                );
+            case DialogsId.SCRIPT_CONTINGENCY:
+                return (
+                    <ScriptDialog
+                        id={getActiveContingencyScriptId()}
+                        open={true}
+                        onClose={handleCloseDialog}
+                        onError={handleLastError}
+                        title={intl.formatMessage({
+                            id: 'editContingencyList',
+                        })}
+                        type={ElementType.CONTINGENCY_LIST}
+                    />
+                );
+            case DialogsId.SCRIPT:
+                return (
+                    <ScriptDialog
+                        id={getActiveFilterScriptId()}
+                        open={true}
+                        onClose={handleCloseDialog}
+                        onError={handleLastError}
+                        title={intl.formatMessage({
+                            id: 'editFilterScript',
+                        })}
+                        type={ElementType.FILTER}
+                    />
+                );
+            case DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY:
+                return (
+                    <ReplaceWithScriptDialog
+                        id={activeElement ? activeElement.elementUuid : ''}
+                        open={true}
+                        onClose={handleCloseDialog}
+                        onClick={(id) =>
+                            replaceFormContingencyListWithScriptCB(
+                                id,
+                                selectedDirectory?.elementUuid
+                            )
+                        }
+                        onError={handleLastError}
+                        title={intl.formatMessage({ id: 'replaceList' })}
+                    />
+                );
+            case DialogsId.COPY_FILTER_TO_SCRIPT_CONTINGENCY:
+                return (
+                    <CopyToScriptDialog
+                        id={activeElement ? activeElement.elementUuid : ''}
+                        open={true}
+                        onClose={handleCloseDialog}
+                        onClick={(id, newName) =>
+                            newScriptFromFiltersContingencyListCB(
+                                id,
+                                newName,
+                                selectedDirectory?.elementUuid
+                            )
+                        }
+                        currentName={
+                            activeElement ? activeElement.elementName : ''
+                        }
+                        title={intl.formatMessage({
+                            id: 'copyToScriptList',
+                        })}
+                    />
+                );
+            case DialogsId.REPLACE_FILTER_BY_SCRIPT:
+                return (
+                    <ReplaceWithScriptDialog
+                        id={activeElement ? activeElement.elementUuid : ''}
+                        open={true}
+                        onClose={handleCloseDialog}
+                        onClick={(id) =>
+                            FiltersReplaceWithScriptCB(
+                                id,
+                                selectedDirectory?.elementUuid
+                            )
+                        }
+                        title={intl.formatMessage({ id: 'replaceList' })}
+                    />
+                );
+            case DialogsId.COPY_FILTER_TO_SCRIPT:
+                return (
+                    <CopyToScriptDialog
+                        id={activeElement ? activeElement.elementUuid : ''}
+                        open={true}
+                        onClose={handleCloseDialog}
+                        onClick={(id, newName) =>
+                            newScriptFromFilterCB(
+                                id,
+                                newName,
+                                selectedDirectory?.elementUuid
+                            )
+                        }
+                        currentName={
+                            activeElement ? activeElement.elementName : ''
+                        }
+                        title={intl.formatMessage({ id: 'copyToScriptList' })}
+                    />
+                );
+            case DialogsId.GENERIC_FILTER:
+                return (
+                    <CriteriaBasedFilterDialog
+                        id={getActiveFilterFormId()}
+                        open={true}
+                        onClose={handleCloseDialog}
+                        onError={handleLastError}
+                        title={intl.formatMessage({ id: 'editFilter' })}
+                        contentType={ElementType.FILTER}
+                    />
+                );
+            case DialogsId.ADD_NEW_STUDY_FROM_CASE:
+                return (
+                    <CreateStudyDialog
+                        open={true}
+                        onClose={handleCloseDialog}
+                        providedCase={activeElement}
+                    />
+                );
+            default:
+                return null;
+        }
+    };
     return (
         <>
             {open && (
@@ -532,146 +725,7 @@ const ContentContextualMenu = (props) => {
                     onClose={onClose}
                 />
             )}
-            {/** Dialogs **/}
-            <RenameDialog
-                open={openDialog === DialogsId.RENAME}
-                onClose={handleCloseDialog}
-                onClick={(elementName) =>
-                    renameCB(activeElement?.elementUuid, elementName)
-                }
-                title={useIntl().formatMessage({ id: 'renameElement' })}
-                message={'renameElementMsg'}
-                currentName={activeElement ? activeElement.elementName : ''}
-                type={activeElement ? activeElement.type : ''}
-                error={renameState.errorMessage}
-            />
-            <DeleteDialog
-                open={openDialog === DialogsId.DELETE}
-                onClose={handleCloseDialog}
-                onClick={() =>
-                    deleteCB(
-                        selectedElements.map((e) => {
-                            return [e.elementUuid];
-                        })
-                    )
-                }
-                items={selectedElements}
-                multipleDeleteFormatMessageId={
-                    'deleteMultipleItemsDialogMessage'
-                }
-                simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
-                error={multipleDeleteError}
-            />
-            <MoveDialog
-                open={openDialog === DialogsId.MOVE}
-                onClose={(selectedDir) => {
-                    if (selectedDir.length > 0) {
-                        moveCB(
-                            selectedElements.map((element) => {
-                                return [element.elementUuid, selectedDir[0].id];
-                            })
-                        );
-                    }
-                    handleCloseDialog();
-                }}
-                items={selectedElements}
-            />
-            <CriteriaBasedFilterDialog
-                id={getActiveContingencyFormId()}
-                open={openDialog === DialogsId.FILTERS_CONTINGENCY}
-                onClose={handleCloseDialog}
-                onError={handleLastError}
-                title={useIntl().formatMessage({ id: 'editContingencyList' })}
-                contentType={ElementType.CONTINGENCY_LIST}
-            />
-            <ScriptDialog
-                id={getActiveContingencyScriptId()}
-                open={openDialog === DialogsId.SCRIPT_CONTINGENCY}
-                onClose={handleCloseDialog}
-                onError={handleLastError}
-                title={useIntl().formatMessage({ id: 'editContingencyList' })}
-                type={ElementType.CONTINGENCY_LIST}
-            />
-            <ScriptDialog
-                id={getActiveFilterScriptId()}
-                open={openDialog === DialogsId.SCRIPT}
-                onClose={handleCloseDialog}
-                onError={handleLastError}
-                title={useIntl().formatMessage({ id: 'editFilterScript' })}
-                type={ElementType.FILTER}
-            />
-            <ReplaceWithScriptDialog
-                id={activeElement ? activeElement.elementUuid : ''}
-                open={
-                    openDialog ===
-                    DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY
-                }
-                onClose={handleCloseDialog}
-                onClick={(id) =>
-                    replaceFormContingencyListWithScriptCB(
-                        id,
-                        selectedDirectory?.elementUuid
-                    )
-                }
-                onError={handleLastError}
-                title={useIntl().formatMessage({ id: 'replaceList' })}
-            />
-            <CopyToScriptDialog
-                id={activeElement ? activeElement.elementUuid : ''}
-                open={
-                    openDialog === DialogsId.COPY_FILTER_TO_SCRIPT_CONTINGENCY
-                }
-                onClose={handleCloseDialog}
-                onClick={(id, newName) =>
-                    newScriptFromFiltersContingencyListCB(
-                        id,
-                        newName,
-                        selectedDirectory?.elementUuid
-                    )
-                }
-                currentName={activeElement ? activeElement.elementName : ''}
-                title={useIntl().formatMessage({ id: 'copyToScriptList' })}
-            />
-            <ReplaceWithScriptDialog
-                id={activeElement ? activeElement.elementUuid : ''}
-                open={openDialog === DialogsId.REPLACE_FILTER_BY_SCRIPT}
-                onClose={handleCloseDialog}
-                onClick={(id) =>
-                    FiltersReplaceWithScriptCB(
-                        id,
-                        selectedDirectory?.elementUuid
-                    )
-                }
-                title={useIntl().formatMessage({ id: 'replaceList' })}
-            />
-            <CopyToScriptDialog
-                id={activeElement ? activeElement.elementUuid : ''}
-                open={openDialog === DialogsId.COPY_FILTER_TO_SCRIPT}
-                onClose={handleCloseDialog}
-                onClick={(id, newName) =>
-                    newScriptFromFilterCB(
-                        id,
-                        newName,
-                        selectedDirectory?.elementUuid
-                    )
-                }
-                currentName={activeElement ? activeElement.elementName : ''}
-                title={useIntl().formatMessage({ id: 'copyToScriptList' })}
-            />
-            <CriteriaBasedFilterDialog
-                id={getActiveFilterFormId()}
-                open={openDialog === DialogsId.GENERIC_FILTER}
-                onClose={handleCloseDialog}
-                onError={handleLastError}
-                title={useIntl().formatMessage({ id: 'editFilter' })}
-                contentType={ElementType.FILTER}
-            />
-
-            <CreateStudyDialog
-                open={openDialog === DialogsId.ADD_NEW_STUDY_FROM_CASE}
-                onClose={handleCloseDialog}
-                providedCase={activeElement}
-            />
+            {renderDialog()}
 
             <iframe
                 id={DownloadIframe}
