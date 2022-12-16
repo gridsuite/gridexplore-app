@@ -297,7 +297,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             setUploadingFileInProgress(true);
             createCaseWithoutDirectoryElementCreation(selectedFile)
                 .then((caseUuid) => {
-                    setUploadingFileInProgress(false);
                     setTempCaseUuid(caseUuid);
                     getCaseImportParams(caseUuid, setFormatWithParameters);
                     setCreateStudyErr('');
@@ -305,9 +304,11 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 .catch((error) => {
                     setTempCaseUuid(null);
                     handleFileUploadError(error, setCreateStudyErr);
-                    setUploadingFileInProgress(false);
                     dispatch(selectFile(null));
                     setFormatWithParameters([]);
+                })
+                .finally(() => {
+                    setUploadingFileInProgress(false);
                 });
         }
     }, [

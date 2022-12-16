@@ -61,11 +61,13 @@ export const useTextValue = ({
     ...formProps
 }) => {
     const [value, setValue] = useState(defaultValue);
+    const [touched, setTouched] = useState(false);
 
     const classes = useStyles();
 
     const handleChangeValue = useCallback((event) => {
         setValue(event.target.value);
+        setTouched(true);
     }, []);
 
     const field = useMemo(() => {
@@ -97,7 +99,7 @@ export const useTextValue = ({
 
     useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
 
-    return [value, field, setValue];
+    return [value, field, setValue, touched];
 };
 
 export const useFileValue = ({
@@ -174,11 +176,14 @@ export const useNameField = ({
     );
 
     const updateValidity = useCallback(
-        (name) => {
-            if (name.replace(/ /g, '') === '') {
+        (name, touched) => {
+            const nameFormated = name.replace(/ /g, '');
+            if (nameFormated === '' && touched) {
                 setError(intl.formatMessage({ id: 'nameEmpty' }));
                 setChecking(false);
-            } else if (name === props.defaultValue) {
+                return;
+            }
+            if (nameFormated !== '' && name === props.defaultValue) {
                 setError(
                     alreadyExistingErrorMessage
                         ? alreadyExistingErrorMessage
@@ -187,7 +192,8 @@ export const useNameField = ({
                           })
                 );
                 setChecking(false);
-            } else {
+            }
+            if (nameFormated !== '') {
                 //If the name is not only white spaces and not defaultValue
                 doesElementExist(name)
                     .then((data) => {
@@ -234,7 +240,7 @@ export const useNameField = ({
             );
     }, [checking, error]);
 
-    const [name, field, setName] = useTextValue({
+    const [name, field, setName, touched] = useTextValue({
         ...props,
         triggerReset,
         error: !!error,
@@ -251,8 +257,8 @@ export const useNameField = ({
         clearTimeout(timer.current);
         setChecking(true);
         setError(undefined);
-        timer.current = setTimeout(() => updateValidity(name), 700);
-    }, [active, props.defaultValue, name, updateValidity]);
+        timer.current = setTimeout(() => updateValidity(name, touched), 700);
+    }, [active, props.defaultValue, name, updateValidity, touched]);
 
     useEffect(() => {
         setError(undefined);
