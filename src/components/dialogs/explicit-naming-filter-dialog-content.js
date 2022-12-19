@@ -230,6 +230,12 @@ const ExplicitNamingFilterDialogContent = ({
         }
     };
 
+    const handleKeyPressed = (event) => {
+        if (open && event.key === 'Enter') {
+            handlePopupConfirmation();
+        }
+    };
+
     const handlePopupConfirmation = () => {
         setOpenConfirmationPopup(false);
         setIsEdited(false);
@@ -273,7 +279,7 @@ const ExplicitNamingFilterDialogContent = ({
                 <Dialog
                     open={isConfirmationPopupOpen}
                     aria-labelledby="dialog-title-change-equipment-type"
-                    onKeyPress={handlePopupConfirmation}
+                    onKeyPress={handleKeyPressed}
                 >
                     <DialogTitle id={'dialog-title-change-equipment-type'}>
                         {'Confirmation'}
