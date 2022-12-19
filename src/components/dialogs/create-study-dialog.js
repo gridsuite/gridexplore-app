@@ -291,7 +291,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         setValue: setStudyName,
         selectedFileOk,
         createStudyErr,
-        fileChekedCase: fileCheckedCase,
+        fileCheckedCase,
         touched,
     });
 

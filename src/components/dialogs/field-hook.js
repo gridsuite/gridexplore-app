@@ -293,7 +293,7 @@ export const usePrefillNameField = ({
     setValue,
     selectedFileOk,
     createStudyErr,
-    fileChekedCase,
+    fileCheckedCase,
     touched,
 }) => {
     useEffect(() => {
@@ -303,7 +303,7 @@ export const usePrefillNameField = ({
                 nameRef.current.trim().length === 0 &&
                 selectedFile != null &&
                 selectedFileOk &&
-                fileChekedCase &&
+                fileCheckedCase &&
                 createStudyErr === ''
             ) {
                 setValue(
@@ -319,7 +319,7 @@ export const usePrefillNameField = ({
         setValue,
         touched,
         selectedFileOk,
-        fileChekedCase,
+        fileCheckedCase,
         createStudyErr,
     ]);
 };
