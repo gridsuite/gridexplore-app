@@ -358,8 +358,13 @@ const CreateFilterDialog = ({
     };
 
     const onFilterTypeChange = (event) => {
-        setOpenConfirmationPopup(true);
-        setChoosedFilterType(event.target.value);
+        if (equipmentType !== null) {
+            setOpenConfirmationPopup(true);
+            setChoosedFilterType(event.target.value);
+        } else {
+            handlePopupConfirmation();
+            setNewListType(event.target.value);
+        }
     };
 
     const handlePopupConfirmation = () => {

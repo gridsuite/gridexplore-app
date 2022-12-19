@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useEquipmentTableValues } from './field-hook';
 import makeStyles from '@mui/styles/makeStyles';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { getFilterById } from '../../utils/rest-api';
 
 import IconButton from '@mui/material/IconButton';
@@ -18,7 +18,18 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 import { Draggable } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
-import { Alert, Checkbox, Input, Tooltip } from '@mui/material';
+import {
+    Alert,
+    Button,
+    Checkbox,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Input,
+    Tooltip,
+} from '@mui/material';
 import { filterEquipmentDefinition } from '../../utils/equipment-types';
 import { FilterTypeSelection } from './criteria-based-filter-dialog-content';
 
@@ -43,6 +54,7 @@ export const ExplicitNamingFilterRow = ({
     handleSetValue,
     handleSelection,
     selectedIds,
+    tableLength,
 }) => {
     const intl = useIntl();
     const classes = useStyles();
@@ -57,6 +69,7 @@ export const ExplicitNamingFilterRow = ({
                     style={{ width: '100%' }}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
+                    {...provided.dragHandleProps}
                 >
                     <Grid
                         container
@@ -66,19 +79,23 @@ export const ExplicitNamingFilterRow = ({
                         sx={{ width: '100%', height: '50%' }}
                     >
                         <Grid xs={1} item>
-                            <IconButton
-                                {...provided.dragHandleProps}
-                                key={id + index + 'drag'}
-                            >
-                                <Tooltip
-                                    title={intl.formatMessage({
-                                        id: 'dragAndDrop',
-                                    })}
-                                    placement="right"
+                            {tableLength !== 1 ? (
+                                <IconButton
+                                    {...provided.dragHandleProps}
+                                    key={id + index + 'drag'}
                                 >
-                                    <DragIndicatorIcon spacing={0} />
-                                </Tooltip>
-                            </IconButton>
+                                    <Tooltip
+                                        title={intl.formatMessage({
+                                            id: 'dragAndDrop',
+                                        })}
+                                        placement="right"
+                                    >
+                                        <DragIndicatorIcon spacing={0} />
+                                    </Tooltip>
+                                </IconButton>
+                            ) : (
+                                <></>
+                            )}
                         </Grid>
                         <Grid xs={1} item>
                             <Checkbox
@@ -88,6 +105,8 @@ export const ExplicitNamingFilterRow = ({
                             ></Checkbox>
                         </Grid>
                         <Grid
+                            container
+                            alignItems="center"
                             xs={getXs()}
                             item
                             key={id + index + 'equipmentID'}
@@ -111,6 +130,8 @@ export const ExplicitNamingFilterRow = ({
                         </Grid>
                         {isGeneratorOrLoad && (
                             <Grid
+                                container
+                                alignItems="center"
                                 xs={3}
                                 item
                                 key={id + index + 'dKey'}
@@ -162,7 +183,9 @@ const ExplicitNamingFilterDialogContent = ({
     const [isEdited, setIsEdited] = useState(false);
     const fetchFilter = useRef(null);
     fetchFilter.current = open && !isFilterCreation;
-
+    const intl = useIntl();
+    const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
+    const [newEquipmentType, setNewEquipmentType] = useState(null);
     useEffect(() => {
         if (id && fetchFilter.current) {
             getFilterById(id)
@@ -174,7 +197,7 @@ const ExplicitNamingFilterDialogContent = ({
         }
     }, [id]);
 
-    const [tableValues, tableValuesField] = useEquipmentTableValues({
+    const [tableValues, tableValuesField, isDragged] = useEquipmentTableValues({
         id: id ?? 'editFilterTable',
         name: name,
         tableHeadersIds: isGeneratorOrLoad
@@ -194,8 +217,23 @@ const ExplicitNamingFilterDialogContent = ({
         );
     }, [equipmentType]);
 
-    const handleEquipmentTypeChange = (type) => {
-        setEquipmentType(type);
+    const handleEquipmentTypeChange = (type, isTableEdited) => {
+        if (isTableEdited) {
+            setNewEquipmentType(type);
+            setOpenConfirmationPopup(true);
+        } else {
+            setEquipmentType(type);
+            setDefaultValues({
+                filterEquipmentsAttributes: [],
+                equipmentType: equipmentType,
+            });
+        }
+    };
+
+    const handlePopupConfirmation = () => {
+        setOpenConfirmationPopup(false);
+        setIsEdited(false);
+        setEquipmentType(newEquipmentType);
         setDefaultValues({
             filterEquipmentsAttributes: [],
             equipmentType: equipmentType,
@@ -210,12 +248,14 @@ const ExplicitNamingFilterDialogContent = ({
             equipmentType,
             name,
             id,
-            isEdited
+            isEdited,
+            isDragged
         );
     }, [
         equipmentType,
         handleFilterCreation,
         id,
+        isDragged,
         isEdited,
         isFilterCreation,
         isGeneratorOrLoad,
@@ -227,6 +267,38 @@ const ExplicitNamingFilterDialogContent = ({
         sendData();
     }, [sendData]);
 
+    const renderChangeEquipmentTypePopup = () => {
+        return (
+            <div>
+                <Dialog
+                    open={isConfirmationPopupOpen}
+                    aria-labelledby="dialog-title-change-equipment-type"
+                    onKeyPress={handlePopupConfirmation}
+                >
+                    <DialogTitle id={'dialog-title-change-equipment-type'}>
+                        {'Confirmation'}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {intl.formatMessage({ id: 'changeTypeMessage' })}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpenConfirmationPopup(false)}>
+                            <FormattedMessage id="cancel" />
+                        </Button>
+                        <Button
+                            onClick={handlePopupConfirmation}
+                            variant="outlined"
+                        >
+                            <FormattedMessage id="validate" />
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        );
+    };
+
     return (
         <div>
             <Grid container spacing={2}>
@@ -236,6 +308,7 @@ const ExplicitNamingFilterDialogContent = ({
                         disabled={false}
                         onChange={handleEquipmentTypeChange}
                         equipmentDefinition={filterEquipmentDefinition}
+                        isEdited={isEdited}
                     />
                 </Grid>
                 <Grid item xs={12} />
@@ -244,6 +317,7 @@ const ExplicitNamingFilterDialogContent = ({
             {createFilterErr !== '' && (
                 <Alert severity="error">{createFilterErr}</Alert>
             )}
+            {renderChangeEquipmentTypePopup()}
         </div>
     );
 };

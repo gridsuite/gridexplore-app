@@ -5,9 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useRef, useState } from 'react';
-import { MenuItem, Grid, Select, FormControl, InputLabel } from '@mui/material';
+import {
+    MenuItem,
+    Grid,
+    Select,
+    FormControl,
+    InputLabel,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    Button,
+} from '@mui/material';
 import { getContingencyList, getFilterById } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
@@ -40,8 +52,9 @@ function generateDefaultValue(val, originalValue) {
     };
 }
 
-const SingleFilter = ({ filter, definition, onChange }) => {
+const SingleFilter = ({ filter, definition, onChange, setIsFormEdited }) => {
     const localChange = (newVal) => {
+        //setIsFormEdited(true);
         filter.value = newVal;
         onChange();
     };
@@ -57,6 +70,7 @@ export const FilterTypeSelection = ({
     type,
     onChange,
     equipmentDefinition,
+    isEdited,
 }) => {
     return (
         <>
@@ -68,7 +82,7 @@ export const FilterTypeSelection = ({
                 <Select
                     label={<FormattedMessage id={'equipmentType'} />}
                     value={type === null ? '' : type}
-                    onChange={(e) => onChange(e.target.value)}
+                    onChange={(e) => onChange(e.target.value, isEdited)}
                 >
                     {Object.entries(equipmentDefinition).map(([key, value]) => (
                         <MenuItem key={key} value={key}>
@@ -89,16 +103,19 @@ export const CriteriaBasedFilterDialogContent = ({
     handleEquipmentTypeChange,
 }) => {
     const [initialFilter, setInitialFilter] = useState(null);
-    const [filterType, setFilterType] = useState(null);
+    const [equipmentType, setEquipmentType] = useState(null);
     const [currentFormEdit, setCurrentFormEdit] = useState({
-        type: { value: filterType },
+        type: { value: equipmentType },
     });
     const currentFilter = useRef(null);
     const currentFilterToSend = useRef({});
     const { snackError } = useSnackMessage();
     const openRef = useRef(null);
     openRef.current = open;
-
+    const intl = useIntl();
+    const [isFormEdited, setIsFormEdited] = useState(false);
+    const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
+    const [newEquipmentType, setNewEquipmentType] = useState(null);
     function getEquipmentsDefinition() {
         return contentType === ElementType.FILTER
             ? filterEquipmentDefinition
@@ -111,7 +128,7 @@ export const CriteriaBasedFilterDialogContent = ({
                 getFilterById(id)
                     .then((response) => {
                         setInitialFilter(response);
-                        setFilterType(
+                        setEquipmentType(
                             response.equipmentFilterForm.equipmentType
                         );
                         setCurrentFormEdit({
@@ -131,7 +148,7 @@ export const CriteriaBasedFilterDialogContent = ({
                 getContingencyList(ContingencyListType.FORM, id)
                     .then((response) => {
                         setInitialFilter(response);
-                        setFilterType(response.equipmentType);
+                        setEquipmentType(response.equipmentType);
                         setCurrentFormEdit({
                             equipmentType: {
                                 value: response.equipmentType,
@@ -151,7 +168,7 @@ export const CriteriaBasedFilterDialogContent = ({
             });
             currentFilter.current = null;
             setInitialFilter(null);
-            setFilterType(null);
+            setEquipmentType(null);
         }
     }, [id, contentType, snackError]);
 
@@ -197,11 +214,58 @@ export const CriteriaBasedFilterDialogContent = ({
 
     const changeFilterType = (newType) => {
         // TODO: should reset all fields in currentFormEdit
+        if (isFormEdited) {
+            setOpenConfirmationPopup(true);
+            setNewEquipmentType(newType);
+        } else {
+            handleSelectionEquipmentTypeChange(newType);
+        }
+    };
+
+    const handleSelectionEquipmentTypeChange = (newType) => {
+        setIsFormEdited(false);
         currentFormEdit.equipmentType = { value: newType };
-        setFilterType(newType);
+        setEquipmentType(newType);
         if (id == null && contentType === ElementType.FILTER)
             handleEquipmentTypeChange(newType);
         editDone();
+    };
+
+    const handlePopupConfirmation = () => {
+        setOpenConfirmationPopup(false);
+        handleSelectionEquipmentTypeChange(newEquipmentType);
+    };
+
+    const renderChangeEquipmentTypePopup = () => {
+        return (
+            <div>
+                <Dialog
+                    open={isConfirmationPopupOpen}
+                    aria-labelledby="dialog-title-change-equipment-type"
+                    onKeyPress={handlePopupConfirmation}
+                >
+                    <DialogTitle id={'dialog-title-change-equipment-type'}>
+                        {'Confirmation'}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {intl.formatMessage({ id: 'changeTypeMessage' })}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpenConfirmationPopup(false)}>
+                            <FormattedMessage id="cancel" />
+                        </Button>
+                        <Button
+                            onClick={handlePopupConfirmation}
+                            variant="outlined"
+                        >
+                            <FormattedMessage id="validate" />
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        );
     };
 
     const renderFilter = (key, definition) => {
@@ -223,14 +287,15 @@ export const CriteriaBasedFilterDialogContent = ({
                 filter={currentFormEdit[key]}
                 definition={definition}
                 onChange={editDone}
+                setIsFormEdited={setIsFormEdited}
             />
         );
     };
 
     const renderSpecific = () => {
-        if (filterType !== null) {
+        if (equipmentType !== null) {
             return Object.entries(
-                getEquipmentsDefinition()[filterType].fields
+                getEquipmentsDefinition()[equipmentType].fields
             ).map(([key, definition]) => {
                 return renderFilter(key, definition);
             });
@@ -245,11 +310,12 @@ export const CriteriaBasedFilterDialogContent = ({
                 style={{ width: '100%', padding: 10, paddingRight: 20 }}
             >
                 {FilterTypeSelection({
-                    type: filterType,
+                    type: equipmentType,
                     onChange: changeFilterType,
                     equipmentDefinition: getEquipmentsDefinition(),
                 })}
                 {renderSpecific()}
+                {renderChangeEquipmentTypePopup()}
             </Grid>
         </>
     );
