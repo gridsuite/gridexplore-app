@@ -61,13 +61,13 @@ export const useTextValue = ({
     ...formProps
 }) => {
     const [value, setValue] = useState(defaultValue);
-    const [touched, setTouched] = useState(false);
+    const [hasChanged, setHasChanged] = useState(false);
 
     const classes = useStyles();
 
     const handleChangeValue = useCallback((event) => {
         setValue(event.target.value);
-        setTouched(true);
+        setHasChanged(true);
     }, []);
 
     const field = useMemo(() => {
@@ -99,7 +99,7 @@ export const useTextValue = ({
 
     useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
 
-    return [value, field, setValue, touched];
+    return [value, field, setValue, hasChanged];
 };
 
 export const useFileValue = ({
@@ -110,7 +110,7 @@ export const useFileValue = ({
     const selectedFile = useSelector((state) => state.selectedFile);
     const intl = useIntl();
     const dispatch = useDispatch();
-    const [isFileOk, setIsFileOk] = useState(false);
+    const [fileOk, setFileOk] = useState(false);
     const [fileError, setFileError] = useState();
 
     const field = <UploadCase isLoading={isLoading} />;
@@ -123,10 +123,10 @@ export const useFileValue = ({
         const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
         if (!selectedFile) {
             setFileError();
-            setIsFileOk(false);
+            setFileOk(false);
         } else if (selectedFile.size <= MAX_FILE_SIZE_IN_BYTES) {
             setFileError();
-            setIsFileOk(true);
+            setFileOk(true);
         } else {
             setFileError(
                 fileExceedsLimitMessage
@@ -141,10 +141,10 @@ export const useFileValue = ({
                           }
                       )
             );
-            setIsFileOk(false);
+            setFileOk(false);
         }
     }, [selectedFile, fileExceedsLimitMessage, intl]);
-    return [selectedFile, field, fileError, isFileOk];
+    return [selectedFile, field, fileError, fileOk, setFileOk];
 };
 
 const makeAdornmentEndIcon = (content) => {
@@ -183,6 +183,11 @@ export const useNameField = ({
                 setChecking(false);
                 return;
             }
+            if (nameFormated === '' && !touched) {
+                setChecking(undefined);
+                return;
+            }
+
             if (nameFormated !== '' && name === props.defaultValue) {
                 setError(
                     alreadyExistingErrorMessage
@@ -228,16 +233,19 @@ export const useNameField = ({
     );
 
     useEffect(() => {
-        if (checking === undefined) return;
-        if (checking)
+        if (checking === undefined || error) {
+            setAdornment(undefined);
+            return;
+        }
+        if (checking) {
             setAdornment(
                 makeAdornmentEndIcon(<CircularProgress size="1rem" />)
             );
-        else if (error) setAdornment(undefined);
-        else
+        } else {
             setAdornment(
                 makeAdornmentEndIcon(<CheckIcon style={{ color: 'green' }} />)
             );
+        }
     }, [checking, error]);
 
     const [name, field, setName, touched] = useTextValue({
@@ -275,25 +283,45 @@ export const useNameField = ({
             !error &&
             !checking,
         setName,
+        touched,
     ];
 };
 
-export const usePrefillNameField = ({ nameRef, selectedFile, setValue }) => {
+export const usePrefillNameField = ({
+    nameRef,
+    selectedFile,
+    setValue,
+    selectedFileOk,
+    createStudyErr,
+    fileChekedCase,
+    touched,
+}) => {
     useEffect(() => {
         if (setValue) {
             if (
                 nameRef !== undefined &&
                 nameRef.current.trim().length === 0 &&
-                selectedFile != null
+                selectedFile != null &&
+                selectedFileOk &&
+                fileChekedCase &&
+                createStudyErr === ''
             ) {
                 setValue(
                     selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
                 );
-            } else if (selectedFile == null) {
+            } else if (selectedFile == null && !touched) {
                 setValue('');
             }
         }
-    }, [nameRef, selectedFile, setValue]);
+    }, [
+        nameRef,
+        selectedFile,
+        setValue,
+        touched,
+        selectedFileOk,
+        fileChekedCase,
+        createStudyErr,
+    ]);
 };
 
 export const useEquipmentTableValues = ({
