@@ -63,7 +63,12 @@ export const ExplicitNamingFilterRow = ({
     };
 
     return (
-        <Draggable draggableId={id} index={index} key={id + value + index}>
+        <Draggable
+            isDragDisabled={tableLength === 1}
+            draggableId={id}
+            index={index}
+            key={id + value + index}
+        >
             {(provided) => (
                 <div
                     style={{ width: '100%' }}

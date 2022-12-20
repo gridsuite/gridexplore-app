@@ -52,11 +52,10 @@ function generateDefaultValue(val, originalValue) {
     };
 }
 
-const SingleFilter = ({ filter, definition, onChange, isFormEdited }) => {
+const SingleFilter = ({ filter, definition, onChange }) => {
     const localChange = (newVal) => {
-        isFormEdited = true;
         filter.value = newVal;
-        onChange(isFormEdited);
+        onChange();
     };
     return definition.type.renderer({
         initialValue: filter.value,
@@ -113,7 +112,7 @@ export const CriteriaBasedFilterDialogContent = ({
     const openRef = useRef(null);
     openRef.current = open;
     const intl = useIntl();
-    const isFormEdited = useRef({ isFormEdited: false });
+    const isCurrentFormEdited = useRef({ isFormEdited: false });
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [newEquipmentType, setNewEquipmentType] = useState(null);
     function getEquipmentsDefinition() {
@@ -195,7 +194,7 @@ export const CriteriaBasedFilterDialogContent = ({
         return value1NotNull && value2NotNull;
     }
 
-    const editDone = (isEdited) => {
+    const editDone = () => {
         let res = {};
         Object.entries(currentFormEdit).forEach(([key, obj]) => {
             if (key.startsWith('nominalVoltage') && !validVoltageValues(obj)) {
@@ -210,14 +209,21 @@ export const CriteriaBasedFilterDialogContent = ({
         currentFilterToSend.current.type = FilterType.CRITERIA;
         currentFilterToSend.current.equipmentFilterForm = { ...res };
         handleFilterCreation(currentFilterToSend.current);
-        if (isEdited) {
-            isFormEdited.current.isFormEdited = isFormEdited;
+        const hasEdition = Object.values(res).some(
+            (val) =>
+                val !== undefined &&
+                val !== null &&
+                ((Array.isArray(val) && val.length > 0) ||
+                    (typeof val === 'object' && Object.keys(val).length > 0))
+        );
+        if (hasEdition) {
+            isCurrentFormEdited.current.isFormEdited = true;
         }
     };
 
     const changeEquipmentType = (newType) => {
         // TODO: should reset all fields in currentFormEdit
-        if (isFormEdited.current.isFormEdited) {
+        if (isCurrentFormEdited.current.isFormEdited) {
             setOpenConfirmationPopup(true);
             setNewEquipmentType(newType);
         } else {
@@ -226,7 +232,7 @@ export const CriteriaBasedFilterDialogContent = ({
     };
 
     const handleSelectionEquipmentTypeChange = (newType) => {
-        isFormEdited.current.isFormEdited = false;
+        isCurrentFormEdited.current.isFormEdited = false;
         currentFormEdit.equipmentType = { value: newType };
         setEquipmentType(newType);
         if (id == null && contentType === ElementType.FILTER)
@@ -296,7 +302,6 @@ export const CriteriaBasedFilterDialogContent = ({
                 filter={currentFormEdit[key]}
                 definition={definition}
                 onChange={editDone}
-                isFormEdited={isFormEdited.current}
             />
         );
     };
