@@ -69,11 +69,13 @@ const ExplicitNamingFilterCreationDialog = ({
         equipmentType,
         name,
         id,
-        isEdited
+        isEdited,
+        isDragged
     ) => {
         setEquipmentType(equipmentType);
         setTablesValues(tableValues);
         setIsEdited(isEdited);
+        if (isDragged) setIsEdited(true);
     };
 
     useEffect(() => {

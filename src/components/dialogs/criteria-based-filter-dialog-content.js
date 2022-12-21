@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useRef, useState } from 'react';
 import { MenuItem, Grid, Select, FormControl, InputLabel } from '@mui/material';
 import { getContingencyList, getFilterById } from '../../utils/rest-api';
@@ -19,6 +19,7 @@ import {
     contingencyListEquipmentDefinition,
     filterEquipmentDefinition,
 } from '../../utils/equipment-types';
+import { renderPopup } from './create-filter-dialog';
 
 function deepCopy(aObject) {
     if (!aObject) {
@@ -57,6 +58,7 @@ export const FilterTypeSelection = ({
     type,
     onChange,
     equipmentDefinition,
+    isEdited,
 }) => {
     return (
         <>
@@ -68,7 +70,7 @@ export const FilterTypeSelection = ({
                 <Select
                     label={<FormattedMessage id={'equipmentType'} />}
                     value={type === null ? '' : type}
-                    onChange={(e) => onChange(e.target.value)}
+                    onChange={(e) => onChange(e.target.value, isEdited)}
                 >
                     {Object.entries(equipmentDefinition).map(([key, value]) => (
                         <MenuItem key={key} value={key}>
@@ -89,16 +91,19 @@ export const CriteriaBasedFilterDialogContent = ({
     handleEquipmentTypeChange,
 }) => {
     const [initialFilter, setInitialFilter] = useState(null);
-    const [filterType, setFilterType] = useState(null);
+    const [equipmentType, setEquipmentType] = useState(null);
     const [currentFormEdit, setCurrentFormEdit] = useState({
-        type: { value: filterType },
+        type: { value: equipmentType },
     });
     const currentFilter = useRef(null);
     const currentFilterToSend = useRef({});
     const { snackError } = useSnackMessage();
     const openRef = useRef(null);
     openRef.current = open;
-
+    const intl = useIntl();
+    const isCurrentFormEdited = useRef({ isFormEdited: false });
+    const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
+    const [newEquipmentType, setNewEquipmentType] = useState(null);
     function getEquipmentsDefinition() {
         return contentType === ElementType.FILTER
             ? filterEquipmentDefinition
@@ -111,7 +116,7 @@ export const CriteriaBasedFilterDialogContent = ({
                 getFilterById(id)
                     .then((response) => {
                         setInitialFilter(response);
-                        setFilterType(
+                        setEquipmentType(
                             response.equipmentFilterForm.equipmentType
                         );
                         setCurrentFormEdit({
@@ -131,7 +136,7 @@ export const CriteriaBasedFilterDialogContent = ({
                 getContingencyList(ContingencyListType.FORM, id)
                     .then((response) => {
                         setInitialFilter(response);
-                        setFilterType(response.equipmentType);
+                        setEquipmentType(response.equipmentType);
                         setCurrentFormEdit({
                             equipmentType: {
                                 value: response.equipmentType,
@@ -151,7 +156,7 @@ export const CriteriaBasedFilterDialogContent = ({
             });
             currentFilter.current = null;
             setInitialFilter(null);
-            setFilterType(null);
+            setEquipmentType(null);
         }
     }, [id, contentType, snackError]);
 
@@ -193,15 +198,46 @@ export const CriteriaBasedFilterDialogContent = ({
         currentFilterToSend.current.type = FilterType.CRITERIA;
         currentFilterToSend.current.equipmentFilterForm = { ...res };
         handleFilterCreation(currentFilterToSend.current);
+        const hasEdition = Object.values(res).some(
+            (val) =>
+                val !== undefined &&
+                val !== null &&
+                ((Array.isArray(val) && val.length > 0) ||
+                    (typeof val === 'object' && Object.keys(val).length > 0))
+        );
+        if (hasEdition) {
+            isCurrentFormEdited.current.isFormEdited = true;
+        }
     };
 
-    const changeFilterType = (newType) => {
+    const changeEquipmentType = (newType) => {
         // TODO: should reset all fields in currentFormEdit
+        if (isCurrentFormEdited.current.isFormEdited) {
+            setOpenConfirmationPopup(true);
+            setNewEquipmentType(newType);
+        } else {
+            handleSelectionEquipmentTypeChange(newType);
+        }
+    };
+
+    const handleSelectionEquipmentTypeChange = (newType) => {
+        isCurrentFormEdited.current.isFormEdited = false;
         currentFormEdit.equipmentType = { value: newType };
-        setFilterType(newType);
+        setEquipmentType(newType);
         if (id == null && contentType === ElementType.FILTER)
             handleEquipmentTypeChange(newType);
         editDone();
+    };
+
+    const handlePopupConfirmation = () => {
+        setOpenConfirmationPopup(false);
+        handleSelectionEquipmentTypeChange(newEquipmentType);
+    };
+
+    const handleKeyPressed = (event) => {
+        if (open && event.key === 'Enter') {
+            handlePopupConfirmation();
+        }
     };
 
     const renderFilter = (key, definition) => {
@@ -228,9 +264,9 @@ export const CriteriaBasedFilterDialogContent = ({
     };
 
     const renderSpecific = () => {
-        if (filterType !== null) {
+        if (equipmentType !== null) {
             return Object.entries(
-                getEquipmentsDefinition()[filterType].fields
+                getEquipmentsDefinition()[equipmentType].fields
             ).map(([key, definition]) => {
                 return renderFilter(key, definition);
             });
@@ -245,11 +281,18 @@ export const CriteriaBasedFilterDialogContent = ({
                 style={{ width: '100%', padding: 10, paddingRight: 20 }}
             >
                 {FilterTypeSelection({
-                    type: filterType,
-                    onChange: changeFilterType,
+                    type: equipmentType,
+                    onChange: changeEquipmentType,
                     equipmentDefinition: getEquipmentsDefinition(),
                 })}
                 {renderSpecific()}
+                {renderPopup(
+                    isConfirmationPopupOpen,
+                    handleKeyPressed,
+                    intl,
+                    setOpenConfirmationPopup,
+                    handlePopupConfirmation
+                )}
             </Grid>
         </>
     );
