@@ -328,19 +328,17 @@ export const useEquipmentTableValues = ({
     const [selectedIds, setSelectedIds] = useState(new Set());
     const handleDeleteItem = useCallback(() => {
         setValues((oldValues) => {
-            let newValues = [...oldValues];
-            if (selectedIds.size === newValues.length) {
+            if (selectedIds.size === oldValues.length) {
                 setSelectedIds(new Set());
                 return [{}];
             }
-            for (let index = selectedIds.size - 1; index >= 0; index--) {
-                const item = [...selectedIds][index];
-                newValues.splice(item, 1);
-            }
-            setSelectedIds(new Set());
-            setIsEdited(true);
+            const newValues = oldValues.filter(
+                (val) => !selectedIds.has(oldValues.indexOf(val))
+            );
             return newValues.length === 0 ? [{}] : newValues;
         });
+        setSelectedIds(new Set());
+        setIsEdited(true);
         setCreateFilterErr('');
     }, [selectedIds, setCreateFilterErr, setIsEdited]);
 
