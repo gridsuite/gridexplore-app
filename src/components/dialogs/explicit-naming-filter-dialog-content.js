@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useEquipmentTableValues } from './field-hook';
 import makeStyles from '@mui/styles/makeStyles';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { getFilterById } from '../../utils/rest-api';
 
 import IconButton from '@mui/material/IconButton';
@@ -18,20 +18,10 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 import { Draggable } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
-import {
-    Alert,
-    Button,
-    Checkbox,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Input,
-    Tooltip,
-} from '@mui/material';
+import { Alert, Checkbox, Input, Tooltip } from '@mui/material';
 import { filterEquipmentDefinition } from '../../utils/equipment-types';
 import { FilterTypeSelection } from './criteria-based-filter-dialog-content';
+import { renderPopup } from './create-filter-dialog';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -278,38 +268,6 @@ const ExplicitNamingFilterDialogContent = ({
         sendData();
     }, [sendData]);
 
-    const renderChangeEquipmentTypePopup = () => {
-        return (
-            <div>
-                <Dialog
-                    open={isConfirmationPopupOpen}
-                    aria-labelledby="dialog-title-change-equipment-type"
-                    onKeyPress={handleKeyPressed}
-                >
-                    <DialogTitle id={'dialog-title-change-equipment-type'}>
-                        {'Confirmation'}
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            {intl.formatMessage({ id: 'changeTypeMessage' })}
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setOpenConfirmationPopup(false)}>
-                            <FormattedMessage id="cancel" />
-                        </Button>
-                        <Button
-                            onClick={handlePopupConfirmation}
-                            variant="outlined"
-                        >
-                            <FormattedMessage id="validate" />
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-        );
-    };
-
     return (
         <div>
             <Grid container spacing={2}>
@@ -328,7 +286,13 @@ const ExplicitNamingFilterDialogContent = ({
             {createFilterErr !== '' && (
                 <Alert severity="error">{createFilterErr}</Alert>
             )}
-            {renderChangeEquipmentTypePopup()}
+            {renderPopup(
+                isConfirmationPopupOpen,
+                handleKeyPressed,
+                intl,
+                setOpenConfirmationPopup,
+                handlePopupConfirmation
+            )}
         </div>
     );
 };

@@ -333,9 +333,10 @@ export const useEquipmentTableValues = ({
                 setSelectedIds(new Set());
                 return [{}];
             }
-            selectedIds.forEach((index) => {
-                newValues.splice(index, 1);
-            });
+            for (let index = selectedIds.size - 1; index >= 0; index--) {
+                const item = [...selectedIds][index];
+                newValues.splice(item, 1);
+            }
             setSelectedIds(new Set());
             setIsEdited(true);
             return newValues.length === 0 ? [{}] : newValues;

@@ -89,6 +89,44 @@ const DialogContainer = withStyles(() => ({
     },
 }))(Dialog);
 
+export const renderPopup = (
+    isConfirmationPopupOpen,
+    handleKeyPressed,
+    intl,
+    setOpenConfirmationPopup,
+    handlePopupConfirmation
+) => {
+    return (
+        <div>
+            <Dialog
+                open={isConfirmationPopupOpen}
+                aria-labelledby="dialog-title-change-equipment-type"
+                onKeyPress={handleKeyPressed}
+            >
+                <DialogTitle id={'dialog-title-change-equipment-type'}>
+                    {'Confirmation'}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {intl.formatMessage({ id: 'changeTypeMessage' })}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenConfirmationPopup(false)}>
+                        <FormattedMessage id="cancel" />
+                    </Button>
+                    <Button
+                        onClick={handlePopupConfirmation}
+                        variant="outlined"
+                    >
+                        <FormattedMessage id="validate" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </div>
+    );
+};
+
 const CreateFilterDialog = ({
     open,
     onClose,
@@ -374,38 +412,6 @@ const CreateFilterDialog = ({
         setCreateFilterErr('');
     };
 
-    const renderChangeFilterTypePopup = () => {
-        return (
-            <div>
-                <Dialog
-                    open={isConfirmationPopupOpen}
-                    aria-labelledby="dialog-title-change-filter-type"
-                    onKeyPress={() => handlePopupConfirmation()}
-                >
-                    <DialogTitle id={'dialog-title-change-filter-type'}>
-                        {'Confirmation'}
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            {intl.formatMessage({ id: 'changeTypeMessage' })}
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setOpenConfirmationPopup(false)}>
-                            <FormattedMessage id="cancel" />
-                        </Button>
-                        <Button
-                            onClick={() => handlePopupConfirmation()}
-                            variant="outlined"
-                        >
-                            <FormattedMessage id="validate" />
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-        );
-    };
-
     return (
         <>
             <Dialog
@@ -490,7 +496,13 @@ const CreateFilterDialog = ({
                     </Button>
                 </DialogActions>
             </Dialog>
-            {renderChangeFilterTypePopup()}
+            {renderPopup(
+                isConfirmationPopupOpen,
+                handleKeyPressed,
+                intl,
+                setOpenConfirmationPopup,
+                handlePopupConfirmation
+            )}
         </>
     );
 };

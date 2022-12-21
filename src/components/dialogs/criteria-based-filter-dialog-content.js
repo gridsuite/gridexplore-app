@@ -7,19 +7,7 @@
 
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useRef, useState } from 'react';
-import {
-    MenuItem,
-    Grid,
-    Select,
-    FormControl,
-    InputLabel,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
-    Button,
-} from '@mui/material';
+import { MenuItem, Grid, Select, FormControl, InputLabel } from '@mui/material';
 import { getContingencyList, getFilterById } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
@@ -31,6 +19,7 @@ import {
     contingencyListEquipmentDefinition,
     filterEquipmentDefinition,
 } from '../../utils/equipment-types';
+import { renderPopup } from './create-filter-dialog';
 
 function deepCopy(aObject) {
     if (!aObject) {
@@ -251,38 +240,6 @@ export const CriteriaBasedFilterDialogContent = ({
         }
     };
 
-    const renderChangeEquipmentTypePopup = () => {
-        return (
-            <div>
-                <Dialog
-                    open={isConfirmationPopupOpen}
-                    aria-labelledby="dialog-title-change-equipment-type"
-                    onKeyPress={handleKeyPressed}
-                >
-                    <DialogTitle id={'dialog-title-change-equipment-type'}>
-                        {'Confirmation'}
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            {intl.formatMessage({ id: 'changeTypeMessage' })}
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setOpenConfirmationPopup(false)}>
-                            <FormattedMessage id="cancel" />
-                        </Button>
-                        <Button
-                            onClick={handlePopupConfirmation}
-                            variant="outlined"
-                        >
-                            <FormattedMessage id="validate" />
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-        );
-    };
-
     const renderFilter = (key, definition) => {
         if (initialFilter !== null) {
             if (currentFormEdit[key] === undefined) {
@@ -329,7 +286,13 @@ export const CriteriaBasedFilterDialogContent = ({
                     equipmentDefinition: getEquipmentsDefinition(),
                 })}
                 {renderSpecific()}
-                {renderChangeEquipmentTypePopup()}
+                {renderPopup(
+                    isConfirmationPopupOpen,
+                    handleKeyPressed,
+                    intl,
+                    setOpenConfirmationPopup,
+                    handlePopupConfirmation
+                )}
             </Grid>
         </>
     );
