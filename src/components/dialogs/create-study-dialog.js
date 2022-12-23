@@ -298,7 +298,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     //Inits the dialog
     useEffect(() => {
         if (open && providedCase) {
-            // setStudyName(providedCase.elementName);
             setCaseExist(true);
             dispatch(selectCase(providedCase.elementUuid));
             getCaseImportParams(
