@@ -171,7 +171,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         useState(false);
     const [isUploadingFileInProgress, setUploadingFileInProgress] =
         useState(false);
-    const [studyName, NameField, nameError, nameOk, setStudyName] =
+
+    const [fileCheckedCase, setFileCheckedCase] = useState(false);
+
+    const [studyName, NameField, nameError, nameOk, setStudyName, touched] =
         useNameField({
             label: 'nameProperty',
             autoFocus: true,
@@ -208,12 +211,17 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const [currentParameters, paramsComponent, resetImportParamsToDefault] =
         useImportExportParams(formatWithParameters);
 
-    const [selectedFile, FileField, selectedFileError, isSelectedFileOk] =
-        useFileValue({
-            label: 'Case',
-            triggerReset,
-            isLoading: isUploadingFileInProgress,
-        });
+    const [
+        selectedFile,
+        FileField,
+        selectedFileError,
+        selectedFileOk,
+        setSelectedFileOk,
+    ] = useFileValue({
+        label: 'Case',
+        triggerReset,
+        isLoading: isUploadingFileInProgress,
+    });
 
     const getCaseImportParams = useCallback(
         (caseUuid, setFormatWithParameters) => {
@@ -281,12 +289,15 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         nameRef: studyNameRef,
         selectedFile,
         setValue: setStudyName,
+        selectedFileOk,
+        createStudyErr,
+        fileCheckedCase,
+        touched,
     });
 
     //Inits the dialog
     useEffect(() => {
         if (open && providedCase) {
-            setStudyName(providedCase.elementName);
             setCaseExist(true);
             dispatch(selectCase(providedCase.elementUuid));
             getCaseImportParams(
@@ -297,7 +308,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             setUploadingFileInProgress(true);
             createCaseWithoutDirectoryElementCreation(selectedFile)
                 .then((caseUuid) => {
-                    setUploadingFileInProgress(false);
                     setTempCaseUuid(caseUuid);
                     getCaseImportParams(caseUuid, setFormatWithParameters);
                     setCreateStudyErr('');
@@ -305,9 +315,13 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                 .catch((error) => {
                     setTempCaseUuid(null);
                     handleFileUploadError(error, setCreateStudyErr);
-                    setUploadingFileInProgress(false);
                     dispatch(selectFile(null));
                     setFormatWithParameters([]);
+                    setSelectedFileOk(false);
+                })
+                .finally(() => {
+                    setUploadingFileInProgress(false);
+                    setFileCheckedCase(true);
                 });
         }
     }, [
@@ -319,6 +333,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         getCaseImportParams,
         handleFileUploadError,
         setStudyName,
+        setSelectedFileOk,
     ]);
 
     const resetDialog = () => {
@@ -455,7 +470,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             studyName === '' ||
             !nameOk ||
             !isParamsOk ||
-            (!providedCase && !isSelectedFileOk) ||
+            (!providedCase && !selectedFileOk) ||
             isUploadingFileInProgress
         );
     };
