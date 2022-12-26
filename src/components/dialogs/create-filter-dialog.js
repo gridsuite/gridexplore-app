@@ -421,7 +421,7 @@ const CreateFilterDialog = ({
                 onKeyPress={handleKeyPressed}
             >
                 <DialogTitle>{title}</DialogTitle>
-                <DialogContent>
+                <DialogContent style={{ overflow: 'hidden' }}>
                     <TextField
                         autoFocus
                         margin="dense"

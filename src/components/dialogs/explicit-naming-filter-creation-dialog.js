@@ -150,7 +150,7 @@ const ExplicitNamingFilterCreationDialog = ({
             onClose={handleClose}
         >
             <DialogTitle onClose={onClose}>{title}</DialogTitle>
-            <DialogContent>
+            <DialogContent style={{ overflow: 'hidden' }}>
                 <ExplicitNamingFilterDialogContent
                     id={id}
                     open={open}
