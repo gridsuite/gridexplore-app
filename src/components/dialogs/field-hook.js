@@ -61,13 +61,11 @@ export const useTextValue = ({
     ...formProps
 }) => {
     const [value, setValue] = useState(defaultValue);
-    const [hasChanged, setHasChanged] = useState(false);
 
     const classes = useStyles();
 
     const handleChangeValue = useCallback((event) => {
         setValue(event.target.value);
-        setHasChanged(true);
     }, []);
 
     const field = useMemo(() => {
@@ -99,7 +97,7 @@ export const useTextValue = ({
 
     useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
 
-    return [value, field, setValue, hasChanged];
+    return [value, field, setValue];
 };
 
 export const useFileValue = ({
@@ -294,7 +292,6 @@ export const usePrefillNameField = ({
     selectedFileOk,
     createStudyErr,
     fileCheckedCase,
-    touched,
 }) => {
     useEffect(() => {
         if (setValue) {
@@ -309,7 +306,7 @@ export const usePrefillNameField = ({
                 setValue(
                     selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
                 );
-            } else if (selectedFile == null && !touched) {
+            } else if (selectedFile == null) {
                 setValue('');
             }
         }
@@ -317,7 +314,6 @@ export const usePrefillNameField = ({
         nameRef,
         selectedFile,
         setValue,
-        touched,
         selectedFileOk,
         fileCheckedCase,
         createStudyErr,

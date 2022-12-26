@@ -174,7 +174,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     const [fileCheckedCase, setFileCheckedCase] = useState(false);
 
-    const [studyName, NameField, nameError, nameOk, setStudyName, touched] =
+    const [studyName, NameField, nameError, nameOk, setStudyName] =
         useNameField({
             label: 'nameProperty',
             autoFocus: true,
@@ -285,6 +285,8 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         }
     }, [tempCaseUuid, handleFileUploadError]);
 
+    console.info('fileCheckedCase', fileCheckedCase)
+
     usePrefillNameField({
         nameRef: studyNameRef,
         selectedFile,
@@ -292,7 +294,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         selectedFileOk,
         createStudyErr,
         fileCheckedCase,
-        touched,
     });
 
     //Inits the dialog
