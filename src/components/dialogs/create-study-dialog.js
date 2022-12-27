@@ -33,27 +33,26 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    loadCasesSuccess,
-    selectCase,
-    removeSelectedCase,
-    setActiveDirectory,
     addUploadingElement,
+    loadCasesSuccess,
+    removeSelectedCase,
     removeUploadingElement,
+    selectCase,
     selectFile,
+    setActiveDirectory,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useImportExportParams, useSnackMessage } from '@gridsuite/commons-ui';
 import { ElementType } from '../../utils/elementType';
 import {
     useFileValue,
     useNameField,
-    useTextValue,
     usePrefillNameField,
+    useTextValue,
 } from './field-hook';
 import { keyGenerator } from '../../utils/functions.js';
 import { Divider, Grid } from '@mui/material';
-import { useImportExportParams } from '@gridsuite/commons-ui';
 import {
     HTTP_CONNECTION_FAILED_MESSAGE,
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
@@ -137,7 +136,7 @@ const SelectCase = () => {
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  */
-export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
+export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const [caseExist, setCaseExist] = React.useState(false);
 
     const { snackError } = useSnackMessage();
@@ -152,6 +151,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const caseName = useSelector((state) => state.selectedCase);
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    // Why is this in redux ??
     const selectedCase = useSelector((state) => state.selectedCase);
 
     const [tempCaseUuid, setTempCaseUuid] = useState(null);
@@ -212,11 +212,11 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         useImportExportParams(formatWithParameters);
 
     const [
-        selectedFile,
+        providedCaseFile,
         FileField,
-        selectedFileError,
-        selectedFileOk,
-        setSelectedFileOk,
+        providedCaseFileError,
+        providedCaseFileOk,
+        setProvidedCaseFileOk,
     ] = useFileValue({
         label: 'Case',
         triggerReset,
@@ -287,9 +287,9 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     usePrefillNameField({
         nameRef: studyNameRef,
-        selectedFile,
+        selectedFile: providedCaseFile,
         setValue: setStudyName,
-        selectedFileOk,
+        selectedFileOk: providedCaseFileOk,
         createStudyErr,
         fileCheckedCase,
         touched,
@@ -297,16 +297,16 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 
     //Inits the dialog
     useEffect(() => {
-        if (open && providedCase) {
+        if (open && providedExistingCase) {
             setCaseExist(true);
-            dispatch(selectCase(providedCase.elementUuid));
+            dispatch(selectCase(providedExistingCase.elementUuid));
             getCaseImportParams(
-                providedCase.elementUuid,
+                providedExistingCase.elementUuid,
                 setFormatWithParameters
             );
-        } else if (open && selectedFile) {
+        } else if (open && providedCaseFile) {
             setUploadingFileInProgress(true);
-            createCaseWithoutDirectoryElementCreation(selectedFile)
+            createCaseWithoutDirectoryElementCreation(providedCaseFile)
                 .then((caseUuid) => {
                     setTempCaseUuid(caseUuid);
                     getCaseImportParams(caseUuid, setFormatWithParameters);
@@ -317,7 +317,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                     handleFileUploadError(error, setCreateStudyErr);
                     dispatch(selectFile(null));
                     setFormatWithParameters([]);
-                    setSelectedFileOk(false);
+                    setProvidedCaseFileOk(false);
                 })
                 .finally(() => {
                     setUploadingFileInProgress(false);
@@ -328,12 +328,12 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         open,
         dispatch,
         selectedDirectory?.elementName,
-        providedCase,
-        selectedFile,
+        providedExistingCase,
+        providedCaseFile,
         getCaseImportParams,
         handleFileUploadError,
         setStudyName,
-        setSelectedFileOk,
+        setProvidedCaseFileOk,
     ]);
 
     const resetDialog = () => {
@@ -407,7 +407,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             setCreateStudyErr(intl.formatMessage({ id: 'caseNameErrorMsg' }));
             return;
         }
-        if (!caseExist && selectedFile === null) {
+        if (!caseExist && providedCaseFile === null) {
             setCreateStudyErr(intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
         }
@@ -425,6 +425,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             studyName,
             description,
             caseName ?? tempCaseUuid,
+            providedExistingCase ? true : false,
             activeDirectory,
             currentParameters &&
                 (isParamsDisplayed || isParamsCaseFileDisplayed)
@@ -470,7 +471,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             studyName === '' ||
             !nameOk ||
             !isParamsOk ||
-            (!providedCase && !selectedFileOk) ||
+            (!providedExistingCase && !providedCaseFileOk) ||
             isUploadingFileInProgress
         );
     };
@@ -598,8 +599,8 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                             {createStudyErr}
                         </Alert>
                     )}
-                    {selectedFileError && (
-                        <Alert severity="error">{selectedFileError}</Alert>
+                    {providedCaseFileError && (
+                        <Alert severity="error">{providedCaseFileError}</Alert>
                     )}
                 </DialogContent>
                 <DialogActions>
@@ -622,7 +623,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
 CreateStudyDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    providedCase: PropTypes.any,
+    providedExistingCase: PropTypes.any,
 };
 
 export default CreateStudyDialog;
