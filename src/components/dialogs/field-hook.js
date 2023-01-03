@@ -174,14 +174,14 @@ export const useNameField = ({
     );
 
     const updateValidity = useCallback(
-        (name, touched) => {
+        (name) => {
             const nameFormated = name.replace(/ /g, '');
-            if (nameFormated === '' && touched) {
+            if (nameFormated === '') {
                 setError(intl.formatMessage({ id: 'nameEmpty' }));
                 setChecking(false);
                 return;
             }
-            if (nameFormated === '' && !touched) {
+            if (nameFormated === '') {
                 setChecking(undefined);
                 return;
             }
@@ -246,7 +246,7 @@ export const useNameField = ({
         }
     }, [checking, error]);
 
-    const [name, field, setName, touched] = useTextValue({
+    const [name, field, setName] = useTextValue({
         ...props,
         triggerReset,
         error: !!error,
@@ -263,8 +263,8 @@ export const useNameField = ({
         clearTimeout(timer.current);
         setChecking(true);
         setError(undefined);
-        timer.current = setTimeout(() => updateValidity(name, touched), 700);
-    }, [active, props.defaultValue, name, updateValidity, touched]);
+        timer.current = setTimeout(() => updateValidity(name), 700);
+    }, [active, props.defaultValue, name, updateValidity]);
 
     useEffect(() => {
         setError(undefined);
@@ -281,7 +281,6 @@ export const useNameField = ({
             !error &&
             !checking,
         setName,
-        touched,
     ];
 };
 
