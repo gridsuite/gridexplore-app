@@ -285,8 +285,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         }
     }, [tempCaseUuid, handleFileUploadError]);
 
-    console.info('fileCheckedCase', fileCheckedCase)
-
     usePrefillNameField({
         nameRef: studyNameRef,
         selectedFile,
