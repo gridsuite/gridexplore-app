@@ -11,7 +11,6 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import React, { useEffect, useRef, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { createFilter, saveFilter } from '../../utils/rest-api';
 import { FilterType } from '../../utils/elementType';
@@ -20,15 +19,6 @@ import Alert from '@mui/material/Alert';
 import PropTypes from 'prop-types';
 
 import ExplicitNamingFilterDialogContent from './explicit-naming-filter-dialog-content';
-
-const useStyles = makeStyles((theme) => ({
-    dialogPaper: {
-        width: 'auto',
-        minWidth: '800px',
-        minHeight: '400px',
-        margin: 'auto',
-    },
-}));
 
 const ExplicitNamingFilterCreationDialog = ({
     id,
@@ -39,7 +29,6 @@ const ExplicitNamingFilterCreationDialog = ({
     isFilterCreation,
 }) => {
     const intl = useIntl();
-    const classes = useStyles();
     const [isGeneratorOrLoad, setIsGeneratorOrLoad] = useState(false);
     const [equipmentType, setEquipmentType] = useState(null);
 
@@ -144,10 +133,10 @@ const ExplicitNamingFilterCreationDialog = ({
 
     return (
         <Dialog
-            classes={{ paper: classes.dialogPaper }}
             fullWidth={true}
             open={open}
             onClose={handleClose}
+            scroll="body"
         >
             <DialogTitle onClose={onClose}>{title}</DialogTitle>
             <DialogContent style={{ overflow: 'hidden' }}>

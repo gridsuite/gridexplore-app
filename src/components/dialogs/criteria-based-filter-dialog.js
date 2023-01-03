@@ -7,7 +7,6 @@
 
 import { FormattedMessage } from 'react-intl';
 import React, { useEffect, useRef, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
@@ -16,14 +15,6 @@ import Dialog from '@mui/material/Dialog';
 import { saveFilter, saveFormContingencyList } from '../../utils/rest-api';
 import { ElementType } from '../../utils/elementType';
 import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
-
-const useStyles = makeStyles(() => ({
-    dialogPaper: {
-        minWidth: '705px',
-        minHeight: '500px',
-        margin: 'auto',
-    },
-}));
 
 export const CriteriaBasedFilterDialog = ({
     id,
@@ -38,7 +29,6 @@ export const CriteriaBasedFilterDialog = ({
     const [initialFilter, setInitialFilter] = useState(null);
     const currentFilter = useRef(null);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
-    const classes = useStyles();
     const openRef = useRef(null);
     openRef.current = open;
 
@@ -98,13 +88,12 @@ export const CriteriaBasedFilterDialog = ({
 
     return (
         <Dialog
-            classes={{ paper: classes.dialogPaper }}
             open={open}
             onClose={onClose}
             aria-labelledby="dialog-title-filters-contingency-edit"
         >
             <DialogTitle>{title}</DialogTitle>
-            <DialogContent>
+            <DialogContent style={{ overflow: 'hidden' }}>
                 <CriteriaBasedFilterDialogContent
                     id={id}
                     open={open}

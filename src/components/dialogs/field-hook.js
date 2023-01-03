@@ -571,14 +571,7 @@ export const useEquipmentTableValues = ({
                                     </Grid>
                                     <Grid
                                         overflow={'auto'}
-                                        style={{
-                                            maxHeight:
-                                                window.innerHeight < 600
-                                                    ? '15vh'
-                                                    : window.innerHeight < 900
-                                                    ? '25vh'
-                                                    : '45vh',
-                                        }}
+                                        style={{ maxHeight: '45vh' }}
                                     >
                                         {values.map((value, index) => (
                                             <Row

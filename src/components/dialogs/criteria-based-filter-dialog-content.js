@@ -278,7 +278,13 @@ export const CriteriaBasedFilterDialogContent = ({
             <Grid
                 container
                 spacing={1}
-                style={{ width: '100%', padding: 10, paddingRight: 20 }}
+                style={{
+                    width: '100%',
+                    padding: 10,
+                    paddingRight: 20,
+                    overflowY: 'auto',
+                    maxHeight: '45vh',
+                }}
             >
                 {FilterTypeSelection({
                     type: equipmentType,
