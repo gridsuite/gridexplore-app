@@ -205,7 +205,7 @@ export const CriteriaBasedFilterDialogContent = ({
                 ((Array.isArray(val) && val.length > 0) ||
                     (typeof val === 'object' && Object.keys(val).length > 0))
         );
-        if (hasEdition) {
+        if (id === undefined && hasEdition) {
             isCurrentFormEdited.current.isFormEdited = true;
         }
     };
