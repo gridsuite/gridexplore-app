@@ -44,6 +44,12 @@ const useStyles = makeStyles((theme) => ({
         top: theme.spacing(1),
         color: theme.palette.grey[500],
     },
+    dialogPaper: {
+        width: 'auto',
+        minWidth: '800px',
+        minHeight: '400px',
+        margin: 'auto',
+    },
 }));
 
 const CustomDialogTitle = (props) => {
@@ -415,6 +421,7 @@ const CreateFilterDialog = ({
     return (
         <>
             <Dialog
+                classes={{ paper: classes.dialogPaper }}
                 fullWidth={true}
                 open={open && !filterType}
                 onClose={handleClose}
