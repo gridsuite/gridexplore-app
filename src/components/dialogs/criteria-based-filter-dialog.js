@@ -15,6 +15,16 @@ import Dialog from '@mui/material/Dialog';
 import { saveFilter, saveFormContingencyList } from '../../utils/rest-api';
 import { ElementType } from '../../utils/elementType';
 import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
+import { makeStyles } from '@mui/styles';
+
+const useStyles = makeStyles(() => ({
+    dialogPaper: {
+        width: 'auto',
+        minWidth: '800px',
+        minHeight: '400px',
+        margin: 'auto',
+    },
+}));
 
 export const CriteriaBasedFilterDialog = ({
     id,

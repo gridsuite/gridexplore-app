@@ -601,6 +601,7 @@ export const useEquipmentTableValues = ({
                     </DragDropContext>
                 </Box>
                 <Grid container>
+                    <Grid item xs={1}></Grid>
                     <Grid item xs justifyContent={'flex-end'}>
                         <IconButton
                             className={classes.iconColor}
