@@ -19,8 +19,9 @@ import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-con
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
-        minWidth: '705px',
-        minHeight: '500px',
+        width: 'auto',
+        minWidth: '800px',
+        minHeight: '400px',
         margin: 'auto',
     },
 }));
