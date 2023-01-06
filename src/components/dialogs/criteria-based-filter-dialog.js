@@ -105,7 +105,7 @@ export const CriteriaBasedFilterDialog = ({
             aria-labelledby="dialog-title-filters-contingency-edit"
         >
             <DialogTitle>{title}</DialogTitle>
-            <DialogContent>
+            <DialogContent style={{ overflow: 'hidden' }}>
                 <CriteriaBasedFilterDialogContent
                     id={id}
                     open={open}
