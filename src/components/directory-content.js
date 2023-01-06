@@ -120,6 +120,7 @@ const DirectoryContent = () => {
 
     const classes = useStyles();
     const intl = useIntl();
+    const toDayMidnight = useRef(new Date().setHours(0, 0, 0, 0));
 
     /* Menu states */
     const [mousePosition, setMousePosition] =
@@ -344,7 +345,14 @@ const DirectoryContent = () => {
     function dateCellRender(cellData) {
         const data = new Date(cellData.rowData[cellData.dataKey]);
         if (data instanceof Date && !isNaN(data)) {
-            const date = data.toLocaleDateString(intl.locale);
+            const cellMidnight = new Date(data).setHours(0, 0, 0, 0);
+            const time = new Intl.DateTimeFormat(intl.locale, {
+                timeStyle: 'medium',
+            }).format(data);
+            const cellText =
+                toDayMidnight.current === cellMidnight
+                    ? time
+                    : data.toLocaleDateString(intl.locale);
             const fullDate = new Intl.DateTimeFormat(intl.locale, {
                 dateStyle: 'long',
                 timeStyle: 'long',
@@ -353,7 +361,7 @@ const DirectoryContent = () => {
             return (
                 <div className={classes.cell}>
                     <Tooltip title={fullDate} placement="right">
-                        <span>{date}</span>
+                        <span>{cellText}</span>
                     </Tooltip>
                 </div>
             );
