@@ -535,8 +535,10 @@ const TreeViewsContainer = () => {
             const error = directoryUpdatedEvent.eventData.headers['error'];
             const elementName =
                 directoryUpdatedEvent.eventData.headers['elementName'];
-
-            displayErrorIfExist(error, elementName);
+            if (error) {
+                displayErrorIfExist(error, elementName);
+                dispatch(directoryUpdated({}));
+            }
 
             if (isRootDirectory) {
                 updateRootDirectories();
