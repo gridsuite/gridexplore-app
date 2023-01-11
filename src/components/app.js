@@ -28,7 +28,6 @@ import {
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
-    setShowAuthenticationRouterLogin,
 } from '@gridsuite/commons-ui';
 
 import { useMatch } from 'react-router-dom';
@@ -154,8 +153,6 @@ const App = () => {
             })
             .catch(function (error) {
                 setUserManager({ instance: null, error: error.message });
-                console.debug('error when importing the idp settings', error);
-                dispatch(setShowAuthenticationRouterLogin(true));
             });
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
     }, [initialMatchSilentRenewCallbackUrl, dispatch]);
