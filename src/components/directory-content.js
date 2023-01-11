@@ -644,7 +644,7 @@ const DirectoryContent = () => {
                             dataKey: 'selected',
                             label: '',
                             headerRenderer: selectionHeaderRenderer,
-                            maxWidth: 60,
+                            maxWidth: 42,
                         },
                         {
                             width: 100,
@@ -663,7 +663,7 @@ const DirectoryContent = () => {
                             cellRenderer: typeCellRender,
                         },
                         {
-                            width: 50,
+                            width: 100,
                             label: intl.formatMessage({
                                 id: 'creator',
                             }),
@@ -671,7 +671,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            width: 50,
+                            width: 100,
                             label: intl.formatMessage({
                                 id: 'created',
                             }),
@@ -679,7 +679,7 @@ const DirectoryContent = () => {
                             cellRenderer: dateCellRender,
                         },
                         {
-                            width: 50,
+                            width: 100,
                             label: intl.formatMessage({
                                 id: 'modifiedBy',
                             }),
@@ -687,7 +687,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            width: 50,
+                            width: 100,
                             label: intl.formatMessage({
                                 id: 'modified',
                             }),
