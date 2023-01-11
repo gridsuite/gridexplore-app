@@ -29,7 +29,6 @@ import {
     getPreLoginPath,
     initializeAuthenticationProd,
     setShowAuthenticationRouterLogin,
-    getIdTokenExpiresIn,
 } from '@gridsuite/commons-ui';
 
 import { useMatch } from 'react-router-dom';
@@ -152,29 +151,6 @@ const App = () => {
         )
             .then((userManager) => {
                 setUserManager({ instance: userManager, error: null });
-                return userManager.getUser().then((user) => {
-                    if (
-                        (user == null || getIdTokenExpiresIn(user) < 0) &&
-                        initialMatchSilentRenewCallbackUrl == null
-                    ) {
-                        return userManager.signinSilent().catch((error) => {
-                            dispatch(setShowAuthenticationRouterLogin(true));
-                            const oidcHackReloaded =
-                                'gridsuite-oidc-hack-reloaded';
-                            if (
-                                !sessionStorage.getItem(oidcHackReloaded) &&
-                                error.message ===
-                                    'authority mismatch on settings vs. signin state'
-                            ) {
-                                sessionStorage.setItem(oidcHackReloaded, true);
-                                console.log(
-                                    'Hack oidc, reload page to make login work'
-                                );
-                                window.location.reload();
-                            }
-                        });
-                    }
-                });
             })
             .catch(function (error) {
                 setUserManager({ instance: null, error: error.message });
