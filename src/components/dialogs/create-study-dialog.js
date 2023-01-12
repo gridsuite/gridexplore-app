@@ -151,7 +151,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const caseName = useSelector((state) => state.selectedCase);
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    // Why is this in redux ??
     const selectedCase = useSelector((state) => state.selectedCase);
 
     const [tempCaseUuid, setTempCaseUuid] = useState(null);
