@@ -33,27 +33,26 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    loadCasesSuccess,
-    selectCase,
-    removeSelectedCase,
-    setActiveDirectory,
     addUploadingElement,
+    loadCasesSuccess,
+    removeSelectedCase,
     removeUploadingElement,
+    selectCase,
     selectFile,
+    setActiveDirectory,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useImportExportParams, useSnackMessage } from '@gridsuite/commons-ui';
 import { ElementType } from '../../utils/elementType';
 import {
     useFileValue,
     useNameField,
-    useTextValue,
     usePrefillNameField,
+    useTextValue,
 } from './field-hook';
 import { keyGenerator } from '../../utils/functions.js';
 import { Divider, Grid } from '@mui/material';
-import { useImportExportParams } from '@gridsuite/commons-ui';
 import {
     HTTP_CONNECTION_FAILED_MESSAGE,
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
@@ -131,6 +130,27 @@ const SelectCase = () => {
         </div>
     );
 };
+
+const DIE_EXTENSIONS_PARAM = 'iidm.die.with-extensions';
+const DIE_SUPPORTED_EXTENSIONS = [
+    'apc',
+    'bbsp',
+    'bs',
+    'cm',
+    'cp',
+    'gs',
+    'gsc',
+    'hapc',
+    'hopr',
+    'io',
+    'isc',
+    'ld',
+    'oa',
+    'rmd',
+    'sa',
+    'soc',
+    'vr',
+];
 
 /**
  * Dialog to create a study
@@ -228,11 +248,25 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             getCaseImportParameters(caseUuid)
                 .then((result) => {
                     // sort possible values alphabetically to display select options sorted
+
                     result.parameters = result.parameters?.map((p) => {
-                        let sortedPossibleValue = p.possibleValues?.sort(
-                            (a, b) => a.localeCompare(b)
+                        p.possibleValues = p.possibleValues?.sort((a, b) =>
+                            a.localeCompare(b)
                         );
-                        p.possibleValues = sortedPossibleValue;
+
+                        //TODO This is temporary fix, we extract the supported extension and ignore the others for DIE files
+                        // When all extensions are supported, it should be removed
+                        if (
+                            result?.formatName === 'DIE' &&
+                            p.name === DIE_EXTENSIONS_PARAM
+                        ) {
+                            p.possibleValues = p.possibleValues?.filter(
+                                (extension) =>
+                                    DIE_SUPPORTED_EXTENSIONS.includes(
+                                        extension
+                                    ) || extension === 'all'
+                            );
+                        }
                         return p;
                     });
                     setFormatWithParameters(result.parameters);
@@ -410,6 +444,16 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         if (!caseExist && selectedFile === null) {
             setCreateStudyErr(intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
+        }
+
+        console.log('params : ', formatWithParameters);
+        console.log('params curr : ', currentParameters);
+
+        if (
+            currentParameters[DIE_EXTENSIONS_PARAM] &&
+            currentParameters[DIE_EXTENSIONS_PARAM].indexOf('all') !== -1
+        ) {
+            currentParameters[DIE_EXTENSIONS_PARAM] = DIE_SUPPORTED_EXTENSIONS;
         }
 
         const uploadingStudy = {
