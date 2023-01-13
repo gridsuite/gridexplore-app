@@ -148,7 +148,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const intl = useIntl();
     const dispatch = useDispatch();
 
-    const caseName = useSelector((state) => state.selectedCase);
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const selectedCase = useSelector((state) => state.selectedCase);
@@ -402,7 +401,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         if (!nameOk) {
             return;
         }
-        if (caseExist && caseName === null) {
+        if (caseExist && selectedCase === null) {
             setCreateStudyErr(intl.formatMessage({ id: 'caseNameErrorMsg' }));
             return;
         }
@@ -423,7 +422,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         createStudy(
             studyName,
             description,
-            caseName ?? tempCaseUuid,
+            selectedCase ?? tempCaseUuid,
             providedExistingCase ? true : false,
             activeDirectory,
             currentParameters &&

@@ -341,7 +341,7 @@ export function fetchElementsInfos(ids) {
 export function createStudy(
     studyName,
     studyDescription,
-    caseName,
+    caseUuid,
     duplicateCase,
     parentDirectoryUuid,
     importParameters
@@ -357,7 +357,7 @@ export function createStudy(
         '/v1/explore/studies/' +
         encodeURIComponent(studyName) +
         '/cases/' +
-        encodeURIComponent(caseName) +
+        encodeURIComponent(caseUuid) +
         '?' +
         urlSearchParams.toString();
     console.debug(createStudyUrl);
