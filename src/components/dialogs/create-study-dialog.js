@@ -446,9 +446,6 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             return;
         }
 
-        console.log('params : ', formatWithParameters);
-        console.log('params curr : ', currentParameters);
-
         if (
             currentParameters[DIE_EXTENSIONS_PARAM] &&
             currentParameters[DIE_EXTENSIONS_PARAM].indexOf('all') !== -1
