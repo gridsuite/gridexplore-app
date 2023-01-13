@@ -708,7 +708,7 @@ const ContentContextualMenu = (props) => {
                     <CreateStudyDialog
                         open={true}
                         onClose={handleCloseDialog}
-                        providedCase={activeElement}
+                        providedExistingCase={activeElement}
                     />
                 );
             default:
