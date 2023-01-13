@@ -144,7 +144,6 @@ const DIE_SUPPORTED_EXTENSIONS = [
     'hopr',
     'isc',
     'ld',
-    'rmd',
     'sa',
 ];
 
