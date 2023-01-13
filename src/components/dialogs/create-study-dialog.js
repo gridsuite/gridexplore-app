@@ -254,7 +254,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                             a.localeCompare(b)
                         );
 
-                        //TODO This is temporary fix, we extract the supported extension and ignore the others for DIE files
+                        //TODO This is temporary fix, we filter non supported extensions when we import DIE
                         // When all extensions are supported, it should be removed
                         if (
                             result?.formatName === 'DIE' &&
