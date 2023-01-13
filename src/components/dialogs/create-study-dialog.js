@@ -136,20 +136,16 @@ const DIE_SUPPORTED_EXTENSIONS = [
     'apc',
     'bbsp',
     'bs',
-    'cm',
     'cp',
     'gs',
     'gsc',
+    'gec',
     'hapc',
     'hopr',
-    'io',
     'isc',
     'ld',
-    'oa',
     'rmd',
     'sa',
-    'soc',
-    'vr',
 ];
 
 /**
@@ -450,7 +446,9 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
             currentParameters[DIE_EXTENSIONS_PARAM] &&
             currentParameters[DIE_EXTENSIONS_PARAM].indexOf('all') !== -1
         ) {
-            currentParameters[DIE_EXTENSIONS_PARAM] = DIE_SUPPORTED_EXTENSIONS;
+            currentParameters[DIE_EXTENSIONS_PARAM] = formatWithParameters
+                .find((val) => val.name === DIE_EXTENSIONS_PARAM)
+                ?.possibleValues.filter((extension) => extension !== 'all');
         }
 
         const uploadingStudy = {
