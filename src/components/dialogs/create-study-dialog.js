@@ -255,7 +255,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
                         );
 
                         //TODO This is temporary fix, we filter non supported extensions when we import DIE
-                        // When all extensions are supported, it should be removed
+                        // When all extensions are supported, this should be removed
                         if (
                             result?.formatName === 'DIE' &&
                             p.name === DIE_EXTENSIONS_PARAM
