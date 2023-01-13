@@ -507,89 +507,110 @@ export const useEquipmentTableValues = ({
 
     const field = useMemo(() => {
         return (
-            <Box sx={{ flexGrow: 1 }}>
-                <DragDropContext onDragEnd={commit}>
-                    <Droppable droppableId={id + name} key={id + name}>
-                        {(provided) => (
-                            <div
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                                key={id + name}
-                            >
-                                <Grid container key={name + 'container'}>
-                                    <Grid item xs={1}></Grid>
-                                    <Grid item xs={1}>
-                                        <Checkbox
-                                            onClick={(e) => {
-                                                toggleSelectAll();
-                                                e.stopPropagation();
-                                            }}
-                                            checked={selectedIds?.size > 0}
-                                            indeterminate={
-                                                selectedIds.size !== 0 &&
-                                                selectedIds.size !==
-                                                    values.length
-                                            }
-                                        ></Checkbox>
-                                    </Grid>
-                                    {tableHeadersIds.map((value, index) => (
-                                        <Grid
-                                            container
-                                            direction="row"
-                                            justifyContent="flex-start"
-                                            alignItems="flex-end"
-                                            xs={
-                                                isGeneratorOrLoad
-                                                    ? value === 'ID'
-                                                        ? 6
-                                                        : 3
-                                                    : 9
-                                            }
-                                            item
-                                            key={index + name + value}
-                                            style={{
-                                                width: '100%',
-                                                borderBottom: '3px solid grey',
-                                                marginBottom: 15,
-                                                paddingTop: 5,
-                                            }}
-                                        >
-                                            <span key={'header' + name + index}>
-                                                <FormattedMessage id={value} />
-                                            </span>
+            <>
+                <Box sx={{ flexGrow: 1 }}>
+                    <DragDropContext onDragEnd={commit}>
+                        <Droppable droppableId={id + name} key={id + name}>
+                            {(provided) => (
+                                <div
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                    key={id + name}
+                                >
+                                    <Grid container key={name + 'container'}>
+                                        <Grid item xs={1}></Grid>
+                                        <Grid item xs={1}>
+                                            <Checkbox
+                                                onClick={(e) => {
+                                                    toggleSelectAll();
+                                                    e.stopPropagation();
+                                                }}
+                                                checked={selectedIds?.size > 0}
+                                                indeterminate={
+                                                    selectedIds.size !== 0 &&
+                                                    selectedIds.size !==
+                                                        values.length
+                                                }
+                                            ></Checkbox>
                                         </Grid>
-                                    ))}
-                                    <Grid xs={3} item />
-                                </Grid>
-                                {values.map((value, index) => (
-                                    <Row
-                                        id={index + id}
-                                        value={value}
-                                        isLastValue={
-                                            index === values.length - 1
-                                        }
-                                        index={index}
-                                        isGeneratorOrLoad={isGeneratorOrLoad}
-                                        handleSetValue={handleSetValue}
-                                        selectedIds={selectedIds}
-                                        handleSelection={toggleSelection}
-                                        key={name + index}
-                                        tableLength={values.length}
-                                    />
-                                ))}
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
-                </DragDropContext>
+                                        {tableHeadersIds.map((value, index) => (
+                                            <Grid
+                                                container
+                                                direction="row"
+                                                justifyContent="flex-start"
+                                                alignItems="flex-end"
+                                                xs={
+                                                    isGeneratorOrLoad
+                                                        ? value === 'ID'
+                                                            ? 6
+                                                            : 3
+                                                        : 9
+                                                }
+                                                item
+                                                key={index + name + value}
+                                                style={{
+                                                    width: '100%',
+                                                    borderBottom:
+                                                        '3px solid grey',
+                                                    marginBottom: 15,
+                                                    paddingTop: 5,
+                                                }}
+                                            >
+                                                <span
+                                                    key={
+                                                        'header' + name + index
+                                                    }
+                                                >
+                                                    <FormattedMessage
+                                                        id={value}
+                                                    />
+                                                </span>
+                                            </Grid>
+                                        ))}
+                                        <Grid xs={3} item />
+                                    </Grid>
+                                    <Grid
+                                        overflow={'auto'}
+                                        style={{ maxHeight: '45vh' }}
+                                    >
+                                        {values.map((value, index) => (
+                                            <Row
+                                                id={index + id}
+                                                value={value}
+                                                isLastValue={
+                                                    index === values.length - 1
+                                                }
+                                                index={index}
+                                                isGeneratorOrLoad={
+                                                    isGeneratorOrLoad
+                                                }
+                                                handleSetValue={handleSetValue}
+                                                selectedIds={selectedIds}
+                                                handleSelection={
+                                                    toggleSelection
+                                                }
+                                                key={name + index}
+                                                tableLength={values.length}
+                                            />
+                                        ))}
+                                    </Grid>
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
+                </Box>
                 <Grid container>
+                    <Grid item xs={1}></Grid>
                     <Grid item xs justifyContent={'flex-end'}>
                         <IconButton
                             className={classes.iconColor}
                             onClick={() => setOpenCSVImportDialog(true)}
                         >
                             <Tooltip
-                                title={intl.formatMessage({ id: 'ImportCSV' })}
+                                title={intl.formatMessage({
+                                    id: 'ImportCSV',
+                                })}
                                 placement="bottom"
                             >
                                 <Upload />
@@ -637,18 +658,18 @@ export const useEquipmentTableValues = ({
                             <ArrowCircleDown />
                         </IconButton>
                     </Grid>
+                    <CsvImportFilterCreationDialog
+                        open={openCSVImportDialog}
+                        title={intl.formatMessage({ id: 'chooseCSVFile' })}
+                        onClose={() => setOpenCSVImportDialog(false)}
+                        equipmentType={equipmentType}
+                        handleValidateCSV={(csvData, keepTableValues) =>
+                            updateTableValues(csvData, keepTableValues)
+                        }
+                        tableValues={values}
+                    />
                 </Grid>
-                <CsvImportFilterCreationDialog
-                    open={openCSVImportDialog}
-                    title={intl.formatMessage({ id: 'chooseCSVFile' })}
-                    onClose={() => setOpenCSVImportDialog(false)}
-                    equipmentType={equipmentType}
-                    handleValidateCSV={(csvData, keepTableValues) =>
-                        updateTableValues(csvData, keepTableValues)
-                    }
-                    tableValues={values}
-                />
-            </Box>
+            </>
         );
     }, [
         commit,
