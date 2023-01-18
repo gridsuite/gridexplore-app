@@ -41,6 +41,8 @@ export function CreateCaseDialog({ onClose, open }) {
     const userId = useSelector((state) => state.user.profile.sub);
     const dispatch = useDispatch();
     const [triggerReset, setTriggerReset] = useState(true);
+    const [fileCheckedCase, setFileCheckedCase] = useState(false);
+
     const [name, NameField, nameError, nameOk, setCaseName] = useNameField({
         label: 'nameProperty',
         autoFocus: true,
@@ -77,10 +79,19 @@ export function CreateCaseDialog({ onClose, open }) {
         nameRef.current = name;
     }, [name]);
 
+    useEffect(() => {
+        if (isFileOk) {
+            setFileCheckedCase(true);
+        }
+    }, [isFileOk]);
+
     usePrefillNameField({
-        nameRef,
+        nameRef: nameRef,
         selectedFile: file,
         setValue: setCaseName,
+        selectedFileOk: isFileOk,
+        createStudyErr: fileError,
+        fileCheckedCase: fileCheckedCase,
     });
 
     const handleCreateNewCase = () => {

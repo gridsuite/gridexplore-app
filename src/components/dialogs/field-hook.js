@@ -298,17 +298,26 @@ export const usePrefillNameField = ({
 }) => {
     useEffect(() => {
         if (setValue) {
+            //selectedFile is a file the user choosed through a picker
             if (
-                nameRef !== undefined &&
-                nameRef.current.trim().length === 0 &&
-                selectedFile != null &&
+                selectedFile?.name &&
+                nameRef?.current.trim().length === 0 &&
+                !createStudyErr &&
                 selectedFileOk &&
-                fileCheckedCase &&
-                createStudyErr === ''
+                fileCheckedCase
             ) {
                 setValue(
                     selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
                 );
+            }
+            //selectedFile is an preexisting case stored in gridexplore
+            else if (
+                selectedFile?.elementName &&
+                nameRef?.current.trim().length === 0 &&
+                !createStudyErr &&
+                fileCheckedCase
+            ) {
+                setValue(selectedFile.elementName);
             } else if (selectedFile == null && !touched) {
                 setValue('');
             }
