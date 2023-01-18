@@ -41,7 +41,6 @@ export function CreateCaseDialog({ onClose, open }) {
     const userId = useSelector((state) => state.user.profile.sub);
     const dispatch = useDispatch();
     const [triggerReset, setTriggerReset] = useState(true);
-
     const [name, NameField, nameError, nameOk, setCaseName] = useNameField({
         label: 'nameProperty',
         autoFocus: true,
