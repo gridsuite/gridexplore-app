@@ -298,7 +298,7 @@ export const usePrefillNameField = ({
 }) => {
     useEffect(() => {
         if (setValue) {
-            //selectedFile is a file the user choosed through a picker
+            //here selectedFile is a file the user choosed through a picker
             if (
                 selectedFile?.name &&
                 nameRef?.current.trim().length === 0 &&
@@ -310,7 +310,7 @@ export const usePrefillNameField = ({
                     selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
                 );
             }
-            //selectedFile is an preexisting case stored in gridexplore
+            //here selectedFile is an already stored case
             else if (
                 selectedFile?.elementName &&
                 nameRef?.current.trim().length === 0 &&
