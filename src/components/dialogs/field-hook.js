@@ -292,7 +292,7 @@ export const usePrefillNameField = ({
     selectedFile,
     setValue,
     selectedFileOk,
-    createStudyErr,
+    creationError,
     fileCheckedCase,
     touched,
 }) => {
@@ -302,7 +302,7 @@ export const usePrefillNameField = ({
             if (
                 selectedFile?.name &&
                 nameRef?.current.trim().length === 0 &&
-                !createStudyErr &&
+                !creationError &&
                 selectedFileOk &&
                 fileCheckedCase
             ) {
@@ -314,8 +314,7 @@ export const usePrefillNameField = ({
             else if (
                 selectedFile?.elementName &&
                 nameRef?.current.trim().length === 0 &&
-                !createStudyErr &&
-                fileCheckedCase
+                !creationError
             ) {
                 setValue(selectedFile.elementName);
             } else if (selectedFile == null && !touched) {
@@ -329,7 +328,7 @@ export const usePrefillNameField = ({
         touched,
         selectedFileOk,
         fileCheckedCase,
-        createStudyErr,
+        creationError,
     ]);
 };
 

@@ -291,10 +291,10 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
         nameRef: studyNameRef,
         selectedFile: providedCase ?? selectedFile,
         setValue: setStudyName,
-        selectedFileOk,
-        createStudyErr,
-        fileCheckedCase,
-        touched,
+        selectedFileOk: selectedFileOk,
+        fileError: createStudyErr,
+        fileCheckedCase: fileCheckedCase,
+        touched: touched,
     });
 
     //Inits the dialog

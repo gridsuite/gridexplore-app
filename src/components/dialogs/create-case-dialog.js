@@ -41,7 +41,6 @@ export function CreateCaseDialog({ onClose, open }) {
     const userId = useSelector((state) => state.user.profile.sub);
     const dispatch = useDispatch();
     const [triggerReset, setTriggerReset] = useState(true);
-    const [fileCheckedCase, setFileCheckedCase] = useState(false);
 
     const [name, NameField, nameError, nameOk, setCaseName] = useNameField({
         label: 'nameProperty',
@@ -79,19 +78,14 @@ export function CreateCaseDialog({ onClose, open }) {
         nameRef.current = name;
     }, [name]);
 
-    useEffect(() => {
-        if (isFileOk) {
-            setFileCheckedCase(true);
-        }
-    }, [isFileOk]);
-
     usePrefillNameField({
         nameRef: nameRef,
         selectedFile: file,
         setValue: setCaseName,
         selectedFileOk: isFileOk,
-        createStudyErr: fileError,
-        fileCheckedCase: fileCheckedCase,
+        creationError: fileError,
+        //fileCheckedCase is necessary for a test to succeed but always match isFileOk in this case since there is no intermediary validation
+        fileCheckedCase: isFileOk,
     });
 
     const handleCreateNewCase = () => {
