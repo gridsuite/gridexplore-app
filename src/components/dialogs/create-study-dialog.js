@@ -172,9 +172,7 @@ export const CreateStudyDialog = ({ open, onClose, providedCase }) => {
     const [isUploadingFileInProgress, setUploadingFileInProgress] =
         useState(false);
 
-    const [fileCheckedCase, setFileCheckedCase] = useState(
-        providedCase ? true : false
-    );
+    const [fileCheckedCase, setFileCheckedCase] = useState(!!providedCase);
 
     const [studyName, NameField, nameError, nameOk, setStudyName, touched] =
         useNameField({
