@@ -41,17 +41,18 @@ export function CreateCaseDialog({ onClose, open }) {
     const userId = useSelector((state) => state.user.profile.sub);
     const dispatch = useDispatch();
     const [triggerReset, setTriggerReset] = useState(true);
-    const [name, NameField, nameError, nameOk, setCaseName] = useNameField({
-        label: 'nameProperty',
-        autoFocus: true,
-        elementType: ElementType.CASE,
-        parentDirectoryId: activeDirectory,
-        triggerReset,
-        active: open,
-        style: {
-            width: '90%',
-        },
-    });
+    const [name, NameField, nameError, nameOk, setCaseName, touched] =
+        useNameField({
+            label: 'nameProperty',
+            autoFocus: true,
+            elementType: ElementType.CASE,
+            parentDirectoryId: activeDirectory,
+            triggerReset,
+            active: open,
+            style: {
+                width: '90%',
+            },
+        });
 
     const [description, DescriptionField] = useTextValue({
         label: 'descriptionProperty',
@@ -78,9 +79,14 @@ export function CreateCaseDialog({ onClose, open }) {
     }, [name]);
 
     usePrefillNameField({
-        nameRef,
+        nameRef: nameRef,
         selectedFile: file,
         setValue: setCaseName,
+        selectedFileOk: isFileOk,
+        creationError: fileError,
+        //fileCheckedCase is necessary for a test to succeed but always match isFileOk in this case since there is no intermediary validation
+        fileCheckedCase: isFileOk,
+        touched: touched,
     });
 
     const handleCreateNewCase = () => {
