@@ -301,21 +301,18 @@ export const usePrefillNameField = ({
             //here selectedFile is a file the user choosed through a picker
             if (
                 selectedFile?.name &&
-                nameRef?.current.trim().length === 0 &&
+                (nameRef?.current.trim().length === 0 || !touched) &&
                 !creationError &&
                 selectedFileOk &&
-                fileCheckedCase
+                fileCheckedCase &&
+                !touched
             ) {
                 setValue(
                     selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
                 );
             }
             //here selectedFile is an already stored case
-            else if (
-                selectedFile?.elementName &&
-                nameRef?.current.trim().length === 0 &&
-                !creationError
-            ) {
+            else if (selectedFile?.elementName && !creationError) {
                 setValue(selectedFile.elementName);
             } else if (selectedFile == null && !touched) {
                 setValue('');
