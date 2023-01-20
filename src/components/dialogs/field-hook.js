@@ -301,7 +301,6 @@ export const usePrefillNameField = ({
             //here selectedFile is a file the user choosed through a picker
             if (
                 selectedFile?.name &&
-                (nameRef?.current.trim().length === 0 || !touched) &&
                 !creationError &&
                 selectedFileOk &&
                 fileCheckedCase &&
