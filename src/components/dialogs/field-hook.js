@@ -344,16 +344,10 @@ export const useEquipmentTableValues = ({
         setValues((oldValues) => [...oldValues, {}]);
     }, []);
     const checkValues = useCallback(() => {
-        if (
-            defaultTableValues !== undefined &&
-            defaultTableValues.length !== 0
-        ) {
+        if (defaultTableValues !== undefined) {
             setValues([...defaultTableValues]);
-        } else {
-            setValues([]);
-            handleAddValue();
         }
-    }, [defaultTableValues, handleAddValue]);
+    }, [defaultTableValues]);
 
     useEffect(() => {
         checkValues();
@@ -518,7 +512,7 @@ export const useEquipmentTableValues = ({
                                     key={id + name}
                                 >
                                     <Grid container key={name + 'container'}>
-                                        <Grid item xs={1}></Grid>
+                                        <Grid item xs={0.6}></Grid>
                                         <Grid item xs={1}>
                                             <Checkbox
                                                 onClick={(e) => {

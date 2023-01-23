@@ -23,14 +23,7 @@ import { filterEquipmentDefinition } from '../../utils/equipment-types';
 import { FilterTypeSelection } from './criteria-based-filter-dialog-content';
 import { renderPopup } from './create-filter-dialog';
 
-const useStyles = makeStyles(() => ({
-    dialogPaper: {
-        width: 'auto',
-        minWidth: '800px',
-        minHeight: '400px',
-        margin: 'auto',
-    },
-}));
+const useStyles = makeStyles(() => ({}));
 
 function isNumber(val) {
     return /^-?[0-9]*[.,]?[0-9]*$/.test(val);
@@ -73,7 +66,7 @@ export const ExplicitNamingFilterRow = ({
                         key={index + id + 'container item'}
                         sx={{ width: '100%', height: '50%' }}
                     >
-                        <Grid xs={1} item>
+                        <Grid xs={0.6} item>
                             {tableLength !== 1 ? (
                                 <IconButton
                                     {...provided.dragHandleProps}
@@ -119,8 +112,6 @@ export const ExplicitNamingFilterRow = ({
                                         distributionKey: value?.distributionKey,
                                     })
                                 }
-                                error={value?.equipmentID === ''}
-                                required
                             />
                         </Grid>
                         {isGeneratorOrLoad && (
@@ -162,6 +153,20 @@ export const ExplicitNamingFilterRow = ({
     );
 };
 
+function generNamingsArray(defaultValues, isGeneratorOrLoad) {
+    const min_namings_number = 10;
+    let values = defaultValues ?? [];
+    let n = values ? min_namings_number - values.length : min_namings_number;
+    for (var i = 0; i < n; i++) {
+        if (isGeneratorOrLoad) {
+            values.push({ equipmentID: '', distributionKey: 0 });
+        } else {
+            values.push({ equipmentID: '' });
+        }
+    }
+    return values;
+}
+
 const ExplicitNamingFilterDialogContent = ({
     id,
     open,
@@ -181,6 +186,7 @@ const ExplicitNamingFilterDialogContent = ({
     const intl = useIntl();
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [newEquipmentType, setNewEquipmentType] = useState(null);
+
     useEffect(() => {
         if (id && fetchFilter.current) {
             getFilterById(id)
@@ -200,7 +206,10 @@ const ExplicitNamingFilterDialogContent = ({
             : headersId,
         Row: ExplicitNamingFilterRow,
         isGeneratorOrLoad: isGeneratorOrLoad,
-        defaultTableValues: defaultValues?.filterEquipmentsAttributes,
+        defaultTableValues: generNamingsArray(
+            defaultValues?.filterEquipmentsAttributes,
+            isGeneratorOrLoad
+        ),
         setCreateFilterErr: setCreateFilterErr,
         equipmentType: equipmentType,
         setIsEdited: setIsEdited,
