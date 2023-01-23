@@ -33,13 +33,13 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    addUploadingElement,
     loadCasesSuccess,
-    removeSelectedCase,
-    removeUploadingElement,
     selectCase,
-    selectFile,
+    removeSelectedCase,
     setActiveDirectory,
+    addUploadingElement,
+    removeUploadingElement,
+    selectFile,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
@@ -48,8 +48,8 @@ import { ElementType } from '../../utils/elementType';
 import {
     useFileValue,
     useNameField,
-    usePrefillNameField,
     useTextValue,
+    usePrefillNameField,
 } from './field-hook';
 import { keyGenerator } from '../../utils/functions.js';
 import { Divider, Grid } from '@mui/material';
@@ -170,7 +170,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const [isUploadingFileInProgress, setUploadingFileInProgress] =
         useState(false);
 
-    const [fileCheckedCase, setFileCheckedCase] = useState(!!providedCase);
+    const [fileCheckedCase, setFileCheckedCase] = useState(!!providedExistingCase);
 
     const [studyName, NameField, nameError, nameOk, setStudyName, touched] =
         useNameField({
