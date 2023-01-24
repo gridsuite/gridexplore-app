@@ -103,7 +103,6 @@ export const useTextValue = ({
 };
 
 export const useFileValue = ({
-    triggerReset,
     fileExceedsLimitMessage,
     isLoading,
 }) => {
@@ -114,9 +113,11 @@ export const useFileValue = ({
     const [fileError, setFileError] = useState();
 
     const field = <UploadCase isLoading={isLoading} />;
-    useEffect(() => {
-        dispatch(removeSelectedFile());
-    }, [dispatch, triggerReset]);
+
+    const resetSelectedFile = useCallback(
+        () => dispatch(removeSelectedFile()),
+        [dispatch]
+    );
 
     useEffect(() => {
         const MAX_FILE_SIZE_IN_MO = 100;
@@ -144,7 +145,7 @@ export const useFileValue = ({
             setFileOk(false);
         }
     }, [selectedFile, fileExceedsLimitMessage, intl]);
-    return [selectedFile, field, fileError, fileOk, setFileOk];
+    return [selectedFile, field, fileError, fileOk, setFileOk, resetSelectedFile];
 };
 
 const makeAdornmentEndIcon = (content) => {

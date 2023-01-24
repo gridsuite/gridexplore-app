@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
@@ -154,14 +154,10 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const [tempCaseUuid, setTempCaseUuid] = useState(null);
 
-    const oldTempCaseUuid = useRef(null);
-
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
 
     const [formatWithParameters, setFormatWithParameters] = useState([]);
-
-    const [triggerReset, setTriggerReset] = React.useState(true);
 
     const [isParamsOk, setIsParamsOk] = useState(true);
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
@@ -180,7 +176,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             autoFocus: true,
             elementType: ElementType.STUDY,
             parentDirectoryId: activeDirectory,
-            triggerReset,
             active: open,
             style: {
                 width: '90%',
@@ -189,7 +184,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const [description, DescriptionField] = useTextValue({
         label: 'descriptionProperty',
-        triggerReset,
         style: {
             width: '90%',
         },
@@ -217,9 +211,9 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         providedCaseFileError,
         providedCaseFileOk,
         setProvidedCaseFileOk,
+        resetProvidedCaseFile,
     ] = useFileValue({
         label: 'Case',
-        triggerReset,
         isLoading: isUploadingFileInProgress,
     });
 
@@ -272,19 +266,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         }
     }, [open]);
 
-    useEffect(() => {
-        if (oldTempCaseUuid.current !== tempCaseUuid) {
-            if (oldTempCaseUuid.current) {
-                deleteCase(oldTempCaseUuid.current)
-                    .then()
-                    .catch((error) =>
-                        handleFileUploadError(error, setCreateStudyErr)
-                    );
-            }
-            oldTempCaseUuid.current = tempCaseUuid;
-        }
-    }, [tempCaseUuid, handleFileUploadError]);
-
     usePrefillNameField({
         nameRef: studyNameRef,
         selectedFile: providedExistingCase ?? providedCaseFile,
@@ -336,21 +317,21 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         setProvidedCaseFileOk,
     ]);
 
-    const resetDialog = () => {
-        setCreateStudyErr('');
-        setStudyName('');
-        setActiveDirectoryName(selectedDirectory?.elementName);
+    const handleCloseDialog = () => {
+        // if we have a tempCaseUuid that means we cancelled the creation
+        // so we need to delete the associated newly created case (if we created one)
+        if (providedCaseFile && tempCaseUuid) {
+            deleteCase(tempCaseUuid)
+                .then()
+                .catch((error) =>
+                    handleFileUploadError(error, setCreateStudyErr)
+                );
+        }
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         dispatch(removeSelectedCase());
-        setTriggerReset((oldVal) => !oldVal);
-        setFormatWithParameters([]);
-        setIsParamsCaseFileDisplayed(false);
-    };
-
-    const handleCloseDialog = () => {
-        onClose();
+        resetProvidedCaseFile();
         resetImportParamsToDefault();
-        resetDialog();
+        onClose();
     };
 
     const AdvancedParameterButton = ({
@@ -433,7 +414,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 : ''
         )
             .then(() => {
-                oldTempCaseUuid.current = null;
                 handleCloseDialog();
             })
             .catch((error) => {
@@ -445,7 +425,10 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     },
                 });
             })
-            .finally(() => dispatch(removeUploadingElement(uploadingStudy)));
+            .finally(() => {
+                setTempCaseUuid(null);
+                dispatch(removeUploadingElement(uploadingStudy));
+            });
         dispatch(addUploadingElement(uploadingStudy));
     };
 
