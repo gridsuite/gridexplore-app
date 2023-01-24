@@ -153,7 +153,7 @@ export const ExplicitNamingFilterRow = ({
     );
 };
 
-function generNamingsArray(defaultValues, isGeneratorOrLoad) {
+function generateNamingArray(defaultValues, isGeneratorOrLoad) {
     const min_namings_number = 10;
     let values = defaultValues ?? [];
     let n = values ? min_namings_number - values.length : min_namings_number;
@@ -206,7 +206,7 @@ const ExplicitNamingFilterDialogContent = ({
             : headersId,
         Row: ExplicitNamingFilterRow,
         isGeneratorOrLoad: isGeneratorOrLoad,
-        defaultTableValues: generNamingsArray(
+        defaultTableValues: generateNamingArray(
             defaultValues?.filterEquipmentsAttributes,
             isGeneratorOrLoad
         ),
