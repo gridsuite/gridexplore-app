@@ -292,23 +292,27 @@ export const usePrefillNameField = ({
     selectedFile,
     setValue,
     selectedFileOk,
-    createStudyErr,
+    creationError,
     fileCheckedCase,
     touched,
 }) => {
     useEffect(() => {
         if (setValue) {
+            //here selectedFile is a file the user choosed through a picker
             if (
-                nameRef !== undefined &&
-                nameRef.current.trim().length === 0 &&
-                selectedFile != null &&
+                selectedFile?.name &&
+                !creationError &&
                 selectedFileOk &&
                 fileCheckedCase &&
-                createStudyErr === ''
+                !touched
             ) {
                 setValue(
                     selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
                 );
+            }
+            //here selectedFile is an already stored case
+            else if (selectedFile?.elementName && !creationError) {
+                setValue(selectedFile.elementName);
             } else if (selectedFile == null && !touched) {
                 setValue('');
             }
@@ -320,7 +324,7 @@ export const usePrefillNameField = ({
         touched,
         selectedFileOk,
         fileCheckedCase,
-        createStudyErr,
+        creationError,
     ]);
 };
 
