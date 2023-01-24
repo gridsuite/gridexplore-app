@@ -341,12 +341,14 @@ export function fetchElementsInfos(ids) {
 export function createStudy(
     studyName,
     studyDescription,
-    caseName,
+    caseUuid,
+    duplicateCase,
     parentDirectoryUuid,
     importParameters
 ) {
     console.info('Creating a new study...');
     let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('duplicateCase', duplicateCase);
     urlSearchParams.append('description', studyDescription);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
@@ -355,7 +357,7 @@ export function createStudy(
         '/v1/explore/studies/' +
         encodeURIComponent(studyName) +
         '/cases/' +
-        encodeURIComponent(caseName) +
+        encodeURIComponent(caseUuid) +
         '?' +
         urlSearchParams.toString();
     console.debug(createStudyUrl);
@@ -820,12 +822,13 @@ export function getCaseImportParameters(caseUuid) {
 }
 
 export function createCaseWithoutDirectoryElementCreation(selectedFile) {
-    const createPrivateCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases';
+    const createCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases';
     const formData = new FormData();
     formData.append('file', selectedFile);
-    console.debug(createPrivateCaseUrl);
+    formData.append('withExpiration', encodeURIComponent(true));
+    console.debug(createCaseUrl);
 
-    return backendFetchJson(createPrivateCaseUrl, {
+    return backendFetchJson(createCaseUrl, {
         method: 'post',
         body: formData,
     });
