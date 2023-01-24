@@ -28,51 +28,61 @@ const filterSave = (
                 id: 'distributionKeyWithMissingIdError',
             })
         );
-    } else {
-        let values = tableValues.filter(
-            (el) => el?.equipmentID && el.equipmentID.trim().length > 0
+        return;
+    }
+
+    let values = tableValues.filter(
+        (el) => el?.equipmentID && el.equipmentID.trim().length > 0
+    );
+    if (values.length === 0) {
+        setCreateFilterErr(
+            intl.formatMessage({
+                id: 'emptyFilterError',
+            })
         );
-        let isAllKeysNull = values.every((row) => !row.distributionKey);
-        values.forEach((val, index) => {
-            // we check if all the distribution keys are null.
-            // If one is set, all the distribution keys that are null take 0 as value
-            const isDKEmpty =
-                isGeneratorOrLoad && !isAllKeysNull && !val.distributionKey;
-            values[index] = {
-                equipmentID: val.equipmentID?.trim(),
-                distributionKey: isDKEmpty ? 0 : val?.distributionKey,
-            };
-        });
-        if (isFilterCreation) {
-            createFilter(
-                {
-                    type: FilterType.EXPLICIT_NAMING,
-                    equipmentType: equipmentType,
-                    filterEquipmentsAttributes: values,
-                },
-                name,
-                activeDirectory
-            )
-                .then(() => {
-                    handleClose();
-                })
-                .catch((message) => {
-                    setCreateFilterErr(message);
-                });
-        } else {
-            saveFilter({
-                id: id,
+        return;
+    }
+
+    let isAllKeysNull = values.every((row) => !row.distributionKey);
+    values.forEach((val, index) => {
+        // we check if all the distribution keys are null.
+        // If one is set, all the distribution keys that are null take 0 as value
+        const isDKEmpty =
+            isGeneratorOrLoad && !isAllKeysNull && !val.distributionKey;
+        values[index] = {
+            equipmentID: val.equipmentID?.trim(),
+            distributionKey: isDKEmpty ? 0 : val?.distributionKey,
+        };
+    });
+    if (isFilterCreation) {
+        createFilter(
+            {
                 type: FilterType.EXPLICIT_NAMING,
                 equipmentType: equipmentType,
                 filterEquipmentsAttributes: values,
+            },
+            name,
+            activeDirectory
+        )
+            .then(() => {
+                handleClose();
             })
-                .then(() => {
-                    handleClose();
-                })
-                .catch((message) => {
-                    setCreateFilterErr(message);
-                });
-        }
+            .catch((message) => {
+                setCreateFilterErr(message);
+            });
+    } else {
+        saveFilter({
+            id: id,
+            type: FilterType.EXPLICIT_NAMING,
+            equipmentType: equipmentType,
+            filterEquipmentsAttributes: values,
+        })
+            .then(() => {
+                handleClose();
+            })
+            .catch((message) => {
+                setCreateFilterErr(message);
+            });
     }
 };
 

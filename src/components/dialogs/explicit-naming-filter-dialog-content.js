@@ -153,20 +153,6 @@ export const ExplicitNamingFilterRow = ({
     );
 };
 
-function generateNamingArray(defaultValues, isGeneratorOrLoad) {
-    const min_namings_number = 10;
-    let values = defaultValues ?? [];
-    let n = values ? min_namings_number - values.length : min_namings_number;
-    for (var i = 0; i < n; i++) {
-        if (isGeneratorOrLoad) {
-            values.push({ equipmentID: '', distributionKey: 0 });
-        } else {
-            values.push({ equipmentID: '' });
-        }
-    }
-    return values;
-}
-
 const ExplicitNamingFilterDialogContent = ({
     id,
     open,
@@ -206,13 +192,11 @@ const ExplicitNamingFilterDialogContent = ({
             : headersId,
         Row: ExplicitNamingFilterRow,
         isGeneratorOrLoad: isGeneratorOrLoad,
-        defaultTableValues: generateNamingArray(
-            defaultValues?.filterEquipmentsAttributes,
-            isGeneratorOrLoad
-        ),
+        defaultTableValues: defaultValues?.filterEquipmentsAttributes,
         setCreateFilterErr: setCreateFilterErr,
         equipmentType: equipmentType,
         setIsEdited: setIsEdited,
+        minNumberOfEquipments: 10,
     });
 
     useEffect(() => {

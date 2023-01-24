@@ -328,6 +328,25 @@ export const usePrefillNameField = ({
     ]);
 };
 
+function generateNamingArray(
+    defaultValues,
+    isGeneratorOrLoad,
+    minNumberOfEquipments
+) {
+    let values = defaultValues ?? [];
+    let n = values
+        ? minNumberOfEquipments - values.length
+        : minNumberOfEquipments;
+    for (var i = 0; i < n; i++) {
+        if (isGeneratorOrLoad) {
+            values.push({ equipmentID: '', distributionKey: 0 });
+        } else {
+            values.push({ equipmentID: '' });
+        }
+    }
+    return values;
+}
+
 export const useEquipmentTableValues = ({
     id,
     tableHeadersIds,
@@ -339,6 +358,7 @@ export const useEquipmentTableValues = ({
     name,
     equipmentType,
     setIsEdited,
+    minNumberOfEquipments,
 }) => {
     const classes = useStyles();
     const [values, setValues] = useState([]);
@@ -349,9 +369,15 @@ export const useEquipmentTableValues = ({
     }, []);
     const checkValues = useCallback(() => {
         if (defaultTableValues !== undefined) {
-            setValues([...defaultTableValues]);
+            setValues(
+                generateNamingArray(
+                    [...defaultTableValues],
+                    isGeneratorOrLoad,
+                    minNumberOfEquipments
+                )
+            );
         }
-    }, [defaultTableValues]);
+    }, [defaultTableValues, isGeneratorOrLoad, minNumberOfEquipments]);
 
     useEffect(() => {
         checkValues();
@@ -362,17 +388,31 @@ export const useEquipmentTableValues = ({
         setValues((oldValues) => {
             if (selectedIds.size === oldValues.length) {
                 setSelectedIds(new Set());
-                return [{}];
+                return generateNamingArray(
+                    [],
+                    isGeneratorOrLoad,
+                    minNumberOfEquipments
+                );
             }
             const newValues = oldValues.filter(
                 (val) => !selectedIds.has(oldValues.indexOf(val))
             );
-            return newValues.length === 0 ? [{}] : newValues;
+            return generateNamingArray(
+                newValues,
+                isGeneratorOrLoad,
+                minNumberOfEquipments
+            );
         });
         setSelectedIds(new Set());
         setIsEdited(true);
         setCreateFilterErr('');
-    }, [selectedIds, setCreateFilterErr, setIsEdited]);
+    }, [
+        selectedIds,
+        setCreateFilterErr,
+        setIsEdited,
+        isGeneratorOrLoad,
+        minNumberOfEquipments,
+    ]);
 
     const handleSetValue = useCallback(
         (index, newValue) => {
@@ -488,8 +528,13 @@ export const useEquipmentTableValues = ({
     const updateTableValues = useCallback(
         (csvData, keepTableValues) => {
             if (csvData) {
+                let newValues = [...values];
                 if (!keepTableValues) {
-                    values.splice(0);
+                    newValues.splice(0);
+                } else {
+                    newValues = newValues.filter(
+                        (v) => v?.equipmentID?.trim().length > 0
+                    );
                 }
                 let objects = Object.keys(csvData).map(function (key) {
                     return {
@@ -497,10 +542,17 @@ export const useEquipmentTableValues = ({
                         distributionKey: csvData[key][1]?.trim() || undefined,
                     };
                 });
-                values.push(...objects);
+                newValues.push(...objects);
+                setValues(
+                    generateNamingArray(
+                        newValues,
+                        isGeneratorOrLoad,
+                        minNumberOfEquipments
+                    )
+                );
             }
         },
-        [values]
+        [values, isGeneratorOrLoad, minNumberOfEquipments]
     );
 
     const field = useMemo(() => {

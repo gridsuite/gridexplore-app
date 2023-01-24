@@ -174,6 +174,7 @@
     "multipleEquipmentTypeError": "Chaque filtre ne doit avoir qu'un seul type d'équipement",
     "missingEquipmentsIdsError": "L'ID est un champ obligatoire pour tous les équipements",
     "distributionKeyWithMissingIdError": "ID manquant avec une clé de répartition définie",
+    "emptyFilterError": "Le filtre doit contenir au moins un équipement",
     "noEquipmentTypeFoundInCSVError": "Le type d'équipement est un champ obligatoire",
     "noDataInCsvFile": "Aucune donnée trouvée dans ce fichier",
     "noFilterTypeSelected": "La sélection du type de filtre est obligatoire",
