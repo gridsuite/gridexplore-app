@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
@@ -154,6 +154,8 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const [tempCaseUuid, setTempCaseUuid] = useState(null);
 
+    const oldTempCaseUuid = useRef(null);
+
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
 
@@ -265,6 +267,19 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             setTempCaseUuid(null);
         }
     }, [open]);
+
+    useEffect(() => {
+        if (oldTempCaseUuid.current !== tempCaseUuid) {
+            if (oldTempCaseUuid.current) {
+                deleteCase(oldTempCaseUuid.current)
+                    .then()
+                    .catch((error) =>
+                        handleFileUploadError(error, setCreateStudyErr)
+                    );
+            }
+            oldTempCaseUuid.current = tempCaseUuid;
+        }
+    }, [tempCaseUuid, handleFileUploadError]);
 
     usePrefillNameField({
         nameRef: studyNameRef,

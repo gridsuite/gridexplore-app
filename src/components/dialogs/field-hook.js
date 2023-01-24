@@ -102,10 +102,7 @@ export const useTextValue = ({
     return [value, field, setValue, hasChanged];
 };
 
-export const useFileValue = ({
-    fileExceedsLimitMessage,
-    isLoading,
-}) => {
+export const useFileValue = ({ fileExceedsLimitMessage, isLoading }) => {
     const selectedFile = useSelector((state) => state.selectedFile);
     const intl = useIntl();
     const dispatch = useDispatch();
@@ -145,7 +142,14 @@ export const useFileValue = ({
             setFileOk(false);
         }
     }, [selectedFile, fileExceedsLimitMessage, intl]);
-    return [selectedFile, field, fileError, fileOk, setFileOk, resetSelectedFile];
+    return [
+        selectedFile,
+        field,
+        fileError,
+        fileOk,
+        setFileOk,
+        resetSelectedFile,
+    ];
 };
 
 const makeAdornmentEndIcon = (content) => {
