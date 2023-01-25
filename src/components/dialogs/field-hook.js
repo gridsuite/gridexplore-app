@@ -339,7 +339,7 @@ function generateNamingArray(
         : minNumberOfEquipments;
     for (var i = 0; i < n; i++) {
         if (isGeneratorOrLoad) {
-            values.push({ equipmentID: '', distributionKey: 0 });
+            values.push({ equipmentID: '', distributionKey: undefined });
         } else {
             values.push({ equipmentID: '' });
         }
