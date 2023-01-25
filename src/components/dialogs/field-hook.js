@@ -550,6 +550,7 @@ export const useEquipmentTableValues = ({
                         minNumberOfEquipments
                     )
                 );
+                setIsEdited(true);
             }
         },
         [values, isGeneratorOrLoad, minNumberOfEquipments]
