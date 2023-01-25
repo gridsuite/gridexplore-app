@@ -71,9 +71,6 @@ export const CriteriaBasedFilterDialog = ({
 
     const handleCancel = () => {
         onClose();
-        currentFilter.current = null;
-        setInitialFilter(null);
-        setBtnSaveListDisabled(true);
     };
 
     const handleValidate = () => {

@@ -81,8 +81,6 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
     };
 
     const handleCancel = () => {
-        setAceEditorContent(currentScript.script);
-        setBtnSaveListDisabled(true);
         onClose();
     };
 

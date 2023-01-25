@@ -236,18 +236,6 @@ const CreateFilterDialog = ({
         setFilterNameValid(isNameValid);
     };
 
-    const resetDialog = () => {
-        setNewListName('');
-        setNewListType(FilterType.CRITERIA);
-        setFilterType('');
-        setLoadingCheckFilterName(false);
-        setCreateFilterErr('');
-        setFilterNameValid(false);
-        setOpenConfirmationPopup(false);
-        setChoosedFilterType(FilterType.CRITERIA);
-        setEquipmentType(null);
-    };
-
     const handleNamingFilterCallBack = (
         tableValues,
         isGeneratorOrLoad,
@@ -371,7 +359,6 @@ const CreateFilterDialog = ({
 
     const handleClose = () => {
         onClose();
-        resetDialog();
     };
 
     const renderFilterNameStatus = () => {

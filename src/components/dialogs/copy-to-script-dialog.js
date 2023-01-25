@@ -42,7 +42,6 @@ const CopyToScriptDialog = ({
     };
 
     const handleClose = () => {
-        setNewNameValue(currentName);
         onClose();
     };
 

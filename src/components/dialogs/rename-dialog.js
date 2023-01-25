@@ -41,13 +41,10 @@ const RenameDialog = ({
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const intl = useIntl();
 
-    const [triggerReset, setTriggerReset] = React.useState(true);
-
     const [newName, newNameField, newNameError, newNameOk] = useNameField({
         label: message,
         autoFocus: true,
         active: open,
-        triggerReset,
         defaultValue: currentName,
         // if current element is directory, activeDirectory is current element
         parentDirectoryId:
@@ -71,7 +68,6 @@ const RenameDialog = ({
     };
 
     const handleClose = () => {
-        setTriggerReset((oldValue) => !oldValue);
         onClose();
     };
 
