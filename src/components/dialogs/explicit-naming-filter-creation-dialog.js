@@ -132,6 +132,7 @@ const ExplicitNamingFilterCreationDialog = ({
                     variant="outlined"
                     onClick={handleCreateFilter}
                     disabled={
+                        tableValues === undefined ||
                         tableValues.length === 0 ||
                         createFilterErr !== '' ||
                         !equipmentType ||
