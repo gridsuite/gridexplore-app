@@ -60,7 +60,6 @@ const AccessRightsDialog = ({
 
     const handleClose = () => {
         onClose();
-        setLoading(false);
     };
 
     const handleChange = (event) => {

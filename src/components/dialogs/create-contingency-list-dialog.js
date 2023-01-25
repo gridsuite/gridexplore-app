@@ -57,18 +57,8 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    const resetDialog = () => {
-        setContingencyListName('');
-        setContingencyListDescription('');
-        setContingencyListType(ContingencyListType.SCRIPT);
-        setLoadingCheckContingencyName(false);
-        setCreateContingencyListErr('');
-        setContingencyNameValid(false);
-    };
-
     const handleCloseDialog = () => {
         onClose();
-        resetDialog();
     };
 
     const handleContingencyListDescriptionChanges = (e) => {
@@ -163,7 +153,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         )
             .then(() => {
                 onClose();
-                resetDialog();
             })
             .catch((error) => {
                 setCreateContingencyListErr(error.message);
