@@ -120,7 +120,7 @@ const DirectoryContent = () => {
 
     const classes = useStyles();
     const intl = useIntl();
-    const toDayMidnight = useRef(new Date().setHours(0, 0, 0, 0));
+    const todayStart = new Date().setHours(0, 0, 0, 0);
 
     /* Menu states */
     const [mousePosition, setMousePosition] =
@@ -355,8 +355,7 @@ const DirectoryContent = () => {
                 intl.locale === 'en'
                     ? data.toISOString().substring(0, 10)
                     : data.toLocaleDateString(intl.locale);
-            const cellText =
-                toDayMidnight.current === cellMidnight ? time : displayedDate;
+            const cellText = todayStart === cellMidnight ? time : displayedDate;
             const fullDate = new Intl.DateTimeFormat(intl.locale, {
                 dateStyle: 'long',
                 timeStyle: 'long',
