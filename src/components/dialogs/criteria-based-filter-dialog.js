@@ -36,18 +36,11 @@ export const CriteriaBasedFilterDialog = ({
     isFilterCreation,
     handleFilterCreation,
 }) => {
-    const [initialFilter, setInitialFilter] = useState(null);
     const currentFilter = useRef(null);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const classes = useStyles();
     const openRef = useRef(null);
     openRef.current = open;
-
-    useEffect(() => {
-        if (initialFilter !== null) {
-            setBtnSaveListDisabled(initialFilter.transient !== true);
-        }
-    }, [initialFilter]);
 
     const handleEditCallback = (filter) => {
         if (contentType === ElementType.CONTINGENCY_LIST) {
