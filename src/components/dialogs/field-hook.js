@@ -553,7 +553,7 @@ export const useEquipmentTableValues = ({
                 setIsEdited(true);
             }
         },
-        [values, isGeneratorOrLoad, minNumberOfEquipments]
+        [values, isGeneratorOrLoad, minNumberOfEquipments, setIsEdited]
     );
 
     const field = useMemo(() => {
