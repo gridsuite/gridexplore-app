@@ -52,11 +52,6 @@ const ExplicitNamingFilterCreationDialog = ({
     const fetchFilter = useRef(null);
     fetchFilter.current = open && !isFilterCreation;
 
-    const resetDialog = () => {
-        setEquipmentType('');
-        setCreateFilterErr('');
-    };
-
     useEffect(() => {
         setIsGeneratorOrLoad(
             equipmentType === 'GENERATOR' || equipmentType === 'LOAD'
@@ -100,7 +95,6 @@ const ExplicitNamingFilterCreationDialog = ({
 
     const handleClose = () => {
         if (onClose) onClose();
-        resetDialog();
     };
 
     return (

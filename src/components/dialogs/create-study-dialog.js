@@ -161,8 +161,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const [formatWithParameters, setFormatWithParameters] = useState([]);
 
-    const [triggerReset, setTriggerReset] = React.useState(true);
-
     const [isParamsOk, setIsParamsOk] = useState(true);
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
     const [isParamsCaseFileDisplayed, setIsParamsCaseFileDisplayed] =
@@ -180,7 +178,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             autoFocus: true,
             elementType: ElementType.STUDY,
             parentDirectoryId: activeDirectory,
-            triggerReset,
             active: open,
             style: {
                 width: '90%',
@@ -189,7 +186,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const [description, DescriptionField] = useTextValue({
         label: 'descriptionProperty',
-        triggerReset,
         style: {
             width: '90%',
         },
@@ -217,9 +213,9 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         providedCaseFileError,
         providedCaseFileOk,
         setProvidedCaseFileOk,
+        resetProvidedCaseFile,
     ] = useFileValue({
         label: 'Case',
-        triggerReset,
         isLoading: isUploadingFileInProgress,
     });
 
@@ -336,21 +332,21 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         setProvidedCaseFileOk,
     ]);
 
-    const resetDialog = () => {
-        setCreateStudyErr('');
-        setStudyName('');
-        setActiveDirectoryName(selectedDirectory?.elementName);
+    const handleCloseDialog = () => {
+        // if we have a tempCaseUuid that means we cancelled the creation
+        // so we need to delete the associated newly created case (if we created one)
+        if (providedCaseFile && tempCaseUuid) {
+            deleteCase(tempCaseUuid)
+                .then()
+                .catch((error) =>
+                    handleFileUploadError(error, setCreateStudyErr)
+                );
+        }
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         dispatch(removeSelectedCase());
-        setTriggerReset((oldVal) => !oldVal);
-        setFormatWithParameters([]);
-        setIsParamsCaseFileDisplayed(false);
-    };
-
-    const handleCloseDialog = () => {
-        onClose();
+        resetProvidedCaseFile();
         resetImportParamsToDefault();
-        resetDialog();
+        onClose();
     };
 
     const AdvancedParameterButton = ({
@@ -433,7 +429,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 : ''
         )
             .then(() => {
-                oldTempCaseUuid.current = null;
                 handleCloseDialog();
             })
             .catch((error) => {
@@ -445,7 +440,10 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     },
                 });
             })
-            .finally(() => dispatch(removeUploadingElement(uploadingStudy)));
+            .finally(() => {
+                setTempCaseUuid(null);
+                dispatch(removeUploadingElement(uploadingStudy));
+            });
         dispatch(addUploadingElement(uploadingStudy));
     };
 
