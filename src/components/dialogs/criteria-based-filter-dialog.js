@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
     dialogPaper: {
         width: 'auto',
         minWidth: '800px',
-        minHeight: '400px',
+        minHeight: '600px',
         margin: 'auto',
     },
 }));
