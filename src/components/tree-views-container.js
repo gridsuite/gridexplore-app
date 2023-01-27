@@ -32,6 +32,18 @@ import * as constants from '../utils/UIconstants';
 // Menu
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 
+let TreeViewPluginsArray = [];
+try {
+    const { TreeViewPlugins } = require('../plugins');
+    if (!TreeViewPlugins) {
+        throw new Error('No TreeViewPlugins definition in ../../plugins');
+    }
+
+    TreeViewPluginsArray = TreeViewPlugins;
+} catch (e) {
+    console.debug('No TreeViewPlugins available', e);
+}
+
 const initialMousePosition = {
     mouseX: null,
     mouseY: null,
@@ -616,6 +628,9 @@ const TreeViewsContainer = () => {
                 }}
                 onContextMenu={(e) => onContextMenu(e, null)}
             >
+                {TreeViewPluginsArray.map((Plugin, index) => {
+                    return <Plugin key={index} />;
+                })}
                 {treeData.mapData &&
                     treeData.rootDirectories.map((rootDirectory) => (
                         <DirectoryTreeView

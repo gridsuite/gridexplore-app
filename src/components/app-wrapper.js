@@ -36,6 +36,20 @@ import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
 
+let messages_plugins_en = null;
+try {
+    messages_plugins_en = require('../plugins/translations/en.json');
+} catch (e) {
+    console.debug('No plugins EN translations available');
+}
+
+let messages_plugins_fr = null;
+try {
+    messages_plugins_fr = require('../plugins/translations/fr.json');
+} catch (e) {
+    console.debug('No plugins FR translations available');
+}
+
 const lightTheme = createTheme({
     palette: {
         mode: 'light',
@@ -112,6 +126,7 @@ const messages = {
         ...table_en,
         ...treeview_finder_en,
         ...card_error_boundary_en,
+        ...messages_plugins_en,
     },
     fr: {
         ...messages_fr,
@@ -120,6 +135,7 @@ const messages = {
         ...table_fr,
         ...treeview_finder_fr,
         ...card_error_boundary_fr,
+        ...messages_plugins_fr,
     },
 };
 

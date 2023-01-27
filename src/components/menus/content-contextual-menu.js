@@ -58,6 +58,19 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 
+let DirectoryContentMenuPluginsArray = [];
+try {
+    const { DirectoryContentMenuPlugins } = require('../../plugins');
+    if (!DirectoryContentMenuPlugins) {
+        throw new Error(
+            'No DirectoryContentMenuPlugins definition in ../../plugins'
+        );
+    }
+    DirectoryContentMenuPluginsArray = DirectoryContentMenuPlugins;
+} catch (e) {
+    console.debug('No DirectoryContentMenuPlugins available', e);
+}
+
 const ContentContextualMenu = (props) => {
     const {
         activeElement,
@@ -507,6 +520,25 @@ const ContentContextualMenu = (props) => {
                     );
                 },
                 icon: <InsertDriveFileIcon fontSize="small" />,
+            });
+        }
+
+        if (DirectoryContentMenuPluginsArray.length > 0) {
+            menuItems.push({ isDivider: true });
+            DirectoryContentMenuPluginsArray.forEach((menuPlugin) => {
+                menuItems.push({
+                    messageDescriptorId: menuPlugin.messageDescriptorId,
+                    callback: () => {
+                        const openDialogId = menuPlugin.handleClick(
+                            activeElement,
+                            DialogsId
+                        );
+                        if (openDialogId) {
+                            handleOpenDialog(openDialogId);
+                        }
+                    },
+                    icon: menuPlugin.icon,
+                });
             });
         }
 
