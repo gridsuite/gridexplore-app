@@ -333,10 +333,10 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     ]);
 
     const handleCloseDialog = () => {
-        // if we have a tempCaseUuid that means we cancelled the creation
+        // if we have an oldTempCaseUuid here that means we cancelled the creation
         // so we need to delete the associated newly created case (if we created one)
-        if (providedCaseFile && tempCaseUuid) {
-            deleteCase(tempCaseUuid)
+        if (providedCaseFile && oldTempCaseUuid.current) {
+            deleteCase(oldTempCaseUuid.current)
                 .then()
                 .catch((error) =>
                     handleFileUploadError(error, setCreateStudyErr)
@@ -429,6 +429,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 : ''
         )
             .then(() => {
+                oldTempCaseUuid.current = null;
                 handleCloseDialog();
             })
             .catch((error) => {
