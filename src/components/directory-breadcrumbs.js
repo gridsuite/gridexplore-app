@@ -6,6 +6,7 @@
  */
 
 import React from 'react';
+import clsx from 'clsx';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory } from '../redux/actions';
@@ -41,13 +42,15 @@ const useStyles = makeStyles((theme) => ({
         display: 'inline-grid',
         alignItems: 'center',
         textAlign: 'center',
-        fontWeight: 'bold',
 
         backgroundColor: theme.row.hover,
         padding: theme.spacing(0.5, 2, 0.5),
         borderRadius: theme.spacing(2),
 
         cursor: 'initial',
+    },
+    selectedLabel: {
+        fontWeight: 'bold',
     },
     icon: {
         marginRight: theme.spacing(1),
@@ -120,18 +123,24 @@ const DirectoryBreadcrumbs = () => {
             currentPath.length > 0
         ) {
             return (
-                <Typography className={classes.directory} color="textPrimary">
-                    <Tooltip
-                        title={currentPath[currentPath.length - 1].elementName}
-                    >
-                        <div className={classes.limitTextSize}>
+                <Tooltip
+                    title={currentPath[currentPath.length - 1].elementName}
+                >
+                    <div className={classes.directory}>
+                        <Typography
+                            className={clsx(
+                                classes.selectedLabel,
+                                classes.limitTextSize
+                            )}
+                            color="textPrimary"
+                        >
                             {currentPath.length === 1 && (
                                 <FolderOpenIcon className={classes.icon} />
                             )}
                             {currentPath[currentPath.length - 1].elementName}
-                        </div>
-                    </Tooltip>
-                </Typography>
+                        </Typography>
+                    </div>
+                </Tooltip>
             );
         }
     };
