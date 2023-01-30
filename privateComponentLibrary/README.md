@@ -7,6 +7,7 @@ It should make the app works with or without external plugins from privateCompon
 
 in this folder
 ```bash
+    npm install
     npm run build
 ```
 then in root folder of gridExplore-app

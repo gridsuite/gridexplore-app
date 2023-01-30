@@ -1,6 +1,9 @@
 # dependencies
 **/node_modules
+
+# parcel
 **/dist
+**/.parcel-cache
 
 # production
 /build
