@@ -6,7 +6,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
     dialogPaper: {
         width: 'auto',
         minWidth: '800px',
-        minHeight: '400px',
+        minHeight: '600px',
         margin: 'auto',
     },
 }));
@@ -36,18 +36,11 @@ export const CriteriaBasedFilterDialog = ({
     isFilterCreation,
     handleFilterCreation,
 }) => {
-    const [initialFilter, setInitialFilter] = useState(null);
     const currentFilter = useRef(null);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const classes = useStyles();
     const openRef = useRef(null);
     openRef.current = open;
-
-    useEffect(() => {
-        if (initialFilter !== null) {
-            setBtnSaveListDisabled(initialFilter.transient !== true);
-        }
-    }, [initialFilter]);
 
     const handleEditCallback = (filter) => {
         if (contentType === ElementType.CONTINGENCY_LIST) {
@@ -71,9 +64,6 @@ export const CriteriaBasedFilterDialog = ({
 
     const handleCancel = () => {
         onClose();
-        currentFilter.current = null;
-        setInitialFilter(null);
-        setBtnSaveListDisabled(true);
     };
 
     const handleValidate = () => {

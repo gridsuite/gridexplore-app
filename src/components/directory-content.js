@@ -120,7 +120,7 @@ const DirectoryContent = () => {
 
     const classes = useStyles();
     const intl = useIntl();
-    const toDayMidnight = useRef(new Date().setHours(0, 0, 0, 0));
+    const todayStart = new Date().setHours(0, 0, 0, 0);
 
     /* Menu states */
     const [mousePosition, setMousePosition] =
@@ -346,16 +346,20 @@ const DirectoryContent = () => {
         const data = new Date(cellData.rowData[cellData.dataKey]);
         if (data instanceof Date && !isNaN(data)) {
             const cellMidnight = new Date(data).setHours(0, 0, 0, 0);
+
             const time = new Intl.DateTimeFormat(intl.locale, {
                 timeStyle: 'medium',
+                hour12: false,
             }).format(data);
-            const cellText =
-                toDayMidnight.current === cellMidnight
-                    ? time
+            const displayedDate =
+                intl.locale === 'en'
+                    ? data.toISOString().substring(0, 10)
                     : data.toLocaleDateString(intl.locale);
+            const cellText = todayStart === cellMidnight ? time : displayedDate;
             const fullDate = new Intl.DateTimeFormat(intl.locale, {
                 dateStyle: 'long',
                 timeStyle: 'long',
+                hour12: false,
             }).format(data);
 
             return (

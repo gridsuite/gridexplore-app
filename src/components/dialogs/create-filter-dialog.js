@@ -6,16 +6,12 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import withStyles from '@mui/styles/withStyles';
 import makeStyles from '@mui/styles/makeStyles';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -23,7 +19,7 @@ import TextField from '@mui/material/TextField';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
-import { createFilter, elementExists, saveFilter } from '../../utils/rest-api';
+import { createFilter, elementExists } from '../../utils/rest-api';
 import Alert from '@mui/material/Alert';
 import { useSelector } from 'react-redux';
 import { ElementType, FilterType } from '../../utils/elementType';
@@ -32,6 +28,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
 import ExplicitNamingFilterDialogContent from './explicit-naming-filter-dialog-content';
 import { DialogContentText } from '@mui/material';
+import filterSave from './filters-save';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -47,53 +44,10 @@ const useStyles = makeStyles((theme) => ({
     dialogPaper: {
         width: 'auto',
         minWidth: '800px',
-        minHeight: '400px',
+        minHeight: '600px',
         margin: 'auto',
     },
 }));
-
-const CustomDialogTitle = (props) => {
-    const { children, onClose, ...other } = props;
-    const classes = useStyles();
-    return (
-        <DialogTitle
-            className={classes.root}
-            {...other}
-            style={{ padding: '15px' }}
-        >
-            <Typography variant="h6">{children}</Typography>
-            {onClose ? (
-                <IconButton
-                    aria-label="close"
-                    className={classes.closeButton}
-                    onClick={onClose}
-                    size="large"
-                >
-                    <CloseIcon />
-                </IconButton>
-            ) : null}
-        </DialogTitle>
-    );
-};
-
-const CustomDialogContent = withStyles(() => ({
-    root: {
-        padding: '15px',
-    },
-}))(DialogContent);
-
-const CustomDialogActions = withStyles(() => ({
-    root: {
-        margin: '0',
-        padding: '15px',
-    },
-}))(DialogActions);
-
-const DialogContainer = withStyles(() => ({
-    paper: {
-        width: '600px',
-    },
-}))(Dialog);
 
 export const renderPopup = (
     isConfirmationPopupOpen,
@@ -162,7 +116,7 @@ const CreateFilterDialog = ({
     const [filterToSave, setFilterToSave] = useState(null);
     const [tableValues, setTableValues] = useState([]);
     const [isGeneratorOrLoad, setIsGeneratorOrLoad] = useState(false);
-    const [isCreation, setIsFilterCreation] = useState(false);
+    const [isFilterCreation, setIsFilterCreation] = useState(false);
     const [equipmentType, setEquipmentType] = useState(null);
     const [name, setName] = useState('');
     const [id, setId] = useState('');
@@ -236,18 +190,6 @@ const CreateFilterDialog = ({
         setFilterNameValid(isNameValid);
     };
 
-    const resetDialog = () => {
-        setNewListName('');
-        setNewListType(FilterType.CRITERIA);
-        setFilterType('');
-        setLoadingCheckFilterName(false);
-        setCreateFilterErr('');
-        setFilterNameValid(false);
-        setOpenConfirmationPopup(false);
-        setChoosedFilterType(FilterType.CRITERIA);
-        setEquipmentType(null);
-    };
-
     const handleNamingFilterCallBack = (
         tableValues,
         isGeneratorOrLoad,
@@ -262,69 +204,6 @@ const CreateFilterDialog = ({
         setName(name);
         setId(id);
         setTableValues(tableValues);
-    };
-
-    const handleCreateFilter = (
-        tableValues,
-        isGeneratorOrLoad,
-        isCreation,
-        equipmentType,
-        name,
-        id
-    ) => {
-        let hasMissingId = tableValues.some((el) => !el?.equipmentID?.trim());
-        if (hasMissingId) {
-            setCreateFilterErr(
-                intl.formatMessage({
-                    id: 'missingEquipmentsIdsError',
-                })
-            );
-        } else {
-            let isAllKeysNull = tableValues.every(
-                (row) => !row.distributionKey
-            );
-            tableValues.forEach((val, index) => {
-                // we check if all the distribution keys are null.
-                // If one is set, all the distribution keys that are null take 0 as value
-                const isDKEmpty =
-                    isGeneratorOrLoad && !isAllKeysNull && !val.distributionKey;
-                tableValues[index] = {
-                    equipmentID: val.equipmentID?.trim(),
-                    distributionKey: isDKEmpty ? 0 : val.distributionKey,
-                };
-            });
-
-            if (isCreation) {
-                createFilter(
-                    {
-                        type: FilterType.EXPLICIT_NAMING,
-                        equipmentType: equipmentType,
-                        filterEquipmentsAttributes: tableValues,
-                    },
-                    name,
-                    activeDirectory
-                )
-                    .then(() => {
-                        handleClose();
-                    })
-                    .catch((message) => {
-                        setCreateFilterErr(message);
-                    });
-            } else {
-                saveFilter({
-                    id: id,
-                    type: FilterType.EXPLICIT_NAMING,
-                    equipmentType: equipmentType,
-                    filterEquipmentsAttributes: tableValues,
-                })
-                    .then(() => {
-                        handleClose();
-                    })
-                    .catch((message) => {
-                        setCreateFilterErr(message);
-                    });
-            }
-        }
     };
 
     useEffect(() => {
@@ -344,13 +223,17 @@ const CreateFilterDialog = ({
         }
 
         if (newListType === FilterType.EXPLICIT_NAMING) {
-            handleCreateFilter(
+            filterSave(
                 tableValues,
                 isGeneratorOrLoad,
-                isCreation,
+                isFilterCreation,
                 equipmentType,
                 name,
-                id
+                id,
+                setCreateFilterErr,
+                activeDirectory,
+                intl,
+                handleClose
             );
             return;
         }
@@ -371,7 +254,6 @@ const CreateFilterDialog = ({
 
     const handleClose = () => {
         onClose();
-        resetDialog();
     };
 
     const renderFilterNameStatus = () => {
@@ -428,12 +310,12 @@ const CreateFilterDialog = ({
                 onKeyPress={handleKeyPressed}
             >
                 <DialogTitle>{title}</DialogTitle>
-                <DialogContent style={{ overflow: 'hidden' }}>
+                <DialogContent>
                     <TextField
                         autoFocus
                         margin="dense"
                         type="text"
-                        style={{ width: '90%' }}
+                        style={{ width: '100%' }}
                         onChange={(event) =>
                             handleFilterNameChanges(event.target.value)
                         }
@@ -521,55 +403,6 @@ CreateFilterDialog.propTypes = {
     title: PropTypes.object.isRequired,
     customTextValidationBtn: PropTypes.object.isRequired,
     customTextCancelBtn: PropTypes.object.isRequired,
-};
-
-const PopupInfo = ({
-    open,
-    onClose,
-    title,
-    customAlertMessage,
-    customTextValidationBtn,
-    handleBtnOk,
-    handleBtnCancel,
-}) => {
-    const handleClose = () => {
-        onClose();
-    };
-
-    const handleOk = () => {
-        handleBtnOk();
-    };
-
-    const handleCancel = () => {
-        handleBtnCancel();
-    };
-
-    return (
-        <DialogContainer open={open} onClose={handleClose}>
-            <CustomDialogTitle onClose={handleClose}>{title}</CustomDialogTitle>
-            <CustomDialogContent dividers>
-                {customAlertMessage}
-            </CustomDialogContent>
-            <CustomDialogActions>
-                <Button autoFocus onClick={handleCancel}>
-                    <FormattedMessage id="cancel" />
-                </Button>
-                <Button variant="outlined" onClick={handleOk}>
-                    {customTextValidationBtn}
-                </Button>
-            </CustomDialogActions>
-        </DialogContainer>
-    );
-};
-
-PopupInfo.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    title: PropTypes.object.isRequired,
-    customAlertMessage: PropTypes.object.isRequired,
-    customTextValidationBtn: PropTypes.object.isRequired,
-    handleBtnOk: PropTypes.func.isRequired,
-    handleBtnCancel: PropTypes.func.isRequired,
 };
 
 export default CreateFilterDialog;

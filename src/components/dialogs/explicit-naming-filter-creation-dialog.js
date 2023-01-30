@@ -12,13 +12,23 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { createFilter, saveFilter } from '../../utils/rest-api';
-import { FilterType } from '../../utils/elementType';
 import { useSelector } from 'react-redux';
 import Alert from '@mui/material/Alert';
 import PropTypes from 'prop-types';
 
 import ExplicitNamingFilterDialogContent from './explicit-naming-filter-dialog-content';
+import filterSave from './filters-save';
+
+import makeStyles from '@mui/styles/makeStyles';
+
+const useStyles = makeStyles((theme) => ({
+    dialogPaper: {
+        width: 'auto',
+        minWidth: '800px',
+        minHeight: '600px',
+        margin: 'auto',
+    },
+}));
 
 const ExplicitNamingFilterCreationDialog = ({
     id,
@@ -28,7 +38,9 @@ const ExplicitNamingFilterCreationDialog = ({
     title,
     isFilterCreation,
 }) => {
+    const classes = useStyles();
     const intl = useIntl();
+
     const [isGeneratorOrLoad, setIsGeneratorOrLoad] = useState(false);
     const [equipmentType, setEquipmentType] = useState(null);
 
@@ -39,11 +51,6 @@ const ExplicitNamingFilterCreationDialog = ({
     const [isEdited, setIsEdited] = useState(false);
     const fetchFilter = useRef(null);
     fetchFilter.current = open && !isFilterCreation;
-
-    const resetDialog = () => {
-        setEquipmentType('');
-        setCreateFilterErr('');
-    };
 
     useEffect(() => {
         setIsGeneratorOrLoad(
@@ -72,67 +79,27 @@ const ExplicitNamingFilterCreationDialog = ({
     }, [tableValues]);
 
     const handleCreateFilter = () => {
-        let hasMissingId = tableValues.some((el) => !el?.equipmentID?.trim());
-        if (hasMissingId) {
-            setCreateFilterErr(
-                intl.formatMessage({
-                    id: 'missingEquipmentsIdsError',
-                })
-            );
-        } else {
-            let isAllKeysNull = tableValues.every(
-                (row) => !row.distributionKey
-            );
-            tableValues.forEach((val, index) => {
-                // we check if all the distribution keys are null.
-                // If one is set, all the distribution keys that are null take 0 as value
-                const isDKEmpty =
-                    isGeneratorOrLoad && !isAllKeysNull && !val.distributionKey;
-                tableValues[index] = {
-                    equipmentID: val.equipmentID?.trim(),
-                    distributionKey: isDKEmpty ? 0 : val?.distributionKey,
-                };
-            });
-            if (isFilterCreation) {
-                createFilter(
-                    {
-                        type: FilterType.EXPLICIT_NAMING,
-                        equipmentType: equipmentType,
-                        filterEquipmentsAttributes: tableValues,
-                    },
-                    name,
-                    activeDirectory
-                )
-                    .then(() => {
-                        handleClose();
-                    })
-                    .catch((message) => {
-                        setCreateFilterErr(message);
-                    });
-            } else {
-                saveFilter({
-                    id: id,
-                    type: FilterType.EXPLICIT_NAMING,
-                    equipmentType: equipmentType,
-                    filterEquipmentsAttributes: tableValues,
-                })
-                    .then(() => {
-                        handleClose();
-                    })
-                    .catch((message) => {
-                        setCreateFilterErr(message);
-                    });
-            }
-        }
+        filterSave(
+            tableValues,
+            isGeneratorOrLoad,
+            isFilterCreation,
+            equipmentType,
+            name,
+            id,
+            setCreateFilterErr,
+            activeDirectory,
+            intl,
+            handleClose
+        );
     };
 
     const handleClose = () => {
         if (onClose) onClose();
-        resetDialog();
     };
 
     return (
         <Dialog
+            classes={{ paper: classes.dialogPaper }}
             fullWidth={true}
             open={open}
             onClose={handleClose}
@@ -159,6 +126,7 @@ const ExplicitNamingFilterCreationDialog = ({
                     variant="outlined"
                     onClick={handleCreateFilter}
                     disabled={
+                        tableValues === undefined ||
                         tableValues.length === 0 ||
                         createFilterErr !== '' ||
                         !equipmentType ||

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -40,29 +40,26 @@ export function CreateCaseDialog({ onClose, open }) {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
     const dispatch = useDispatch();
-    const [triggerReset, setTriggerReset] = useState(true);
-    const [name, NameField, nameError, nameOk, setCaseName] = useNameField({
-        label: 'nameProperty',
-        autoFocus: true,
-        elementType: ElementType.CASE,
-        parentDirectoryId: activeDirectory,
-        triggerReset,
-        active: open,
-        style: {
-            width: '90%',
-        },
-    });
+    const [name, NameField, nameError, nameOk, setCaseName, touched] =
+        useNameField({
+            label: 'nameProperty',
+            autoFocus: true,
+            elementType: ElementType.CASE,
+            parentDirectoryId: activeDirectory,
+            active: open,
+            style: {
+                width: '90%',
+            },
+        });
 
     const [description, DescriptionField] = useTextValue({
         label: 'descriptionProperty',
-        triggerReset,
         style: {
             width: '90%',
         },
     });
-    const [file, FileField, fileError, isFileOk] = useFileValue({
+    const [file, FileField, fileError, isFileOk, resetFile] = useFileValue({
         label: 'Case',
-        triggerReset,
     });
 
     function validate() {
@@ -78,9 +75,14 @@ export function CreateCaseDialog({ onClose, open }) {
     }, [name]);
 
     usePrefillNameField({
-        nameRef,
+        nameRef: nameRef,
         selectedFile: file,
         setValue: setCaseName,
+        selectedFileOk: isFileOk,
+        creationError: fileError,
+        //fileCheckedCase is necessary for a test to succeed but always match isFileOk in this case since there is no intermediary validation
+        fileCheckedCase: isFileOk,
+        touched: touched,
     });
 
     const handleCreateNewCase = () => {
@@ -128,7 +130,7 @@ export function CreateCaseDialog({ onClose, open }) {
     };
 
     const handleCloseDialog = () => {
-        setTriggerReset((oldVal) => !oldVal);
+        resetFile();
         onClose();
     };
 
