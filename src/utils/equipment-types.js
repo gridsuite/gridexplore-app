@@ -69,6 +69,12 @@ const SingleCountries1 = {
         type: filteredTypes.countries,
     },
 };
+const FreeProps = {
+    freeProperties: {
+        name: 'FreeProperties',
+        type: filteredTypes.freeProperties,
+    },
+};
 const Line = { label: 'Lines', type: 'LINE' };
 const Generator = { label: 'Generators', type: 'GENERATOR' };
 const Load = { label: 'Loads', type: 'LOAD' };
@@ -144,6 +150,7 @@ export const filterEquipmentDefinition = {
         fields: {
             ...Countries,
             ...NominalVoltage,
+            ...FreeProps,
         },
     },
     BATTERY: {

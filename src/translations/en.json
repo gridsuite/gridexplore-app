@@ -169,6 +169,9 @@
     "cannotPasteTextAsNominalVoltage": "The clipboard text cannot be set as a positive number: ",
     "cannotRetrieveContingencyList": "Could not retrieve contingency list: ",
     "cannotRetrievefilter": "Could not retrieve filter: ",
+    "AddFreePropCrit": "Add a filter by property",
+    "PropertyName": "Property name",
+    "PropertyValues": "Property values",
 
     "getAppLinkError": "Error getting application link for type = {type}",
     "nameValidityCheckErrorMsg": "Error checking name validity : ",

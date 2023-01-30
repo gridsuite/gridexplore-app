@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useRef, useState, useMemo } from 'react';
+import React, {
+    useCallback,
+    useRef,
+    useState,
+    useMemo,
+    useEffect,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import { Chip, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
@@ -16,6 +22,11 @@ import { useParameterState } from './parameters-dialog';
 import { getComputedLanguage } from '../../utils/language';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
+import { fetchAppsAndUrls } from '../../utils/rest-api';
 
 const useStyles = makeStyles((theme) => ({
     inputLegend: {
@@ -195,7 +206,7 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
         } else {
             onSetNumber(index, newValue);
         }
-        evt.preventDefault(); // dont call onChange after onPaste
+        evt.preventDefault(); // don't call onChange after onPaste
     }
 
     const intl = useIntl();
@@ -290,6 +301,254 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
     );
 };
 
+export const FreePropertyOneSide = ({
+    index,
+    onChange,
+    defaultValue,
+    fieldProps,
+}) => {
+    const predefined = fieldProps;
+
+    const [name, setName] = useState(defaultValue?.name);
+
+    const predefinedNames = useMemo(() => {
+        return Object.keys(predefined ?? []).sort();
+    }, [predefined]);
+
+    const predefinedValues = useMemo(() => {
+        const predefinedForName = predefined?.[name];
+        if (!predefinedForName) return [];
+        return [...new Set(predefinedForName)].sort();
+    }, [name, predefined]);
+
+    const [values, setValues] = useState(defaultValue?.values || []);
+
+    return (
+        <>
+            <FormControl fullWidth margin="dense">
+                <Autocomplete
+                    id={'nameProperty'}
+                    defaultValue={''}
+                    value={name}
+                    freeSolo
+                    forcePopupIcon
+                    onChange={(oldVal, newVal) => {
+                        onChange(index, { name: newVal, values });
+                        setName(newVal);
+                    }}
+                    options={predefinedNames}
+                    renderInput={(props) => (
+                        <TextField
+                            label={<FormattedMessage id="PropertyName" />}
+                            {...props}
+                        />
+                    )}
+                />
+            </FormControl>
+            <FormControl fullWidth margin="dense">
+                <Autocomplete
+                    id="prop_values"
+                    value={values}
+                    freeSolo
+                    forcePopupIcon
+                    multiple={true}
+                    onChange={(oldVal, newVal) => {
+                        onChange(index, { name, values: newVal });
+                        setValues(newVal);
+                    }}
+                    options={predefinedValues}
+                    renderInput={(props) => (
+                        <TextField
+                            label={<FormattedMessage id="PropertyValues" />}
+                            {...props}
+                        />
+                    )}
+                    renderTags={(val, getTagsProps) =>
+                        val.map((code, index) => (
+                            <Chip
+                                id={'chip_' + code}
+                                size={'small'}
+                                label={code}
+                                {...getTagsProps({ index })}
+                            />
+                        ))
+                    }
+                />
+            </FormControl>
+        </>
+    );
+};
+
+export const useExpandableCriterium = ({
+    id,
+    labelAddValue,
+    Field,
+    fieldProps,
+    initialValues,
+    onChange,
+}) => {
+    const classes = useStyles();
+    const [values, setValues] = useState(initialValues);
+
+    const handleDeleteItem = useCallback(
+        (index) => {
+            setValues((oldValues) => {
+                let newValues = [...oldValues];
+                newValues.splice(index, 1);
+                onChange(newValues);
+                return newValues;
+            });
+        },
+        [onChange]
+    );
+
+    const handleSetValue = useCallback(
+        (index, newValue) => {
+            setValues((oldValues) => {
+                let newValues = [...oldValues];
+                newValues[index] = newValue;
+                onChange(newValues);
+                return newValues;
+            });
+        },
+        [onChange]
+    );
+
+    const handleAddValue = useCallback(() => {
+        setValues((oldValues) => {
+            const ret = [...oldValues, { name: '', values: [] }];
+            onChange(ret);
+            return ret;
+        });
+    }, [onChange]);
+
+    const field = useMemo(() => {
+        return (
+            <Grid item container spacing={2} columns={1}>
+                <Grid
+                    item
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        width: '100%',
+                    }}
+                >
+                    <span>
+                        <Button
+                            fullWidth
+                            className={classes.button}
+                            startIcon={<AddIcon />}
+                            onClick={handleAddValue}
+                        >
+                            <FormattedMessage id={labelAddValue} />
+                        </Button>
+                    </span>
+                </Grid>
+                <Grid item sx={{ width: '100%' }} columns={1}>
+                    {values.map((value, idx) => (
+                        <span
+                            key={id + idx}
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                width: '100%',
+                            }}
+                        >
+                            <Field
+                                index={idx}
+                                onChange={handleSetValue}
+                                defaultValue={value}
+                                fieldProps={fieldProps}
+                            />
+                            <IconButton
+                                className={classes.deleteButton}
+                                key={id + idx}
+                                onClick={() => handleDeleteItem(idx)}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </span>
+                    ))}
+                </Grid>
+            </Grid>
+        );
+    }, [
+        values,
+        fieldProps,
+        classes.button,
+        classes.deleteButton,
+        handleAddValue,
+        labelAddValue,
+        id,
+        handleSetValue,
+        handleDeleteItem,
+    ]);
+
+    return field;
+};
+
+const FreePropertiesOneSide = ({ initialValue, onChange, titleMessage }) => {
+    const [fieldProps, setFieldProps] = useState(null);
+    const initialValues = useMemo(() => {
+        if (!initialValue) return [];
+        const ret = Object.entries(initialValue).map(([k, v]) => {
+            return { name: k, values: v };
+        });
+        return ret;
+    }, [initialValue]);
+
+    const onPropertiesArrayChange = useCallback(
+        (arr) => {
+            const obj = !arr
+                ? {}
+                : Object.fromEntries(arr.map((p) => [p.name, p.values]));
+            onChange(obj);
+            // return obj;
+        },
+        [onChange]
+    );
+
+    const freePropsField = useExpandableCriterium({
+        id: 'freeProp',
+        labelAddValue: 'AddFreePropCrit',
+        Field: FreePropertyOneSide,
+        fieldProps: fieldProps,
+        initialValues: initialValues,
+        onChange: onPropertiesArrayChange,
+    });
+
+    const fetchPredefinedProperties = () => {
+        return fetchAppsAndUrls().then((res) => {
+            const studyMetadata = res.find(
+                (metadata) => metadata.name === 'Study'
+            );
+            if (!studyMetadata) {
+                return Promise.reject(
+                    'Study entry could not be found in metadatas'
+                );
+            }
+
+            return studyMetadata?.predefinedEquipmentProperties?.substation;
+        });
+    };
+
+    const field = useMemo(() => {
+        return (
+            <>
+                <Grid container item direction="row" spacing={2}>
+                    {freePropsField}
+                </Grid>
+            </>
+        );
+    }, [freePropsField]);
+
+    useEffect(() => {
+        fetchPredefinedProperties().then((p) => setFieldProps(p));
+    }, []);
+
+    return field;
+};
+
 export const filteredTypes = {
     countries: {
         defaultValue: [],
@@ -305,5 +564,9 @@ export const filteredTypes = {
     enum: {
         defaultValue: null,
         renderer: EnumSelection,
+    },
+    freeProperties: {
+        renderer: FreePropertiesOneSide,
+        defaultValue: [],
     },
 };
