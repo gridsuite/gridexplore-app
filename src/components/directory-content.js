@@ -666,7 +666,7 @@ const DirectoryContent = () => {
                             cellRenderer: typeCellRender,
                         },
                         {
-                            maxWidth: 130,
+                            maxWidth: 135,
                             label: intl.formatMessage({
                                 id: 'creator',
                             }),
@@ -674,7 +674,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            maxWidth: 130,
+                            maxWidth: 135,
                             label: intl.formatMessage({
                                 id: 'created',
                             }),
@@ -682,7 +682,7 @@ const DirectoryContent = () => {
                             cellRenderer: dateCellRender,
                         },
                         {
-                            maxWidth: 140,
+                            maxWidth: 135,
                             label: intl.formatMessage({
                                 id: 'modifiedBy',
                             }),
@@ -690,7 +690,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            maxWidth: 130,
+                            maxWidth: 135,
                             label: intl.formatMessage({
                                 id: 'modified',
                             }),
