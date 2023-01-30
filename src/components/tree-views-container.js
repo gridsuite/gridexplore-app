@@ -32,6 +32,20 @@ import * as constants from '../utils/UIconstants';
 // Menu
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 
+let ExternalPluginsArray = [];
+try {
+    const ExternalPlugins = require('privatecomponentlibrary').default;
+    if (!ExternalPlugins) {
+        throw new Error(
+            'No ExternalPlugins definition in privatecomponentlibrary'
+        );
+    }
+
+    ExternalPluginsArray = ExternalPlugins;
+} catch (e) {
+    console.debug('No ExternalPlugins available', e);
+}
+
 let TreeViewPluginsArray = [];
 try {
     const { TreeViewPlugins } = require('../plugins');
@@ -628,8 +642,11 @@ const TreeViewsContainer = () => {
                 }}
                 onContextMenu={(e) => onContextMenu(e, null)}
             >
+                {ExternalPluginsArray.map((Plugin, index) => {
+                    return <Plugin key={'external_' + index} />;
+                })}
                 {TreeViewPluginsArray.map((Plugin, index) => {
-                    return <Plugin key={index} />;
+                    return <Plugin key={'plugin_' + index} />;
                 })}
                 {treeData.mapData &&
                     treeData.rootDirectories.map((rootDirectory) => (

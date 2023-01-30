@@ -30,7 +30,8 @@
         "react-window": "^1.8.5",
         "reconnecting-websocket": "^4.4.0",
         "redux": "^4.0.5",
-        "typeface-roboto": "^1.0.0"
+        "typeface-roboto": "^1.0.0",
+        "privatecomponentlibrary": "file:./privateComponentLibrary"
     },
     "scripts": {
         "start": "react-scripts start",
