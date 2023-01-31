@@ -648,10 +648,9 @@ const DirectoryContent = () => {
                             dataKey: 'selected',
                             label: '',
                             headerRenderer: selectionHeaderRenderer,
-                            maxWidth: 60,
+                            maxWidth: 42,
                         },
                         {
-                            width: 100,
                             label: intl.formatMessage({
                                 id: 'elementName',
                             }),
@@ -659,7 +658,7 @@ const DirectoryContent = () => {
                             cellRenderer: nameCellRender,
                         },
                         {
-                            width: 100,
+                            maxWidth: 220,
                             label: intl.formatMessage({
                                 id: 'type',
                             }),
@@ -667,7 +666,7 @@ const DirectoryContent = () => {
                             cellRenderer: typeCellRender,
                         },
                         {
-                            width: 50,
+                            maxWidth: 135,
                             label: intl.formatMessage({
                                 id: 'creator',
                             }),
@@ -675,7 +674,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            width: 50,
+                            maxWidth: 135,
                             label: intl.formatMessage({
                                 id: 'created',
                             }),
@@ -683,7 +682,7 @@ const DirectoryContent = () => {
                             cellRenderer: dateCellRender,
                         },
                         {
-                            width: 50,
+                            maxWidth: 135,
                             label: intl.formatMessage({
                                 id: 'modifiedBy',
                             }),
@@ -691,7 +690,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            width: 50,
+                            maxWidth: 135,
                             label: intl.formatMessage({
                                 id: 'modified',
                             }),
