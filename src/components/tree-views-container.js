@@ -31,6 +31,8 @@ import { notificationType } from '../utils/notificationType';
 import * as constants from '../utils/UIconstants';
 // Menu
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
+// Plugins
+import { TreeViewContainerPlugins } from '../plugins';
 
 const initialMousePosition = {
     mouseX: null,
@@ -616,6 +618,9 @@ const TreeViewsContainer = () => {
                 }}
                 onContextMenu={(e) => onContextMenu(e, null)}
             >
+                {TreeViewContainerPlugins.map((Plugin, index) => {
+                    return <Plugin key={'TreeViewPlugin_' + index} />;
+                })}
                 {treeData.mapData &&
                     treeData.rootDirectories.map((rootDirectory) => (
                         <DirectoryTreeView

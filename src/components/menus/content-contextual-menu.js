@@ -58,6 +58,9 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 
+// Plugins
+import { DirectoryContentMenuItemPlugins } from '../../plugins';
+
 const ContentContextualMenu = (props) => {
     const {
         activeElement,
@@ -507,6 +510,25 @@ const ContentContextualMenu = (props) => {
                     );
                 },
                 icon: <InsertDriveFileIcon fontSize="small" />,
+            });
+        }
+
+        if (DirectoryContentMenuItemPlugins.length > 0) {
+            menuItems.push({ isDivider: true });
+            DirectoryContentMenuItemPlugins.forEach((menuPlugin) => {
+                menuItems.push({
+                    messageDescriptorId: menuPlugin.messageDescriptorId,
+                    callback: () => {
+                        const openDialogId = menuPlugin.handleClick(
+                            activeElement,
+                            DialogsId
+                        );
+                        if (openDialogId) {
+                            handleOpenDialog(openDialogId);
+                        }
+                    },
+                    icon: menuPlugin.icon,
+                });
             });
         }
 
