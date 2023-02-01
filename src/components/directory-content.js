@@ -651,6 +651,7 @@ const DirectoryContent = () => {
                             maxWidth: 42,
                         },
                         {
+                            maxWidth: 540,
                             label: intl.formatMessage({
                                 id: 'elementName',
                             }),
@@ -658,7 +659,7 @@ const DirectoryContent = () => {
                             cellRenderer: nameCellRender,
                         },
                         {
-                            maxWidth: 220,
+                            maxWidth: 240,
                             label: intl.formatMessage({
                                 id: 'type',
                             }),
@@ -666,7 +667,7 @@ const DirectoryContent = () => {
                             cellRenderer: typeCellRender,
                         },
                         {
-                            maxWidth: 135,
+                            maxWidth: 140,
                             label: intl.formatMessage({
                                 id: 'creator',
                             }),
@@ -674,7 +675,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            maxWidth: 135,
+                            maxWidth: 140,
                             label: intl.formatMessage({
                                 id: 'created',
                             }),
@@ -682,7 +683,7 @@ const DirectoryContent = () => {
                             cellRenderer: dateCellRender,
                         },
                         {
-                            maxWidth: 135,
+                            maxWidth: 140,
                             label: intl.formatMessage({
                                 id: 'modifiedBy',
                             }),
@@ -690,7 +691,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            maxWidth: 135,
+                            maxWidth: 140,
                             label: intl.formatMessage({
                                 id: 'modified',
                             }),
