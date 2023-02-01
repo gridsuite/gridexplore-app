@@ -651,7 +651,7 @@ const DirectoryContent = () => {
                             maxWidth: 42,
                         },
                         {
-                            maxWidth: 540,
+                            maxWidth: 570,
                             label: intl.formatMessage({
                                 id: 'elementName',
                             }),
@@ -659,7 +659,7 @@ const DirectoryContent = () => {
                             cellRenderer: nameCellRender,
                         },
                         {
-                            maxWidth: 240,
+                            maxWidth: 220,
                             label: intl.formatMessage({
                                 id: 'type',
                             }),
@@ -667,7 +667,7 @@ const DirectoryContent = () => {
                             cellRenderer: typeCellRender,
                         },
                         {
-                            maxWidth: 140,
+                            maxWidth: 135,
                             label: intl.formatMessage({
                                 id: 'creator',
                             }),
@@ -675,7 +675,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            maxWidth: 140,
+                            maxWidth: 135,
                             label: intl.formatMessage({
                                 id: 'created',
                             }),
@@ -683,7 +683,7 @@ const DirectoryContent = () => {
                             cellRenderer: dateCellRender,
                         },
                         {
-                            maxWidth: 140,
+                            maxWidth: 135,
                             label: intl.formatMessage({
                                 id: 'modifiedBy',
                             }),
@@ -691,7 +691,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            maxWidth: 140,
+                            maxWidth: 135,
                             label: intl.formatMessage({
                                 id: 'modified',
                             }),
