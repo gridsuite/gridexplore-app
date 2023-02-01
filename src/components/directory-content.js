@@ -651,6 +651,7 @@ const DirectoryContent = () => {
                             maxWidth: 42,
                         },
                         {
+                            maxWidth: 570,
                             label: intl.formatMessage({
                                 id: 'elementName',
                             }),
