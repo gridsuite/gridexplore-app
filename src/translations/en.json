@@ -170,6 +170,8 @@
     "cannotRetrieveContingencyList": "Could not retrieve contingency list: ",
     "cannotRetrievefilter": "Could not retrieve filter: ",
     "AddFreePropCrit": "Add a filter by property",
+    "AddFreePropCrit1": "Add a filter by property 1",
+    "AddFreePropCrit2": "Add a filter by property 2",
     "PropertyName": "Property name",
     "PropertyValues": "Property values",
 

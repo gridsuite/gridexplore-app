@@ -301,84 +301,6 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
     );
 };
 
-export const FreePropertyOneSide = ({
-    index,
-    onChange,
-    defaultValue,
-    fieldProps,
-}) => {
-    const predefined = fieldProps;
-
-    const [name, setName] = useState(defaultValue?.name);
-
-    const predefinedNames = useMemo(() => {
-        return Object.keys(predefined ?? []).sort();
-    }, [predefined]);
-
-    const predefinedValues = useMemo(() => {
-        const predefinedForName = predefined?.[name];
-        if (!predefinedForName) return [];
-        return [...new Set(predefinedForName)].sort();
-    }, [name, predefined]);
-
-    const [values, setValues] = useState(defaultValue?.values || []);
-
-    return (
-        <>
-            <FormControl fullWidth margin="dense">
-                <Autocomplete
-                    id={'nameProperty'}
-                    defaultValue={''}
-                    value={name}
-                    freeSolo
-                    forcePopupIcon
-                    onChange={(oldVal, newVal) => {
-                        onChange(index, { name: newVal, values });
-                        setName(newVal);
-                    }}
-                    options={predefinedNames}
-                    renderInput={(props) => (
-                        <TextField
-                            label={<FormattedMessage id="PropertyName" />}
-                            {...props}
-                        />
-                    )}
-                />
-            </FormControl>
-            <FormControl fullWidth margin="dense">
-                <Autocomplete
-                    id="prop_values"
-                    value={values}
-                    freeSolo
-                    forcePopupIcon
-                    multiple={true}
-                    onChange={(oldVal, newVal) => {
-                        onChange(index, { name, values: newVal });
-                        setValues(newVal);
-                    }}
-                    options={predefinedValues}
-                    renderInput={(props) => (
-                        <TextField
-                            label={<FormattedMessage id="PropertyValues" />}
-                            {...props}
-                        />
-                    )}
-                    renderTags={(val, getTagsProps) =>
-                        val.map((code, index) => (
-                            <Chip
-                                id={'chip_' + code}
-                                size={'small'}
-                                label={code}
-                                {...getTagsProps({ index })}
-                            />
-                        ))
-                    }
-                />
-            </FormControl>
-        </>
-    );
-};
-
 export const useExpandableCriterium = ({
     id,
     labelAddValue,
@@ -487,7 +409,88 @@ export const useExpandableCriterium = ({
     return field;
 };
 
+export const FreePropertyOneSide = ({
+    index,
+    onChange,
+    defaultValue,
+    fieldProps,
+}) => {
+    const predefined = fieldProps;
+
+    const [name, setName] = useState(defaultValue?.name);
+
+    const predefinedNames = useMemo(() => {
+        return Object.keys(predefined ?? []).sort();
+    }, [predefined]);
+
+    const predefinedValues = useMemo(() => {
+        const predefinedForName = predefined?.[name];
+        if (!predefinedForName) return [];
+        return [...new Set(predefinedForName)].sort();
+    }, [name, predefined]);
+
+    const [values, setValues] = useState(defaultValue?.values || []);
+
+    return (
+        <>
+            <FormControl fullWidth margin="dense">
+                <Autocomplete
+                    id={'name_roperty'}
+                    defaultValue={''}
+                    value={name}
+                    freeSolo
+                    forcePopupIcon
+                    onChange={(oldVal, newVal) => {
+                        onChange(index, { name: newVal, values });
+                        setName(newVal);
+                    }}
+                    options={predefinedNames}
+                    renderInput={(props) => (
+                        <TextField
+                            label={<FormattedMessage id="PropertyName" />}
+                            {...props}
+                        />
+                    )}
+                />
+            </FormControl>
+            <FormControl fullWidth margin="dense">
+                <Autocomplete
+                    id="prop_values"
+                    value={values}
+                    freeSolo
+                    forcePopupIcon
+                    multiple={true}
+                    onChange={(oldVal, newVal) => {
+                        onChange(index, { name, values: newVal });
+                        setValues(newVal);
+                    }}
+                    options={predefinedValues}
+                    renderInput={(props) => (
+                        <TextField
+                            label={<FormattedMessage id="PropertyValues" />}
+                            {...props}
+                        />
+                    )}
+                    renderTags={(val, getTagsProps) =>
+                        val.map((code, index) => (
+                            <Chip
+                                id={'chip_' + code}
+                                size={'small'}
+                                label={code}
+                                {...getTagsProps({ index })}
+                            />
+                        ))
+                    }
+                />
+            </FormControl>
+        </>
+    );
+};
+
 const FreePropertiesOneSide = ({ initialValue, onChange, titleMessage }) => {
+    const numericSuffixRegex = /[0-9]*$/;
+    const numericSuffix = numericSuffixRegex.exec(titleMessage)[0];
+
     const [fieldProps, setFieldProps] = useState(null);
     const initialValues = useMemo(() => {
         if (!initialValue) return [];
@@ -509,8 +512,8 @@ const FreePropertiesOneSide = ({ initialValue, onChange, titleMessage }) => {
     );
 
     const freePropsField = useExpandableCriterium({
-        id: 'freeProp',
-        labelAddValue: 'AddFreePropCrit',
+        id: 'freeProp' + numericSuffix,
+        labelAddValue: 'AddFreePropCrit' + numericSuffix,
         Field: FreePropertyOneSide,
         fieldProps: fieldProps,
         initialValues: initialValues,
