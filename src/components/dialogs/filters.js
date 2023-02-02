@@ -439,6 +439,7 @@ export const FreePropertyOneSide = ({
                     defaultValue={''}
                     value={name}
                     freeSolo
+                    autoSelect
                     forcePopupIcon
                     onChange={(oldVal, newVal) => {
                         onChange(index, { name: newVal, values });
@@ -458,6 +459,7 @@ export const FreePropertyOneSide = ({
                     id="prop_values"
                     value={values}
                     freeSolo
+                    autoSelect
                     forcePopupIcon
                     multiple={true}
                     onChange={(oldVal, newVal) => {
