@@ -506,7 +506,6 @@ const FreePropertiesOneSide = ({ initialValue, onChange, titleMessage }) => {
                 ? {}
                 : Object.fromEntries(arr.map((p) => [p.name, p.values]));
             onChange(obj);
-            // return obj;
         },
         [onChange]
     );
