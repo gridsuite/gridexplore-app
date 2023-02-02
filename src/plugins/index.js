@@ -4,7 +4,10 @@
 // treeViewContainerPlugins imports
 // import {} from './treeViewContainerPlugins';
 
-// exports
+// Exports
+// Warning : Keep the following exported arrays emptied to manage no plugins
+// implementations otherwise those module imports will fail in the base code
+// of this project.
 export const DirectoryContentMenuItemPlugins = [];
 
 export const TreeViewContainerPlugins = [];
