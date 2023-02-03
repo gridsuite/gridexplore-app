@@ -1,13 +1,13 @@
 // directoryContentMenuPlugins imports
-// import {} from './directoryContentMenuItemPlugins';
+import CreateStudyMenuItem from './directoryContentMenuItemPlugins/createStudyMenuItem';
 
 // treeViewContainerPlugins imports
-// import {} from './treeViewContainerPlugins';
+import AlertButton from './treeViewContainerPlugins/alertButton';
 
 // Exports
 // Warning : Keep the following exported arrays emptied to manage no plugins
 // implementations otherwise those module imports will fail in the base code
 // of this project.
-export const DirectoryContentMenuItemPlugins = [];
+export const DirectoryContentMenuItemPlugins = [CreateStudyMenuItem];
 
-export const TreeViewContainerPlugins = [];
+export const TreeViewContainerPlugins = [AlertButton];
