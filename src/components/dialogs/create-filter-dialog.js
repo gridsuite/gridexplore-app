@@ -310,7 +310,7 @@ const CreateFilterDialog = ({
                 onKeyPress={handleKeyPressed}
             >
                 <DialogTitle>{title}</DialogTitle>
-                <DialogContent>
+                <DialogContent style={{ maxHeight: '60vh' }}>
                     <TextField
                         autoFocus
                         margin="dense"
