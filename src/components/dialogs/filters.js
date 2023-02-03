@@ -409,12 +409,7 @@ export const useExpandableCriterium = ({
     return field;
 };
 
-export const FreePropertyOneSide = ({
-    index,
-    onChange,
-    defaultValue,
-    fieldProps,
-}) => {
+export const FreeProperty = ({ index, onChange, defaultValue, fieldProps }) => {
     const predefined = fieldProps;
 
     const [name, setName] = useState(defaultValue?.name);
@@ -442,8 +437,9 @@ export const FreePropertyOneSide = ({
                     autoSelect
                     forcePopupIcon
                     onChange={(oldVal, newVal) => {
-                        onChange(index, { name: newVal, values });
+                        onChange(index, { name: newVal, values: [] });
                         setName(newVal);
+                        setValues([]);
                     }}
                     options={predefinedNames}
                     renderInput={(props) => (
@@ -489,7 +485,7 @@ export const FreePropertyOneSide = ({
     );
 };
 
-const FreePropertiesOneSide = ({ initialValue, onChange, titleMessage }) => {
+const FreeProperties = ({ initialValue, onChange, titleMessage }) => {
     const numericSuffixRegex = /[0-9]*$/;
     const numericSuffix = numericSuffixRegex.exec(titleMessage)[0];
 
@@ -515,7 +511,7 @@ const FreePropertiesOneSide = ({ initialValue, onChange, titleMessage }) => {
     const freePropsField = useExpandableCriterium({
         id: 'freeProp' + numericSuffix,
         labelAddValue: 'AddFreePropCrit' + numericSuffix,
-        Field: FreePropertyOneSide,
+        Field: FreeProperty,
         fieldProps: fieldProps,
         initialValues: initialValues,
         onChange: onPropertiesArrayChange,
@@ -570,7 +566,7 @@ export const filteredTypes = {
         renderer: EnumSelection,
     },
     freeProperties: {
-        renderer: FreePropertiesOneSide,
-        defaultValue: [],
+        renderer: FreeProperties,
+        defaultValue: {},
     },
 };
