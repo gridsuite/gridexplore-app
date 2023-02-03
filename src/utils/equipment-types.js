@@ -39,6 +39,18 @@ const Countries2 = {
         type: filteredTypes.countries,
     },
 };
+const FreeProperties1 = {
+    freeProperties1: {
+        name: 'FreeProperties1',
+        type: filteredTypes.freeProperties,
+    },
+};
+const FreeProperties2 = {
+    freeProperties2: {
+        name: 'FreeProperties2',
+        type: filteredTypes.freeProperties,
+    },
+};
 const NominalVoltage = {
     nominalVoltage: {
         name: 'nominalVoltage',
@@ -115,14 +127,8 @@ export const filterEquipmentDefinition = {
             ...Countries2,
             ...NominalVoltage1,
             ...NominalVoltage2,
-            freeProperties1: {
-                name: 'FreeProperties1',
-                type: filteredTypes.freeProperties,
-            },
-            freeProperties2: {
-                name: 'FreeProperties2',
-                type: filteredTypes.freeProperties,
-            },
+            ...FreeProperties1,
+            ...FreeProperties2,
         },
     },
     TWO_WINDINGS_TRANSFORMER: {
@@ -218,8 +224,8 @@ export const filterEquipmentDefinition = {
             ...Countries1,
             ...Countries2,
             ...NominalVoltage,
-            freeProperties1: FreeProps.freeProperties,
-            freeProperties2: FreeProps.freeProperties,
+            ...FreeProperties1,
+            ...FreeProperties2,
         },
     },
     VOLTAGE_LEVEL: {
