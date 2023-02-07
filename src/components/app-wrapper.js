@@ -114,7 +114,7 @@ const messages = {
         ...table_en,
         ...treeview_finder_en,
         ...card_error_boundary_en,
-        ...messages_plugins_en,
+        ...messages_plugins_en, // keep it at the end to allow translation overwritting
     },
     fr: {
         ...messages_fr,
@@ -123,7 +123,7 @@ const messages = {
         ...table_fr,
         ...treeview_finder_fr,
         ...card_error_boundary_fr,
-        ...messages_plugins_fr,
+        ...messages_plugins_fr, // keep it at the end to allow translation overwritting
     },
 };
 
