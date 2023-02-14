@@ -648,10 +648,10 @@ const DirectoryContent = () => {
                             dataKey: 'selected',
                             label: '',
                             headerRenderer: selectionHeaderRenderer,
-                            maxWidth: 42,
+                            maxWidth: 40,
+                            minWidth: 40,
                         },
                         {
-                            maxWidth: 570,
                             label: intl.formatMessage({
                                 id: 'elementName',
                             }),
@@ -660,6 +660,7 @@ const DirectoryContent = () => {
                         },
                         {
                             maxWidth: 220,
+                            minWidth: 220,
                             label: intl.formatMessage({
                                 id: 'type',
                             }),
@@ -668,6 +669,7 @@ const DirectoryContent = () => {
                         },
                         {
                             maxWidth: 135,
+                            minWidth: 135,
                             label: intl.formatMessage({
                                 id: 'creator',
                             }),
@@ -676,6 +678,7 @@ const DirectoryContent = () => {
                         },
                         {
                             maxWidth: 135,
+                            minWidth: 135,
                             label: intl.formatMessage({
                                 id: 'created',
                             }),
@@ -684,6 +687,7 @@ const DirectoryContent = () => {
                         },
                         {
                             maxWidth: 135,
+                            minWidth: 135,
                             label: intl.formatMessage({
                                 id: 'modifiedBy',
                             }),
@@ -692,6 +696,7 @@ const DirectoryContent = () => {
                         },
                         {
                             maxWidth: 135,
+                            minWidth: 135,
                             label: intl.formatMessage({
                                 id: 'modified',
                             }),
