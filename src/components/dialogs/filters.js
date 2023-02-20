@@ -308,9 +308,11 @@ export const useExpandableCriterium = ({
     fieldProps,
     initialValues,
     onChange,
+    validateItems,
 }) => {
     const classes = useStyles();
     const [values, setValues] = useState(initialValues);
+    const [errors, setErrors] = useState();
 
     const handleDeleteItem = useCallback(
         (index) => {
@@ -344,9 +346,41 @@ export const useExpandableCriterium = ({
         });
     }, [onChange]);
 
+    useEffect(() => {
+        const res = validateItems ? validateItems(values) : [];
+        setErrors(res);
+    }, [values, validateItems]);
+
     const field = useMemo(() => {
         return (
             <Grid item container spacing={2} columns={1}>
+                <Grid item sx={{ width: '100%' }} columns={1}>
+                    {values.map((value, idx) => (
+                        <span
+                            key={id + idx}
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                width: '100%',
+                            }}
+                        >
+                            <Field
+                                index={idx}
+                                onChange={handleSetValue}
+                                defaultValue={value}
+                                fieldProps={fieldProps}
+                                errors={errors?.get(idx)}
+                            />
+                            <IconButton
+                                className={classes.deleteButton}
+                                key={id + idx}
+                                onClick={() => handleDeleteItem(idx)}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </span>
+                    ))}
+                </Grid>
                 <Grid
                     item
                     sx={{
@@ -366,32 +400,6 @@ export const useExpandableCriterium = ({
                         </Button>
                     </span>
                 </Grid>
-                <Grid item sx={{ width: '100%' }} columns={1}>
-                    {values.map((value, idx) => (
-                        <span
-                            key={id + idx}
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                width: '100%',
-                            }}
-                        >
-                            <Field
-                                index={idx}
-                                onChange={handleSetValue}
-                                defaultValue={value}
-                                fieldProps={fieldProps}
-                            />
-                            <IconButton
-                                className={classes.deleteButton}
-                                key={id + idx}
-                                onClick={() => handleDeleteItem(idx)}
-                            >
-                                <DeleteIcon />
-                            </IconButton>
-                        </span>
-                    ))}
-                </Grid>
             </Grid>
         );
     }, [
@@ -404,15 +412,22 @@ export const useExpandableCriterium = ({
         id,
         handleSetValue,
         handleDeleteItem,
+        errors,
     ]);
 
     return field;
 };
 
-export const FreeProperty = ({ index, onChange, defaultValue, fieldProps }) => {
+export const FreeProperty = ({
+    index,
+    onChange,
+    defaultValue,
+    fieldProps,
+    errors,
+}) => {
     const predefined = fieldProps;
 
-    const [name, setName] = useState(defaultValue?.name);
+    const [name, setName] = useState(defaultValue?.name || '');
 
     const predefinedNames = useMemo(() => {
         return Object.keys(predefined ?? []).sort();
@@ -425,6 +440,11 @@ export const FreeProperty = ({ index, onChange, defaultValue, fieldProps }) => {
     }, [name, predefined]);
 
     const [values, setValues] = useState(defaultValue?.values || []);
+
+    useEffect(() => {
+        setName(defaultValue?.name);
+        setValues(defaultValue?.values);
+    }, [defaultValue]);
 
     return (
         <>
@@ -445,6 +465,7 @@ export const FreeProperty = ({ index, onChange, defaultValue, fieldProps }) => {
                     renderInput={(props) => (
                         <TextField
                             label={<FormattedMessage id="PropertyName" />}
+                            error={!!errors?.PropName}
                             {...props}
                         />
                     )}
@@ -485,6 +506,35 @@ export const FreeProperty = ({ index, onChange, defaultValue, fieldProps }) => {
     );
 };
 
+function validateProperties(values) {
+    const res = new Map();
+    const idMap = values.reduce(
+        (m, v) => m.set(v.name, (m.get(v.name) || 0) + 1),
+        new Map()
+    );
+
+    values.forEach((val, idx) => {
+        const count = idMap.get(val.name);
+        if (count > 1) {
+            res.set(idx, {
+                error: true,
+                PropName: 'DuplicateName',
+            });
+        } else if (!val.name && idMap.size > 1) {
+            res.set(idx, {
+                error: true,
+                PropName: 'EmptyNameNotAlone',
+            });
+        } else if (!val.name && val.values?.length > 0) {
+            res.set(idx, {
+                error: true,
+                PropName: 'EmptyNameCanNotHaveValues',
+            });
+        }
+    });
+    return res;
+}
+
 const FreeProperties = ({ initialValue, onChange, titleMessage }) => {
     const numericSuffixRegex = /[0-9]*$/;
     const numericSuffix = numericSuffixRegex.exec(titleMessage)[0];
@@ -493,7 +543,7 @@ const FreeProperties = ({ initialValue, onChange, titleMessage }) => {
     const initialValues = useMemo(() => {
         if (!initialValue) return [];
         const ret = Object.entries(initialValue).map(([k, v]) => {
-            return { name: k, values: v };
+            return { name: k || '', values: v };
         });
         return ret;
     }, [initialValue]);
@@ -502,7 +552,7 @@ const FreeProperties = ({ initialValue, onChange, titleMessage }) => {
         (arr) => {
             const obj = !arr
                 ? {}
-                : Object.fromEntries(arr.map((p) => [p.name, p.values]));
+                : Object.fromEntries(arr.map((p) => [p.name || '', p.values]));
             onChange(obj);
         },
         [onChange]
@@ -515,6 +565,7 @@ const FreeProperties = ({ initialValue, onChange, titleMessage }) => {
         fieldProps: fieldProps,
         initialValues: initialValues,
         onChange: onPropertiesArrayChange,
+        validateItems: validateProperties,
     });
 
     const fetchPredefinedProperties = () => {
