@@ -487,6 +487,7 @@ export const FreeProperty = ({
                     renderInput={(props) => (
                         <TextField
                             label={<FormattedMessage id="PropertyValues" />}
+                            error={!!errors?.PropValue}
                             {...props}
                         />
                     )}
@@ -515,21 +516,20 @@ function validateProperties(values) {
 
     values.forEach((val, idx) => {
         const count = idMap.get(val.name);
-        if (count > 1) {
-            res.set(idx, {
-                error: true,
-                PropName: 'DuplicateName',
-            });
-        } else if (!val.name && idMap.size > 1) {
-            res.set(idx, {
-                error: true,
-                PropName: 'EmptyNameNotAlone',
-            });
-        } else if (!val.name && val.values?.length > 0) {
-            res.set(idx, {
-                error: true,
-                PropName: 'EmptyNameCanNotHaveValues',
-            });
+        const errInBuild = {};
+        if (!val?.values?.length) {
+            errInBuild.PropValue = 'ValueMayNotBeEmpty';
+        }
+
+        if (!val.name) {
+            errInBuild.PropName = 'EmptyName';
+        } else if (count > 1) {
+            errInBuild.PropName = 'DuplicateName';
+        }
+
+        if (Object.keys(errInBuild).length) {
+            errInBuild.error = true;
+            res.set(idx, errInBuild);
         }
     });
     return res;
