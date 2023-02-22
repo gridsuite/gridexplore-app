@@ -301,7 +301,7 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
     );
 };
 
-export const useExpandableCriterium = ({
+export const useExpandableCriteria = ({
     id,
     labelAddValue,
     Field,
@@ -450,7 +450,7 @@ export const FreeProperty = ({
         <>
             <FormControl fullWidth margin="dense">
                 <Autocomplete
-                    id={'name_roperty'}
+                    id={'name_property'}
                     defaultValue={''}
                     value={name}
                     freeSolo
@@ -558,7 +558,7 @@ const FreeProperties = ({ initialValue, onChange, titleMessage }) => {
         [onChange]
     );
 
-    const freePropsField = useExpandableCriterium({
+    const freePropsField = useExpandableCriteria({
         id: 'freeProp' + numericSuffix,
         labelAddValue: 'AddFreePropCrit' + numericSuffix,
         Field: FreeProperty,
