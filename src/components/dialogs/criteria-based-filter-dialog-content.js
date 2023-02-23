@@ -275,14 +275,7 @@ export const CriteriaBasedFilterDialogContent = ({
 
     return (
         <>
-            <Grid
-                container
-                style={{
-                    width: '100%',
-                    overflowY: 'auto',
-                    maxHeight: '45vh',
-                }}
-            >
+            <Grid container>
                 {FilterTypeSelection({
                     type: equipmentType,
                     onChange: changeEquipmentType,

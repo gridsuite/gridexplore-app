@@ -168,6 +168,11 @@
     "cannotPasteTextAsNominalVoltage": "Le texte copié ne peut pas être utilisé pour un nombre positif : ",
     "cannotRetrieveContingencyList": "Erreur d'accès à la liste d'aléas : ",
     "cannotRetrievefilter": "Erreur d'accès au filtre : ",
+    "AddFreePropCrit": "Ajouter un filtrage par propriété",
+    "AddFreePropCrit1": "Ajouter un filtrage par propriété 1",
+    "AddFreePropCrit2": "Ajouter un filtrage par propriété 2",
+    "PropertyName": "Nom de la propriété",
+    "PropertyValues": "Valeurs de la propriété",
 
     "getAppLinkError": "Erreur lors de la récupération du lien vers l'application pour le type = {type}",
     "nameValidityCheckErrorMsg": "Erreur lors de la vérification de la validité du nom : ",

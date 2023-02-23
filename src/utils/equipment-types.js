@@ -39,6 +39,18 @@ const Countries2 = {
         type: filteredTypes.countries,
     },
 };
+const FreeProperties1 = {
+    freeProperties1: {
+        name: 'FreeProperties1',
+        type: filteredTypes.freeProperties,
+    },
+};
+const FreeProperties2 = {
+    freeProperties2: {
+        name: 'FreeProperties2',
+        type: filteredTypes.freeProperties,
+    },
+};
 const NominalVoltage = {
     nominalVoltage: {
         name: 'nominalVoltage',
@@ -67,6 +79,12 @@ const SingleCountries1 = {
     countries1: {
         name: 'Countries',
         type: filteredTypes.countries,
+    },
+};
+const FreeProps = {
+    freeProperties: {
+        name: 'FreeProperties',
+        type: filteredTypes.freeProperties,
     },
 };
 const Line = { label: 'Lines', type: 'LINE' };
@@ -109,6 +127,8 @@ export const filterEquipmentDefinition = {
             ...Countries2,
             ...NominalVoltage1,
             ...NominalVoltage2,
+            ...FreeProperties1,
+            ...FreeProperties2,
         },
     },
     TWO_WINDINGS_TRANSFORMER: {
@@ -117,6 +137,7 @@ export const filterEquipmentDefinition = {
             ...Countries,
             ...NominalVoltage1,
             ...NominalVoltage2,
+            ...FreeProps,
         },
     },
     THREE_WINDINGS_TRANSFORMER: {
@@ -129,6 +150,7 @@ export const filterEquipmentDefinition = {
                 name: 'nominalVoltage3',
                 type: filteredTypes.range,
             },
+            ...FreeProps,
         },
     },
     GENERATOR: {
@@ -137,6 +159,7 @@ export const filterEquipmentDefinition = {
             ...Countries,
             ...EnergySource,
             ...NominalVoltage,
+            ...FreeProps,
         },
     },
     LOAD: {
@@ -144,6 +167,7 @@ export const filterEquipmentDefinition = {
         fields: {
             ...Countries,
             ...NominalVoltage,
+            ...FreeProps,
         },
     },
     BATTERY: {
@@ -151,6 +175,7 @@ export const filterEquipmentDefinition = {
         fields: {
             ...Countries,
             ...NominalVoltage,
+            ...FreeProps,
         },
     },
     SHUNT_COMPENSATOR: {
@@ -158,6 +183,7 @@ export const filterEquipmentDefinition = {
         fields: {
             ...Countries,
             ...NominalVoltage,
+            ...FreeProps,
         },
     },
     STATIC_VAR_COMPENSATOR: {
@@ -165,6 +191,7 @@ export const filterEquipmentDefinition = {
         fields: {
             ...Countries,
             ...NominalVoltage,
+            ...FreeProps,
         },
     },
     DANGLING_LINE: {
@@ -172,6 +199,7 @@ export const filterEquipmentDefinition = {
         fields: {
             ...Countries,
             ...NominalVoltage,
+            ...FreeProps,
         },
     },
     LCC_CONVERTER_STATION: {
@@ -179,6 +207,7 @@ export const filterEquipmentDefinition = {
         fields: {
             ...Countries,
             ...NominalVoltage,
+            ...FreeProps,
         },
     },
     VSC_CONVERTER_STATION: {
@@ -186,6 +215,7 @@ export const filterEquipmentDefinition = {
         fields: {
             ...Countries,
             ...NominalVoltage,
+            ...FreeProps,
         },
     },
     HVDC_LINE: {
@@ -194,6 +224,8 @@ export const filterEquipmentDefinition = {
             ...Countries1,
             ...Countries2,
             ...NominalVoltage,
+            ...FreeProperties1,
+            ...FreeProperties2,
         },
     },
     VOLTAGE_LEVEL: {
@@ -201,12 +233,14 @@ export const filterEquipmentDefinition = {
         fields: {
             ...Countries,
             ...NominalVoltage,
+            ...FreeProps,
         },
     },
     SUBSTATION: {
         ...Substation,
         fields: {
             ...Countries,
+            ...FreeProps,
         },
     },
 };
