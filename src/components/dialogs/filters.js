@@ -471,7 +471,7 @@ export const FreeProperty = ({
                     )}
                 />
             </FormControl>
-            <FormControl fullWidth margin="dense">
+            <FormControl sx={{ paddingLeft: '1ex' }}>
                 <Autocomplete
                     id="prop_values"
                     value={values}
