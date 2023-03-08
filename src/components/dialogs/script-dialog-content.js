@@ -11,7 +11,6 @@ import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-groovy';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
-
 import makeStyles from '@mui/styles/makeStyles';
 import { getContingencyList, getFilterById } from '../../utils/rest-api';
 import { ContingencyListType, ElementType } from '../../utils/elementType';

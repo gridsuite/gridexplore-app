@@ -12,10 +12,6 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import 'ace-builds/src-noconflict/mode-groovy';
-import 'ace-builds/src-noconflict/theme-github';
-import 'ace-builds/src-noconflict/theme-clouds_midnight';
-
 import makeStyles from '@mui/styles/makeStyles';
 import { saveFilter, saveScriptContingencyList } from '../../utils/rest-api';
 import { ElementType, FilterType } from '../../utils/elementType';
