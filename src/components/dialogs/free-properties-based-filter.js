@@ -131,6 +131,7 @@ function validateProperties(values) {
 }
 
 export const FreeProperties = ({ initialValue, onChange, titleMessage }) => {
+    console.debug('FreeProperties', initialValue);
     const numericSuffixRegex = /[0-9]*$/;
     const numericSuffix = numericSuffixRegex.exec(titleMessage)[0];
 
@@ -195,3 +196,231 @@ export const FreeProperties = ({ initialValue, onChange, titleMessage }) => {
     return field;
 };
 
+export const FreeProperty2 = ({
+    index,
+    onChange,
+    defaultValue,
+    fieldProps,
+    errors,
+}) => {
+    const predefined = fieldProps;
+
+    const [name, setName] = useState(defaultValue?.name || '');
+
+    const predefinedNames = useMemo(() => {
+        return Object.keys(predefined ?? []).sort();
+    }, [predefined]);
+
+    const predefinedValues = useMemo(() => {
+        const predefinedForName = predefined?.[name];
+        if (!predefinedForName) return [];
+        return [...new Set(predefinedForName)].sort();
+    }, [name, predefined]);
+
+    const [values1, setValues1] = useState(defaultValue?.values1 || []);
+    const [values2, setValues2] = useState(defaultValue?.values2 || []);
+    console.debug('FreeProperty2', { name, values1, values2 });
+
+    useEffect(() => {
+        setName(defaultValue?.name);
+        setValues1(defaultValue?.values1 || []);
+        setValues2(defaultValue?.values2 || []);
+    }, [defaultValue]);
+
+    return (
+        <>
+            <FormControl
+                fullWidth
+                margin="dense"
+                sx={{ flexBasis: '28%', marginTop: 0 }}
+            >
+                <Autocomplete
+                    id={'name_property'}
+                    defaultValue={''}
+                    value={name}
+                    freeSolo
+                    autoSelect
+                    forcePopupIcon
+                    onChange={(oldVal, newVal) => {
+                        onChange(index, {
+                            name: newVal,
+                            values1: [],
+                            values2: [],
+                        });
+                        setName(newVal);
+                        setValues1([]);
+                        setValues2([]);
+                    }}
+                    options={predefinedNames}
+                    renderInput={(props) => (
+                        <TextField
+                            label={<FormattedMessage id="PropertyName" />}
+                            error={!!errors?.PropName}
+                            {...props}
+                        />
+                    )}
+                />
+            </FormControl>
+            <FormControl sx={{ paddingLeft: '1ex', flexBasis: '36%' }}>
+                <Autocomplete
+                    id="prop_values1"
+                    value={values1}
+                    freeSolo
+                    autoSelect
+                    forcePopupIcon
+                    multiple={true}
+                    onChange={(oldVal, newVal) => {
+                        onChange(index, { name, values1: newVal });
+                        setValues1(newVal);
+                    }}
+                    options={predefinedValues}
+                    renderInput={(props) => (
+                        <TextField
+                            label={<FormattedMessage id="PropertyValues" />}
+                            error={!!errors?.PropValue}
+                            {...props}
+                        />
+                    )}
+                    renderTags={(val, getTagsProps) =>
+                        val.map((code, index) => (
+                            <Chip
+                                id={'chip_' + code}
+                                size={'small'}
+                                label={code}
+                                {...getTagsProps({ index })}
+                            />
+                        ))
+                    }
+                />
+            </FormControl>
+            <FormControl sx={{ paddingLeft: '1ex', flexBasis: '36%' }}>
+                <Autocomplete
+                    id="prop_values2"
+                    value={values2}
+                    freeSolo
+                    autoSelect
+                    forcePopupIcon
+                    multiple={true}
+                    onChange={(oldVal, newVal) => {
+                        onChange(index, { name, values2: newVal });
+                        setValues2(newVal);
+                    }}
+                    options={predefinedValues}
+                    renderInput={(props) => (
+                        <TextField
+                            label={<FormattedMessage id="PropertyValues" />}
+                            error={!!errors?.PropValue}
+                            {...props}
+                        />
+                    )}
+                    renderTags={(val, getTagsProps) =>
+                        val.map((code, index) => (
+                            <Chip
+                                id={'chip_' + code}
+                                size={'small'}
+                                label={code}
+                                {...getTagsProps({ index })}
+                            />
+                        ))
+                    }
+                />
+            </FormControl>
+        </>
+    );
+};
+
+function validateProperties2(values) {
+    const res = new Map();
+    const idMap = values.reduce(
+        (m, v) => m.set(v.name, (m.get(v.name) || 0) + 1),
+        new Map()
+    );
+
+    values.forEach((val, idx) => {
+        const count = idMap.get(val.name);
+        const errInBuild = {};
+        if (!val?.values1?.length && !val?.values2?.length) {
+            errInBuild.PropValue = 'ValueMayNotBeEmpty';
+        }
+
+        if (!val.name) {
+            errInBuild.PropName = 'EmptyName';
+        } else if (count > 1) {
+            errInBuild.PropName = 'DuplicateName';
+        }
+
+        if (Object.keys(errInBuild).length) {
+            errInBuild.error = true;
+            res.set(idx, errInBuild);
+        }
+    });
+    console.debug('validateProperties2', res);
+    return res;
+}
+
+export const FreeProperties2 = ({ initialValue, onChange, titleMessage }) => {
+    const numericSuffixRegex = /[0-9]*$/;
+    const numericSuffix = numericSuffixRegex.exec(titleMessage)[0];
+
+    const [fieldProps, setFieldProps] = useState(null);
+    console.debug('FreeProperties2', initialValue, fieldProps);
+    const initialValues = useMemo(() => {
+        console.debug('FreeProperties2.initialValues.useMemo', initialValue);
+        if (!initialValue) return [];
+        const ret = Object.entries(initialValue).map(([k, v]) => v);
+        console.debug('FreeProperties2.initialValues.useMemo.ret', ret);
+        return ret;
+    }, [initialValue]);
+
+    const onPropertiesArrayChange = useCallback(
+        (arr) => {
+            console.debug('onPropertiesArrayChange', arr);
+            const obj = !arr
+                ? {}
+                : Object.fromEntries(arr.map((p) => [p.name || '', p.values]));
+            onChange(obj);
+        },
+        [onChange]
+    );
+
+    const freePropsField = useExpandableCriteria({
+        id: 'freeProp' + numericSuffix,
+        labelAddValue: 'AddFreePropCrit' + numericSuffix,
+        Field: FreeProperty2,
+        fieldProps: fieldProps,
+        initialValues: initialValues,
+        onChange: onPropertiesArrayChange,
+        validateItems: validateProperties2,
+    });
+
+    const fetchPredefinedProperties = () => {
+        return fetchAppsAndUrls().then((res) => {
+            const studyMetadata = res.find(
+                (metadata) => metadata.name === 'Study'
+            );
+            if (!studyMetadata) {
+                return Promise.reject(
+                    'Study entry could not be found in metadatas'
+                );
+            }
+
+            return studyMetadata?.predefinedEquipmentProperties?.substation;
+        });
+    };
+
+    const field = useMemo(() => {
+        return (
+            <>
+                <Grid container item direction="row" spacing={2}>
+                    {freePropsField}
+                </Grid>
+            </>
+        );
+    }, [freePropsField]);
+
+    useEffect(() => {
+        fetchPredefinedProperties().then((p) => setFieldProps(p));
+    }, []);
+
+    return field;
+};

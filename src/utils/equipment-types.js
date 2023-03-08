@@ -39,16 +39,10 @@ const Countries2 = {
         type: filteredTypes.countries,
     },
 };
-const FreeProperties1 = {
-    freeProperties1: {
-        name: 'FreeProperties1',
-        type: filteredTypes.freeProperties,
-    },
-};
 const FreeProperties2 = {
-    freeProperties2: {
-        name: 'FreeProperties2',
-        type: filteredTypes.freeProperties,
+    freeProperties: {
+        name: 'FreeProperties',
+        type: filteredTypes.freeProperties2,
     },
 };
 const NominalVoltage = {
@@ -127,7 +121,6 @@ export const filterEquipmentDefinition = {
             ...Countries2,
             ...NominalVoltage1,
             ...NominalVoltage2,
-            ...FreeProperties1,
             ...FreeProperties2,
         },
     },
@@ -224,7 +217,6 @@ export const filterEquipmentDefinition = {
             ...Countries1,
             ...Countries2,
             ...NominalVoltage,
-            ...FreeProperties1,
             ...FreeProperties2,
         },
     },

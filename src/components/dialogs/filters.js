@@ -16,7 +16,10 @@ import { useParameterState } from './parameters-dialog';
 import { getComputedLanguage } from '../../utils/language';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { FreeProperties } from './free-properties-based-filter';
+import {
+    FreeProperties,
+    FreeProperties2,
+} from './free-properties-based-filter';
 
 const useStyles = makeStyles((theme) => ({
     inputLegend: {
@@ -309,6 +312,10 @@ export const filteredTypes = {
     },
     freeProperties: {
         renderer: FreeProperties,
+        defaultValue: {},
+    },
+    freeProperties2: {
+        renderer: FreeProperties2,
         defaultValue: {},
     },
 };

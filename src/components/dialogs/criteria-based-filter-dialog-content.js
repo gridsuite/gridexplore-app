@@ -83,6 +83,70 @@ export const FilterTypeSelection = ({
     );
 };
 
+const backToFrontTweak = (response) => {
+    if (
+        !response?.equipmentFilterForm ||
+        !['LINE', 'HVDC'].includes(response.equipmentType)
+    ) {
+        return response;
+    }
+
+    const props1 = response.equipmentFilterForm.freeProperties1;
+    const props2 = response.equipmentFilterForm.freeProperties2;
+    let ret = { ...response };
+    let eff = { ...response.equipmentFilterForm };
+    delete eff.freeProperties1;
+    delete eff.freeProperties2;
+    ret.equipmentFilterForm = eff;
+    const allKeys = new Set();
+    const biProps = {};
+    if (props1) Object.keys(props1).forEach((k) => allKeys.add(k));
+    if (props2) Object.keys(props2).forEach((k) => allKeys.add(k));
+    allKeys.forEach((k) => {
+        const biProp = { name: k };
+        const values1 = props1[k];
+        if (values1) biProp.values1 = values1;
+        const values2 = props2[k];
+        if (values2) biProp.values2 = values2;
+        biProps[k] = biProp;
+    });
+    eff.freeProperties = biProps;
+    return ret;
+};
+
+const frontToBackTweak = (filter) => {
+    if (
+        !filter?.equipmentFilterForm ||
+        !['LINE', 'HVDC'].includes(filter.equipmentType)
+    ) {
+        return filter;
+    }
+
+    const biProps = filter.equipmentFilterForm.freeProperties;
+    let ret = { ...filter };
+    let eff = { ...ret.equipmentFilterForm };
+    delete eff.freeProperties;
+    ret.equipmentFilterForm = eff;
+    const props1 = {};
+    const props2 = {};
+    if (biProps) {
+        Object.entries(biProps).forEach(([k, bp]) => {
+            const values1 = bp.values1;
+            const values2 = bp.values2;
+            if (values1) {
+                props1[bp.name] = values1;
+            }
+            if (values2) {
+                props2[bp.name] = values2;
+            }
+        });
+    }
+
+    eff.freeProperties1 = props1;
+    eff.freeProperties2 = props2;
+    return ret;
+};
+
 export const CriteriaBasedFilterDialogContent = ({
     id,
     open,
@@ -115,14 +179,12 @@ export const CriteriaBasedFilterDialogContent = ({
             if (contentType === ElementType.FILTER) {
                 getFilterById(id)
                     .then((response) => {
-                        setInitialFilter(response);
-                        setEquipmentType(
-                            response.equipmentFilterForm.equipmentType
-                        );
+                        setInitialFilter(backToFrontTweak(response));
+                        let eType = response.equipmentFilterForm.equipmentType;
+                        setEquipmentType(eType);
                         setCurrentFormEdit({
                             equipmentType: {
-                                value: response.equipmentFilterForm
-                                    .equipmentType,
+                                value: eType,
                             },
                         });
                     })

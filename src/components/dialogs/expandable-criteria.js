@@ -24,6 +24,7 @@ export const useExpandableCriteria = ({
     // const classes = useStyles();
     const [values, setValues] = useState(initialValues);
     const [errors, setErrors] = useState();
+    console.debug('useExpandableCriteria', values);
 
     const handleDeleteItem = useCallback(
         (index) => {
@@ -73,6 +74,7 @@ export const useExpandableCriteria = ({
                                 display: 'flex',
                                 flexDirection: 'row',
                                 width: '100%',
+                                marginTop: '1ex',
                             }}
                         >
                             <Field
