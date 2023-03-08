@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -12,37 +12,20 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
-import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-groovy';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
 
 import makeStyles from '@mui/styles/makeStyles';
-import {
-    getContingencyList,
-    getFilterById,
-    saveFilter,
-    saveScriptContingencyList,
-} from '../../utils/rest-api';
-import {
-    ContingencyListType,
-    ElementType,
-    FilterType,
-} from '../../utils/elementType';
+import { saveFilter, saveScriptContingencyList } from '../../utils/rest-api';
+import { ElementType, FilterType } from '../../utils/elementType';
+import ScriptDialogContent from './script-dialog-content';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
         minWidth: '700px',
         minHeight: '500px',
         margin: 'auto',
-    },
-    aceEditor: {
-        minWidth: '650px',
-        minHeight: '450px',
-        marginTop: '4px',
-        //borderLeft: '1px solid #ccc',
-        flexGrow: 1,
     },
 }));
 
@@ -58,21 +41,8 @@ const useStyles = makeStyles(() => ({
  */
 const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
     const classes = useStyles();
-    const selectedTheme = useSelector((state) => state.theme);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
-    const [aceEditorContent, setAceEditorContent] = useState('');
     const [currentScript, setCurrentScript] = useState(null);
-
-    /**
-     * Set name of for the Ace Editor : if theme is light set "github theme" else set "clouds_midnight theme"
-     * */
-    let themeForAceEditor = () => {
-        return selectedTheme === 'Light'
-            ? 'github'
-            : selectedTheme === 'Dark'
-            ? 'clouds_midnight'
-            : '';
-    };
 
     const handleClose = () => {
         handleCancel();
@@ -87,7 +57,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
         if (type === ElementType.CONTINGENCY_LIST) {
             newScript = {
                 id: id,
-                script: aceEditorContent,
+                script: currentScript ?? '',
             };
             saveScriptContingencyList(newScript)
                 .then(() => {})
@@ -97,7 +67,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
         } else {
             newScript = {
                 id: id,
-                script: aceEditorContent,
+                script: currentScript ?? '',
                 type: FilterType.SCRIPT,
             };
             saveFilter(newScript)
@@ -111,55 +81,14 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
         setCurrentScript(newScript);
     };
 
-    const onChangeAceEditor = (newScript) => {
-        setAceEditorContent(newScript);
-        if (currentScript !== null && newScript !== currentScript.script) {
+    const onChangeHandler = (newScript) => {
+        setCurrentScript(newScript);
+        if (newScript !== currentScript) {
             setBtnSaveListDisabled(false);
         } else {
             setBtnSaveListDisabled(true);
         }
     };
-
-    const getCurrentScript = useCallback(
-        (currentItemId) => {
-            if (currentItemId != null) {
-                if (type === ElementType.CONTINGENCY_LIST) {
-                    getContingencyList(
-                        ContingencyListType.SCRIPT,
-                        currentItemId
-                    )
-                        .then((data) => {
-                            if (data) {
-                                setCurrentScript(data);
-                                setAceEditorContent(data.script);
-                            }
-                        })
-                        .catch((error) => {
-                            onError(error.message);
-                        });
-                } else if (type === ElementType.FILTER) {
-                    getFilterById(currentItemId)
-                        .then((data) => {
-                            if (data) {
-                                setCurrentScript(data);
-                                setAceEditorContent(
-                                    data.script === null ? '' : data.script
-                                );
-                            }
-                        })
-                        .catch((error) => {
-                            onError(error.message);
-                        });
-                }
-            }
-        },
-        [onError, type]
-    );
-
-    useEffect(() => {
-        // get contingency list
-        getCurrentScript(id);
-    }, [id, getCurrentScript]);
 
     return (
         <Dialog
@@ -171,15 +100,11 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <div>
-                    <AceEditor
-                        className={classes.aceEditor}
-                        mode="groovy"
-                        placeholder="Insert your groovy script here"
-                        theme={themeForAceEditor()}
-                        onChange={(val) => onChangeAceEditor(val)}
-                        value={aceEditorContent}
-                        fontSize="18px"
-                        editorProps={{ $blockScrolling: true }}
+                    <ScriptDialogContent
+                        id={id}
+                        onChange={onChangeHandler}
+                        onError={onError}
+                        type={type}
                     />
                 </div>
             </DialogContent>
