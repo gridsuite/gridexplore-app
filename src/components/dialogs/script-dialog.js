@@ -62,8 +62,6 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const [aceEditorContent, setAceEditorContent] = useState('');
     const [currentScript, setCurrentScript] = useState(null);
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
 
     /**
      * Set name of for the Ace Editor : if theme is light set "github theme" else set "clouds_midnight theme"
@@ -89,8 +87,6 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
         if (type === ElementType.CONTINGENCY_LIST) {
             newScript = {
                 id: id,
-                name: name,
-                description: description,
                 script: aceEditorContent,
             };
             saveScriptContingencyList(newScript)
@@ -101,8 +97,6 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
         } else {
             newScript = {
                 id: id,
-                name: name,
-                description: description,
                 script: aceEditorContent,
                 type: FilterType.SCRIPT,
             };
@@ -138,8 +132,6 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                             if (data) {
                                 setCurrentScript(data);
                                 setAceEditorContent(data.script);
-                                setName(data.name);
-                                setDescription(data.description);
                             }
                         })
                         .catch((error) => {
@@ -153,8 +145,6 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                                 setAceEditorContent(
                                     data.script === null ? '' : data.script
                                 );
-                                setName(data.name);
-                                setDescription(data.description);
                             }
                         })
                         .catch((error) => {
