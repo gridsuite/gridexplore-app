@@ -7,11 +7,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Chip, FormControl } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
+import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
+
 import { useExpandableCriteria } from './expandable-criteria';
 import { fetchAppsAndUrls } from '../../utils/rest-api';
-import Grid from '@mui/material/Grid';
 
 export const FreeProperty = ({
     index,
@@ -43,7 +44,11 @@ export const FreeProperty = ({
 
     return (
         <>
-            <FormControl fullWidth margin="dense">
+            <FormControl
+                fullWidth
+                margin="dense"
+                sx={{ flexBasis: '28%', marginTop: 0 }}
+            >
                 <Autocomplete
                     id={'name_property'}
                     defaultValue={''}
@@ -66,7 +71,9 @@ export const FreeProperty = ({
                     )}
                 />
             </FormControl>
-            <FormControl sx={{ paddingLeft: '1ex' }}>
+            <FormControl
+                sx={{ paddingLeft: '1ex', flexBasis: '72%', marginTop: 0 }}
+            >
                 <Autocomplete
                     id="prop_values"
                     value={values}
@@ -130,7 +137,12 @@ function validateProperties(values) {
     return res;
 }
 
-export const FreeProperties = ({ initialValue, onChange, titleMessage }) => {
+export const FreeProperties = ({
+    initialValue,
+    onChange,
+    titleMessage,
+    isForSubstation = false,
+}) => {
     console.debug('FreeProperties', initialValue);
     const numericSuffixRegex = /[0-9]*$/;
     const numericSuffix = numericSuffixRegex.exec(titleMessage)[0];
@@ -179,21 +191,41 @@ export const FreeProperties = ({ initialValue, onChange, titleMessage }) => {
         });
     };
 
-    const field = useMemo(() => {
-        return (
-            <>
-                <Grid container item direction="row" spacing={2}>
-                    {freePropsField}
+    const field = (
+        <>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <h3>
+                        <FormattedMessage id={'FreePropsCrit'} />
+                    </h3>
+                    {!isForSubstation && (
+                        <h4>
+                            <FormattedMessage id={'SubstationFreeProps'} />
+                        </h4>
+                    )}
                 </Grid>
-            </>
-        );
-    }, [freePropsField]);
+            </Grid>
+
+            <Grid container item direction="row" spacing={2}>
+                {freePropsField}
+            </Grid>
+        </>
+    );
 
     useEffect(() => {
         fetchPredefinedProperties().then((p) => setFieldProps(p));
     }, []);
 
     return field;
+};
+
+export const FreePropertiesS = ({ initialValue, onChange, titleMessage }) => {
+    return FreeProperties({
+        initialValue,
+        onChange,
+        titleMessage,
+        isForSubstation: true,
+    });
 };
 
 export const FreeProperty2 = ({
@@ -219,7 +251,6 @@ export const FreeProperty2 = ({
 
     const [values1, setValues1] = useState(defaultValue?.values1 || []);
     const [values2, setValues2] = useState(defaultValue?.values2 || []);
-    console.debug('FreeProperty2', { name, values1, values2 });
 
     useEffect(() => {
         setName(defaultValue?.name);
@@ -354,7 +385,6 @@ function validateProperties2(values) {
             res.set(idx, errInBuild);
         }
     });
-    console.debug('validateProperties2', res);
     return res;
 }
 
@@ -363,12 +393,9 @@ export const FreeProperties2 = ({ initialValue, onChange, titleMessage }) => {
     const numericSuffix = numericSuffixRegex.exec(titleMessage)[0];
 
     const [fieldProps, setFieldProps] = useState(null);
-    console.debug('FreeProperties2', initialValue, fieldProps);
     const initialValues = useMemo(() => {
-        console.debug('FreeProperties2.initialValues.useMemo', initialValue);
         if (!initialValue) return [];
         const ret = Object.entries(initialValue).map(([k, v]) => v);
-        console.debug('FreeProperties2.initialValues.useMemo.ret', ret);
         return ret;
     }, [initialValue]);
 
@@ -408,15 +435,24 @@ export const FreeProperties2 = ({ initialValue, onChange, titleMessage }) => {
         });
     };
 
-    const field = useMemo(() => {
-        return (
-            <>
-                <Grid container item direction="row" spacing={2}>
-                    {freePropsField}
+    const field = (
+        <>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <h3>
+                        <FormattedMessage id={'FreePropsCrit'} />
+                    </h3>
+                    <h4>
+                        <FormattedMessage id={'SubstationsFreeProps'} />
+                    </h4>
                 </Grid>
-            </>
-        );
-    }, [freePropsField]);
+            </Grid>
+
+            <Grid container item direction="row" spacing={2}>
+                {freePropsField}
+            </Grid>
+        </>
+    );
 
     useEffect(() => {
         fetchPredefinedProperties().then((p) => setFieldProps(p));

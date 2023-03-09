@@ -18,6 +18,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     FreeProperties,
+    FreePropertiesS,
     FreeProperties2,
 } from './free-properties-based-filter';
 
@@ -316,6 +317,10 @@ export const filteredTypes = {
     },
     freeProperties2: {
         renderer: FreeProperties2,
+        defaultValue: {},
+    },
+    freePropertiesS: {
+        renderer: FreePropertiesS,
         defaultValue: {},
     },
 };

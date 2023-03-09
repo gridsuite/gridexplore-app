@@ -39,12 +39,6 @@ const Countries2 = {
         type: filteredTypes.countries,
     },
 };
-const FreeProperties2 = {
-    freeProperties: {
-        name: 'FreeProperties',
-        type: filteredTypes.freeProperties2,
-    },
-};
 const NominalVoltage = {
     nominalVoltage: {
         name: 'nominalVoltage',
@@ -81,6 +75,19 @@ const FreeProps = {
         type: filteredTypes.freeProperties,
     },
 };
+const FreePropsS = {
+    freeProperties: {
+        name: 'FreeProperties',
+        type: filteredTypes.freePropertiesS,
+    },
+};
+const FreeProperties2 = {
+    freeProperties: {
+        name: 'FreeProperties',
+        type: filteredTypes.freeProperties2,
+    },
+};
+
 const Line = { label: 'Lines', type: 'LINE' };
 const Generator = { label: 'Generators', type: 'GENERATOR' };
 const Load = { label: 'Loads', type: 'LOAD' };
@@ -232,7 +239,7 @@ export const filterEquipmentDefinition = {
         ...Substation,
         fields: {
             ...Countries,
-            ...FreeProps,
+            ...FreePropsS,
         },
     },
 };
