@@ -143,7 +143,6 @@ export const FreeProperties = ({
     titleMessage,
     isForSubstation = false,
 }) => {
-    console.debug('FreeProperties', initialValue);
     const numericSuffixRegex = /[0-9]*$/;
     const numericSuffix = numericSuffixRegex.exec(titleMessage)[0];
 
@@ -301,7 +300,7 @@ export const FreeProperty2 = ({
                     forcePopupIcon
                     multiple={true}
                     onChange={(oldVal, newVal) => {
-                        onChange(index, { name, values1: newVal });
+                        onChange(index, { name, values1: newVal, values2 });
                         setValues1(newVal);
                     }}
                     options={predefinedValues}
@@ -333,7 +332,7 @@ export const FreeProperty2 = ({
                     forcePopupIcon
                     multiple={true}
                     onChange={(oldVal, newVal) => {
-                        onChange(index, { name, values2: newVal });
+                        onChange(index, { name, values1, values2: newVal });
                         setValues2(newVal);
                     }}
                     options={predefinedValues}
@@ -401,10 +400,9 @@ export const FreeProperties2 = ({ initialValue, onChange, titleMessage }) => {
 
     const onPropertiesArrayChange = useCallback(
         (arr) => {
-            console.debug('onPropertiesArrayChange', arr);
             const obj = !arr
                 ? {}
-                : Object.fromEntries(arr.map((p) => [p.name || '', p.values]));
+                : Object.fromEntries(arr.map((p) => [p.name || '', p]));
             onChange(obj);
         },
         [onChange]

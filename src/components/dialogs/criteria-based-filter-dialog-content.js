@@ -117,7 +117,7 @@ const backToFrontTweak = (response) => {
 const frontToBackTweak = (filter) => {
     if (
         !filter?.equipmentFilterForm ||
-        !['LINE', 'HVDC'].includes(filter.equipmentType)
+        !['LINE', 'HVDC'].includes(filter.equipmentFilterForm.equipmentType)
     ) {
         return filter;
     }
@@ -131,6 +131,7 @@ const frontToBackTweak = (filter) => {
     const props2 = {};
     if (biProps) {
         Object.entries(biProps).forEach(([k, bp]) => {
+            if (!bp) return;
             const values1 = bp.values1;
             const values2 = bp.values2;
             if (values1) {
@@ -229,6 +230,7 @@ export const CriteriaBasedFilterDialogContent = ({
         if (contentType === ElementType.FILTER) {
             // data model is not the same: filter has a sub-object 'equipmentFilterForm'
             currentFilter.current.equipmentFilterForm = newVal;
+            currentFilter.current = frontToBackTweak(currentFilter.current);
         } else {
             for (const k in newVal) currentFilter.current[k] = newVal[k];
         }
@@ -259,6 +261,9 @@ export const CriteriaBasedFilterDialogContent = ({
         currentFilterToSend.current.id = id;
         currentFilterToSend.current.type = FilterType.CRITERIA;
         currentFilterToSend.current.equipmentFilterForm = { ...res };
+        currentFilterToSend.current = frontToBackTweak(
+            currentFilterToSend.current
+        );
         handleFilterCreation(currentFilterToSend.current);
         const hasEdition = Object.values(res).some(
             (val) =>

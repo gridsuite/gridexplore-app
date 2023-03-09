@@ -788,10 +788,11 @@ export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
  * Save Filter
  */
 export function saveFilter(filter) {
+    const body = JSON.stringify(filter);
     return backendFetch(PREFIX_FILTERS_QUERIES + '/' + filter.id, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(filter),
+        body,
     });
 }
 

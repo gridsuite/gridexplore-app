@@ -24,7 +24,6 @@ export const useExpandableCriteria = ({
     // const classes = useStyles();
     const [values, setValues] = useState(initialValues);
     const [errors, setErrors] = useState();
-    console.debug('useExpandableCriteria', values);
 
     const handleDeleteItem = useCallback(
         (index) => {
