@@ -276,7 +276,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                                 !loadingCheckContingencyName
                             }
                             type="text"
-                            style={{ width: '90%' }}
+                            style={{ width: '100%' }}
                             label={<FormattedMessage id="nameProperty" />}
                         />
                         {renderContingencyNameStatus()}
@@ -288,7 +288,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                         margin="dense"
                         value={contingencyListDescription}
                         type="text"
-                        style={{ width: '90%' }}
+                        style={{ width: '100%' }}
                         label={<FormattedMessage id="descriptionProperty" />}
                     />
 
