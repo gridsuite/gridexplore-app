@@ -341,7 +341,10 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                         disabled={
                             contingencyListName === '' ||
                             !contingencyNameValid ||
-                            loadingCheckContingencyName
+                            loadingCheckContingencyName ||
+                            (contingencyListType === ContingencyListType.FORM &&
+                                !currentCriteriaBasedFilter?.current
+                                    ?.equipmentType)
                         }
                     >
                         <FormattedMessage id="validate" />
