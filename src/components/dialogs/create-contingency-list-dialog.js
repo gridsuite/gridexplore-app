@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -30,6 +30,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
 import { renderPopup } from './create-filter-dialog';
 import ScriptDialogContent from './script-dialog-content';
+import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -66,6 +67,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const timer = React.useRef();
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [currentScript, setCurrentScript] = useState(null);
+    const currentCriteriaBasedFilter = useRef(null);
     const [isUnsavedChanges, setUnsavedChanges] = useState(false);
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
@@ -163,7 +165,14 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         if (loadingCheckContingencyName || !contingencyNameValid) {
             return;
         }
-        const formContent = currentScript; // TODO CHARLY changer cette ligne si on est en mode formulaire et pas script.
+
+        let formContent;
+        if (contingencyListType === ContingencyListType.FORM) {
+            formContent = currentCriteriaBasedFilter.current;
+        } else if (contingencyListType === ContingencyListType.SCRIPT) {
+            formContent = currentScript;
+        }
+
         createContingencyList(
             contingencyListType,
             contingencyListName,
@@ -221,6 +230,22 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         if (newScript !== currentScript) {
             setUnsavedChanges(true);
         }
+    };
+
+    const handleCriteriaBasedFilterCreation = (filter) => {
+        currentCriteriaBasedFilter.current = {};
+        currentCriteriaBasedFilter.current.id = filter.id;
+        currentCriteriaBasedFilter.current.equipmentType =
+            filter.equipmentFilterForm.equipmentType;
+        currentCriteriaBasedFilter.current.countries1 =
+            filter.equipmentFilterForm.countries1;
+        currentCriteriaBasedFilter.current.countries2 =
+            filter.equipmentFilterForm.countries2;
+        currentCriteriaBasedFilter.current.nominalVoltage1 =
+            filter.equipmentFilterForm.nominalVoltage1;
+        currentCriteriaBasedFilter.current.nominalVoltage2 =
+            filter.equipmentFilterForm.nominalVoltage2;
+        setUnsavedChanges(true);
     };
 
     return (
@@ -292,7 +317,13 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                             type={ElementType.CONTINGENCY_LIST}
                         />
                     ) : (
-                        <>form TODO</>
+                        <CriteriaBasedFilterDialogContent
+                            open={open}
+                            contentType={ElementType.CONTINGENCY_LIST}
+                            handleFilterCreation={
+                                handleCriteriaBasedFilterCreation
+                            }
+                        />
                     )}
                     {createContingencyListErr !== '' && (
                         <Alert severity="error">

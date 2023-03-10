@@ -517,11 +517,8 @@ export function createContingencyList(
 
     let body = {};
     if (contingencyListType === ContingencyListType.FORM) {
-        // default form: empty LINE // TODO CHARLY remplacer les valeurs par défaut
-        body.equipmentType = 'LINE';
-        body.nominalVoltage1 = null;
-    }
-    if (contingencyListType === ContingencyListType.SCRIPT) {
+        body = formContent;
+    } else if (contingencyListType === ContingencyListType.SCRIPT) {
         body.script = formContent;
     }
     return backendFetch(createContingencyListUrl, {
