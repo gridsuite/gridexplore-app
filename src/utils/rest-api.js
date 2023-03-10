@@ -492,6 +492,7 @@ export function createContingencyList(
     contingencyListType,
     contingencyListName,
     contingencyListDescription,
+    formContent,
     parentDirectoryUuid
 ) {
     console.info('Creating a new contingency list...');
@@ -516,9 +517,12 @@ export function createContingencyList(
 
     let body = {};
     if (contingencyListType === ContingencyListType.FORM) {
-        // default form: empty LINE
+        // default form: empty LINE // TODO CHARLY remplacer les valeurs par défaut
         body.equipmentType = 'LINE';
         body.nominalVoltage1 = null;
+    }
+    if (contingencyListType === ContingencyListType.SCRIPT) {
+        body.script = formContent;
     }
     return backendFetch(createContingencyListUrl, {
         method: 'post',

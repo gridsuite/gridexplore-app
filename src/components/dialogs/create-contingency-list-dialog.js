@@ -28,8 +28,16 @@ import { ContingencyListType, ElementType } from '../../utils/elementType';
 import CircularProgress from '@mui/material/CircularProgress';
 import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
+import { renderPopup } from './create-filter-dialog';
+import ScriptDialogContent from './script-dialog-content';
 
-const useStyles = makeStyles(() => ({}));
+const useStyles = makeStyles(() => ({
+    dialogPaper: {
+        minWidth: '700px',
+        minHeight: '500px',
+        margin: 'auto',
+    },
+}));
 
 /**
  * Dialog to create a contingency
@@ -40,6 +48,8 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const [contingencyListType, setContingencyListType] = React.useState(
         ContingencyListType.SCRIPT
     );
+    const [choosedContingencyListType, setChoosedContingencyListType] =
+        useState(ContingencyListType.SCRIPT);
 
     const [contingencyListName, setContingencyListName] = React.useState('');
     const [contingencyListDescription, setContingencyListDescription] =
@@ -54,6 +64,9 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const classes = useStyles();
     const intl = useIntl();
     const timer = React.useRef();
+    const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
+    const [currentScript, setCurrentScript] = useState(null);
+    const [isUnsavedChanges, setUnsavedChanges] = useState(false);
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
@@ -129,7 +142,13 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     };
 
     const handleChangeContingencyListType = (event) => {
-        setContingencyListType(event.target.value);
+        if (isUnsavedChanges) {
+            setOpenConfirmationPopup(true);
+            setChoosedContingencyListType(event.target.value);
+        } else {
+            handlePopupConfirmation();
+            setContingencyListType(event.target.value);
+        }
     };
 
     const handleCreateNewContingencyList = () => {
@@ -144,14 +163,16 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         if (loadingCheckContingencyName || !contingencyNameValid) {
             return;
         }
-
+        const formContent = currentScript; // TODO CHARLY changer cette ligne si on est en mode formulaire et pas script.
         createContingencyList(
             contingencyListType,
             contingencyListName,
             contingencyListDescription,
+            formContent,
             activeDirectory
         )
             .then(() => {
+                setUnsavedChanges(false);
                 onClose();
             })
             .catch((error) => {
@@ -187,9 +208,25 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
             handleCreateNewContingencyList();
         }
     };
+
+    const handlePopupConfirmation = () => {
+        setOpenConfirmationPopup(false);
+        setContingencyListType(choosedContingencyListType);
+        setCreateContingencyListErr('');
+        setUnsavedChanges(false);
+    };
+
+    const onScriptChangeHandler = (newScript) => {
+        setCurrentScript(newScript);
+        if (newScript !== currentScript) {
+            setUnsavedChanges(true);
+        }
+    };
+
     return (
         <div>
             <Dialog
+                classes={{ paper: classes.dialogPaper }}
                 fullWidth={true}
                 open={open}
                 onClose={handleCloseDialog}
@@ -248,6 +285,15 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                             label={<FormattedMessage id="FORM" />}
                         />
                     </RadioGroup>
+                    {contingencyListType === ContingencyListType.SCRIPT ? (
+                        <ScriptDialogContent
+                            onChange={onScriptChangeHandler}
+                            onError={setCreateContingencyListErr}
+                            type={ElementType.CONTINGENCY_LIST}
+                        />
+                    ) : (
+                        <>form TODO</>
+                    )}
                     {createContingencyListErr !== '' && (
                         <Alert severity="error">
                             {createContingencyListErr}
@@ -271,6 +317,13 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            {renderPopup(
+                isConfirmationPopupOpen,
+                handleKeyPressed,
+                intl,
+                setOpenConfirmationPopup,
+                handlePopupConfirmation
+            )}
         </div>
     );
 };
