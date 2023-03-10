@@ -4,7 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { Chip, FormControl } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid';
@@ -109,38 +115,11 @@ export const FreeProperty = ({
     );
 };
 
-function validateProperties(values) {
-    const res = new Map();
-    const idMap = values.reduce(
-        (m, v) => m.set(v.name, (m.get(v.name) || 0) + 1),
-        new Map()
-    );
-
-    values.forEach((val, idx) => {
-        const count = idMap.get(val.name);
-        const errInBuild = {};
-        if (!val?.values?.length) {
-            errInBuild.PropValue = 'ValueMayNotBeEmpty';
-        }
-
-        if (!val.name) {
-            errInBuild.PropName = 'EmptyName';
-        } else if (count > 1) {
-            errInBuild.PropName = 'DuplicateName';
-        }
-
-        if (Object.keys(errInBuild).length) {
-            errInBuild.error = true;
-            res.set(idx, errInBuild);
-        }
-    });
-    return res;
-}
-
 export const FreeProperties = ({
     initialValue,
     onChange,
     titleMessage,
+    validationsCount,
     isForSubstation = false,
 }) => {
     const numericSuffixRegex = /[0-9]*$/;
@@ -154,15 +133,64 @@ export const FreeProperties = ({
         });
         return ret;
     }, [initialValue]);
+    const validationsCountRef = useRef();
 
     const onPropertiesArrayChange = useCallback(
         (arr) => {
             const obj = !arr
                 ? {}
                 : Object.fromEntries(arr.map((p) => [p.name || '', p.values]));
-            onChange(obj);
+            const vetoIdx = arr.findIndex((p) => !p.name || !p?.values?.length);
+            onChange(obj, vetoIdx >= 0);
         },
         [onChange]
+    );
+
+    const validateProperties = useCallback(
+        (values, prevErrors) => {
+            const res = new Map();
+            const idMap = values.reduce(
+                (m, v) => m.set(v.name, (m.get(v.name) || 0) + 1),
+                new Map()
+            );
+
+            const shrinksOnly =
+                validationsCountRef.current === validationsCount;
+
+            values.forEach((val, idx) => {
+                let prevError = prevErrors?.get(idx);
+                if (shrinksOnly && !prevError) return;
+
+                const count = idMap.get(val.name);
+                const errInBuild = {};
+                if (
+                    !val?.values?.length &&
+                    (!shrinksOnly || prevError?.PropValue)
+                ) {
+                    errInBuild.PropValue = 'ValueMayNotBeEmpty';
+                }
+
+                if (!shrinksOnly || prevError?.PropName) {
+                    if (!val.name) {
+                        errInBuild.PropName = 'EmptyName';
+                    } else if (count > 1) {
+                        errInBuild.PropName = 'DuplicateName';
+                    }
+                }
+
+                if (Object.keys(errInBuild).length) {
+                    errInBuild.error = true;
+                    res.set(idx, errInBuild);
+                }
+            });
+
+            if (validationsCountRef.current !== validationsCount) {
+                validationsCountRef.current = validationsCount;
+            }
+
+            return res;
+        },
+        [validationsCount]
     );
 
     const freePropsField = useExpandableCriteria({
@@ -306,7 +334,7 @@ export const FreeProperty2 = ({
                     options={predefinedValues}
                     renderInput={(props) => (
                         <TextField
-                            label={<FormattedMessage id="PropertyValues" />}
+                            label={<FormattedMessage id="PropertyValues1" />}
                             error={!!errors?.PropValue}
                             {...props}
                         />
@@ -338,7 +366,7 @@ export const FreeProperty2 = ({
                     options={predefinedValues}
                     renderInput={(props) => (
                         <TextField
-                            label={<FormattedMessage id="PropertyValues" />}
+                            label={<FormattedMessage id="PropertyValues2" />}
                             error={!!errors?.PropValue}
                             {...props}
                         />
@@ -359,35 +387,12 @@ export const FreeProperty2 = ({
     );
 };
 
-function validateProperties2(values) {
-    const res = new Map();
-    const idMap = values.reduce(
-        (m, v) => m.set(v.name, (m.get(v.name) || 0) + 1),
-        new Map()
-    );
-
-    values.forEach((val, idx) => {
-        const count = idMap.get(val.name);
-        const errInBuild = {};
-        if (!val?.values1?.length && !val?.values2?.length) {
-            errInBuild.PropValue = 'ValueMayNotBeEmpty';
-        }
-
-        if (!val.name) {
-            errInBuild.PropName = 'EmptyName';
-        } else if (count > 1) {
-            errInBuild.PropName = 'DuplicateName';
-        }
-
-        if (Object.keys(errInBuild).length) {
-            errInBuild.error = true;
-            res.set(idx, errInBuild);
-        }
-    });
-    return res;
-}
-
-export const FreeProperties2 = ({ initialValue, onChange, titleMessage }) => {
+export const FreeProperties2 = ({
+    initialValue,
+    onChange,
+    titleMessage,
+    validationsCount,
+}) => {
     const numericSuffixRegex = /[0-9]*$/;
     const numericSuffix = numericSuffixRegex.exec(titleMessage)[0];
 
@@ -397,15 +402,67 @@ export const FreeProperties2 = ({ initialValue, onChange, titleMessage }) => {
         const ret = Object.entries(initialValue).map(([k, v]) => v);
         return ret;
     }, [initialValue]);
+    const validationsCountRef = useRef(0);
 
     const onPropertiesArrayChange = useCallback(
         (arr) => {
             const obj = !arr
                 ? {}
                 : Object.fromEntries(arr.map((p) => [p.name || '', p]));
-            onChange(obj);
+            const veto = arr.some(
+                (p) => !p.name || (!p?.values1?.length && !p?.values2?.length)
+            );
+            onChange(obj, veto);
         },
         [onChange]
+    );
+
+    const validateProperties2 = useCallback(
+        (values, prevErrors) => {
+            const res = new Map();
+            const idMap = values.reduce(
+                (m, v) => m.set(v.name, (m.get(v.name) || 0) + 1),
+                new Map()
+            );
+
+            const shrinksOnly =
+                validationsCountRef.current === validationsCount;
+
+            values.forEach((val, idx) => {
+                let prevError = prevErrors?.get(idx);
+                if (shrinksOnly && !prevError) return;
+
+                const count = idMap.get(val.name);
+                const errInBuild = {};
+                if (
+                    !val?.values1?.length &&
+                    !val?.values2?.length &&
+                    (!shrinksOnly || prevError?.PropValue)
+                ) {
+                    errInBuild.PropValue = 'ValueMayNotBeEmpty';
+                }
+
+                if (!shrinksOnly || prevError?.PropName) {
+                    if (!val.name) {
+                        errInBuild.PropName = 'EmptyName';
+                    } else if (count > 1) {
+                        errInBuild.PropName = 'DuplicateName';
+                    }
+                }
+
+                if (Object.keys(errInBuild).length) {
+                    errInBuild.error = true;
+                    res.set(idx, errInBuild);
+                }
+            });
+
+            if (validationsCountRef.current !== validationsCount) {
+                validationsCountRef.current = validationsCount;
+            }
+
+            return res;
+        },
+        [validationsCount]
     );
 
     const freePropsField = useExpandableCriteria({

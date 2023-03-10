@@ -176,6 +176,8 @@
     "AddFreePropCrit2": "Ajouter un filtrage par propriété 2",
     "PropertyName": "Nom de la propriété",
     "PropertyValues": "Valeurs de la propriété",
+    "PropertyValues1": "Valeurs de la propriété 1",
+    "PropertyValues2": "Valeurs de la propriété 2",
 
     "getAppLinkError": "Erreur lors de la récupération du lien vers l'application pour le type = {type}",
     "nameValidityCheckErrorMsg": "Erreur lors de la vérification de la validité du nom : ",

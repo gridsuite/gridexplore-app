@@ -58,8 +58,11 @@ export const useExpandableCriteria = ({
     }, [onChange]);
 
     useEffect(() => {
-        const res = validateItems ? validateItems(values) : [];
-        setErrors(res);
+        if (validateItems) {
+            setErrors((prevErrors) => validateItems(values, prevErrors));
+        } else {
+            setErrors(null);
+        }
     }, [values, validateItems]);
 
     const field = useMemo(() => {

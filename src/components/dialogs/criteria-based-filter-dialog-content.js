@@ -41,16 +41,17 @@ function generateDefaultValue(val, originalValue) {
     };
 }
 
-const SingleFilter = ({ filter, definition, onChange }) => {
-    const localChange = (newVal) => {
+const SingleFilter = ({ filter, definition, onChange, validationsCount }) => {
+    const localChange = (newVal, veto) => {
         filter.value = newVal;
-        onChange();
+        onChange(veto);
     };
     return definition.type.renderer({
         initialValue: filter.value,
         onChange: localChange,
         titleMessage: definition.name,
         enumValues: definition.enumValues,
+        validationsCount,
     });
 };
 
@@ -154,6 +155,7 @@ export const CriteriaBasedFilterDialogContent = ({
     contentType,
     handleFilterCreation,
     handleEquipmentTypeChange,
+    validationsCount,
 }) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [equipmentType, setEquipmentType] = useState(null);
@@ -224,15 +226,14 @@ export const CriteriaBasedFilterDialogContent = ({
     }, [id, contentType, snackError]);
 
     function onChange(newVal) {
-        currentFilter.current = {};
-        currentFilter.current.id = id;
-        currentFilter.current.type = FilterType.CRITERIA;
-        if (contentType === ElementType.FILTER) {
+        if (contentType !== ElementType.FILTER) {
+            const newFilter = { id, type: FilterType.CRITERIA, ...newVal };
+            currentFilter.current = newFilter;
+        } else if (newVal) {
             // data model is not the same: filter has a sub-object 'equipmentFilterForm'
-            currentFilter.current.equipmentFilterForm = newVal;
-            currentFilter.current = frontToBackTweak(currentFilter.current);
-        } else {
-            for (const k in newVal) currentFilter.current[k] = newVal[k];
+            const newFilter = { id, type: FilterType.CRITERIA };
+            newFilter.equipmentFilterForm = newVal;
+            currentFilter.current = frontToBackTweak(newFilter);
         }
     }
 
@@ -247,7 +248,7 @@ export const CriteriaBasedFilterDialogContent = ({
         return value1NotNull && value2NotNull;
     }
 
-    const editDone = () => {
+    const editDone = (veto) => {
         let res = {};
         Object.entries(currentFormEdit).forEach(([key, obj]) => {
             if (key.startsWith('nominalVoltage') && !validVoltageValues(obj)) {
@@ -258,17 +259,13 @@ export const CriteriaBasedFilterDialogContent = ({
             }
         });
         onChange(res);
-        currentFilterToSend.current.id = id;
-        currentFilterToSend.current.type = FilterType.CRITERIA;
-        currentFilterToSend.current.equipmentFilterForm = { ...res };
-        currentFilterToSend.current = frontToBackTweak(
-            currentFilterToSend.current
-        );
-        handleFilterCreation(currentFilterToSend.current);
+        const newFilter = { id, type: FilterType.CRITERIA };
+        newFilter.equipmentFilterForm = { ...res };
+        currentFilterToSend.current = frontToBackTweak(newFilter);
+        handleFilterCreation(currentFilterToSend.current, veto);
         const hasEdition = Object.values(res).some(
             (val) =>
-                val !== undefined &&
-                val !== null &&
+                val &&
                 ((Array.isArray(val) && val.length > 0) ||
                     (typeof val === 'object' && Object.keys(val).length > 0))
         );
@@ -293,7 +290,7 @@ export const CriteriaBasedFilterDialogContent = ({
         setEquipmentType(newType);
         if (id == null && contentType === ElementType.FILTER)
             handleEquipmentTypeChange(newType);
-        editDone();
+        editDone(false);
     };
 
     const handlePopupConfirmation = () => {
@@ -326,6 +323,7 @@ export const CriteriaBasedFilterDialogContent = ({
                 filter={currentFormEdit[key]}
                 definition={definition}
                 onChange={editDone}
+                validationsCount={validationsCount}
             />
         );
     };
