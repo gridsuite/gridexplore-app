@@ -234,12 +234,6 @@ export const CriteriaBasedFilterDialogContent = ({
         handleSelectionEquipmentTypeChange(newEquipmentType);
     };
 
-    const handleKeyPressed = (event) => {
-        if (open && event.key === 'Enter') {
-            handlePopupConfirmation();
-        }
-    };
-
     const renderFilter = (key, definition) => {
         if (initialFilter !== null) {
             if (currentFormEdit[key] === undefined) {
@@ -284,7 +278,6 @@ export const CriteriaBasedFilterDialogContent = ({
                 {renderSpecific()}
                 {renderPopup(
                     isConfirmationPopupOpen,
-                    handleKeyPressed,
                     intl,
                     setOpenConfirmationPopup,
                     handlePopupConfirmation

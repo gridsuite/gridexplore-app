@@ -51,17 +51,22 @@ const useStyles = makeStyles((theme) => ({
 
 export const renderPopup = (
     isConfirmationPopupOpen,
-    handleKeyPressed,
     intl,
     setOpenConfirmationPopup,
     handlePopupConfirmation
 ) => {
+    const handleEnterKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            handlePopupConfirmation();
+        }
+    };
+
     return (
         <div>
             <Dialog
                 open={isConfirmationPopupOpen}
                 aria-labelledby="dialog-title-change-equipment-type"
-                onKeyPress={handleKeyPressed}
+                onKeyPress={handleEnterKeyPress}
             >
                 <DialogTitle id={'dialog-title-change-equipment-type'}>
                     {'Confirmation'}
@@ -277,12 +282,6 @@ const CreateFilterDialog = ({
         );
     };
 
-    const handleKeyPressed = (event) => {
-        if (event.key === 'Enter') {
-            handleValidation();
-        }
-    };
-
     const onFilterTypeChange = (event) => {
         if (equipmentType !== null) {
             setOpenConfirmationPopup(true);
@@ -307,7 +306,6 @@ const CreateFilterDialog = ({
                 fullWidth={true}
                 open={open && !filterType}
                 onClose={handleClose}
-                onKeyPress={handleKeyPressed}
             >
                 <DialogTitle>{title}</DialogTitle>
                 <DialogContent style={{ maxHeight: '60vh' }}>
@@ -387,7 +385,6 @@ const CreateFilterDialog = ({
             </Dialog>
             {renderPopup(
                 isConfirmationPopupOpen,
-                handleKeyPressed,
                 intl,
                 setOpenConfirmationPopup,
                 handlePopupConfirmation
