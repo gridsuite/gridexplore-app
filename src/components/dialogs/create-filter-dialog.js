@@ -109,7 +109,7 @@ const CreateFilterDialog = ({
     const [newListType, setNewListType] = useState(FilterType.CRITERIA);
     const [filterType, setFilterType] = useState(null);
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
-    const [choosedFilterType, setChoosedFilterType] = useState(
+    const [chosenFilterType, setChosenFilterType] = useState(
         FilterType.CRITERIA
     );
 
@@ -286,7 +286,7 @@ const CreateFilterDialog = ({
     const onFilterTypeChange = (event) => {
         if (equipmentType !== null) {
             setOpenConfirmationPopup(true);
-            setChoosedFilterType(event.target.value);
+            setChosenFilterType(event.target.value);
         } else {
             handlePopupConfirmation();
             setNewListType(event.target.value);
@@ -295,7 +295,7 @@ const CreateFilterDialog = ({
 
     const handlePopupConfirmation = () => {
         setOpenConfirmationPopup(false);
-        setNewListType(choosedFilterType);
+        setNewListType(chosenFilterType);
         setEquipmentType(null);
         setCreateFilterErr('');
     };
