@@ -49,8 +49,9 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const [contingencyListType, setContingencyListType] = React.useState(
         ContingencyListType.SCRIPT
     );
-    const [choosedContingencyListType, setChoosedContingencyListType] =
-        useState(ContingencyListType.SCRIPT);
+    const [chosenContingencyListType, setChosenContingencyListType] = useState(
+        ContingencyListType.SCRIPT
+    );
 
     const [contingencyListName, setContingencyListName] = React.useState('');
     const [contingencyListDescription, setContingencyListDescription] =
@@ -146,7 +147,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const handleChangeContingencyListType = (event) => {
         if (isUnsavedChanges) {
             setOpenConfirmationPopup(true);
-            setChoosedContingencyListType(event.target.value);
+            setChosenContingencyListType(event.target.value);
         } else {
             handlePopupConfirmation();
             setContingencyListType(event.target.value);
@@ -220,7 +221,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
 
     const handlePopupConfirmation = () => {
         setOpenConfirmationPopup(false);
-        setContingencyListType(choosedContingencyListType);
+        setContingencyListType(chosenContingencyListType);
         setCreateContingencyListErr('');
         setUnsavedChanges(false);
     };
