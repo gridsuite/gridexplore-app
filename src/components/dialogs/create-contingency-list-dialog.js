@@ -68,7 +68,8 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const timer = React.useRef();
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [currentScript, setCurrentScript] = useState(null);
-    const currentCriteriaBasedFilter = useRef(null);
+    const [currentCriteriaBasedFilter, setCurrentCriteriaBasedFilter] =
+        useState(null);
     const [isUnsavedChanges, setUnsavedChanges] = useState(false);
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
@@ -169,7 +170,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
 
         let formContent;
         if (contingencyListType === ContingencyListType.FORM) {
-            formContent = currentCriteriaBasedFilter.current;
+            formContent = currentCriteriaBasedFilter;
         } else if (contingencyListType === ContingencyListType.SCRIPT) {
             formContent = currentScript;
         }
@@ -234,18 +235,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     };
 
     const handleCriteriaBasedFilterCreation = (filter) => {
-        currentCriteriaBasedFilter.current = {};
-        currentCriteriaBasedFilter.current.id = filter.id;
-        currentCriteriaBasedFilter.current.equipmentType =
-            filter.equipmentFilterForm.equipmentType;
-        currentCriteriaBasedFilter.current.countries1 =
-            filter.equipmentFilterForm.countries1;
-        currentCriteriaBasedFilter.current.countries2 =
-            filter.equipmentFilterForm.countries2;
-        currentCriteriaBasedFilter.current.nominalVoltage1 =
-            filter.equipmentFilterForm.nominalVoltage1;
-        currentCriteriaBasedFilter.current.nominalVoltage2 =
-            filter.equipmentFilterForm.nominalVoltage2;
+        setCurrentCriteriaBasedFilter(filter.equipmentFilterForm);
         setUnsavedChanges(true);
     };
 
@@ -344,8 +334,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                             !contingencyNameValid ||
                             loadingCheckContingencyName ||
                             (contingencyListType === ContingencyListType.FORM &&
-                                !currentCriteriaBasedFilter?.current
-                                    ?.equipmentType)
+                                !currentCriteriaBasedFilter?.equipmentType)
                         }
                     >
                         <FormattedMessage id="validate" />
