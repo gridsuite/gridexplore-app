@@ -214,10 +214,9 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         );
     };
 
-    const handleKeyPressed = (event) => {
-        if (event.key === 'Enter') {
-            handleCreateNewContingencyList();
-        }
+    const handleKeyPressed = () => {
+        // TODO This function is to be removed. It is still there to simplify pull requests.
+        return;
     };
 
     const handlePopupConfirmation = () => {
@@ -247,7 +246,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                 open={open}
                 onClose={handleCloseDialog}
                 aria-labelledby="form-dialog-title"
-                onKeyPress={handleKeyPressed}
             >
                 <DialogTitle id="form-dialog-title">
                     <FormattedMessage id="createNewContingencyList" />
