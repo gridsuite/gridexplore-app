@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
