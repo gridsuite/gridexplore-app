@@ -214,11 +214,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         );
     };
 
-    const handleKeyPressed = () => {
-        // TODO This function is to be removed. It is still there to simplify pull requests.
-        return;
-    };
-
     const handlePopupConfirmation = () => {
         setOpenConfirmationPopup(false);
         setContingencyListType(chosenContingencyListType);
@@ -341,7 +336,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
             </Dialog>
             {renderPopup(
                 isConfirmationPopupOpen,
-                handleKeyPressed,
                 intl,
                 setOpenConfirmationPopup,
                 handlePopupConfirmation

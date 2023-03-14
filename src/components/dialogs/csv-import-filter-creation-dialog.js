@@ -131,7 +131,6 @@ const CsvImportFilterCreationDialog = ({
                 <Dialog
                     open={isConfirmationPopupOpen}
                     aria-labelledby="dialog-confirmation-csv-data"
-                    onKeyPress={() => handleAddPopupConfirmation()}
                 >
                     <DialogTitle id={'dialog-confirmation-csv-data'}>
                         {'Confirmation'}

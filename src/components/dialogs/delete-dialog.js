@@ -77,12 +77,6 @@ const DeleteDialog = ({
         onClick();
     };
 
-    const handleKeyPressed = (event) => {
-        if (open && event.key === 'Enter') {
-            handleClose();
-        }
-    };
-
     const buildTitle = (items) => {
         return items.length === 1
             ? intl.formatMessage(
@@ -192,7 +186,6 @@ const DeleteDialog = ({
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-delete"
-            onKeyPress={handleKeyPressed}
         >
             <DialogTitle>{buildTitle(itemsState)}</DialogTitle>
             <DialogContent>
