@@ -515,15 +515,9 @@ export function createContingencyList(
         urlSearchParams.toString();
     console.debug(createContingencyListUrl);
 
-    let body = {};
-    if (contingencyListType === ContingencyListType.FORM) {
-        body = formContent;
-    } else if (contingencyListType === ContingencyListType.SCRIPT) {
-        body.script = formContent;
-    }
     return backendFetch(createContingencyListUrl, {
         method: 'post',
-        body: JSON.stringify(body),
+        body: JSON.stringify(formContent),
     });
 }
 
