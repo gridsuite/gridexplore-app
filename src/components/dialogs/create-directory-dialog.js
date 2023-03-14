@@ -73,12 +73,6 @@ export const CreateDirectoryDialog = ({
         setIsPrivate(event.target.value);
     };
 
-    const handleKeyPressed = (event) => {
-        if (open && event.key === 'Enter' && canCreate()) {
-            handleClick();
-        }
-    };
-
     const canCreate = () => {
         return nameOk;
     };
@@ -89,7 +83,6 @@ export const CreateDirectoryDialog = ({
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-delete"
-            onKeyPress={handleKeyPressed}
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>

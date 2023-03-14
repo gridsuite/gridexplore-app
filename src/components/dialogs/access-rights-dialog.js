@@ -66,12 +66,6 @@ const AccessRightsDialog = ({
         setSelected(event.target.value);
     };
 
-    const handleKeyPressed = (event) => {
-        if (open && event.key === 'Enter') {
-            handleClick();
-        }
-    };
-
     useEffect(() => {
         // on purpose use of == with null, in stead of ===, idiomatic
         setSelected(isPrivate == null ? null : isPrivate.toString());
@@ -81,7 +75,6 @@ const AccessRightsDialog = ({
         <Dialog
             open={open}
             onClose={handleClose}
-            onKeyPress={handleKeyPressed}
             aria-labelledby="dialog-title-accessRights"
         >
             <DialogTitle>{title}</DialogTitle>

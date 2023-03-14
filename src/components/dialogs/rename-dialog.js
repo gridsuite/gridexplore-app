@@ -71,12 +71,6 @@ const RenameDialog = ({
         onClose();
     };
 
-    const handleKeyPressed = (event) => {
-        if (open && event.key === 'Enter' && canRename()) {
-            handleClick();
-        }
-    };
-
     const canRename = () => {
         return newNameOk;
     };
@@ -87,7 +81,6 @@ const RenameDialog = ({
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-rename"
-            onKeyPress={handleKeyPressed}
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>

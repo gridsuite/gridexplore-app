@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -68,8 +68,11 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const timer = React.useRef();
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [currentScript, setCurrentScript] = useState(null);
-    const [currentCriteriaBasedFilter, setCurrentCriteriaBasedFilter] =
-        useState(null);
+    const currentCriteriaBasedFilter = useRef(null);
+    const [
+        currentCriteriaBasedFilterEquipmentTypeSelected,
+        setCurrentCriteriaBasedFilterEquipmentTypeSelected,
+    ] = useState(false);
     const [isUnsavedChanges, setUnsavedChanges] = useState(false);
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
@@ -170,7 +173,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
 
         let formContent;
         if (contingencyListType === ContingencyListType.FORM) {
-            formContent = currentCriteriaBasedFilter;
+            formContent = currentCriteriaBasedFilter.current;
         } else if (contingencyListType === ContingencyListType.SCRIPT) {
             formContent = { script: currentScript };
         }
@@ -214,11 +217,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         );
     };
 
-    const handleKeyPressed = () => {
-        // TODO This function is to be removed. It is still there to simplify pull requests.
-        return;
-    };
-
     const handlePopupConfirmation = () => {
         setOpenConfirmationPopup(false);
         setContingencyListType(chosenContingencyListType);
@@ -234,7 +232,21 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     };
 
     const handleCriteriaBasedFilterCreation = (filter) => {
-        setCurrentCriteriaBasedFilter(filter.equipmentFilterForm);
+        currentCriteriaBasedFilter.current = {};
+        currentCriteriaBasedFilter.current.id = filter.id;
+        currentCriteriaBasedFilter.current.equipmentType =
+            filter.equipmentFilterForm.equipmentType;
+        currentCriteriaBasedFilter.current.countries1 =
+            filter.equipmentFilterForm.countries1;
+        currentCriteriaBasedFilter.current.countries2 =
+            filter.equipmentFilterForm.countries2;
+        currentCriteriaBasedFilter.current.nominalVoltage1 =
+            filter.equipmentFilterForm.nominalVoltage1;
+        currentCriteriaBasedFilter.current.nominalVoltage2 =
+            filter.equipmentFilterForm.nominalVoltage2;
+        setCurrentCriteriaBasedFilterEquipmentTypeSelected(
+            !!currentCriteriaBasedFilter?.current?.equipmentType
+        );
         setUnsavedChanges(true);
     };
 
@@ -332,7 +344,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                             !contingencyNameValid ||
                             loadingCheckContingencyName ||
                             (contingencyListType === ContingencyListType.FORM &&
-                                !currentCriteriaBasedFilter?.equipmentType)
+                                !currentCriteriaBasedFilterEquipmentTypeSelected)
                         }
                     >
                         <FormattedMessage id="validate" />
@@ -341,7 +353,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
             </Dialog>
             {renderPopup(
                 isConfirmationPopupOpen,
-                handleKeyPressed,
                 intl,
                 setOpenConfirmationPopup,
                 handlePopupConfirmation

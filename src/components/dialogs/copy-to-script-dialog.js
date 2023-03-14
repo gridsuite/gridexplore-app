@@ -45,12 +45,6 @@ const CopyToScriptDialog = ({
         onClose();
     };
 
-    const handleKeyPressed = (event) => {
-        if (open && event.key === 'Enter') {
-            handleClick();
-        }
-    };
-
     useEffect(() => {
         setNewNameValue(currentName || '');
     }, [currentName]);
@@ -60,7 +54,6 @@ const CopyToScriptDialog = ({
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-rename"
-            onKeyPress={handleKeyPressed}
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
