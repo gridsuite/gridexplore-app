@@ -218,12 +218,6 @@ const ExplicitNamingFilterDialogContent = ({
         }
     };
 
-    const handleKeyPressed = (event) => {
-        if (open && event.key === 'Enter') {
-            handlePopupConfirmation();
-        }
-    };
-
     const handlePopupConfirmation = () => {
         setOpenConfirmationPopup(false);
         setIsEdited(false);
@@ -281,7 +275,6 @@ const ExplicitNamingFilterDialogContent = ({
             )}
             {renderPopup(
                 isConfirmationPopupOpen,
-                handleKeyPressed,
                 intl,
                 setOpenConfirmationPopup,
                 handlePopupConfirmation
