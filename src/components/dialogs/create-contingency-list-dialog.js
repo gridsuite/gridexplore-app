@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -69,6 +69,10 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [currentScript, setCurrentScript] = useState(null);
     const currentCriteriaBasedFilter = useRef(null);
+    const [
+        currentCriteriaBasedFilterEquipmentTypeSelected,
+        setCurrentCriteriaBasedFilterEquipmentTypeSelected,
+    ] = useState(false);
     const [isUnsavedChanges, setUnsavedChanges] = useState(false);
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
@@ -240,6 +244,9 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
             filter.equipmentFilterForm.nominalVoltage1;
         currentCriteriaBasedFilter.current.nominalVoltage2 =
             filter.equipmentFilterForm.nominalVoltage2;
+        setCurrentCriteriaBasedFilterEquipmentTypeSelected(
+            !!currentCriteriaBasedFilter?.current?.equipmentType
+        );
         setUnsavedChanges(true);
     };
 
@@ -337,8 +344,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                             !contingencyNameValid ||
                             loadingCheckContingencyName ||
                             (contingencyListType === ContingencyListType.FORM &&
-                                !currentCriteriaBasedFilter?.current
-                                    ?.equipmentType)
+                                !currentCriteriaBasedFilterEquipmentTypeSelected)
                         }
                     >
                         <FormattedMessage id="validate" />
