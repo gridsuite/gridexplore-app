@@ -36,7 +36,7 @@ export const CriteriaBasedFilterDialog = ({
     isFilterCreation,
     handleFilterCreation,
 }) => {
-    const currentFilter = useRef(null);
+    const [currentFilter, setCurrentFilter] = useState(null);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const classes = useStyles();
     const openRef = useRef(null);
@@ -44,20 +44,9 @@ export const CriteriaBasedFilterDialog = ({
 
     const handleEditCallback = (filter) => {
         if (contentType === ElementType.CONTINGENCY_LIST) {
-            currentFilter.current = {};
-            currentFilter.current.id = filter.id;
-            currentFilter.current.equipmentType =
-                filter.equipmentFilterForm.equipmentType;
-            currentFilter.current.countries1 =
-                filter.equipmentFilterForm.countries1;
-            currentFilter.current.countries2 =
-                filter.equipmentFilterForm.countries2;
-            currentFilter.current.nominalVoltage1 =
-                filter.equipmentFilterForm.nominalVoltage1;
-            currentFilter.current.nominalVoltage2 =
-                filter.equipmentFilterForm.nominalVoltage2;
+            setCurrentFilter(filter.equipmentFilterForm);
         } else {
-            currentFilter.current = filter;
+            setCurrentFilter(filter);
         }
         setBtnSaveListDisabled(false);
     };
@@ -69,13 +58,13 @@ export const CriteriaBasedFilterDialog = ({
     const handleValidate = () => {
         if (!isFilterCreation) {
             if (contentType === ElementType.FILTER) {
-                saveFilter(currentFilter.current)
+                saveFilter(currentFilter)
                     .then()
                     .catch((errorMessage) => {
                         onError(errorMessage);
                     });
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
-                saveFormContingencyList(currentFilter.current)
+                saveFormContingencyList(currentFilter)
                     .then()
                     .catch((errorMessage) => {
                         onError(errorMessage);
@@ -83,7 +72,7 @@ export const CriteriaBasedFilterDialog = ({
             }
             handleCancel();
         } else {
-            handleFilterCreation(currentFilter.current);
+            handleFilterCreation(currentFilter);
         }
     };
 
