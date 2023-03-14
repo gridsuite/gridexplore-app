@@ -448,12 +448,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         dispatch(addUploadingElement(uploadingStudy));
     };
 
-    const handleKeyPressed = (event) => {
-        if (event.key === 'Enter') {
-            handleCreateNewStudy();
-        }
-    };
-
     const handleSelectFolder = () => {
         setFolderSelectorOpen(true);
     };
@@ -508,7 +502,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 open={open}
                 onClose={handleCloseDialog}
                 aria-labelledby="form-dialog-title"
-                onKeyPress={handleKeyPressed}
             >
                 <DialogTitle id="form-dialog-title">
                     <FormattedMessage id="createNewStudy" />
