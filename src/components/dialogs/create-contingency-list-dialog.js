@@ -172,7 +172,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         if (contingencyListType === ContingencyListType.FORM) {
             formContent = currentCriteriaBasedFilter;
         } else if (contingencyListType === ContingencyListType.SCRIPT) {
-            formContent = currentScript;
+            formContent = { script: currentScript };
         }
 
         createContingencyList(
