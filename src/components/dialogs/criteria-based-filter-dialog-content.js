@@ -87,7 +87,7 @@ export const FilterTypeSelection = ({
 const backToFrontTweak = (response) => {
     if (
         !response?.equipmentFilterForm ||
-        !['LINE', 'HVDC'].includes(response.equipmentType)
+        !['LINE', 'HVDC_LINE'].includes(response.equipmentType)
     ) {
         return response;
     }
@@ -118,7 +118,9 @@ const backToFrontTweak = (response) => {
 const frontToBackTweak = (filter) => {
     if (
         !filter?.equipmentFilterForm ||
-        !['LINE', 'HVDC'].includes(filter.equipmentFilterForm.equipmentType)
+        !['LINE', 'HVDC_LINE'].includes(
+            filter.equipmentFilterForm.equipmentType
+        )
     ) {
         return filter;
     }
