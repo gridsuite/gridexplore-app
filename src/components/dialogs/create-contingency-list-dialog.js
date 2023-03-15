@@ -68,7 +68,15 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const timer = React.useRef();
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [currentScript, setCurrentScript] = useState(null);
+
+    // currentCriteriaBasedFilter is a ref but should be a state, like in create-filter-dialog.js.
+    // We tried to change the code this way, but failed to fix related bugs in time.
+    // If/when someone tries to change it to a state, they should be mindful of the content
+    // of the form sent to the backend when submitting a criteria-based form with multiple
+    // fields : while testing this, we found that only the last modified field was sent instead
+    // of all of them.
     const currentCriteriaBasedFilter = useRef(null);
+
     const [
         isCriteriaBasedEquipmentTypeSelected,
         setIsCriteriaBasedEquipmentTypeSelected,
