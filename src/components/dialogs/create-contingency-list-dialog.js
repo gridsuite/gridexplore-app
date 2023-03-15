@@ -70,8 +70,8 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const [currentScript, setCurrentScript] = useState(null);
     const currentCriteriaBasedFilter = useRef(null);
     const [
-        currentCriteriaBasedFilterEquipmentTypeSelected,
-        setCurrentCriteriaBasedFilterEquipmentTypeSelected,
+        isCriteriaBasedEquipmentTypeSelected,
+        setIsCriteriaBasedEquipmentTypeSelected,
     ] = useState(false);
     const [isUnsavedChanges, setUnsavedChanges] = useState(false);
 
@@ -218,10 +218,14 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     };
 
     const handlePopupConfirmation = () => {
+        // This should reset all the forms' contents
         setOpenConfirmationPopup(false);
         setContingencyListType(chosenContingencyListType);
         setCreateContingencyListErr('');
         setUnsavedChanges(false);
+        currentCriteriaBasedFilter.current = null;
+        setIsCriteriaBasedEquipmentTypeSelected(false);
+        setCurrentScript(null);
     };
 
     const onScriptChangeHandler = (newScript) => {
@@ -234,17 +238,12 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const handleCriteriaBasedFilterCreation = (filter) => {
         currentCriteriaBasedFilter.current = {};
         currentCriteriaBasedFilter.current.id = filter.id;
-        currentCriteriaBasedFilter.current.equipmentType =
-            filter.equipmentFilterForm.equipmentType;
-        currentCriteriaBasedFilter.current.countries1 =
-            filter.equipmentFilterForm.countries1;
-        currentCriteriaBasedFilter.current.countries2 =
-            filter.equipmentFilterForm.countries2;
-        currentCriteriaBasedFilter.current.nominalVoltage1 =
-            filter.equipmentFilterForm.nominalVoltage1;
-        currentCriteriaBasedFilter.current.nominalVoltage2 =
-            filter.equipmentFilterForm.nominalVoltage2;
-        setCurrentCriteriaBasedFilterEquipmentTypeSelected(
+        Object.assign(
+            currentCriteriaBasedFilter.current,
+            filter.equipmentFilterForm
+        );
+
+        setIsCriteriaBasedEquipmentTypeSelected(
             !!currentCriteriaBasedFilter?.current?.equipmentType
         );
         setUnsavedChanges(true);
@@ -344,7 +343,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                             !contingencyNameValid ||
                             loadingCheckContingencyName ||
                             (contingencyListType === ContingencyListType.FORM &&
-                                !currentCriteriaBasedFilterEquipmentTypeSelected)
+                                !isCriteriaBasedEquipmentTypeSelected)
                         }
                     >
                         <FormattedMessage id="validate" />
