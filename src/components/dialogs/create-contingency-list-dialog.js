@@ -182,11 +182,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         );
     };
 
-    const handleKeyPressed = (event) => {
-        if (event.key === 'Enter') {
-            handleCreateNewContingencyList();
-        }
-    };
     return (
         <div>
             <Dialog
@@ -194,7 +189,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                 open={open}
                 onClose={handleCloseDialog}
                 aria-labelledby="form-dialog-title"
-                onKeyPress={handleKeyPressed}
             >
                 <DialogTitle id="form-dialog-title">
                     <FormattedMessage id="createNewContingencyList" />

@@ -123,12 +123,6 @@ export function CreateCaseDialog({ onClose, open }) {
         handleCloseDialog();
     };
 
-    const handleKeyPressed = (event) => {
-        if (event.key === 'Enter') {
-            handleCreateNewCase();
-        }
-    };
-
     const handleCloseDialog = () => {
         resetFile();
         onClose();
@@ -140,7 +134,6 @@ export function CreateCaseDialog({ onClose, open }) {
             open={open}
             onClose={handleCloseDialog}
             aria-labelledby="form-dialog-title"
-            onKeyPress={handleKeyPressed}
         >
             <DialogTitle id="form-dialog-title">
                 <FormattedMessage id="ImportNewCase" />

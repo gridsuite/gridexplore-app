@@ -45,7 +45,9 @@ export const CriteriaBasedFilterDialog = ({
 
     const handleEditCallback = (filter, veto) => {
         if (contentType === ElementType.CONTINGENCY_LIST) {
-            setCurrentFilter(filter.equipmentFilterForm);
+            setCurrentFilter(
+                Object.assign({ id: filter.id }, filter.equipmentFilterForm)
+            );
         } else if (!veto) {
             setCurrentFilter(filter);
         }
