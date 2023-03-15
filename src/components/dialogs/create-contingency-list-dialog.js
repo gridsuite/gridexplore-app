@@ -153,21 +153,23 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
             setOpenConfirmationPopup(true);
             setChosenContingencyListType(event.target.value);
         } else {
-            handlePopupConfirmation();
+            resetForms();
             setContingencyListType(event.target.value);
         }
     };
 
+    const isFormValidationAllowed = () => {
+        return (
+            contingencyListName !== '' &&
+            contingencyNameValid &&
+            !loadingCheckContingencyName &&
+            (contingencyListType !== ContingencyListType.FORM ||
+                isCriteriaBasedEquipmentTypeSelected)
+        );
+    };
+
     const handleCreateNewContingencyList = () => {
-        //To manage the case when we never tried to enter a name
-        if (contingencyListName === '') {
-            setCreateContingencyListErr(
-                intl.formatMessage({ id: 'nameEmpty' })
-            );
-            return;
-        }
-        //We don't do anything if the checks are not over or the name is not valid
-        if (loadingCheckContingencyName || !contingencyNameValid) {
+        if (!isFormValidationAllowed()) {
             return;
         }
 
@@ -217,15 +219,18 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         );
     };
 
-    const handlePopupConfirmation = () => {
-        // This should reset all the forms' contents
-        setOpenConfirmationPopup(false);
-        setContingencyListType(chosenContingencyListType);
+    const resetForms = () => {
         setCreateContingencyListErr('');
         setUnsavedChanges(false);
         currentCriteriaBasedFilter.current = null;
         setIsCriteriaBasedEquipmentTypeSelected(false);
         setCurrentScript(null);
+    };
+
+    const handlePopupConfirmation = () => {
+        setOpenConfirmationPopup(false);
+        setContingencyListType(chosenContingencyListType);
+        resetForms();
     };
 
     const onScriptChangeHandler = (newScript) => {
@@ -338,13 +343,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     <Button
                         onClick={() => handleCreateNewContingencyList()}
                         variant="outlined"
-                        disabled={
-                            contingencyListName === '' ||
-                            !contingencyNameValid ||
-                            loadingCheckContingencyName ||
-                            (contingencyListType === ContingencyListType.FORM &&
-                                !isCriteriaBasedEquipmentTypeSelected)
-                        }
+                        disabled={!isFormValidationAllowed()}
                     >
                         <FormattedMessage id="validate" />
                     </Button>
