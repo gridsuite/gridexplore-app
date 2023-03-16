@@ -17,7 +17,7 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 
-import { useExpandableCriteria } from './expandable-criteria';
+import { ExpandableCriteria } from './expandable-criteria';
 import { fetchAppsAndUrls } from '../../utils/rest-api';
 
 export const FreeProperty = ({
@@ -115,6 +115,37 @@ export const FreeProperty = ({
     );
 };
 
+const makeFreePropertiesProblemsMap = (values, full, prevErrors) => {
+    const res = {};
+    const idMap = values.reduce(
+        (m, v) => m.set(v.name, (m.get(v.name) || 0) + 1),
+        new Map()
+    );
+
+    values.forEach((val, idx) => {
+        let prevError = prevErrors?.[idx];
+        if (!full && !prevError) return;
+
+        const count = idMap.get(val.name);
+        const errInBuild = {};
+        if (!val?.values?.length) {
+            errInBuild.PropValue = 'ValueMayNotBeEmpty';
+        }
+
+        if (!val.name) {
+            errInBuild.PropName = 'EmptyName';
+        } else if (count > 1) {
+            errInBuild.PropName = 'DuplicateName';
+        }
+
+        if (Object.keys(errInBuild).length) {
+            errInBuild.error = true;
+        }
+        res[idx] = errInBuild;
+    });
+    return res;
+};
+
 export const FreeProperties = ({
     initialValue,
     onChange,
@@ -137,52 +168,24 @@ export const FreeProperties = ({
 
     const onPropertiesArrayChange = useCallback(
         (arr) => {
+            const pbs = makeFreePropertiesProblemsMap(arr, true, null);
+            const blockingLinesCount = Object.entries(pbs).filter(
+                ([k, v]) => v && Object.entries(v).length > 0
+            ).length;
+
             const obj = !arr
                 ? {}
                 : Object.fromEntries(arr.map((p) => [p.name || '', p.values]));
-            const vetoIdx = arr.findIndex((p) => !p.name || !p?.values?.length);
-            onChange(obj, vetoIdx >= 0);
+            onChange(obj, blockingLinesCount > 0);
         },
         [onChange]
     );
 
     const validateProperties = useCallback(
         (values, prevErrors) => {
-            const res = new Map();
-            const idMap = values.reduce(
-                (m, v) => m.set(v.name, (m.get(v.name) || 0) + 1),
-                new Map()
-            );
+            const full = validationsCountRef.current !== validationsCount;
 
-            const shrinksOnly =
-                validationsCountRef.current === validationsCount;
-
-            values.forEach((val, idx) => {
-                let prevError = prevErrors?.get(idx);
-                if (shrinksOnly && !prevError) return;
-
-                const count = idMap.get(val.name);
-                const errInBuild = {};
-                if (
-                    !val?.values?.length &&
-                    (!shrinksOnly || prevError?.PropValue)
-                ) {
-                    errInBuild.PropValue = 'ValueMayNotBeEmpty';
-                }
-
-                if (!shrinksOnly || prevError?.PropName) {
-                    if (!val.name) {
-                        errInBuild.PropName = 'EmptyName';
-                    } else if (count > 1) {
-                        errInBuild.PropName = 'DuplicateName';
-                    }
-                }
-
-                if (Object.keys(errInBuild).length) {
-                    errInBuild.error = true;
-                    res.set(idx, errInBuild);
-                }
-            });
+            const res = makeFreePropertiesProblemsMap(values, full, prevErrors);
 
             if (validationsCountRef.current !== validationsCount) {
                 validationsCountRef.current = validationsCount;
@@ -193,15 +196,19 @@ export const FreeProperties = ({
         [validationsCount]
     );
 
-    const freePropsField = useExpandableCriteria({
-        id: 'freeProp' + numericSuffix,
-        labelAddValue: 'AddFreePropCrit' + numericSuffix,
-        Field: FreeProperty,
-        fieldProps: fieldProps,
-        initialValues: initialValues,
-        onChange: onPropertiesArrayChange,
-        validateItems: validateProperties,
-    });
+    const keyAndId = 'freeProp' + numericSuffix;
+    const freePropsField = (
+        <ExpandableCriteria
+            key={keyAndId}
+            id={keyAndId}
+            labelAddValue={'AddFreePropCrit' + numericSuffix}
+            Field={FreeProperty}
+            fieldProps={fieldProps}
+            initialValues={initialValues}
+            onChange={onPropertiesArrayChange}
+            validateItems={validateProperties}
+        />
+    );
 
     const fetchPredefinedProperties = () => {
         return fetchAppsAndUrls().then((res) => {
@@ -387,6 +394,37 @@ export const FreeProperty2 = ({
     );
 };
 
+const makeFreeProperties2ProblemsMap = (values, full, prevErrors) => {
+    const res = {};
+    const idMap = values.reduce(
+        (m, v) => m.set(v.name, (m.get(v.name) || 0) + 1),
+        new Map()
+    );
+
+    values.forEach((val, idx) => {
+        let prevError = prevErrors?.[idx];
+        if (!full && !prevError) return;
+
+        const count = idMap.get(val.name);
+        const errInBuild = {};
+        if (!val?.values1?.length && !val?.values2?.length) {
+            errInBuild.PropValue = 'ValueMayNotBeEmpty';
+        }
+
+        if (!val.name) {
+            errInBuild.PropName = 'EmptyName';
+        } else if (count > 1) {
+            errInBuild.PropName = 'DuplicateName';
+        }
+
+        if (Object.keys(errInBuild).length) {
+            errInBuild.error = true;
+        }
+        res[idx] = errInBuild;
+    });
+    return res;
+};
+
 export const FreeProperties2 = ({
     initialValue,
     onChange,
@@ -406,55 +444,27 @@ export const FreeProperties2 = ({
 
     const onPropertiesArrayChange = useCallback(
         (arr) => {
+            const pbs = makeFreeProperties2ProblemsMap(arr, true, null);
+            const blockingLinesCount = Object.entries(pbs).filter(
+                ([k, v]) => v && Object.entries(v).length > 0
+            ).length;
             const obj = !arr
                 ? {}
                 : Object.fromEntries(arr.map((p) => [p.name || '', p]));
-            const veto = arr.some(
-                (p) => !p.name || (!p?.values1?.length && !p?.values2?.length)
-            );
-            onChange(obj, veto);
+            onChange(obj, blockingLinesCount > 0);
         },
         [onChange]
     );
 
     const validateProperties2 = useCallback(
         (values, prevErrors) => {
-            const res = new Map();
-            const idMap = values.reduce(
-                (m, v) => m.set(v.name, (m.get(v.name) || 0) + 1),
-                new Map()
+            const full = validationsCountRef.current !== validationsCount;
+
+            const res = makeFreeProperties2ProblemsMap(
+                values,
+                full,
+                prevErrors
             );
-
-            const shrinksOnly =
-                validationsCountRef.current === validationsCount;
-
-            values.forEach((val, idx) => {
-                let prevError = prevErrors?.get(idx);
-                if (shrinksOnly && !prevError) return;
-
-                const count = idMap.get(val.name);
-                const errInBuild = {};
-                if (
-                    !val?.values1?.length &&
-                    !val?.values2?.length &&
-                    (!shrinksOnly || prevError?.PropValue)
-                ) {
-                    errInBuild.PropValue = 'ValueMayNotBeEmpty';
-                }
-
-                if (!shrinksOnly || prevError?.PropName) {
-                    if (!val.name) {
-                        errInBuild.PropName = 'EmptyName';
-                    } else if (count > 1) {
-                        errInBuild.PropName = 'DuplicateName';
-                    }
-                }
-
-                if (Object.keys(errInBuild).length) {
-                    errInBuild.error = true;
-                    res.set(idx, errInBuild);
-                }
-            });
 
             if (validationsCountRef.current !== validationsCount) {
                 validationsCountRef.current = validationsCount;
@@ -465,15 +475,19 @@ export const FreeProperties2 = ({
         [validationsCount]
     );
 
-    const freePropsField = useExpandableCriteria({
-        id: 'freeProp' + numericSuffix,
-        labelAddValue: 'AddFreePropCrit' + numericSuffix,
-        Field: FreeProperty2,
-        fieldProps: fieldProps,
-        initialValues: initialValues,
-        onChange: onPropertiesArrayChange,
-        validateItems: validateProperties2,
-    });
+    const keyAndId = 'freeProp' + numericSuffix;
+    const freePropsField = (
+        <ExpandableCriteria
+            key={keyAndId}
+            id={keyAndId}
+            labelAddValue={'AddFreePropCrit' + numericSuffix}
+            Field={FreeProperty2}
+            fieldProps={fieldProps}
+            initialValues={initialValues}
+            onChange={onPropertiesArrayChange}
+            validateItems={validateProperties2}
+        />
+    );
 
     const fetchPredefinedProperties = () => {
         return fetchAppsAndUrls().then((res) => {

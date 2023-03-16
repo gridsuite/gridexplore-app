@@ -12,7 +12,7 @@ import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import { FormattedMessage } from 'react-intl';
 
-export const useExpandableCriteria = ({
+export const ExpandableCriteria = ({
     id,
     labelAddValue,
     Field,
@@ -83,7 +83,7 @@ export const useExpandableCriteria = ({
                                 onChange={handleSetValue}
                                 defaultValue={value}
                                 fieldProps={fieldProps}
-                                errors={errors?.get(idx)}
+                                errors={errors?.[idx]}
                             />
                             <IconButton
                                 key={id + idx}

@@ -111,7 +111,7 @@ const backToFrontTweak = (response) => {
         if (values2) biProp.values2 = values2;
         biProps[k] = biProp;
     });
-    eff.freeProperties = biProps;
+    eff.freePropertiesP = biProps;
     return ret;
 };
 
@@ -125,10 +125,10 @@ const frontToBackTweak = (filter) => {
         return filter;
     }
 
-    const biProps = filter.equipmentFilterForm.freeProperties;
+    const biProps = filter.equipmentFilterForm.freePropertiesP;
     let ret = { ...filter };
     let eff = { ...ret.equipmentFilterForm };
-    delete eff.freeProperties;
+    delete eff.freePropertiesP;
     ret.equipmentFilterForm = eff;
     const props1 = {};
     const props2 = {};

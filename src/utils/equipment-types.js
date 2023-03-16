@@ -82,7 +82,7 @@ const FreePropsS = {
     },
 };
 const FreeProperties2 = {
-    freeProperties: {
+    freePropertiesP: {
         name: 'FreeProperties',
         type: filteredTypes.freeProperties2,
     },
