@@ -21,7 +21,6 @@ export const useExpandableCriteria = ({
     onChange,
     validateItems,
 }) => {
-    // const classes = useStyles();
     const [values, setValues] = useState(initialValues);
     const [errors, setErrors] = useState();
 
@@ -87,7 +86,6 @@ export const useExpandableCriteria = ({
                                 errors={errors?.get(idx)}
                             />
                             <IconButton
-                                // className={classes.deleteButton}
                                 key={id + idx}
                                 onClick={() => handleDeleteItem(idx)}
                             >
@@ -120,8 +118,6 @@ export const useExpandableCriteria = ({
     }, [
         values,
         fieldProps,
-        // classes.button,
-        // classes.deleteButton,
         handleAddValue,
         labelAddValue,
         id,

@@ -45,7 +45,7 @@ export const FreeProperty = ({
 
     useEffect(() => {
         setName(defaultValue?.name);
-        setValues(defaultValue?.values);
+        setValues(defaultValue?.values || []);
     }, [defaultValue]);
 
     return (
