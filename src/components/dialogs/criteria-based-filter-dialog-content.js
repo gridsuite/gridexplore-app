@@ -180,7 +180,7 @@ export const CriteriaBasedFilterDialogContent = ({
     }
 
     useEffect(() => {
-        if (id !== null && openRef.current) {
+        if (id && openRef.current) {
             if (contentType === ElementType.FILTER) {
                 getFilterById(id)
                     .then((response) => {
