@@ -68,7 +68,15 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const timer = React.useRef();
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [currentScript, setCurrentScript] = useState(null);
+
+    // currentCriteriaBasedFilter is a ref but should be a state, like in create-filter-dialog.js.
+    // We tried to change the code this way, but failed to fix related bugs in time.
+    // If/when someone tries to change it to a state, they should be mindful of the content
+    // of the form sent to the backend when submitting a criteria-based form with multiple
+    // fields : while testing this, we found that only the last modified field was sent instead
+    // of all of them.
     const currentCriteriaBasedFilter = useRef(null);
+
     const [
         isCriteriaBasedEquipmentTypeSelected,
         setIsCriteriaBasedEquipmentTypeSelected,
@@ -153,21 +161,23 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
             setOpenConfirmationPopup(true);
             setChosenContingencyListType(event.target.value);
         } else {
-            handlePopupConfirmation();
+            resetForms();
             setContingencyListType(event.target.value);
         }
     };
 
+    const isFormValidationAllowed = () => {
+        return (
+            contingencyListName !== '' &&
+            contingencyNameValid &&
+            !loadingCheckContingencyName &&
+            (contingencyListType !== ContingencyListType.FORM ||
+                isCriteriaBasedEquipmentTypeSelected)
+        );
+    };
+
     const handleCreateNewContingencyList = () => {
-        //To manage the case when we never tried to enter a name
-        if (contingencyListName === '') {
-            setCreateContingencyListErr(
-                intl.formatMessage({ id: 'nameEmpty' })
-            );
-            return;
-        }
-        //We don't do anything if the checks are not over or the name is not valid
-        if (loadingCheckContingencyName || !contingencyNameValid) {
+        if (!isFormValidationAllowed()) {
             return;
         }
 
@@ -217,15 +227,18 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         );
     };
 
-    const handlePopupConfirmation = () => {
-        // This should reset all the forms' contents
-        setOpenConfirmationPopup(false);
-        setContingencyListType(chosenContingencyListType);
+    const resetForms = () => {
         setCreateContingencyListErr('');
         setUnsavedChanges(false);
         currentCriteriaBasedFilter.current = null;
         setIsCriteriaBasedEquipmentTypeSelected(false);
         setCurrentScript(null);
+    };
+
+    const handlePopupConfirmation = () => {
+        setOpenConfirmationPopup(false);
+        setContingencyListType(chosenContingencyListType);
+        resetForms();
     };
 
     const onScriptChangeHandler = (newScript) => {
@@ -338,13 +351,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     <Button
                         onClick={() => handleCreateNewContingencyList()}
                         variant="outlined"
-                        disabled={
-                            contingencyListName === '' ||
-                            !contingencyNameValid ||
-                            loadingCheckContingencyName ||
-                            (contingencyListType === ContingencyListType.FORM &&
-                                !isCriteriaBasedEquipmentTypeSelected)
-                        }
+                        disabled={!isFormValidationAllowed()}
                     >
                         <FormattedMessage id="validate" />
                     </Button>
