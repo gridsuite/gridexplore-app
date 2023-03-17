@@ -50,6 +50,8 @@ export const CriteriaBasedFilterDialog = ({
             );
         } else if (!veto) {
             setCurrentFilter(filter);
+        } else {
+            setCurrentFilter(null);
         }
         setBtnSaveListDisabled(false);
     };

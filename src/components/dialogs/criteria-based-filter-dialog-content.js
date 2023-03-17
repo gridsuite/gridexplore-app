@@ -42,13 +42,9 @@ function generateDefaultValue(val, originalValue) {
 }
 
 const SingleFilter = ({ filter, definition, onChange, validationsCount }) => {
-    const localChange = (newVal, veto) => {
-        filter.value = newVal;
-        onChange(veto);
-    };
     return definition.type.renderer({
         initialValue: filter.value,
-        onChange: localChange,
+        onChange: onChange,
         titleMessage: definition.name,
         enumValues: definition.enumValues,
         validationsCount,
@@ -227,18 +223,6 @@ export const CriteriaBasedFilterDialogContent = ({
         }
     }, [id, contentType, snackError]);
 
-    function onChange(newVal) {
-        if (contentType !== ElementType.FILTER) {
-            const newFilter = { id, type: FilterType.CRITERIA, ...newVal };
-            currentFilter.current = newFilter;
-        } else if (newVal) {
-            // data model is not the same: filter has a sub-object 'equipmentFilterForm'
-            const newFilter = { id, type: FilterType.CRITERIA };
-            newFilter.equipmentFilterForm = newVal;
-            currentFilter.current = frontToBackTweak(newFilter);
-        }
-    }
-
     function validVoltageValues(obj) {
         let value1NotNull =
             obj.value.hasOwnProperty('value1') && obj.value['value1'] !== null;
@@ -260,7 +244,15 @@ export const CriteriaBasedFilterDialogContent = ({
                 res[key] = obj.value;
             }
         });
-        onChange(res);
+        if (contentType !== ElementType.FILTER) {
+            const newFilter1 = { id, type: FilterType.CRITERIA, ...res };
+            currentFilter.current = newFilter1;
+        } else if (res) {
+            // data model is not the same: filter has a sub-object 'equipmentFilterForm'
+            const newFilter1 = { id, type: FilterType.CRITERIA };
+            newFilter1.equipmentFilterForm = res;
+            currentFilter.current = frontToBackTweak(newFilter1);
+        }
         const newFilter = { id, type: FilterType.CRITERIA };
         newFilter.equipmentFilterForm = { ...res };
         currentFilterToSend.current = frontToBackTweak(newFilter);
@@ -292,7 +284,10 @@ export const CriteriaBasedFilterDialogContent = ({
         setEquipmentType(newType);
         if (id == null && contentType === ElementType.FILTER)
             handleEquipmentTypeChange(newType);
-        editDone(false);
+        const globalVeto = Object.entries(currentFormEdit).some(
+            ([k, v]) => v.veto
+        );
+        editDone(globalVeto);
     };
 
     const handlePopupConfirmation = () => {
@@ -301,24 +296,37 @@ export const CriteriaBasedFilterDialogContent = ({
     };
 
     const renderFilter = (key, definition) => {
-        if (initialFilter !== null) {
-            if (currentFormEdit[key] === undefined) {
-                currentFormEdit[key] = generateDefaultValue(
-                    definition,
-                    contentType === ElementType.FILTER
-                        ? initialFilter.equipmentFilterForm[key]
-                        : initialFilter[key]
-                );
-            }
-        } else {
-            currentFormEdit[key] = generateDefaultValue(definition, null);
+        if (currentFormEdit[key] === undefined) {
+            currentFormEdit[key] = generateDefaultValue(
+                definition,
+                initialFilter === null
+                    ? null
+                    : contentType === ElementType.FILTER
+                    ? initialFilter.equipmentFilterForm[key]
+                    : initialFilter[key]
+            );
         }
+
+        const currFilter = currentFormEdit[key];
+        const localChange = (newVal, veto) => {
+            currFilter.value = newVal;
+            if (veto) {
+                currFilter.veto = true;
+            } else {
+                delete currFilter.veto;
+            }
+            const globalVeto = Object.entries(currentFormEdit).some(
+                ([k, v]) => v.veto
+            );
+            editDone(globalVeto);
+        };
+
         return (
             <SingleFilter
                 key={key}
-                filter={currentFormEdit[key]}
+                filter={currFilter}
                 definition={definition}
-                onChange={editDone}
+                onChange={localChange}
                 validationsCount={validationsCount}
             />
         );
