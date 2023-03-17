@@ -20,7 +20,17 @@ import { FormattedMessage } from 'react-intl';
 import { ExpandableCriteria } from './expandable-criteria';
 import { fetchAppsAndUrls } from '../../utils/rest-api';
 
-export const FreeProperty = ({
+/**
+ * Component for edition a {name:string, values:[string]} object
+ * @param index the index is the sequence
+ * @param onChange callback(index, {name:string, values:[string]})
+ * @param defaultValue initial value
+ * @param fieldProps predefined properties, in the form { name1 : values1, name2 : values2 ...}
+ * @param errors current errors, in the form {PropName?, PropValue?}
+ * @returns {JSX.Element}
+ * @constructor
+ */
+const FreeProperty = ({
     index,
     onChange,
     defaultValue,
@@ -146,6 +156,17 @@ const makeFreePropertiesProblemsMap = (values, full, prevErrors) => {
     return res;
 };
 
+/**
+ * Component for edition a {nameA: [valuesA], nameB: [valuesB]} object
+ * @param initialValue the initial object
+ * @param onChange callback(nextValue, nextValueIsNotValid)
+ * @param titleMessage
+ * @param validationsCount number of validations user has tried so far
+ * @param isForSubstation if false, adds a label telling that the named properties
+ * are to be found on the containing substation.
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export const FreeProperties = ({
     initialValue,
     onChange,
@@ -262,7 +283,17 @@ export const FreePropertiesS = ({ initialValue, onChange, titleMessage }) => {
     });
 };
 
-export const FreeProperty2 = ({
+/**
+ * Component for edition a {name:string, values1:[string], values2:[string]} object
+ * @param index the index is the sequence
+ * @param onChange callback(index, {name:string, values1:[string], values2:[string]})
+ * @param defaultValue initial value
+ * @param fieldProps predefined properties, in the form { name1 : values1, name2 : values2 ...}
+ * @param errors current errors, in the form {PropName?, PropValue?}
+ * @returns {JSX.Element}
+ * @constructor
+ */
+const FreeProperty2 = ({
     index,
     onChange,
     defaultValue,
@@ -425,6 +456,15 @@ const makeFreeProperties2ProblemsMap = (values, full, prevErrors) => {
     return res;
 };
 
+/**
+ * Component for edition a {nameA: {values1: [values1A], values2:[values2A]} nameB: {values1: [values1B]} object
+ * @param initialValue the initial object
+ * @param onChange callback(nextValue, nextValueIsNotValid)
+ * @param titleMessage
+ * @param validationsCount number of validations user has tried so far
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export const FreeProperties2 = ({
     initialValue,
     onChange,
