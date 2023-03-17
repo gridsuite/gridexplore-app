@@ -274,11 +274,17 @@ export const FreeProperties = ({
     return field;
 };
 
-export const FreePropertiesS = ({ initialValue, onChange, titleMessage }) => {
+export const FreePropertiesS = ({
+    initialValue,
+    onChange,
+    titleMessage,
+    validationsCount,
+}) => {
     return FreeProperties({
         initialValue,
         onChange,
         titleMessage,
+        validationsCount,
         isForSubstation: true,
     });
 };
