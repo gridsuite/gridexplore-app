@@ -80,6 +80,14 @@ export const FilterTypeSelection = ({
     );
 };
 
+/**
+ * Transform
+ * from obj.equipmentFilterForm.{
+ *   freeProperties1.{nameA:valuesA, nameB:valuesB},
+ *   freeProperties2.{nameA:valuesC}
+ * to a obj.equipmentFilterForm.freeProperties.{nameA:{values1:valuesA, values2:valuesC}, namesB:{value1:valuesB}}
+ * in order to be able to present values of both side on the same line as the name of the property.
+ */
 const backToFrontTweak = (response) => {
     if (
         !response?.equipmentFilterForm ||
@@ -111,6 +119,14 @@ const backToFrontTweak = (response) => {
     return ret;
 };
 
+/**
+ * Transform
+ * from obj.equipmentFilterForm.freeProperties.{nameA:{values1:valuesA, values2:valuesC}, namesB:{value1:valuesB}}
+ * to obj.equipmentFilterForm.{
+ *  freeProperties1.{nameA:valuesA, nameB:valuesB},
+ *  freeProperties2.{nameA:valuesC}
+ * in order to be able to reintegrates values on the same line as the name of the property to each side.
+ */
 const frontToBackTweak = (filter) => {
     if (
         !filter?.equipmentFilterForm ||
