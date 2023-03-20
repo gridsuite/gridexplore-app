@@ -125,7 +125,7 @@ const FreeProperty = ({
     );
 };
 
-const makeFreePropertiesProblemsMap = (values, full, prevErrors) => {
+const makeFreePropertiesProblemsMap = (values, full, prevErrors, isBiValue) => {
     const res = {};
     const idMap = values.reduce(
         (m, v) => m.set(v.name, (m.get(v.name) || 0) + 1),
@@ -138,7 +138,10 @@ const makeFreePropertiesProblemsMap = (values, full, prevErrors) => {
 
         const count = idMap.get(val.name);
         const errInBuild = {};
-        if (!val?.values?.length) {
+        const valIsEmpty = isBiValue
+            ? !val?.values1?.length && !val?.values2?.length
+            : !val?.values?.length;
+        if (valIsEmpty) {
             errInBuild.PropValue = 'ValueMayNotBeEmpty';
         }
 
@@ -189,7 +192,7 @@ export const FreeProperties = ({
 
     const onPropertiesArrayChange = useCallback(
         (arr) => {
-            const pbs = makeFreePropertiesProblemsMap(arr, true, null);
+            const pbs = makeFreePropertiesProblemsMap(arr, true, null, false);
             const blockingLinesCount = Object.entries(pbs).filter(
                 ([k, v]) => v && Object.entries(v).length > 0
             ).length;
@@ -206,7 +209,12 @@ export const FreeProperties = ({
         (values, prevErrors) => {
             const full = validationsCountRef.current !== validationsCount;
 
-            const res = makeFreePropertiesProblemsMap(values, full, prevErrors);
+            const res = makeFreePropertiesProblemsMap(
+                values,
+                full,
+                prevErrors,
+                false
+            );
 
             if (validationsCountRef.current !== validationsCount) {
                 validationsCountRef.current = validationsCount;
@@ -431,37 +439,6 @@ const FreeProperty2 = ({
     );
 };
 
-const makeFreeProperties2ProblemsMap = (values, full, prevErrors) => {
-    const res = {};
-    const idMap = values.reduce(
-        (m, v) => m.set(v.name, (m.get(v.name) || 0) + 1),
-        new Map()
-    );
-
-    values.forEach((val, idx) => {
-        let prevError = prevErrors?.[idx];
-        if (!full && !prevError) return;
-
-        const count = idMap.get(val.name);
-        const errInBuild = {};
-        if (!val?.values1?.length && !val?.values2?.length) {
-            errInBuild.PropValue = 'ValueMayNotBeEmpty';
-        }
-
-        if (!val.name) {
-            errInBuild.PropName = 'EmptyName';
-        } else if (count > 1) {
-            errInBuild.PropName = 'DuplicateName';
-        }
-
-        if (Object.keys(errInBuild).length) {
-            errInBuild.error = true;
-        }
-        res[idx] = errInBuild;
-    });
-    return res;
-};
-
 /**
  * Component for edition a {nameA: {values1: [values1A], values2:[values2A]} nameB: {values1: [values1B]} object
  * @param initialValue the initial object
@@ -490,7 +467,7 @@ export const FreeProperties2 = ({
 
     const onPropertiesArrayChange = useCallback(
         (arr) => {
-            const pbs = makeFreeProperties2ProblemsMap(arr, true, null);
+            const pbs = makeFreePropertiesProblemsMap(arr, true, null, true);
             const blockingLinesCount = Object.entries(pbs).filter(
                 ([k, v]) => v && Object.entries(v).length > 0
             ).length;
@@ -506,10 +483,11 @@ export const FreeProperties2 = ({
         (values, prevErrors) => {
             const full = validationsCountRef.current !== validationsCount;
 
-            const res = makeFreeProperties2ProblemsMap(
+            const res = makeFreePropertiesProblemsMap(
                 values,
                 full,
-                prevErrors
+                prevErrors,
+                true
             );
 
             if (validationsCountRef.current !== validationsCount) {
