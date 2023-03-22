@@ -24,13 +24,17 @@ import { useSelector } from 'react-redux';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import PropTypes from 'prop-types';
-import { ContingencyListType, ElementType } from '../../utils/elementType';
+import {
+    ContingencyListType,
+    ElementType,
+} from '../../utils/elementType';
 import CircularProgress from '@mui/material/CircularProgress';
 import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
 import { renderPopup } from './create-filter-dialog';
 import ScriptDialogContent from './script-dialog-content';
 import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
+import ExplicitNamingContingencyListDialogContent from './explicit-naming-contingency-list-content';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -47,15 +51,13 @@ const useStyles = makeStyles(() => ({
  */
 export const CreateContingencyListDialog = ({ open, onClose }) => {
     const [contingencyListType, setContingencyListType] = React.useState(
-        ContingencyListType.SCRIPT
+        ContingencyListType.FORM
     );
     const [chosenContingencyListType, setChosenContingencyListType] = useState(
-        ContingencyListType.SCRIPT
+        ContingencyListType.FORM
     );
 
     const [contingencyListName, setContingencyListName] = React.useState('');
-    const [contingencyListDescription, setContingencyListDescription] =
-        React.useState('');
     const [createContingencyListErr, setCreateContingencyListErr] =
         React.useState('');
 
@@ -68,6 +70,11 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const timer = React.useRef();
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [currentScript, setCurrentScript] = useState(null);
+
+    const [newNameList, setNewListName] = useState('');
+
+    const [tableValues, setTableValues] = useState([]);
+    //const [isFilterCreation, setIsFilterCreation] = useState(false);
 
     // currentCriteriaBasedFilter is a ref but should be a state, like in create-filter-dialog.js.
     // We tried to change the code this way, but failed to fix related bugs in time.
@@ -87,10 +94,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
 
     const handleCloseDialog = () => {
         onClose();
-    };
-
-    const handleContingencyListDescriptionChanges = (e) => {
-        setContingencyListDescription(e.target.value);
     };
 
     /**
@@ -176,6 +179,58 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         );
     };
 
+    const charlyTempFormatConverter = (id, name, values) => {
+        // values format :
+        // [
+        //     {
+        //         "contingencyName":"45",
+        //         "equipmentIDs":"bbbb"
+        //     },
+        //     {
+        //         "contingencyName":"46",
+        //         "equipmentIDs":"77lkl"
+        //     },
+        //     {
+        //         "contingencyName":"",
+        //         "equipmentIDs":""
+        //     }
+        // ]
+
+        const identifiersList = values
+            .filter(
+                (line) =>
+                    line?.equipmentIDs && line.equipmentIDs.trim().length > 0
+            ) // We only take lines that have an equipmentIDs value
+            .map((line) => {
+                const identifierList = line.equipmentIDs
+                    .split('|')
+                    .map((identifier) => {
+                        return {
+                            type: 'ID_BASED',
+                            identifier: identifier,
+                        };
+                    });
+
+                return {
+                    type: 'LIST',
+                    // contingencyName: line.contingencyName, // Not used for now
+                    identifierList: identifierList,
+                };
+            });
+
+        return {
+            id: id,
+            identifierContingencyList: {
+                type: 'identifier',
+                version: '1.0',
+                name: name,
+                identifiableType: 'LINE', // hardcoded for the moment
+                identifiers: identifiersList,
+            },
+            type: 'IDENTIFIERS',
+        };
+    };
+
     const handleCreateNewContingencyList = () => {
         if (!isFormValidationAllowed()) {
             return;
@@ -186,12 +241,20 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
             formContent = currentCriteriaBasedFilter.current;
         } else if (contingencyListType === ContingencyListType.SCRIPT) {
             formContent = { script: currentScript };
+        } else if (
+            contingencyListType === ContingencyListType.EXPLICIT_NAMING
+        ) {
+            // TODO CHARLY clean this temporary format function.
+            formContent = charlyTempFormatConverter(
+                null,
+                contingencyListName,
+                tableValues
+            );
         }
 
         createContingencyList(
             contingencyListType,
             contingencyListName,
-            contingencyListDescription,
             formContent,
             activeDirectory
         )
@@ -262,6 +325,26 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         setUnsavedChanges(true);
     };
 
+    const handleNamingFilterCallBack = (
+        tableValues,
+        isGeneratorOrLoad,
+        isCreation,
+        equipmentType,
+        name,
+        id
+    ) => {
+        console.error(
+            'CHARLY handleNamingFilterCallBack tableValues => ',
+            tableValues
+        );
+        //setIsGeneratorOrLoad(isGeneratorOrLoad);
+        //setIsFilterCreation(isCreation);
+        //setEquipmentType(equipmentType);
+        //setName(name);
+        //setId(id);
+        setTableValues(tableValues);
+    };
+
     return (
         <div>
             <Dialog
@@ -290,52 +373,57 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                             }
                             type="text"
                             style={{ width: '100%' }}
-                            label={<FormattedMessage id="nameProperty" />}
+                            label={<FormattedMessage id="nameList" />}
                         />
                         {renderContingencyNameStatus()}
                     </div>
-                    <TextField
-                        onChange={(e) =>
-                            handleContingencyListDescriptionChanges(e)
-                        }
-                        margin="dense"
-                        value={contingencyListDescription}
-                        type="text"
-                        style={{ width: '100%' }}
-                        label={<FormattedMessage id="descriptionProperty" />}
-                    />
 
                     <RadioGroup
-                        aria-label="gender"
-                        name="gender1"
+                        aria-label="type"
+                        name="contingencyListType"
                         value={contingencyListType}
                         onChange={handleChangeContingencyListType}
                         row
                     >
                         <FormControlLabel
-                            value="SCRIPT"
+                            value={ContingencyListType.FORM}
+                            control={<Radio />}
+                            label={<FormattedMessage id="CriteriaBased" />}
+                        />
+                        <FormControlLabel
+                            value={ContingencyListType.EXPLICIT_NAMING}
+                            control={<Radio />}
+                            label={<FormattedMessage id="ExplicitNaming" />}
+                        />
+                        <FormControlLabel
+                            value={ContingencyListType.SCRIPT}
                             control={<Radio />}
                             label={<FormattedMessage id="SCRIPT" />}
                         />
-                        <FormControlLabel
-                            value="FORM"
-                            control={<Radio />}
-                            label={<FormattedMessage id="FORM" />}
-                        />
                     </RadioGroup>
-                    {contingencyListType === ContingencyListType.SCRIPT ? (
+                    {contingencyListType === ContingencyListType.SCRIPT && (
                         <ScriptDialogContent
                             onChange={onScriptChangeHandler}
                             onError={setCreateContingencyListErr}
                             type={ElementType.CONTINGENCY_LIST}
                         />
-                    ) : (
+                    )}
+                    {contingencyListType === ContingencyListType.FORM && (
                         <CriteriaBasedFilterDialogContent
                             open={open}
                             contentType={ElementType.CONTINGENCY_LIST}
                             handleFilterCreation={
                                 handleCriteriaBasedFilterCreation
                             }
+                        />
+                    )}
+                    {contingencyListType ===
+                        ContingencyListType.EXPLICIT_NAMING && (
+                        <ExplicitNamingContingencyListDialogContent
+                            open={open}
+                            name={newNameList}
+                            isFilterCreation={true}
+                            handleFilterCreation={handleNamingFilterCallBack}
                         />
                     )}
                     {createContingencyListErr !== '' && (

@@ -336,17 +336,23 @@ export const usePrefillNameField = ({
 function generateNamingArray(
     defaultValues,
     isGeneratorOrLoad,
-    minNumberOfEquipments
+    minNumberOfEquipments,
+    formType // TODO This whole function should be refactored, but won't be now because of time constraints
 ) {
     let values = defaultValues ?? [];
     let n = values
         ? minNumberOfEquipments - values.length
         : minNumberOfEquipments;
     for (var i = 0; i < n; i++) {
-        if (isGeneratorOrLoad) {
-            values.push({ equipmentID: '', distributionKey: undefined });
-        } else {
-            values.push({ equipmentID: '' });
+        // TODO Refactor : we should not have hardcoded value parameters like this in this function.
+        if (formType === ElementType.FILTER) {
+            if (isGeneratorOrLoad) {
+                values.push({ equipmentID: '', distributionKey: undefined });
+            } else {
+                values.push({ equipmentID: '' });
+            }
+        } else if (formType === ElementType.CONTINGENCY_LIST) {
+            values.push({ contingencyName: '', equipmentIDs: '' }); // TODO CHARLY adapter en tableau
         }
     }
     return values;
@@ -357,13 +363,14 @@ export const useEquipmentTableValues = ({
     tableHeadersIds,
     Row,
     inputForm,
-    isGeneratorOrLoad = false,
+    isGeneratorOrLoad = false, // TODO This function should be refactored to remove the business logic. The refactor won't be done now because of time constraints.
     defaultTableValues,
     setCreateFilterErr,
     name,
     equipmentType,
     setIsEdited,
     minNumberOfEquipments,
+    formType = ElementType.FILTER, // TODO This is temporary : should be refactored to remove the business logic.
 }) => {
     const classes = useStyles();
     const [values, setValues] = useState(defaultTableValues);
@@ -378,11 +385,17 @@ export const useEquipmentTableValues = ({
                 generateNamingArray(
                     [...defaultTableValues],
                     isGeneratorOrLoad,
-                    minNumberOfEquipments
+                    minNumberOfEquipments,
+                    formType
                 )
             );
         }
-    }, [defaultTableValues, isGeneratorOrLoad, minNumberOfEquipments]);
+    }, [
+        defaultTableValues,
+        isGeneratorOrLoad,
+        minNumberOfEquipments,
+        formType,
+    ]);
 
     useEffect(() => {
         checkValues();
@@ -396,7 +409,8 @@ export const useEquipmentTableValues = ({
                 return generateNamingArray(
                     [],
                     isGeneratorOrLoad,
-                    minNumberOfEquipments
+                    minNumberOfEquipments,
+                    formType
                 );
             }
             const newValues = oldValues.filter(
@@ -405,7 +419,8 @@ export const useEquipmentTableValues = ({
             return generateNamingArray(
                 newValues,
                 isGeneratorOrLoad,
-                minNumberOfEquipments
+                minNumberOfEquipments,
+                formType
             );
         });
         setSelectedIds(new Set());
@@ -417,10 +432,12 @@ export const useEquipmentTableValues = ({
         setIsEdited,
         isGeneratorOrLoad,
         minNumberOfEquipments,
+        formType,
     ]);
 
     const handleSetValue = useCallback(
         (index, newValue) => {
+            console.error('CHARLY handleSetValue', index, newValue);
             setValues((oldValues) => {
                 let newValues = [...oldValues];
                 newValues[index] = newValue;
@@ -534,31 +551,61 @@ export const useEquipmentTableValues = ({
         (csvData, keepTableValues) => {
             if (csvData) {
                 let newValues = [...values];
-                if (!keepTableValues) {
-                    newValues.splice(0);
-                } else {
-                    newValues = newValues.filter(
-                        (v) => v?.equipmentID?.trim().length > 0
-                    );
+                let objects;
+
+                // TODO This is temporary : should be refactored to remove the business logic.
+                if (formType === ElementType.FILTER) {
+                    if (!keepTableValues) {
+                        newValues.splice(0);
+                    } else {
+                        // TODO Refactor : we should not have hardcoded value parameters like this in this function.
+                        newValues = newValues.filter(
+                            (v) => v?.equipmentID?.trim().length > 0
+                        );
+                    }
+                    objects = Object.keys(csvData).map(function (key) {
+                        return {
+                            equipmentID: csvData[key][0]?.trim(),
+                            distributionKey:
+                                csvData[key][1]?.trim() || undefined,
+                        };
+                    });
+                } else if (formType === ElementType.CONTINGENCY_LIST) {
+                    if (!keepTableValues) {
+                        newValues.splice(0);
+                    } else {
+                        // TODO Refactor : we should not have hardcoded value parameters like this in this function.
+                        newValues = newValues.filter(
+                            (v) => v?.contingencyName?.trim().length > 0
+                        );
+                    }
+                    objects = Object.keys(csvData).map(function (key) {
+                        return {
+                            contingencyName: csvData[key][0]?.trim(),
+                            equipmentIDs: csvData[key][1]?.trim() || undefined, // TODO CHARLY gérer le format correct pour le futur tableau de données
+                        };
+                    });
                 }
-                let objects = Object.keys(csvData).map(function (key) {
-                    return {
-                        equipmentID: csvData[key][0]?.trim(),
-                        distributionKey: csvData[key][1]?.trim() || undefined,
-                    };
-                });
+
                 newValues.push(...objects);
                 setValues(
                     generateNamingArray(
                         newValues,
                         isGeneratorOrLoad,
-                        minNumberOfEquipments
+                        minNumberOfEquipments,
+                        formType
                     )
                 );
                 setIsEdited(true);
             }
         },
-        [values, isGeneratorOrLoad, minNumberOfEquipments, setIsEdited]
+        [
+            values,
+            isGeneratorOrLoad,
+            minNumberOfEquipments,
+            setIsEdited,
+            formType,
+        ]
     );
 
     const field = useMemo(() => {
@@ -604,8 +651,13 @@ export const useEquipmentTableValues = ({
                                                         justifyContent="flex-start"
                                                         alignItems="flex-end"
                                                         xs={
-                                                            isGeneratorOrLoad
-                                                                ? value === 'ID'
+                                                            isGeneratorOrLoad ||
+                                                            formType ===
+                                                                ElementType.CONTINGENCY_LIST
+                                                                ? value ===
+                                                                      'ID' ||
+                                                                  value ===
+                                                                      'equipments' // TODO This should be refactored, we should not have hardcoded value parameters like this in this function.
                                                                     ? 6
                                                                     : 3
                                                                 : 9
@@ -764,6 +816,7 @@ export const useEquipmentTableValues = ({
         handleDeleteItem,
         handleChangeOrder,
         updateTableValues,
+        formType,
     ]);
 
     return [values, field, isDragged];

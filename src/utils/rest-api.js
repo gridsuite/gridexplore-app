@@ -491,19 +491,22 @@ export function rootDirectoryExists(directoryName) {
 export function createContingencyList(
     contingencyListType,
     contingencyListName,
-    contingencyListDescription,
     formContent,
     parentDirectoryUuid
 ) {
     console.info('Creating a new contingency list...');
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('description', contingencyListDescription);
+    urlSearchParams.append('description', ''); // TODO CHARLY supprimer cette ligne dès que back ne la traite plus
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
-    const typeUriParam =
-        contingencyListType === ContingencyListType.SCRIPT
-            ? 'script-contingency-lists'
-            : 'form-contingency-lists';
+    let typeUriParam = '';
+    if (contingencyListType === ContingencyListType.FORM) {
+        typeUriParam = 'form-contingency-lists';
+    } else if (contingencyListType === ContingencyListType.SCRIPT) {
+        typeUriParam = 'script-contingency-lists';
+    } else if (contingencyListType === ContingencyListType.EXPLICIT_NAMING) {
+        typeUriParam = 'identifier-contingency-lists';
+    }
 
     const createContingencyListUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +
