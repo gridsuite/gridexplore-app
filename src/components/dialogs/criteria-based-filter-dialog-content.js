@@ -41,16 +41,13 @@ function generateDefaultValue(val, originalValue) {
     };
 }
 
-const SingleFilter = ({ filter, definition, onChange }) => {
-    const localChange = (newVal) => {
-        filter.value = newVal;
-        onChange();
-    };
+const SingleFilter = ({ filter, definition, onChange, validationsCount }) => {
     return definition.type.renderer({
         initialValue: filter.value,
-        onChange: localChange,
+        onChange: onChange,
         titleMessage: definition.name,
         enumValues: definition.enumValues,
+        validationsCount,
     });
 };
 
@@ -83,12 +80,96 @@ export const FilterTypeSelection = ({
     );
 };
 
+/**
+ * Transform
+ * from obj.equipmentFilterForm.{
+ *   freeProperties1.{nameA:valuesA, nameB:valuesB},
+ *   freeProperties2.{nameA:valuesC}
+ * to a obj.equipmentFilterForm.freeProperties.{nameA:{values1:valuesA, values2:valuesC}, namesB:{value1:valuesB}}
+ * in order to be able to present values of both side on the same line as the name of the property.
+ */
+const backToFrontTweak = (response) => {
+    if (
+        !response?.equipmentFilterForm ||
+        !['LINE', 'HVDC_LINE'].includes(response.equipmentType)
+    ) {
+        return response;
+    }
+
+    const props1 = response.equipmentFilterForm.freeProperties1;
+    const props2 = response.equipmentFilterForm.freeProperties2;
+    let ret = { ...response };
+    let eff = { ...response.equipmentFilterForm };
+    delete eff.freeProperties1;
+    delete eff.freeProperties2;
+    ret.equipmentFilterForm = eff;
+    const allKeys = new Set();
+    const biProps = {};
+    if (props1) Object.keys(props1).forEach((k) => allKeys.add(k));
+    if (props2) Object.keys(props2).forEach((k) => allKeys.add(k));
+    allKeys.forEach((k) => {
+        const biProp = { name: k };
+        const values1 = props1[k];
+        if (values1) biProp.values1 = values1;
+        const values2 = props2[k];
+        if (values2) biProp.values2 = values2;
+        biProps[k] = biProp;
+    });
+    eff.freePropertiesP = biProps;
+    return ret;
+};
+
+/**
+ * Transform
+ * from obj.equipmentFilterForm.freeProperties.{nameA:{values1:valuesA, values2:valuesC}, namesB:{value1:valuesB}}
+ * to obj.equipmentFilterForm.{
+ *  freeProperties1.{nameA:valuesA, nameB:valuesB},
+ *  freeProperties2.{nameA:valuesC}
+ * in order to be able to reintegrates values on the same line as the name of the property to each side.
+ */
+const frontToBackTweak = (filter) => {
+    if (
+        !filter?.equipmentFilterForm ||
+        !['LINE', 'HVDC_LINE'].includes(
+            filter.equipmentFilterForm.equipmentType
+        )
+    ) {
+        return filter;
+    }
+
+    const biProps = filter.equipmentFilterForm.freePropertiesP;
+    let ret = { ...filter };
+    let eff = { ...ret.equipmentFilterForm };
+    delete eff.freePropertiesP;
+    ret.equipmentFilterForm = eff;
+    const props1 = {};
+    const props2 = {};
+    if (biProps) {
+        Object.entries(biProps).forEach(([k, bp]) => {
+            if (!bp) return;
+            const values1 = bp.values1;
+            const values2 = bp.values2;
+            if (values1) {
+                props1[bp.name] = values1;
+            }
+            if (values2) {
+                props2[bp.name] = values2;
+            }
+        });
+    }
+
+    eff.freeProperties1 = props1;
+    eff.freeProperties2 = props2;
+    return ret;
+};
+
 export const CriteriaBasedFilterDialogContent = ({
     id,
     open,
     contentType,
     handleFilterCreation,
     handleEquipmentTypeChange,
+    validationsCount,
 }) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [equipmentType, setEquipmentType] = useState(null);
@@ -115,14 +196,12 @@ export const CriteriaBasedFilterDialogContent = ({
             if (contentType === ElementType.FILTER) {
                 getFilterById(id)
                     .then((response) => {
-                        setInitialFilter(response);
-                        setEquipmentType(
-                            response.equipmentFilterForm.equipmentType
-                        );
+                        setInitialFilter(backToFrontTweak(response));
+                        let eType = response.equipmentFilterForm.equipmentType;
+                        setEquipmentType(eType);
                         setCurrentFormEdit({
                             equipmentType: {
-                                value: response.equipmentFilterForm
-                                    .equipmentType,
+                                value: eType,
                             },
                         });
                     })
@@ -160,18 +239,6 @@ export const CriteriaBasedFilterDialogContent = ({
         }
     }, [id, contentType, snackError]);
 
-    function onChange(newVal) {
-        currentFilter.current = {};
-        currentFilter.current.id = id;
-        currentFilter.current.type = FilterType.CRITERIA;
-        if (contentType === ElementType.FILTER) {
-            // data model is not the same: filter has a sub-object 'equipmentFilterForm'
-            currentFilter.current.equipmentFilterForm = newVal;
-        } else {
-            for (const k in newVal) currentFilter.current[k] = newVal[k];
-        }
-    }
-
     function validVoltageValues(obj) {
         let value1NotNull =
             obj.value.hasOwnProperty('value1') && obj.value['value1'] !== null;
@@ -183,7 +250,7 @@ export const CriteriaBasedFilterDialogContent = ({
         return value1NotNull && value2NotNull;
     }
 
-    const editDone = () => {
+    const editDone = (veto) => {
         let res = {};
         Object.entries(currentFormEdit).forEach(([key, obj]) => {
             if (key.startsWith('nominalVoltage') && !validVoltageValues(obj)) {
@@ -193,15 +260,22 @@ export const CriteriaBasedFilterDialogContent = ({
                 res[key] = obj.value;
             }
         });
-        onChange(res);
-        currentFilterToSend.current.id = id;
-        currentFilterToSend.current.type = FilterType.CRITERIA;
-        currentFilterToSend.current.equipmentFilterForm = { ...res };
-        handleFilterCreation(currentFilterToSend.current);
+        if (contentType !== ElementType.FILTER) {
+            const newFilter1 = { id, type: FilterType.CRITERIA, ...res };
+            currentFilter.current = newFilter1;
+        } else if (res) {
+            // data model is not the same: filter has a sub-object 'equipmentFilterForm'
+            const newFilter1 = { id, type: FilterType.CRITERIA };
+            newFilter1.equipmentFilterForm = res;
+            currentFilter.current = frontToBackTweak(newFilter1);
+        }
+        const newFilter = { id, type: FilterType.CRITERIA };
+        newFilter.equipmentFilterForm = { ...res };
+        currentFilterToSend.current = frontToBackTweak(newFilter);
+        handleFilterCreation(currentFilterToSend.current, veto);
         const hasEdition = Object.values(res).some(
             (val) =>
-                val !== undefined &&
-                val !== null &&
+                val &&
                 ((Array.isArray(val) && val.length > 0) ||
                     (typeof val === 'object' && Object.keys(val).length > 0))
         );
@@ -226,7 +300,10 @@ export const CriteriaBasedFilterDialogContent = ({
         setEquipmentType(newType);
         if (id == null && contentType === ElementType.FILTER)
             handleEquipmentTypeChange(newType);
-        editDone();
+        const globalVeto = Object.entries(currentFormEdit).some(
+            ([k, v]) => v.veto
+        );
+        editDone(globalVeto);
     };
 
     const handlePopupConfirmation = () => {
@@ -235,24 +312,38 @@ export const CriteriaBasedFilterDialogContent = ({
     };
 
     const renderFilter = (key, definition) => {
-        if (initialFilter !== null) {
-            if (currentFormEdit[key] === undefined) {
-                currentFormEdit[key] = generateDefaultValue(
-                    definition,
-                    contentType === ElementType.FILTER
-                        ? initialFilter.equipmentFilterForm[key]
-                        : initialFilter[key]
-                );
-            }
-        } else {
-            currentFormEdit[key] = generateDefaultValue(definition, null);
+        if (currentFormEdit[key] === undefined) {
+            currentFormEdit[key] = generateDefaultValue(
+                definition,
+                initialFilter === null
+                    ? null
+                    : contentType === ElementType.FILTER
+                    ? initialFilter.equipmentFilterForm[key]
+                    : initialFilter[key]
+            );
         }
+
+        const currFilter = currentFormEdit[key];
+        const localChange = (newVal, veto) => {
+            currFilter.value = newVal;
+            if (veto) {
+                currFilter.veto = true;
+            } else {
+                delete currFilter.veto;
+            }
+            const globalVeto = Object.entries(currentFormEdit).some(
+                ([k, v]) => v.veto
+            );
+            editDone(globalVeto);
+        };
+
         return (
             <SingleFilter
                 key={key}
-                filter={currentFormEdit[key]}
+                filter={currFilter}
                 definition={definition}
-                onChange={editDone}
+                onChange={localChange}
+                validationsCount={validationsCount}
             />
         );
     };

@@ -38,17 +38,20 @@ export const CriteriaBasedFilterDialog = ({
 }) => {
     const [currentFilter, setCurrentFilter] = useState(null);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
+    const [validationsCount, setValidationsCount] = useState(0);
     const classes = useStyles();
     const openRef = useRef(null);
     openRef.current = open;
 
-    const handleEditCallback = (filter) => {
+    const handleEditCallback = (filter, veto) => {
         if (contentType === ElementType.CONTINGENCY_LIST) {
             setCurrentFilter(
                 Object.assign({ id: filter.id }, filter.equipmentFilterForm)
             );
-        } else {
+        } else if (!veto) {
             setCurrentFilter(filter);
+        } else {
+            setCurrentFilter(null);
         }
         setBtnSaveListDisabled(false);
     };
@@ -58,7 +61,12 @@ export const CriteriaBasedFilterDialog = ({
     };
 
     const handleValidate = () => {
-        if (!isFilterCreation) {
+        setValidationsCount((prev) => prev + 1);
+        if (!currentFilter) {
+            return;
+        } else if (isFilterCreation) {
+            handleFilterCreation(currentFilter);
+        } else {
             if (contentType === ElementType.FILTER) {
                 saveFilter(currentFilter)
                     .then()
@@ -73,8 +81,6 @@ export const CriteriaBasedFilterDialog = ({
                     });
             }
             handleCancel();
-        } else {
-            handleFilterCreation(currentFilter);
         }
     };
 
@@ -92,6 +98,7 @@ export const CriteriaBasedFilterDialog = ({
                     open={open}
                     contentType={contentType}
                     handleFilterCreation={handleEditCallback}
+                    validationsCount={validationsCount}
                 />
             </DialogContent>
             <DialogActions>

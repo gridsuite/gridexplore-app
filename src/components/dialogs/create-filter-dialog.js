@@ -112,14 +112,16 @@ const CreateFilterDialog = ({
     );
 
     const [filterToSave, setFilterToSave] = useState(null);
+    const [validationsCount, setValidationsCount] = useState(0);
     const [tableValues, setTableValues] = useState([]);
     const [isGeneratorOrLoad, setIsGeneratorOrLoad] = useState(false);
     const [isFilterCreation, setIsFilterCreation] = useState(false);
     const [equipmentType, setEquipmentType] = useState(null);
     const [name, setName] = useState('');
     const [id, setId] = useState('');
-    const handleCallback = (criteriaFilter) => {
-        if (criteriaFilter) {
+    const handleCallback = (criteriaFilter, veto) => {
+        if (veto) setFilterToSave(null);
+        else if (criteriaFilter) {
             setFilterToSave(criteriaFilter);
         }
     };
@@ -209,8 +211,9 @@ const CreateFilterDialog = ({
     }, [tableValues]);
 
     const handleValidation = () => {
-        //To manage the case when we never tried to enter a name
+        setValidationsCount((prev) => prev + 1);
 
+        //To manage the case when we never tried to enter a name
         if (newNameList === '') {
             setCreateFilterErr(intl.formatMessage({ id: 'nameEmpty' }));
             return;
@@ -233,6 +236,8 @@ const CreateFilterDialog = ({
                 intl,
                 handleClose
             );
+            return;
+        } else if (!filterToSave) {
             return;
         }
 
@@ -344,6 +349,7 @@ const CreateFilterDialog = ({
                             handleFilterCreation={handleCallback}
                             handleEquipmentTypeChange={handleEquipmentChange}
                             contentType={ElementType.FILTER}
+                            validationsCount={validationsCount}
                         />
                     ) : (
                         <ExplicitNamingFilterDialogContent
