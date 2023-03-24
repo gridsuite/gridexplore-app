@@ -437,7 +437,6 @@ export const useEquipmentTableValues = ({
 
     const handleSetValue = useCallback(
         (index, newValue) => {
-            console.error('CHARLY handleSetValue', index, newValue);
             setValues((oldValues) => {
                 let newValues = [...oldValues];
                 newValues[index] = newValue;

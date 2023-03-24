@@ -562,10 +562,12 @@ export function duplicateContingencyList(
  */
 export function getContingencyList(type, id) {
     let url = PREFIX_ACTIONS_QUERIES;
-    if (type === 'SCRIPT') {
+    if (type === ContingencyListType.SCRIPT) {
         url += '/v1/script-contingency-lists/';
-    } else {
+    } else if (type === ContingencyListType.FORM) {
         url += '/v1/form-contingency-lists/';
+    } else if (type === ContingencyListType.EXPLICIT_NAMING) {
+        url += '/v1/identifier-contingency-lists/';
     }
     url += id;
 
@@ -573,7 +575,7 @@ export function getContingencyList(type, id) {
 }
 
 /**
- * Add new Filter contingency list
+ * Saves a Filter contingency list
  * @returns {Promise<Response>}
  */
 export function saveFormContingencyList(form) {
@@ -591,7 +593,7 @@ export function saveFormContingencyList(form) {
 }
 
 /**
- * Add new contingency list
+ * Saves a script contingency list
  * @returns {Promise<Response>}
  */
 export function saveScriptContingencyList(scriptContingencyList) {
@@ -603,6 +605,24 @@ export function saveScriptContingencyList(scriptContingencyList) {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(scriptContingencyList),
+    });
+}
+
+/**
+ * Saves an explicit naming contingency list
+ * @returns {Promise<Response>}
+ */
+export function saveExplicitNamingContingencyList(
+    explicitNamingContingencyList
+) {
+    const url =
+        PREFIX_ACTIONS_QUERIES +
+        '/v1/identifier-contingency-lists/' +
+        explicitNamingContingencyList.id;
+    return backendFetch(url, {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(explicitNamingContingencyList),
     });
 }
 

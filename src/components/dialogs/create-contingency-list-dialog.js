@@ -24,17 +24,16 @@ import { useSelector } from 'react-redux';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import PropTypes from 'prop-types';
-import {
-    ContingencyListType,
-    ElementType,
-} from '../../utils/elementType';
+import { ContingencyListType, ElementType } from '../../utils/elementType';
 import CircularProgress from '@mui/material/CircularProgress';
 import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
 import { renderPopup } from './create-filter-dialog';
 import ScriptDialogContent from './script-dialog-content';
 import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
-import ExplicitNamingContingencyListDialogContent from './explicit-naming-contingency-list-content';
+import ExplicitNamingContingencyListDialogContent, {
+    charlyTempFormatConverter,
+} from './explicit-naming-contingency-list-content';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -70,11 +69,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
     const timer = React.useRef();
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [currentScript, setCurrentScript] = useState(null);
-
-    const [newNameList, setNewListName] = useState('');
-
     const [tableValues, setTableValues] = useState([]);
-    //const [isFilterCreation, setIsFilterCreation] = useState(false);
 
     // currentCriteriaBasedFilter is a ref but should be a state, like in create-filter-dialog.js.
     // We tried to change the code this way, but failed to fix related bugs in time.
@@ -179,58 +174,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         );
     };
 
-    const charlyTempFormatConverter = (id, name, values) => {
-        // values format :
-        // [
-        //     {
-        //         "contingencyName":"45",
-        //         "equipmentIDs":"bbbb"
-        //     },
-        //     {
-        //         "contingencyName":"46",
-        //         "equipmentIDs":"77lkl"
-        //     },
-        //     {
-        //         "contingencyName":"",
-        //         "equipmentIDs":""
-        //     }
-        // ]
-
-        const identifiersList = values
-            .filter(
-                (line) =>
-                    line?.equipmentIDs && line.equipmentIDs.trim().length > 0
-            ) // We only take lines that have an equipmentIDs value
-            .map((line) => {
-                const identifierList = line.equipmentIDs
-                    .split('|')
-                    .map((identifier) => {
-                        return {
-                            type: 'ID_BASED',
-                            identifier: identifier,
-                        };
-                    });
-
-                return {
-                    type: 'LIST',
-                    // contingencyName: line.contingencyName, // Not used for now
-                    identifierList: identifierList,
-                };
-            });
-
-        return {
-            id: id,
-            identifierContingencyList: {
-                type: 'identifier',
-                version: '1.0',
-                name: name,
-                identifiableType: 'LINE', // hardcoded for the moment
-                identifiers: identifiersList,
-            },
-            type: 'IDENTIFIERS',
-        };
-    };
-
     const handleCreateNewContingencyList = () => {
         if (!isFormValidationAllowed()) {
             return;
@@ -304,14 +247,14 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         resetForms();
     };
 
-    const onScriptChangeHandler = (newScript) => {
+    const onChangeScriptHandler = (newScript) => {
         setCurrentScript(newScript);
         if (newScript !== currentScript) {
             setUnsavedChanges(true);
         }
     };
 
-    const handleCriteriaBasedFilterCreation = (filter) => {
+    const onChangeCriteriaBasedHandler = (filter) => {
         currentCriteriaBasedFilter.current = {};
         currentCriteriaBasedFilter.current.id = filter.id;
         Object.assign(
@@ -325,24 +268,18 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         setUnsavedChanges(true);
     };
 
-    const handleNamingFilterCallBack = (
+    const onChangeExplicitNamingHandler = (
         tableValues,
-        isGeneratorOrLoad,
-        isCreation,
-        equipmentType,
-        name,
-        id
+        //isCreation,
+        //name,
+        //id,
+        isEdited,
+        isDragged
     ) => {
-        console.error(
-            'CHARLY handleNamingFilterCallBack tableValues => ',
-            tableValues
-        );
-        //setIsGeneratorOrLoad(isGeneratorOrLoad);
-        //setIsFilterCreation(isCreation);
-        //setEquipmentType(equipmentType);
-        //setName(name);
-        //setId(id);
         setTableValues(tableValues);
+        setCreateContingencyListErr('');
+        setUnsavedChanges(isEdited);
+        if (isDragged) setUnsavedChanges(true);
     };
 
     return (
@@ -403,7 +340,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     </RadioGroup>
                     {contingencyListType === ContingencyListType.SCRIPT && (
                         <ScriptDialogContent
-                            onChange={onScriptChangeHandler}
+                            onChange={onChangeScriptHandler}
                             onError={setCreateContingencyListErr}
                             type={ElementType.CONTINGENCY_LIST}
                         />
@@ -412,18 +349,16 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                         <CriteriaBasedFilterDialogContent
                             open={open}
                             contentType={ElementType.CONTINGENCY_LIST}
-                            handleFilterCreation={
-                                handleCriteriaBasedFilterCreation
-                            }
+                            handleFilterCreation={onChangeCriteriaBasedHandler}
                         />
                     )}
                     {contingencyListType ===
                         ContingencyListType.EXPLICIT_NAMING && (
                         <ExplicitNamingContingencyListDialogContent
                             open={open}
-                            name={newNameList}
-                            isFilterCreation={true}
-                            handleFilterCreation={handleNamingFilterCallBack}
+                            name={'newContingencyList'}
+                            isCreation={true}
+                            onChange={onChangeExplicitNamingHandler}
                         />
                     )}
                     {createContingencyListErr !== '' && (
@@ -433,11 +368,11 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => handleCloseDialog()}>
+                    <Button onClick={handleCloseDialog}>
                         <FormattedMessage id="cancel" />
                     </Button>
                     <Button
-                        onClick={() => handleCreateNewContingencyList()}
+                        onClick={handleCreateNewContingencyList}
                         variant="outlined"
                         disabled={!isFormValidationAllowed()}
                     >

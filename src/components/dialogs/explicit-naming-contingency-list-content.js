@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid';
 import { useEquipmentTableValues } from './field-hook';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
-import { getFilterById } from '../../utils/rest-api';
+import { getContingencyList } from '../../utils/rest-api';
 
 import IconButton from '@mui/material/IconButton';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
@@ -19,12 +19,44 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { Draggable } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
 import { Alert, Checkbox, Input, Tooltip } from '@mui/material';
-import { filterEquipmentDefinition } from '../../utils/equipment-types';
-import { FilterTypeSelection } from './criteria-based-filter-dialog-content';
-import { renderPopup } from './create-filter-dialog';
-import { ElementType } from '../../utils/elementType';
+import { ContingencyListType, ElementType } from '../../utils/elementType';
 
 const useStyles = makeStyles(() => ({}));
+
+export const charlyTempFormatConverter = (id, name, values) => {
+    const identifiersList = values
+        .filter(
+            (line) => line?.equipmentIDs && line.equipmentIDs.trim().length > 0
+        ) // We only take lines that have an equipmentIDs value
+        .map((line) => {
+            const identifierList = line.equipmentIDs
+                .split('|')
+                .map((identifier) => {
+                    return {
+                        type: 'ID_BASED',
+                        identifier: identifier,
+                    };
+                });
+
+            return {
+                type: 'LIST',
+                // contingencyName: line.contingencyName, // Not used for now
+                identifierList: identifierList,
+            };
+        });
+
+    return {
+        id: id,
+        identifierContingencyList: {
+            type: 'identifier',
+            version: '1.0',
+            name: name,
+            identifiableType: 'LINE', // hardcoded for the moment
+            identifiers: identifiersList,
+        },
+        type: 'IDENTIFIERS',
+    };
+};
 
 export const ExplicitNamingFilterRow = ({
     id,
@@ -147,28 +179,39 @@ const ExplicitNamingContingencyListDialogContent = ({
     id,
     open,
     name,
-    isFilterCreation,
-    handleFilterCreation,
+    isCreation,
+    onChange,
 }) => {
-    //const [isGeneratorOrLoad, setIsGeneratorOrLoad] = useState(false);
-    //const [equipmentType, setEquipmentType] = useState(null);
     const headersId = ['elementName', 'equipments'];
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const [defaultValues, setDefaultValues] = useState({
-        filterEquipmentsAttributes: [],
+        identifierContingencyList: [],
     });
     const [isEdited, setIsEdited] = useState(false);
     const fetchFilter = useRef(null);
-    fetchFilter.current = open && !isFilterCreation;
-    //const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
-    //const [newEquipmentType, setNewEquipmentType] = useState(null);
+    fetchFilter.current = open && !isCreation;
+
+    const charlyConverterTemp = (idContingencyList) => {
+        const result = idContingencyList.identifiers.map(
+            (identifiers, index) => {
+                return {
+                    contingencyName: 'contingencyName' + index,
+                    equipmentIDs: identifiers.identifierList
+                        .map((identifier) => identifier.identifier)
+                        .join('|'),
+                };
+            }
+        );
+        return { identifierContingencyList: result };
+    };
 
     useEffect(() => {
         if (id && fetchFilter.current) {
-            getFilterById(id)
+            getContingencyList(ContingencyListType.EXPLICIT_NAMING, id)
                 .then((response) => {
-                    setDefaultValues(response); // TODO CHARLY analyser le retour du back d'Etienne et mapper le résultat ici ... (GOTO LBL A)
-                    //setEquipmentType(response?.equipmentType);
+                    setDefaultValues(
+                        charlyConverterTemp(response?.identifierContingencyList)
+                    );
                 })
                 .catch((error) => setCreateFilterErr(error));
         }
@@ -179,111 +222,40 @@ const ExplicitNamingContingencyListDialogContent = ({
         name: name,
         tableHeadersIds: headersId,
         Row: ExplicitNamingFilterRow,
-        //isGeneratorOrLoad: isGeneratorOrLoad,
         isGeneratorOrLoad: false,
-        defaultTableValues: defaultValues?.filterEquipmentsAttributes, // TODO CHARLY (LBL A) ... et là
+        defaultTableValues: defaultValues?.identifierContingencyList,
         setCreateFilterErr: setCreateFilterErr,
-        //equipmentType: equipmentType,
         equipmentType: '',
         setIsEdited: setIsEdited,
         minNumberOfEquipments: 3,
         formType: ElementType.CONTINGENCY_LIST,
     });
 
-    /*useEffect(() => {
-        setIsGeneratorOrLoad(
-            equipmentType === 'GENERATOR' || equipmentType === 'LOAD'
-        );
-    }, [equipmentType]);*/
-
-    /*const handleEquipmentTypeChange = (type, isTableEdited) => {
-        if (isTableEdited) {
-            setNewEquipmentType(type);
-            setOpenConfirmationPopup(true);
-        } else {
-            setEquipmentType(type);
-            setDefaultValues({
-                filterEquipmentsAttributes: [],
-                equipmentType: equipmentType,
-            });
-        }
-    };*/
-
-    /*const handlePopupConfirmation = () => {
-        setOpenConfirmationPopup(false);
-        setIsEdited(false);
-        setEquipmentType(newEquipmentType);
-        setDefaultValues({
-            filterEquipmentsAttributes: [],
-            equipmentType: equipmentType,
-        });
-    };*/
-
-    const sendData = useCallback(() => {
-        handleFilterCreation(
-            tableValues,
-            //isGeneratorOrLoad,
-            false,
-            isFilterCreation,
-            //equipmentType,
-            '',
-            name,
-            id,
-            isEdited,
-            isDragged
-        );
-    }, [
-        //equipmentType,
-        handleFilterCreation,
-        id,
-        isDragged,
-        isEdited,
-        isFilterCreation,
-        //isGeneratorOrLoad,
-        name,
-        tableValues,
-    ]);
-
     useEffect(() => {
-        sendData();
-    }, [sendData]);
+        onChange(tableValues, isEdited, isDragged);
+    }, [onChange, isDragged, isEdited, tableValues]);
 
     return (
         <div>
             <Grid container spacing={2}>
-                {/*<Grid item xs={12}>*/}
-                {/*    REMOVED*/}
-                {/*    <FilterTypeSelection*/}
-                {/*        type={'GENERATOR'}*/}
-                {/*        disabled={false}*/}
-                {/*        onChange={() => {}}*/}
-                {/*        equipmentDefinition={filterEquipmentDefinition}*/}
-                {/*        isEdited={isEdited}*/}
-                {/*    />*/}
-                {/*</Grid>*/}
                 <Grid item xs={12} />
-                {/*equipmentType && */ tableValuesField}
+                {tableValuesField}
             </Grid>
             {createFilterErr !== '' && (
                 <Alert severity="error">{createFilterErr}</Alert>
             )}
-            {/*renderPopup(
-                isConfirmationPopupOpen,
-                intl,
-                setOpenConfirmationPopup,
-                handlePopupConfirmation
-            )*/}
         </div>
     );
 };
 
 ExplicitNamingContingencyListDialogContent.prototype = {
+    // TODO CHARLY clean this
     id: PropTypes.string,
     name: PropTypes.string,
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool,
     title: PropTypes.string,
-    isFilterCreation: PropTypes.bool,
+    isCreation: PropTypes.bool,
 };
 
 export default ExplicitNamingContingencyListDialogContent;

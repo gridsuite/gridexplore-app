@@ -45,6 +45,7 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
+import ExplicitNamingContingencyListEditDialog from './dialogs/explicit-naming-contingency-list-edit-dialog';
 
 const circularProgressSize = '70px';
 
@@ -154,6 +155,11 @@ const DirectoryContent = () => {
                         event.rowData.elementUuid
                     );
                     setOpenDialog(subtype);
+                } else if (subtype === ContingencyListType.EXPLICIT_NAMING) {
+                    setCurrentExplicitNamingContingencyListId(
+                        event.rowData.elementUuid
+                    );
+                    setOpenDialog(subtype);
                 }
             } else if (event.rowData.type === ElementType.FILTER) {
                 if (subtype === FilterType.EXPLICIT_NAMING) {
@@ -178,6 +184,19 @@ const DirectoryContent = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
         setCurrentFiltersContingencyListId(null);
+    };
+
+    /**
+     * Explicit Naming contingency list dialog: window status value for editing an explicit naming contingency list
+     */
+    const [
+        currentExplicitNamingContingencyListId,
+        setCurrentExplicitNamingContingencyListId,
+    ] = React.useState(null);
+    const handleCloseExplicitNamingContingency = () => {
+        setOpenDialog(constants.DialogsId.NONE);
+        setActiveElement(null);
+        setCurrentExplicitNamingContingencyListId(null);
     };
 
     /**
@@ -720,6 +739,8 @@ const DirectoryContent = () => {
     };
 
     const renderDialog = () => {
+        // TODO openDialog should also be aware of the dialog's type, not only its subtype, because
+        // if/when two different dialogs have the same subtype, this function will display the wrong dialog.
         switch (openDialog) {
             case ContingencyListType.FORM:
                 return (
@@ -745,6 +766,19 @@ const DirectoryContent = () => {
                             id: 'editContingencyList',
                         })}
                         type={ElementType.CONTINGENCY_LIST}
+                    />
+                );
+            case ContingencyListType.EXPLICIT_NAMING:
+                return (
+                    <ExplicitNamingContingencyListEditDialog
+                        id={currentExplicitNamingContingencyListId}
+                        open={true}
+                        onClose={handleCloseExplicitNamingContingency}
+                        title={intl.formatMessage({
+                            id: 'editContingencyList',
+                        })}
+                        isCreation={false}
+                        name={currentExplicitNamingContingencyListId}
                     />
                 );
             case FilterType.EXPLICIT_NAMING:
