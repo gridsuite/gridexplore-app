@@ -208,5 +208,7 @@
     "keepCSVDataMessage": "Voulez-vous remplacer ou ajouter vos identifiants ?",
     "chooseCSVFile" : "Choisir un fichier CSV",
     "add" : "Ajouter",
-    "replace": "Remplacer"
+    "replace": "Remplacer",
+
+    "temporaryContingencyWarning": "Dans la version actuelle, les noms des aléas ne sont pas sauvegardés et on ne peut renseigner que des N-1, pas de N-k."
 }

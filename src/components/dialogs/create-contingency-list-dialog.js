@@ -31,9 +31,8 @@ import CheckIcon from '@mui/icons-material/Check';
 import { renderPopup } from './create-filter-dialog';
 import ScriptDialogContent from './script-dialog-content';
 import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
-import ExplicitNamingContingencyListDialogContent, {
-    charlyTempFormatConverter,
-} from './explicit-naming-contingency-list-content';
+import ExplicitNamingContingencyListDialogContent from './explicit-naming-contingency-list-content';
+import { prepareContingencyListForBackend } from './contingency-list-helper';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -83,6 +82,10 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         isCriteriaBasedEquipmentTypeSelected,
         setIsCriteriaBasedEquipmentTypeSelected,
     ] = useState(false);
+
+    const [isExplicitNamingFormClean, setIsExplicitNamingFormClean] =
+        useState(true);
+
     const [isUnsavedChanges, setUnsavedChanges] = useState(false);
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
@@ -170,7 +173,9 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
             contingencyNameValid &&
             !loadingCheckContingencyName &&
             (contingencyListType !== ContingencyListType.FORM ||
-                isCriteriaBasedEquipmentTypeSelected)
+                isCriteriaBasedEquipmentTypeSelected) &&
+            (contingencyListType !== ContingencyListType.EXPLICIT_NAMING ||
+                isExplicitNamingFormClean)
         );
     };
 
@@ -187,8 +192,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         } else if (
             contingencyListType === ContingencyListType.EXPLICIT_NAMING
         ) {
-            // TODO CHARLY clean this temporary format function.
-            formContent = charlyTempFormatConverter(
+            formContent = prepareContingencyListForBackend(
                 null,
                 contingencyListName,
                 tableValues
@@ -239,6 +243,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         currentCriteriaBasedFilter.current = null;
         setIsCriteriaBasedEquipmentTypeSelected(false);
         setCurrentScript(null);
+        setIsExplicitNamingFormClean(true);
     };
 
     const handlePopupConfirmation = () => {
@@ -270,15 +275,14 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
 
     const onChangeExplicitNamingHandler = (
         tableValues,
-        //isCreation,
-        //name,
-        //id,
         isEdited,
-        isDragged
+        isDragged,
+        isClean // used if one of the field's value is not yet registered, to prevent submiting the form without it
     ) => {
         setTableValues(tableValues);
         setCreateContingencyListErr('');
         setUnsavedChanges(isEdited);
+        setIsExplicitNamingFormClean(isClean);
         if (isDragged) setUnsavedChanges(true);
     };
 

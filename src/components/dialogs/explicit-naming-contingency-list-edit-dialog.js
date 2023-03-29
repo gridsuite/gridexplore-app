@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -10,17 +10,15 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import React, { useEffect, useRef, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
+import React, { useRef, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 import Alert from '@mui/material/Alert';
 import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
-import ExplicitNamingContingencyListDialogContent, {
-    charlyTempFormatConverter,
-} from './explicit-naming-contingency-list-content';
+import ExplicitNamingContingencyListDialogContent from './explicit-naming-contingency-list-content';
 import { saveExplicitNamingContingencyList } from '../../utils/rest-api';
+import { prepareContingencyListForBackend } from './contingency-list-helper';
 
 const useStyles = makeStyles((theme) => ({
     dialogPaper: {
@@ -45,21 +43,35 @@ const ExplicitNamingContingencyListEditDialog = ({
         React.useState('');
     const [tableValues, setTablesValues] = useState([]);
     const [isUnsavedChanges, setUnsavedChanges] = useState(false);
+    const [isExplicitNamingFormClean, setIsExplicitNamingFormClean] =
+        useState(true);
     const fetchFilter = useRef(null);
     fetchFilter.current = open && !isCreation;
 
-    const onChangeHandler = (tableValues, isEdited, isDragged) => {
+    const onChangeHandler = (tableValues, isEdited, isDragged, isClean) => {
         setTablesValues(tableValues);
         setEditContingencyListErr('');
         setUnsavedChanges(isEdited);
+        setIsExplicitNamingFormClean(isClean);
         if (isDragged) setUnsavedChanges(true);
     };
 
-    useEffect(() => {}, [tableValues]);
+    const isFormValidationAllowed = () => {
+        return (
+            tableValues &&
+            tableValues.length > 0 &&
+            editContingencyListErr === '' &&
+            isUnsavedChanges &&
+            isExplicitNamingFormClean
+        );
+    };
 
     const handleEditContingencyList = () => {
+        if (!isFormValidationAllowed()) {
+            return;
+        }
         saveExplicitNamingContingencyList(
-            charlyTempFormatConverter(id, name, tableValues)
+            prepareContingencyListForBackend(id, name, tableValues)
         )
             .then(() => {
                 setUnsavedChanges(false);
@@ -102,12 +114,7 @@ const ExplicitNamingContingencyListEditDialog = ({
                 <Button
                     variant="outlined"
                     onClick={handleEditContingencyList}
-                    disabled={
-                        tableValues === undefined ||
-                        tableValues.length === 0 ||
-                        editContingencyListErr !== '' ||
-                        !isUnsavedChanges
-                    }
+                    disabled={!isFormValidationAllowed()}
                 >
                     <FormattedMessage id="validate" />
                 </Button>
@@ -117,7 +124,6 @@ const ExplicitNamingContingencyListEditDialog = ({
 };
 
 ExplicitNamingContingencyListEditDialog.prototype = {
-    // TODO CHARLY clean this
     id: PropTypes.string,
     name: PropTypes.string,
     onClose: PropTypes.func.isRequired,

@@ -18,32 +18,49 @@ import CsvDownloader from 'react-csv-downloader';
 import Alert from '@mui/material/Alert';
 import PropTypes from 'prop-types';
 import { DialogContentText } from '@mui/material';
+import { ElementType } from '../../utils/elementType';
 
 const CsvImportFilterCreationDialog = ({
     onClose,
     open,
     title,
-    equipmentType,
+    equipmentType, // TODO This function should be refactored to remove the business logic. The refactor won't be done now because of time constraints.
     handleValidateCSV,
     tableValues,
+    formType = ElementType.FILTER, // TODO This is temporary : should be refactored to remove the business logic.
 }) => {
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const intl = useIntl();
     const { CSVReader } = useCSVReader();
     const [value, setValue] = useState([]);
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
-    const fileHeaders = [
-        intl.formatMessage({ id: 'equipmentID' }),
-        equipmentType === 'GENERATOR' || equipmentType === 'LOAD'
-            ? intl.formatMessage({ id: 'distributionKey' })
-            : '',
-    ];
 
-    const data = [...[fileHeaders]];
+    const buildHeader = () => {
+        // TODO This is temporary : should be refactored to remove the business logic.
+        if (formType === ElementType.FILTER) {
+            if (equipmentType === 'GENERATOR' || equipmentType === 'LOAD') {
+                return [
+                    intl.formatMessage({ id: 'equipmentID' }),
+                    intl.formatMessage({ id: 'distributionKey' }),
+                ];
+            } else {
+                return [intl.formatMessage({ id: 'equipmentID' })];
+            }
+        } else if (formType === ElementType.CONTINGENCY_LIST) {
+            return [
+                intl.formatMessage({ id: 'elementName' }),
+                intl.formatMessage({ id: 'equipments' }),
+            ];
+        }
+    };
+    const fileHeaders = buildHeader();
+
+    const data = [...[fileHeaders], '']; // Adding an empty column to force a separator at the end of the header prevents an issue down the line with the uploaded CSV file.
 
     const csvData = () => {
         let newData = [...data];
         for (let i = 0; i < 10; i++) {
+            // TODO Remove this old code that is no longer necessary. It was used before to add a comment in the CSV file after 10 lines.
             newData.push([]);
         }
         return newData;
@@ -70,15 +87,17 @@ const CsvImportFilterCreationDialog = ({
             }
         }
 
-        for (let i = 1; i < rows.length; i++) {
-            // Check if every row has equipment id
-            if (!rows[i][0]) {
-                setCreateFilterErr(
-                    intl.formatMessage({
-                        id: 'missingEquipmentsIdsError',
-                    })
-                );
-                return false;
+        if (formType === ElementType.FILTER) {
+            for (let i = 1; i < rows.length; i++) {
+                // Check if every row has equipment id
+                if (!rows[i][0]) {
+                    setCreateFilterErr(
+                        intl.formatMessage({
+                            id: 'missingEquipmentsIdsError',
+                        })
+                    );
+                    return false;
+                }
             }
         }
         return true;
@@ -86,10 +105,10 @@ const CsvImportFilterCreationDialog = ({
 
     const handleCreateFilter = (saveTableValues) => {
         if (value.length !== 0) {
-            const result = value.filter((val) => {
-                return !!val[0];
+            const result = value.filter((row) => {
+                // We keep the row if at least one of its column has a value
+                return row.some((column) => !!column?.trim());
             });
-
             if (validateCsvFile(result)) {
                 result.splice(0, 1);
                 handleValidateCSV(result, saveTableValues);

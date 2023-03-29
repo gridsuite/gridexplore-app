@@ -209,5 +209,7 @@
     "keepCSVDataMessage": "Do you want to add the criteria or replace the existing ones?",
     "chooseCSVFile" : "Choose a csv file",
     "add" : "Add",
-    "replace": "Replace"
+    "replace": "Replace",
+
+    "temporaryContingencyWarning": "Please note that in the current version contingency names are not saved and contingencies can only contain one equipement."
 }

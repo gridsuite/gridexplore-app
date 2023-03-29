@@ -352,7 +352,7 @@ function generateNamingArray(
                 values.push({ equipmentID: '' });
             }
         } else if (formType === ElementType.CONTINGENCY_LIST) {
-            values.push({ contingencyName: '', equipmentIDs: '' }); // TODO CHARLY adapter en tableau
+            values.push({ contingencyName: '', equipmentIDs: [] });
         }
     }
     return values;
@@ -362,7 +362,6 @@ export const useEquipmentTableValues = ({
     id,
     tableHeadersIds,
     Row,
-    inputForm,
     isGeneratorOrLoad = false, // TODO This function should be refactored to remove the business logic. The refactor won't be done now because of time constraints.
     defaultTableValues,
     setCreateFilterErr,
@@ -374,11 +373,23 @@ export const useEquipmentTableValues = ({
 }) => {
     const classes = useStyles();
     const [values, setValues] = useState(defaultTableValues);
+    const [cleanValues, setCleanValues] = useState([]); // Stores the clean state of each row if needed
     const intl = useIntl();
     const [isDragged, setIsDragged] = useState(false);
+    const [isClean, setIsClean] = useState(true); // true if there is nothing dirty (===false) in cleanValues.
+
     const handleAddValue = useCallback(() => {
-        setValues((oldValues) => [...oldValues, {}]);
-    }, []);
+        // TODO This is temporary : should be refactored to remove the business logic.
+        if (formType === ElementType.CONTINGENCY_LIST) {
+            setValues((oldValues) => [
+                ...oldValues,
+                { contingencyName: '', equipmentIDs: [] },
+            ]);
+        } else {
+            setValues((oldValues) => [...oldValues, {}]);
+        }
+    }, [formType]);
+
     const checkValues = useCallback(() => {
         if (defaultTableValues !== undefined) {
             setValues(
@@ -400,6 +411,17 @@ export const useEquipmentTableValues = ({
     useEffect(() => {
         checkValues();
     }, [checkValues]);
+
+    // Updates the isClean boolean, so that it is true if there is nothing dirty (===false) in cleanValues.
+    useEffect(() => {
+        // The cleanValues array can contain undefined values, so we strictly compare them to "false".
+        if (isClean && cleanValues.some((n) => n === false)) {
+            setIsClean(false);
+        } else if (!isClean && !cleanValues.some((n) => n === false)) {
+            setIsClean(true);
+        }
+    }, [isClean, cleanValues]);
+
     const [openCSVImportDialog, setOpenCSVImportDialog] = useState(false);
     const [selectedIds, setSelectedIds] = useState(new Set());
     const handleDeleteItem = useCallback(() => {
@@ -448,6 +470,17 @@ export const useEquipmentTableValues = ({
         [setCreateFilterErr, setIsEdited]
     );
 
+    const handleSetClean = useCallback(
+        (index, cleanValue) => {
+            setCleanValues((oldValues) => {
+                let newValues = [...oldValues];
+                newValues[index] = cleanValue;
+                return newValues;
+            });
+        },
+        [setCleanValues]
+    );
+
     const handleChangeOrder = useCallback(
         (direction) => {
             const res = [...values];
@@ -486,7 +519,7 @@ export const useEquipmentTableValues = ({
         [selectedIds, setIsEdited, values]
     );
 
-    const commit = useCallback(
+    const handleOnDragEnd = useCallback(
         ({ source, destination }) => {
             if (destination === null || source.index === destination.index)
                 return;
@@ -514,6 +547,9 @@ export const useEquipmentTableValues = ({
                     return res.indexOf(val);
                 });
             setSelectedIds(new Set(array));
+
+            // When a row is dragged, the non-clean values are lost, so we clean the cleanValues array.
+            setCleanValues([]);
         },
         [selectedIds, values]
     );
@@ -575,13 +611,19 @@ export const useEquipmentTableValues = ({
                     } else {
                         // TODO Refactor : we should not have hardcoded value parameters like this in this function.
                         newValues = newValues.filter(
-                            (v) => v?.contingencyName?.trim().length > 0
+                            (v) =>
+                                v?.contingencyName?.trim().length > 0 ||
+                                v?.equipmentIDs?.length > 0
                         );
                     }
                     objects = Object.keys(csvData).map(function (key) {
                         return {
-                            contingencyName: csvData[key][0]?.trim(),
-                            equipmentIDs: csvData[key][1]?.trim() || undefined, // TODO CHARLY gérer le format correct pour le futur tableau de données
+                            contingencyName: csvData[key][0]?.trim() || '',
+                            equipmentIDs:
+                                csvData[key][1]
+                                    ?.split('|')
+                                    .map((n) => n.trim())
+                                    .filter((n) => n) || undefined,
                         };
                     });
                 }
@@ -612,7 +654,7 @@ export const useEquipmentTableValues = ({
             values && (
                 <>
                     <Box sx={{ flexGrow: 1 }}>
-                        <DragDropContext onDragEnd={commit}>
+                        <DragDropContext onDragEnd={handleOnDragEnd}>
                             <Droppable droppableId={id + name} key={id + name}>
                                 {(provided) => (
                                     <div
@@ -714,6 +756,9 @@ export const useEquipmentTableValues = ({
                                                     }
                                                     key={name + index}
                                                     tableLength={values.length}
+                                                    handleSetClean={
+                                                        handleSetClean
+                                                    }
                                                 />
                                             ))}
                                         </Grid>
@@ -791,13 +836,14 @@ export const useEquipmentTableValues = ({
                                 updateTableValues(csvData, keepTableValues)
                             }
                             tableValues={values}
+                            formType={formType}
                         />
                     </Grid>
                 </>
             )
         );
     }, [
-        commit,
+        handleOnDragEnd,
         id,
         name,
         intl,
@@ -814,9 +860,10 @@ export const useEquipmentTableValues = ({
         handleAddValue,
         handleDeleteItem,
         handleChangeOrder,
+        handleSetClean,
         updateTableValues,
         formType,
     ]);
 
-    return [values, field, isDragged];
+    return [values, field, isDragged, isClean];
 };
