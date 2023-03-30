@@ -118,6 +118,7 @@
     "ImportCSV": "Import CSV",
     "CsvFileName": "CSV file name",
     "CSVFileComment": "# Supported Equipments Types : ",
+    "CSVFileCommentContingencyList": "# Use \"|\" as a separator if a contingency contains several equipments",
 
     "equipmentType": "Equipment type",
     "equipmentName": "Equipment Name",

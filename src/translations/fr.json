@@ -117,6 +117,7 @@
     "ImportCSV": "Import CSV",
     "CsvFileName": "Nom de fichier CSV",
     "CSVFileComment": "# Types d'ouvrages supportés : ",
+    "CSVFileCommentContingencyList": "# Si un aléa est associé à plusieurs ouvrages, utiliser la barre verticale \"|\" comme séparateur",
 
     "equipmentType": "Type d'ouvrage",
     "equipmentName": "Nom d'ouvrage",

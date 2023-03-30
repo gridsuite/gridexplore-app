@@ -59,10 +59,13 @@ const CsvImportFilterCreationDialog = ({
 
     const csvData = () => {
         let newData = [...data];
+        // Adds 10 empty lines in the CSV file before adding the comment.
         for (let i = 0; i < 10; i++) {
-            // TODO Remove this old code that is no longer necessary. It was used before to add a comment in the CSV file after 10 lines.
             newData.push([]);
         }
+        newData.push([
+            intl.formatMessage({ id: 'CSVFileCommentContingencyList' }),
+        ]);
         return newData;
     };
 
@@ -106,6 +109,10 @@ const CsvImportFilterCreationDialog = ({
     const handleCreateFilter = (saveTableValues) => {
         if (value.length !== 0) {
             const result = value.filter((row) => {
+                // We do not keep the comment rows
+                if (row[0].startsWith('#')) {
+                    return false;
+                }
                 // We keep the row if at least one of its column has a value
                 return row.some((column) => !!column?.trim());
             });
