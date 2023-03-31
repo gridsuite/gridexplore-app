@@ -208,6 +208,7 @@ export const ExplicitNamingFilterRow = ({
                                     handleAutoCompleteInputChange(value)
                                 } // To store the current value with each keystroke
                                 style={{ width: '100%' }}
+                                size="small"
                                 options={[]}
                                 renderInput={(props) => (
                                     <TextField

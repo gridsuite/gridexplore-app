@@ -198,7 +198,11 @@ const CsvImportFilterCreationDialog = ({
                                 <Grid item xs={6}>
                                     <CsvDownloader
                                         datas={csvData()}
-                                        filename={'filterCreation'}
+                                        filename={
+                                            formType === ElementType.FILTER
+                                                ? 'filterCreation'
+                                                : 'contingencyListCreation'
+                                        }
                                     >
                                         <Button variant={'contained'}>
                                             <FormattedMessage id="GenerateCSV" />
