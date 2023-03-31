@@ -21,4 +21,5 @@ export const FilterType = {
 export const ContingencyListType = {
     SCRIPT: 'SCRIPT',
     FORM: 'FORM',
+    EXPLICIT_NAMING: 'IDENTIFIERS',
 };

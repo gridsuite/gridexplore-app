@@ -106,7 +106,8 @@
     "CRITERIA_FILTER": "Filter (Criteria based)",
     "IDENTIFIER_LIST_FILTER": "Filter (Explicit naming)",
     "SCRIPT_CONTINGENCY_LIST": "Contingency list (script)",
-    "FORM_CONTINGENCY_LIST": "Contingency list (form)",
+    "FORM_CONTINGENCY_LIST": "Contingency list (Criteria based)",
+    "IDENTIFIERS_CONTINGENCY_LIST": "Contingency list (Explicit naming)",
     "CriteriaBased": "Criteria based",
     "ExplicitNaming": "Explicit naming",
     "UploadCSV": "Upload CSV",
@@ -117,14 +118,17 @@
     "ImportCSV": "Import CSV",
     "CsvFileName": "CSV file name",
     "CSVFileComment": "# Supported Equipments Types : ",
+    "CSVFileCommentContingencyList": "# Use \"|\" as a separator if a contingency contains several equipments",
 
     "equipmentType": "Equipment type",
     "equipmentName": "Equipment Name",
     "equipmentID": "Equipment ID",
+    "equipments": "Equipments",
     "nominalVoltage": "Nominal Voltage",
     "alertBeforeReplaceWithScript": "Do you really want to replace this list with a Groovy script ?{br}{br}This action cannot be reversed",
     "replaceList": "Replace list",
     "copyToScriptList": "Copy to script",
+    "nameList": "Name of the list",
     "newNameList": "New list name",
     "copyToScript": "Copy to script",
     "replaceWithScript": "Replace with script",
@@ -206,5 +210,7 @@
     "keepCSVDataMessage": "Do you want to add the criteria or replace the existing ones?",
     "chooseCSVFile" : "Choose a csv file",
     "add" : "Add",
-    "replace": "Replace"
+    "replace": "Replace",
+
+    "temporaryContingencyWarning": "Please note that in the current version contingency names are not saved and contingencies can only contain one equipement."
 }

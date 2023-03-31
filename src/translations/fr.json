@@ -105,7 +105,8 @@
     "CRITERIA_FILTER": "Filtre (Par critères)",
     "IDENTIFIER_LIST_FILTER": "Filtre (Par nommage)",
     "SCRIPT_CONTINGENCY_LIST": "Liste d'aléas (script)",
-    "FORM_CONTINGENCY_LIST": "Liste d'aléas (formulaire)",
+    "FORM_CONTINGENCY_LIST": "Liste d'aléas (Par critères)",
+    "IDENTIFIERS_CONTINGENCY_LIST": "Liste d'aléas (Par nommage)",
     "CriteriaBased": "Par critères",
     "ExplicitNaming": "Par nommage",
     "UploadCSV": "Télécharger le CSV",
@@ -116,14 +117,17 @@
     "ImportCSV": "Import CSV",
     "CsvFileName": "Nom de fichier CSV",
     "CSVFileComment": "# Types d'ouvrages supportés : ",
+    "CSVFileCommentContingencyList": "# Si un aléa est associé à plusieurs ouvrages, utiliser la barre verticale \"|\" comme séparateur",
 
     "equipmentType": "Type d'ouvrage",
     "equipmentName": "Nom d'ouvrage",
     "equipmentID": "ID d'ouvrage",
+    "equipments": "Ouvrages",
     "nominalVoltage": "Tension nominale",
     "alertBeforeReplaceWithScript": "Voulez-vous vraiment remplacer cette liste par un script Groovy ?{br}{br}Cette action est irréversible",
     "replaceList": "Remplacer la liste",
     "copyToScriptList": "Copier vers script",
+    "nameList": "Nom de la liste",
     "newNameList": "Nouveau nom de la liste",
     "copyToScript": "Copier dans un script",
     "replaceWithScript": "Remplacer par un script",
@@ -205,5 +209,7 @@
     "keepCSVDataMessage": "Voulez-vous remplacer ou ajouter vos identifiants ?",
     "chooseCSVFile" : "Choisir un fichier CSV",
     "add" : "Ajouter",
-    "replace": "Remplacer"
+    "replace": "Remplacer",
+
+    "temporaryContingencyWarning": "Dans la version actuelle, les noms des aléas ne sont pas sauvegardés et on ne peut renseigner que des N-1, pas de N-k."
 }
