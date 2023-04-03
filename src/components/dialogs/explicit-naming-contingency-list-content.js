@@ -54,9 +54,13 @@ export const ExplicitNamingFilterRow = ({
 
     const handleAutoCompleteChange = useCallback(
         (newVal) => {
+            const noBlankEntries = newVal
+                .filter((e) => String(e).trim().length > 0)
+                .map((e) => e.trim());
+            const noBlankOrDuplicatesEntries = [...new Set(noBlankEntries)];
             handleSetValue(index, {
                 contingencyName: value?.contingencyName,
-                equipmentIDs: newVal,
+                equipmentIDs: noBlankOrDuplicatesEntries,
             });
             handleSetClean(index, true);
             setIsClean(true);

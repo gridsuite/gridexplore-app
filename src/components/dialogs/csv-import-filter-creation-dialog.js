@@ -127,14 +127,23 @@ const CsvImportFilterCreationDialog = ({
     };
 
     const handleOpenCSVConfirmationDataDialog = () => {
-        const res = tableValues.filter(
-            (d) => !Object.values(d).every((v) => v == null)
-        ).length;
-        if (res === 0) {
+        // We check if there are values in the table
+        const isValuesInTable = tableValues.some(
+            (line) =>
+                line &&
+                Object.values(line).some(
+                    (e) =>
+                        e !== undefined &&
+                        e !== null &&
+                        String(e).trim().length > 0
+                )
+        );
+
+        if (isValuesInTable) {
+            setOpenConfirmationPopup(true);
+        } else {
             setOpenConfirmationPopup(false);
             handleCreateFilter(false);
-        } else {
-            setOpenConfirmationPopup(true);
         }
     };
 
