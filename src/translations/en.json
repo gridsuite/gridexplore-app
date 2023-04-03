@@ -118,7 +118,10 @@
     "ImportCSV": "Import CSV",
     "CsvFileName": "CSV file name",
     "CSVFileComment": "# Supported Equipments Types : ",
-    "CSVFileCommentContingencyList": "# Use \"|\" as a separator if a contingency contains several equipments",
+    "CSVFileCommentContingencyList1": "# Use \"|\" as a separator if a contingency contains several equipments",
+    "CSVFileCommentContingencyList2": "# Line 1,ID_line1",
+    "CSVFileCommentContingencyList3": "# Transformer 2,ID_transformer2",
+    "CSVFileCommentContingencyList4": "# N-2 composite,ID_line1|ID_generator1",
 
     "equipmentType": "Equipment type",
     "equipmentName": "Equipment Name",

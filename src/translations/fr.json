@@ -117,7 +117,10 @@
     "ImportCSV": "Import CSV",
     "CsvFileName": "Nom de fichier CSV",
     "CSVFileComment": "# Types d'ouvrages supportés : ",
-    "CSVFileCommentContingencyList": "# Si un aléa est associé à plusieurs ouvrages, utiliser la barre verticale \"|\" comme séparateur",
+    "CSVFileCommentContingencyList1": "# Si un aléa est associé à plusieurs ouvrages utiliser la barre verticale \"|\" comme séparateur",
+    "CSVFileCommentContingencyList2": "# Ligne 1,ID_ligne1",
+    "CSVFileCommentContingencyList3": "# Transformateur 2,ID_transformateur2",
+    "CSVFileCommentContingencyList4": "# N-2 mixte,ID_ligne1|ID_groupe1",
 
     "equipmentType": "Type d'ouvrage",
     "equipmentName": "Nom d'ouvrage",

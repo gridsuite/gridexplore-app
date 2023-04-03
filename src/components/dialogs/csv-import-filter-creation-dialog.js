@@ -59,13 +59,14 @@ const CsvImportFilterCreationDialog = ({
 
     const csvData = () => {
         let newData = [...data];
-        // Adds 10 empty lines in the CSV file before adding the comment.
-        for (let i = 0; i < 10; i++) {
-            newData.push([]);
+        if (formType === ElementType.CONTINGENCY_LIST) {
+            newData.push(
+                [intl.formatMessage({ id: 'CSVFileCommentContingencyList1' })],
+                [intl.formatMessage({ id: 'CSVFileCommentContingencyList2' })],
+                [intl.formatMessage({ id: 'CSVFileCommentContingencyList3' })],
+                [intl.formatMessage({ id: 'CSVFileCommentContingencyList4' })]
+            );
         }
-        newData.push([
-            intl.formatMessage({ id: 'CSVFileCommentContingencyList' }),
-        ]);
         return newData;
     };
 
@@ -212,6 +213,7 @@ const CsvImportFilterCreationDialog = ({
                                                 ? 'filterCreation'
                                                 : 'contingencyListCreation'
                                         }
+                                        separator={','}
                                     >
                                         <Button variant={'contained'}>
                                             <FormattedMessage id="GenerateCSV" />
