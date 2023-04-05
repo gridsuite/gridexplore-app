@@ -59,13 +59,14 @@ const CsvImportFilterCreationDialog = ({
 
     const csvData = () => {
         let newData = [...data];
-        // Adds 10 empty lines in the CSV file before adding the comment.
-        for (let i = 0; i < 10; i++) {
-            newData.push([]);
+        if (formType === ElementType.CONTINGENCY_LIST) {
+            newData.push(
+                [intl.formatMessage({ id: 'CSVFileCommentContingencyList1' })],
+                [intl.formatMessage({ id: 'CSVFileCommentContingencyList2' })],
+                [intl.formatMessage({ id: 'CSVFileCommentContingencyList3' })],
+                [intl.formatMessage({ id: 'CSVFileCommentContingencyList4' })]
+            );
         }
-        newData.push([
-            intl.formatMessage({ id: 'CSVFileCommentContingencyList' }),
-        ]);
         return newData;
     };
 
@@ -127,14 +128,23 @@ const CsvImportFilterCreationDialog = ({
     };
 
     const handleOpenCSVConfirmationDataDialog = () => {
-        const res = tableValues.filter(
-            (d) => !Object.values(d).every((v) => v == null)
-        ).length;
-        if (res === 0) {
+        // We check if there are values in the table
+        const isValuesInTable = tableValues.some(
+            (line) =>
+                line &&
+                Object.values(line).some(
+                    (e) =>
+                        e !== undefined &&
+                        e !== null &&
+                        String(e).trim().length > 0
+                )
+        );
+
+        if (isValuesInTable) {
+            setOpenConfirmationPopup(true);
+        } else {
             setOpenConfirmationPopup(false);
             handleCreateFilter(false);
-        } else {
-            setOpenConfirmationPopup(true);
         }
     };
 
@@ -203,6 +213,7 @@ const CsvImportFilterCreationDialog = ({
                                                 ? 'filterCreation'
                                                 : 'contingencyListCreation'
                                         }
+                                        separator={','}
                                     >
                                         <Button variant={'contained'}>
                                             <FormattedMessage id="GenerateCSV" />
