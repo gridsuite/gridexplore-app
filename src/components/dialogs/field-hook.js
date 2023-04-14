@@ -182,18 +182,18 @@ export const useNameField = ({
 
     const updateValidity = useCallback(
         (name, touched) => {
-            const nameFormated = name.replace(/ /g, '');
-            if (nameFormated === '' && touched) {
+            const nameFormatted = name.replace(/ /g, '');
+            if (nameFormatted === '' && touched) {
                 setError(intl.formatMessage({ id: 'nameEmpty' }));
                 setChecking(false);
                 return;
             }
-            if (nameFormated === '' && !touched) {
+            if (nameFormatted === '' && !touched) {
                 setChecking(undefined);
                 return;
             }
 
-            if (nameFormated !== '' && name === props.defaultValue) {
+            if (nameFormatted !== '' && name === props.defaultValue) {
                 setError(
                     alreadyExistingErrorMessage
                         ? alreadyExistingErrorMessage
@@ -203,7 +203,7 @@ export const useNameField = ({
                 );
                 setChecking(false);
             }
-            if (nameFormated !== '') {
+            if (nameFormatted !== '') {
                 //If the name is not only white spaces and not defaultValue
                 doesElementExist(name)
                     .then((data) => {
