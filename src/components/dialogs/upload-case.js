@@ -20,8 +20,11 @@ export const UploadCase = ({ isLoading }) => {
     const handleFileUpload = (e) => {
         e.preventDefault();
         let files = e.target.files;
-        if (files.size === 0) dispatch(selectFile(null));
-        else dispatch(selectFile(files[0]));
+        if (files.size === 0) {
+            dispatch(selectFile(null));
+        } else {
+            dispatch(selectFile(files[0]));
+        }
     };
 
     return (

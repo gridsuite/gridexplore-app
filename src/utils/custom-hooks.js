@@ -106,12 +106,16 @@ export const useDeferredFetch = (
                         type: ActionType.SUCCESS,
                         payload: data,
                     });
-                    if (onSuccess) onSuccess(data, args);
+                    if (onSuccess) {
+                        onSuccess(data, args);
+                    }
                 } else {
                     dispatch({
                         type: ActionType.SUCCESS,
                     });
-                    if (onSuccess) onSuccess(null, args);
+                    if (onSuccess) {
+                        onSuccess(null, args);
+                    }
                 }
             } catch (error) {
                 if (!error.status) {
@@ -275,17 +279,20 @@ export const useMultipleDeferredFetch = (
                 dispatch({
                     type: ActionType.ERROR,
                 });
-                if (onError)
+                if (onError) {
                     onError(
                         state.public.errorMessage,
                         paramList,
                         state.public.paramsOnError
                     );
+                }
             } else {
                 dispatch({
                     type: ActionType.SUCCESS,
                 });
-                if (onSuccess) onSuccess(state.public.data);
+                if (onSuccess) {
+                    onSuccess(state.public.data);
+                }
             }
         }
     }, [paramList, onError, onSuccess, state]);

@@ -35,7 +35,9 @@ function deepCopy(aObject) {
 }
 
 function generateDefaultValue(val, originalValue) {
-    if (originalValue != null) return { value: originalValue };
+    if (originalValue != null) {
+        return { value: originalValue };
+    }
     return {
         value: deepCopy(val.defaultValue) || deepCopy(val.type.defaultValue),
     };
@@ -105,14 +107,22 @@ const backToFrontTweak = (response) => {
     ret.equipmentFilterForm = eff;
     const allKeys = new Set();
     const biProps = {};
-    if (props1) Object.keys(props1).forEach((k) => allKeys.add(k));
-    if (props2) Object.keys(props2).forEach((k) => allKeys.add(k));
+    if (props1) {
+        Object.keys(props1).forEach((k) => allKeys.add(k));
+    }
+    if (props2) {
+        Object.keys(props2).forEach((k) => allKeys.add(k));
+    }
     allKeys.forEach((k) => {
         const biProp = { name: k };
         const values1 = props1[k];
-        if (values1) biProp.values1 = values1;
+        if (values1) {
+            biProp.values1 = values1;
+        }
         const values2 = props2[k];
-        if (values2) biProp.values2 = values2;
+        if (values2) {
+            biProp.values2 = values2;
+        }
         biProps[k] = biProp;
     });
     eff.freePropertiesP = biProps;
@@ -146,7 +156,9 @@ const frontToBackTweak = (filter) => {
     const props2 = {};
     if (biProps) {
         Object.entries(biProps).forEach(([k, bp]) => {
-            if (!bp) return;
+            if (!bp) {
+                return;
+            }
             const values1 = bp.values1;
             const values2 = bp.values2;
             if (values1) {
@@ -298,8 +310,9 @@ export const CriteriaBasedFilterDialogContent = ({
         isCurrentFormEdited.current.isFormEdited = false;
         currentFormEdit.equipmentType = { value: newType };
         setEquipmentType(newType);
-        if (id == null && contentType === ElementType.FILTER)
+        if (id == null && contentType === ElementType.FILTER) {
             handleEquipmentTypeChange(newType);
+        }
         const globalVeto = Object.entries(currentFormEdit).some(
             ([k, v]) => v.veto
         );

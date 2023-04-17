@@ -120,9 +120,12 @@ const CreateFilterDialog = ({
     const [name, setName] = useState('');
     const [id, setId] = useState('');
     const handleCallback = (criteriaFilter, veto) => {
-        if (veto) setFilterToSave(null);
-        else if (criteriaFilter) {
-            setFilterToSave(criteriaFilter);
+        if (veto) {
+            setFilterToSave(null);
+        } else {
+            if (criteriaFilter) {
+                setFilterToSave(criteriaFilter);
+            }
         }
     };
 

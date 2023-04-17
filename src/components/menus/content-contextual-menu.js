@@ -429,7 +429,9 @@ const ContentContextualMenu = (props) => {
     };
 
     const buildMenu = () => {
-        if (selectedElements.length === 0) return;
+        if (selectedElements.length === 0) {
+            return;
+        }
 
         // build menuItems here
         let menuItems = [];
