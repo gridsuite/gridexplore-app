@@ -71,7 +71,9 @@ const ExplicitNamingFilterCreationDialog = ({
         setEquipmentType(equipmentType);
         setTablesValues(tableValues);
         setIsEdited(isEdited);
-        if (isDragged) setIsEdited(true);
+        if (isDragged) {
+            setIsEdited(true);
+        }
     };
 
     useEffect(() => {
@@ -94,7 +96,9 @@ const ExplicitNamingFilterCreationDialog = ({
     };
 
     const handleClose = () => {
-        if (onClose) onClose();
+        if (onClose) {
+            onClose();
+        }
     };
 
     return (

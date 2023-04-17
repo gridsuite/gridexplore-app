@@ -47,7 +47,9 @@ const FreeProperty = ({
 
     const predefinedValues = useMemo(() => {
         const predefinedForName = predefined?.[name];
-        if (!predefinedForName) return [];
+        if (!predefinedForName) {
+            return [];
+        }
         return [...new Set(predefinedForName)].sort();
     }, [name, predefined]);
 
@@ -134,7 +136,9 @@ const makeFreePropertiesProblemsMap = (values, full, prevErrors, isBiValue) => {
 
     values.forEach((val, idx) => {
         let prevError = prevErrors?.[idx];
-        if (!full && !prevError) return;
+        if (!full && !prevError) {
+            return;
+        }
 
         const count = idMap.get(val.name);
         const errInBuild = {};
@@ -182,7 +186,9 @@ export const FreeProperties = ({
 
     const [fieldProps, setFieldProps] = useState(null);
     const initialValues = useMemo(() => {
-        if (!initialValue) return [];
+        if (!initialValue) {
+            return [];
+        }
         const ret = Object.entries(initialValue).map(([k, v]) => {
             return { name: k || '', values: v };
         });
@@ -324,7 +330,9 @@ const FreeProperty2 = ({
 
     const predefinedValues = useMemo(() => {
         const predefinedForName = predefined?.[name];
-        if (!predefinedForName) return [];
+        if (!predefinedForName) {
+            return [];
+        }
         return [...new Set(predefinedForName)].sort();
     }, [name, predefined]);
 
@@ -459,7 +467,9 @@ export const FreeProperties2 = ({
 
     const [fieldProps, setFieldProps] = useState(null);
     const initialValues = useMemo(() => {
-        if (!initialValue) return [];
+        if (!initialValue) {
+            return [];
+        }
         const ret = Object.entries(initialValue).map(([k, v]) => v);
         return ret;
     }, [initialValue]);

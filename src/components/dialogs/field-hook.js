@@ -521,8 +521,9 @@ export const useEquipmentTableValues = ({
 
     const handleOnDragEnd = useCallback(
         ({ source, destination }) => {
-            if (destination === null || source.index === destination.index)
+            if (destination === null || source.index === destination.index) {
                 return;
+            }
             setIsDragged(true);
             const res = [...values];
             res.forEach((e) => {

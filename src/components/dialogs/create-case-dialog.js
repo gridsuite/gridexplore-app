@@ -86,7 +86,9 @@ export function CreateCaseDialog({ onClose, open }) {
     });
 
     const handleCreateNewCase = () => {
-        if (!validate()) return;
+        if (!validate()) {
+            return;
+        }
         const uploadingCase = {
             id: keyGenerator(),
             elementName: name,
