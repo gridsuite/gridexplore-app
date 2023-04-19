@@ -563,14 +563,22 @@ export function duplicateContingencyList(
 export function getContingencyList(type, id) {
     let url = PREFIX_ACTIONS_QUERIES;
     if (type === ContingencyListType.SCRIPT) {
-        url += '/v1/script-contingency-lists/';
+        url =
+            PREFIX_EXPLORE_SERVER_QUERIES +
+            '/v1/explore//script-contingency-lists/';
+        // url += '/v1/script-contingency-lists/';
     } else if (type === ContingencyListType.FORM) {
-        url += '/v1/form-contingency-lists/';
+        //url += '/v1/form-contingency-lists/';
+        url =
+            PREFIX_EXPLORE_SERVER_QUERIES +
+            '/v1/explore/form-contingency-lists/';
     } else if (type === ContingencyListType.EXPLICIT_NAMING) {
-        url += '/v1/identifier-contingency-lists/';
+        //url += '/v1/identifier-contingency-lists/';
+        url =
+            PREFIX_EXPLORE_SERVER_QUERIES +
+            '/v1/explore/identifier-contingency-lists/';
     }
     url += id;
-
     return backendFetchJson(url);
 }
 
@@ -756,7 +764,11 @@ export function getFilters() {
  * @returns {Promise<Response>}
  */
 export function getFilterById(id) {
-    const url = PREFIX_FILTERS_QUERIES + '/' + id;
+    const url =
+        process.env.REACT_APP_API_GATEWAY +
+        '/explore/v1/explore/filters' +
+        '/' +
+        id;
     return backendFetchJson(url);
 }
 

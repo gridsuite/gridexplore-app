@@ -214,6 +214,7 @@ export const CriteriaBasedFilterDialogContent = ({
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
                 getContingencyList(ContingencyListType.FORM, id)
                     .then((response) => {
+                        console.log('all ok: ', response);
                         setInitialFilter(response);
                         setEquipmentType(response.equipmentType);
                         setCurrentFormEdit({
