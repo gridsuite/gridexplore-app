@@ -565,7 +565,7 @@ export function getContingencyList(type, id) {
     if (type === ContingencyListType.SCRIPT) {
         url =
             PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore//script-contingency-lists/';
+            '/v1/explore/script-contingency-lists/';
         // url += '/v1/script-contingency-lists/';
     } else if (type === ContingencyListType.FORM) {
         //url += '/v1/form-contingency-lists/';
@@ -589,7 +589,9 @@ export function getContingencyList(type, id) {
 export function saveFormContingencyList(form) {
     const { nominalVoltage, ...rest } = form;
     const url =
-        PREFIX_ACTIONS_QUERIES + '/v1/form-contingency-lists/' + form.id;
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/form-contingency-lists/' +
+        form.id;
     return backendFetch(url, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
@@ -606,8 +608,8 @@ export function saveFormContingencyList(form) {
  */
 export function saveScriptContingencyList(scriptContingencyList) {
     const url =
-        PREFIX_ACTIONS_QUERIES +
-        '/v1/script-contingency-lists/' +
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/script-contingency-lists/' +
         scriptContingencyList.id;
     return backendFetch(url, {
         method: 'put',
@@ -624,8 +626,8 @@ export function saveExplicitNamingContingencyList(
     explicitNamingContingencyList
 ) {
     const url =
-        PREFIX_ACTIONS_QUERIES +
-        '/v1/identifier-contingency-lists/' +
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/identifier-contingency-lists/' +
         explicitNamingContingencyList.id;
     return backendFetch(url, {
         method: 'put',
@@ -819,11 +821,14 @@ export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
  */
 export function saveFilter(filter) {
     const body = JSON.stringify(filter);
-    return backendFetch(PREFIX_FILTERS_QUERIES + '/' + filter.id, {
-        method: 'put',
-        headers: { 'Content-Type': 'application/json' },
-        body,
-    });
+    return backendFetch(
+        PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/filters' + '/' + filter.id,
+        {
+            method: 'put',
+            headers: { 'Content-Type': 'application/json' },
+            body,
+        }
+    );
 }
 
 /**
