@@ -205,7 +205,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     };
 
     const [currentParameters, paramsComponent, resetImportParamsToDefault] =
-        useImportExportParams(formatWithParameters);
+        useImportExportParams(formatWithParameters, null, null, 'standard');
 
     const [
         providedCaseFile,
