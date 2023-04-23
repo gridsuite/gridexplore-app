@@ -35,10 +35,19 @@ const useStyles = makeStyles(() => ({
  * @param type Contingencies or filter
  * @param subtype Element's subtype
  */
-const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
+const ScriptDialog = ({
+    id,
+    open,
+    onClose,
+    onError,
+    title,
+    type,
+    isCreation,
+}) => {
     const classes = useStyles();
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const [currentScript, setCurrentScript] = useState(null);
+    const [nameValue, setNameValue] = useState('');
 
     const handleClose = () => {
         handleCancel();
@@ -54,6 +63,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
             newScript = {
                 id: id,
                 script: currentScript ?? '',
+                name: nameValue ?? '',
             };
             saveScriptContingencyList(newScript)
                 .then(() => {})
@@ -77,12 +87,13 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
         setCurrentScript(newScript);
     };
 
-    const onChangeHandler = (newScript) => {
-        setCurrentScript(newScript);
-        if (newScript !== currentScript) {
-            setBtnSaveListDisabled(false);
+    const onChangeHandler = (newValue, isScript) => {
+        if (isScript) {
+            setBtnSaveListDisabled(newValue === currentScript);
+            setCurrentScript(newValue);
         } else {
-            setBtnSaveListDisabled(true);
+            setNameValue(newValue);
+            setBtnSaveListDisabled(newValue === nameValue);
         }
     };
 
@@ -101,6 +112,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                         onChange={onChangeHandler}
                         onError={onError}
                         type={type}
+                        isCreation={isCreation}
                     />
                 </div>
             </DialogContent>
@@ -127,6 +139,7 @@ ScriptDialog.propTypes = {
     onError: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
+    isCreation: PropTypes.bool,
 };
 
 export default ScriptDialog;

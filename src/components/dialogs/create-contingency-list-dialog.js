@@ -344,6 +344,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     </RadioGroup>
                     {contingencyListType === ContingencyListType.SCRIPT && (
                         <ScriptDialogContent
+                            isCreation
                             onChange={onChangeScriptHandler}
                             onError={setCreateContingencyListErr}
                             type={ElementType.CONTINGENCY_LIST}

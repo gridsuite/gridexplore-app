@@ -14,6 +14,7 @@ import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import makeStyles from '@mui/styles/makeStyles';
 import { getContingencyList, getFilterById } from '../../utils/rest-api';
 import { ContingencyListType, ElementType } from '../../utils/elementType';
+import NameComponent from './name-filter-or-contingency';
 
 const useStyles = makeStyles(() => ({
     aceEditor: {
@@ -25,10 +26,11 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const ScriptDialogContent = ({ id, onError, type, onChange }) => {
+const ScriptDialogContent = ({ id, onError, type, onChange, isCreation }) => {
     const classes = useStyles();
     const selectedTheme = useSelector((state) => state.theme);
     const [aceEditorContent, setAceEditorContent] = useState('');
+    const [nameValue, setNameValue] = useState('');
 
     /**
      * Set name of for the Ace Editor : if theme is light set "github theme" else set "clouds_midnight theme"
@@ -41,10 +43,17 @@ const ScriptDialogContent = ({ id, onError, type, onChange }) => {
             : '';
     };
 
+    const handleNameChange = useCallback(
+        (newName) => {
+            setNameValue(newName);
+            onChange(newName);
+        },
+        [setNameValue, onChange]
+    );
     const onChangeAceEditor = useCallback(
         (newScript) => {
             setAceEditorContent(newScript);
-            onChange(newScript);
+            onChange(newScript, true);
         },
         [setAceEditorContent, onChange]
     );
@@ -60,6 +69,7 @@ const ScriptDialogContent = ({ id, onError, type, onChange }) => {
                         .then((data) => {
                             if (data) {
                                 setAceEditorContent(data.script ?? '');
+                                setNameValue(data.name ?? '');
                             }
                         })
                         .catch((error) => {
@@ -87,16 +97,26 @@ const ScriptDialogContent = ({ id, onError, type, onChange }) => {
     }, [id, getCurrentScript]);
 
     return (
-        <AceEditor
-            className={classes.aceEditor}
-            mode="groovy"
-            placeholder="Insert your groovy script here"
-            theme={themeForAceEditor()}
-            onChange={(val) => onChangeAceEditor(val)}
-            value={aceEditorContent}
-            fontSize="18px"
-            editorProps={{ $blockScrolling: true }}
-        />
+        <>
+            {!isCreation && (
+                <NameComponent
+                    titleMessage={'Name'}
+                    contentType={type}
+                    initialValue={nameValue}
+                    onChange={handleNameChange}
+                />
+            )}
+            <AceEditor
+                className={classes.aceEditor}
+                mode="groovy"
+                placeholder="Insert your groovy script here"
+                theme={themeForAceEditor()}
+                onChange={(val) => onChangeAceEditor(val)}
+                value={aceEditorContent}
+                fontSize="18px"
+                editorProps={{ $blockScrolling: true }}
+            />
+        </>
     );
 };
 
@@ -105,6 +125,7 @@ ScriptDialogContent.propTypes = {
     onError: PropTypes.func.isRequired,
     type: PropTypes.string.isRequired,
     onChange: PropTypes.func,
+    isCreation: PropTypes.bool,
 };
 
 export default ScriptDialogContent;

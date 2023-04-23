@@ -23,7 +23,6 @@ import {
 } from './free-properties-based-filter';
 import { useSelector } from 'react-redux';
 import { elementExists } from '../../utils/rest-api';
-import { ElementType } from '../../utils/elementType';
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
 
@@ -329,14 +328,13 @@ export const Name = ({
     };
 
     /**
-     * on change input check if name already exist
+     * on input change, check if name already exist
      * @param name
      */
     const updateFormState = (name) => {
         if (name !== '') {
             //If the name is not only white spaces
             if (name.replace(/ /g, '') !== '') {
-                console.log('contentType: ', contentType)
                 elementExists(activeDirectory, name, contentType)
                     .then((data) => {
                         setFormState(
