@@ -83,7 +83,6 @@ export const CriteriaBasedFilterDialog = ({
             handleCancel();
         }
     };
-
     return (
         <Dialog
             classes={{ paper: classes.dialogPaper }}
@@ -99,6 +98,7 @@ export const CriteriaBasedFilterDialog = ({
                     contentType={contentType}
                     handleFilterCreation={handleEditCallback}
                     validationsCount={validationsCount}
+                    isFilterCreation={isFilterCreation}
                 />
             </DialogContent>
             <DialogActions>

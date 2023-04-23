@@ -33,6 +33,7 @@ import {
     REMOVE_UPLOADING_ELEMENT,
     DIRECTORY_UPDATED,
     TREE_DATA,
+  SELECT_ELEMENT,
 } from './actions';
 
 import {
@@ -55,6 +56,7 @@ const initialState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     currentChildren: null,
     selectedDirectory: null,
+    selectedElement: null,
     activeDirectory: null,
     currentPath: [],
     user: null,
@@ -178,5 +180,8 @@ export const reducer = createReducer(initialState, {
     },
     [TREE_DATA]: (state, action) => {
         state.treeData = action.treeData;
+    },
+    [SELECT_ELEMENT]: (state, action) => {
+        state.selectedElement = action.selectedElement;
     },
 });

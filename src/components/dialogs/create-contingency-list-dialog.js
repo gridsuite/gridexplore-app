@@ -352,6 +352,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     {contingencyListType === ContingencyListType.FORM && (
                         <CriteriaBasedFilterDialogContent
                             open={open}
+                            isCreation={true}
                             contentType={ElementType.CONTINGENCY_LIST}
                             handleFilterCreation={onChangeCriteriaBasedHandler}
                         />

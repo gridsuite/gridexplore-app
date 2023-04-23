@@ -41,13 +41,22 @@ function generateDefaultValue(val, originalValue) {
     };
 }
 
-const SingleFilter = ({ filter, definition, onChange, validationsCount }) => {
+const SingleFilter = ({
+    filter,
+    definition,
+    onChange,
+    validationsCount,
+    isModeCreation,
+    contentType,
+}) => {
     return definition.type.renderer({
         initialValue: filter.value,
         onChange: onChange,
         titleMessage: definition.name,
         enumValues: definition.enumValues,
         validationsCount,
+        isCreation: isModeCreation,
+        contentType: contentType,
     });
 };
 
@@ -170,6 +179,8 @@ export const CriteriaBasedFilterDialogContent = ({
     handleFilterCreation,
     handleEquipmentTypeChange,
     validationsCount,
+    isFilterCreation,
+    isCreation,
 }) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [equipmentType, setEquipmentType] = useState(null);
@@ -214,7 +225,6 @@ export const CriteriaBasedFilterDialogContent = ({
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
                 getContingencyList(ContingencyListType.FORM, id)
                     .then((response) => {
-                        console.log('all ok: ', response);
                         setInitialFilter(response);
                         setEquipmentType(response.equipmentType);
                         setCurrentFormEdit({
@@ -323,7 +333,6 @@ export const CriteriaBasedFilterDialogContent = ({
                     : initialFilter[key]
             );
         }
-
         const currFilter = currentFormEdit[key];
         const localChange = (newVal, veto) => {
             currFilter.value = newVal;
@@ -337,7 +346,8 @@ export const CriteriaBasedFilterDialogContent = ({
             );
             editDone(globalVeto);
         };
-
+        /** check if ContingencyList  or filter is on creation mode */
+        const isModeCreation = isFilterCreation || isCreation;
         return (
             <SingleFilter
                 key={key}
@@ -345,6 +355,8 @@ export const CriteriaBasedFilterDialogContent = ({
                 definition={definition}
                 onChange={localChange}
                 validationsCount={validationsCount}
+                isModeCreation={isModeCreation}
+                contentType={contentType}
             />
         );
     };

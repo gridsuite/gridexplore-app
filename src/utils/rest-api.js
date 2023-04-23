@@ -822,7 +822,7 @@ export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
 export function saveFilter(filter) {
     const body = JSON.stringify(filter);
     return backendFetch(
-        PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/filters' + '/' + filter.id,
+        PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/filters/' + filter.id,
         {
             method: 'put',
             headers: { 'Content-Type': 'application/json' },

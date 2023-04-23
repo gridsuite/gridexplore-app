@@ -132,3 +132,12 @@ export function setTreeData(treeData) {
         treeData: treeData,
     };
 }
+
+export const SELECT_ELEMENT = 'SELECT_ELEMENT';
+
+export function setSelectedElement(selectedElement) {
+    return {
+        type: SELECT_ELEMENT,
+        selectedElement: selectedElement,
+    };
+}
