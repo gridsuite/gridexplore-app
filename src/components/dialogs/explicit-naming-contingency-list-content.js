@@ -23,6 +23,7 @@ import { ContingencyListType, ElementType } from '../../utils/elementType';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { getIdentifierContingencyListFromResponse } from './contingency-list-helper';
+import NameComponent from './name-filter-or-contingency';
 
 const useStyles = makeStyles((theme) => ({
     chip: {
@@ -267,7 +268,14 @@ const ExplicitNamingContingencyListDialogContent = ({
     const [isEdited, setIsEdited] = useState(false);
     const fetchFilter = useRef(null);
     fetchFilter.current = open && !isCreation;
+    const [nameValue, setNameValue] = useState('');
 
+    const handleNameChange = useCallback(
+        (newName) => {
+            setNameValue(newName);
+        },
+        [setNameValue]
+    );
     useEffect(() => {
         if (id && fetchFilter.current) {
             getContingencyList(ContingencyListType.EXPLICIT_NAMING, id)
@@ -275,10 +283,13 @@ const ExplicitNamingContingencyListDialogContent = ({
                     setDefaultValues(
                         getIdentifierContingencyListFromResponse(response)
                     );
+                    if (!isCreation) {
+                        handleNameChange(response?.name ?? '');
+                    }
                 })
                 .catch((error) => setCreateFilterErr(error));
         }
-    }, [id]);
+    }, [id, handleNameChange, isCreation]);
 
     const [tableValues, tableValuesField, isDragged, isClean] =
         useEquipmentTableValues({
@@ -296,13 +307,21 @@ const ExplicitNamingContingencyListDialogContent = ({
         });
 
     useEffect(() => {
-        onChange(tableValues, isEdited, isDragged, isClean);
-    }, [onChange, tableValues, isEdited, isDragged, isClean]);
+        onChange(tableValues, isEdited, isDragged, isClean, nameValue);
+    }, [onChange, tableValues, isEdited, isDragged, isClean, nameValue]);
 
     return (
         <div>
             <Grid container spacing={2}>
                 <Grid item xs={12} />
+                {!isCreation && (
+                    <NameComponent
+                        titleMessage={'Name'}
+                        contentType={ElementType.CONTINGENCY_LIST}
+                        initialValue={nameValue}
+                        onChange={handleNameChange}
+                    />
+                )}
                 {/* // TODO Remove this temporary message with the next Powsybl version, when contingency names can be saved */}
                 <Grid item xs={12}>
                     <Alert severity="warning">

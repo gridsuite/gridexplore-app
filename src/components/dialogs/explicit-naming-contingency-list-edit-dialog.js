@@ -47,22 +47,32 @@ const ExplicitNamingContingencyListEditDialog = ({
         useState(true);
     const fetchFilter = useRef(null);
     fetchFilter.current = open && !isCreation;
+    const [nameValue, setNameValue] = useState('');
 
-    const onChangeHandler = (tableValues, isEdited, isDragged, isClean) => {
+    const onChangeHandler = (
+        tableValues,
+        isEdited,
+        isDragged,
+        isClean,
+        newName
+    ) => {
         setTablesValues(tableValues);
         setEditContingencyListErr('');
         setUnsavedChanges(isEdited);
         setIsExplicitNamingFormClean(isClean);
+        setNameValue(newName);
         if (isDragged) setUnsavedChanges(true);
     };
 
     const isFormValidationAllowed = () => {
+        console.log('nameValue: ', nameValue);
         return (
-            tableValues &&
-            tableValues.length > 0 &&
-            editContingencyListErr === '' &&
-            isUnsavedChanges &&
-            isExplicitNamingFormClean
+            (tableValues &&
+                tableValues.length > 0 &&
+                editContingencyListErr === '' &&
+                isUnsavedChanges &&
+                isExplicitNamingFormClean) ||
+            nameValue !== ''
         );
     };
 
@@ -70,9 +80,10 @@ const ExplicitNamingContingencyListEditDialog = ({
         if (!isFormValidationAllowed()) {
             return;
         }
-        saveExplicitNamingContingencyList(
-            prepareContingencyListForBackend(id, name, tableValues)
-        )
+        saveExplicitNamingContingencyList({
+            ...prepareContingencyListForBackend(id, name, tableValues),
+            name: nameValue,
+        })
             .then(() => {
                 setUnsavedChanges(false);
                 onClose();
