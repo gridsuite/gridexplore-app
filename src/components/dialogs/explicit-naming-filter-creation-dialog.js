@@ -50,6 +50,7 @@ const ExplicitNamingFilterCreationDialog = ({
     const [tableValues, setTablesValues] = useState([]);
     const [isEdited, setIsEdited] = useState(false);
     const fetchFilter = useRef(null);
+    const [nameValue, setNameValue] = useState('');
     fetchFilter.current = open && !isFilterCreation;
 
     useEffect(() => {
@@ -66,11 +67,13 @@ const ExplicitNamingFilterCreationDialog = ({
         name,
         id,
         isEdited,
-        isDragged
+        isDragged,
+        newName
     ) => {
         setEquipmentType(equipmentType);
         setTablesValues(tableValues);
         setIsEdited(isEdited);
+        setNameValue(newName);
         if (isDragged) setIsEdited(true);
     };
 
@@ -89,12 +92,23 @@ const ExplicitNamingFilterCreationDialog = ({
             setCreateFilterErr,
             activeDirectory,
             intl,
-            handleClose
+            handleClose,
+            nameValue
         );
     };
 
     const handleClose = () => {
         if (onClose) onClose();
+    };
+
+    const isFormValidationAllowed = () => {
+        return (
+            isEdited &&
+            ((tableValues?.length > 0 &&
+                createFilterErr !== '' &&
+                !equipmentType) ||
+                nameValue !== '')
+        );
     };
 
     return (
@@ -125,13 +139,7 @@ const ExplicitNamingFilterCreationDialog = ({
                 <Button
                     variant="outlined"
                     onClick={handleCreateFilter}
-                    disabled={
-                        tableValues === undefined ||
-                        tableValues.length === 0 ||
-                        createFilterErr !== '' ||
-                        !equipmentType ||
-                        !isEdited
-                    }
+                    disabled={!isFormValidationAllowed()}
                 >
                     <FormattedMessage id="validate" />
                 </Button>

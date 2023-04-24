@@ -17,7 +17,8 @@ const filterSave = (
     setCreateFilterErr,
     activeDirectory,
     intl,
-    handleClose
+    handleClose,
+    updatedName
 ) => {
     let hasMissingIdWithDistrKey = tableValues.some(
         (el) => !el?.equipmentID?.trim() && el.distributionKey
@@ -76,6 +77,7 @@ const filterSave = (
             type: FilterType.EXPLICIT_NAMING,
             equipmentType: equipmentType,
             filterEquipmentsAttributes: values,
+            name: updatedName,
         })
             .then(() => {
                 handleClose();
