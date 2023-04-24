@@ -306,7 +306,9 @@ const DirectoryContent = () => {
         let href;
         if (appsAndUrls !== null) {
             appsAndUrls.find((app) => {
-                if (!app.resources) return false;
+                if (!app.resources) {
+                    return false;
+                }
                 return app.resources.find((res) => {
                     if (res.types.includes(objectType)) {
                         href =
@@ -409,12 +411,14 @@ const DirectoryContent = () => {
     const getDisplayedElementName = (cellData) => {
         const { elementName, uploading, elementUuid } = cellData.rowData;
         const formatMessage = intl.formatMessage;
-        if (uploading)
+        if (uploading) {
             return elementName + '\n' + formatMessage({ id: 'uploading' });
-        if (!childrenMetadata[elementUuid])
+        }
+        if (!childrenMetadata[elementUuid]) {
             return (
                 elementName + '\n' + formatMessage({ id: 'creationInProgress' })
             );
+        }
         return childrenMetadata[elementUuid].name;
     };
 
@@ -515,7 +519,9 @@ const DirectoryContent = () => {
     }
 
     useEffect(() => {
-        if (!selectedDirectory) return;
+        if (!selectedDirectory) {
+            return;
+        }
         setIsMissingDataAfterDirChange(true);
     }, [selectedDirectory, setIsMissingDataAfterDirChange]);
 
@@ -728,14 +734,20 @@ const DirectoryContent = () => {
 
     const renderContent = () => {
         // Here we wait for Metadata for the folder content
-        if (isMissingDataAfterDirChange) return renderLoadingContent();
+        if (isMissingDataAfterDirChange) {
+            return renderLoadingContent();
+        }
 
         // If no selection or currentChildren = null (first time) render nothing
         // TODO : Make a beautiful page here
-        if (!currentChildren || !selectedDirectory) return;
+        if (!currentChildren || !selectedDirectory) {
+            return;
+        }
 
         // If empty dir then render an appropriate content
-        if (currentChildren.length === 0) return renderEmptyDirContent();
+        if (currentChildren.length === 0) {
+            return renderEmptyDirContent();
+        }
 
         // Finally if we have elements then render the table
         return renderTableContent();

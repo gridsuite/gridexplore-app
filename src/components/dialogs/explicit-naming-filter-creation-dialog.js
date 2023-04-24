@@ -74,7 +74,9 @@ const ExplicitNamingFilterCreationDialog = ({
         setTablesValues(tableValues);
         setIsEdited(isEdited);
         setNameValue(newName);
-        if (isDragged) setIsEdited(true);
+        if (isDragged) {
+            setIsEdited(true);
+        }
     };
 
     useEffect(() => {
@@ -98,7 +100,9 @@ const ExplicitNamingFilterCreationDialog = ({
     };
 
     const handleClose = () => {
-        if (onClose) onClose();
+        if (onClose) {
+            onClose();
+        }
     };
 
     const isFormValidationAllowed = () => {

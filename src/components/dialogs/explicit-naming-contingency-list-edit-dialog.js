@@ -61,7 +61,9 @@ const ExplicitNamingContingencyListEditDialog = ({
         setUnsavedChanges(isEdited);
         setIsExplicitNamingFormClean(isClean);
         setNameValue(newName);
-        if (isDragged) setUnsavedChanges(true);
+        if (isDragged) {
+            setUnsavedChanges(true);
+        }
     };
 
     const isFormValidationAllowed = () => {
@@ -93,7 +95,9 @@ const ExplicitNamingContingencyListEditDialog = ({
     };
 
     const handleClose = () => {
-        if (onClose) onClose();
+        if (onClose) {
+            onClose();
+        }
     };
 
     return (

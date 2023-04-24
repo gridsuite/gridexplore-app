@@ -283,7 +283,9 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         setCreateContingencyListErr('');
         setUnsavedChanges(isEdited);
         setIsExplicitNamingFormClean(isClean);
-        if (isDragged) setUnsavedChanges(true);
+        if (isDragged) {
+            setUnsavedChanges(true);
+        }
     };
 
     return (

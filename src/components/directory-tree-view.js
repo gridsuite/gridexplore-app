@@ -120,8 +120,11 @@ const DirectoryTreeView = ({
             let ins = [];
             let outs = [];
             ids.forEach((id) => {
-                if (!expandedRef.current.includes(id)) ins.push(id);
-                else outs.push(id);
+                if (!expandedRef.current.includes(id)) {
+                    ins.push(id);
+                } else {
+                    outs.push(id);
+                }
             });
             ensureInOutExpansion(ins, outs);
         },
@@ -149,8 +152,12 @@ const DirectoryTreeView = ({
     }
 
     useEffect(() => {
-        if (currentPath.length === 0) return;
-        if (currentPath[0].elementUuid !== treeViewUuid) return;
+        if (currentPath.length === 0) {
+            return;
+        }
+        if (currentPath[0].elementUuid !== treeViewUuid) {
+            return;
+        }
         ensureInOutExpansion(currentPath.map((n) => n.elementUuid));
     }, [currentPath, ensureInOutExpansion, treeViewUuid]);
 
