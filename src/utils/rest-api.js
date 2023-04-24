@@ -566,14 +566,11 @@ export function getContingencyList(type, id) {
         url =
             PREFIX_EXPLORE_SERVER_QUERIES +
             '/v1/explore/script-contingency-lists/';
-        // url += '/v1/script-contingency-lists/';
     } else if (type === ContingencyListType.FORM) {
-        //url += '/v1/form-contingency-lists/';
         url =
             PREFIX_EXPLORE_SERVER_QUERIES +
             '/v1/explore/form-contingency-lists/';
     } else if (type === ContingencyListType.EXPLICIT_NAMING) {
-        //url += '/v1/identifier-contingency-lists/';
         url =
             PREFIX_EXPLORE_SERVER_QUERIES +
             '/v1/explore/identifier-contingency-lists/';
