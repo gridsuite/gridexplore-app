@@ -125,6 +125,8 @@ const backToFrontTweak = (response) => {
         biProps[k] = biProp;
     });
     eff.freePropertiesP = biProps;
+    //TODO:CHECK THIS
+    //ret.equipmentFilterForm = {...ret.equipmentFilterForm, name :response?.name};
     return ret;
 };
 
@@ -322,6 +324,12 @@ export const CriteriaBasedFilterDialogContent = ({
         handleSelectionEquipmentTypeChange(newEquipmentType);
     };
 
+    const handleFilterDefaultValues = (key, initialFilter) => {
+        /** the name is accessible outside of the equipmentFilterForm */
+        return key !== 'name'
+            ? initialFilter?.equipmentFilterForm[key]
+            : initialFilter?.name;
+    };
     const renderFilter = (key, definition) => {
         if (currentFormEdit[key] === undefined) {
             currentFormEdit[key] = generateDefaultValue(
@@ -329,7 +337,7 @@ export const CriteriaBasedFilterDialogContent = ({
                 initialFilter === null
                     ? null
                     : contentType === ElementType.FILTER
-                    ? initialFilter.equipmentFilterForm[key]
+                    ? handleFilterDefaultValues(key, initialFilter)
                     : initialFilter[key]
             );
         }
