@@ -33,7 +33,7 @@ import {
     REMOVE_UPLOADING_ELEMENT,
     DIRECTORY_UPDATED,
     TREE_DATA,
-  SELECT_ELEMENT,
+    SELECT_ELEMENT,
 } from './actions';
 
 import {

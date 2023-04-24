@@ -398,7 +398,9 @@ export const Name = ({
         );
     };
     /** don't show the name field if not edit mode */
-    if (isCreation) return null;
+    if (isCreation) {
+        return null;
+    }
     return (
         <>
             <TextField
