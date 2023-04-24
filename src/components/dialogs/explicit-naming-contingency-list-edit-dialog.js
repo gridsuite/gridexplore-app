@@ -65,7 +65,6 @@ const ExplicitNamingContingencyListEditDialog = ({
     };
 
     const isFormValidationAllowed = () => {
-        console.log('nameValue: ', nameValue);
         return (
             (tableValues &&
                 tableValues.length > 0 &&

@@ -49,7 +49,7 @@ export const CriteriaBasedFilterDialog = ({
                 Object.assign({ id: filter.id }, filter.equipmentFilterForm)
             );
         } else if (!veto) {
-            /** name should be send outside of equipmentFilterForm */
+            /** name should be sent outside the equipmentFilterForm */
             setCurrentFilter(
                 Object.assign({
                     ...filter,
