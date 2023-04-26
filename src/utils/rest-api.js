@@ -825,10 +825,17 @@ export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
 /**
  * Save Filter
  */
-export function saveFilter(filter) {
+export function saveFilter(filter, name) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
     const body = JSON.stringify(filter);
+
     return backendFetch(
-        PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/filters/' + filter.id,
+        PREFIX_EXPLORE_SERVER_QUERIES +
+            '/v1/explore/filters/' +
+            filter.id +
+            '?' +
+            urlSearchParams.toString(),
         {
             method: 'put',
             headers: { 'Content-Type': 'application/json' },

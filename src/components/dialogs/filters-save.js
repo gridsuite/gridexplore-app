@@ -72,13 +72,15 @@ const filterSave = (
                 setCreateFilterErr(message);
             });
     } else {
-        saveFilter({
-            id: id,
-            type: FilterType.EXPLICIT_NAMING,
-            equipmentType: equipmentType,
-            filterEquipmentsAttributes: values,
-            name: updatedName,
-        })
+        saveFilter(
+            {
+                id: id,
+                type: FilterType.EXPLICIT_NAMING,
+                equipmentType: equipmentType,
+                filterEquipmentsAttributes: values,
+            },
+            updatedName
+        )
             .then(() => {
                 handleClose();
             })

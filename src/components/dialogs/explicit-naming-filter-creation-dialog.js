@@ -20,6 +20,8 @@ import ExplicitNamingFilterDialogContent from './explicit-naming-filter-dialog-c
 import filterSave from './filters-save';
 
 import makeStyles from '@mui/styles/makeStyles';
+import { ElementType } from '../../utils/elementType';
+import NameWrapper from './name-wrapper';
 
 const useStyles = makeStyles((theme) => ({
     dialogPaper: {
@@ -50,8 +52,10 @@ const ExplicitNamingFilterCreationDialog = ({
     const [tableValues, setTablesValues] = useState([]);
     const [isEdited, setIsEdited] = useState(false);
     const fetchFilter = useRef(null);
-    const [nameValue, setNameValue] = useState('');
     fetchFilter.current = open && !isFilterCreation;
+
+    const [currentName, setCurrentName] = useState(name);
+    const [isNameValide, setIsNameValide] = useState(true);
 
     useEffect(() => {
         setIsGeneratorOrLoad(
@@ -67,13 +71,11 @@ const ExplicitNamingFilterCreationDialog = ({
         name,
         id,
         isEdited,
-        isDragged,
-        newName
+        isDragged
     ) => {
         setEquipmentType(equipmentType);
         setTablesValues(tableValues);
         setIsEdited(isEdited);
-        setNameValue(newName);
         if (isDragged) {
             setIsEdited(true);
         }
@@ -95,7 +97,7 @@ const ExplicitNamingFilterCreationDialog = ({
             activeDirectory,
             intl,
             handleClose,
-            nameValue
+            currentName
         );
     };
 
@@ -106,13 +108,17 @@ const ExplicitNamingFilterCreationDialog = ({
     };
 
     const isFormValidationAllowed = () => {
-        return (
+        const areTableValuesValide =
             isEdited &&
-            ((tableValues?.length > 0 &&
-                createFilterErr !== '' &&
-                !equipmentType) ||
-                nameValue !== '')
-        );
+            tableValues?.length > 0 &&
+            createFilterErr === '' &&
+            equipmentType;
+        return isNameValide && (areTableValuesValide || name !== currentName);
+    };
+
+    const nameCheck = (isValide, newName) => {
+        setIsNameValide(isValide);
+        setCurrentName(newName);
     };
 
     return (
@@ -125,13 +131,21 @@ const ExplicitNamingFilterCreationDialog = ({
         >
             <DialogTitle onClose={onClose}>{title}</DialogTitle>
             <DialogContent style={{ overflow: 'hidden' }}>
-                <ExplicitNamingFilterDialogContent
-                    id={id}
-                    open={open}
-                    name={name}
-                    isFilterCreation={isFilterCreation}
-                    handleFilterCreation={handleEditCallback}
-                />
+                <NameWrapper
+                    titleMessage="Name"
+                    isCreation={isFilterCreation}
+                    initialValue={name}
+                    contentType={ElementType.FILTER}
+                    handleNameValidation={nameCheck}
+                >
+                    <ExplicitNamingFilterDialogContent
+                        id={id}
+                        open={open}
+                        name={name}
+                        isFilterCreation={isFilterCreation}
+                        handleFilterCreation={handleEditCallback}
+                    />
+                </NameWrapper>
                 {createFilterErr !== '' && (
                     <Alert severity="error">{createFilterErr}</Alert>
                 )}

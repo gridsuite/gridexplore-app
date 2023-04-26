@@ -22,8 +22,6 @@ import { Alert, Checkbox, Input, Tooltip } from '@mui/material';
 import { filterEquipmentDefinition } from '../../utils/equipment-types';
 import { FilterTypeSelection } from './criteria-based-filter-dialog-content';
 import { renderPopup } from './create-filter-dialog';
-import NameComponent from './name-filter-or-contingency';
-import { ElementType } from '../../utils/elementType';
 
 const useStyles = makeStyles(() => ({}));
 
@@ -174,28 +172,16 @@ const ExplicitNamingFilterDialogContent = ({
     const intl = useIntl();
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [newEquipmentType, setNewEquipmentType] = useState(null);
-    const [nameValue, setNameValue] = useState('');
-    const handleNameChange = useCallback(
-        (newName) => {
-            setNameValue(newName);
-            setIsEdited(true);
-        },
-        [setNameValue]
-    );
     useEffect(() => {
         if (id && fetchFilter.current) {
             getFilterById(id)
                 .then((response) => {
                     setDefaultValues(response);
                     setEquipmentType(response?.equipmentType);
-                    if (!isFilterCreation) {
-                        handleNameChange(response?.name ?? '');
-                        setIsEdited(false);
-                    }
                 })
                 .catch((error) => setCreateFilterErr(error));
         }
-    }, [id, handleNameChange, isFilterCreation]);
+    }, [id]);
 
     const [tableValues, tableValuesField, isDragged] = useEquipmentTableValues({
         id: id ?? 'editFilterTable',
@@ -229,7 +215,6 @@ const ExplicitNamingFilterDialogContent = ({
                 equipmentType: equipmentType,
             });
         }
-        setNameValue('');
     };
 
     const handlePopupConfirmation = () => {
@@ -251,8 +236,7 @@ const ExplicitNamingFilterDialogContent = ({
             name,
             id,
             isEdited,
-            isDragged,
-            nameValue
+            isDragged
         );
     }, [
         equipmentType,
@@ -264,7 +248,6 @@ const ExplicitNamingFilterDialogContent = ({
         isGeneratorOrLoad,
         name,
         tableValues,
-        nameValue,
     ]);
 
     useEffect(() => {
@@ -281,18 +264,8 @@ const ExplicitNamingFilterDialogContent = ({
                         equipmentDefinition={filterEquipmentDefinition}
                         isEdited={isEdited}
                     />
-                    {!isFilterCreation && (
-                        <NameComponent
-                            titleMessage={'Name'}
-                            contentType={ElementType.FILTER}
-                            initialValue={nameValue}
-                            onChange={handleNameChange}
-                        />
-                    )}
                 </Grid>
-
                 <Grid item xs={12} />
-
                 {equipmentType && tableValuesField}
             </Grid>
             {createFilterErr !== '' && (

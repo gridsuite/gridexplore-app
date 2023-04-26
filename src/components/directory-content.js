@@ -813,7 +813,7 @@ const DirectoryContent = () => {
                         onClose={handleCloseExplicitNamingFilterDialog}
                         title={intl.formatMessage({ id: 'editFilter' })}
                         isFilterCreation={false}
-                        name={currentExplicitNamingFilterId}
+                        name={name}
                     />
                 );
             case FilterType.CRITERIA:
