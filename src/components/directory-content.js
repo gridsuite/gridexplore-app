@@ -802,7 +802,7 @@ const DirectoryContent = () => {
                             id: 'editContingencyList',
                         })}
                         isCreation={false}
-                        name={currentExplicitNamingContingencyListId}
+                        name={name}
                     />
                 );
             case FilterType.EXPLICIT_NAMING:
