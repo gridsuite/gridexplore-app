@@ -14,7 +14,6 @@ import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import makeStyles from '@mui/styles/makeStyles';
 import { getContingencyList, getFilterById } from '../../utils/rest-api';
 import { ContingencyListType, ElementType } from '../../utils/elementType';
-import NameComponent from './name-filter-or-contingency';
 
 const useStyles = makeStyles(() => ({
     aceEditor: {
@@ -26,11 +25,16 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const ScriptDialogContent = ({ id, onError, type, onChange, isCreation }) => {
+const ScriptDialogContent = ({
+    id,
+    onError,
+    type,
+    onChange,
+    handleNoEdition,
+}) => {
     const classes = useStyles();
     const selectedTheme = useSelector((state) => state.theme);
     const [aceEditorContent, setAceEditorContent] = useState('');
-    const [nameValue, setNameValue] = useState('');
 
     /**
      * Set name of for the Ace Editor : if theme is light set "github theme" else set "clouds_midnight theme"
@@ -43,19 +47,19 @@ const ScriptDialogContent = ({ id, onError, type, onChange, isCreation }) => {
             : '';
     };
 
-    const handleNameChange = useCallback(
-        (newName) => {
-            setNameValue(newName);
-            onChange(newName);
-        },
-        [setNameValue, onChange]
-    );
     const onChangeAceEditor = useCallback(
         (newScript) => {
             setAceEditorContent(newScript);
-            onChange(newScript, true);
+            onChange(newScript);
         },
         [setAceEditorContent, onChange]
+    );
+    // used to pass the initial script value to the parent component if the script was not edited.
+    const noEditionContent = useCallback(
+        (script) => {
+            handleNoEdition(script ?? '');
+        },
+        [handleNoEdition]
     );
 
     const getCurrentScript = useCallback(
@@ -69,7 +73,7 @@ const ScriptDialogContent = ({ id, onError, type, onChange, isCreation }) => {
                         .then((data) => {
                             if (data) {
                                 setAceEditorContent(data.script ?? '');
-                                setNameValue(data.name ?? '');
+                                noEditionContent(data.script ?? '');
                             }
                         })
                         .catch((error) => {
@@ -88,35 +92,24 @@ const ScriptDialogContent = ({ id, onError, type, onChange, isCreation }) => {
                 }
             }
         },
-        [onError, type, setAceEditorContent]
+        [onError, type, setAceEditorContent, noEditionContent]
     );
 
     useEffect(() => {
         // get contingency list
         getCurrentScript(id);
     }, [id, getCurrentScript]);
-
     return (
-        <>
-            {!isCreation && (
-                <NameComponent
-                    titleMessage={'Name'}
-                    contentType={type}
-                    initialValue={nameValue}
-                    onChange={handleNameChange}
-                />
-            )}
-            <AceEditor
-                className={classes.aceEditor}
-                mode="groovy"
-                placeholder="Insert your groovy script here"
-                theme={themeForAceEditor()}
-                onChange={(val) => onChangeAceEditor(val)}
-                value={aceEditorContent}
-                fontSize="18px"
-                editorProps={{ $blockScrolling: true }}
-            />
-        </>
+        <AceEditor
+            className={classes.aceEditor}
+            mode="groovy"
+            placeholder="Insert your groovy script here"
+            theme={themeForAceEditor()}
+            onChange={(val) => onChangeAceEditor(val)}
+            value={aceEditorContent}
+            fontSize="18px"
+            editorProps={{ $blockScrolling: true }}
+        />
     );
 };
 

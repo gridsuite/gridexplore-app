@@ -567,17 +567,11 @@ export function duplicateContingencyList(
 export function getContingencyList(type, id) {
     let url = PREFIX_ACTIONS_QUERIES;
     if (type === ContingencyListType.SCRIPT) {
-        url =
-            PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore/script-contingency-lists/';
+        url += '/v1/script-contingency-lists/';
     } else if (type === ContingencyListType.FORM) {
-        url =
-            PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore/form-contingency-lists/';
+        url += '/v1/form-contingency-lists/';
     } else if (type === ContingencyListType.EXPLICIT_NAMING) {
-        url =
-            PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore/identifier-contingency-lists/';
+        url += '/v1/identifier-contingency-lists/';
     }
     url += id;
     return backendFetchJson(url);
@@ -588,11 +582,17 @@ export function getContingencyList(type, id) {
  * @returns {Promise<Response>}
  */
 export function saveFormContingencyList(form) {
-    const { nominalVoltage, ...rest } = form;
+    const { nominalVoltage, name, ...rest } = form;
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/form-contingency-lists/' +
-        form.id;
+        form.id +
+        '?' +
+        urlSearchParams.toString();
+
     return backendFetch(url, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
@@ -607,11 +607,15 @@ export function saveFormContingencyList(form) {
  * Saves a script contingency list
  * @returns {Promise<Response>}
  */
-export function saveScriptContingencyList(scriptContingencyList) {
+export function saveScriptContingencyList(scriptContingencyList, name) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/script-contingency-lists/' +
-        scriptContingencyList.id;
+        scriptContingencyList.id +
+        '?' +
+        urlSearchParams.toString();
     return backendFetch(url, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
@@ -767,11 +771,7 @@ export function getFilters() {
  * @returns {Promise<Response>}
  */
 export function getFilterById(id) {
-    const url =
-        process.env.REACT_APP_API_GATEWAY +
-        '/explore/v1/explore/filters' +
-        '/' +
-        id;
+    const url = PREFIX_FILTERS_QUERIES + '/' + id;
     return backendFetchJson(url);
 }
 
