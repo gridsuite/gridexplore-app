@@ -27,12 +27,7 @@ const EnergySource = {
         },
     },
 };
-const Name = {
-    name: {
-        name: 'Name',
-        type: filteredTypes.name,
-    },
-};
+
 const Countries1 = {
     countries1: {
         name: 'Countries1',
@@ -130,7 +125,6 @@ export const filterEquipmentDefinition = {
     LINE: {
         ...Line,
         fields: {
-            ...Name,
             ...Countries1,
             ...Countries2,
             ...NominalVoltage1,
@@ -141,7 +135,6 @@ export const filterEquipmentDefinition = {
     TWO_WINDINGS_TRANSFORMER: {
         ...TwoWindingTransfo,
         fields: {
-            ...Name,
             ...Countries,
             ...NominalVoltage1,
             ...NominalVoltage2,
@@ -151,7 +144,6 @@ export const filterEquipmentDefinition = {
     THREE_WINDINGS_TRANSFORMER: {
         ...ThreeWindingTransfo,
         fields: {
-            ...Name,
             ...Countries,
             ...NominalVoltage1,
             ...NominalVoltage2,
@@ -165,7 +157,6 @@ export const filterEquipmentDefinition = {
     GENERATOR: {
         ...Generator,
         fields: {
-            ...Name,
             ...Countries,
             ...EnergySource,
             ...NominalVoltage,
@@ -175,7 +166,6 @@ export const filterEquipmentDefinition = {
     LOAD: {
         ...Load,
         fields: {
-            ...Name,
             ...Countries,
             ...NominalVoltage,
             ...FreeProps,
@@ -184,7 +174,6 @@ export const filterEquipmentDefinition = {
     BATTERY: {
         ...Battery,
         fields: {
-            ...Name,
             ...Countries,
             ...NominalVoltage,
             ...FreeProps,
@@ -193,7 +182,6 @@ export const filterEquipmentDefinition = {
     SHUNT_COMPENSATOR: {
         ...ShuntCompensator,
         fields: {
-            ...Name,
             ...Countries,
             ...NominalVoltage,
             ...FreeProps,
@@ -202,7 +190,6 @@ export const filterEquipmentDefinition = {
     STATIC_VAR_COMPENSATOR: {
         ...SVC,
         fields: {
-            ...Name,
             ...Countries,
             ...NominalVoltage,
             ...FreeProps,
@@ -211,7 +198,6 @@ export const filterEquipmentDefinition = {
     DANGLING_LINE: {
         ...DanglingLine,
         fields: {
-            ...Name,
             ...Countries,
             ...NominalVoltage,
             ...FreeProps,
@@ -220,7 +206,6 @@ export const filterEquipmentDefinition = {
     LCC_CONVERTER_STATION: {
         ...LCC,
         fields: {
-            ...Name,
             ...Countries,
             ...NominalVoltage,
             ...FreeProps,
@@ -229,7 +214,6 @@ export const filterEquipmentDefinition = {
     VSC_CONVERTER_STATION: {
         ...VSC,
         fields: {
-            ...Name,
             ...Countries,
             ...NominalVoltage,
             ...FreeProps,
@@ -238,7 +222,6 @@ export const filterEquipmentDefinition = {
     HVDC_LINE: {
         ...Hvdc,
         fields: {
-            ...Name,
             ...Countries1,
             ...Countries2,
             ...NominalVoltage,
@@ -248,7 +231,6 @@ export const filterEquipmentDefinition = {
     VOLTAGE_LEVEL: {
         ...VoltageLevel,
         fields: {
-            ...Name,
             ...Countries,
             ...NominalVoltage,
             ...FreeProps,
@@ -257,7 +239,6 @@ export const filterEquipmentDefinition = {
     SUBSTATION: {
         ...Substation,
         fields: {
-            ...Name,
             ...Countries,
             ...FreePropsS,
         },
@@ -269,7 +250,6 @@ export const contingencyListEquipmentDefinition = {
     LINE: {
         ...Line,
         fields: {
-            ...Name,
             ...Countries1,
             ...Countries2,
             ...NominalVoltage1,
@@ -279,7 +259,6 @@ export const contingencyListEquipmentDefinition = {
     TWO_WINDINGS_TRANSFORMER: {
         ...TwoWindingTransfo,
         fields: {
-            ...Name,
             ...SingleCountries1,
             ...NominalVoltage1,
             ...NominalVoltage2,
@@ -288,7 +267,6 @@ export const contingencyListEquipmentDefinition = {
     GENERATOR: {
         ...Generator,
         fields: {
-            ...Name,
             ...SingleCountries1,
             ...SingleNominalVoltage1,
         },
@@ -296,7 +274,6 @@ export const contingencyListEquipmentDefinition = {
     STATIC_VAR_COMPENSATOR: {
         ...SVC,
         fields: {
-            ...Name,
             ...SingleCountries1,
             ...SingleNominalVoltage1,
         },
@@ -304,7 +281,6 @@ export const contingencyListEquipmentDefinition = {
     SHUNT_COMPENSATOR: {
         ...ShuntCompensator,
         fields: {
-            ...Name,
             ...SingleCountries1,
             ...SingleNominalVoltage1,
         },
@@ -312,7 +288,6 @@ export const contingencyListEquipmentDefinition = {
     HVDC_LINE: {
         ...Hvdc,
         fields: {
-            ...Name,
             ...Countries1,
             ...Countries2,
             ...SingleNominalVoltage1,
@@ -321,7 +296,6 @@ export const contingencyListEquipmentDefinition = {
     BUSBAR_SECTION: {
         ...BusBar,
         fields: {
-            ...Name,
             ...SingleCountries1,
             ...SingleNominalVoltage1,
         },
@@ -329,7 +303,6 @@ export const contingencyListEquipmentDefinition = {
     DANGLING_LINE: {
         ...DanglingLine,
         fields: {
-            ...Name,
             ...SingleCountries1,
             ...SingleNominalVoltage1,
         },

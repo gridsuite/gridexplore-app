@@ -6,7 +6,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -16,6 +16,7 @@ import Dialog from '@mui/material/Dialog';
 import { saveFilter, saveFormContingencyList } from '../../utils/rest-api';
 import { ElementType } from '../../utils/elementType';
 import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
+import NameWrapper from './name-wrapper';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -35,10 +36,13 @@ export const CriteriaBasedFilterDialog = ({
     contentType,
     isFilterCreation,
     handleFilterCreation,
+    name,
 }) => {
     const [currentFilter, setCurrentFilter] = useState(null);
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const [validationsCount, setValidationsCount] = useState(0);
+    const [currentName, setCurrentName] = useState(name);
+    const [isNameValide, setIsNameValide] = useState(true);
     const classes = useStyles();
     const openRef = useRef(null);
     openRef.current = open;
@@ -49,22 +53,29 @@ export const CriteriaBasedFilterDialog = ({
                 Object.assign({ id: filter.id }, filter.equipmentFilterForm)
             );
         } else if (!veto) {
-            /** name should be sent outside the equipmentFilterForm */
-            setCurrentFilter(
-                Object.assign({
-                    ...filter,
-                    name: filter.equipmentFilterForm.name,
-                })
-            );
+            //name should be sent outside the equipmentFilterForm
+            setCurrentFilter({
+                ...filter,
+            });
         } else {
             setCurrentFilter(null);
         }
-        setBtnSaveListDisabled(false);
+        setBtnSaveListDisabled(!isNameValide);
+    };
+
+    const nameCheckCallBack = (isValide, newName) => {
+        setIsNameValide(isValide);
+        setCurrentName(newName);
+        setBtnSaveListDisabled(!isValide);
     };
 
     const handleCancel = () => {
         onClose();
     };
+
+    const handleNoEdit = useCallback((value) => {
+        setCurrentFilter(value);
+    }, []);
 
     const handleValidate = () => {
         setValidationsCount((prev) => prev + 1);
@@ -74,13 +85,13 @@ export const CriteriaBasedFilterDialog = ({
             handleFilterCreation(currentFilter);
         } else {
             if (contentType === ElementType.FILTER) {
-                saveFilter(currentFilter)
+                saveFilter(currentFilter, currentName)
                     .then()
                     .catch((errorMessage) => {
                         onError(errorMessage);
                     });
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
-                saveFormContingencyList(currentFilter)
+                saveFormContingencyList(currentFilter, currentName)
                     .then()
                     .catch((errorMessage) => {
                         onError(errorMessage);
@@ -98,14 +109,23 @@ export const CriteriaBasedFilterDialog = ({
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent style={{ maxHeight: '60vh' }}>
-                <CriteriaBasedFilterDialogContent
-                    id={id}
-                    open={open}
+                <NameWrapper
+                    titleMessage="Name"
+                    initialValue={name}
                     contentType={contentType}
-                    handleFilterCreation={handleEditCallback}
-                    validationsCount={validationsCount}
-                    isFilterCreation={isFilterCreation}
-                />
+                    handleNameValidation={nameCheckCallBack}
+                >
+                    <CriteriaBasedFilterDialogContent
+                        id={id}
+                        open={open}
+                        contentType={contentType}
+                        handleFilterCreation={handleEditCallback}
+                        validationsCount={validationsCount}
+                        isFilterCreation={isFilterCreation}
+                        name={name}
+                        handleNoEdit={handleNoEdit}
+                    />
+                </NameWrapper>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCancel}>

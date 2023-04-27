@@ -581,8 +581,8 @@ export function getContingencyList(type, id) {
  * Saves a Filter contingency list
  * @returns {Promise<Response>}
  */
-export function saveFormContingencyList(form) {
-    const { nominalVoltage, name, ...rest } = form;
+export function saveFormContingencyList(form, name) {
+    const { nominalVoltage, ...rest } = form;
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
 

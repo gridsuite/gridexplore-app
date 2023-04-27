@@ -135,8 +135,7 @@ const backToFrontTweak = (response) => {
         biProps[k] = biProp;
     });
     eff.freePropertiesP = biProps;
-    //TODO:CHECK THIS
-    //ret.equipmentFilterForm = {...ret.equipmentFilterForm, name :response?.name};
+
     return ret;
 };
 
@@ -195,6 +194,8 @@ export const CriteriaBasedFilterDialogContent = ({
     validationsCount,
     isFilterCreation,
     isCreation,
+    name,
+    handleNoEdit,
 }) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [equipmentType, setEquipmentType] = useState(null);
@@ -221,7 +222,10 @@ export const CriteriaBasedFilterDialogContent = ({
             if (contentType === ElementType.FILTER) {
                 getFilterById(id)
                     .then((response) => {
-                        setInitialFilter(backToFrontTweak(response));
+                        setInitialFilter({
+                            ...backToFrontTweak(response),
+                        });
+                        handleNoEdit({ ...backToFrontTweak(response) });
                         let eType = response.equipmentFilterForm.equipmentType;
                         setEquipmentType(eType);
                         setCurrentFormEdit({
@@ -239,7 +243,8 @@ export const CriteriaBasedFilterDialogContent = ({
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
                 getContingencyList(ContingencyListType.FORM, id)
                     .then((response) => {
-                        setInitialFilter(response);
+                        setInitialFilter({ ...response });
+                        handleNoEdit({ ...response });
                         setEquipmentType(response.equipmentType);
                         setCurrentFormEdit({
                             equipmentType: {
@@ -262,7 +267,7 @@ export const CriteriaBasedFilterDialogContent = ({
             setInitialFilter(null);
             setEquipmentType(null);
         }
-    }, [id, contentType, snackError]);
+    }, [id, contentType, snackError, handleNoEdit]);
 
     function validVoltageValues(obj) {
         let value1NotNull =
@@ -338,7 +343,7 @@ export const CriteriaBasedFilterDialogContent = ({
     };
 
     const handleFilterDefaultValues = (key, initialFilter) => {
-        /** the name is accessible outside of the equipmentFilterForm */
+        //the name is accessible outside of the equipmentFilterForm
         return key !== 'name'
             ? initialFilter?.equipmentFilterForm[key]
             : initialFilter?.name;
@@ -367,7 +372,7 @@ export const CriteriaBasedFilterDialogContent = ({
             );
             editDone(globalVeto);
         };
-        /** check if ContingencyList  or filter is on creation mode */
+        //Check if ContingencyList  or filter is on creation mode
         const isModeCreation = isFilterCreation || isCreation;
         return (
             <SingleFilter
@@ -391,7 +396,6 @@ export const CriteriaBasedFilterDialogContent = ({
             });
         }
     };
-
     return (
         <>
             <Grid container>
