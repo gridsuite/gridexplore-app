@@ -621,7 +621,7 @@ const DirectoryContent = () => {
         return currentChildren.map((child) => {
             return {
                 ...child,
-                notClickable: child.type === ElementType.CASE,
+                notClickable: false,
             };
         });
     };
