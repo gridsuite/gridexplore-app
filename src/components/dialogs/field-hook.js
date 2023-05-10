@@ -5,18 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import {
     Checkbox,
     CircularProgress,
+    debounce,
     IconButton,
     InputAdornment,
     TextField,
@@ -166,7 +161,6 @@ export const useNameField = ({
     ...props
 }) => {
     const [error, setError] = useState();
-    const timer = useRef();
     const intl = useIntl();
     const [checking, setChecking] = useState(undefined);
     const [adornment, setAdornment] = useState();
@@ -237,6 +231,11 @@ export const useNameField = ({
         ]
     );
 
+    const debouncedUpdateValidity = useMemo(
+        () => debounce(updateValidity, 700),
+        [updateValidity]
+    );
+
     useEffect(() => {
         if (checking === undefined || error) {
             setAdornment(undefined);
@@ -261,21 +260,16 @@ export const useNameField = ({
     });
 
     useEffect(() => {
-        if (
-            !active ||
-            ((name === '' || name === props.defaultValue) && !timer.current)
-        ) {
+        if (!active || name === '' || name === props.defaultValue) {
             return; // initial render or hook in closed component to avoid sending unexpected request
         }
-        clearTimeout(timer.current);
         setChecking(true);
         setError(undefined);
-        timer.current = setTimeout(() => updateValidity(name, touched), 700);
-    }, [active, props.defaultValue, name, updateValidity, touched]);
+        debouncedUpdateValidity(name, touched);
+    }, [active, props.defaultValue, name, touched]);
 
     useEffect(() => {
         setError(undefined);
-        timer.current = undefined;
         setChecking(undefined);
         setAdornment(undefined);
     }, [triggerReset]);

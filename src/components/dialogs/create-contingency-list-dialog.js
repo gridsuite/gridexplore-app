@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -33,6 +33,7 @@ import ScriptDialogContent from './script-dialog-content';
 import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
 import ExplicitNamingContingencyListDialogContent from './explicit-naming-contingency-list-content';
 import { prepareContingencyListForBackend } from './contingency-list-helper';
+import { debounce } from '@mui/material';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -65,7 +66,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
 
     const classes = useStyles();
     const intl = useIntl();
-    const timer = React.useRef();
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [currentScript, setCurrentScript] = useState(null);
     const [tableValues, setTableValues] = useState([]);
@@ -141,15 +141,14 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         }
     };
 
+    const debouncedUpdateContingencyFormState = useMemo(
+        () => debounce(updateContingencyFormState, 700),
+        []
+    );
     const handleContingencyNameChanges = (name) => {
         setContingencyListName(name);
         setLoadingCheckContingencyName(true);
-
-        //Reset the timer so we only call update on the last input
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => {
-            updateContingencyFormState(name);
-        }, 700);
+        debouncedUpdateContingencyFormState(name);
     };
 
     const setContingencyFormState = (errorMessage, isNameValid) => {

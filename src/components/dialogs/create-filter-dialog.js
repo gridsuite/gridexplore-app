@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 
 import Dialog from '@mui/material/Dialog';
@@ -27,7 +27,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
 import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
 import ExplicitNamingFilterDialogContent from './explicit-naming-filter-dialog-content';
-import { DialogContentText } from '@mui/material';
+import { debounce, DialogContentText } from '@mui/material';
 import filterSave from './filters-save';
 
 const useStyles = makeStyles((theme) => ({
@@ -103,7 +103,6 @@ const CreateFilterDialog = ({
 
     const classes = useStyles();
     const intl = useIntl();
-    const timer = React.useRef();
     const [newListType, setNewListType] = useState(FilterType.CRITERIA);
     const [filterType, setFilterType] = useState(null);
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
@@ -175,15 +174,15 @@ const CreateFilterDialog = ({
         }
     };
 
+    const debouncedUpdateFilterFormState = useMemo(
+        () => debounce(updateFilterFormState, 700),
+        []
+    );
+
     const handleFilterNameChanges = (name) => {
         setNewListName(name);
         setLoadingCheckFilterName(true);
-
-        //Reset the timer so we only call update on the last input
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => {
-            updateFilterFormState(name);
-        }, 700);
+        debouncedUpdateFilterFormState(name);
     };
 
     const setFilterFormState = (errorMessage, isNameValid) => {
