@@ -121,8 +121,6 @@ export const CriteriaBasedFilterDialog = ({
                         contentType={contentType}
                         handleFilterCreation={handleEditCallback}
                         validationsCount={validationsCount}
-                        isFilterCreation={isFilterCreation}
-                        name={name}
                         handleNoEdit={handleNoEdit}
                     />
                 </NameWrapper>
