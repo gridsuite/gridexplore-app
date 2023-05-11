@@ -266,7 +266,7 @@ export const useNameField = ({
         setChecking(true);
         setError(undefined);
         debouncedUpdateValidity(name, touched);
-    }, [active, props.defaultValue, name, touched]);
+    }, [active, props.defaultValue, name, debouncedUpdateValidity, touched]);
 
     useEffect(() => {
         setError(undefined);
