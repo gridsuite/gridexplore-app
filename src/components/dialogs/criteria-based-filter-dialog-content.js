@@ -43,22 +43,13 @@ function generateDefaultValue(val, originalValue) {
     };
 }
 
-const SingleFilter = ({
-    filter,
-    definition,
-    onChange,
-    validationsCount,
-    isModeCreation,
-    contentType,
-}) => {
+const SingleFilter = ({ filter, definition, onChange, validationsCount }) => {
     return definition.type.renderer({
         initialValue: filter.value,
         onChange: onChange,
         titleMessage: definition.name,
         enumValues: definition.enumValues,
         validationsCount,
-        isCreation: isModeCreation,
-        contentType: contentType,
     });
 };
 
@@ -192,9 +183,6 @@ export const CriteriaBasedFilterDialogContent = ({
     handleFilterCreation,
     handleEquipmentTypeChange,
     validationsCount,
-    isFilterCreation,
-    isCreation,
-    name,
     handleNoEdit,
 }) => {
     const [initialFilter, setInitialFilter] = useState(null);
@@ -244,6 +232,7 @@ export const CriteriaBasedFilterDialogContent = ({
                 getContingencyList(ContingencyListType.FORM, id)
                     .then((response) => {
                         setInitialFilter({ ...response });
+                        // handleNoEdit is a callback to send response to the parent component.If the user has not modified any field then the response will be used as a payload.
                         handleNoEdit({ ...response });
                         setEquipmentType(response.equipmentType);
                         setCurrentFormEdit({
@@ -342,12 +331,6 @@ export const CriteriaBasedFilterDialogContent = ({
         handleSelectionEquipmentTypeChange(newEquipmentType);
     };
 
-    const handleFilterDefaultValues = (key, initialFilter) => {
-        //the name is accessible outside of the equipmentFilterForm
-        return key !== 'name'
-            ? initialFilter?.equipmentFilterForm[key]
-            : initialFilter?.name;
-    };
     const renderFilter = (key, definition) => {
         if (currentFormEdit[key] === undefined) {
             currentFormEdit[key] = generateDefaultValue(
@@ -355,7 +338,7 @@ export const CriteriaBasedFilterDialogContent = ({
                 initialFilter === null
                     ? null
                     : contentType === ElementType.FILTER
-                    ? handleFilterDefaultValues(key, initialFilter)
+                    ? initialFilter.equipmentFilterForm[key]
                     : initialFilter[key]
             );
         }
@@ -372,8 +355,6 @@ export const CriteriaBasedFilterDialogContent = ({
             );
             editDone(globalVeto);
         };
-        //Check if ContingencyList  or filter is on creation mode
-        const isModeCreation = isFilterCreation || isCreation;
         return (
             <SingleFilter
                 key={key}
@@ -381,8 +362,6 @@ export const CriteriaBasedFilterDialogContent = ({
                 definition={definition}
                 onChange={localChange}
                 validationsCount={validationsCount}
-                isModeCreation={isModeCreation}
-                contentType={contentType}
             />
         );
     };
