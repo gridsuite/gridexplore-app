@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -98,52 +98,55 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
      * on change input popup check if name already exist
      * @param name
      */
-    const updateContingencyFormState = (name) => {
-        if (name !== '') {
-            //If the name is not only white spaces
-            if (name.replace(/ /g, '') !== '') {
-                elementExists(
-                    activeDirectory,
-                    name,
-                    ElementType.CONTINGENCY_LIST
-                )
-                    .then((data) => {
-                        setContingencyFormState(
-                            data
-                                ? intl.formatMessage({
-                                      id: 'nameAlreadyUsed',
-                                  })
-                                : '',
-                            !data
-                        );
-                    })
-                    .catch((error) => {
-                        setContingencyFormState(
-                            intl.formatMessage({
-                                id: 'nameValidityCheckErrorMsg',
-                            }) + error.message,
-                            false
-                        );
-                    })
-                    .finally(() => {
-                        setLoadingCheckContingencyName(false);
-                    });
+    const updateContingencyFormState = useCallback(
+        (name) => {
+            if (name !== '') {
+                //If the name is not only white spaces
+                if (name.replace(/ /g, '') !== '') {
+                    elementExists(
+                        activeDirectory,
+                        name,
+                        ElementType.CONTINGENCY_LIST
+                    )
+                        .then((data) => {
+                            setContingencyFormState(
+                                data
+                                    ? intl.formatMessage({
+                                          id: 'nameAlreadyUsed',
+                                      })
+                                    : '',
+                                !data
+                            );
+                        })
+                        .catch((error) => {
+                            setContingencyFormState(
+                                intl.formatMessage({
+                                    id: 'nameValidityCheckErrorMsg',
+                                }) + error.message,
+                                false
+                            );
+                        })
+                        .finally(() => {
+                            setLoadingCheckContingencyName(false);
+                        });
+                } else {
+                    setContingencyFormState(
+                        intl.formatMessage({ id: 'nameEmpty' }),
+                        false
+                    );
+                    setLoadingCheckContingencyName(false);
+                }
             } else {
-                setContingencyFormState(
-                    intl.formatMessage({ id: 'nameEmpty' }),
-                    false
-                );
+                setContingencyFormState('', false);
                 setLoadingCheckContingencyName(false);
             }
-        } else {
-            setContingencyFormState('', false);
-            setLoadingCheckContingencyName(false);
-        }
-    };
+        },
+        [activeDirectory, intl]
+    );
 
     const debouncedUpdateContingencyFormState = useMemo(
         () => debounce(updateContingencyFormState, 700),
-        []
+        [updateContingencyFormState]
     );
     const handleContingencyNameChanges = (name) => {
         setContingencyListName(name);

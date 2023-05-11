@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 
 import Dialog from '@mui/material/Dialog';
@@ -135,48 +135,51 @@ const CreateFilterDialog = ({
      * on change input popup check if name already exist
      * @param name
      */
-    const updateFilterFormState = (name) => {
-        if (name !== '') {
-            //If the name is not only white spaces
-            if (name.replace(/ /g, '') !== '') {
-                elementExists(activeDirectory, name, ElementType.FILTER)
-                    .then((data) => {
-                        setFilterFormState(
-                            data
-                                ? intl.formatMessage({
-                                      id: 'nameAlreadyUsed',
-                                  })
-                                : '',
-                            !data
-                        );
-                    })
-                    .catch((error) => {
-                        setFilterFormState(
-                            intl.formatMessage({
-                                id: 'nameValidityCheckErrorMsg',
-                            }) + error.message,
-                            false
-                        );
-                    })
-                    .finally(() => {
-                        setLoadingCheckFilterName(false);
-                    });
+    const updateFilterFormState = useCallback(
+        (name) => {
+            if (name !== '') {
+                //If the name is not only white spaces
+                if (name.replace(/ /g, '') !== '') {
+                    elementExists(activeDirectory, name, ElementType.FILTER)
+                        .then((data) => {
+                            setFilterFormState(
+                                data
+                                    ? intl.formatMessage({
+                                          id: 'nameAlreadyUsed',
+                                      })
+                                    : '',
+                                !data
+                            );
+                        })
+                        .catch((error) => {
+                            setFilterFormState(
+                                intl.formatMessage({
+                                    id: 'nameValidityCheckErrorMsg',
+                                }) + error.message,
+                                false
+                            );
+                        })
+                        .finally(() => {
+                            setLoadingCheckFilterName(false);
+                        });
+                } else {
+                    setFilterFormState(
+                        intl.formatMessage({ id: 'nameEmpty' }),
+                        false
+                    );
+                    setLoadingCheckFilterName(false);
+                }
             } else {
-                setFilterFormState(
-                    intl.formatMessage({ id: 'nameEmpty' }),
-                    false
-                );
+                setFilterFormState('', false);
                 setLoadingCheckFilterName(false);
             }
-        } else {
-            setFilterFormState('', false);
-            setLoadingCheckFilterName(false);
-        }
-    };
+        },
+        [activeDirectory, intl]
+    );
 
     const debouncedUpdateFilterFormState = useMemo(
         () => debounce(updateFilterFormState, 700),
-        []
+        [updateFilterFormState]
     );
 
     const handleFilterNameChanges = (name) => {
