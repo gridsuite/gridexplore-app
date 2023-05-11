@@ -114,7 +114,7 @@ const ScriptDialog = ({
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <NameWrapper
-                    titleMessage="Name"
+                    titleMessage="nameProperty"
                     isCreation={isCreation}
                     initialValue={name}
                     contentType={type}

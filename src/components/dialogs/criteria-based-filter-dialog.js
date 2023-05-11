@@ -110,7 +110,7 @@ export const CriteriaBasedFilterDialog = ({
             <DialogTitle>{title}</DialogTitle>
             <DialogContent style={{ maxHeight: '60vh' }}>
                 <NameWrapper
-                    titleMessage="Name"
+                    titleMessage="nameProperty"
                     initialValue={name}
                     contentType={contentType}
                     handleNameValidation={nameCheckCallBack}

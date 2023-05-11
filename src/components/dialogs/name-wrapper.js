@@ -23,17 +23,14 @@ const NameWrapper = ({
     handleNameValidation,
 }) => {
     const [value, setValue] = useState(initialValue);
-    const [newName, setNewName] = useState('');
 
     const [loadingCheckName, setLoadingCheckName] = useState(false);
-    const [nameValid, setNameValid] = useState(false);
     const timer = React.useRef();
     const intl = useIntl();
     const [errorMessage, setErrorMessage] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
     const setFormState = (errorMessage, isNameValid, name) => {
-        setNameValid(isNameValid);
         setErrorMessage(errorMessage);
         handleNameValidation(isNameValid, name);
     };
@@ -79,7 +76,6 @@ const NameWrapper = ({
     };
     const handleNameChanges = (name) => {
         setValue(name);
-        setNewName(name);
         setLoadingCheckName(true);
         clearTimeout(timer.current);
         timer.current = setTimeout(() => {
@@ -88,7 +84,7 @@ const NameWrapper = ({
     };
 
     const renderNameStatus = () => {
-        const showOk = newName !== '' && !loadingCheckName && nameValid;
+        const showOk = value !== '' && !loadingCheckName && errorMessage === '';
         return (
             <div
                 style={{
@@ -112,7 +108,7 @@ const NameWrapper = ({
                 margin="dense"
                 value={value}
                 type="text"
-                error={!!newName && !nameValid && !loadingCheckName}
+                error={!!value && !errorMessage === '' && !loadingCheckName}
                 style={{ width: '100%' }}
                 label={<FormattedMessage id={titleMessage} />}
             />
