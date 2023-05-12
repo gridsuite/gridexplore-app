@@ -585,10 +585,11 @@ export function saveFormContingencyList(form, name) {
     const { nominalVoltage, ...rest } = form;
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
+    urlSearchParams.append('contingencyListType', ContingencyListType.FORM);
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/form-contingency-lists/' +
+        '/v1/explore/contingency-lists/' +
         form.id +
         '?' +
         urlSearchParams.toString();
@@ -610,9 +611,10 @@ export function saveFormContingencyList(form, name) {
 export function saveScriptContingencyList(scriptContingencyList, name) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
+    urlSearchParams.append('contingencyListType', ContingencyListType.SCRIPT);
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/script-contingency-lists/' +
+        '/v1/explore/contingency-lists/' +
         scriptContingencyList.id +
         '?' +
         urlSearchParams.toString();
@@ -633,9 +635,10 @@ export function saveExplicitNamingContingencyList(
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
+    urlSearchParams.append('contingencyListType', ContingencyListType.EXPLICIT_NAMING);
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/identifier-contingency-lists/' +
+        '/v1/explore/contingency-lists/' +
         explicitNamingContingencyList.id +
         '?' +
         urlSearchParams.toString();
