@@ -635,7 +635,10 @@ export function saveExplicitNamingContingencyList(
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
-    urlSearchParams.append('contingencyListType', ContingencyListType.EXPLICIT_NAMING);
+    urlSearchParams.append(
+        'contingencyListType',
+        ContingencyListType.EXPLICIT_NAMING
+    );
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/contingency-lists/' +
