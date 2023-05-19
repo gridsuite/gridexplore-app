@@ -85,7 +85,7 @@ const DeleteDialog = ({
                       itemName: (
                           <OverflowableText
                               text={items[0].elementName}
-                              style={{ width: '100%' }}
+                              style={{ marginLeft: '1%' }}
                               tooltipStyle={classes.tooltip}
                           />
                       ),
@@ -161,11 +161,17 @@ const DeleteDialog = ({
                                 },
                                 {
                                     itemName: (
-                                        <span style={{ fontWeight: 'bold' }}>
+                                        <span>
                                             {items.length === 1 && (
                                                 <OverflowableText
                                                     text={items[0].elementName}
-                                                    style={{ width: '100%' }}
+                                                    style={{
+                                                        fontWeight: 'bold',
+                                                        marginLeft: 'initial',
+                                                        marginRight: 'initial',
+                                                        verticalAlign: 'middle',
+                                                        display: 'inline-block',
+                                                    }}
                                                     tooltipStyle={
                                                         classes.tooltip
                                                     }
@@ -187,7 +193,9 @@ const DeleteDialog = ({
             onClose={handleClose}
             aria-labelledby="dialog-title-delete"
         >
-            <DialogTitle>{buildTitle(itemsState)}</DialogTitle>
+            <DialogTitle style={{ display: 'flex' }}>
+                {buildTitle(itemsState)}
+            </DialogTitle>
             <DialogContent>
                 {buildItemsToDeleteGrid(
                     itemsState,
