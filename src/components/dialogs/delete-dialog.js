@@ -97,6 +97,27 @@ const DeleteDialog = ({
               );
     };
 
+    const renderElement = (items) => {
+        const isBig = items[0].elementName?.length > 72;
+
+        const style = isBig
+            ? { width: '100%', fontWeight: 'bold' }
+            : {
+                  fontWeight: 'bold',
+                  marginLeft: 'initial',
+                  marginRight: 'initial',
+                  verticalAlign: 'middle',
+                  display: 'inline-block',
+              };
+        return (
+            <OverflowableText
+                text={items[0].elementName}
+                style={style}
+                tooltipStyle={classes.tooltip}
+            />
+        );
+    };
+
     const buildItemsToDeleteGrid = (
         items,
         multipleDeleteFormatMessageId,
@@ -162,21 +183,8 @@ const DeleteDialog = ({
                                 {
                                     itemName: (
                                         <span>
-                                            {items.length === 1 && (
-                                                <OverflowableText
-                                                    text={items[0].elementName}
-                                                    style={{
-                                                        fontWeight: 'bold',
-                                                        marginLeft: 'initial',
-                                                        marginRight: 'initial',
-                                                        verticalAlign: 'middle',
-                                                        display: 'inline-block',
-                                                    }}
-                                                    tooltipStyle={
-                                                        classes.tooltip
-                                                    }
-                                                />
-                                            )}
+                                            {items.length === 1 &&
+                                                renderElement(items)}
                                         </span>
                                     ),
                                 }
