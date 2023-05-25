@@ -85,7 +85,7 @@ const DeleteDialog = ({
                       itemName: (
                           <OverflowableText
                               text={items[0].elementName}
-                              style={{ width: '100%' }}
+                              style={{ marginLeft: '1%' }}
                               tooltipStyle={classes.tooltip}
                           />
                       ),
@@ -95,6 +95,27 @@ const DeleteDialog = ({
                   { id: 'deleteMultipleItemsDialogTitle' },
                   { itemsCount: items.length }
               );
+    };
+
+    const renderElement = (items) => {
+        const isBig = items[0].elementName?.length > 72;
+
+        const style = isBig
+            ? { width: '100%', fontWeight: 'bold' }
+            : {
+                  fontWeight: 'bold',
+                  marginLeft: 'initial',
+                  marginRight: 'initial',
+                  verticalAlign: 'middle',
+                  display: 'inline-block',
+              };
+        return (
+            <OverflowableText
+                text={items[0].elementName}
+                style={style}
+                tooltipStyle={classes.tooltip}
+            />
+        );
     };
 
     const buildItemsToDeleteGrid = (
@@ -161,16 +182,9 @@ const DeleteDialog = ({
                                 },
                                 {
                                     itemName: (
-                                        <span style={{ fontWeight: 'bold' }}>
-                                            {items.length === 1 && (
-                                                <OverflowableText
-                                                    text={items[0].elementName}
-                                                    style={{ width: '100%' }}
-                                                    tooltipStyle={
-                                                        classes.tooltip
-                                                    }
-                                                />
-                                            )}
+                                        <span>
+                                            {items.length === 1 &&
+                                                renderElement(items)}
                                         </span>
                                     ),
                                 }
@@ -187,7 +201,9 @@ const DeleteDialog = ({
             onClose={handleClose}
             aria-labelledby="dialog-title-delete"
         >
-            <DialogTitle>{buildTitle(itemsState)}</DialogTitle>
+            <DialogTitle style={{ display: 'flex' }}>
+                {buildTitle(itemsState)}
+            </DialogTitle>
             <DialogContent>
                 {buildItemsToDeleteGrid(
                     itemsState,
