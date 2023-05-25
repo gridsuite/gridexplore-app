@@ -25,13 +25,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const ScriptDialogContent = ({
-    id,
-    onError,
-    type,
-    onChange,
-    handleNoEdition,
-}) => {
+const ScriptDialogContent = ({ id, onError, type, onChange }) => {
     const classes = useStyles();
     const selectedTheme = useSelector((state) => state.theme);
     const [aceEditorContent, setAceEditorContent] = useState('');
@@ -54,13 +48,6 @@ const ScriptDialogContent = ({
         },
         [setAceEditorContent, onChange]
     );
-    // used to pass the initial script value to the parent component if the script was not edited.
-    const noEditionContent = useCallback(
-        (script) => {
-            handleNoEdition(script ?? '');
-        },
-        [handleNoEdition]
-    );
 
     const getCurrentScript = useCallback(
         (currentItemId) => {
@@ -72,8 +59,8 @@ const ScriptDialogContent = ({
                     )
                         .then((data) => {
                             if (data) {
-                                setAceEditorContent(data.script ?? '');
-                                noEditionContent(data.script ?? '');
+                                // used to pass the initial script value to the parent component.
+                                onChangeAceEditor(data.script ?? '');
                             }
                         })
                         .catch((error) => {
@@ -92,7 +79,7 @@ const ScriptDialogContent = ({
                 }
             }
         },
-        [onError, type, setAceEditorContent, noEditionContent]
+        [onError, type, setAceEditorContent, onChangeAceEditor]
     );
 
     useEffect(() => {

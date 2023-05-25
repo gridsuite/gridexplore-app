@@ -53,7 +53,6 @@ export const CriteriaBasedFilterDialog = ({
                 Object.assign({ id: filter.id }, filter.equipmentFilterForm)
             );
         } else if (!veto) {
-            //name should be sent outside the equipmentFilterForm
             setCurrentFilter({
                 ...filter,
             });
@@ -73,7 +72,7 @@ export const CriteriaBasedFilterDialog = ({
         onClose();
     };
 
-    const handleNoEdit = useCallback((value) => {
+    const onFetchedDataCallback = useCallback((value) => {
         setCurrentFilter(value);
     }, []);
 
@@ -121,7 +120,7 @@ export const CriteriaBasedFilterDialog = ({
                         contentType={contentType}
                         handleFilterCreation={handleEditCallback}
                         validationsCount={validationsCount}
-                        handleNoEdit={handleNoEdit}
+                        onFetchedDataCallback={onFetchedDataCallback}
                     />
                 </NameWrapper>
             </DialogContent>

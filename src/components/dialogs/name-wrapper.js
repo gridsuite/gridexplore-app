@@ -17,7 +17,6 @@ import { Alert } from '@mui/material';
 const NameWrapper = ({
     initialValue,
     titleMessage,
-    isCreation,
     contentType,
     children,
     handleNameValidation,
@@ -97,10 +96,7 @@ const NameWrapper = ({
             </div>
         );
     };
-    //don't show the field if it's not edit mode
-    if (isCreation) {
-        return null;
-    }
+
     return (
         <>
             <TextField
@@ -124,7 +120,6 @@ const NameWrapper = ({
 NameWrapper.propTypes = {
     initialValue: PropTypes.string,
     titleMessage: PropTypes.string,
-    isCreation: PropTypes.bool,
     contentType: PropTypes.string,
     children: PropTypes.node,
     handleNameValidation: PropTypes.func,

@@ -112,7 +112,6 @@ const ExplicitNamingContingencyListEditDialog = ({
             <DialogContent style={{ overflow: 'hidden' }}>
                 <NameWrapper
                     titleMessage="nameProperty"
-                    isCreation={isCreation}
                     initialValue={name}
                     contentType={ElementType.CONTINGENCY_LIST}
                     handleNameValidation={nameCheck}

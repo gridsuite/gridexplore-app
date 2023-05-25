@@ -88,21 +88,18 @@ const ScriptDialog = ({
         setCurrentScript(newScript);
     };
 
-    const onScriptChange = (newValue) => {
-        setBtnSaveListDisabled(!isNameValide);
-        setCurrentScript(newValue);
-    };
-
+    const onScriptChange = useCallback(
+        (newValue) => {
+            setBtnSaveListDisabled(!isNameValide);
+            setCurrentScript(newValue);
+        },
+        [isNameValide]
+    );
     const nameCheck = (isValide, newName) => {
         setIsNameValide(isValide);
         setBtnSaveListDisabled(!isValide);
         setCurrentName(newName);
     };
-
-    const handleNoEdition = useCallback((value) => {
-        // get the initial script if nothing was edited.
-        setCurrentScript(value);
-    }, []);
 
     return (
         <Dialog
@@ -115,7 +112,6 @@ const ScriptDialog = ({
             <DialogContent>
                 <NameWrapper
                     titleMessage="nameProperty"
-                    isCreation={isCreation}
                     initialValue={name}
                     contentType={type}
                     handleNameValidation={nameCheck}
@@ -127,7 +123,6 @@ const ScriptDialog = ({
                         type={type}
                         isCreation={isCreation}
                         name={name}
-                        handleNoEdition={handleNoEdition}
                     />
                 </NameWrapper>
             </DialogContent>

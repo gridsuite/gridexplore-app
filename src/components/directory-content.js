@@ -7,7 +7,7 @@
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setActiveDirectory, setSelectedElement } from '../redux/actions';
+import { setActiveDirectory } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import * as constants from '../utils/UIconstants';
@@ -135,7 +135,6 @@ const DirectoryContent = () => {
             const subtype = childrenMetadata[event.rowData.elementUuid].subtype;
             /** set active directory on the store because it will be used while editing the contingency name */
             dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-            dispatch(setSelectedElement(event.rowData.elementUuid));
             if (event.rowData.type === ElementType.STUDY) {
                 let url = getLink(
                     event.rowData.elementUuid,

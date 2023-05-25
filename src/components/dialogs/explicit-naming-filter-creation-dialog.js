@@ -133,7 +133,6 @@ const ExplicitNamingFilterCreationDialog = ({
             <DialogContent style={{ overflow: 'hidden' }}>
                 <NameWrapper
                     titleMessage="nameProperty"
-                    isCreation={isFilterCreation}
                     initialValue={name}
                     contentType={ElementType.FILTER}
                     handleNameValidation={nameCheck}

@@ -27,7 +27,6 @@ const EnergySource = {
         },
     },
 };
-
 const Countries1 = {
     countries1: {
         name: 'Countries1',

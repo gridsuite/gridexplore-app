@@ -183,7 +183,7 @@ export const CriteriaBasedFilterDialogContent = ({
     handleFilterCreation,
     handleEquipmentTypeChange,
     validationsCount,
-    handleNoEdit,
+    onFetchedDataCallback,
 }) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [equipmentType, setEquipmentType] = useState(null);
@@ -213,7 +213,9 @@ export const CriteriaBasedFilterDialogContent = ({
                         setInitialFilter({
                             ...backToFrontTweak(response),
                         });
-                        handleNoEdit({ ...backToFrontTweak(response) });
+                        onFetchedDataCallback({
+                            ...backToFrontTweak(response),
+                        });
                         let eType = response.equipmentFilterForm.equipmentType;
                         setEquipmentType(eType);
                         setCurrentFormEdit({
@@ -232,8 +234,8 @@ export const CriteriaBasedFilterDialogContent = ({
                 getContingencyList(ContingencyListType.FORM, id)
                     .then((response) => {
                         setInitialFilter({ ...response });
-                        // handleNoEdit is a callback to send response to the parent component.If the user has not modified any field then the response will be used as a payload.
-                        handleNoEdit({ ...response });
+                        // onFetchedDataCallback is a callback to send response to the parent component when data is fetched.
+                        onFetchedDataCallback({ ...response });
                         setEquipmentType(response.equipmentType);
                         setCurrentFormEdit({
                             equipmentType: {
@@ -256,7 +258,7 @@ export const CriteriaBasedFilterDialogContent = ({
             setInitialFilter(null);
             setEquipmentType(null);
         }
-    }, [id, contentType, snackError, handleNoEdit]);
+    }, [id, contentType, snackError, onFetchedDataCallback]);
 
     function validVoltageValues(obj) {
         let value1NotNull =
