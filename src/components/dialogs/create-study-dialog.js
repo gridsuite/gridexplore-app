@@ -219,28 +219,29 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         return extractDefaultMap(formatWithParameters);
     }, [formatWithParameters]);
 
-    const [currentValues, setCurrentValues] = useState({});
-    const currentParameters = {};
+    const [currentParameters, setCurrentParameters] = useState({});
     const onChange = useCallback((paramName, value, isEdit) => {
         if (!isEdit) {
-            setCurrentValues((prevCurrentValues) => {
+            setCurrentParameters((prevCurrentParameters) => {
                 return {
-                    ...prevCurrentValues,
+                    ...prevCurrentParameters,
                     ...{ [paramName]: value },
                 };
             });
         }
     }, []);
-    const paramsComponent = (
-        <FlatParameters
-            paramsAsArray={formatWithParameters}
-            initValues={currentValues}
-            onChange={onChange}
-            variant="standard"
-        />
-    );
+    const paramsComponent = useMemo(() => {
+        return (
+            <FlatParameters
+                paramsAsArray={formatWithParameters}
+                initValues={currentParameters}
+                onChange={onChange}
+                variant="standard"
+            />
+        );
+    }, [formatWithParameters, currentParameters, onChange]);
     const resetImportParamsToDefault = useCallback(() => {
-        setCurrentValues(defaultValues);
+        setCurrentParameters(defaultValues);
     }, [defaultValues]);
 
     const [
