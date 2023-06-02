@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -33,7 +33,7 @@ import ScriptDialogContent from './script-dialog-content';
 import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
 import ExplicitNamingContingencyListDialogContent from './explicit-naming-contingency-list-content';
 import { prepareContingencyListForBackend } from './contingency-list-helper';
-import { debounce } from '@mui/material';
+import { useDebounce } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -144,9 +144,9 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         [activeDirectory, intl]
     );
 
-    const debouncedUpdateContingencyFormState = useMemo(
-        () => debounce(updateContingencyFormState, 700),
-        [updateContingencyFormState]
+    const debouncedUpdateContingencyFormState = useDebounce(
+        updateContingencyFormState,
+        700
     );
     const handleContingencyNameChanges = (name) => {
         setContingencyListName(name);

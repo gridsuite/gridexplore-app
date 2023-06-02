@@ -11,7 +11,6 @@ import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import {
     Checkbox,
     CircularProgress,
-    debounce,
     IconButton,
     InputAdornment,
     TextField,
@@ -30,6 +29,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { ArrowCircleDown, ArrowCircleUp, Upload } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import CsvImportFilterCreationDialog from './csv-import-filter-creation-dialog';
+import { useDebounce } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -231,10 +231,7 @@ export const useNameField = ({
         ]
     );
 
-    const debouncedUpdateValidity = useMemo(
-        () => debounce(updateValidity, 700),
-        [updateValidity]
-    );
+    const debouncedUpdateValidity = useDebounce(updateValidity, 700);
 
     useEffect(() => {
         if (checking === undefined || error) {
