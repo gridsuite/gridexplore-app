@@ -50,7 +50,6 @@ import {
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
 import {
-    extractDefaultMap,
     FlatParameters,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -215,10 +214,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         setIsParamsCaseFileDisplayed((oldValue) => !oldValue);
     };
 
-    const defaultValues = useMemo(() => {
-        return extractDefaultMap(formatWithParameters);
-    }, [formatWithParameters]);
-
     const [currentParameters, setCurrentParameters] = useState({});
     const onChange = useCallback((paramName, value, isEdit) => {
         if (!isEdit) {
@@ -240,9 +235,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             />
         );
     }, [formatWithParameters, currentParameters, onChange]);
-    const resetImportParamsToDefault = useCallback(() => {
-        setCurrentParameters(defaultValues);
-    }, [defaultValues]);
 
     const [
         providedCaseFile,
@@ -381,7 +373,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         dispatch(removeSelectedCase());
         resetProvidedCaseFile();
-        resetImportParamsToDefault();
         onClose();
     };
 
