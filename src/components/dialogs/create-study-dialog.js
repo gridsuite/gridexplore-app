@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
@@ -49,10 +43,7 @@ import {
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
-import {
-    FlatParameters,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { FlatParameters, useSnackMessage } from '@gridsuite/commons-ui';
 import { ElementType } from '../../utils/elementType';
 import {
     useFileValue,
@@ -225,16 +216,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             });
         }
     }, []);
-    const paramsComponent = useMemo(() => {
-        return (
-            <FlatParameters
-                paramsAsArray={formatWithParameters}
-                initValues={currentParameters}
-                onChange={onChange}
-                variant="standard"
-            />
-        );
-    }, [formatWithParameters, currentParameters, onChange]);
 
     const [
         providedCaseFile,
@@ -501,7 +482,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         isParamsCaseFileDisplayed,
         handleShowParametersForCaseFileClick,
         formatWithParameters,
-        paramsComponent,
         paramDivider
     ) => (
         <>
@@ -517,7 +497,14 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     callback={handleShowParametersForCaseFileClick}
                     disabled={formatWithParameters.length === 0}
                 />
-                {isParamsCaseFileDisplayed && paramsComponent}
+                {isParamsCaseFileDisplayed && (
+                    <FlatParameters
+                        paramsAsArray={formatWithParameters}
+                        initValues={currentParameters}
+                        onChange={onChange}
+                        variant="standard"
+                    />
+                )}
             </div>
         </>
     );
@@ -548,7 +535,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                                     isParamsCaseFileDisplayed,
                                     handleShowParametersForCaseFileClick,
                                     formatWithParameters,
-                                    paramsComponent,
                                     classes.paramDivider
                                 )}
                             </>
@@ -603,7 +589,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                                 isParamsDisplayed,
                                 handleShowParametersClick,
                                 formatWithParameters,
-                                paramsComponent,
                                 classes.paramDivider
                             )}
                         </>
