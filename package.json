@@ -12,6 +12,7 @@
         "@mui/material": "^5.5.0",
         "@mui/styles": "^5.5.0",
         "@reduxjs/toolkit": "^1.2.3",
+        "@hookform/resolvers": "^3.0.0",
         "ace-builds": "^1.4.12",
         "core-js": "^3.6.4",
         "localized-countries": "^2.0.0",
@@ -30,7 +31,11 @@
         "react-window": "^1.8.5",
         "reconnecting-websocket": "^4.4.0",
         "redux": "^4.0.5",
-        "typeface-roboto": "^1.0.0"
+        "typeface-roboto": "^1.0.0",
+        "ag-grid-community": "^29.0.0",
+        "ag-grid-react": "^29.0.0",
+        "react-hook-form": "^7.41.0",
+        "yup": "^1.0.0"
     },
     "scripts": {
         "start": "react-scripts start",

@@ -46,6 +46,7 @@ import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
 import ExplicitNamingContingencyListEditDialog from './dialogs/explicit-naming-contingency-list-edit-dialog';
+import ExplicitNamingFilterDialog from "./dialogs/explicit-naming-filter/explicit-naming-filter-dialog";
 
 const circularProgressSize = '70px';
 
@@ -163,6 +164,7 @@ const DirectoryContent = () => {
                 }
             } else if (event.rowData.type === ElementType.FILTER) {
                 if (subtype === FilterType.EXPLICIT_NAMING) {
+                    console.log('id filter', event.rowData)
                     setCurrentExplicitNamingFilterId(event.rowData.elementUuid);
                     setOpenDialog(subtype);
                 } else if (subtype === FilterType.CRITERIA) {
@@ -795,15 +797,29 @@ const DirectoryContent = () => {
                 );
             case FilterType.EXPLICIT_NAMING:
                 return (
-                    <ExplicitNamingFilterCreationDialog
-                        id={currentExplicitNamingFilterId}
+
+                    <ExplicitNamingFilterDialog
+                        filterId={currentExplicitNamingFilterId}
                         open={true}
                         onClose={handleCloseExplicitNamingFilterDialog}
-                        title={intl.formatMessage({ id: 'editFilter' })}
+                        titleId={'editFilter'}
                         isFilterCreation={false}
                         name={currentExplicitNamingFilterId}
                     />
-                );
+
+                /*
+            <ExplicitNamingFilterCreationDialog
+                id={currentExplicitNamingFilterId}
+                open={true}
+                onClose={handleCloseExplicitNamingFilterDialog}
+                title={intl.formatMessage({id: 'editFilter'})}
+                isFilterCreation={false}
+                name={currentExplicitNamingFilterId}
+            />
+    */
+
+
+                )
             case FilterType.CRITERIA:
                 return (
                     <CriteriaBasedFilterDialog

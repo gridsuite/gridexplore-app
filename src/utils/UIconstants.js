@@ -29,6 +29,8 @@ export const DialogsId = {
     ADD_DIRECTORY: 'add_directory',
     ADD_NEW_CONTINGENCY_LIST: 'add_new_contingency_list',
     ADD_NEW_FILTER: 'add_new_filter',
+    ADD_NEW_FILTER_AG_GRID: 'add_new_filter_ag_grid',
+    ADD_NEW_CONTINGENCY_LIST_RHF: 'add_new_contingency_list_rhf',
     ADD_NEW_CASE: 'add_new_case',
     ACCESS_RIGHTS: 'access_rights',
     RENAME_DIRECTORY: 'rename_directory',

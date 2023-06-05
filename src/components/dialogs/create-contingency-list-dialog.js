@@ -199,6 +199,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
             );
         }
 
+        console.log('testtest old ', formContent);
         createContingencyList(
             contingencyListType,
             contingencyListName,

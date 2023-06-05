@@ -39,6 +39,9 @@ import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
 import { CreateCaseDialog } from '../dialogs/create-case-dialog';
 import { ElementType } from '../../utils/elementType';
+import ExplicitNamingFilterForm from '../dialogs/explicit-naming-filter/explicit-naming-filter-form';
+import ExplicitNamingFilterDialog from '../dialogs/explicit-naming-filter/explicit-naming-filter-dialog';
+import ExplicitNamingContingencyListDialog from '../dialogs/explicit-naming-contingency-list/explicit-naming-contingency-list-dialog';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
@@ -141,6 +144,22 @@ const DirectoryTreeContextualMenu = (props) => {
                     messageDescriptorId: 'createNewFilter',
                     callback: () => {
                         handleOpenDialog(DialogsId.ADD_NEW_FILTER);
+                    },
+                    icon: <AddIcon fontSize="small" />,
+                },
+                {
+                    messageDescriptorId: 'createNewFilterAgGrid',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.ADD_NEW_FILTER_AG_GRID);
+                    },
+                    icon: <AddIcon fontSize="small" />,
+                },
+                {
+                    messageDescriptorId: 'createContingencyListRhf',
+                    callback: () => {
+                        handleOpenDialog(
+                            DialogsId.ADD_NEW_CONTINGENCY_LIST_RHF
+                        );
                     },
                     icon: <AddIcon fontSize="small" />,
                 },
@@ -316,6 +335,22 @@ const DirectoryTreeContextualMenu = (props) => {
                             <FormattedMessage id="validate" />
                         }
                         customTextCancelBtn={<FormattedMessage id="cancel" />}
+                    />
+                );
+            case DialogsId.ADD_NEW_FILTER_AG_GRID:
+                return (
+                    <ExplicitNamingFilterDialog
+                        open={true}
+                        titleId={'createNewFilter'}
+                        onClose={handleCloseDialog}
+                    />
+                );
+            case DialogsId.ADD_NEW_CONTINGENCY_LIST_RHF:
+                return (
+                    <ExplicitNamingContingencyListDialog
+                        open={true}
+                        titleId={'createNewContingencyList'}
+                        onClose={handleCloseDialog}
                     />
                 );
             case DialogsId.ADD_NEW_CASE:

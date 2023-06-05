@@ -19,6 +19,8 @@ import makeStyles from '@mui/styles/makeStyles';
 import ExplicitNamingContingencyListDialogContent from './explicit-naming-contingency-list-content';
 import { saveExplicitNamingContingencyList } from '../../utils/rest-api';
 import { prepareContingencyListForBackend } from './contingency-list-helper';
+import ExplicitNamingContingencyListDialog
+    from "./explicit-naming-contingency-list/explicit-naming-contingency-list-dialog";
 
 const useStyles = makeStyles((theme) => ({
     dialogPaper: {
@@ -100,12 +102,11 @@ const ExplicitNamingContingencyListEditDialog = ({
         >
             <DialogTitle onClose={onClose}>{title}</DialogTitle>
             <DialogContent style={{ overflow: 'hidden' }}>
-                <ExplicitNamingContingencyListDialogContent
-                    id={id}
+                <ExplicitNamingContingencyListDialog
+                    contingencyListId={id}
                     open={open}
-                    name={name}
-                    isCreation={isCreation}
-                    onChange={onChangeHandler}
+                    titleId={'editContingencyList'}
+                    onClose={handleClose}
                 />
                 {editContingencyListErr !== '' && (
                     <Alert severity="error">{editContingencyListErr}</Alert>

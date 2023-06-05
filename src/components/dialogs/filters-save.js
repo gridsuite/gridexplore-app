@@ -31,7 +31,10 @@ const filterSave = (
         return;
     }
 
-    let values = tableValues.filter(
+    console.log('tableValues : ', tableValues)
+    let values = tableValues
+        .map((f) => {return {equipmentID: f?.id}})
+        .filter(
         (el) => el?.equipmentID && el.equipmentID.trim().length > 0
     );
     if (values.length === 0) {

@@ -66,6 +66,10 @@ const lightTheme = createTheme({
         secondary: '#F4F4F4',
         hover: '#8E9C9B',
     },
+    aggrid: 'ag-theme-alpine',
+    agGridBackground: {
+        color: 'white'
+    }
 });
 
 const darkTheme = createTheme({
@@ -96,6 +100,10 @@ const darkTheme = createTheme({
         secondary: '#323232',
         hover: '#545C5B',
     },
+    aggrid: 'ag-theme-alpine-dark',
+    agGridBackground: {
+        color: '#383838'
+    }
 });
 
 const getMuiTheme = (theme) => {
