@@ -42,7 +42,7 @@ export const CriteriaBasedFilterDialog = ({
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const [validationsCount, setValidationsCount] = useState(0);
     const [currentName, setCurrentName] = useState(name);
-    const [isNameValide, setIsNameValide] = useState(true);
+    const [isNameValid, setIsNameValid] = useState(true);
     const classes = useStyles();
     const openRef = useRef(null);
     openRef.current = open;
@@ -59,13 +59,13 @@ export const CriteriaBasedFilterDialog = ({
         } else {
             setCurrentFilter(null);
         }
-        setBtnSaveListDisabled(!isNameValide);
+        setBtnSaveListDisabled(!isNameValid);
     };
 
-    const nameCheckCallBack = (isValide, newName) => {
-        setIsNameValide(isValide);
+    const nameCheckCallBack = (isValid, newName) => {
+        setIsNameValid(isValid);
         setCurrentName(newName);
-        setBtnSaveListDisabled(!isValide);
+        setBtnSaveListDisabled(!isValid);
     };
 
     const handleCancel = () => {

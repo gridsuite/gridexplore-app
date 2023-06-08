@@ -50,7 +50,7 @@ const ScriptDialog = ({
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const [currentScript, setCurrentScript] = useState(null);
     const [currentName, setCurrentName] = useState(name);
-    const [isNameValide, setIsNameValide] = useState(true);
+    const [isNameValid, setIsNameValid] = useState(true);
     const handleClose = () => {
         handleCancel();
     };
@@ -90,14 +90,14 @@ const ScriptDialog = ({
 
     const onScriptChange = useCallback(
         (newValue) => {
-            setBtnSaveListDisabled(!isNameValide);
+            setBtnSaveListDisabled(!isNameValid);
             setCurrentScript(newValue);
         },
-        [isNameValide]
+        [isNameValid]
     );
-    const nameCheck = (isValide, newName) => {
-        setIsNameValide(isValide);
-        setBtnSaveListDisabled(!isValide);
+    const nameCheck = (isValid, newName) => {
+        setIsNameValid(isValid);
+        setBtnSaveListDisabled(!isValid);
         setCurrentName(newName);
     };
 

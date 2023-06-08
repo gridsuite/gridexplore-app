@@ -49,7 +49,7 @@ const ExplicitNamingContingencyListEditDialog = ({
     const fetchFilter = useRef(null);
     fetchFilter.current = open && !isCreation;
     const [currentName, setCurrentName] = useState(name);
-    const [isNameValide, setIsNameValide] = useState(true);
+    const [isNameValid, setIsNameValid] = useState(true);
     const onChangeHandler = (tableValues, isEdited, isDragged, isClean) => {
         setTablesValues(tableValues);
         setEditContingencyListErr('');
@@ -61,13 +61,13 @@ const ExplicitNamingContingencyListEditDialog = ({
     };
 
     const isFormValidationAllowed = () => {
-        const areTableValuesValide =
+        const areTableValuesValid =
             tableValues?.length > 0 &&
             editContingencyListErr === '' &&
             isUnsavedChanges &&
             isExplicitNamingFormClean;
 
-        return isNameValide && (areTableValuesValide || name !== currentName);
+        return isNameValid && (areTableValuesValid || name !== currentName);
     };
 
     const handleEditContingencyList = () => {
@@ -95,8 +95,8 @@ const ExplicitNamingContingencyListEditDialog = ({
         }
     };
 
-    const nameCheck = (isValide, newName) => {
-        setIsNameValide(isValide);
+    const nameCheck = (isValid, newName) => {
+        setIsNameValid(isValid);
         setCurrentName(newName);
     };
 

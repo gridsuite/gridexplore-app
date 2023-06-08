@@ -55,7 +55,7 @@ const ExplicitNamingFilterCreationDialog = ({
     fetchFilter.current = open && !isFilterCreation;
 
     const [currentName, setCurrentName] = useState(name);
-    const [isNameValide, setIsNameValide] = useState(true);
+    const [isNameValid, setIsNameValid] = useState(true);
 
     useEffect(() => {
         setIsGeneratorOrLoad(
@@ -108,16 +108,16 @@ const ExplicitNamingFilterCreationDialog = ({
     };
 
     const isFormValidationAllowed = () => {
-        const areTableValuesValide =
+        const areTableValuesValid =
             isEdited &&
             tableValues?.length > 0 &&
             createFilterErr === '' &&
             equipmentType;
-        return isNameValide && (areTableValuesValide || name !== currentName);
+        return isNameValid && (areTableValuesValid || name !== currentName);
     };
 
-    const nameCheck = (isValide, newName) => {
-        setIsNameValide(isValide);
+    const nameCheck = (isValid, newName) => {
+        setIsNameValid(isValid);
         setCurrentName(newName);
     };
 
