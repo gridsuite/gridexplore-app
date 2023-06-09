@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { elementExists } from '../../utils/rest-api';
@@ -13,6 +13,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 import { Alert } from '@mui/material';
+import { useDebounce } from '@gridsuite/commons-ui';
 
 const NameWrapper = ({
     initialValue,
@@ -22,64 +23,75 @@ const NameWrapper = ({
     handleNameValidation,
 }) => {
     const [value, setValue] = useState(initialValue);
-
     const [loadingCheckName, setLoadingCheckName] = useState(false);
-    const timer = React.useRef();
     const intl = useIntl();
     const [errorMessage, setErrorMessage] = React.useState('');
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    const setFormState = (errorMessage, isNameValid, name) => {
-        setErrorMessage(errorMessage);
-        handleNameValidation(isNameValid, name);
-    };
+    const setFormState = useCallback(
+        (errorMessage, isNameValid, name) => {
+            setErrorMessage(errorMessage);
+            handleNameValidation(isNameValid, name);
+        },
+        [handleNameValidation]
+    );
 
     /**
      * on change input check if name already exist
      * @param name
      */
-    const updateFormState = (name) => {
-        if (name === '') {
-            setFormState(intl.formatMessage({ id: 'nameEmpty' }), false, name);
-            setLoadingCheckName(false);
-        } else if (name.match(/^\s*$/)) {
-            setFormState(intl.formatMessage({ id: 'nameEmpty' }), false, name);
-            setLoadingCheckName(false);
-        } else {
-            //If the name is not only white spaces
-            elementExists(activeDirectory, name, contentType)
-                .then((data) => {
-                    setFormState(
-                        data
-                            ? intl.formatMessage({
-                                  id: 'nameAlreadyUsed',
-                              })
-                            : '',
-                        !data,
-                        name
-                    );
-                })
-                .catch((error) => {
-                    setFormState(
-                        intl.formatMessage({
-                            id: 'nameValidityCheckErrorMsg',
-                        }) + error.message,
-                        false,
-                        name
-                    );
-                })
-                .finally(() => {
-                    setLoadingCheckName(false);
-                });
-        }
-    };
+    const updateFormState = useCallback(
+        (name) => {
+            if (name === '') {
+                setFormState(
+                    intl.formatMessage({ id: 'nameEmpty' }),
+                    false,
+                    name
+                );
+                setLoadingCheckName(false);
+            } else if (name.match(/^\s*$/)) {
+                setFormState(
+                    intl.formatMessage({ id: 'nameEmpty' }),
+                    false,
+                    name
+                );
+                setLoadingCheckName(false);
+            } else {
+                //If the name is not only white spaces
+                elementExists(activeDirectory, name, contentType)
+                    .then((data) => {
+                        setFormState(
+                            data
+                                ? intl.formatMessage({
+                                      id: 'nameAlreadyUsed',
+                                  })
+                                : '',
+                            !data,
+                            name
+                        );
+                    })
+                    .catch((error) => {
+                        setFormState(
+                            intl.formatMessage({
+                                id: 'nameValidityCheckErrorMsg',
+                            }) + error.message,
+                            false,
+                            name
+                        );
+                    })
+                    .finally(() => {
+                        setLoadingCheckName(false);
+                    });
+            }
+        },
+        [activeDirectory, contentType, intl, setFormState]
+    );
+    const debouncedUpdateFormState = useDebounce(updateFormState, 700);
+
     const handleNameChanges = (name) => {
         setValue(name);
         setLoadingCheckName(true);
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => {
-            updateFormState(name);
-        }, 700);
+        debouncedUpdateFormState(name);
     };
 
     const renderNameStatus = () => {
