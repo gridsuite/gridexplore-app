@@ -252,6 +252,6 @@
     "iidm.import.cgmes.create-fictitious-switches-for-disconnected-terminals-mode.NEVER": "Never",
     "iidm.import.cgmes.post-processors": "Post processors",
     "iidm.import.cgmes.post-processors.desc": "Post processors",
-    "iidm.import.ucte.combine-phase-angle-regulation": "Combine phase and angle regulation",
-    "iidm.import.ucte.combine-phase-angle-regulation.desc": "Combine phase and angle regulation"
+    "ucte.import.combine-phase-angle-regulation": "Combine phase and angle regulation",
+    "ucte.import.combine-phase-angle-regulation.desc": "Combine phase and angle regulation"
 }
