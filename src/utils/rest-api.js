@@ -574,7 +574,6 @@ export function getContingencyList(type, id) {
         url += '/v1/identifier-contingency-lists/';
     }
     url += id;
-
     return backendFetchJson(url);
 }
 
@@ -582,10 +581,19 @@ export function getContingencyList(type, id) {
  * Saves a Filter contingency list
  * @returns {Promise<Response>}
  */
-export function saveFormContingencyList(form) {
+export function saveFormContingencyList(form, name) {
     const { nominalVoltage, ...rest } = form;
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('contingencyListType', ContingencyListType.FORM);
+
     const url =
-        PREFIX_ACTIONS_QUERIES + '/v1/form-contingency-lists/' + form.id;
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/contingency-lists/' +
+        form.id +
+        '?' +
+        urlSearchParams.toString();
+
     return backendFetch(url, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
@@ -600,11 +608,16 @@ export function saveFormContingencyList(form) {
  * Saves a script contingency list
  * @returns {Promise<Response>}
  */
-export function saveScriptContingencyList(scriptContingencyList) {
+export function saveScriptContingencyList(scriptContingencyList, name) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('contingencyListType', ContingencyListType.SCRIPT);
     const url =
-        PREFIX_ACTIONS_QUERIES +
-        '/v1/script-contingency-lists/' +
-        scriptContingencyList.id;
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/contingency-lists/' +
+        scriptContingencyList.id +
+        '?' +
+        urlSearchParams.toString();
     return backendFetch(url, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
@@ -617,12 +630,21 @@ export function saveScriptContingencyList(scriptContingencyList) {
  * @returns {Promise<Response>}
  */
 export function saveExplicitNamingContingencyList(
-    explicitNamingContingencyList
+    explicitNamingContingencyList,
+    name
 ) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append(
+        'contingencyListType',
+        ContingencyListType.EXPLICIT_NAMING
+    );
     const url =
-        PREFIX_ACTIONS_QUERIES +
-        '/v1/identifier-contingency-lists/' +
-        explicitNamingContingencyList.id;
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/contingency-lists/' +
+        explicitNamingContingencyList.id +
+        '?' +
+        urlSearchParams.toString();
     return backendFetch(url, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
@@ -809,13 +831,23 @@ export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
 /**
  * Save Filter
  */
-export function saveFilter(filter) {
+export function saveFilter(filter, name) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
     const body = JSON.stringify(filter);
-    return backendFetch(PREFIX_FILTERS_QUERIES + '/' + filter.id, {
-        method: 'put',
-        headers: { 'Content-Type': 'application/json' },
-        body,
-    });
+
+    return backendFetch(
+        PREFIX_EXPLORE_SERVER_QUERIES +
+            '/v1/explore/filters/' +
+            filter.id +
+            '?' +
+            urlSearchParams.toString(),
+        {
+            method: 'put',
+            headers: { 'Content-Type': 'application/json' },
+            body,
+        }
+    );
 }
 
 /**

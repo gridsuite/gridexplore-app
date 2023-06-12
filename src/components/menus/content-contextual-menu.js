@@ -602,6 +602,7 @@ const ContentContextualMenu = (props) => {
                     <ScriptDialog
                         id={getActiveContingencyScriptId()}
                         open={true}
+                        isCreation
                         onClose={handleCloseDialog}
                         onError={handleLastError}
                         title={intl.formatMessage({
@@ -615,6 +616,7 @@ const ContentContextualMenu = (props) => {
                     <ScriptDialog
                         id={getActiveFilterScriptId()}
                         open={true}
+                        isCreation
                         onClose={handleCloseDialog}
                         onError={handleLastError}
                         title={intl.formatMessage({

@@ -128,9 +128,13 @@ const DirectoryContent = () => {
         React.useState(initialMousePosition);
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
+    const [elementName, setElementName] = useState('');
     const handleRowClick = (event) => {
         if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
+            setElementName(childrenMetadata[event.rowData.elementUuid]?.name);
             const subtype = childrenMetadata[event.rowData.elementUuid].subtype;
+            /** set active directory on the store because it will be used while editing the contingency name */
+            dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
             if (event.rowData.type === ElementType.STUDY) {
                 let url = getLink(
                     event.rowData.elementUuid,
@@ -184,6 +188,7 @@ const DirectoryContent = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
         setCurrentFiltersContingencyListId(null);
+        setElementName('');
     };
 
     /**
@@ -197,6 +202,7 @@ const DirectoryContent = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
         setCurrentExplicitNamingContingencyListId(null);
+        setElementName('');
     };
 
     /**
@@ -208,6 +214,7 @@ const DirectoryContent = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setCurrentCriteriaBasedFilterId(null);
         setActiveElement(null);
+        setElementName('');
     };
 
     /**
@@ -217,6 +224,7 @@ const DirectoryContent = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setCurrentExplicitNamingFilterId(null);
         setActiveElement(null);
+        setElementName('');
     };
     const [currentExplicitNamingFilterId, setCurrentExplicitNamingFilterId] =
         useState(null);
@@ -230,6 +238,7 @@ const DirectoryContent = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
         setCurrentScriptContingencyListId(null);
+        setElementName('');
     };
 
     /**
@@ -750,7 +759,7 @@ const DirectoryContent = () => {
         return renderTableContent();
     };
 
-    const renderDialog = () => {
+    const renderDialog = (name) => {
         // TODO openDialog should also be aware of the dialog's type, not only its subtype, because
         // if/when two different dialogs have the same subtype, this function will display the wrong dialog.
         switch (openDialog) {
@@ -765,6 +774,7 @@ const DirectoryContent = () => {
                             id: 'editContingencyList',
                         })}
                         contentType={ElementType.CONTINGENCY_LIST}
+                        name={name}
                     />
                 );
             case ContingencyListType.SCRIPT:
@@ -778,6 +788,7 @@ const DirectoryContent = () => {
                             id: 'editContingencyList',
                         })}
                         type={ElementType.CONTINGENCY_LIST}
+                        name={name}
                     />
                 );
             case ContingencyListType.EXPLICIT_NAMING:
@@ -790,7 +801,7 @@ const DirectoryContent = () => {
                             id: 'editContingencyList',
                         })}
                         isCreation={false}
-                        name={currentExplicitNamingContingencyListId}
+                        name={name}
                     />
                 );
             case FilterType.EXPLICIT_NAMING:
@@ -801,7 +812,7 @@ const DirectoryContent = () => {
                         onClose={handleCloseExplicitNamingFilterDialog}
                         title={intl.formatMessage({ id: 'editFilter' })}
                         isFilterCreation={false}
-                        name={currentExplicitNamingFilterId}
+                        name={name}
                     />
                 );
             case FilterType.CRITERIA:
@@ -813,6 +824,7 @@ const DirectoryContent = () => {
                         onError={handleError}
                         title={intl.formatMessage({ id: 'editFilter' })}
                         contentType={ElementType.FILTER}
+                        name={name}
                     />
                 );
             default:
@@ -881,7 +893,7 @@ const DirectoryContent = () => {
                     }
                 />
             </div>
-            {renderDialog()}
+            {renderDialog(elementName)}
         </>
     );
 };
