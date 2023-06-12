@@ -229,7 +229,7 @@
     "iidm.import.cgmes.create-busbar-section-for-every-connectivity-node.desc": "Create busbar section for every connectivity node",
     "iidm.import.cgmes.ensure-id-alias-unicity": "Ensure IDs and aliases unicity ",
     "iidm.import.cgmes.ensure-id-alias-unicity.desc": "Ensure IDs and aliases are unique",
-    "iidm.import.cgmes.naming-strategy": "Naming startegy",
+    "iidm.import.cgmes.naming-strategy": "Naming strategy",
     "iidm.import.cgmes.naming-strategy.desc": "Configure what type of naming strategy you want to use for the provided ID mapping file",
     "iidm.import.cgmes.import-control-areas": "Import control areas",
     "iidm.import.cgmes.import-control-areas.desc": "Import control areas",
