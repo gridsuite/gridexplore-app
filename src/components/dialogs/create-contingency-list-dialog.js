@@ -348,6 +348,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     </RadioGroup>
                     {contingencyListType === ContingencyListType.SCRIPT && (
                         <ScriptDialogContent
+                            isCreation
                             onChange={onChangeScriptHandler}
                             onError={setCreateContingencyListErr}
                             type={ElementType.CONTINGENCY_LIST}
@@ -356,6 +357,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     {contingencyListType === ContingencyListType.FORM && (
                         <CriteriaBasedFilterDialogContent
                             open={open}
+                            isCreation
                             contentType={ElementType.CONTINGENCY_LIST}
                             handleFilterCreation={onChangeCriteriaBasedHandler}
                         />

@@ -29,6 +29,12 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.paper,
         padding: '0 8px 0 8px',
     },
+    dialogPaper: {
+        width: 'auto',
+        minWidth: '800px',
+        minHeight: '600px',
+        margin: 'auto',
+    },
 }));
 
 export const CountriesSelection = ({
@@ -294,7 +300,6 @@ export const RangeSelection = ({ initialValue, onChange, titleMessage }) => {
         </>
     );
 };
-
 export const filteredTypes = {
     countries: {
         defaultValue: [],
