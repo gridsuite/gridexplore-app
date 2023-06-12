@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 
 import Dialog from '@mui/material/Dialog';
@@ -29,6 +29,7 @@ import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-con
 import ExplicitNamingFilterDialogContent from './explicit-naming-filter-dialog-content';
 import { DialogContentText } from '@mui/material';
 import filterSave from './filters-save';
+import { useDebounce } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -103,7 +104,6 @@ const CreateFilterDialog = ({
 
     const classes = useStyles();
     const intl = useIntl();
-    const timer = React.useRef();
     const [newListType, setNewListType] = useState(FilterType.CRITERIA);
     const [filterType, setFilterType] = useState(null);
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
@@ -136,54 +136,57 @@ const CreateFilterDialog = ({
      * on change input popup check if name already exist
      * @param name
      */
-    const updateFilterFormState = (name) => {
-        if (name !== '') {
-            //If the name is not only white spaces
-            if (name.replace(/ /g, '') !== '') {
-                elementExists(activeDirectory, name, ElementType.FILTER)
-                    .then((data) => {
-                        setFilterFormState(
-                            data
-                                ? intl.formatMessage({
-                                      id: 'nameAlreadyUsed',
-                                  })
-                                : '',
-                            !data
-                        );
-                    })
-                    .catch((error) => {
-                        setFilterFormState(
-                            intl.formatMessage({
-                                id: 'nameValidityCheckErrorMsg',
-                            }) + error.message,
-                            false
-                        );
-                    })
-                    .finally(() => {
-                        setLoadingCheckFilterName(false);
-                    });
+    const updateFilterFormState = useCallback(
+        (name) => {
+            if (name !== '') {
+                //If the name is not only white spaces
+                if (name.replace(/ /g, '') !== '') {
+                    elementExists(activeDirectory, name, ElementType.FILTER)
+                        .then((data) => {
+                            setFilterFormState(
+                                data
+                                    ? intl.formatMessage({
+                                          id: 'nameAlreadyUsed',
+                                      })
+                                    : '',
+                                !data
+                            );
+                        })
+                        .catch((error) => {
+                            setFilterFormState(
+                                intl.formatMessage({
+                                    id: 'nameValidityCheckErrorMsg',
+                                }) + error.message,
+                                false
+                            );
+                        })
+                        .finally(() => {
+                            setLoadingCheckFilterName(false);
+                        });
+                } else {
+                    setFilterFormState(
+                        intl.formatMessage({ id: 'nameEmpty' }),
+                        false
+                    );
+                    setLoadingCheckFilterName(false);
+                }
             } else {
-                setFilterFormState(
-                    intl.formatMessage({ id: 'nameEmpty' }),
-                    false
-                );
+                setFilterFormState('', false);
                 setLoadingCheckFilterName(false);
             }
-        } else {
-            setFilterFormState('', false);
-            setLoadingCheckFilterName(false);
-        }
-    };
+        },
+        [activeDirectory, intl]
+    );
+
+    const debouncedUpdateFilterFormState = useDebounce(
+        updateFilterFormState,
+        700
+    );
 
     const handleFilterNameChanges = (name) => {
         setNewListName(name);
         setLoadingCheckFilterName(true);
-
-        //Reset the timer so we only call update on the last input
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => {
-            updateFilterFormState(name);
-        }, 700);
+        debouncedUpdateFilterFormState(name);
     };
 
     const setFilterFormState = (errorMessage, isNameValid) => {
