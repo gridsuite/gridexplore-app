@@ -1,29 +1,43 @@
 import { useController } from 'react-hook-form';
-import { MenuItem, Select } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import {FormControl, FormHelperText, InputLabel, MenuItem, Select} from '@mui/material';
+import {FormattedMessage, useIntl} from 'react-intl';
 import React from 'react';
+import FormControlLabel from "@mui/material/FormControlLabel";
 
-const SelectInput = ({ name, options, label = '', ...props }) => {
+const SelectInput = ({ name, options, labelId = '', ...props }) => {
+    const intl = useIntl()
     const {
         field: { onChange, value, ref },
         fieldState: { error },
     } = useController({ name });
 
     return (
-        <Select
-            label={<FormattedMessage id={'equipmentType'} />}
-            value={value === null ? '' : value}
-            onChange={(e) => onChange(e.target.value)}
-            style={{ width: '100%' }}
-            {...props}
-        >
-            {options?.length > 0 &&
-                options.map(([key, value]) => (
-                    <MenuItem key={key} value={key}>
-                        <FormattedMessage id={value.label} />
-                    </MenuItem>
-                ))}
-        </Select>
+        <>
+            <FormControl fullWidth margin="dense">
+                <InputLabel>
+                    <FormattedMessage id={labelId} />
+                </InputLabel>
+
+                <Select
+                    label={<FormattedMessage id={labelId} />}
+                    value={value === null ? '' : value}
+                    onChange={(e) => onChange(e.target.value)}
+                    error={!!error?.message}
+                >
+                    {options?.length > 0 &&
+                        options.map(([key, value]) => (
+                            <MenuItem key={key} value={key}>
+                                <FormattedMessage id={value.label} />
+                            </MenuItem>
+                        ))}
+                </Select>
+                {error?.message && (
+                    <FormHelperText error={!!error?.message} >
+                        <FormattedMessage id={error?.message}/>
+                    </FormHelperText>
+                )}
+            </FormControl>
+        </>
     );
 };
 

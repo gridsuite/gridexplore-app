@@ -82,7 +82,6 @@ const CsvUploader = ({
             });
             if (validateCsvFile(result)) {
                 result.splice(0, 1);
-                console.log('test result', result);
                 const dataFromCsv = formatCsvData(result);
                 const newValues = saveTableValues
                     ? [...getValues(name), ...dataFromCsv]
@@ -109,7 +108,6 @@ const CsvUploader = ({
                 )
         );
 
-        console.log('isValuesInTable : ', isValuesInTable);
         if (isValuesInTable) {
             setOpenConfirmationPopup(true);
         } else {

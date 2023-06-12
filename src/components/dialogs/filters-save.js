@@ -31,7 +31,6 @@ const filterSave = (
         return;
     }
 
-    console.log('tableValues : ', tableValues)
     let values = tableValues
         .map((f) => {return {equipmentID: f?.id}})
         .filter(

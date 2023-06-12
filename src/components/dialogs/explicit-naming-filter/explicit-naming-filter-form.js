@@ -1,23 +1,17 @@
 import TextInput from '../../utils/text-input';
-import {
-    EQUIPMENT_ID,
-    EQUIPMENT_TABLE,
-    EQUIPMENT_TYPE,
-    NAME,
-} from '../../utils/field-constants';
-import { FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { filterEquipmentDefinition } from '../../../utils/equipment-types';
+import {DISTRIBUTION_KEY, EQUIPMENT_ID, EQUIPMENT_TABLE, EQUIPMENT_TYPE, NAME,} from '../../utils/field-constants';
+import {FormattedMessage, useIntl} from 'react-intl';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {filterEquipmentDefinition} from '../../../utils/equipment-types';
 import SelectInput from '../../utils/select-input';
-import AggridTableForm from '../ag-grid-table/aggrid-table-form';
-import { useFormContext, useWatch } from 'react-hook-form';
-import { Grid } from '@mui/material';
-import { gridItem } from '../../utils/dialog-utils';
+import {useFormContext, useWatch} from 'react-hook-form';
+import {Grid} from '@mui/material';
+import {gridItem} from '../../utils/dialog-utils';
 import Box from '@mui/material/Box';
-import CustomAgGridTable from '../ag-grid-table-rhf/custom-ag-grid-table';
-import NumberEditor from '../ag-grid-table/cell-editors/number-editors';
-import { renderPopup } from '../create-filter-dialog';
-import Alert from '@mui/material/Alert';
+import CustomAgGridTable, {ROW_DRAGGING_SELECTION_COLUMN_DEF} from '../ag-grid-table-rhf/custom-ag-grid-table';
+import {renderPopup} from '../create-filter-dialog';
+import {DEFAULT_EQUIPMENT_TABLE_ROWS} from "./explicit-naming-filter-dialog";
+import NumberEditor from "../ag-grid-table-rhf/cell-editors/number-editors";
 
 const ExplicitNamingFilterForm = ({ defaultEquipmentType }) => {
     const intl = useIntl();
@@ -36,20 +30,24 @@ const ExplicitNamingFilterForm = ({ defaultEquipmentType }) => {
     });
 
     const { setValue } = useFormContext();
-    console.log('defaultEquipmentType : ', defaultEquipmentType);
     useEffect(() => {
+        const isTableEmpty = watchEquipmentTable.every((el, i) => {
+            return !el[EQUIPMENT_ID] && !el[DISTRIBUTION_KEY]
+        })
         if (
             watchEquipmentType &&
             watchEquipmentType !== defaultEquipmentType &&
-            watchEquipmentTable?.length > 0
+            !isTableEmpty
         ) {
             setIsConfirmationPopupOpen(true);
+        } else if (watchEquipmentType !== defaultEquipmentType) {
+            setValue(EQUIPMENT_TABLE, DEFAULT_EQUIPMENT_TABLE_ROWS);
         }
     }, [watchEquipmentType]);
 
     const handlePopupConfirmation = () => {
         setIsConfirmationPopupOpen(false);
-        setValue(EQUIPMENT_TABLE, []);
+        setValue(EQUIPMENT_TABLE, DEFAULT_EQUIPMENT_TABLE_ROWS);
     };
     const isGeneratorOrLoad = useMemo(
         () =>
@@ -64,7 +62,7 @@ const ExplicitNamingFilterForm = ({ defaultEquipmentType }) => {
                 ? result.map((val) => {
                       return {
                           equipmentID: val[0],
-                          distributionKey: val[1],
+                          distributionKey: val[1] || null,
                       };
                   })
                 : result.map((val) => {
@@ -76,38 +74,41 @@ const ExplicitNamingFilterForm = ({ defaultEquipmentType }) => {
         [isGeneratorOrLoad]
     );
     const columnDefs = useMemo(
-        () =>
-            isGeneratorOrLoad
+        () => {
+            return isGeneratorOrLoad
                 ? [
-                      {
-                          field: 'equipmentID',
-                          minWidth: 150,
-                          headerCheckboxSelection: true,
-                          checkboxSelection: true,
-                          editable:true,
-                          rowDrag: true,
-                      },
-                      {
-                          field: 'distributionKey',
-                          filter: 'agNumberColumnFilter',
-                          numeric: true,
-                          editable:true,
-                          cellEditor: NumberEditor,
-                      },
-                  ]
+                    ...ROW_DRAGGING_SELECTION_COLUMN_DEF,
+                    {
+                        field: 'equipmentID',
+                        editable: true,
+                        maxWidth: 300,
+                        flex: 1,
+                        singleClickEdit: true,
+                    },
+                    {
+                        field: 'distributionKey',
+                        numeric: true,
+                        editable: true,
+                        cellEditor: NumberEditor,
+                        singleClickEdit: true,
+                    },
+                ]
                 : [
-                      {
-                          field: 'equipmentID',
-                          minWidth: 150,
-                          headerCheckboxSelection: true,
-                          checkboxSelection: true,
-                          editable:true,
-                          rowDrag: true,
-                      },
-                  ],
+                    ...ROW_DRAGGING_SELECTION_COLUMN_DEF,
+                    {
+                        field: 'equipmentID',
+                        editable: true,
+                        flex: 1,
+                        singleClickEdit: true,
+                    },
+                ];
+        },
         [isGeneratorOrLoad]
     );
 
+    useEffect(() => {
+
+    }, [watchEquipmentType])
     const nameField = (
         <TextInput
             name={NAME}
@@ -123,19 +124,27 @@ const ExplicitNamingFilterForm = ({ defaultEquipmentType }) => {
         <SelectInput
             name={EQUIPMENT_TYPE}
             options={Object.entries(filterEquipmentDefinition)}
+            labelId={'equipmentType'}
         />
     );
+
+    const initialData = useMemo(() => {
+        return { [EQUIPMENT_ID]: '', [DISTRIBUTION_KEY]: null }
+    }, [])
+
+    const csvFileHeaders = useMemo(() => [
+        intl.formatMessage({ id: 'equipmentID' }),
+        intl.formatMessage({ id: 'distributionKey' }),
+    ], []);
 
     const equipmentTableField = (
         <CustomAgGridTable
             name={EQUIPMENT_TABLE}
             columnDefs={columnDefs}
             formatCsvData={formatCsvData}
-            csvFileHeaders={[
-                intl.formatMessage({ id: 'equipmentID' }),
-                intl.formatMessage({ id: 'distributionKey' }),
-            ]}
-            initialRowData={{ equipmentID: '', distributionKey: '' }}
+            csvFileHeaders={csvFileHeaders}
+            defaultRowData={initialData}
+            minNumberOfRows={3}
         />
     );
 

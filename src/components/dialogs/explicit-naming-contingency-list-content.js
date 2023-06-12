@@ -223,8 +223,7 @@ export const ExplicitNamingFilterRow = ({
                                     />
                                 )}
                                 renderTags={(values) => {
-                                    console.log('rend tags', values);
-                                    return (values.map((item, indexInArray) => (
+                                    return values.map((item, indexInArray) => (
                                         <Chip
                                             key={
                                                 id +
@@ -242,9 +241,8 @@ export const ExplicitNamingFilterRow = ({
                                             label={item}
                                             className={classes.chip}
                                         />
-                                    )))
-                                }
-                                }
+                                    ));
+                                }}
                             />
                         </Grid>
                     </Grid>

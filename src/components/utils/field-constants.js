@@ -1,5 +1,5 @@
 export const NAME = 'name';
-export const EQUIPMENT_ID = 'equipmentId';
+export const EQUIPMENT_ID = 'equipmentID';
 export const EQUIPMENT_TYPE = 'equipmentType';
 export const EQUIPMENT_TABLE = 'equipmentTable';
 export const DISTRIBUTION_KEY = 'distributionKey';

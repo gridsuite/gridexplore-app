@@ -1,13 +1,12 @@
-import {FormProvider} from "react-hook-form";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import {Grid} from "@mui/material";
-import {FormattedMessage} from "react-intl";
-import DialogContent from "@mui/material/DialogContent";
-import ExplicitNamingFilterForm from "./explicit-naming-filter/explicit-naming-filter-form";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
-import makeStyles from "@mui/styles/makeStyles";
+import { FormProvider } from 'react-hook-form';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import { Grid } from '@mui/material';
+import { FormattedMessage } from 'react-intl';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -29,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CustomMuiDialog = ({
+    name,
     open,
     schema,
     methods,
@@ -36,10 +36,11 @@ const CustomMuiDialog = ({
     onSave,
     onValidationError,
     titleId,
+    disabledSave,
     ...dialogProps
 }) => {
     const classes = useStyles();
-    const { handleSubmit } = methods;
+    const { handleSubmit, getValues } = methods;
 
     const handleClose = (event) => {
         onClose(event);
@@ -52,11 +53,11 @@ const CustomMuiDialog = ({
     const handleValidate = (data) => {
         onSave(data);
         onClose(data);
-    }
+    };
 
     const handleValidationError = (errors) => {
         onValidationError && onValidationError(errors);
-    }
+    };
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <Dialog
@@ -72,7 +73,7 @@ const CustomMuiDialog = ({
                 </DialogTitle>
                 <DialogContent
                     style={{
-                        overflow: 'hidden',
+                        overflow: 'auto',
                         justifyContent: 'space-around',
                         flexGrow: 1,
                     }}
@@ -84,6 +85,7 @@ const CustomMuiDialog = ({
                         <FormattedMessage id="cancel" />
                     </Button>
                     <Button
+                        disabled={disabledSave}
                         onClick={handleSubmit(
                             handleValidate,
                             handleValidationError
@@ -95,6 +97,6 @@ const CustomMuiDialog = ({
             </Dialog>
         </FormProvider>
     );
-}
+};
 
 export default CustomMuiDialog;

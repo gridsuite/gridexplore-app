@@ -7,10 +7,9 @@
 
 import { TextField } from '@mui/material';
 import React from 'react';
-import PropTypes from 'prop-types';
-import { useController, useFormContext } from 'react-hook-form';
-import makeStyles from "@mui/styles/makeStyles";
-import {genHelperError} from "./dialog-utils";
+import { useController } from 'react-hook-form';
+import makeStyles from '@mui/styles/makeStyles';
+import { genHelperError } from './dialog-utils';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {

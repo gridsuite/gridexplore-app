@@ -81,7 +81,6 @@ const CsvImportDialog = ({
             });
             if (validateCsvFile(result)) {
                 result.splice(0, 1);
-                console.log('test result', result);
                 setRows(result.map((val) => {return {
                     equipmentID: val[0],
                     distributionKey: val[1]
@@ -107,7 +106,6 @@ const CsvImportDialog = ({
                 )
         );
 
-        console.log('isValuesInTable : ', isValuesInTable);
         if (isValuesInTable) {
             setOpenConfirmationPopup(true);
         } else {

@@ -1,8 +1,8 @@
 import TextInput from '../../utils/text-input';
 import {CONTINGENCY_NAME, EQUIPMENT_ID, EQUIPMENT_IDS, EQUIPMENT_TABLE, NAME} from '../../utils/field-constants';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, { useMemo } from 'react';
-import CustomAgGridTable from '../ag-grid-table-rhf/custom-ag-grid-table';
+import React, {useEffect, useMemo} from 'react';
+import CustomAgGridTable, {ROW_DRAGGING_SELECTION_COLUMN_DEF} from '../ag-grid-table-rhf/custom-ag-grid-table';
 import {Chip, Grid} from '@mui/material';
 import chipsArrayEditor, {ChipsArray} from '../ag-grid-table-rhf/cell-editors/chips-array-editor';
 import {useCallback} from "react";
@@ -23,16 +23,16 @@ const ExplicitNamingContingencyListForm = ({}) => {
     const watchEquipmentId = useWatch({
         name: EQUIPMENT_ID,
     });
+
     const intl = useIntl();
     const columnDefs = useMemo(() => {
         return [
+            ...ROW_DRAGGING_SELECTION_COLUMN_DEF,
             {
                 field: CONTINGENCY_NAME,
                 minWidth: 150,
-                headerCheckboxSelection: true,
-                checkboxSelection: true,
-                rowDrag: true,
                 editable: true,
+                singleClickEdit: true,
             },
             {
                 field: EQUIPMENT_IDS,
@@ -63,7 +63,6 @@ const ExplicitNamingContingencyListForm = ({}) => {
     );
 
     const formatCsvData = useCallback((results) => {
-        console.log('csv results : ', results);
         const contingencyList = results.map((value, index) => {
             return {
                 [CONTINGENCY_NAME]: value[0]?.trim() || '',
@@ -96,7 +95,8 @@ const ExplicitNamingContingencyListForm = ({}) => {
             csvFileHeaders={csvFileHeaders}
             csvInitialData={csvInitialData}
             formatCsvData={formatCsvData}
-            initialRowData={{ [CONTINGENCY_NAME]: '', [EQUIPMENT_IDS]:[] }}
+            defaultRowData={{ [CONTINGENCY_NAME]: '', [EQUIPMENT_IDS]:[] }}
+            minNumberOfRows={3}
         />
     );
 

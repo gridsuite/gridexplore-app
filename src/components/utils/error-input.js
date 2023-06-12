@@ -1,20 +1,17 @@
-import {Grid} from "@mui/material";
-import Alert from "@mui/material/Alert";
-import {useController} from "react-hook-form";
-import {FormattedMessage} from "react-intl";
-import {useEffect} from "react";
+import Alert from '@mui/material/Alert';
+import { useController } from 'react-hook-form';
+import { useIntl } from 'react-intl';
+import { useEffect, useState } from 'react';
 
-const ErrorInput = ({name}) => {
+const ErrorInput = ({ name }) => {
+    const intl = useIntl();
+    const [errorMsg, setErrorMsg] = useState(null);
 
     const {
         fieldState: { error },
     } = useController({
         name,
     });
-
-    useEffect(() => {
-        console.log('errors errors : ', error);
-    }, [error])
 
     const errorProps = (errorMsg) => {
         if (typeof errorMsg === 'string') {
@@ -32,14 +29,13 @@ const ErrorInput = ({name}) => {
         return {};
     };
 
-    return (
-        error?.message && (
-            <Alert
-                severity={'error'}
-                message={<FormattedMessage {...errorProps(error?.message)} />}
-            />
-        )
-    );
-}
+    useEffect(() => {
+        if (error?.message) {
+            setErrorMsg(intl.formatMessage({ ...errorProps(error?.message) }));
+        }
+    }, [error, intl]);
+
+    return errorMsg && <Alert severity={'error'}>{errorMsg}</Alert>;
+};
 
 export default ErrorInput;
