@@ -39,7 +39,6 @@ import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
 import { CreateCaseDialog } from '../dialogs/create-case-dialog';
 import { ElementType } from '../../utils/elementType';
-import ExplicitNamingFilterForm from '../dialogs/explicit-naming-filter/explicit-naming-filter-form';
 import ExplicitNamingFilterDialog from '../dialogs/explicit-naming-filter/explicit-naming-filter-dialog';
 import ExplicitNamingContingencyListDialog from '../dialogs/explicit-naming-contingency-list/explicit-naming-contingency-list-dialog';
 

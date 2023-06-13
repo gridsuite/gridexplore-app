@@ -1,13 +1,17 @@
 import { useController } from 'react-hook-form';
-import {FormControl, FormHelperText, InputLabel, MenuItem, Select} from '@mui/material';
-import {FormattedMessage, useIntl} from 'react-intl';
+import {
+    FormControl,
+    FormHelperText,
+    InputLabel,
+    MenuItem,
+    Select,
+} from '@mui/material';
+import { FormattedMessage } from 'react-intl';
 import React from 'react';
-import FormControlLabel from "@mui/material/FormControlLabel";
 
 const SelectInput = ({ name, options, labelId = '', ...props }) => {
-    const intl = useIntl()
     const {
-        field: { onChange, value, ref },
+        field: { onChange, value },
         fieldState: { error },
     } = useController({ name });
 
@@ -32,8 +36,8 @@ const SelectInput = ({ name, options, labelId = '', ...props }) => {
                         ))}
                 </Select>
                 {error?.message && (
-                    <FormHelperText error={!!error?.message} >
-                        <FormattedMessage id={error?.message}/>
+                    <FormHelperText error={!!error?.message}>
+                        <FormattedMessage id={error?.message} />
                     </FormHelperText>
                 )}
             </FormControl>

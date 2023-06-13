@@ -16,11 +16,9 @@ import Alert from '@mui/material/Alert';
 import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
-import ExplicitNamingContingencyListDialogContent from './explicit-naming-contingency-list-content';
 import { saveExplicitNamingContingencyList } from '../../utils/rest-api';
 import { prepareContingencyListForBackend } from './contingency-list-helper';
-import ExplicitNamingContingencyListDialog
-    from "./explicit-naming-contingency-list/explicit-naming-contingency-list-dialog";
+import ExplicitNamingContingencyListDialog from './explicit-naming-contingency-list/explicit-naming-contingency-list-dialog';
 
 const useStyles = makeStyles((theme) => ({
     dialogPaper: {
