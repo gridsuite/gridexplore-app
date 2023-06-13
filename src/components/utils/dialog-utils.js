@@ -1,5 +1,5 @@
-import {Grid} from "@mui/material";
-import {FormattedMessage} from "react-intl";
+import { Grid } from '@mui/material';
+import { FormattedMessage } from 'react-intl';
 
 export const gridItem = (field, size = 6) => {
     return (

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveDirectory } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -36,7 +36,6 @@ import { fetchElementsInfos } from '../utils/rest-api';
 
 import ScriptDialog from './dialogs/script-dialog';
 import CriteriaBasedFilterDialog from './dialogs/criteria-based-filter-dialog';
-import ExplicitNamingFilterCreationDialog from './dialogs/explicit-naming-filter-creation-dialog';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
@@ -45,10 +44,8 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
-import ExplicitNamingContingencyListEditDialog from './dialogs/explicit-naming-contingency-list-edit-dialog';
-import ExplicitNamingFilterDialog from "./dialogs/explicit-naming-filter/explicit-naming-filter-dialog";
-import ExplicitNamingContingencyListDialog
-    from "./dialogs/explicit-naming-contingency-list/explicit-naming-contingency-list-dialog";
+import ExplicitNamingFilterDialog from './dialogs/explicit-naming-filter/explicit-naming-filter-dialog';
+import ExplicitNamingContingencyListDialog from './dialogs/explicit-naming-contingency-list/explicit-naming-contingency-list-dialog';
 
 const circularProgressSize = '70px';
 
@@ -789,13 +786,14 @@ const DirectoryContent = () => {
                         open={true}
                         onClose={handleCloseExplicitNamingContingency}
                         titleId={'editContingencyList'}
-                        contingencyListId={currentExplicitNamingContingencyListId}
+                        contingencyListId={
+                            currentExplicitNamingContingencyListId
+                        }
                         //contingencyName={currentExplicitNamingContingencyListId}
                     />
                 );
             case FilterType.EXPLICIT_NAMING:
                 return (
-
                     <ExplicitNamingFilterDialog
                         filterId={currentExplicitNamingFilterId}
                         open={true}
@@ -804,20 +802,7 @@ const DirectoryContent = () => {
                         isFilterCreation={false}
                         name={currentExplicitNamingFilterId}
                     />
-
-                /*
-            <ExplicitNamingFilterCreationDialog
-                id={currentExplicitNamingFilterId}
-                open={true}
-                onClose={handleCloseExplicitNamingFilterDialog}
-                title={intl.formatMessage({id: 'editFilter'})}
-                isFilterCreation={false}
-                name={currentExplicitNamingFilterId}
-            />
-    */
-
-
-                )
+                );
             case FilterType.CRITERIA:
                 return (
                     <CriteriaBasedFilterDialog

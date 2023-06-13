@@ -32,10 +32,10 @@ const filterSave = (
     }
 
     let values = tableValues
-        .map((f) => {return {equipmentID: f?.id}})
-        .filter(
-        (el) => el?.equipmentID && el.equipmentID.trim().length > 0
-    );
+        .map((f) => {
+            return { equipmentID: f?.id };
+        })
+        .filter((el) => el?.equipmentID && el.equipmentID.trim().length > 0);
     if (values.length === 0) {
         setCreateFilterErr(
             intl.formatMessage({

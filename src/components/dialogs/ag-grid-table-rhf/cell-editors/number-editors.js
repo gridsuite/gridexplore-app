@@ -1,18 +1,11 @@
-import React, {
-    forwardRef,
-    useEffect,
-    useImperativeHandle,
-    useState,
-} from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { Input } from '@mui/material';
 
 const NumberEditor = forwardRef(({ ...props }, ref) => {
     const [value, setValue] = useState(props.value ?? null);
 
     const handleChange = (event) => {
-        const inputValue = event.target.value;
-        setValue(inputValue);
-        props.setValue(inputValue)
+        setValue(event.target.value);
     };
 
     useImperativeHandle(
