@@ -8,3 +8,4 @@ export const EQUIPMENT_IDS = 'equipmentIDs';
 export const CONTINGENCY_NAME = 'contingencyName';
 export const COUNTRIES_1 = 'countries1'
 export const COUNTRIES_2 = 'countries2'
+

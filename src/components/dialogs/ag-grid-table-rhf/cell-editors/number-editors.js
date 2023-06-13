@@ -1,9 +1,4 @@
-import React, {
-    forwardRef,
-    useEffect,
-    useImperativeHandle,
-    useState,
-} from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { Input } from '@mui/material';
 
 const NumberEditor = forwardRef(({ ...props }, ref) => {

@@ -1,14 +1,21 @@
 import TextInput from '../../utils/text-input';
-import {CONTINGENCY_NAME, EQUIPMENT_ID, EQUIPMENT_IDS, EQUIPMENT_TABLE, NAME} from '../../utils/field-constants';
+import {
+    CONTINGENCY_NAME,
+    EQUIPMENT_ID,
+    EQUIPMENT_IDS,
+    EQUIPMENT_TABLE,
+    NAME,
+} from '../../utils/field-constants';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, {useEffect, useMemo} from 'react';
-import CustomAgGridTable, {ROW_DRAGGING_SELECTION_COLUMN_DEF} from '../ag-grid-table-rhf/custom-ag-grid-table';
-import {Chip, Grid} from '@mui/material';
-import chipsArrayEditor, {ChipsArray} from '../ag-grid-table-rhf/cell-editors/chips-array-editor';
-import {useCallback} from "react";
-import {gridItem} from "../../utils/dialog-utils";
-import Box from "@mui/material/Box";
-import {useWatch} from "react-hook-form";
+import React, { useCallback, useMemo } from 'react';
+import CustomAgGridTable, {
+    ROW_DRAGGING_SELECTION_COLUMN_DEF,
+} from '../ag-grid-table-rhf/custom-ag-grid-table';
+import { Grid } from '@mui/material';
+import chipsArrayEditor from '../ag-grid-table-rhf/cell-editors/chips-array-editor';
+import { gridItem } from '../../utils/dialog-utils';
+import Box from '@mui/material/Box';
+import { useWatch } from 'react-hook-form';
 
 const suppressEnter = (params) => {
     const KEY_ENTER = 'Enter';
@@ -19,7 +26,7 @@ const suppressEnter = (params) => {
     return key === KEY_ENTER;
 };
 
-const ExplicitNamingContingencyListForm = ({}) => {
+const ExplicitNamingContingencyListForm = () => {
     const watchEquipmentId = useWatch({
         name: EQUIPMENT_ID,
     });
@@ -74,19 +81,25 @@ const ExplicitNamingContingencyListForm = ({}) => {
             };
         });
         return contingencyList;
-    }, [])
+    }, []);
 
-    const csvFileHeaders = useMemo(() => [
-        intl.formatMessage({ id: 'elementName' }),
-        intl.formatMessage({ id: 'equipments' }),
-    ], []);
+    const csvFileHeaders = useMemo(
+        () => [
+            intl.formatMessage({ id: 'elementName' }),
+            intl.formatMessage({ id: 'equipments' }),
+        ],
+        [intl]
+    );
 
-    const csvInitialData = useMemo(() => [
-        [intl.formatMessage({ id: 'CSVFileCommentContingencyList1' })],
-        [intl.formatMessage({ id: 'CSVFileCommentContingencyList2' })],
-        [intl.formatMessage({ id: 'CSVFileCommentContingencyList3' })],
-        [intl.formatMessage({ id: 'CSVFileCommentContingencyList4' })]
-    ], []);
+    const csvInitialData = useMemo(
+        () => [
+            [intl.formatMessage({ id: 'CSVFileCommentContingencyList1' })],
+            [intl.formatMessage({ id: 'CSVFileCommentContingencyList2' })],
+            [intl.formatMessage({ id: 'CSVFileCommentContingencyList3' })],
+            [intl.formatMessage({ id: 'CSVFileCommentContingencyList4' })],
+        ],
+        [intl]
+    );
 
     const equipmentTableField = (
         <CustomAgGridTable
@@ -95,7 +108,7 @@ const ExplicitNamingContingencyListForm = ({}) => {
             csvFileHeaders={csvFileHeaders}
             csvInitialData={csvInitialData}
             formatCsvData={formatCsvData}
-            defaultRowData={{ [CONTINGENCY_NAME]: '', [EQUIPMENT_IDS]:[] }}
+            defaultRowData={{ [CONTINGENCY_NAME]: '', [EQUIPMENT_IDS]: [] }}
             minNumberOfRows={3}
         />
     );
@@ -114,7 +127,7 @@ const ExplicitNamingContingencyListForm = ({}) => {
                 </Grid>
             </Grid>
         </>
-    )
+    );
 };
 
 export default ExplicitNamingContingencyListForm;

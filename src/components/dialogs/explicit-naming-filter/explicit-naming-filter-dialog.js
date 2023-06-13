@@ -11,7 +11,6 @@ import { filterEquipmentDefinition } from '../../../utils/equipment-types';
 import { useForm } from 'react-hook-form';
 import ExplicitNamingFilterForm from './explicit-naming-filter-form';
 import { useEffect, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import {
     createFilter,
@@ -33,25 +32,6 @@ const checkNameIsUnique = (name, activeDirectory) => {
         );
     });
 };
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        margin: 0,
-        padding: theme.spacing(2),
-    },
-    closeButton: {
-        position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
-        color: theme.palette.grey[500],
-    },
-    dialogPaper: {
-        width: 'auto',
-        minWidth: '800px',
-        minHeight: '600px',
-        margin: 'auto',
-    },
-}));
 
 export const DEFAULT_EQUIPMENT_TABLE_ROWS = [{}, {}, {}, {}];
 const emptyFormData = {
@@ -125,12 +105,16 @@ const ExplicitNamingFilterDialog = ({
             getFilterById(filterId).then((response) => {
                 if (response) {
                     setDefaultEquipmentType(response?.equipmentType);
-                    reset({
-                        [NAME]: '',
-                        [EQUIPMENT_ID]: filterId,
-                        [EQUIPMENT_TYPE]: response?.equipmentType,
-                        [EQUIPMENT_TABLE]: response?.filterEquipmentsAttributes,
-                    }, {keepDefaultValues: false});
+                    reset(
+                        {
+                            [NAME]: '',
+                            [EQUIPMENT_ID]: filterId,
+                            [EQUIPMENT_TYPE]: response?.equipmentType,
+                            [EQUIPMENT_TABLE]:
+                                response?.filterEquipmentsAttributes,
+                        },
+                        { keepDefaultValues: false }
+                    );
                 }
             });
         }
@@ -146,19 +130,25 @@ const ExplicitNamingFilterDialog = ({
     };
 
     const onSubmit = (filter) => {
-
-        let equipments = filter[EQUIPMENT_TABLE].filter((eq) => eq[EQUIPMENT_ID]);
+        let equipments = filter[EQUIPMENT_TABLE].filter(
+            (eq) => eq[EQUIPMENT_ID]
+        );
 
         // we check if there is equipment with distribution key,
         // if we find one, we set all others' distribution keys that are null to 0
-        const atLeastOnDistributionKey = equipments.some((eq) => eq[DISTRIBUTION_KEY] !== null);
+        const atLeastOnDistributionKey = equipments.some(
+            (eq) => eq[DISTRIBUTION_KEY] !== null
+        );
         if (atLeastOnDistributionKey) {
             equipments = equipments.map((eq, index) => {
                 if (!eq[DISTRIBUTION_KEY]) {
-                    setValue(`${EQUIPMENT_TABLE}.${index}.${DISTRIBUTION_KEY}`, 0)
+                    setValue(
+                        `${EQUIPMENT_TABLE}.${index}.${DISTRIBUTION_KEY}`,
+                        0
+                    );
                 }
                 return eq;
-            })
+            });
         }
         if (filterId) {
             saveFilter({
