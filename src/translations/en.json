@@ -215,5 +215,6 @@
     "add" : "Add",
     "replace": "Replace",
 
-    "temporaryContingencyWarning": "Please note that in the current version contingency names are not saved and contingencies can only contain one equipement."
+    "temporaryContingencyWarning": "Please note that in the current version contingency names are not saved and contingencies can only contain one equipement.",
+    "DIE": "arcade"
 }

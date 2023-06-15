@@ -30,7 +30,7 @@ import {
     OverflowableText,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Checkbox } from '@mui/material';
+import { Checkbox, Typography } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
 
@@ -328,17 +328,17 @@ const DirectoryContent = () => {
         return href;
     }
 
-    function getElementTypeTranslation(type, subtype) {
-        return (
-            <FormattedMessage
-                id={
-                    type === ElementType.FILTER ||
-                    type === ElementType.CONTINGENCY_LIST
-                        ? subtype + '_' + type
-                        : type
-                }
-            />
-        );
+    function getElementTypeTranslation(type, subtype, formatCase) {
+        let label =
+            type === ElementType.FILTER || type === ElementType.CONTINGENCY_LIST
+                ? intl.formatMessage({ id: subtype + '_' + type })
+                : type === ElementType.CASE
+                ? intl.formatMessage({ id: type }) +
+                  ' (' +
+                  formatCase.toLowerCase() +
+                  ')'
+                : intl.formatMessage({ id: type });
+        return <Typography>{label}</Typography>;
     }
 
     function typeCellRender(cellData) {
@@ -350,7 +350,8 @@ const DirectoryContent = () => {
                     <div>
                         {getElementTypeTranslation(
                             objectType,
-                            childrenMetadata[elementUuid].subtype
+                            childrenMetadata[elementUuid].subtype,
+                            childrenMetadata[elementUuid]?.format
                         )}
                     </div>
                 ) : null}
@@ -551,6 +552,7 @@ const DirectoryContent = () => {
                             subtype: e.specificMetadata
                                 ? e.specificMetadata.type
                                 : null,
+                            format: e.specificMetadata?.format,
                         };
                     });
                 })
