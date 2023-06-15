@@ -329,16 +329,17 @@ const DirectoryContent = () => {
     }
 
     function getElementTypeTranslation(type, subtype, formatCase) {
-        let label =
+        const format =
+            formatCase === 'DIE'
+                ? intl.formatMessage({ id: formatCase })
+                : formatCase.toLowerCase();
+        const elementTypeLabel =
             type === ElementType.FILTER || type === ElementType.CONTINGENCY_LIST
                 ? intl.formatMessage({ id: subtype + '_' + type })
                 : type === ElementType.CASE
-                ? intl.formatMessage({ id: type }) +
-                  ' (' +
-                  formatCase.toLowerCase() +
-                  ')'
+                ? intl.formatMessage({ id: type }) + ' (' + format + ')'
                 : intl.formatMessage({ id: type });
-        return <Typography>{label}</Typography>;
+        return <Typography>{elementTypeLabel}</Typography>;
     }
 
     function typeCellRender(cellData) {
