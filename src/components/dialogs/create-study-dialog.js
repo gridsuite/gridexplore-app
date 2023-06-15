@@ -33,23 +33,23 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    loadCasesSuccess,
-    selectCase,
-    removeSelectedCase,
-    setActiveDirectory,
     addUploadingElement,
+    loadCasesSuccess,
+    removeSelectedCase,
     removeUploadingElement,
+    selectCase,
     selectFile,
+    setActiveDirectory,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
-import { useImportExportParams, useSnackMessage } from '@gridsuite/commons-ui';
+import { FlatParameters, useSnackMessage } from '@gridsuite/commons-ui';
 import { ElementType } from '../../utils/elementType';
 import {
     useFileValue,
     useNameField,
-    useTextValue,
     usePrefillNameField,
+    useTextValue,
 } from './field-hook';
 import { keyGenerator } from '../../utils/functions.js';
 import { Divider, Grid } from '@mui/material';
@@ -135,6 +135,7 @@ const SelectCase = () => {
  * Dialog to create a study
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
+ * @param providedExistingCase
  */
 export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const [caseExist, setCaseExist] = React.useState(false);
@@ -204,8 +205,17 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         setIsParamsCaseFileDisplayed((oldValue) => !oldValue);
     };
 
-    const [currentParameters, paramsComponent, resetImportParamsToDefault] =
-        useImportExportParams(formatWithParameters, null, null, 'standard');
+    const [currentParameters, setCurrentParameters] = useState({});
+    const onChange = useCallback((paramName, value, isEdit) => {
+        if (!isEdit) {
+            setCurrentParameters((prevCurrentParameters) => {
+                return {
+                    ...prevCurrentParameters,
+                    ...{ [paramName]: value },
+                };
+            });
+        }
+    }, []);
 
     const [
         providedCaseFile,
@@ -225,10 +235,9 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 .then((result) => {
                     // sort possible values alphabetically to display select options sorted
                     result.parameters = result.parameters?.map((p) => {
-                        let sortedPossibleValue = p.possibleValues?.sort(
-                            (a, b) => a.localeCompare(b)
+                        p.possibleValues = p.possibleValues?.sort((a, b) =>
+                            a.localeCompare(b)
                         );
-                        p.possibleValues = sortedPossibleValue;
                         return p;
                     });
                     setFormatWithParameters(result.parameters);
@@ -345,7 +354,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         dispatch(removeSelectedCase());
         resetProvidedCaseFile();
-        resetImportParamsToDefault();
         onClose();
     };
 
@@ -421,7 +429,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             studyName,
             description,
             selectedCase ?? tempCaseUuid,
-            providedExistingCase ? true : false,
+            !!providedExistingCase,
             activeDirectory,
             currentParameters &&
                 (isParamsDisplayed || isParamsCaseFileDisplayed)
@@ -474,7 +482,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         isParamsCaseFileDisplayed,
         handleShowParametersForCaseFileClick,
         formatWithParameters,
-        paramsComponent,
         paramDivider
     ) => (
         <>
@@ -490,7 +497,14 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     callback={handleShowParametersForCaseFileClick}
                     disabled={formatWithParameters.length === 0}
                 />
-                {isParamsCaseFileDisplayed && paramsComponent}
+                {isParamsCaseFileDisplayed && (
+                    <FlatParameters
+                        paramsAsArray={formatWithParameters}
+                        initValues={currentParameters}
+                        onChange={onChange}
+                        variant="standard"
+                    />
+                )}
             </div>
         </>
     );
@@ -521,7 +535,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                                     isParamsCaseFileDisplayed,
                                     handleShowParametersForCaseFileClick,
                                     formatWithParameters,
-                                    paramsComponent,
                                     classes.paramDivider
                                 )}
                             </>
@@ -576,7 +589,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                                 isParamsDisplayed,
                                 handleShowParametersClick,
                                 formatWithParameters,
-                                paramsComponent,
                                 classes.paramDivider
                             )}
                         </>

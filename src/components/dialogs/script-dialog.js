@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -16,6 +16,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { saveFilter, saveScriptContingencyList } from '../../utils/rest-api';
 import { ElementType, FilterType } from '../../utils/elementType';
 import ScriptDialogContent from './script-dialog-content';
+import NameWrapper from './name-wrapper';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -35,11 +36,21 @@ const useStyles = makeStyles(() => ({
  * @param type Contingencies or filter
  * @param subtype Element's subtype
  */
-const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
+const ScriptDialog = ({
+    id,
+    open,
+    onClose,
+    onError,
+    title,
+    type,
+    isCreation,
+    name,
+}) => {
     const classes = useStyles();
     const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
     const [currentScript, setCurrentScript] = useState(null);
-
+    const [currentName, setCurrentName] = useState(name);
+    const [isNameValid, setIsNameValid] = useState(true);
     const handleClose = () => {
         handleCancel();
     };
@@ -55,7 +66,7 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
                 id: id,
                 script: currentScript ?? '',
             };
-            saveScriptContingencyList(newScript)
+            saveScriptContingencyList(newScript, currentName)
                 .then(() => {})
                 .catch((error) => {
                     onError(error.message);
@@ -77,13 +88,17 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
         setCurrentScript(newScript);
     };
 
-    const onChangeHandler = (newScript) => {
-        setCurrentScript(newScript);
-        if (newScript !== currentScript) {
-            setBtnSaveListDisabled(false);
-        } else {
-            setBtnSaveListDisabled(true);
-        }
+    const onScriptChange = useCallback(
+        (newValue) => {
+            setBtnSaveListDisabled(!isNameValid);
+            setCurrentScript(newValue);
+        },
+        [isNameValid]
+    );
+    const nameCheck = (isValid, newName) => {
+        setIsNameValid(isValid);
+        setBtnSaveListDisabled(!isValid);
+        setCurrentName(newName);
     };
 
     return (
@@ -95,14 +110,21 @@ const ScriptDialog = ({ id, open, onClose, onError, title, type }) => {
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <div>
+                <NameWrapper
+                    titleMessage="nameProperty"
+                    initialValue={name}
+                    contentType={type}
+                    handleNameValidation={nameCheck}
+                >
                     <ScriptDialogContent
                         id={id}
-                        onChange={onChangeHandler}
+                        onChange={onScriptChange}
                         onError={onError}
                         type={type}
+                        isCreation={isCreation}
+                        name={name}
                     />
-                </div>
+                </NameWrapper>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCancel}>
@@ -127,6 +149,7 @@ ScriptDialog.propTypes = {
     onError: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
+    isCreation: PropTypes.bool,
 };
 
 export default ScriptDialog;
