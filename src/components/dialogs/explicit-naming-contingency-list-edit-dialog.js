@@ -12,13 +12,14 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import React, { useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import Alert from '@mui/material/Alert';
 import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import ExplicitNamingContingencyListDialogContent from './explicit-naming-contingency-list-content';
 import { saveExplicitNamingContingencyList } from '../../utils/rest-api';
 import { prepareContingencyListForBackend } from './contingency-list-helper';
+import { ElementType } from '../../utils/elementType';
+import NameWrapper from './name-wrapper';
 
 const useStyles = makeStyles((theme) => ({
     dialogPaper: {
@@ -47,7 +48,8 @@ const ExplicitNamingContingencyListEditDialog = ({
         useState(true);
     const fetchFilter = useRef(null);
     fetchFilter.current = open && !isCreation;
-
+    const [currentName, setCurrentName] = useState(name);
+    const [isNameValid, setIsNameValid] = useState(true);
     const onChangeHandler = (tableValues, isEdited, isDragged, isClean) => {
         setTablesValues(tableValues);
         setEditContingencyListErr('');
@@ -59,13 +61,13 @@ const ExplicitNamingContingencyListEditDialog = ({
     };
 
     const isFormValidationAllowed = () => {
-        return (
-            tableValues &&
-            tableValues.length > 0 &&
+        const areTableValuesValid =
+            tableValues?.length > 0 &&
             editContingencyListErr === '' &&
             isUnsavedChanges &&
-            isExplicitNamingFormClean
-        );
+            isExplicitNamingFormClean;
+
+        return isNameValid && (areTableValuesValid || name !== currentName);
     };
 
     const handleEditContingencyList = () => {
@@ -73,7 +75,10 @@ const ExplicitNamingContingencyListEditDialog = ({
             return;
         }
         saveExplicitNamingContingencyList(
-            prepareContingencyListForBackend(id, name, tableValues)
+            {
+                ...prepareContingencyListForBackend(id, name, tableValues),
+            },
+            currentName
         )
             .then(() => {
                 setUnsavedChanges(false);
@@ -90,6 +95,11 @@ const ExplicitNamingContingencyListEditDialog = ({
         }
     };
 
+    const nameCheck = (isValid, newName) => {
+        setIsNameValid(isValid);
+        setCurrentName(newName);
+    };
+
     return (
         <Dialog
             classes={{ paper: classes.dialogPaper }}
@@ -100,16 +110,20 @@ const ExplicitNamingContingencyListEditDialog = ({
         >
             <DialogTitle onClose={onClose}>{title}</DialogTitle>
             <DialogContent style={{ overflow: 'hidden' }}>
-                <ExplicitNamingContingencyListDialogContent
-                    id={id}
-                    open={open}
-                    name={name}
-                    isCreation={isCreation}
-                    onChange={onChangeHandler}
-                />
-                {editContingencyListErr !== '' && (
-                    <Alert severity="error">{editContingencyListErr}</Alert>
-                )}
+                <NameWrapper
+                    titleMessage="nameProperty"
+                    initialValue={name}
+                    contentType={ElementType.CONTINGENCY_LIST}
+                    handleNameValidation={nameCheck}
+                >
+                    <ExplicitNamingContingencyListDialogContent
+                        id={id}
+                        open={open}
+                        name={name}
+                        isCreation={isCreation}
+                        onChange={onChangeHandler}
+                    />
+                </NameWrapper>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>

@@ -59,7 +59,8 @@ const ScriptDialogContent = ({ id, onError, type, onChange }) => {
                     )
                         .then((data) => {
                             if (data) {
-                                setAceEditorContent(data.script ?? '');
+                                // used to pass the initial script value to the parent component.
+                                onChangeAceEditor(data.script ?? '');
                             }
                         })
                         .catch((error) => {
@@ -78,14 +79,13 @@ const ScriptDialogContent = ({ id, onError, type, onChange }) => {
                 }
             }
         },
-        [onError, type, setAceEditorContent]
+        [onError, type, setAceEditorContent, onChangeAceEditor]
     );
 
     useEffect(() => {
         // get contingency list
         getCurrentScript(id);
     }, [id, getCurrentScript]);
-
     return (
         <AceEditor
             className={classes.aceEditor}
@@ -105,6 +105,7 @@ ScriptDialogContent.propTypes = {
     onError: PropTypes.func.isRequired,
     type: PropTypes.string.isRequired,
     onChange: PropTypes.func,
+    isCreation: PropTypes.bool,
 };
 
 export default ScriptDialogContent;

@@ -126,6 +126,7 @@ const backToFrontTweak = (response) => {
         biProps[k] = biProp;
     });
     eff.freePropertiesP = biProps;
+
     return ret;
 };
 
@@ -182,6 +183,7 @@ export const CriteriaBasedFilterDialogContent = ({
     handleFilterCreation,
     handleEquipmentTypeChange,
     validationsCount,
+    onFetchedDataCallback,
 }) => {
     const [initialFilter, setInitialFilter] = useState(null);
     const [equipmentType, setEquipmentType] = useState(null);
@@ -208,7 +210,12 @@ export const CriteriaBasedFilterDialogContent = ({
             if (contentType === ElementType.FILTER) {
                 getFilterById(id)
                     .then((response) => {
-                        setInitialFilter(backToFrontTweak(response));
+                        setInitialFilter({
+                            ...backToFrontTweak(response),
+                        });
+                        onFetchedDataCallback({
+                            ...backToFrontTweak(response),
+                        });
                         let eType = response.equipmentFilterForm.equipmentType;
                         setEquipmentType(eType);
                         setCurrentFormEdit({
@@ -226,7 +233,9 @@ export const CriteriaBasedFilterDialogContent = ({
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
                 getContingencyList(ContingencyListType.FORM, id)
                     .then((response) => {
-                        setInitialFilter(response);
+                        setInitialFilter({ ...response });
+                        // onFetchedDataCallback is a callback to send response to the parent component when data is fetched.
+                        onFetchedDataCallback({ ...response });
                         setEquipmentType(response.equipmentType);
                         setCurrentFormEdit({
                             equipmentType: {
@@ -249,7 +258,7 @@ export const CriteriaBasedFilterDialogContent = ({
             setInitialFilter(null);
             setEquipmentType(null);
         }
-    }, [id, contentType, snackError]);
+    }, [id, contentType, snackError, onFetchedDataCallback]);
 
     function validVoltageValues(obj) {
         let value1NotNull =
@@ -335,7 +344,6 @@ export const CriteriaBasedFilterDialogContent = ({
                     : initialFilter[key]
             );
         }
-
         const currFilter = currentFormEdit[key];
         const localChange = (newVal, veto) => {
             currFilter.value = newVal;
@@ -349,7 +357,6 @@ export const CriteriaBasedFilterDialogContent = ({
             );
             editDone(globalVeto);
         };
-
         return (
             <SingleFilter
                 key={key}
@@ -370,7 +377,6 @@ export const CriteriaBasedFilterDialogContent = ({
             });
         }
     };
-
     return (
         <>
             <Grid container>
