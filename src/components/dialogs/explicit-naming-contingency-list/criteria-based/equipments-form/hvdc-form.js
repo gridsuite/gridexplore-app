@@ -1,16 +1,11 @@
 import CountriesInput from "../../../../utils/countries-input";
-import {
-    COUNTRIES_1,
-    COUNTRIES_2,
-    NOMINAL_VOLTAGE_1,
-    NOMINAL_VOLTAGE_2
-} from "../../../../utils/field-constants";
+import {COUNTRIES_1, COUNTRIES_2, NOMINAL_VOLTAGE_1, NOMINAL_VOLTAGE_2} from "../../../../utils/field-constants";
+import RangeInput from "../../../../utils/range-input";
 import {Grid} from "@mui/material";
 import {gridItem} from "../../../../utils/dialog-utils";
-import React from "react";
-import RangeInput from "../../../../utils/range-input";
+import React from "@types/react";
 
-const LineForm = ({
+const HvdcForm = ({
 
 }) => {
     const countries1 = (
@@ -47,6 +42,6 @@ const LineForm = ({
             {gridItem(nominalValue2Field, 12)}
         </Grid>
     );
-};
+}
 
-export default LineForm;
+export default HvdcForm;

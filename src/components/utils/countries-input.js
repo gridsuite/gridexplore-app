@@ -1,18 +1,25 @@
 import { useParameterState } from '../dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import React, { useCallback, useState } from '@types/react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { getComputedLanguage } from '../../utils/language';
 import { Chip, FormControl } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
-import {useController} from "react-hook-form";
-import {useMemo} from "react";
+import {useController, useFieldArray, useFormContext} from 'react-hook-form';
+import { useMemo } from 'react';
 
 export const CountriesInput = ({ name, titleMessage }) => {
-    const {
-        field: { onChange, value },
-    } = useController({ name });
+    const {field: {
+        value, onChange
+    }} = useController({
+        name
+    })
+    const { getValues } = useFormContext();
+
+    const { fields, append, remove } = useFieldArray({
+        name
+    });
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const countriesListCB = useCallback(() => {
@@ -29,7 +36,7 @@ export const CountriesInput = ({ name, titleMessage }) => {
         }
     }, [languageLocal]);
 
-    const countriesList = useMemo(() => countriesListCB(), [])
+    const countriesList = useMemo(() => countriesListCB(), []);
     return (
         <>
             <FormControl fullWidth margin="dense">
@@ -37,7 +44,10 @@ export const CountriesInput = ({ name, titleMessage }) => {
                     id="select_countries"
                     value={value}
                     multiple
-                    onChange={onChange}
+                    onChange={(event, value) => {
+                        console.log('event : ', value);
+                        onChange(value)
+                    }}
                     options={Object.keys(countriesList.object())}
                     getOptionLabel={(code) => countriesList.get(code)}
                     renderInput={(props) => (

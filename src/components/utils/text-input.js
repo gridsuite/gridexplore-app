@@ -5,11 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextField } from '@mui/material';
+import { InputAdornment, TextField } from '@mui/material';
 import React from 'react';
-import { useController } from 'react-hook-form';
+import { useController, useFormContext } from 'react-hook-form';
 import makeStyles from '@mui/styles/makeStyles';
-import { genHelperError } from './dialog-utils';
+import { FieldLabel, func_identity, genHelperError } from './dialog-utils';
+import IconButton from '@mui/material/IconButton';
+import { genHelperPreviousValue } from './inputs/hooks-helpers';
+import PropTypes from 'prop-types';
+import TextFieldWithAdornment from './text-field-with-adornment';
+import ClearIcon from '@mui/icons-material/Clear';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -21,38 +26,105 @@ const useStyles = makeStyles((theme) => ({
 const TextInput = ({
     name,
     label,
+    labelValues, // this prop is used to add a value to label. this value is displayed without being translated
     id,
+    adornment,
+    outputTransform = func_identity, //transform materialUi input value before sending it to react hook form, mostly used to deal with number fields
+    inputTransform = func_identity, //transform react hook form value before sending it to materialUi input, mostly used to deal with number fields
     acceptValue = () => true, //used to check user entry before committing the input change, used mostly to prevent user from typing a character in number field
+    formProps,
+    previousValue,
+    clearable,
+    customAdornment,
     ...props
 }) => {
     const classes = useStyles();
+    const { validationSchema, getValues, removeOptional } = useFormContext();
     const {
         field: { onChange, value, ref },
         fieldState: { error },
     } = useController({ name });
 
+    const Field = adornment ? TextFieldWithAdornment : TextField;
+
+    const handleClearValue = () => {
+        onChange(outputTransform(''));
+    };
+
     const handleValueChanged = (e) => {
         if (acceptValue(e.target.value)) {
-            onChange(e.target.value);
+            onChange(outputTransform(e.target.value));
         }
     };
 
+    const transformedValue = inputTransform(value);
+
+    const fieldLabel = !label
+        ? null
+        : FieldLabel({
+              label,
+              values: labelValues,
+              optional: false,
+              /*!isFieldRequired(name, validationSchema, getValues()) &&
+                  !formProps?.disabled &&
+                  !removeOptional*/
+          });
+
     return (
-        <TextField
-            key={name}
-            size="medium"
-            fullWidth={true}
-            label={label}
-            value={value}
+        <Field
+            key={id ? id : label}
+            fullWidth
+            id={id ? id : label}
+            label={fieldLabel}
+            {...(adornment && {
+                adornmentPosition: adornment.position,
+                adornmentText: adornment?.text,
+            })}
+            value={transformedValue}
             onChange={handleValueChanged}
             FormHelperTextProps={{
                 className: classes.helperText,
             }}
+            InputProps={{
+                endAdornment: (
+                    <InputAdornment position="end">
+                        {clearable &&
+                            transformedValue !== undefined &&
+                            transformedValue !== '' && (
+                                <IconButton onClick={handleClearValue}>
+                                    <ClearIcon />
+                                </IconButton>
+                            )}
+                        {customAdornment && { ...customAdornment }}
+                    </InputAdornment>
+                ),
+                ...props.inputProps,
+            }}
             inputRef={ref}
+            {...(clearable &&
+                adornment && {
+                    handleClearValue: handleClearValue,
+                })}
+            {...genHelperPreviousValue(previousValue, adornment)}
             {...genHelperError(error?.message)}
-            {...props}
+            {...formProps}
         />
     );
+};
+
+TextInput.propTypes = {
+    label: PropTypes.string,
+    labelValues: PropTypes.object,
+    errorMessage: PropTypes.string,
+    value: PropTypes.any,
+    onChange: PropTypes.func,
+    adornment: PropTypes.object,
+    customAdornment: PropTypes.object,
+    transformValue: PropTypes.func,
+    acceptValue: PropTypes.func,
+    formProps: PropTypes.object,
+    previousValue: PropTypes.any,
+    clearable: PropTypes.bool,
 };
 
 export default TextInput;

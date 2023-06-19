@@ -170,7 +170,6 @@ export const CustomAgGridTable = ({
 
     useEffect(() => {
         if (gridApi) {
-            //gridApi.api.setColumnDefs(columnDefs);
             gridApi.api.sizeColumnsToFit();
         }
     }, [columnDefs])

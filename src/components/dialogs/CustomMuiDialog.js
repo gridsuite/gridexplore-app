@@ -40,7 +40,7 @@ const CustomMuiDialog = ({
     ...dialogProps
 }) => {
     const classes = useStyles();
-    const { handleSubmit, getValues } = methods;
+    const { handleSubmit } = methods;
 
     const handleClose = (event) => {
         onClose(event);
@@ -56,6 +56,7 @@ const CustomMuiDialog = ({
     };
 
     const handleValidationError = (errors) => {
+        console.log('errors : ', errors)
         onValidationError && onValidationError(errors);
     };
     return (

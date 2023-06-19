@@ -2,11 +2,17 @@ import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import yup from '../../utils/yup-config';
 import {
+    CONTINGENCY_LIST_TYPE,
     CONTINGENCY_NAME,
+    COUNTRIES_1,
+    COUNTRIES_2,
     EQUIPMENT_ID,
     EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
+    EQUIPMENT_TYPE,
     NAME,
+    NOMINAL_VOLTAGE_1,
+    NOMINAL_VOLTAGE_2,
 } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
@@ -14,13 +20,25 @@ import {
     createContingencyList,
     elementExists,
     getContingencyList,
-    saveExplicitNamingContingencyList,
 } from '../../../utils/rest-api';
 import { useEffect } from 'react';
-import { ContingencyListType, ElementType } from '../../../utils/elementType';
+import {
+    ContingencyListType,
+    ContingencyListTypeRefactor,
+    ElementType,
+} from '../../../utils/elementType';
 import CustomMuiDialog from '../CustomMuiDialog';
-import ExplicitNamingContingencyListForm from './explicit-naming-contingency-list-form';
-import { prepareContingencyListForBackend } from '../contingency-list-helper';
+import ContingencyListCreationForm from './contingency-list-creation-form';
+import {
+    getRangeInputEmptyDataForm,
+    getRangeInputSchema,
+} from '../../utils/range-input';
+import {
+    DEFAULT_TABLE_ROWS,
+    editContingencyList,
+    getFormContent,
+    getFormDataFromFetchedElement,
+} from './contingency-list-utils';
 
 const checkNameIsUnique = (name, activeDirectory) => {
     if (!name) {
@@ -32,18 +50,25 @@ const checkNameIsUnique = (name, activeDirectory) => {
         );
     });
 };
-const DEFAULT_TABLE_ROWS = [{}, {}, {}];
+
 const emptyFormData = {
     [EQUIPMENT_ID]: null,
     [NAME]: '',
     [EQUIPMENT_TABLE]: DEFAULT_TABLE_ROWS,
+    [CONTINGENCY_LIST_TYPE]: ContingencyListTypeRefactor.CRITERIA_BASED.id,
+    [EQUIPMENT_TYPE]: null,
+    [COUNTRIES_1]: [],
+    [COUNTRIES_2]: [],
+    ...getRangeInputEmptyDataForm(NOMINAL_VOLTAGE_1),
+    ...getRangeInputEmptyDataForm(NOMINAL_VOLTAGE_2),
 };
 
-const ExplicitNamingContingencyListDialog = ({
+const ContingencyListCreationDialog = ({
     contingencyListId,
     onClose,
     open,
     titleId,
+    contingencyListType,
 }) => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const { snackError } = useSnackMessage();
@@ -61,12 +86,22 @@ const ExplicitNamingContingencyListDialog = ({
                             checkNameIsUnique(name, activeDirectory)
                         ),
             }),
+        [EQUIPMENT_TYPE]: yup.string().nullable(),
+        [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
         [EQUIPMENT_TABLE]: yup.array().of(
             yup.object().shape({
                 [CONTINGENCY_NAME]: yup.string().nullable(),
                 [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
             })
         ),
+        [COUNTRIES_1]: yup.array().of(
+            yup.string().nullable()
+        ),
+        [COUNTRIES_2]:yup.array().of(
+            yup.string().nullable()
+        ),
+        ...getRangeInputSchema(NOMINAL_VOLTAGE_1),
+        ...getRangeInputSchema(NOMINAL_VOLTAGE_2),
     });
 
     const methods = useForm({
@@ -74,35 +109,22 @@ const ExplicitNamingContingencyListDialog = ({
         resolver: yupResolver(schema),
     });
 
-    const { reset } = methods;
+    const { reset, formState:{errors} } = methods;
 
     useEffect(() => {
         if (contingencyListId) {
-            getContingencyList(
-                ContingencyListType.EXPLICIT_NAMING,
-                contingencyListId
-            ).then((response) => {
-                if (response) {
-                    const result =
-                        response?.identifierContingencyList?.identifiers?.map(
-                            (identifiers, index) => {
-                                return {
-                                    [CONTINGENCY_NAME]:
-                                        'contingencyName' + index, // Temporary : at the moment, we do not save the name in the backend.
-                                    [EQUIPMENT_IDS]:
-                                        identifiers.identifierList.map(
-                                            (identifier) =>
-                                                identifier.identifier
-                                        ),
-                                };
-                            }
+            getContingencyList(contingencyListType, contingencyListId).then(
+                (response) => {
+                    if (response) {
+                        const formData = getFormDataFromFetchedElement(
+                            response,
+                            contingencyListType,
+                            contingencyListId
                         );
-                    reset({
-                        [EQUIPMENT_ID]: contingencyListId,
-                        [EQUIPMENT_TABLE]: result ?? DEFAULT_TABLE_ROWS,
-                    });
+                        reset(formData);
+                    }
                 }
-            });
+            );
         }
     }, [contingencyListId, reset]);
 
@@ -116,13 +138,10 @@ const ExplicitNamingContingencyListDialog = ({
     };
 
     const onSubmit = (data) => {
+        console.log('data : ', errors)
+        console.log('data : ', data)
         if (contingencyListId) {
-            const equipments = prepareContingencyListForBackend(
-                contingencyListId,
-                contingencyListId,
-                data[EQUIPMENT_TABLE] ?? []
-            );
-            saveExplicitNamingContingencyList(equipments ?? [])
+            editContingencyList(contingencyListId, contingencyListType, data)
                 .then(() => {
                     handleClose();
                 })
@@ -134,15 +153,15 @@ const ExplicitNamingContingencyListDialog = ({
                     });
                 });
         } else {
-            const equipments = prepareContingencyListForBackend(
+            const formContent = getFormContent(
                 contingencyListId ?? null,
-                data[NAME],
-                data[EQUIPMENT_TABLE] ?? []
+                data
             );
+            console.log('before sending  :  ', formContent);
             createContingencyList(
-                ContingencyListType.EXPLICIT_NAMING,
+                data[CONTINGENCY_LIST_TYPE],
                 data[NAME],
-                equipments,
+                formContent,
                 activeDirectory
             )
                 .then(() => handleClose())
@@ -164,9 +183,9 @@ const ExplicitNamingContingencyListDialog = ({
             methods={methods}
             titleId={titleId}
         >
-            <ExplicitNamingContingencyListForm />
+            <ContingencyListCreationForm />
         </CustomMuiDialog>
     );
 };
 
-export default ExplicitNamingContingencyListDialog;
+export default ContingencyListCreationDialog;

@@ -45,7 +45,7 @@ import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
 import ExplicitNamingFilterDialog from './dialogs/explicit-naming-filter/explicit-naming-filter-dialog';
-import ExplicitNamingContingencyListDialog from './dialogs/explicit-naming-contingency-list/explicit-naming-contingency-list-dialog';
+import ContingencyListCreationDialog from './dialogs/explicit-naming-contingency-list/contingency-list-creation-dialog';
 
 const circularProgressSize = '70px';
 
@@ -782,13 +782,14 @@ const DirectoryContent = () => {
                 );
             case ContingencyListType.EXPLICIT_NAMING:
                 return (
-                    <ExplicitNamingContingencyListDialog
+                    <ContingencyListCreationDialog
                         open={true}
                         onClose={handleCloseExplicitNamingContingency}
                         titleId={'editContingencyList'}
                         contingencyListId={
                             currentExplicitNamingContingencyListId
                         }
+                        contingencyListType={ContingencyListType.EXPLICIT_NAMING}
                         //contingencyName={currentExplicitNamingContingencyListId}
                     />
                 );

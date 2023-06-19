@@ -40,7 +40,7 @@ import { useDeferredFetch } from '../../utils/custom-hooks';
 import { CreateCaseDialog } from '../dialogs/create-case-dialog';
 import { ElementType } from '../../utils/elementType';
 import ExplicitNamingFilterDialog from '../dialogs/explicit-naming-filter/explicit-naming-filter-dialog';
-import ExplicitNamingContingencyListDialog from '../dialogs/explicit-naming-contingency-list/explicit-naming-contingency-list-dialog';
+import ContingencyListCreationDialog from '../dialogs/explicit-naming-contingency-list/contingency-list-creation-dialog';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
@@ -346,7 +346,7 @@ const DirectoryTreeContextualMenu = (props) => {
                 );
             case DialogsId.ADD_NEW_CONTINGENCY_LIST_RHF:
                 return (
-                    <ExplicitNamingContingencyListDialog
+                    <ContingencyListCreationDialog
                         open={true}
                         titleId={'createNewContingencyList'}
                         onClose={handleCloseDialog}
