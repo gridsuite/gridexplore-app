@@ -329,16 +329,14 @@ const DirectoryContent = () => {
     }
 
     function getElementTypeTranslation(type, subtype, formatCase) {
-        const format =
-            formatCase === 'DIE'
-                ? intl.formatMessage({ id: formatCase })
-                : formatCase.toLowerCase();
-        const elementTypeLabel =
+        const format = formatCase
+            ? ' (' + intl.formatMessage({ id: formatCase }) + ')'
+            : '';
+        const elemType =
             type === ElementType.FILTER || type === ElementType.CONTINGENCY_LIST
                 ? intl.formatMessage({ id: subtype + '_' + type })
-                : type === ElementType.CASE
-                ? intl.formatMessage({ id: type }) + ' (' + format + ')'
                 : intl.formatMessage({ id: type });
+        const elementTypeLabel = `${elemType}${format.toLocaleLowerCase()}`;
         return <Typography>{elementTypeLabel}</Typography>;
     }
 
@@ -352,7 +350,7 @@ const DirectoryContent = () => {
                         {getElementTypeTranslation(
                             objectType,
                             childrenMetadata[elementUuid].subtype,
-                            childrenMetadata[elementUuid]?.format
+                            childrenMetadata[elementUuid].format
                         )}
                     </div>
                 ) : null}
@@ -553,7 +551,7 @@ const DirectoryContent = () => {
                             subtype: e.specificMetadata
                                 ? e.specificMetadata.type
                                 : null,
-                            format: e.specificMetadata?.format,
+                            format: e.specificMetadata?.format ?? null,
                         };
                     });
                 })

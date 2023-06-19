@@ -216,5 +216,12 @@
     "replace": "Replace",
 
     "temporaryContingencyWarning": "Please note that in the current version contingency names are not saved and contingencies can only contain one equipement.",
-    "DIE": "arcade"
+    "DIE" : "ARCADE",
+    "XIIDM": "XIIDM",
+    "CGMES": "CGMES",
+    "PSS/E" : "PSS/E",
+    "UCTE" : "UCTE",
+    "MATPOWER": "MATPOWER",
+    "POWERFACTORY" : "POWERFACTORY",
+    "IEEE CDF": "IEEE CDF"
 }
