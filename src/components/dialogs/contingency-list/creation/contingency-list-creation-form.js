@@ -1,23 +1,27 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import RadioInput from '../../../utils/radio-input';
 import {
     CONTINGENCY_LIST_TYPE,
-    EQUIPMENT_ID,
-    NAME, SCRIPT,
+    NAME,
+    SCRIPT,
 } from '../../../utils/field-constants';
 import { ContingencyListTypeRefactor } from '../../../../utils/elementType';
 import { Grid } from '@mui/material';
 import { gridItem } from '../../../utils/dialog-utils';
-import Box from '@mui/material/Box';
 import React from 'react';
 import { useWatch } from 'react-hook-form';
 import CriteriaBasedForm from '../criteria-based/criteria-based-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import TextInput from '../../../utils/text-input';
-import { FormattedMessage } from 'react-intl';
-import ScriptInput from "../../../utils/script-input";
+import ScriptInput from '../../../utils/script-input';
 
-const ContingencyListCreationForm = ({}) => {
-
+const ContingencyListCreationForm = () => {
     const watchContingencyListType = useWatch({
         name: CONTINGENCY_LIST_TYPE,
     });
@@ -57,7 +61,9 @@ const ContingencyListCreationForm = ({}) => {
                 <ExplicitNamingForm />
             )}
             {watchContingencyListType ===
-                ContingencyListTypeRefactor.SCRIPT.id && <ScriptInput name={SCRIPT}/>}
+                ContingencyListTypeRefactor.SCRIPT.id && (
+                <ScriptInput name={SCRIPT} />
+            )}
         </Grid>
     );
 };

@@ -1,31 +1,38 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {useFieldArray, useFormContext} from 'react-hook-form';
-import {AgGridReact} from 'ag-grid-react';
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
+import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {ArrowCircleDown, ArrowCircleUp, Upload} from '@mui/icons-material';
-import {Grid, Tooltip} from '@mui/material';
-import {useIntl} from 'react-intl';
+import { ArrowCircleDown, ArrowCircleUp, Upload } from '@mui/icons-material';
+import { Grid, Tooltip } from '@mui/material';
+import { useIntl } from 'react-intl';
 import CsvUploader from './csv-uploader/csv-uploader';
 import makeStyles from '@mui/styles/makeStyles';
 import ErrorInput from '../../utils/error-input';
-import clsx from "clsx";
-import {useTheme} from "@mui/styles";
+import clsx from 'clsx';
+import { useTheme } from '@mui/styles';
 
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
         rowDrag: true,
-        maxWidth:35
+        maxWidth: 35,
     },
     {
         headerCheckboxSelection: true,
         checkboxSelection: true,
-        maxWidth:50
+        maxWidth: 50,
     },
-]
+];
 
 const useStyles = makeStyles((theme) => ({
     grid: {
@@ -77,9 +84,9 @@ export const CustomAgGridTable = ({
     name,
     columnDefs,
     defaultRowData,
-    formatCsvData,
+    fromCsvDataToFormValues, // this used to transform rows from csv file, to data can be displayed in the table
     csvFileHeaders,
-    csvInitialData,
+    csvInitialData, // this is used if csv file generated has some row by default (comments for example)
     minNumberOfRows = 0,
 }) => {
     const classes = useStyles();
@@ -91,7 +98,8 @@ export const CustomAgGridTable = ({
     const [upDisabled, setUpDisabled] = useState(false);
     const [downDisabled, setDownDisabled] = useState(false);
     const intl = useIntl();
-    const { getValues, setValue, } = useFormContext();
+    const { getValues } = useFormContext();
+    const [rowData, setRowData] = useState(getValues(name) ?? []);
     const { fields, append, remove, move, update } = useFieldArray({
         control,
         name: name,
@@ -99,12 +107,11 @@ export const CustomAgGridTable = ({
 
     useEffect(() => {
         setRowData(getValues(name));
-    }, [fields, getValues])
-    const [rowData, setRowData] = useState(getValues(name) ?? []);
+    }, [fields, getValues, setRowData, name]);
 
     const handleAddRow = () => {
         append(defaultRowData);
-        setRowData(getValues(name))
+        setRowData(getValues(name));
     };
 
     const handleDeleteRows = () => {
@@ -118,47 +125,41 @@ export const CustomAgGridTable = ({
                     }
                 }
                 return true;
-            } )
+            });
             if (rows.length === minNumberOfRows) {
-                update(idx, defaultRowData)
-            }
-            else {
-                remove(idx)
+                update(idx, defaultRowData);
+            } else {
+                remove(idx);
             }
         });
         setRowData(getValues(name));
     };
 
+    const getIndex = (val) => {
+        const rows = getValues(name);
+        return rows.findIndex((obj) => {
+            for (let key in val) {
+                if (obj[key] !== val[key]) {
+                    return false;
+                }
+            }
+            return true;
+        });
+    };
     const handleMoveRowUp = () => {
         selectedRows.forEach((val, index) => {
-            const rows = getValues(name);
-            const idx = rows.findIndex((obj) => {
-                for (let key in val) {
-                    if (obj[key] !== val[key]) {
-                        return false;
-                    }
-                }
-                return true;
-            } )
+            const idx = getIndex(val);
             move(idx, idx - 1);
         });
-        setRowData(getValues(name))
+        setRowData(getValues(name));
     };
 
     const handleMoveRowDown = () => {
         selectedRows.forEach((val, index) => {
-            const rows = getValues(name);
-            const idx = rows.findIndex((obj) => {
-                for (let key in val) {
-                    if (obj[key] !== val[key]) {
-                        return false;
-                    }
-                }
-                return true;
-            } )
+            const idx = getIndex(val);
             move(idx, idx + 1);
         });
-        setRowData(getValues(name))
+        setRowData(getValues(name));
     };
 
     const defaultColDef = useMemo(
@@ -172,7 +173,7 @@ export const CustomAgGridTable = ({
         if (gridApi) {
             gridApi.api.sizeColumnsToFit();
         }
-    }, [columnDefs])
+    }, [columnDefs, gridApi]);
 
     const updateButtonsState = useCallback(
         (event) => {
@@ -189,11 +190,7 @@ export const CustomAgGridTable = ({
 
     return (
         <Grid container spacing={2}>
-            <Grid
-                item
-                xs={12}
-                className={clsx([theme.aggrid, classes.grid])}
-            >
+            <Grid item xs={12} className={clsx([theme.aggrid, classes.grid])}>
                 <AgGridReact
                     rowData={rowData}
                     onGridReady={(params) => {
@@ -225,7 +222,13 @@ export const CustomAgGridTable = ({
                     //onCellValueChanged={onCellValueChanged}
                 ></AgGridReact>
             </Grid>
-            <Grid item xs={12} textAlign={'end'} justifyContent={'flex-end'} position={'sticky'}>
+            <Grid
+                item
+                xs={12}
+                textAlign={'end'}
+                justifyContent={'flex-end'}
+                position={'sticky'}
+            >
                 <IconButton
                     className={classes.iconColor}
                     onClick={() => setUploaderOpen(true)}
@@ -272,7 +275,7 @@ export const CustomAgGridTable = ({
                 </IconButton>
             </Grid>
             <Grid item xs={12}>
-                <ErrorInput name={name}/>
+                <ErrorInput name={name} />
             </Grid>
             <CsvUploader
                 open={uploaderOpen}
@@ -282,7 +285,7 @@ export const CustomAgGridTable = ({
                 title={'title test'}
                 name={name}
                 tableValues={fields}
-                formatCsvData={formatCsvData}
+                formatCsvData={fromCsvDataToFormValues}
                 csvData={csvInitialData}
             />
         </Grid>

@@ -1,12 +1,16 @@
-import TextInput from '../../../utils/text-input';
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {
     CONTINGENCY_NAME,
-    EQUIPMENT_ID,
     EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
-    NAME,
 } from '../../../utils/field-constants';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import React, { useCallback, useMemo } from 'react';
 import CustomAgGridTable, {
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
@@ -15,7 +19,6 @@ import { Grid } from '@mui/material';
 import chipsArrayEditor from '../../ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { gridItem } from '../../../utils/dialog-utils';
 import Box from '@mui/material/Box';
-import { useWatch } from 'react-hook-form';
 
 const suppressEnter = (params) => {
     const KEY_ENTER = 'Enter';
@@ -27,7 +30,6 @@ const suppressEnter = (params) => {
 };
 
 const ExplicitNamingForm = () => {
-
     const intl = useIntl();
     const columnDefs = useMemo(() => {
         return [
@@ -45,18 +47,14 @@ const ExplicitNamingForm = () => {
                 },
                 autoHeight: true,
                 wrapText: true,
-                cellEditorPopup: true,
-                cellEditorParams: {
-                    cellHeight: 50,
-                },
                 singleClickEdit: true,
                 cellRenderer: chipsArrayEditor,
             },
         ];
     }, []);
 
-    const formatCsvData = useCallback((results) => {
-        const contingencyList = results.map((value, index) => {
+    const fromCsvDataToFormValues = useCallback((results) => {
+        return results.map((value, index) => {
             return {
                 [CONTINGENCY_NAME]: value[0]?.trim() || '',
                 [EQUIPMENT_IDS]:
@@ -66,7 +64,6 @@ const ExplicitNamingForm = () => {
                         .filter((n) => n) || undefined,
             };
         });
-        return contingencyList;
     }, []);
 
     const csvFileHeaders = useMemo(
@@ -93,7 +90,7 @@ const ExplicitNamingForm = () => {
             columnDefs={columnDefs}
             csvFileHeaders={csvFileHeaders}
             csvInitialData={csvInitialData}
-            formatCsvData={formatCsvData}
+            fromCsvDataToFormValues={fromCsvDataToFormValues}
             defaultRowData={{ [CONTINGENCY_NAME]: '', [EQUIPMENT_IDS]: [] }}
             minNumberOfRows={3}
         />

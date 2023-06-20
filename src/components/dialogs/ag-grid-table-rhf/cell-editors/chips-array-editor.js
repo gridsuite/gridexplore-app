@@ -1,17 +1,21 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import React, {
     forwardRef,
-    useCallback,
     useEffect,
-    useMemo,
+    useImperativeHandle,
     useState,
 } from 'react';
-import { Chip, Input } from '@mui/material';
+import { Chip } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import makeStyles from '@mui/styles/makeStyles';
 import TextField from '@mui/material/TextField';
-import {useImperativeHandle} from "react";
-import {EQUIPMENT_IDS} from "../../../utils/field-constants";
-import {styled} from "@mui/styles";
+import { EQUIPMENT_IDS } from '../../../utils/field-constants';
 
 const useStyles = makeStyles({
     input: {
@@ -27,24 +31,6 @@ const useStyles = makeStyles({
     },
 });
 
-export const ChipsArray = ({ values, onDelete, getTagProps }) => {
-    return (
-        values &&
-        values.map((val, index) => (
-            <Chip
-                key={val + index}
-                label={val}
-                size={'small'}
-                onDelete={() => {
-                    onDelete(index);
-                }}
-                style={{ margin: '2px' }}
-                {...getTagProps({index})}
-            />
-        ))
-    );
-};
-
 const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     const [values, setValues] = useState(props?.data?.[EQUIPMENT_IDS] ?? []);
     const classes = useStyles();
@@ -55,20 +41,21 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
         setValues(newValues);
     };
 
-    useEffect(() =>  {
-        props.setValue(values)
-    }, [values])
+    useEffect(() => {
+        props.setValue(values);
+    }, [values, props]);
 
     const handleChipAdd = (_, value) => {
         const updatedValues = new Set([...values, ...value]);
         setValues([...updatedValues]);
-
     };
 
     const handleKeyPress = (event) => {
         if (event.key === 'Enter' && values?.length > 0) {
             props.api.stopEditing();
-            const newVal = Array.isArray(event?.value) ? event.value[0].trim() : '';
+            const newVal = Array.isArray(event?.value)
+                ? event.value[0].trim()
+                : '';
             if (newVal !== '' && !values.includes(newVal)) {
                 handleChipAdd(event.value);
             }
@@ -109,12 +96,18 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
                     />
                 );
             }}
-            renderTags={(val, getTagProps) => (
-                <ChipsArray
-                    values={val}
-                    getTagProps={getTagProps}
-                />
-            )}
+            renderTags={(val, getTagProps) =>
+                values.map((val, index) => (
+                    <Chip
+                        key={val + index}
+                        label={val}
+                        size={'small'}
+                        style={{ margin: '2px' }}
+                        {...getTagProps({ index })}
+                        onDelete={(i) => handleChipDeleted(i)}
+                    />
+                ))
+            }
         />
     );
 });

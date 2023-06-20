@@ -1,6 +1,11 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { filterEquipmentDefinition } from '../../../../utils/equipment-types';
-import LineForm from './equipments-form/line-form';
-import AutocompleteSelectInput from '../../../utils/autocomplete-select-input';
 import {
     COUNTRIES_1,
     COUNTRIES_2,
@@ -8,14 +13,14 @@ import {
     NOMINAL_VOLTAGE_1,
     NOMINAL_VOLTAGE_2,
 } from '../../../utils/field-constants';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { gridItem } from '../../../utils/dialog-utils';
 import { Grid } from '@mui/material';
 import CountriesInput from '../../../utils/countries-input';
 import RangeInput from '../../../utils/range-input';
 import SelectInput from '../../../utils/select-input';
-import {CONTINGENCY_LIST_EQUIPMENTS} from "../contingency-list-utils";
+import { CONTINGENCY_LIST_EQUIPMENTS } from '../contingency-list-utils';
 
 const CriteriaBasedForm = () => {
     const { getValues } = useFormContext();

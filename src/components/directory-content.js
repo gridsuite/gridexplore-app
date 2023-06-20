@@ -43,8 +43,8 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
-import ExplicitNamingFilterDialog from './dialogs/explicit-naming-filter/explicit-naming-filter-dialog';
 import ContingencyListModificationDialog from './dialogs/contingency-list/modification/contingency-list-modification-dialog';
+import ExplicitNamingFilterCreationDialog from './dialogs/explicit-naming-filter-creation-dialog';
 
 const circularProgressSize = '70px';
 
@@ -756,7 +756,7 @@ const DirectoryContent = () => {
         return renderTableContent();
     };
 
-    const renderDialog = (elementName) => {
+    const renderDialog = (name) => {
         // TODO openDialog should also be aware of the dialog's type, not only its subtype, because
         // if/when two different dialogs have the same subtype, this function will display the wrong dialog.
         switch (openDialog) {
@@ -770,7 +770,7 @@ const DirectoryContent = () => {
                             ContingencyListTypeRefactor.CRITERIA_BASED.id
                         }
                         onClose={handleCloseFiltersContingency}
-                        name={elementName}
+                        name={name}
                     />
                 );
             case ContingencyListType.SCRIPT:
@@ -783,7 +783,7 @@ const DirectoryContent = () => {
                             ContingencyListTypeRefactor.SCRIPT.id
                         }
                         onClose={handleCloseScriptContingency}
-                        name={elementName}
+                        name={name}
                     />
                 );
             case ContingencyListType.EXPLICIT_NAMING:
@@ -798,18 +798,18 @@ const DirectoryContent = () => {
                             ContingencyListTypeRefactor.EXPLICIT_NAMING.id
                         }
                         onClose={handleCloseExplicitNamingContingency}
-                        name={elementName}
+                        name={name}
                     />
                 );
             case FilterType.EXPLICIT_NAMING:
                 return (
-                    <ExplicitNamingFilterDialog
-                        filterId={currentExplicitNamingFilterId}
+                    <ExplicitNamingFilterCreationDialog
+                        id={currentExplicitNamingFilterId}
                         open={true}
                         onClose={handleCloseExplicitNamingFilterDialog}
-                        titleId={'editFilter'}
+                        title={intl.formatMessage({ id: 'editFilter' })}
                         isFilterCreation={false}
-                        name={currentExplicitNamingFilterId}
+                        name={name}
                     />
                 );
             case FilterType.CRITERIA:

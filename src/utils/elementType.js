@@ -25,7 +25,7 @@ export const ContingencyListType = {
 };
 
 export const ContingencyListTypeRefactor = {
-    SCRIPT: {id: 'SCRIPT', label: 'SCRIPT'},
-    CRITERIA_BASED: {id: 'CRITERIA_BASED', label: 'CriteriaBased'},
-    EXPLICIT_NAMING: {id: 'EXPLICIT_NAMING', label: 'ExplicitNaming'},
+    CRITERIA_BASED: { id: 'CRITERIA_BASED', label: 'CriteriaBased' },
+    EXPLICIT_NAMING: { id: 'EXPLICIT_NAMING', label: 'ExplicitNaming' },
+    SCRIPT: { id: 'SCRIPT', label: 'SCRIPT' },
 };
