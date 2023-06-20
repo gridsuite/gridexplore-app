@@ -183,8 +183,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
         if (!isFormValidationAllowed()) {
             return;
         }
-
-        console.log('currentCriteriaBasedFilter : ', currentCriteriaBasedFilter.current);
         let formContent;
         if (contingencyListType === ContingencyListType.FORM) {
             formContent = currentCriteriaBasedFilter.current;

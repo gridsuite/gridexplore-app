@@ -10,8 +10,6 @@ const SelectInput = ({ name, options, label, ...props }) => {
         name,
     });
 
-    console.log(options);
-
     return (
         <Select
             fullWidth

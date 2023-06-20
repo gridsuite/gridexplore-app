@@ -40,7 +40,7 @@ import { useDeferredFetch } from '../../utils/custom-hooks';
 import { CreateCaseDialog } from '../dialogs/create-case-dialog';
 import { ElementType } from '../../utils/elementType';
 import ExplicitNamingFilterDialog from '../dialogs/explicit-naming-filter/explicit-naming-filter-dialog';
-import ContingencyListCreationDialog from '../dialogs/explicit-naming-contingency-list/contingency-list-creation-dialog';
+import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =

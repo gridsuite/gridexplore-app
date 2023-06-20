@@ -1,0 +1,97 @@
+import { useSelector } from 'react-redux';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import {
+    editContingencyList,
+    getEmptyFormData,
+    getFormDataFromFetchedElement,
+    getSchema,
+} from '../contingency-list-utils';
+import { useEffect, useMemo } from 'react';
+import { fetchContingencyList } from '../../../../utils/rest-api';
+import CustomMuiDialog from '../../CustomMuiDialog';
+import ContingencyListModificationForm from './contingency-list-modification-form';
+
+const emptyFormData = getEmptyFormData();
+
+const ContingencyListModificationDialog = ({
+    contingencyListId,
+    contingencyListType,
+    open,
+    onClose,
+    titleId,
+    name,
+}) => {
+    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const { snackError } = useSnackMessage();
+    const schema = useMemo(() => getSchema(activeDirectory), [activeDirectory]);
+
+    const methods = useForm({
+        defaultValues: emptyFormData,
+        resolver: yupResolver(schema),
+    });
+
+    const { reset } = methods;
+
+    useEffect(() => {
+        if (contingencyListId) {
+            fetchContingencyList(contingencyListType, contingencyListId).then(
+                (response) => {
+                    if (response) {
+                        const formData = getFormDataFromFetchedElement(
+                            response,
+                            contingencyListType,
+                            contingencyListId,
+                            name
+                        );
+                        reset(formData);
+                    }
+                }
+            );
+        }
+    }, [contingencyListId, contingencyListType, name, reset]);
+
+    const closeAndClear = (event) => {
+        reset(emptyFormData, { keepDefaultValues: true });
+        onClose(event);
+    };
+
+    const handleClose = (event) => {
+        closeAndClear(event);
+    };
+
+    const onSubmit = (contingencyList) => {
+        editContingencyList(
+            contingencyListId,
+            contingencyListType,
+            contingencyList
+        )
+            .then(() => {
+                handleClose();
+            })
+            .catch((errorMessage) => {
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'contingencyListEditingError',
+                });
+            });
+    };
+
+    return (
+        <CustomMuiDialog
+            open={open}
+            onClose={closeAndClear}
+            onSave={onSubmit}
+            schema={schema}
+            methods={methods}
+            titleId={titleId}
+        >
+            <ContingencyListModificationForm
+                contingencyListType={contingencyListType}
+            />
+        </CustomMuiDialog>
+    );
+};
+
+export default ContingencyListModificationDialog;

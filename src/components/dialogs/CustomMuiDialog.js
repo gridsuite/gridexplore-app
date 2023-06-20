@@ -56,7 +56,6 @@ const CustomMuiDialog = ({
     };
 
     const handleValidationError = (errors) => {
-        console.log('errors : ', errors)
         onValidationError && onValidationError(errors);
     };
     return (

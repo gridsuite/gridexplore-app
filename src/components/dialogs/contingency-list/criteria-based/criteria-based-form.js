@@ -62,14 +62,6 @@ const CriteriaBasedForm = () => {
         <RangeInput name={NOMINAL_VOLTAGE_2} label={'nominalVoltage2'} />
     );
 
-    useEffect(() => {
-        console.log(
-            'watchEquipmentType : ',
-            watchEquipmentType,
-            getValues(EQUIPMENT_TYPE)
-        );
-    }, []);
-
     return (
         <Grid container item>
             {gridItem(equipmentTypeSelectionField, 12)}

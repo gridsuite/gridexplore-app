@@ -15,4 +15,5 @@ export const VALUE_2 = 'value2';
 export const OPERATION_TYPE = 'type';
 export const CONTINGENCY_LIST_TYPE = 'contingencyListType';
 export const NOMINAL_VOLTAGE_1 = 'nominalVoltage1';
-export const NOMINAL_VOLTAGE_2 = 'nominalVoltage2'
+export const NOMINAL_VOLTAGE_2 = 'nominalVoltage2';
+export const SCRIPT = 'script';

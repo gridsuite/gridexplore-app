@@ -5,13 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Autocomplete, TextField} from '@mui/material';
-import React, {useEffect} from 'react';
-import {FieldLabel, genHelperError, genHelperPreviousValue,} from './inputs/hooks-helpers';
+import { Autocomplete, TextField } from '@mui/material';
+import React from 'react';
+import {
+    FieldLabel,
+    genHelperError,
+    genHelperPreviousValue,
+} from './inputs/hooks-helpers';
 import PropTypes from 'prop-types';
-import {useController, useFormContext} from 'react-hook-form';
-import {func_identity, isFieldRequired} from "./dialog-utils";
-import makeStyles from "@mui/styles/makeStyles";
+import { useController } from 'react-hook-form';
+import { func_identity } from './dialog-utils';
+import makeStyles from '@mui/styles/makeStyles';
 
 /**
  * Autocomplete input
@@ -27,9 +31,9 @@ import makeStyles from "@mui/styles/makeStyles";
 const useStyles = makeStyles((theme) => ({
     helperText: {
         margin: 0,
-            marginTop: 4,
+        marginTop: 4,
     },
-}))
+}));
 const AutocompleteInput = ({
     name,
     label,
@@ -43,7 +47,6 @@ const AutocompleteInput = ({
     onChangeCallback, // method called when input value is changing
     ...props
 }) => {
-    const { validationSchema, getValues, removeOptional } = useFormContext();
     const {
         field: { onChange, value, ref },
         fieldState: { error },
@@ -51,21 +54,17 @@ const AutocompleteInput = ({
     const classes = useStyles();
 
     const handleChange = (value) => {
-        console.log('handleChange 1 : ', value);
         onChangeCallback && onChangeCallback();
         //if free solo not enabled or if value is not of string type, we call onChange right away
         if (!allowNewValue || typeof value !== 'string') {
-            console.log('handleChange 2', outputTransform(value));
-            onChange(value);
+            onChange(outputTransform(value));
             return;
         }
 
         //otherwise, we check if user input matches with one of the options
-        console.log('handleChange 3');
         const matchingOption = options.find((option) => option.id === value);
         //if it does, we send the matching option to react hook form
         if (matchingOption) {
-            console.log('handleChange 4 ');
             onChange(outputTransform(matchingOption));
             return;
         }
@@ -74,9 +73,6 @@ const AutocompleteInput = ({
         onChange(outputTransform(value));
     };
 
-    useEffect(() => {
-        console.log('new value : ', value);
-    }, [value])
     return (
         <Autocomplete
             size={'medium'}
@@ -94,10 +90,14 @@ const AutocompleteInput = ({
             options={options}
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
-                    label={label ? FieldLabel({
-                        label: label,
-                        optional: false,
-                    }) : ''}
+                    label={
+                        label
+                            ? FieldLabel({
+                                  label: label,
+                                  optional: false,
+                              })
+                            : ''
+                    }
                     FormHelperTextProps={{
                         className: classes.helperText,
                     }}
@@ -116,7 +116,7 @@ const AutocompleteInput = ({
 
 AutocompleteInput.propTypes = {
     name: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
+    label: PropTypes.string,
     isRequired: PropTypes.bool,
     options: PropTypes.array.isRequired,
     outputTransform: PropTypes.func,

@@ -124,7 +124,7 @@
     "CSVFileCommentContingencyList3": "# Transformateur 2,ID_transformateur2",
     "CSVFileCommentContingencyList4": "# N-2 mixte,ID_ligne1|ID_groupe1",
     "contingencyListCreationError": "Une erreur est survenue lors de la création de la liste d'aléas: {name}",
-    "contingencyListEditingError": "Une erreur est survenue lors de l'édition de la liste d'aléas: {name}",
+    "contingencyListEditingError": "Une erreur est survenue lors de l'édition de la liste d'aléas",
 
     "equipmentType": "Type d'ouvrage",
     "equipmentName": "Nom d'ouvrage",

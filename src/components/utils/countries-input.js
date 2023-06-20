@@ -1,24 +1,18 @@
 import { useParameterState } from '../dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { getComputedLanguage } from '../../utils/language';
 import { Chip, FormControl } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
-import {useController, useFieldArray, useFormContext} from 'react-hook-form';
-import { useMemo } from 'react';
+import { useController } from 'react-hook-form';
 
 export const CountriesInput = ({ name, titleMessage }) => {
-    const {field: {
-        value, onChange
-    }} = useController({
-        name
-    })
-    const { getValues } = useFormContext();
-
-    const { fields, append, remove } = useFieldArray({
-        name
+    const {
+        field: { value, onChange },
+    } = useController({
+        name,
     });
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
@@ -36,7 +30,7 @@ export const CountriesInput = ({ name, titleMessage }) => {
         }
     }, [languageLocal]);
 
-    const countriesList = useMemo(() => countriesListCB(), []);
+    const countriesList = useMemo(() => countriesListCB(), [countriesListCB]);
     return (
         <>
             <FormControl fullWidth margin="dense">
@@ -45,8 +39,7 @@ export const CountriesInput = ({ name, titleMessage }) => {
                     value={value}
                     multiple
                     onChange={(event, value) => {
-                        console.log('event : ', value);
-                        onChange(value)
+                        onChange(value);
                     }}
                     options={Object.keys(countriesList.object())}
                     getOptionLabel={(code) => countriesList.get(code)}

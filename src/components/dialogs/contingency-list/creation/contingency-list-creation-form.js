@@ -1,24 +1,22 @@
-import RadioInput from '../../utils/radio-input';
+import RadioInput from '../../../utils/radio-input';
 import {
     CONTINGENCY_LIST_TYPE,
     EQUIPMENT_ID,
-    NAME,
-} from '../../utils/field-constants';
-import { ContingencyListTypeRefactor } from '../../../utils/elementType';
+    NAME, SCRIPT,
+} from '../../../utils/field-constants';
+import { ContingencyListTypeRefactor } from '../../../../utils/elementType';
 import { Grid } from '@mui/material';
-import { gridItem } from '../../utils/dialog-utils';
+import { gridItem } from '../../../utils/dialog-utils';
 import Box from '@mui/material/Box';
 import React from 'react';
 import { useWatch } from 'react-hook-form';
-import CriteriaBasedForm from './criteria-based/criteria-based-form';
-import ExplicitNamingForm from './explicit-naming/explicit-naming-form';
-import TextInput from '../../utils/text-input';
+import CriteriaBasedForm from '../criteria-based/criteria-based-form';
+import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
+import TextInput from '../../../utils/text-input';
 import { FormattedMessage } from 'react-intl';
+import ScriptInput from "../../../utils/script-input";
 
 const ContingencyListCreationForm = ({}) => {
-    const watchEquipmentId = useWatch({
-        name: EQUIPMENT_ID,
-    });
 
     const watchContingencyListType = useWatch({
         name: CONTINGENCY_LIST_TYPE,
@@ -35,7 +33,7 @@ const ContingencyListCreationForm = ({}) => {
         />
     );
 
-    const contingencyListType = (
+    const contingencyListTypeField = (
         <RadioInput
             name={CONTINGENCY_LIST_TYPE}
             options={Object.values(ContingencyListTypeRefactor)}
@@ -43,14 +41,12 @@ const ContingencyListCreationForm = ({}) => {
     );
 
     return (
-        <Grid container spacing={3}>
-            {!watchEquipmentId && (
-                <Grid container item>
-                    {gridItem(nameField, 12)}
-                </Grid>
-            )}
+        <Grid container spacing={2}>
             <Grid container item>
-                {gridItem(contingencyListType, 12)}
+                {gridItem(nameField, 12)}
+            </Grid>
+            <Grid container item>
+                {gridItem(contingencyListTypeField, 12)}
             </Grid>
             {watchContingencyListType ===
                 ContingencyListTypeRefactor.CRITERIA_BASED.id && (
@@ -61,7 +57,7 @@ const ContingencyListCreationForm = ({}) => {
                 <ExplicitNamingForm />
             )}
             {watchContingencyListType ===
-                ContingencyListTypeRefactor.SCRIPT.id && <></>}
+                ContingencyListTypeRefactor.SCRIPT.id && <ScriptInput name={SCRIPT}/>}
         </Grid>
     );
 };

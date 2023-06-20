@@ -22,6 +22,7 @@ import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
 import VirtualizedTable from './virtualized-table';
 import {
     ContingencyListType,
+    ContingencyListTypeRefactor,
     ElementType,
     FilterType,
 } from '../utils/elementType';
@@ -33,8 +34,6 @@ import {
 import { Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
-
-import ScriptDialog from './dialogs/script-dialog';
 import CriteriaBasedFilterDialog from './dialogs/criteria-based-filter-dialog';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
@@ -45,7 +44,7 @@ import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
 import ExplicitNamingFilterDialog from './dialogs/explicit-naming-filter/explicit-naming-filter-dialog';
-import ContingencyListCreationDialog from './dialogs/explicit-naming-contingency-list/contingency-list-creation-dialog';
+import ContingencyListModificationDialog from './dialogs/contingency-list/modification/contingency-list-modification-dialog';
 
 const circularProgressSize = '70px';
 
@@ -122,6 +121,7 @@ const DirectoryContent = () => {
     const classes = useStyles();
     const intl = useIntl();
     const todayStart = new Date().setHours(0, 0, 0, 0);
+    const [elementName, setElementName] = useState('');
 
     /* Menu states */
     const [mousePosition, setMousePosition] =
@@ -130,6 +130,7 @@ const DirectoryContent = () => {
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
     const handleRowClick = (event) => {
         if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
+            setElementName(childrenMetadata[event.rowData.elementUuid]?.name);
             const subtype = childrenMetadata[event.rowData.elementUuid].subtype;
             if (event.rowData.type === ElementType.STUDY) {
                 let url = getLink(
@@ -184,6 +185,7 @@ const DirectoryContent = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
         setCurrentFiltersContingencyListId(null);
+        setElementName('');
     };
 
     /**
@@ -197,6 +199,7 @@ const DirectoryContent = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
         setCurrentExplicitNamingContingencyListId(null);
+        setElementName('');
     };
 
     /**
@@ -208,6 +211,7 @@ const DirectoryContent = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setCurrentCriteriaBasedFilterId(null);
         setActiveElement(null);
+        setElementName('');
     };
 
     /**
@@ -217,6 +221,7 @@ const DirectoryContent = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setCurrentExplicitNamingFilterId(null);
         setActiveElement(null);
+        setElementName('');
     };
     const [currentExplicitNamingFilterId, setCurrentExplicitNamingFilterId] =
         useState(null);
@@ -230,6 +235,7 @@ const DirectoryContent = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
         setCurrentScriptContingencyListId(null);
+        setElementName('');
     };
 
     /**
@@ -750,47 +756,49 @@ const DirectoryContent = () => {
         return renderTableContent();
     };
 
-    const renderDialog = () => {
+    const renderDialog = (elementName) => {
         // TODO openDialog should also be aware of the dialog's type, not only its subtype, because
         // if/when two different dialogs have the same subtype, this function will display the wrong dialog.
         switch (openDialog) {
             case ContingencyListType.FORM:
                 return (
-                    <CriteriaBasedFilterDialog
-                        id={currentFiltersContingencyListId}
+                    <ContingencyListModificationDialog
                         open={true}
+                        titleId={'editContingencyList'}
+                        contingencyListId={currentFiltersContingencyListId}
+                        contingencyListType={
+                            ContingencyListTypeRefactor.CRITERIA_BASED.id
+                        }
                         onClose={handleCloseFiltersContingency}
-                        onError={handleError}
-                        title={intl.formatMessage({
-                            id: 'editContingencyList',
-                        })}
-                        contentType={ElementType.CONTINGENCY_LIST}
+                        name={elementName}
                     />
                 );
             case ContingencyListType.SCRIPT:
                 return (
-                    <ScriptDialog
-                        id={currentScriptContingencyListId}
+                    <ContingencyListModificationDialog
                         open={true}
+                        titleId={'editContingencyList'}
+                        contingencyListId={currentScriptContingencyListId}
+                        contingencyListType={
+                            ContingencyListTypeRefactor.SCRIPT.id
+                        }
                         onClose={handleCloseScriptContingency}
-                        onError={handleError}
-                        title={intl.formatMessage({
-                            id: 'editContingencyList',
-                        })}
-                        type={ElementType.CONTINGENCY_LIST}
+                        name={elementName}
                     />
                 );
             case ContingencyListType.EXPLICIT_NAMING:
                 return (
-                    <ContingencyListCreationDialog
+                    <ContingencyListModificationDialog
                         open={true}
-                        onClose={handleCloseExplicitNamingContingency}
                         titleId={'editContingencyList'}
                         contingencyListId={
                             currentExplicitNamingContingencyListId
                         }
-                        contingencyListType={ContingencyListType.EXPLICIT_NAMING}
-                        //contingencyName={currentExplicitNamingContingencyListId}
+                        contingencyListType={
+                            ContingencyListTypeRefactor.EXPLICIT_NAMING.id
+                        }
+                        onClose={handleCloseExplicitNamingContingency}
+                        name={elementName}
                     />
                 );
             case FilterType.EXPLICIT_NAMING:
@@ -881,7 +889,7 @@ const DirectoryContent = () => {
                     }
                 />
             </div>
-            {renderDialog()}
+            {renderDialog(elementName)}
         </>
     );
 };

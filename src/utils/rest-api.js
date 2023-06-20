@@ -8,7 +8,10 @@
 import { APP_NAME, getAppName } from './config-params';
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { ContingencyListType } from './elementType';
+import {
+    ContingencyListType,
+    ContingencyListTypeRefactor,
+} from './elementType';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -504,11 +507,13 @@ export function createContingencyList(
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     let typeUriParam = '';
-    if (contingencyListType === ContingencyListType.FORM) {
+    if (contingencyListType === ContingencyListTypeRefactor.CRITERIA_BASED.id) {
         typeUriParam = 'form-contingency-lists';
-    } else if (contingencyListType === ContingencyListType.SCRIPT) {
+    } else if (contingencyListType === ContingencyListTypeRefactor.SCRIPT.id) {
         typeUriParam = 'script-contingency-lists';
-    } else if (contingencyListType === ContingencyListType.EXPLICIT_NAMING) {
+    } else if (
+        contingencyListType === ContingencyListTypeRefactor.EXPLICIT_NAMING.id
+    ) {
         typeUriParam = 'identifier-contingency-lists';
     }
 
@@ -578,14 +583,26 @@ export function getContingencyList(type, id) {
     return backendFetchJson(url);
 }
 
+export function fetchContingencyList(type, id) {
+    let url = PREFIX_ACTIONS_QUERIES;
+    if (type === ContingencyListTypeRefactor.SCRIPT.id) {
+        url += '/v1/script-contingency-lists/';
+    } else if (type === ContingencyListTypeRefactor.CRITERIA_BASED.id) {
+        url += '/v1/form-contingency-lists/';
+    } else if (type === ContingencyListTypeRefactor.EXPLICIT_NAMING.id) {
+        url += '/v1/identifier-contingency-lists/';
+    }
+    url += id;
+
+    return backendFetchJson(url);
+}
 /**
  * Saves a Filter contingency list
  * @returns {Promise<Response>}
  */
-export function saveFormContingencyList(form) {
+export function saveFormContingencyList(id, form) {
     const { nominalVoltage, ...rest } = form;
-    const url =
-        PREFIX_ACTIONS_QUERIES + '/v1/form-contingency-lists/' + form.id;
+    const url = PREFIX_ACTIONS_QUERIES + '/v1/form-contingency-lists/' + id;
     return backendFetch(url, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },

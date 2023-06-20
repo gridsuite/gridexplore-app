@@ -6,7 +6,7 @@ import { Grid, InputLabel } from '@mui/material';
 import yup from './yup-config';
 import FormControl from '@mui/material/FormControl';
 import { FormattedMessage } from 'react-intl';
-import React, {useEffect, useMemo} from 'react';
+import React, { useMemo } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) => ({
@@ -39,7 +39,7 @@ export const getRangeInputEmptyDataForm = (name) => ({
 
 export const getRangeInputSchema = (name) => ({
     [name]: yup.object().shape({
-        [OPERATION_TYPE]: yup.string().required(),
+        [OPERATION_TYPE]: yup.string(),
         [VALUE_1]: yup.number().nullable(),
         [VALUE_2]: yup.number().nullable(),
     }),
@@ -52,13 +52,9 @@ const RangeInput = ({ name, label }) => {
     });
 
     const isOperationTypeRange = useMemo(
-        () => watchOperationType.id === RangeType.RANGE.id,
+        () => watchOperationType === RangeType.RANGE.id,
         [watchOperationType]
     );
-
-    useEffect(() => {
-        console.log('watchOperationType : ', watchOperationType)
-    }, [watchOperationType]);
 
     const firstValueField = (
         <FloatInput
@@ -100,9 +96,8 @@ const RangeInput = ({ name, label }) => {
             options={Object.values(RangeType)}
             style={{
                 borderRadius: '4px 0 0 4px',
-                width: 'fit-content'
             }}
-            clearable={false}
+            disableClearable={true}
         />
     );
 
@@ -113,7 +108,18 @@ const RangeInput = ({ name, label }) => {
                     <FormattedMessage id={label} />
                 </InputLabel>
                 <Grid container spacing={0}>
-                    <Grid item>{operationTypeField}</Grid>
+                    <Grid
+                        item
+                        style={
+                            isOperationTypeRange
+                                ? {
+                                      flex: 'min-content',
+                                  }
+                                : {}
+                        }
+                    >
+                        {operationTypeField}
+                    </Grid>
                     <Grid item>{firstValueField}</Grid>
                     {isOperationTypeRange && (
                         <Grid item>{secondValueField}</Grid>
