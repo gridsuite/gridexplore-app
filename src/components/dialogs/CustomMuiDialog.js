@@ -25,6 +25,12 @@ const useStyles = makeStyles((theme) => ({
         minHeight: '600px',
         margin: 'auto',
     },
+    content: {
+        marginTop: theme.spacing(2),
+        overflow: 'auto',
+        justifyContent: 'space-around',
+        flexGrow: 1,
+    },
 }));
 
 const CustomMuiDialog = ({
@@ -67,18 +73,16 @@ const CustomMuiDialog = ({
                 fullWidth
             >
                 <DialogTitle>
-                    <Grid item xs={11}>
-                        <FormattedMessage id={titleId} />
+                    <Grid container>
+                        <Grid item xs={11}>
+                            <FormattedMessage id={titleId} />
+                        </Grid>
                     </Grid>
                 </DialogTitle>
-                <DialogContent
-                    style={{
-                        overflow: 'auto',
-                        justifyContent: 'space-around',
-                        flexGrow: 1,
-                    }}
-                >
-                    {dialogProps.children}
+                <DialogContent>
+                    <Grid container className={classes.content}>
+                        {dialogProps.children}
+                    </Grid>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCancel}>

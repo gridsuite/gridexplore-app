@@ -95,7 +95,7 @@ export const getEmptyFormData = () => ({
     [EQUIPMENT_ID]: null,
     [EQUIPMENT_TABLE]: DEFAULT_TABLE_ROWS,
     [CONTINGENCY_LIST_TYPE]: ContingencyListTypeRefactor.CRITERIA_BASED.id,
-    [EQUIPMENT_TYPE]: null,
+    [EQUIPMENT_TYPE]: '',
     [COUNTRIES_1]: [],
     [COUNTRIES_2]: [],
     [SCRIPT]: null,
@@ -153,14 +153,21 @@ export const editContingencyList = (
 ) => {
     switch (contingencyListType) {
         case ContingencyListTypeRefactor.CRITERIA_BASED.id:
-            return saveFormContingencyList(contingencyListId, contingencyList, contingencyList[NAME]);
+            return saveFormContingencyList(
+                contingencyListId,
+                contingencyList,
+                contingencyList[NAME]
+            );
         case ContingencyListTypeRefactor.EXPLICIT_NAMING.id:
             const equipments = prepareContingencyListForBackend(
                 contingencyListId,
                 contingencyListId,
                 contingencyList[EQUIPMENT_TABLE] ?? []
             );
-            return saveExplicitNamingContingencyList(equipments ?? [], contingencyList[NAME]);
+            return saveExplicitNamingContingencyList(
+                equipments ?? [],
+                contingencyList[NAME]
+            );
         case ContingencyListTypeRefactor.SCRIPT.id:
             const newScript = {
                 id: contingencyListId,

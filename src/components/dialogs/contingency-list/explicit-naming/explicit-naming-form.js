@@ -15,10 +15,8 @@ import React, { useCallback, useMemo } from 'react';
 import CustomAgGridTable, {
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
 } from '../../ag-grid-table-rhf/custom-ag-grid-table';
-import { Grid } from '@mui/material';
 import chipsArrayEditor from '../../ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { gridItem } from '../../../utils/dialog-utils';
-import Box from '@mui/material/Box';
 
 const suppressEnter = (params) => {
     const KEY_ENTER = 'Enter';
@@ -93,19 +91,13 @@ const ExplicitNamingForm = () => {
             fromCsvDataToFormValues={fromCsvDataToFormValues}
             defaultRowData={{ [CONTINGENCY_NAME]: '', [EQUIPMENT_IDS]: [] }}
             minNumberOfRows={3}
+            pagination={true}
+            paginationPageSize={100}
+            //getRowId={(data) => data[CONTINGENCY_NAME]}
         />
     );
 
-    return (
-        <>
-            <Grid container spacing={3}>
-                <Box maxWidth />
-                <Grid container item>
-                    {gridItem(equipmentTableField, 12)}
-                </Grid>
-            </Grid>
-        </>
-    );
+    return <>{gridItem(equipmentTableField, 12)}</>;
 };
 
 export default ExplicitNamingForm;

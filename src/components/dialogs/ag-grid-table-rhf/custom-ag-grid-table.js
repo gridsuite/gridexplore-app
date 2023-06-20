@@ -88,6 +88,7 @@ export const CustomAgGridTable = ({
     csvFileHeaders,
     csvInitialData, // this is used if csv file generated has some row by default (comments for example)
     minNumberOfRows = 0,
+    ...props
 }) => {
     const classes = useStyles();
     const theme = useTheme();
@@ -205,8 +206,6 @@ export const CustomAgGridTable = ({
                     rowDragManaged
                     suppressRowClickSelection
                     suppressBrowserResizeObserver
-                    pagination={true}
-                    paginationPageSize={100}
                     columnDefs={columnDefs}
                     detailRowAutoHeight={true}
                     onSelectionChanged={(event) => {
@@ -219,7 +218,10 @@ export const CustomAgGridTable = ({
                     onCellEditingStopped={(event) => {
                         update(event.rowIndex, event.data);
                     }}
-                    //onCellValueChanged={onCellValueChanged}
+                    /*getRowId={(data) => {
+                        console.log('data : ', data);
+                    }}*/
+                    {...props}
                 ></AgGridReact>
             </Grid>
             <Grid
