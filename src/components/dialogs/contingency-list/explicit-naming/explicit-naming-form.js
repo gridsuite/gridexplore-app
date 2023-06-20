@@ -93,7 +93,6 @@ const ExplicitNamingForm = () => {
             minNumberOfRows={3}
             pagination={true}
             paginationPageSize={100}
-            //getRowId={(data) => data[CONTINGENCY_NAME]}
         />
     );
 

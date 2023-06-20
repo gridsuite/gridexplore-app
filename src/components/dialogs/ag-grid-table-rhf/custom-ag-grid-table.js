@@ -218,9 +218,6 @@ export const CustomAgGridTable = ({
                     onCellEditingStopped={(event) => {
                         update(event.rowIndex, event.data);
                     }}
-                    /*getRowId={(data) => {
-                        console.log('data : ', data);
-                    }}*/
                     {...props}
                 ></AgGridReact>
             </Grid>
