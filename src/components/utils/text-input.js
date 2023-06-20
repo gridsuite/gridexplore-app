@@ -7,7 +7,7 @@
 
 import { InputAdornment, TextField } from '@mui/material';
 import React from 'react';
-import { useController, useFormContext } from 'react-hook-form';
+import { useController } from 'react-hook-form';
 import makeStyles from '@mui/styles/makeStyles';
 import { FieldLabel, func_identity, genHelperError } from './dialog-utils';
 import IconButton from '@mui/material/IconButton';
@@ -39,7 +39,6 @@ const TextInput = ({
     ...props
 }) => {
     const classes = useStyles();
-    const { validationSchema, getValues, removeOptional } = useFormContext();
     const {
         field: { onChange, value, ref },
         fieldState: { error },

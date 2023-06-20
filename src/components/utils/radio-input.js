@@ -10,7 +10,7 @@ import { FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { useController } from 'react-hook-form';
 import PropTypes from 'prop-types';
-import {FieldLabel} from "./dialog-utils";
+import { FieldLabel } from './dialog-utils';
 
 const RadioInput = ({ name, label, id, options, formProps }) => {
     const {

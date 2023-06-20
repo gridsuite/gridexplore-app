@@ -90,7 +90,11 @@ export const CriteriaBasedFilterDialog = ({
                         onError(errorMessage);
                     });
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
-                saveFormContingencyList(currentFilter?.id, currentFilter, currentName)
+                saveFormContingencyList(
+                    currentFilter?.id,
+                    currentFilter,
+                    currentName
+                )
                     .then()
                     .catch((errorMessage) => {
                         onError(errorMessage);
