@@ -172,7 +172,6 @@ const ExplicitNamingFilterDialogContent = ({
     const intl = useIntl();
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [newEquipmentType, setNewEquipmentType] = useState(null);
-
     useEffect(() => {
         if (id && fetchFilter.current) {
             getFilterById(id)
@@ -254,7 +253,6 @@ const ExplicitNamingFilterDialogContent = ({
     useEffect(() => {
         sendData();
     }, [sendData]);
-
     return (
         <div>
             <Grid container spacing={2}>

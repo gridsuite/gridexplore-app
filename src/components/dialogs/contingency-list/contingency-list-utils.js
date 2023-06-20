@@ -153,20 +153,20 @@ export const editContingencyList = (
 ) => {
     switch (contingencyListType) {
         case ContingencyListTypeRefactor.CRITERIA_BASED.id:
-            return saveFormContingencyList(contingencyListId, contingencyList);
+            return saveFormContingencyList(contingencyListId, contingencyList, contingencyList[NAME]);
         case ContingencyListTypeRefactor.EXPLICIT_NAMING.id:
             const equipments = prepareContingencyListForBackend(
                 contingencyListId,
                 contingencyListId,
                 contingencyList[EQUIPMENT_TABLE] ?? []
             );
-            return saveExplicitNamingContingencyList(equipments ?? []);
+            return saveExplicitNamingContingencyList(equipments ?? [], contingencyList[NAME]);
         case ContingencyListTypeRefactor.SCRIPT.id:
             const newScript = {
                 id: contingencyListId,
                 script: contingencyList[SCRIPT] ?? '',
             };
-            return saveScriptContingencyList(newScript);
+            return saveScriptContingencyList(newScript, contingencyList[NAME]);
         default:
             return;
     }

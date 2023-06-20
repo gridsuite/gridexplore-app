@@ -145,22 +145,6 @@ const DirectoryTreeContextualMenu = (props) => {
                     icon: <AddIcon fontSize="small" />,
                 },
                 {
-                    messageDescriptorId: 'createNewFilterAgGrid',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.ADD_NEW_FILTER_AG_GRID);
-                    },
-                    icon: <AddIcon fontSize="small" />,
-                },
-                {
-                    messageDescriptorId: 'createContingencyListRhf',
-                    callback: () => {
-                        handleOpenDialog(
-                            DialogsId.ADD_NEW_CONTINGENCY_LIST_RHF
-                        );
-                    },
-                    icon: <AddIcon fontSize="small" />,
-                },
-                {
                     messageDescriptorId: 'ImportNewCase',
                     callback: () => {
                         handleOpenDialog(DialogsId.ADD_NEW_CASE);

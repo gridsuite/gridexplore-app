@@ -121,17 +121,19 @@ const DirectoryContent = () => {
     const classes = useStyles();
     const intl = useIntl();
     const todayStart = new Date().setHours(0, 0, 0, 0);
-    const [elementName, setElementName] = useState('');
 
     /* Menu states */
     const [mousePosition, setMousePosition] =
         React.useState(initialMousePosition);
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
+    const [elementName, setElementName] = useState('');
     const handleRowClick = (event) => {
         if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
             setElementName(childrenMetadata[event.rowData.elementUuid]?.name);
             const subtype = childrenMetadata[event.rowData.elementUuid].subtype;
+            /** set active directory on the store because it will be used while editing the contingency name */
+            dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
             if (event.rowData.type === ElementType.STUDY) {
                 let url = getLink(
                     event.rowData.elementUuid,
@@ -821,6 +823,7 @@ const DirectoryContent = () => {
                         onError={handleError}
                         title={intl.formatMessage({ id: 'editFilter' })}
                         contentType={ElementType.FILTER}
+                        name={name}
                     />
                 );
             default:

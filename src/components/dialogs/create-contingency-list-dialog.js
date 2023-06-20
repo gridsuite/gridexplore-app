@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -33,6 +33,7 @@ import ScriptDialogContent from './script-dialog-content';
 import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
 import ExplicitNamingContingencyListDialogContent from './explicit-naming-contingency-list-content';
 import { prepareContingencyListForBackend } from './contingency-list-helper';
+import { useDebounce } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -65,7 +66,6 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
 
     const classes = useStyles();
     const intl = useIntl();
-    const timer = React.useRef();
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
     const [currentScript, setCurrentScript] = useState(null);
     const [tableValues, setTableValues] = useState([]);
@@ -98,58 +98,60 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
      * on change input popup check if name already exist
      * @param name
      */
-    const updateContingencyFormState = (name) => {
-        if (name !== '') {
-            //If the name is not only white spaces
-            if (name.replace(/ /g, '') !== '') {
-                elementExists(
-                    activeDirectory,
-                    name,
-                    ElementType.CONTINGENCY_LIST
-                )
-                    .then((data) => {
-                        setContingencyFormState(
-                            data
-                                ? intl.formatMessage({
-                                      id: 'nameAlreadyUsed',
-                                  })
-                                : '',
-                            !data
-                        );
-                    })
-                    .catch((error) => {
-                        setContingencyFormState(
-                            intl.formatMessage({
-                                id: 'nameValidityCheckErrorMsg',
-                            }) + error.message,
-                            false
-                        );
-                    })
-                    .finally(() => {
-                        setLoadingCheckContingencyName(false);
-                    });
+    const updateContingencyFormState = useCallback(
+        (name) => {
+            if (name !== '') {
+                //If the name is not only white spaces
+                if (name.replace(/ /g, '') !== '') {
+                    elementExists(
+                        activeDirectory,
+                        name,
+                        ElementType.CONTINGENCY_LIST
+                    )
+                        .then((data) => {
+                            setContingencyFormState(
+                                data
+                                    ? intl.formatMessage({
+                                          id: 'nameAlreadyUsed',
+                                      })
+                                    : '',
+                                !data
+                            );
+                        })
+                        .catch((error) => {
+                            setContingencyFormState(
+                                intl.formatMessage({
+                                    id: 'nameValidityCheckErrorMsg',
+                                }) + error.message,
+                                false
+                            );
+                        })
+                        .finally(() => {
+                            setLoadingCheckContingencyName(false);
+                        });
+                } else {
+                    setContingencyFormState(
+                        intl.formatMessage({ id: 'nameEmpty' }),
+                        false
+                    );
+                    setLoadingCheckContingencyName(false);
+                }
             } else {
-                setContingencyFormState(
-                    intl.formatMessage({ id: 'nameEmpty' }),
-                    false
-                );
+                setContingencyFormState('', false);
                 setLoadingCheckContingencyName(false);
             }
-        } else {
-            setContingencyFormState('', false);
-            setLoadingCheckContingencyName(false);
-        }
-    };
+        },
+        [activeDirectory, intl]
+    );
 
+    const debouncedUpdateContingencyFormState = useDebounce(
+        updateContingencyFormState,
+        700
+    );
     const handleContingencyNameChanges = (name) => {
         setContingencyListName(name);
         setLoadingCheckContingencyName(true);
-
-        //Reset the timer so we only call update on the last input
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => {
-            updateContingencyFormState(name);
-        }, 700);
+        debouncedUpdateContingencyFormState(name);
     };
 
     const setContingencyFormState = (errorMessage, isNameValid) => {
@@ -344,6 +346,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     </RadioGroup>
                     {contingencyListType === ContingencyListType.SCRIPT && (
                         <ScriptDialogContent
+                            isCreation
                             onChange={onChangeScriptHandler}
                             onError={setCreateContingencyListErr}
                             type={ElementType.CONTINGENCY_LIST}
@@ -352,6 +355,7 @@ export const CreateContingencyListDialog = ({ open, onClose }) => {
                     {contingencyListType === ContingencyListType.FORM && (
                         <CriteriaBasedFilterDialogContent
                             open={open}
+                            isCreation
                             contentType={ElementType.CONTINGENCY_LIST}
                             handleFilterCreation={onChangeCriteriaBasedHandler}
                         />

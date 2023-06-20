@@ -72,7 +72,6 @@ const FreeProperty = ({
                     defaultValue={''}
                     value={name}
                     freeSolo
-                    autoSelect
                     forcePopupIcon
                     onChange={(oldVal, newVal) => {
                         onChange(index, { name: newVal, values: [] });
@@ -96,7 +95,6 @@ const FreeProperty = ({
                     id="prop_values"
                     value={values}
                     freeSolo
-                    autoSelect
                     forcePopupIcon
                     multiple={true}
                     onChange={(oldVal, newVal) => {
@@ -357,7 +355,6 @@ const FreeProperty2 = ({
                     defaultValue={''}
                     value={name}
                     freeSolo
-                    autoSelect
                     forcePopupIcon
                     onChange={(oldVal, newVal) => {
                         onChange(index, {
@@ -384,7 +381,6 @@ const FreeProperty2 = ({
                     id="prop_values1"
                     value={values1}
                     freeSolo
-                    autoSelect
                     forcePopupIcon
                     multiple={true}
                     onChange={(oldVal, newVal) => {
@@ -416,7 +412,6 @@ const FreeProperty2 = ({
                     id="prop_values2"
                     value={values2}
                     freeSolo
-                    autoSelect
                     forcePopupIcon
                     multiple={true}
                     onChange={(oldVal, newVal) => {
