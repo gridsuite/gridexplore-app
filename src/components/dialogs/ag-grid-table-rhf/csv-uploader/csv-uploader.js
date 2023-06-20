@@ -18,7 +18,7 @@ import CsvDownloader from 'react-csv-downloader';
 import Alert from '@mui/material/Alert';
 import PropTypes from 'prop-types';
 import { DialogContentText } from '@mui/material';
-import {useController, useFormContext, useWatch} from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 const CsvUploader = ({
     name,
@@ -31,7 +31,7 @@ const CsvUploader = ({
     validateData = () => true,
     formatCsvData,
 }) => {
-    const watchTableValues = useWatch({name});
+    const watchTableValues = useWatch({ name });
     const { getValues, setValue } = useFormContext();
     const [createError, setCreateError] = React.useState('');
     const intl = useIntl();
@@ -97,16 +97,18 @@ const CsvUploader = ({
 
     const handleOpenCSVConfirmationDataDialog = () => {
         // We check if there are values in the table
-        const isValuesInTable = Array.isArray(watchTableValues) && watchTableValues.some(
-            (line) =>
-                line &&
-                Object.values(line).some(
-                    (e) =>
-                        e !== undefined &&
-                        e !== null &&
-                        String(e).trim().length > 0
-                )
-        );
+        const isValuesInTable =
+            Array.isArray(watchTableValues) &&
+            watchTableValues.some(
+                (line) =>
+                    line &&
+                    Object.values(line).some(
+                        (e) =>
+                            e !== undefined &&
+                            e !== null &&
+                            String(e).trim().length > 0
+                    )
+            );
 
         if (isValuesInTable) {
             setOpenConfirmationPopup(true);

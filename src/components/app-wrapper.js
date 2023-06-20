@@ -70,8 +70,8 @@ const lightTheme = createTheme({
     },
     aggrid: 'ag-theme-alpine',
     agGridBackground: {
-        color: 'white'
-    }
+        color: 'white',
+    },
 });
 
 const darkTheme = createTheme({
@@ -104,8 +104,8 @@ const darkTheme = createTheme({
     },
     aggrid: 'ag-theme-alpine-dark',
     agGridBackground: {
-        color: '#383838'
-    }
+        color: '#383838',
+    },
 });
 
 const getMuiTheme = (theme) => {
