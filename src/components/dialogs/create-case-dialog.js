@@ -60,6 +60,8 @@ export function CreateCaseDialog({ onClose, open }) {
     });
     const [file, FileField, fileError, isFileOk, resetFile] = useFileValue({
         label: 'Case',
+        // is used if we don't need to get "setFileOk" from this custom hook.
+        noSetFileNeeded: true,
     });
 
     function validate() {

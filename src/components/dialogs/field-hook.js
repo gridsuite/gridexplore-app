@@ -97,7 +97,11 @@ export const useTextValue = ({
     return [value, field, setValue, hasChanged];
 };
 
-export const useFileValue = ({ fileExceedsLimitMessage, isLoading }) => {
+export const useFileValue = ({
+    fileExceedsLimitMessage,
+    isLoading,
+    noSetFileNeeded = false,
+}) => {
     const selectedFile = useSelector((state) => state.selectedFile);
     const intl = useIntl();
     const dispatch = useDispatch();
@@ -137,6 +141,9 @@ export const useFileValue = ({ fileExceedsLimitMessage, isLoading }) => {
             setFileOk(false);
         }
     }, [selectedFile, fileExceedsLimitMessage, intl]);
+    if (noSetFileNeeded) {
+        return [selectedFile, field, fileError, fileOk, resetSelectedFile];
+    }
     return [
         selectedFile,
         field,
