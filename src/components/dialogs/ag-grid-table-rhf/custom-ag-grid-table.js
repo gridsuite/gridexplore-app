@@ -21,7 +21,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import ErrorInput from '../../utils/error-input';
 import clsx from 'clsx';
 import { useTheme } from '@mui/styles';
-
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
         rowDrag: true,
@@ -87,7 +86,6 @@ export const CustomAgGridTable = ({
     fromCsvDataToFormValues, // this used to transform rows from csv file, to data can be displayed in the table
     csvFileHeaders,
     csvInitialData, // this is used if csv file generated has some row by default (comments for example)
-    minNumberOfRows = 0,
     ...props
 }) => {
     const classes = useStyles();
@@ -100,19 +98,38 @@ export const CustomAgGridTable = ({
     const [downDisabled, setDownDisabled] = useState(false);
     const intl = useIntl();
     const { getValues } = useFormContext();
-    const [rowData, setRowData] = useState(getValues(name) ?? []);
+
     const { fields, append, remove, move, update } = useFieldArray({
         control,
         name: name,
     });
 
-    useEffect(() => {
-        setRowData(getValues(name));
-    }, [fields, getValues, setRowData, name]);
+    // we add the unique generated id from react hook form to each row, so we can use it in getRowId
+    // the unique id used to identify the selected rows, so we can keep the selection when row index is changed.
+    const defaultRowsWithId = useMemo(() => {
+        const rows = getValues(name);
+        if (!rows) {
+            return [];
+        }
+        return getValues(name).map((v, i) => {
+            return {
+                id: fields[i].id,
+                ...v,
+            };
+        });
+    }, [fields, getValues, name]);
+
+    const [rowData, setRowData] = useState(defaultRowsWithId);
 
     const handleAddRow = () => {
         append(defaultRowData);
-        setRowData(getValues(name));
+        setRowData((oldValues) => {
+            const newVal = {
+                id: fields[fields.length - 1].id,
+                ...defaultRowData,
+            };
+            return [...oldValues, newVal];
+        });
     };
 
     const handleDeleteRows = () => {
@@ -127,31 +144,23 @@ export const CustomAgGridTable = ({
                 }
                 return true;
             });
-            if (rows.length === minNumberOfRows) {
-                update(idx, defaultRowData);
-            } else {
-                remove(idx);
-            }
+            remove(idx);
         });
         setRowData(getValues(name));
     };
 
     const getIndex = (val) => {
-        const rows = getValues(name);
-        return rows.findIndex((obj) => {
-            for (let key in val) {
-                if (obj[key] !== val[key]) {
-                    return false;
-                }
-            }
-            return true;
-        });
+        return getValues(name).findIndex((row) => row.id === val.id);
     };
     const handleMoveRowUp = () => {
         selectedRows.forEach((val, index) => {
             const idx = getIndex(val);
             move(idx, idx - 1);
         });
+        setUpDisabled(selectedRows.some((r) => getIndex(r) === 0));
+        setDownDisabled(
+            selectedRows.some((r) => getIndex(r) === rowData.length - 1)
+        );
         setRowData(getValues(name));
     };
 
@@ -160,6 +169,10 @@ export const CustomAgGridTable = ({
             const idx = getIndex(val);
             move(idx, idx + 1);
         });
+        setUpDisabled(selectedRows.some((r) => getIndex(r) === 0));
+        setDownDisabled(
+            selectedRows.some((r) => getIndex(r) === rowData.length - 1)
+        );
         setRowData(getValues(name));
     };
 
@@ -218,6 +231,7 @@ export const CustomAgGridTable = ({
                     onCellEditingStopped={(event) => {
                         update(event.rowIndex, event.data);
                     }}
+                    getRowId={(row) => row.data.id}
                     {...props}
                 ></AgGridReact>
             </Grid>

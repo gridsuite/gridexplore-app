@@ -34,7 +34,6 @@ const ExplicitNamingForm = () => {
             ...ROW_DRAGGING_SELECTION_COLUMN_DEF,
             {
                 field: CONTINGENCY_NAME,
-                minWidth: 150,
                 editable: true,
                 singleClickEdit: true,
             },
@@ -90,7 +89,6 @@ const ExplicitNamingForm = () => {
             csvInitialData={csvInitialData}
             fromCsvDataToFormValues={fromCsvDataToFormValues}
             defaultRowData={{ [CONTINGENCY_NAME]: '', [EQUIPMENT_IDS]: [] }}
-            minNumberOfRows={3}
             pagination={true}
             paginationPageSize={100}
         />

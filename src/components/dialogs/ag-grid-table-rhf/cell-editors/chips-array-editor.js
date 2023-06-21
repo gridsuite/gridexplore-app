@@ -78,12 +78,13 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
         <Autocomplete
             style={{
                 width: '100%',
-                height: '100%',
+                //height: '100%',
             }}
             multiple
             freeSolo
             options={[]}
             value={values}
+            size={'small'}
             onChange={handleChipAdd}
             onKeyPress={handleKeyPress}
             renderInput={(params) => {
