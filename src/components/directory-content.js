@@ -336,7 +336,7 @@ const DirectoryContent = () => {
             type === ElementType.FILTER || type === ElementType.CONTINGENCY_LIST
                 ? intl.formatMessage({ id: subtype + '_' + type })
                 : intl.formatMessage({ id: type });
-        const elementTypeLabel = `${elemType}${format.toLocaleLowerCase()}`;
+        const elementTypeLabel = `${elemType}${format}`;
         return <Typography>{elementTypeLabel}</Typography>;
     }
 
