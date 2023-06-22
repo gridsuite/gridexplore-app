@@ -12,7 +12,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { createContingencyList } from '../../../../utils/rest-api';
 import { useMemo } from 'react';
-import CustomMuiDialog from '../../CustomMuiDialog';
+import CustomMuiDialog from '../../custom-mui-dialog';
 import ContingencyListCreationForm from './contingency-list-creation-form';
 import {
     getEmptyFormData,
@@ -46,6 +46,7 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
 
     const onSubmit = (data) => {
         const formContent = getFormContent(null, data);
+        console.log('formContent : ', formContent);
         createContingencyList(
             data[CONTINGENCY_LIST_TYPE],
             data[NAME],
@@ -69,6 +70,7 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
             schema={schema}
             methods={methods}
             titleId={titleId}
+            removeOptional={true}
         >
             <ContingencyListCreationForm />
         </CustomMuiDialog>

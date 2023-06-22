@@ -31,7 +31,7 @@ const ErrorInput = ({ name }) => {
 
     useEffect(() => {
         if (error?.message) {
-            setErrorMsg(intl.formatMessage({ ...errorProps(error?.message) }));
+            setErrorMsg(intl.formatMessage({ ...errorProps(error.message) }));
         }
     }, [error, intl]);
 

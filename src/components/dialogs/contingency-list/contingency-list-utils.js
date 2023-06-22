@@ -10,10 +10,10 @@ import {
     CONTINGENCY_NAME,
     COUNTRIES_1,
     COUNTRIES_2,
-    EQUIPMENT_ID,
     EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
     EQUIPMENT_TYPE,
+    ID,
     NAME,
     NOMINAL_VOLTAGE_1,
     NOMINAL_VOLTAGE_2,
@@ -66,15 +66,10 @@ export const getSchema = (activeDirectory) => {
         [NAME]: yup
             .string()
             .nullable()
-            .when([EQUIPMENT_ID], {
-                is: null,
-                then: (schema) =>
-                    schema
-                        .required('nameEmpty')
-                        .test('checkIfUniqueName', 'nameAlreadyUsed', (name) =>
-                            checkNameIsUnique(name, activeDirectory)
-                        ),
-            }),
+            .required('nameEmpty')
+            .test('checkIfUniqueName', 'nameAlreadyUsed', (name) =>
+                checkNameIsUnique(name, activeDirectory)
+            ),
         [EQUIPMENT_TYPE]: yup.string().nullable(),
         [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
         [EQUIPMENT_TABLE]: yup.array().of(
@@ -92,7 +87,8 @@ export const getSchema = (activeDirectory) => {
 };
 
 export const getEmptyFormData = () => ({
-    [EQUIPMENT_ID]: null,
+    [NAME]: '',
+    [ID]: null,
     [EQUIPMENT_TABLE]: DEFAULT_TABLE_ROWS,
     [CONTINGENCY_LIST_TYPE]: ContingencyListTypeRefactor.CRITERIA_BASED.id,
     [EQUIPMENT_TYPE]: '',
@@ -112,6 +108,7 @@ export const getFormDataFromFetchedElement = (
     switch (contingencyListType) {
         case ContingencyListTypeRefactor.CRITERIA_BASED.id:
             return {
+                [ID]: contingencyListId,
                 [NAME]: name,
                 [EQUIPMENT_TYPE]: response?.equipmentType,
                 [COUNTRIES_1]: response?.countries1,
@@ -123,8 +120,9 @@ export const getFormDataFromFetchedElement = (
             const result =
                 response?.identifierContingencyList?.identifiers?.map(
                     (identifiers, index) => {
+                        const id = 'contingencyName' + index;
                         return {
-                            [CONTINGENCY_NAME]: 'contingencyName' + index, // Temporary : at the moment, we do not save the name in the backend.
+                            [CONTINGENCY_NAME]: id, // Temporary : at the moment, we do not save the name in the backend.
                             [EQUIPMENT_IDS]: identifiers.identifierList.map(
                                 (identifier) => identifier.identifier
                             ),
@@ -133,11 +131,12 @@ export const getFormDataFromFetchedElement = (
                 );
             return {
                 [NAME]: name,
-                [EQUIPMENT_ID]: contingencyListId,
+                [ID]: contingencyListId,
                 [EQUIPMENT_TABLE]: result ?? DEFAULT_TABLE_ROWS,
             };
         case ContingencyListTypeRefactor.SCRIPT.id:
             return {
+                [ID]: contingencyListId,
                 [NAME]: name,
                 [SCRIPT]: response?.script,
             };
@@ -154,7 +153,6 @@ export const editContingencyList = (
     switch (contingencyListType) {
         case ContingencyListTypeRefactor.CRITERIA_BASED.id:
             return saveFormContingencyList(
-                contingencyListId,
                 contingencyList,
                 contingencyList[NAME]
             );

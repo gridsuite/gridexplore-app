@@ -35,7 +35,7 @@ const CsvImportDialog = ({
     const [createFilterErr, setCreateFilterErr] = React.useState('');
     const intl = useIntl();
     const { CSVReader } = useCSVReader();
-    const [value, setValue] = useState([]);
+    const [importedData, setImportedData] = useState([]);
     const [isConfirmationPopupOpen, setOpenConfirmationPopup] = useState(false);
 
     const data = useMemo(() => {
@@ -70,13 +70,13 @@ const CsvImportDialog = ({
     };
 
     const handleCreateFilter = (saveTableValues) => {
-        if (value.length !== 0) {
-            const result = value.filter((row) => {
+        if (importedData.length !== 0) {
+            const result = importedData.filter((row) => {
                 // We do not keep the comment rows
                 if (row[0].startsWith('#')) {
                     return false;
                 }
-                // We keep the row if at least one of its column has a value
+                // We keep the row if at least one of its column has a importedData
                 return row.some((column) => !!column?.trim());
             });
             if (validateCsvFile(result)) {
@@ -186,7 +186,7 @@ const CsvImportDialog = ({
                             <Grid container item spacing={3}>
                                 <CSVReader
                                     onUploadAccepted={(results) => {
-                                        setValue([...results.data]);
+                                        setImportedData([...results.data]);
                                         setCreateFilterErr('');
                                     }}
                                 >

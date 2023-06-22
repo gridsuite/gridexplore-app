@@ -22,11 +22,9 @@ const useStyles = makeStyles((theme) => ({
     dialogPaper: {
         width: 'auto',
         minWidth: '800px',
-        minHeight: '600px',
         margin: 'auto',
     },
     content: {
-        marginTop: theme.spacing(2),
         overflow: 'auto',
         justifyContent: 'space-around',
         flexGrow: 1,
@@ -43,6 +41,7 @@ const CustomMuiDialog = ({
     onValidationError,
     titleId,
     disabledSave,
+    removeOptional,
     ...dialogProps
 }) => {
     const classes = useStyles();
@@ -65,7 +64,11 @@ const CustomMuiDialog = ({
         onValidationError && onValidationError(errors);
     };
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider
+            validationSchema={schema}
+            {...methods}
+            removeOptional={removeOptional}
+        >
             <Dialog
                 classes={{ paper: classes.dialogPaper }}
                 open={open}
@@ -79,11 +82,7 @@ const CustomMuiDialog = ({
                         </Grid>
                     </Grid>
                 </DialogTitle>
-                <DialogContent>
-                    <Grid container className={classes.content}>
-                        {dialogProps.children}
-                    </Grid>
-                </DialogContent>
+                <DialogContent>{dialogProps.children}</DialogContent>
                 <DialogActions>
                     <Button onClick={handleCancel}>
                         <FormattedMessage id="cancel" />

@@ -1,13 +1,13 @@
 import { useWatch } from 'react-hook-form';
 import { OPERATION_TYPE, VALUE_1, VALUE_2 } from './field-constants';
 import FloatInput from './float-input';
-import AutocompleteSelectInput from './autocomplete-select-input';
 import { Grid, InputLabel } from '@mui/material';
 import yup from './yup-config';
 import FormControl from '@mui/material/FormControl';
 import { FormattedMessage } from 'react-intl';
 import React, { useMemo } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
+import SelectInput from './select-input';
 
 const useStyles = makeStyles((theme) => ({
     inputLegend: {
@@ -91,13 +91,12 @@ const RangeInput = ({ name, label }) => {
     );
 
     const operationTypeField = (
-        <AutocompleteSelectInput
+        <SelectInput
             name={`${name}.${OPERATION_TYPE}`}
             options={Object.values(RangeType)}
             style={{
                 borderRadius: '4px 0 0 4px',
             }}
-            disableClearable={true}
         />
     );
 

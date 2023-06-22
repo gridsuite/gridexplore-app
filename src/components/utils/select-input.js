@@ -14,7 +14,7 @@ const SelectInput = ({ name, options, label, ...props }) => {
     return (
         <FormControl fullWidth>
             <InputLabel>
-                <FormattedMessage id={label} />
+                {label && <FormattedMessage id={label ?? ''} />}
             </InputLabel>
             <Select
                 fullWidth

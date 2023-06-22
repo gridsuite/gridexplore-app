@@ -81,6 +81,10 @@ const ExplicitNamingForm = () => {
         [intl]
     );
 
+    const getRowId = useCallback((row) => {
+        return row.data.id;
+    }, []);
+
     const equipmentTableField = (
         <CustomAgGridTable
             name={EQUIPMENT_TABLE}
@@ -91,6 +95,7 @@ const ExplicitNamingForm = () => {
             defaultRowData={{ [CONTINGENCY_NAME]: '', [EQUIPMENT_IDS]: [] }}
             pagination={true}
             paginationPageSize={100}
+            getRowID={getRowId}
         />
     );
 

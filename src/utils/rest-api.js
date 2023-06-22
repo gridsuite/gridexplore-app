@@ -600,7 +600,7 @@ export function fetchContingencyList(type, id) {
  * @returns {Promise<Response>}
  */
 
-export function saveFormContingencyList(id, form, name) {
+export function saveFormContingencyList(form, name) {
     const { nominalVoltage, ...rest } = form;
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
@@ -609,7 +609,7 @@ export function saveFormContingencyList(id, form, name) {
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/contingency-lists/' +
-        id +
+        form.id +
         '?' +
         urlSearchParams.toString();
 

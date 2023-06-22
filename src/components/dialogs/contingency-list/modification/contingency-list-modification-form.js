@@ -28,7 +28,7 @@ const ContingencyListModificationForm = ({ contingencyListType }) => {
     );
 
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} marginTop={'auto'}>
             <Grid container item>
                 {gridItem(nameField, 12)}
             </Grid>

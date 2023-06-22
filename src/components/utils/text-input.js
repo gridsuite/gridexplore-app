@@ -7,11 +7,15 @@
 
 import { InputAdornment, TextField } from '@mui/material';
 import React from 'react';
-import { useController } from 'react-hook-form';
+import { useController, useFormContext } from 'react-hook-form';
 import makeStyles from '@mui/styles/makeStyles';
-import { FieldLabel, func_identity, genHelperError } from './dialog-utils';
+import { func_identity, isFieldRequired } from './dialog-utils';
 import IconButton from '@mui/material/IconButton';
-import { genHelperPreviousValue } from './inputs/hooks-helpers';
+import {
+    FieldLabel,
+    genHelperError,
+    genHelperPreviousValue,
+} from './inputs/hooks-helpers';
 import PropTypes from 'prop-types';
 import TextFieldWithAdornment from './text-field-with-adornment';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -38,6 +42,7 @@ const TextInput = ({
     customAdornment,
     ...props
 }) => {
+    const { validationSchema, getValues, removeOptional } = useFormContext();
     const classes = useStyles();
     const {
         field: { onChange, value, ref },
@@ -63,10 +68,10 @@ const TextInput = ({
         : FieldLabel({
               label,
               values: labelValues,
-              optional: false,
-              /*!isFieldRequired(name, validationSchema, getValues()) &&
+              optional:
+                  isFieldRequired(name, validationSchema, getValues()) &&
                   !formProps?.disabled &&
-                  !removeOptional*/
+                  !removeOptional,
           });
 
     return (

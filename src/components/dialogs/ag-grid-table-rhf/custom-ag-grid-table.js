@@ -21,6 +21,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import ErrorInput from '../../utils/error-input';
 import clsx from 'clsx';
 import { useTheme } from '@mui/styles';
+
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
         rowDrag: true,
@@ -50,6 +51,9 @@ const useStyles = makeStyles((theme) => ({
             {
                 visibility: 'hidden',
             },
+        '& .ag-body-horizontal-scroll-viewport': {
+            visibility: 'hidden',
+        },
 
         // hides right border for header of "Edit" column due to column being pinned
 
@@ -58,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
         },
         '& .ag-body': {
             backgroundColor: theme.agGridBackground.color,
+            //overflowY: 'scroll',
         },
         '& .ag-row': {
             backgroundColor: theme.agGridBackground.color,
@@ -67,15 +72,15 @@ const useStyles = makeStyles((theme) => ({
         },
         '& .ag-cell-edit-wrapper': {
             height: 'inherit',
-            //border: 'none'
+        },
+        '& .ag-layout-auto-height': {
+            //height: '250px'
+            //height: '300px',
         },
     },
     iconColor: {
         color: theme.palette.primary.main,
         justifyContent: 'flex-end',
-    },
-    selectedRow: {
-        backgroundColor: 'red',
     },
 }));
 
@@ -86,6 +91,7 @@ export const CustomAgGridTable = ({
     fromCsvDataToFormValues, // this used to transform rows from csv file, to data can be displayed in the table
     csvFileHeaders,
     csvInitialData, // this is used if csv file generated has some row by default (comments for example)
+    getRowID, // this used by Ag Grid to get the id of each row
     ...props
 }) => {
     const classes = useStyles();
@@ -98,6 +104,7 @@ export const CustomAgGridTable = ({
     const [downDisabled, setDownDisabled] = useState(false);
     const intl = useIntl();
     const { getValues } = useFormContext();
+    const [rowData, setRowData] = useState([]);
 
     const { fields, append, remove, move, update } = useFieldArray({
         control,
@@ -106,30 +113,15 @@ export const CustomAgGridTable = ({
 
     // we add the unique generated id from react hook form to each row, so we can use it in getRowId
     // the unique id used to identify the selected rows, so we can keep the selection when row index is changed.
-    const defaultRowsWithId = useMemo(() => {
-        const rows = getValues(name);
-        if (!rows) {
-            return [];
-        }
-        return getValues(name).map((v, i) => {
-            return {
-                id: fields[i].id,
-                ...v,
-            };
+    useEffect(() => {
+        const newRows = fields.map((value, index) => {
+            return { rowUuid: value.id, ...getValues(name)[index] };
         });
+        setRowData(newRows);
     }, [fields, getValues, name]);
-
-    const [rowData, setRowData] = useState(defaultRowsWithId);
 
     const handleAddRow = () => {
         append(defaultRowData);
-        setRowData((oldValues) => {
-            const newVal = {
-                id: fields[fields.length - 1].id,
-                ...defaultRowData,
-            };
-            return [...oldValues, newVal];
-        });
     };
 
     const handleDeleteRows = () => {
@@ -146,34 +138,42 @@ export const CustomAgGridTable = ({
             });
             remove(idx);
         });
-        setRowData(getValues(name));
     };
 
     const getIndex = (val) => {
-        return getValues(name).findIndex((row) => row.id === val.id);
+        return fields.findIndex((row) => row.id === val.rowUuid);
     };
+
     const handleMoveRowUp = () => {
-        selectedRows.forEach((val, index) => {
-            const idx = getIndex(val);
-            move(idx, idx - 1);
-        });
-        setUpDisabled(selectedRows.some((r) => getIndex(r) === 0));
-        setDownDisabled(
-            selectedRows.some((r) => getIndex(r) === rowData.length - 1)
-        );
-        setRowData(getValues(name));
+        selectedRows
+            .map((row) => getIndex(row))
+            .sort()
+            .forEach((idx) => {
+                move(idx, idx - 1);
+                if (idx === 1) {
+                    setUpDisabled(true);
+                }
+                if (idx === fields.length - 1) {
+                    setDownDisabled(false);
+                }
+            });
     };
 
     const handleMoveRowDown = () => {
-        selectedRows.forEach((val, index) => {
-            const idx = getIndex(val);
-            move(idx, idx + 1);
-        });
-        setUpDisabled(selectedRows.some((r) => getIndex(r) === 0));
-        setDownDisabled(
-            selectedRows.some((r) => getIndex(r) === rowData.length - 1)
-        );
-        setRowData(getValues(name));
+        selectedRows
+            .map((row) => getIndex(row))
+            .sort()
+            .reverse()
+            .forEach((idx) => {
+                move(idx, idx + 1);
+                if (idx === fields.length - 2) {
+                    setDownDisabled(true);
+                }
+
+                if (idx === 0) {
+                    setUpDisabled(false);
+                }
+            });
     };
 
     const defaultColDef = useMemo(
@@ -208,7 +208,6 @@ export const CustomAgGridTable = ({
                 <AgGridReact
                     rowData={rowData}
                     onGridReady={(params) => {
-                        params.api.setDomLayout('autoHeight');
                         params.api.sizeColumnsToFit();
                         setGridApi(params);
                     }}
@@ -231,7 +230,7 @@ export const CustomAgGridTable = ({
                     onCellEditingStopped={(event) => {
                         update(event.rowIndex, event.data);
                     }}
-                    getRowId={(row) => row.data.id}
+                    getRowId={(row) => row.data.rowUuid}
                     {...props}
                 ></AgGridReact>
             </Grid>

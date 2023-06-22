@@ -14,7 +14,7 @@ import {
     NOMINAL_VOLTAGE_2,
 } from '../../../utils/field-constants';
 import React, { useMemo } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 import { gridItem } from '../../../utils/dialog-utils';
 import { Grid } from '@mui/material';
 import CountriesInput from '../../../utils/countries-input';
@@ -23,7 +23,6 @@ import SelectInput from '../../../utils/select-input';
 import { CONTINGENCY_LIST_EQUIPMENTS } from '../contingency-list-utils';
 
 const CriteriaBasedForm = () => {
-    const { getValues } = useFormContext();
     const watchEquipmentType = useWatch({
         name: EQUIPMENT_TYPE,
     });
@@ -70,7 +69,7 @@ const CriteriaBasedForm = () => {
     return (
         <Grid container item>
             {gridItem(equipmentTypeSelectionField, 12)}
-            {getValues(EQUIPMENT_TYPE) && (
+            {watchEquipmentType && (
                 <>
                     {gridItem(countries1, 12)}
                     {isLineOrHvdc && gridItem(countries2, 12)}

@@ -17,8 +17,9 @@ import {
 } from '../contingency-list-utils';
 import { useEffect, useMemo } from 'react';
 import { fetchContingencyList } from '../../../../utils/rest-api';
-import CustomMuiDialog from '../../CustomMuiDialog';
+import CustomMuiDialog from '../../custom-mui-dialog';
 import ContingencyListModificationForm from './contingency-list-modification-form';
+import { NAME } from '../../../utils/field-constants';
 
 const emptyFormData = getEmptyFormData();
 
@@ -52,6 +53,7 @@ const ContingencyListModificationDialog = ({
                             contingencyListId,
                             name
                         );
+                        console.log('formData :', formData);
                         reset(formData);
                     }
                 }
@@ -81,6 +83,7 @@ const ContingencyListModificationDialog = ({
                 snackError({
                     messageTxt: errorMessage,
                     headerId: 'contingencyListEditingError',
+                    headerValues: { name: contingencyList[NAME] },
                 });
             });
     };
@@ -93,6 +96,7 @@ const ContingencyListModificationDialog = ({
             schema={schema}
             methods={methods}
             titleId={titleId}
+            removeOptional={true}
         >
             <ContingencyListModificationForm
                 contingencyListType={contingencyListType}

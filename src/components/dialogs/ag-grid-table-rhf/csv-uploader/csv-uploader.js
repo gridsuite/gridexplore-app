@@ -133,37 +133,33 @@ const CsvUploader = ({
     };
     const renderConfirmationCsvData = () => {
         return (
-            <div>
-                <Dialog
-                    open={isConfirmationPopupOpen}
-                    aria-labelledby="dialog-confirmation-csv-data"
-                >
-                    <DialogTitle id={'dialog-confirmation-csv-data'}>
-                        {'Confirmation'}
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            {intl.formatMessage({ id: 'keepCSVDataMessage' })}
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => handleCancelDialog()}>
-                            <FormattedMessage id="cancel" />
-                        </Button>
-                        <Button
-                            onClick={() => handleReplacePopupConfirmation()}
-                        >
-                            <FormattedMessage id="replace" />
-                        </Button>
-                        <Button
-                            onClick={() => handleAddPopupConfirmation()}
-                            variant="outlined"
-                        >
-                            <FormattedMessage id="add" />
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
+            <Dialog
+                open={isConfirmationPopupOpen}
+                aria-labelledby="dialog-confirmation-csv-data"
+            >
+                <DialogTitle id={'dialog-confirmation-csv-data'}>
+                    {'Confirmation'}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {intl.formatMessage({ id: 'keepCSVDataMessage' })}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => handleCancelDialog()}>
+                        <FormattedMessage id="cancel" />
+                    </Button>
+                    <Button onClick={() => handleReplacePopupConfirmation()}>
+                        <FormattedMessage id="replace" />
+                    </Button>
+                    <Button
+                        onClick={() => handleAddPopupConfirmation()}
+                        variant="outlined"
+                    >
+                        <FormattedMessage id="add" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
         );
     };
 

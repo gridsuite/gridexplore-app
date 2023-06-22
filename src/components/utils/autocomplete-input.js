@@ -7,15 +7,14 @@
 
 import { Autocomplete, TextField } from '@mui/material';
 import React from 'react';
-import {
-    FieldLabel,
-    genHelperError,
-    genHelperPreviousValue,
-} from './inputs/hooks-helpers';
 import PropTypes from 'prop-types';
-import { useController } from 'react-hook-form';
-import { func_identity } from './dialog-utils';
-import makeStyles from '@mui/styles/makeStyles';
+import { useController, useFormContext } from 'react-hook-form';
+import {
+    func_identity,
+    isFieldRequired,
+    useStyles,
+} from './dialog-utils';
+import { FieldLabel, genHelperError, genHelperPreviousValue } from "./inputs/hooks-helpers";
 
 /**
  * Autocomplete input
@@ -27,13 +26,6 @@ import makeStyles from '@mui/styles/makeStyles';
  * @param value input value
  * @returns autocomplete field containing the options values
  */
-
-const useStyles = makeStyles((theme) => ({
-    helperText: {
-        margin: 0,
-        marginTop: 4,
-    },
-}));
 const AutocompleteInput = ({
     name,
     label,
@@ -47,6 +39,7 @@ const AutocompleteInput = ({
     onChangeCallback, // method called when input value is changing
     ...props
 }) => {
+    const { validationSchema, getValues, removeOptional } = useFormContext();
     const {
         field: { onChange, value, ref },
         fieldState: { error },
@@ -75,7 +68,6 @@ const AutocompleteInput = ({
 
     return (
         <Autocomplete
-            size={'medium'}
             value={inputTransform(value)}
             onChange={(_, data) => handleChange(data)}
             {...(allowNewValue && {
@@ -90,14 +82,17 @@ const AutocompleteInput = ({
             options={options}
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
-                    label={
-                        label
-                            ? FieldLabel({
-                                  label: label,
-                                  optional: false,
-                              })
-                            : ''
-                    }
+                    label={FieldLabel({
+                        label: label,
+                        optional:
+                            !isFieldRequired(
+                                name,
+                                validationSchema,
+                                getValues()
+                            ) &&
+                            !props?.disabled &&
+                            !removeOptional,
+                    })}
                     FormHelperTextProps={{
                         className: classes.helperText,
                     }}
@@ -116,7 +111,7 @@ const AutocompleteInput = ({
 
 AutocompleteInput.propTypes = {
     name: PropTypes.string.isRequired,
-    label: PropTypes.string,
+    label: PropTypes.string.isRequired,
     isRequired: PropTypes.bool,
     options: PropTypes.array.isRequired,
     outputTransform: PropTypes.func,
