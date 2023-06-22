@@ -125,16 +125,7 @@ export const CustomAgGridTable = ({
 
     const handleDeleteRows = () => {
         selectedRows.forEach((val, index) => {
-            setSelectedRows(gridApi.api.getSelectedRows());
-            const rows = getValues(name);
-            const idx = rows.findIndex((obj) => {
-                for (let key in val) {
-                    if (obj[key] !== val[key]) {
-                        return false;
-                    }
-                }
-                return true;
-            });
+            const idx = getIndex(val)
             remove(idx);
         });
     };

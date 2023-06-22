@@ -33,11 +33,13 @@ const ExplicitNamingForm = () => {
         return [
             ...ROW_DRAGGING_SELECTION_COLUMN_DEF,
             {
+                headerName: intl.formatMessage({ id: 'elementName' }),
                 field: CONTINGENCY_NAME,
                 editable: true,
                 singleClickEdit: true,
             },
             {
+                headerName: intl.formatMessage({ id: 'equipments' }),
                 field: EQUIPMENT_IDS,
                 suppressKeyboardEvent: (params) => {
                     return suppressEnter(params);
