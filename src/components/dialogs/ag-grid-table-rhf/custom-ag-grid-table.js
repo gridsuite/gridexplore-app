@@ -117,7 +117,7 @@ export const CustomAgGridTable = ({
             return { rowUuid: value.id, ...getValues(name)[index] };
         });
         setValue(name, newRows);
-    }, [fields, getValues, name]);
+    }, [fields, getValues, name, setValue]);
 
     const handleAddRow = () => {
         append(defaultRowData);
