@@ -142,8 +142,8 @@ export const useFileValue = ({ fileExceedsLimitMessage, isLoading }) => {
         field,
         fileError,
         fileOk,
-        setFileOk,
         resetSelectedFile,
+        setFileOk,
     ];
 };
 
