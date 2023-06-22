@@ -140,7 +140,7 @@ export const CustomAgGridTable = ({
     };
 
     const getIndex = (val) => {
-        return fields.findIndex((row) => row.id === val.rowUuid);
+        return getValues(name).findIndex((row) => row.rowUuid === val.rowUuid);
     };
 
     const handleMoveRowUp = () => {
