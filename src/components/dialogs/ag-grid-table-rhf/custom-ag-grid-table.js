@@ -103,8 +103,7 @@ export const CustomAgGridTable = ({
     const [upDisabled, setUpDisabled] = useState(false);
     const [downDisabled, setDownDisabled] = useState(false);
     const intl = useIntl();
-    const { getValues } = useFormContext();
-    const [rowData, setRowData] = useState([]);
+    const { getValues, setValue } = useFormContext();
 
     const { fields, append, remove, move, update } = useFieldArray({
         control,
@@ -117,7 +116,7 @@ export const CustomAgGridTable = ({
         const newRows = fields.map((value, index) => {
             return { rowUuid: value.id, ...getValues(name)[index] };
         });
-        setRowData(newRows);
+        setValue(name, newRows);
     }, [fields, getValues, name]);
 
     const handleAddRow = () => {
@@ -206,7 +205,7 @@ export const CustomAgGridTable = ({
         <Grid container spacing={2}>
             <Grid item xs={12} className={clsx([theme.aggrid, classes.grid])}>
                 <AgGridReact
-                    rowData={rowData}
+                    rowData={getValues(name)}
                     onGridReady={(params) => {
                         params.api.sizeColumnsToFit();
                         setGridApi(params);
