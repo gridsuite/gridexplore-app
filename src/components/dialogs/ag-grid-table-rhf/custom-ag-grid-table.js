@@ -100,10 +100,10 @@ export const CustomAgGridTable = ({
     const [selectedRows, setSelectedRows] = useState([]);
     const [uploaderOpen, setUploaderOpen] = useState(false);
     const { control } = useFormContext();
-    const [upDisabled, setUpDisabled] = useState(false);
-    const [downDisabled, setDownDisabled] = useState(false);
     const intl = useIntl();
     const { getValues, setValue } = useFormContext();
+    const isFirstSelected = gridApi?.api?.getRowNode(getValues(name)[0]?.rowUuid)?.isSelected();
+    const isLastSelected = gridApi?.api?.getRowNode(getValues(name)[getValues(name).length - 1]?.rowUuid)?.isSelected();
 
     const { fields, append, remove, move, update } = useFieldArray({
         control,
@@ -140,12 +140,6 @@ export const CustomAgGridTable = ({
             .sort()
             .forEach((idx) => {
                 move(idx, idx - 1);
-                if (idx === 1) {
-                    setUpDisabled(true);
-                }
-                if (idx === fields.length - 1) {
-                    setDownDisabled(false);
-                }
             });
     };
 
@@ -156,13 +150,6 @@ export const CustomAgGridTable = ({
             .reverse()
             .forEach((idx) => {
                 move(idx, idx + 1);
-                if (idx === fields.length - 2) {
-                    setDownDisabled(true);
-                }
-
-                if (idx === 0) {
-                    setUpDisabled(false);
-                }
             });
     };
 
@@ -181,13 +168,6 @@ export const CustomAgGridTable = ({
 
     const updateButtonsState = useCallback(
         (event) => {
-            if (event.rowIndex === 0) {
-                setUpDisabled(event.node.selected);
-            }
-
-            if (event.rowIndex === fields.length - 1) {
-                setDownDisabled(event.node.selected);
-            }
         },
         [fields]
     );
@@ -213,9 +193,6 @@ export const CustomAgGridTable = ({
                     onSelectionChanged={(event) => {
                         updateButtonsState(event);
                         setSelectedRows(gridApi.api.getSelectedRows());
-                    }}
-                    onRowSelected={(event) => {
-                        updateButtonsState(event);
                     }}
                     onCellEditingStopped={(event) => {
                         update(event.rowIndex, event.data);
@@ -261,7 +238,7 @@ export const CustomAgGridTable = ({
                 </IconButton>
                 <IconButton
                     key={'upButton'}
-                    disabled={upDisabled || selectedRows.length === 0}
+                    disabled={isFirstSelected || selectedRows.length === 0}
                     onClick={handleMoveRowUp}
                     className={classes.iconColor}
                 >
@@ -269,7 +246,7 @@ export const CustomAgGridTable = ({
                 </IconButton>
                 <IconButton
                     key={'downButton'}
-                    disabled={downDisabled || selectedRows.length === 0}
+                    disabled={isLastSelected || selectedRows.length === 0}
                     className={classes.iconColor}
                     onClick={handleMoveRowDown}
                 >
