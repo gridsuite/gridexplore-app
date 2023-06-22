@@ -19,7 +19,7 @@ import { gridItem } from '../../../utils/dialog-utils';
 import { Grid } from '@mui/material';
 import CountriesInput from '../../../utils/countries-input';
 import RangeInput from '../../../utils/range-input';
-import SelectInput from '../../../utils/select-input';
+import MuiSelectInput from '../../../utils/mui-select-input';
 import { CONTINGENCY_LIST_EQUIPMENTS } from '../contingency-list-utils';
 
 const CriteriaBasedForm = () => {
@@ -28,7 +28,7 @@ const CriteriaBasedForm = () => {
     });
 
     const equipmentTypeSelectionField = (
-        <SelectInput
+        <MuiSelectInput
             name={EQUIPMENT_TYPE}
             options={Object.values(CONTINGENCY_LIST_EQUIPMENTS)}
             label={'equipmentType'}

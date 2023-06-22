@@ -112,7 +112,7 @@ export const getFormDataFromFetchedElement = (
                 [NAME]: name,
                 [EQUIPMENT_TYPE]: response?.equipmentType,
                 [COUNTRIES_1]: response?.countries1,
-                [COUNTRIES_2]: response.countries2,
+                [COUNTRIES_2]: response?.countries2,
                 [NOMINAL_VOLTAGE_1]: response?.nominalVoltage1,
                 [NOMINAL_VOLTAGE_2]: response?.nominalVoltage2,
             };

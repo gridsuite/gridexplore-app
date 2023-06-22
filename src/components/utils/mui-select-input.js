@@ -1,10 +1,11 @@
+
 import { useController } from 'react-hook-form';
 import { InputLabel, MenuItem, Select } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
 import FormControl from '@mui/material/FormControl';
 
-const SelectInput = ({ name, options, label, ...props }) => {
+const MuiSelectInput = ({ name, options, label, ...props }) => {
     const {
         field: { value, onChange },
     } = useController({
@@ -32,4 +33,4 @@ const SelectInput = ({ name, options, label, ...props }) => {
     );
 };
 
-export default SelectInput;
+export default MuiSelectInput;
