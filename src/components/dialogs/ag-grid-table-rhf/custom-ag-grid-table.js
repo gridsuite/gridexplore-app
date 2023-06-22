@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -102,8 +102,12 @@ export const CustomAgGridTable = ({
     const { control } = useFormContext();
     const intl = useIntl();
     const { getValues, setValue } = useFormContext();
-    const isFirstSelected = gridApi?.api?.getRowNode(getValues(name)[0]?.rowUuid)?.isSelected();
-    const isLastSelected = gridApi?.api?.getRowNode(getValues(name)[getValues(name).length - 1]?.rowUuid)?.isSelected();
+    const isFirstSelected = gridApi?.api
+        ?.getRowNode(getValues(name)[0]?.rowUuid)
+        ?.isSelected();
+    const isLastSelected = gridApi?.api
+        ?.getRowNode(getValues(name)[getValues(name).length - 1]?.rowUuid)
+        ?.isSelected();
 
     const { fields, append, remove, move, update } = useFieldArray({
         control,
@@ -125,7 +129,7 @@ export const CustomAgGridTable = ({
 
     const handleDeleteRows = () => {
         selectedRows.forEach((val, index) => {
-            const idx = getIndex(val)
+            const idx = getIndex(val);
             remove(idx);
         });
     };
@@ -166,12 +170,6 @@ export const CustomAgGridTable = ({
         }
     }, [columnDefs, gridApi]);
 
-    const updateButtonsState = useCallback(
-        (event) => {
-        },
-        [fields]
-    );
-
     return (
         <Grid container spacing={2}>
             <Grid item xs={12} className={clsx([theme.aggrid, classes.grid])}>
@@ -191,7 +189,6 @@ export const CustomAgGridTable = ({
                     columnDefs={columnDefs}
                     detailRowAutoHeight={true}
                     onSelectionChanged={(event) => {
-                        updateButtonsState(event);
                         setSelectedRows(gridApi.api.getSelectedRows());
                     }}
                     onCellEditingStopped={(event) => {

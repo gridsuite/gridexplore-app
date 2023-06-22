@@ -50,7 +50,7 @@ const ExplicitNamingForm = () => {
                 cellRenderer: chipsArrayEditor,
             },
         ];
-    }, []);
+    }, [intl]);
 
     const fromCsvDataToFormValues = useCallback((results) => {
         return results.map((value, index) => {
