@@ -542,10 +542,14 @@ export function duplicateContingencyList(
     urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
-    const typeUriParam =
-        contingencyListType === ContingencyListType.SCRIPT
-            ? 'script-contingency-lists'
-            : 'form-contingency-lists';
+    let typeUriParam = '';
+    if (contingencyListType === ContingencyListType.SCRIPT) {
+        typeUriParam += 'script-contingency-lists';
+    } else if (contingencyListType === ContingencyListType.FORM) {
+        typeUriParam += 'form-contingency-lists';
+    } else if (contingencyListType === ContingencyListType.EXPLICIT_NAMING) {
+        typeUriParam += 'identifier-contingency-lists';
+    }
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
