@@ -303,15 +303,6 @@ const ExplicitNamingContingencyListDialogContent = ({
         <div>
             <Grid container spacing={2}>
                 <Grid item xs={12} />
-
-                {/* // TODO Remove this temporary message with the next Powsybl version, when contingency names can be saved */}
-                <Grid item xs={12}>
-                    <Alert severity="warning">
-                        <FormattedMessage id="temporaryContingencyWarning" />
-                    </Alert>
-                </Grid>
-                {/* // End of temporary message to remove */}
-
                 {tableValuesField}
             </Grid>
             {createFilterErr !== '' && (

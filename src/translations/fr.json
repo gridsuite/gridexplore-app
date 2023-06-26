@@ -214,7 +214,6 @@
     "add" : "Ajouter",
     "replace": "Remplacer",
 
-    "temporaryContingencyWarning": "Dans la version actuelle, les noms des aléas ne sont pas sauvegardés et on ne peut renseigner que des N-1, pas de N-k.",
     "DIE" : "ARCADE",
     "XIIDM": "XIIDM",
     "CGMES": "CGMES",
