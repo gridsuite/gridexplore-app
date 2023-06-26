@@ -102,7 +102,6 @@ export const CustomAgGridTable = ({
         keyName: 'rowUuid',
     });
 
-    console.log('getValues(name) : ', getValues(name));
     const handleMoveRowUp = () => {
         selectedRows
             .map((row) => getIndex(row))

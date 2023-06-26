@@ -19,11 +19,10 @@ import chipsArrayEditor from '../../ag-grid-table-rhf/cell-editors/chips-array-e
 import { gridItem } from '../../../utils/dialog-utils';
 
 const suppressEnter = (params) => {
+    console.log('params : ', params);
     const KEY_ENTER = 'Enter';
     const event = params.event;
     const key = event.key;
-    if (key === KEY_ENTER) {
-    }
     return key === KEY_ENTER;
 };
 

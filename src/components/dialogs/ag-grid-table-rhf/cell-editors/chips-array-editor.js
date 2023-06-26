@@ -47,9 +47,9 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
         remove(index);
     };
 
-/*    useEffect(() => {
+    useEffect(() => {
         props.setValue(equipments);
-    }, [equipments, props]);*/
+    }, [equipments, props]);
 
     const handleChipAdd = (_, newValue) => {
         append(newValue);
@@ -63,12 +63,15 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     };
 
     const handleKeyPress = (event) => {
+        console.log('event : ', event);
         if (event.key === 'Enter' && equipments && equipments.length > 0) {
             props.api.stopEditing();
             const newVal = Array.isArray(event?.value)
                 ? event.value[0].trim()
                 : '';
+            console.log('new val 1', newVal);
             if (newVal !== '' && !equipments.includes(newVal)) {
+                console.log('new val 2', newVal);
                 handleChipAdd(newVal);
             }
         }
