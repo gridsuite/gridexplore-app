@@ -24,7 +24,8 @@ export const prepareContingencyListForBackend = (id, name, values) => {
     const identifiersList = values
         .filter(
             (contingency) =>
-                contingency?.identifierList && contingency.identifierList.length > 0
+                contingency?.identifierList &&
+                contingency.identifierList.length > 0
         ) // We only take contingencies that have an identifierList value
         .map((contingency) => {
             const identifierList = contingency.identifierList.map(
