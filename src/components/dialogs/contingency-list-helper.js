@@ -46,7 +46,7 @@ export const prepareContingencyListForBackend = (id, name, values) => {
         id: id,
         identifierContingencyList: {
             type: 'identifier',
-            version:  '1.2',
+            version: '1.2',
             name: name,
             identifiers: identifiersList,
         },
