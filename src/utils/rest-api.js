@@ -9,6 +9,7 @@ import { APP_NAME, getAppName } from './config-params';
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { ContingencyListType } from './elementType';
+import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -125,6 +126,19 @@ export function backendFetchJson(url, init, token) {
     const initCopy = prepareRequest(init, token);
     return safeFetch(url, initCopy).then((safeResponse) => safeResponse.json());
 }
+
+const getContingencyUriParamType = (contingencyListType) => {
+    switch (contingencyListType) {
+        case ContingencyListType.SCRIPT:
+            return CONTINGENCY_ENDPOINTS.SCRIPT_CONTINGENCY_LISTS;
+        case ContingencyListType.FORM:
+            return CONTINGENCY_ENDPOINTS.FORM_CONTINGENCY_LISTS;
+        case ContingencyListType.EXPLICIT_NAMING:
+            return CONTINGENCY_ENDPOINTS.IDENTIFIER_CONTINGENCY_LISTS;
+        default:
+            return null;
+    }
+};
 
 export function fetchValidateUser(user) {
     const sub = user?.profile?.sub;
@@ -542,15 +556,12 @@ export function duplicateContingencyList(
     urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
-    const typeUriParam =
-        contingencyListType === ContingencyListType.SCRIPT
-            ? 'script-contingency-lists'
-            : 'form-contingency-lists';
+    const uriParamType = getContingencyUriParamType(contingencyListType);
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/' +
-        typeUriParam +
+        '/v1/explore' +
+        uriParamType +
         '?' +
         urlSearchParams.toString();
     console.debug(url);
