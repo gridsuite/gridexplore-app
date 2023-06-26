@@ -9,7 +9,7 @@ export const getIdentifierContingencyListFromResponse = (response) => {
     const result = response?.identifierContingencyList?.identifiers?.map(
         (identifiers, index) => {
             return {
-                contingencyName: 'contingencyName' + index, // Temporary : at the moment, we do not save the name in the backend.
+                contingencyName: identifiers.contingencyId,
                 equipmentIDs: identifiers.identifierList.map(
                     (identifier) => identifier.identifier
                 ),
@@ -37,7 +37,7 @@ export const prepareContingencyListForBackend = (id, name, values) => {
 
             return {
                 type: 'LIST',
-                // contingencyName: contingency.contingencyName, // Not used for now
+                contingencyId: contingency.contingencyName,
                 identifierList: identifierList,
             };
         });
@@ -46,9 +46,8 @@ export const prepareContingencyListForBackend = (id, name, values) => {
         id: id,
         identifierContingencyList: {
             type: 'identifier',
-            version: '1.0',
+            version:  '1.2',
             name: name,
-            identifiableType: 'LINE', // hardcoded for the moment
             identifiers: identifiersList,
         },
         type: 'IDENTIFIERS',
