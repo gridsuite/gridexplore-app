@@ -517,18 +517,11 @@ export function createContingencyList(
     urlSearchParams.append('description', ''); // TODO Remove this when the backend does not need it anymore
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
-    let typeUriParam = '';
-    if (contingencyListType === ContingencyListType.FORM) {
-        typeUriParam = 'form-contingency-lists';
-    } else if (contingencyListType === ContingencyListType.SCRIPT) {
-        typeUriParam = 'script-contingency-lists';
-    } else if (contingencyListType === ContingencyListType.EXPLICIT_NAMING) {
-        typeUriParam = 'identifier-contingency-lists';
-    }
+    let typeUriParam = getContingencyUriParamType(contingencyListType);
 
     const createContingencyListUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/' +
+        '/v1/explore' +
         typeUriParam +
         '/' +
         encodeURIComponent(contingencyListName) +
@@ -576,15 +569,12 @@ export function duplicateContingencyList(
  * @returns {Promise<Response>}
  */
 export function getContingencyList(type, id) {
-    let url = PREFIX_ACTIONS_QUERIES;
-    if (type === ContingencyListType.SCRIPT) {
-        url += '/v1/script-contingency-lists/';
-    } else if (type === ContingencyListType.FORM) {
-        url += '/v1/form-contingency-lists/';
-    } else if (type === ContingencyListType.EXPLICIT_NAMING) {
-        url += '/v1/identifier-contingency-lists/';
-    }
-    url += id;
+    let url =
+        PREFIX_ACTIONS_QUERIES +
+        '/v1' +
+        getContingencyUriParamType(type) +
+        '/' +
+        id;
     return backendFetchJson(url);
 }
 
@@ -673,7 +663,9 @@ export function replaceFormContingencyListWithScript(id, parentDirectoryUuid) {
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/form-contingency-lists/' +
+        '/v1/explore' +
+        CONTINGENCY_ENDPOINTS.FORM_CONTINGENCY_LISTS +
+        '/' +
         encodeURIComponent(id) +
         '/replace-with-script' +
         '?' +
@@ -698,7 +690,9 @@ export function newScriptFromFiltersContingencyList(
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/form-contingency-lists/' +
+        '/v1/explore' +
+        CONTINGENCY_ENDPOINTS.FORM_CONTINGENCY_LISTS +
+        '/' +
         encodeURIComponent(id) +
         '/new-script/' +
         encodeURIComponent(newName) +
