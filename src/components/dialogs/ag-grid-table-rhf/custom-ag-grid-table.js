@@ -6,21 +6,15 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useController, useFieldArray, useFormContext } from 'react-hook-form';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import IconButton from '@mui/material/IconButton';
-import AddIcon from '@mui/icons-material/ControlPoint';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { ArrowCircleDown, ArrowCircleUp, Upload } from '@mui/icons-material';
-import { Grid, Tooltip } from '@mui/material';
-import { useIntl } from 'react-intl';
-import CsvUploader from './csv-uploader/csv-uploader';
+import { Grid } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import ErrorInput from '../../utils/error-input';
 import clsx from 'clsx';
 import { useTheme } from '@mui/styles';
+import BottomRightButtons from './bottom-right-buttons';
 
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
@@ -92,58 +86,29 @@ export const CustomAgGridTable = ({
     csvFileHeaders,
     csvInitialData, // this is used if csv file generated has some row by default (comments for example)
     getRowID, // this used by Ag Grid to get the id of each row
+    csvProps,
+    defaultRowsNumber = 0,
     ...props
 }) => {
     const classes = useStyles();
     const theme = useTheme();
     const [gridApi, setGridApi] = useState(null);
     const [selectedRows, setSelectedRows] = useState([]);
-    const [uploaderOpen, setUploaderOpen] = useState(false);
-    const { control } = useFormContext();
-    const intl = useIntl();
-    const { getValues, setValue } = useFormContext();
-    const isFirstSelected = gridApi?.api
-        ?.getRowNode(getValues(name)[0]?.rowUuid)
-        ?.isSelected();
-    const isLastSelected = gridApi?.api
-        ?.getRowNode(getValues(name)[getValues(name).length - 1]?.rowUuid)
-        ?.isSelected();
 
-    const { fields, append, remove, move, update } = useFieldArray({
+    const { control, getValues, setValue } = useFormContext();
+    const { fields, append, remove, update, swap } = useFieldArray({
         control,
         name: name,
+        keyName: 'rowUuid',
     });
 
-    // we add the unique generated id from react hook form to each row, so we can use it in getRowId
-    // the unique id used to identify the selected rows, so we can keep the selection when row index is changed.
-    useEffect(() => {
-        const newRows = fields.map((value, index) => {
-            return { rowUuid: value.id, ...getValues(name)[index] };
-        });
-        setValue(name, newRows);
-    }, [fields, getValues, name, setValue]);
-
-    const handleAddRow = () => {
-        append(defaultRowData);
-    };
-
-    const handleDeleteRows = () => {
-        selectedRows.forEach((val, index) => {
-            const idx = getIndex(val);
-            remove(idx);
-        });
-    };
-
-    const getIndex = (val) => {
-        return getValues(name).findIndex((row) => row.rowUuid === val.rowUuid);
-    };
-
+    console.log('getValues(name) : ', getValues(name));
     const handleMoveRowUp = () => {
         selectedRows
             .map((row) => getIndex(row))
             .sort()
             .forEach((idx) => {
-                move(idx, idx - 1);
+                swap(idx, idx - 1);
             });
     };
 
@@ -153,8 +118,26 @@ export const CustomAgGridTable = ({
             .sort()
             .reverse()
             .forEach((idx) => {
-                move(idx, idx + 1);
+                swap(idx, idx + 1);
             });
+    };
+
+    const handleDeleteRows = () => {
+        selectedRows.forEach((val, index) => {
+            const idx = getIndex(val);
+            remove(idx);
+        });
+    };
+
+    const handleAddRow = () => {
+        append({
+            rowUuid: Math.random(),
+            ...defaultRowData,
+        });
+    };
+
+    const getIndex = (val) => {
+        return getValues(name).findIndex((row) => row.rowUuid === val.rowUuid);
     };
 
     const defaultColDef = useMemo(
@@ -176,10 +159,30 @@ export const CustomAgGridTable = ({
                 <AgGridReact
                     rowData={getValues(name)}
                     onGridReady={(params) => {
-                        params.api.sizeColumnsToFit();
                         setGridApi(params);
+                        const rows = getValues(name);
+                        if (rows.every((r) => r?.rowUuid)) {
+                            setValue(
+                                name,
+                                rows.map((r, i) => {
+                                    if (r?.rowUuid) {
+                                        return r;
+                                    }
+                                    return {
+                                        rowUuid: Math.random(),
+                                        ...r,
+                                    };
+                                })
+                            );
+                        }
+                        setValue(name);
+                        params.api.sizeColumnsToFit();
                     }}
                     defaultColDef={defaultColDef}
+                    onCellValueChanged={(e, t) => {
+                        //console.log('cell changed value :', e);
+                    }}
+                    oncelled
                     rowSelection={'multiple'}
                     domLayout={'autoHeight'}
                     rowDragEntireRow
@@ -194,75 +197,22 @@ export const CustomAgGridTable = ({
                     onCellEditingStopped={(event) => {
                         update(event.rowIndex, event.data);
                     }}
-                    getRowId={(row) => row.data.rowUuid}
+                    getRowId={(row) => {
+                        return row.data.rowUuid;
+                    }}
                     {...props}
                 ></AgGridReact>
             </Grid>
-            <Grid
-                item
-                xs={12}
-                textAlign={'end'}
-                justifyContent={'flex-end'}
-                position={'sticky'}
-            >
-                <IconButton
-                    className={classes.iconColor}
-                    onClick={() => setUploaderOpen(true)}
-                >
-                    <Tooltip
-                        title={intl.formatMessage({
-                            id: 'ImportCSV',
-                        })}
-                        placement="bottom"
-                    >
-                        <Upload />
-                    </Tooltip>
-                </IconButton>
-                <IconButton
-                    key={'addButton'}
-                    onClick={handleAddRow}
-                    className={classes.iconColor}
-                >
-                    <AddIcon />
-                </IconButton>
-                <IconButton
-                    key={'DeleteButton'}
-                    onClick={handleDeleteRows}
-                    disabled={selectedRows.length === 0}
-                    className={classes.iconColor}
-                >
-                    <DeleteIcon />
-                </IconButton>
-                <IconButton
-                    key={'upButton'}
-                    disabled={isFirstSelected || selectedRows.length === 0}
-                    onClick={handleMoveRowUp}
-                    className={classes.iconColor}
-                >
-                    <ArrowCircleUp />
-                </IconButton>
-                <IconButton
-                    key={'downButton'}
-                    disabled={isLastSelected || selectedRows.length === 0}
-                    className={classes.iconColor}
-                    onClick={handleMoveRowDown}
-                >
-                    <ArrowCircleDown />
-                </IconButton>
-            </Grid>
-            <Grid item xs={12}>
-                <ErrorInput name={name} />
-            </Grid>
-            <CsvUploader
-                open={uploaderOpen}
-                fileName={'fileTest'}
-                fileHeaders={csvFileHeaders}
-                onClose={() => setUploaderOpen(false)}
-                title={'title test'}
+            <BottomRightButtons
                 name={name}
-                tableValues={fields}
-                formatCsvData={fromCsvDataToFormValues}
-                csvData={csvInitialData}
+                rowData={getValues(name)}
+                gridApi={gridApi}
+                selectedRows={selectedRows}
+                handleAddRow={handleAddRow}
+                handleDeleteRows={handleDeleteRows}
+                handleMoveRowDown={handleMoveRowDown}
+                handleMoveRowUp={handleMoveRowUp}
+                csvProps={csvProps}
             />
         </Grid>
     );

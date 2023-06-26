@@ -28,7 +28,7 @@ const CsvUploader = ({
     fileHeaders,
     fileName,
     csvData,
-    validateData = () => true,
+    validateData = (rows) => true,
     formatCsvData,
 }) => {
     const watchTableValues = useWatch({ name });
@@ -87,7 +87,6 @@ const CsvUploader = ({
                     ? [...getValues(name), ...dataFromCsv]
                     : dataFromCsv;
                 setValue(name, newValues);
-                //handleValidateCSV(result, saveTableValues);
                 handleClose();
             }
         } else {

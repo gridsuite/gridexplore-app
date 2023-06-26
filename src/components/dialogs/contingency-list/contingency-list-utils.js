@@ -122,6 +122,7 @@ export const getFormDataFromFetchedElement = (
                     (identifiers, index) => {
                         const id = 'contingencyName' + index;
                         return {
+                            rowUuid: id,
                             [CONTINGENCY_NAME]: id, // Temporary : at the moment, we do not save the name in the backend.
                             [EQUIPMENT_IDS]: identifiers.identifierList.map(
                                 (identifier) => identifier.identifier
@@ -132,7 +133,7 @@ export const getFormDataFromFetchedElement = (
             return {
                 [NAME]: name,
                 [ID]: contingencyListId,
-                [EQUIPMENT_TABLE]: result ?? DEFAULT_TABLE_ROWS,
+                [EQUIPMENT_TABLE]: result ?? [],
             };
         case ContingencyListTypeRefactor.SCRIPT.id:
             return {

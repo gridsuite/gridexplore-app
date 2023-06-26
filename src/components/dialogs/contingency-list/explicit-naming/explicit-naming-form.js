@@ -8,8 +8,8 @@
 import {
     CONTINGENCY_NAME,
     EQUIPMENT_IDS,
-    EQUIPMENT_TABLE,
-} from '../../../utils/field-constants';
+    EQUIPMENT_TABLE, ID
+} from "../../../utils/field-constants";
 import { useIntl } from 'react-intl';
 import React, { useCallback, useMemo } from 'react';
 import CustomAgGridTable, {
@@ -48,6 +48,9 @@ const ExplicitNamingForm = () => {
                 wrapText: true,
                 singleClickEdit: true,
                 cellRenderer: chipsArrayEditor,
+                cellRendererParams: {
+                    name: EQUIPMENT_TABLE
+                }
             },
         ];
     }, [intl]);
@@ -55,6 +58,7 @@ const ExplicitNamingForm = () => {
     const fromCsvDataToFormValues = useCallback((results) => {
         return results.map((value, index) => {
             return {
+                [ID]: 'csv_row_' + index,
                 [CONTINGENCY_NAME]: value[0]?.trim() || '',
                 [EQUIPMENT_IDS]:
                     value[1]
@@ -83,21 +87,20 @@ const ExplicitNamingForm = () => {
         [intl]
     );
 
-    const getRowId = useCallback((row) => {
-        return row.data.id;
-    }, []);
-
     const equipmentTableField = (
         <CustomAgGridTable
             name={EQUIPMENT_TABLE}
             columnDefs={columnDefs}
-            csvFileHeaders={csvFileHeaders}
-            csvInitialData={csvInitialData}
-            fromCsvDataToFormValues={fromCsvDataToFormValues}
             defaultRowData={{ [CONTINGENCY_NAME]: '', [EQUIPMENT_IDS]: [] }}
             pagination={true}
             paginationPageSize={100}
-            getRowID={getRowId}
+            defaultRowsNumber={3}
+            csvProps={{
+                fileName: intl.formatMessage({ id: 'contingencyListCreation' }),
+                fileHeaders: csvFileHeaders,
+                formatCsvData: fromCsvDataToFormValues,
+                csvData: csvInitialData,
+            }}
         />
     );
 

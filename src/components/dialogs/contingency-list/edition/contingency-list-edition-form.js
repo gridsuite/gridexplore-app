@@ -15,7 +15,7 @@ import { NAME, SCRIPT } from '../../../utils/field-constants';
 import React from 'react';
 import TextInput from '../../../utils/text-input';
 
-const ContingencyListModificationForm = ({ contingencyListType }) => {
+const ContingencyListEditionForm = ({ contingencyListType }) => {
     const nameField = (
         <TextInput
             name={NAME}
@@ -47,4 +47,4 @@ const ContingencyListModificationForm = ({ contingencyListType }) => {
     );
 };
 
-export default ContingencyListModificationForm;
+export default ContingencyListEditionForm;

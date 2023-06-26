@@ -16,6 +16,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import makeStyles from '@mui/styles/makeStyles';
 import TextField from '@mui/material/TextField';
 import { EQUIPMENT_IDS } from '../../../utils/field-constants';
+import { useController, useFieldArray, useWatch } from 'react-hook-form';
 
 const useStyles = makeStyles({
     input: {
@@ -32,32 +33,43 @@ const useStyles = makeStyles({
 });
 
 const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
-    const [values, setValues] = useState(props?.data?.[EQUIPMENT_IDS] ?? []);
+    const [unsavedInput, setUnsavedInput] = useState('');
     const classes = useStyles();
+    const { field: {value: equipments, onChange} } = useController({
+        name: `${props.name}.${props.rowIndex}.${props.colDef.field}`,
+    });
+
+    const { fields, append, remove } = useFieldArray({
+        name: `${props.name}.${props.rowIndex}.${props.colDef.field}`,
+    });
 
     const handleChipDeleted = (index) => {
-        const newValues = [...values];
-        newValues.splice(index, 1);
-        setValues(newValues);
+        remove(index);
     };
 
-    useEffect(() => {
-        props.setValue(values);
-    }, [values, props]);
+/*    useEffect(() => {
+        props.setValue(equipments);
+    }, [equipments, props]);*/
 
-    const handleChipAdd = (_, value) => {
-        const updatedValues = new Set([...values, ...value]);
-        setValues([...updatedValues]);
+    const handleChipAdd = (_, newValue) => {
+        append(newValue);
+        setUnsavedInput('');
+    };
+
+    const handleOnBlur = (event) => {
+        if (unsavedInput) {
+            handleChipAdd(event, unsavedInput);
+        }
     };
 
     const handleKeyPress = (event) => {
-        if (event.key === 'Enter' && values?.length > 0) {
+        if (event.key === 'Enter' && equipments && equipments.length > 0) {
             props.api.stopEditing();
             const newVal = Array.isArray(event?.value)
                 ? event.value[0].trim()
                 : '';
-            if (newVal !== '' && !values.includes(newVal)) {
-                handleChipAdd(event.value);
+            if (newVal !== '' && !equipments.includes(newVal)) {
+                handleChipAdd(newVal);
             }
         }
     };
@@ -67,25 +79,30 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
         () => {
             return {
                 getValue: () => {
-                    return values;
+                    return equipments;
                 },
             };
         },
-        [values]
+        [equipments]
     );
 
     return (
         <Autocomplete
             style={{
                 width: '100%',
-                //height: '100%',
             }}
             multiple
             freeSolo
             options={[]}
-            value={values}
+            value={equipments ?? []}
             size={'small'}
-            onChange={handleChipAdd}
+            clearOnBlur
+            onChange={(event, newVal) => {
+                onChange(newVal);
+            }}
+            disableClearable={true}
+            onInputChange={(_, val) => setUnsavedInput(val.trim() ?? '')}
+            onBlur={handleOnBlur}
             onKeyPress={handleKeyPress}
             renderInput={(params) => {
                 return (
@@ -98,10 +115,10 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
                 );
             }}
             renderTags={(val, getTagProps) =>
-                values.map((val, index) => (
+                fields.map((val, index) => (
                     <Chip
-                        key={val + index}
-                        label={val}
+                        key={val.id}
+                        label={equipments[index]}
                         size={'small'}
                         style={{ margin: '2px' }}
                         {...getTagProps({ index })}

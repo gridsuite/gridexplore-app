@@ -18,12 +18,12 @@ import {
 import { useEffect, useMemo } from 'react';
 import { fetchContingencyList } from '../../../../utils/rest-api';
 import CustomMuiDialog from '../../custom-mui-dialog';
-import ContingencyListModificationForm from './contingency-list-modification-form';
+import ContingencyListEditionForm from './contingency-list-edition-form';
 import { NAME } from '../../../utils/field-constants';
 
 const emptyFormData = getEmptyFormData();
 
-const ContingencyListModificationDialog = ({
+const ContingencyListEditionDialog = ({
     contingencyListId,
     contingencyListType,
     open,
@@ -53,7 +53,7 @@ const ContingencyListModificationDialog = ({
                             contingencyListId,
                             name
                         );
-                        console.log('formData :', formData);
+                        console.log('formData : ', formData);
                         reset(formData);
                     }
                 }
@@ -98,11 +98,11 @@ const ContingencyListModificationDialog = ({
             titleId={titleId}
             removeOptional={true}
         >
-            <ContingencyListModificationForm
+            <ContingencyListEditionForm
                 contingencyListType={contingencyListType}
             />
         </CustomMuiDialog>
     );
 };
 
-export default ContingencyListModificationDialog;
+export default ContingencyListEditionDialog;
