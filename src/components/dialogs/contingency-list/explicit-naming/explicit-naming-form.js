@@ -8,8 +8,9 @@
 import {
     CONTINGENCY_NAME,
     EQUIPMENT_IDS,
-    EQUIPMENT_TABLE, ID, ROW_UUID
-} from "../../../utils/field-constants";
+    EQUIPMENT_TABLE,
+    ROW_UUID,
+} from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
 import React, { useCallback, useMemo } from 'react';
 import CustomAgGridTable, {
@@ -22,9 +23,6 @@ const suppressEnter = (params) => {
     const KEY_ENTER = 'Enter';
     const event = params.event;
     const key = event.key;
-    if (key === KEY_ENTER) {
-        console.log('here    !');
-    }
     return key === KEY_ENTER;
 };
 
@@ -50,8 +48,8 @@ const ExplicitNamingForm = () => {
                 singleClickEdit: true,
                 cellRenderer: chipsArrayEditor,
                 cellRendererParams: {
-                    name: EQUIPMENT_TABLE
-                }
+                    name: EQUIPMENT_TABLE,
+                },
             },
         ];
     }, [intl]);

@@ -45,9 +45,7 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
     };
 
     const onSubmit = (data) => {
-        console.log('data on submit : ', data);
         const formContent = getFormContent(null, data);
-        console.log('formContent on submit : ', formContent);
         createContingencyList(
             data[CONTINGENCY_LIST_TYPE],
             data[NAME],

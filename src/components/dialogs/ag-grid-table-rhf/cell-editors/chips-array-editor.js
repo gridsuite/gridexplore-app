@@ -15,8 +15,7 @@ import { Chip } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import makeStyles from '@mui/styles/makeStyles';
 import TextField from '@mui/material/TextField';
-import { EQUIPMENT_IDS } from '../../../utils/field-constants';
-import { useController, useFieldArray, useWatch } from 'react-hook-form';
+import { useController, useFieldArray } from 'react-hook-form';
 
 const useStyles = makeStyles({
     input: {
@@ -35,7 +34,9 @@ const useStyles = makeStyles({
 const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     const [unsavedInput, setUnsavedInput] = useState('');
     const classes = useStyles();
-    const { field: {value: equipments, onChange} } = useController({
+    const {
+        field: { value: equipments },
+    } = useController({
         name: `${props.name}.${props.rowIndex}.${props.colDef.field}`,
     });
 
@@ -56,23 +57,9 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
         setUnsavedInput('');
     };
 
-    const handleOnBlur = (event) => {
+    const handleOnChange = (event) => {
         if (unsavedInput) {
             handleChipAdd(event, unsavedInput);
-        }
-    };
-
-    const handleKeyPress = (event) => {
-        console.log('event : ', event.key);
-        if (event.key === 'Enter' && equipments && equipments.length > 0) {
-            console.log(event, event);
-            props.api.stopEditing();
-            const newVal = Array.isArray(event?.value)
-                ? event.value[0].trim()
-                : '';
-            if (newVal !== '' && !equipments.includes(newVal)) {
-                handleChipAdd(newVal);
-            }
         }
     };
 
@@ -88,9 +75,6 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
         [equipments]
     );
 
-    useEffect(() => {
-        console.log('equipments : ', equipments);
-    }, [equipments])
     return (
         <Autocomplete
             style={{
@@ -103,13 +87,11 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
             size={'small'}
             clearOnBlur
             onChange={(event, newVal) => {
-                console.log('newVal ', newVal);
-                onChange(newVal);
+                handleOnChange(event);
             }}
             disableClearable={true}
             onInputChange={(_, val) => setUnsavedInput(val.trim() ?? '')}
-            onBlur={handleOnBlur}
-            onKeyPress={handleKeyPress}
+            onBlur={handleOnChange}
             renderInput={(params) => {
                 return (
                     <TextField
@@ -121,18 +103,16 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
                 );
             }}
             renderTags={(val, getTagProps) => {
-                console.log('val : ', val);
                 return fields.map((val, index) => (
-                  <Chip
-                    key={val.id}
-                    label={equipments[index]}
-                    size={"small"}
-                    {...getTagProps({ index })}
-                    onDelete={(i) => handleChipDeleted(i)}
-                  />
+                    <Chip
+                        key={val.id}
+                        label={equipments[index]}
+                        size={'small'}
+                        {...getTagProps({ index })}
+                        onDelete={(i) => handleChipDeleted(i)}
+                    />
                 ));
-            }
-            }
+            }}
         />
     );
 });

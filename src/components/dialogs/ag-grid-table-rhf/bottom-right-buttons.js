@@ -29,27 +29,29 @@ const BottomRightButtons = ({
 }) => {
     const [uploaderOpen, setUploaderOpen] = useState(false);
     const intl = useIntl();
-    const isFirstSelected = rowData && gridApi?.api
-        ?.getRowNode(rowData[0]?.rowUuid)
-        ?.isSelected();
-    const isLastSelected = rowData && gridApi && gridApi?.api
-        ?.getRowNode(rowData[rowData.length - 1]?.rowUuid)
-        ?.isSelected();
+    const isFirstSelected =
+        rowData && gridApi?.api?.getRowNode(rowData[0]?.rowUuid)?.isSelected();
+    const isLastSelected =
+        rowData &&
+        gridApi &&
+        gridApi?.api
+            ?.getRowNode(rowData[rowData.length - 1]?.rowUuid)
+            ?.isSelected();
 
     return (
         <>
             <Grid item xs={12} justifyContent={'flex-end'}>
                 {csvProps && (
-                  <InnerColoredButton onClick={() => setUploaderOpen(true)}>
-                      <Tooltip
-                        title={intl.formatMessage({
-                            id: 'ImportCSV',
-                        })}
-                        placement="bottom"
-                      >
-                          <Upload />
-                      </Tooltip>
-                  </InnerColoredButton>
+                    <InnerColoredButton onClick={() => setUploaderOpen(true)}>
+                        <Tooltip
+                            title={intl.formatMessage({
+                                id: 'ImportCSV',
+                            })}
+                            placement="bottom"
+                        >
+                            <Upload />
+                        </Tooltip>
+                    </InnerColoredButton>
                 )}
                 <InnerColoredButton key={'addButton'} onClick={handleAddRow}>
                     <AddIcon />

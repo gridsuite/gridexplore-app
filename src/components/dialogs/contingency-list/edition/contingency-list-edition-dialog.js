@@ -53,7 +53,6 @@ const ContingencyListEditionDialog = ({
                             contingencyListId,
                             name
                         );
-                        console.log('formData : ', formData);
                         reset(formData);
                     }
                 }

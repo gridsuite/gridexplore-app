@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useMemo, useState } from "react";
-import { useFieldArray, useFormContext } from "react-hook-form";
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import { Grid } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
-import clsx from "clsx";
-import { useTheme } from "@mui/styles";
-import BottomRightButtons from "./bottom-right-buttons";
+import React, { useEffect, useMemo, useState } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
+import { Grid } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import clsx from 'clsx';
+import { useTheme } from '@mui/styles';
+import BottomRightButtons from './bottom-right-buttons';
 
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
@@ -95,8 +95,8 @@ export const CustomAgGridTable = ({
     const [gridApi, setGridApi] = useState(null);
     const [selectedRows, setSelectedRows] = useState([]);
 
-    const { control, getValues, setValue } = useFormContext();
-    const { fields, append, remove, update, swap, move } = useFieldArray({
+    const { control, getValues } = useFormContext();
+    const { append, remove, update, swap, move } = useFieldArray({
         control,
         name: name,
     });
@@ -167,7 +167,9 @@ export const CustomAgGridTable = ({
                     domLayout={'autoHeight'}
                     rowDragEntireRow
                     rowDragManaged
-                    onRowDragEnd={(e) => move(getIndex(e.node.data), e.overIndex)}
+                    onRowDragEnd={(e) =>
+                        move(getIndex(e.node.data), e.overIndex)
+                    }
                     suppressRowClickSelection
                     suppressBrowserResizeObserver
                     columnDefs={columnDefs}
