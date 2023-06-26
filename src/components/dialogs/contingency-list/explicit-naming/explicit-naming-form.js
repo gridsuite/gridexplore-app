@@ -8,7 +8,7 @@
 import {
     CONTINGENCY_NAME,
     EQUIPMENT_IDS,
-    EQUIPMENT_TABLE, ID
+    EQUIPMENT_TABLE, ID, ROW_UUID
 } from "../../../utils/field-constants";
 import { useIntl } from 'react-intl';
 import React, { useCallback, useMemo } from 'react';
@@ -59,7 +59,7 @@ const ExplicitNamingForm = () => {
     const fromCsvDataToFormValues = useCallback((results) => {
         return results.map((value, index) => {
             return {
-                [ID]: 'csv_row_' + index,
+                [ROW_UUID]: 'csv_row_' + index,
                 [CONTINGENCY_NAME]: value[0]?.trim() || '',
                 [EQUIPMENT_IDS]:
                     value[1]

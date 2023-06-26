@@ -27,7 +27,6 @@ const BottomRightButtons = ({
     handleMoveRowDown,
     csvProps,
 }) => {
-    console.log('gridApi : ', gridApi);
     const [uploaderOpen, setUploaderOpen] = useState(false);
     const intl = useIntl();
     const isFirstSelected = rowData && gridApi?.api
@@ -40,16 +39,18 @@ const BottomRightButtons = ({
     return (
         <>
             <Grid item xs={12} justifyContent={'flex-end'}>
-                <InnerColoredButton onClick={() => setUploaderOpen(true)}>
-                    <Tooltip
+                {csvProps && (
+                  <InnerColoredButton onClick={() => setUploaderOpen(true)}>
+                      <Tooltip
                         title={intl.formatMessage({
                             id: 'ImportCSV',
                         })}
                         placement="bottom"
-                    >
-                        <Upload />
-                    </Tooltip>
-                </InnerColoredButton>
+                      >
+                          <Upload />
+                      </Tooltip>
+                  </InnerColoredButton>
+                )}
                 <InnerColoredButton key={'addButton'} onClick={handleAddRow}>
                     <AddIcon />
                 </InnerColoredButton>

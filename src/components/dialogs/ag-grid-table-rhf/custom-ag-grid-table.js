@@ -96,7 +96,7 @@ export const CustomAgGridTable = ({
     const [selectedRows, setSelectedRows] = useState([]);
 
     const { control, getValues, setValue } = useFormContext();
-    const { fields, append, remove, update, swap } = useFieldArray({
+    const { fields, append, remove, update, swap, move } = useFieldArray({
         control,
         name: name,
     });
@@ -141,6 +141,7 @@ export const CustomAgGridTable = ({
     const defaultColDef = useMemo(
         () => ({
             flex: 1,
+            suppressMovable: true,
         }),
         []
     );
@@ -166,7 +167,7 @@ export const CustomAgGridTable = ({
                     domLayout={'autoHeight'}
                     rowDragEntireRow
                     rowDragManaged
-                    onRowDragEnd={(e) => swap(getIndex(e.node.data), e.overIndex)}
+                    onRowDragEnd={(e) => move(getIndex(e.node.data), e.overIndex)}
                     suppressRowClickSelection
                     suppressBrowserResizeObserver
                     columnDefs={columnDefs}

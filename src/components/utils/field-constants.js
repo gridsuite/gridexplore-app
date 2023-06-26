@@ -1,4 +1,5 @@
 export const ID = 'id';
+export const ROW_UUID = 'rowUuid'
 export const NAME = 'name';
 export const EQUIPMENT_ID = 'equipmentID';
 
