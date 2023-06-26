@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { useController, useFieldArray, useFormContext } from 'react-hook-form';
-import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
-import { Grid } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
-import { useTheme } from '@mui/styles';
-import BottomRightButtons from './bottom-right-buttons';
+import React, { useEffect, useMemo, useState } from "react";
+import { useFieldArray, useFormContext } from "react-hook-form";
+import { AgGridReact } from "ag-grid-react";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import { Grid } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import clsx from "clsx";
+import { useTheme } from "@mui/styles";
+import BottomRightButtons from "./bottom-right-buttons";
 
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
@@ -99,7 +99,6 @@ export const CustomAgGridTable = ({
     const { fields, append, remove, update, swap } = useFieldArray({
         control,
         name: name,
-        keyName: 'rowUuid',
     });
 
     const handleMoveRowUp = () => {
@@ -130,7 +129,7 @@ export const CustomAgGridTable = ({
 
     const handleAddRow = () => {
         append({
-            rowUuid: Math.random(),
+            rowUuid: crypto.randomUUID(),
             ...defaultRowData,
         });
     };
@@ -159,33 +158,15 @@ export const CustomAgGridTable = ({
                     rowData={getValues(name)}
                     onGridReady={(params) => {
                         setGridApi(params);
-                        const rows = getValues(name);
-                        if (rows.every((r) => r?.rowUuid)) {
-                            setValue(
-                                name,
-                                rows.map((r, i) => {
-                                    if (r?.rowUuid) {
-                                        return r;
-                                    }
-                                    return {
-                                        rowUuid: Math.random(),
-                                        ...r,
-                                    };
-                                })
-                            );
-                        }
-                        setValue(name);
                         params.api.sizeColumnsToFit();
                     }}
                     defaultColDef={defaultColDef}
-                    onCellValueChanged={(e, t) => {
-                        //console.log('cell changed value :', e);
-                    }}
                     oncelled
                     rowSelection={'multiple'}
                     domLayout={'autoHeight'}
                     rowDragEntireRow
                     rowDragManaged
+                    onRowDragEnd={(e) => swap(getIndex(e.node.data), e.overIndex)}
                     suppressRowClickSelection
                     suppressBrowserResizeObserver
                     columnDefs={columnDefs}

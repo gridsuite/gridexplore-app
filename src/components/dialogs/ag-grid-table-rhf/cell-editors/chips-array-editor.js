@@ -63,15 +63,14 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     };
 
     const handleKeyPress = (event) => {
-        console.log('event : ', event);
+        console.log('event : ', event.key);
         if (event.key === 'Enter' && equipments && equipments.length > 0) {
+            console.log(event, event);
             props.api.stopEditing();
             const newVal = Array.isArray(event?.value)
                 ? event.value[0].trim()
                 : '';
-            console.log('new val 1', newVal);
             if (newVal !== '' && !equipments.includes(newVal)) {
-                console.log('new val 2', newVal);
                 handleChipAdd(newVal);
             }
         }
@@ -89,6 +88,9 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
         [equipments]
     );
 
+    useEffect(() => {
+        console.log('equipments : ', equipments);
+    }, [equipments])
     return (
         <Autocomplete
             style={{
@@ -97,10 +99,11 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
             multiple
             freeSolo
             options={[]}
-            value={equipments ?? []}
+            value={equipments}
             size={'small'}
             clearOnBlur
             onChange={(event, newVal) => {
+                console.log('newVal ', newVal);
                 onChange(newVal);
             }}
             disableClearable={true}
@@ -117,17 +120,18 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
                     />
                 );
             }}
-            renderTags={(val, getTagProps) =>
-                fields.map((val, index) => (
-                    <Chip
-                        key={val.id}
-                        label={equipments[index]}
-                        size={'small'}
-                        style={{ margin: '2px' }}
-                        {...getTagProps({ index })}
-                        onDelete={(i) => handleChipDeleted(i)}
-                    />
-                ))
+            renderTags={(val, getTagProps) => {
+                console.log('val : ', val);
+                return fields.map((val, index) => (
+                  <Chip
+                    key={val.id}
+                    label={equipments[index]}
+                    size={"small"}
+                    {...getTagProps({ index })}
+                    onDelete={(i) => handleChipDeleted(i)}
+                  />
+                ));
+            }
             }
         />
     );

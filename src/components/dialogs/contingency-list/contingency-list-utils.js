@@ -36,7 +36,7 @@ import {
     getRangeInputSchema,
 } from '../../utils/range-input';
 
-export const DEFAULT_TABLE_ROWS = [{}, {}, {}];
+export const DEFAULT_TABLE_ROWS = [];
 
 export const CONTINGENCY_LIST_EQUIPMENTS = {
     LINE: { id: 'LINE', label: 'Lines' },
