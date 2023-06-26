@@ -633,10 +633,6 @@ export function saveExplicitNamingContingencyList(
     explicitNamingContingencyList,
     name
 ) {
-    console.info(
-        'explicitNamingContingencyList',
-        explicitNamingContingencyList
-    );
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append(
