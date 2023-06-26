@@ -59,8 +59,8 @@ export const ExplicitNamingFilterRow = ({
                 .map((e) => e.trim());
             const noBlankOrDuplicatesEntries = [...new Set(noBlankEntries)];
             handleSetValue(index, {
-                contingencyName: value?.contingencyName,
-                equipmentIDs: noBlankOrDuplicatesEntries,
+                contingencyId: value?.contingencyId,
+                identifierList: noBlankOrDuplicatesEntries,
             });
             handleSetClean(index, true);
             setIsClean(true);
@@ -91,8 +91,8 @@ export const ExplicitNamingFilterRow = ({
     const handleNameChange = useCallback(
         (newVal) => {
             handleSetValue(index, {
-                contingencyName: newVal,
-                equipmentIDs: value?.equipmentIDs,
+                contingencyId: newVal,
+                identifierList: value?.identifierList,
             });
         },
         [index, value, handleSetValue]
@@ -100,8 +100,8 @@ export const ExplicitNamingFilterRow = ({
 
     const handleAutoCompleteDeleteItem = useCallback(
         (item, indexInArray) => {
-            if (value?.equipmentIDs) {
-                let arr = [...value.equipmentIDs];
+            if (value?.identifierList) {
+                let arr = [...value.identifierList];
                 arr.splice(indexInArray, 1);
                 handleAutoCompleteChange(arr);
             }
@@ -114,7 +114,7 @@ export const ExplicitNamingFilterRow = ({
     // input, we save it here.
     const handleAutoCompleteBlur = useCallback(() => {
         if (unsavedAutoCompleteValue?.trim().length > 0) {
-            let arr = [...value.equipmentIDs];
+            let arr = [...value.identifierList];
             arr.push(unsavedAutoCompleteValue);
             handleAutoCompleteChange(arr);
         }
@@ -176,7 +176,7 @@ export const ExplicitNamingFilterRow = ({
                         >
                             <Input
                                 id={id + index + 'nameInput'}
-                                value={value?.contingencyName ?? ''}
+                                value={value?.contingencyId ?? ''}
                                 fullWidth={true}
                                 placeholder={intl.formatMessage({
                                     id: 'elementName',
@@ -197,7 +197,7 @@ export const ExplicitNamingFilterRow = ({
                         >
                             <Autocomplete
                                 id={id + index + 'equipmentsInput'}
-                                value={value?.equipmentIDs ?? []}
+                                value={value?.identifierList ?? []}
                                 freeSolo // Allow any string from the user in the field
                                 multiple // Allow multiple strings in the field
                                 // Saves the user's input when pressing Enter. The value goes in a Chip.

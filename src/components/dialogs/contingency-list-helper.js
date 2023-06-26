@@ -9,8 +9,9 @@ export const getIdentifierContingencyListFromResponse = (response) => {
     const result = response?.identifierContingencyList?.identifiers?.map(
         (identifiers, index) => {
             return {
-                contingencyName: identifiers.contingencyId,
-                equipmentIDs: identifiers.identifierList.map(
+                //This field is named "contingencyId" in powsybl-core but it corresponds the "Name" column in the UI
+                contingencyId: identifiers.contingencyId,
+                identifierList: identifiers.identifierList.map(
                     (identifier) => identifier.identifier
                 ),
             };
@@ -23,10 +24,10 @@ export const prepareContingencyListForBackend = (id, name, values) => {
     const identifiersList = values
         .filter(
             (contingency) =>
-                contingency?.equipmentIDs && contingency.equipmentIDs.length > 0
-        ) // We only take contingencies that have an equipmentIDs value
+                contingency?.identifierList && contingency.identifierList.length > 0
+        ) // We only take contingencies that have an identifierList value
         .map((contingency) => {
-            const identifierList = contingency.equipmentIDs.map(
+            const identifierList = contingency.identifierList.map(
                 (identifier) => {
                     return {
                         type: 'ID_BASED',
@@ -37,7 +38,7 @@ export const prepareContingencyListForBackend = (id, name, values) => {
 
             return {
                 type: 'LIST',
-                contingencyId: contingency.contingencyName,
+                contingencyId: contingency.contingencyId,
                 identifierList: identifierList,
             };
         });
