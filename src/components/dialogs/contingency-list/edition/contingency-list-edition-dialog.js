@@ -56,7 +56,7 @@ const ContingencyListEditionDialog = ({
                             contingencyListId,
                             name
                         );
-                        reset(formData);
+                        reset(formData, { keepDefaultValues: true });
                     }
                 }
             );

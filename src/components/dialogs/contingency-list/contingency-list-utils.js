@@ -19,10 +19,7 @@ import {
     NOMINAL_VOLTAGE_2,
     SCRIPT,
 } from '../../utils/field-constants';
-import {
-    ContingencyListTypeRefactor,
-    ElementType,
-} from '../../../utils/elementType';
+import { ContingencyListType, ElementType } from '../../../utils/elementType';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import {
     elementExists,
@@ -31,7 +28,7 @@ import {
     saveScriptContingencyList,
 } from '../../../utils/rest-api';
 import yup from '../../utils/yup-config';
-import { getRangeInputEmptyDataForm } from '../../utils/range-input';
+import { getRangeInputEmptyDataForm } from '../../utils/rhf-inputs/range-input';
 import { getExplicitNamingSchema } from './explicit-naming/explicit-naming-form';
 import { getCriteriaBasedSchema } from './criteria-based/criteria-based-form';
 
@@ -85,7 +82,7 @@ export const getEmptyFormData = () => ({
     [NAME]: '',
     [ID]: null,
     [EQUIPMENT_TABLE]: DEFAULT_TABLE_ROWS,
-    [CONTINGENCY_LIST_TYPE]: ContingencyListTypeRefactor.CRITERIA_BASED.id,
+    [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [EQUIPMENT_TYPE]: '',
     [COUNTRIES_1]: [],
     [COUNTRIES_2]: [],
@@ -101,7 +98,7 @@ export const getFormDataFromFetchedElement = (
     name
 ) => {
     switch (contingencyListType) {
-        case ContingencyListTypeRefactor.CRITERIA_BASED.id:
+        case ContingencyListType.CRITERIA_BASED.id:
             return {
                 [ID]: contingencyListId,
                 [NAME]: name,
@@ -115,7 +112,7 @@ export const getFormDataFromFetchedElement = (
                     response?.nominalVoltage2 ??
                     getRangeInputEmptyDataForm(NOMINAL_VOLTAGE_2),
             };
-        case ContingencyListTypeRefactor.EXPLICIT_NAMING.id:
+        case ContingencyListType.EXPLICIT_NAMING.id:
             const result =
                 response?.identifierContingencyList?.identifiers?.map(
                     (identifiers, index) => {
@@ -134,7 +131,7 @@ export const getFormDataFromFetchedElement = (
                 [ID]: contingencyListId,
                 [EQUIPMENT_TABLE]: result ?? [],
             };
-        case ContingencyListTypeRefactor.SCRIPT.id:
+        case ContingencyListType.SCRIPT.id:
             return {
                 [ID]: contingencyListId,
                 [NAME]: name,
@@ -151,12 +148,12 @@ export const editContingencyList = (
     contingencyList
 ) => {
     switch (contingencyListType) {
-        case ContingencyListTypeRefactor.CRITERIA_BASED.id:
+        case ContingencyListType.CRITERIA_BASED.id:
             return saveFormContingencyList(
                 contingencyList,
                 contingencyList[NAME]
             );
-        case ContingencyListTypeRefactor.EXPLICIT_NAMING.id:
+        case ContingencyListType.EXPLICIT_NAMING.id:
             const equipments = prepareContingencyListForBackend(
                 contingencyListId,
                 contingencyListId,
@@ -166,7 +163,7 @@ export const editContingencyList = (
                 equipments ?? [],
                 contingencyList[NAME]
             );
-        case ContingencyListTypeRefactor.SCRIPT.id:
+        case ContingencyListType.SCRIPT.id:
             const newScript = {
                 id: contingencyListId,
                 script: contingencyList[SCRIPT] ?? '',
@@ -179,14 +176,14 @@ export const editContingencyList = (
 
 export const getFormContent = (contingencyListId, contingencyList) => {
     switch (contingencyList[CONTINGENCY_LIST_TYPE]) {
-        case ContingencyListTypeRefactor.EXPLICIT_NAMING.id: {
+        case ContingencyListType.EXPLICIT_NAMING.id: {
             return prepareContingencyListForBackend(
                 contingencyListId ?? null,
                 contingencyList[NAME],
                 contingencyList[EQUIPMENT_TABLE] ?? []
             );
         }
-        case ContingencyListTypeRefactor.CRITERIA_BASED.id: {
+        case ContingencyListType.CRITERIA_BASED.id: {
             return {
                 equipmentType: contingencyList[EQUIPMENT_TYPE],
                 countries1: contingencyList[COUNTRIES_1],
@@ -195,7 +192,7 @@ export const getFormContent = (contingencyListId, contingencyList) => {
                 nominalVoltage2: contingencyList[NOMINAL_VOLTAGE_2],
             };
         }
-        case ContingencyListTypeRefactor.SCRIPT.id: {
+        case ContingencyListType.SCRIPT.id: {
             return { script: contingencyList[SCRIPT] };
         }
         default: {

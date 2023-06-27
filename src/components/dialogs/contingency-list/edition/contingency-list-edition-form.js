@@ -7,13 +7,13 @@
 
 import { Grid } from '@mui/material';
 import { gridItem } from '../../../utils/dialog-utils';
-import { ContingencyListTypeRefactor } from '../../../../utils/elementType';
+import { ContingencyListType } from '../../../../utils/elementType';
 import CriteriaBasedForm from '../criteria-based/criteria-based-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
-import ScriptInput from '../../../utils/script-input';
+import ScriptInput from '../../../utils/rhf-inputs/script-input';
 import { NAME, SCRIPT } from '../../../utils/field-constants';
 import React from 'react';
-import TextInput from '../../../utils/text-input';
+import TextInput from '../../../utils/rhf-inputs/text-input';
 import { CONTINGENCY_LIST_EQUIPMENTS } from '../contingency-list-utils';
 
 const ContingencyListEditionForm = ({ contingencyListType }) => {
@@ -33,17 +33,15 @@ const ContingencyListEditionForm = ({ contingencyListType }) => {
             <Grid container item>
                 {gridItem(nameField, 12)}
             </Grid>
-            {contingencyListType ===
-                ContingencyListTypeRefactor.CRITERIA_BASED.id && (
+            {contingencyListType === ContingencyListType.CRITERIA_BASED.id && (
                 <CriteriaBasedForm
                     equipmentsTypes={Object.values(CONTINGENCY_LIST_EQUIPMENTS)}
                 />
             )}
-            {contingencyListType ===
-                ContingencyListTypeRefactor.EXPLICIT_NAMING.id && (
+            {contingencyListType === ContingencyListType.EXPLICIT_NAMING.id && (
                 <ExplicitNamingForm />
             )}
-            {contingencyListType === ContingencyListTypeRefactor.SCRIPT.id && (
+            {contingencyListType === ContingencyListType.SCRIPT.id && (
                 <ScriptInput name={SCRIPT} />
             )}
         </Grid>

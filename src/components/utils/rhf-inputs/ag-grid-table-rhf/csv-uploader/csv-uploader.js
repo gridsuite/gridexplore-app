@@ -82,6 +82,7 @@ const CsvUploader = ({
     };
 
     const handleFileSubmit = (saveTableValues) => {
+        console.log('test : ', saveTableValues, importedData);
         if (importedData.length !== 0) {
             const result = getResultsFromImportedData();
             if (validateCsvFile(result)) {
@@ -90,6 +91,7 @@ const CsvUploader = ({
                 const newValues = saveTableValues
                     ? [...getValues(name), ...dataFromCsv]
                     : dataFromCsv;
+                console.log('test 2 ', newValues, name);
                 setValue(name, newValues);
                 handleClose();
             }

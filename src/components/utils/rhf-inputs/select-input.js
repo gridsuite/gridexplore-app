@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import AutocompleteInput from './autocomplete-input';
 import { useIntl } from 'react-intl';
 
+// The difference between this file and the one in gridstudy app: label is not required
 const SelectInput = ({ options, ...props }) => {
     const intl = useIntl();
 

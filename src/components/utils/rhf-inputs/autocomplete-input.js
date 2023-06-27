@@ -9,12 +9,12 @@ import { Autocomplete, TextField } from '@mui/material';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useController, useFormContext } from 'react-hook-form';
-import { func_identity, isFieldRequired, useStyles } from './dialog-utils';
+import { func_identity, isFieldRequired, useStyles } from '../dialog-utils';
 import {
     FieldLabel,
     genHelperError,
     genHelperPreviousValue,
-} from './inputs/hooks-helpers';
+} from '../inputs/hooks-helpers';
 
 /**
  * Autocomplete input
@@ -26,6 +26,8 @@ import {
  * @param value input value
  * @returns autocomplete field containing the options values
  */
+
+// The difference between this file and the one in gridstudy app: label is not required
 const AutocompleteInput = ({
     name,
     label,

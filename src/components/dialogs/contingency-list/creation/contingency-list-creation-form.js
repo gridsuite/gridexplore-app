@@ -5,21 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import RadioInput from '../../../utils/radio-input';
+import RadioInput from '../../../utils/rhf-inputs/radio-input';
 import {
     CONTINGENCY_LIST_TYPE,
     NAME,
     SCRIPT,
 } from '../../../utils/field-constants';
-import { ContingencyListTypeRefactor } from '../../../../utils/elementType';
+import { ContingencyListType } from '../../../../utils/elementType';
 import { Grid } from '@mui/material';
 import { gridItem } from '../../../utils/dialog-utils';
 import React from 'react';
 import { useWatch } from 'react-hook-form';
 import CriteriaBasedForm from '../criteria-based/criteria-based-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
-import TextInput from '../../../utils/text-input';
-import ScriptInput from '../../../utils/script-input';
+import TextInput from '../../../utils/rhf-inputs/text-input';
+import ScriptInput from '../../../utils/rhf-inputs/script-input';
 import { CONTINGENCY_LIST_EQUIPMENTS } from '../contingency-list-utils';
 
 const ContingencyListCreationForm = () => {
@@ -41,7 +41,7 @@ const ContingencyListCreationForm = () => {
     const contingencyListTypeField = (
         <RadioInput
             name={CONTINGENCY_LIST_TYPE}
-            options={Object.values(ContingencyListTypeRefactor)}
+            options={Object.values(ContingencyListType)}
         />
     );
 
@@ -54,17 +54,16 @@ const ContingencyListCreationForm = () => {
                 {gridItem(contingencyListTypeField, 12)}
             </Grid>
             {watchContingencyListType ===
-                ContingencyListTypeRefactor.CRITERIA_BASED.id && (
+                ContingencyListType.CRITERIA_BASED.id && (
                 <CriteriaBasedForm
                     equipmentsTypes={Object.values(CONTINGENCY_LIST_EQUIPMENTS)}
                 />
             )}
             {watchContingencyListType ===
-                ContingencyListTypeRefactor.EXPLICIT_NAMING.id && (
+                ContingencyListType.EXPLICIT_NAMING.id && (
                 <ExplicitNamingForm />
             )}
-            {watchContingencyListType ===
-                ContingencyListTypeRefactor.SCRIPT.id && (
+            {watchContingencyListType === ContingencyListType.SCRIPT.id && (
                 <ScriptInput name={SCRIPT} />
             )}
         </Grid>

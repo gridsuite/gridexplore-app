@@ -15,8 +15,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useCallback, useMemo } from 'react';
 import CustomAgGridTable, {
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
-} from '../../ag-grid-table-rhf/custom-ag-grid-table';
-import chipsArrayEditor from '../../ag-grid-table-rhf/cell-editors/chips-array-editor';
+} from '../../../utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
+import chipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { gridItem } from '../../../utils/dialog-utils';
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';

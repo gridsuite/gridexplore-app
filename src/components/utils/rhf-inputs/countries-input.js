@@ -1,7 +1,7 @@
-import { useParameterState } from '../dialogs/parameters-dialog';
-import { PARAM_LANGUAGE } from '../../utils/config-params';
+import { useParameterState } from '../../dialogs/parameters-dialog';
+import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import React, { useCallback, useMemo } from 'react';
-import { getComputedLanguage } from '../../utils/language';
+import { getComputedLanguage } from '../../../utils/language';
 import { Chip, FormControl } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';

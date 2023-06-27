@@ -371,7 +371,8 @@ const ContentContextualMenu = (props) => {
         return (
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype === ContingencyListType.FORM
+            selectedElements[0].subtype ===
+                ContingencyListType.CRITERIA_BASED.id
         );
     }, [selectedElements]);
 
@@ -379,7 +380,8 @@ const ContentContextualMenu = (props) => {
         return (
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype === ContingencyListType.FORM &&
+            selectedElements[0].subtype ===
+                ContingencyListType.CRITERIA_BASED.id &&
             isUserAllowed()
         );
     }, [isUserAllowed, selectedElements]);
@@ -387,7 +389,7 @@ const ContentContextualMenu = (props) => {
     const getActiveContingencyScriptId = () => {
         if (
             activeElement?.type === ElementType.CONTINGENCY_LIST &&
-            activeElement?.subtype === ContingencyListType.SCRIPT
+            activeElement?.subtype === ContingencyListType.SCRIPT.id
         ) {
             return activeElement.elementUuid;
         } else {
@@ -398,7 +400,7 @@ const ContentContextualMenu = (props) => {
     const getActiveContingencyFormId = () => {
         if (
             activeElement?.type === ElementType.CONTINGENCY_LIST &&
-            activeElement?.subtype === ContingencyListType.FORM
+            activeElement?.subtype === ContingencyListType.CRITERIA_BASED.id
         ) {
             return activeElement.elementUuid;
         } else {

@@ -9,15 +9,15 @@ import { InputAdornment, TextField } from '@mui/material';
 import React from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 import makeStyles from '@mui/styles/makeStyles';
-import { func_identity, isFieldRequired } from './dialog-utils';
+import { func_identity, isFieldRequired } from '../dialog-utils';
 import IconButton from '@mui/material/IconButton';
 import {
     FieldLabel,
     genHelperError,
     genHelperPreviousValue,
-} from './inputs/hooks-helpers';
+} from '../inputs/hooks-helpers';
 import PropTypes from 'prop-types';
-import TextFieldWithAdornment from './text-field-with-adornment';
+import TextFieldWithAdornment from '../text-field-with-adornment';
 import ClearIcon from '@mui/icons-material/Clear';
 
 const useStyles = makeStyles((theme) => ({

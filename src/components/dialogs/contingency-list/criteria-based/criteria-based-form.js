@@ -17,10 +17,12 @@ import React from 'react';
 import { useWatch } from 'react-hook-form';
 import { gridItem } from '../../../utils/dialog-utils';
 import { Grid } from '@mui/material';
-import CountriesInput from '../../../utils/countries-input';
-import RangeInput, { getRangeInputSchema } from '../../../utils/range-input';
+import CountriesInput from '../../../utils/rhf-inputs/countries-input';
+import RangeInput, {
+    getRangeInputSchema,
+} from '../../../utils/rhf-inputs/range-input';
 import yup from '../../../utils/yup-config';
-import SelectInput from '../../../utils/select-input';
+import SelectInput from '../../../utils/rhf-inputs/select-input';
 
 export const getCriteriaBasedSchema = () => ({
     [EQUIPMENT_TYPE]: yup.string().nullable(),

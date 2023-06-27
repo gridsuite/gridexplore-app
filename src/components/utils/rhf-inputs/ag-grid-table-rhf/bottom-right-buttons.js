@@ -3,7 +3,7 @@ import IconButton from '@mui/material/IconButton';
 import { ArrowCircleDown, ArrowCircleUp, Upload } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ErrorInput from '../../utils/error-input';
+import ErrorInput from '../error-input';
 import CsvUploader from './csv-uploader/csv-uploader';
 import React, { useState } from 'react';
 import { useIntl } from 'react-intl';

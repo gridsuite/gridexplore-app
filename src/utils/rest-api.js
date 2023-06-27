@@ -8,10 +8,7 @@
 import { APP_NAME, getAppName } from './config-params';
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import {
-    ContingencyListType,
-    ContingencyListTypeRefactor,
-} from './elementType';
+import { ContingencyListType } from './elementType';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -507,13 +504,11 @@ export function createContingencyList(
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     let typeUriParam = '';
-    if (contingencyListType === ContingencyListTypeRefactor.CRITERIA_BASED.id) {
+    if (contingencyListType === ContingencyListType.CRITERIA_BASED.id) {
         typeUriParam = 'form-contingency-lists';
-    } else if (contingencyListType === ContingencyListTypeRefactor.SCRIPT.id) {
+    } else if (contingencyListType === ContingencyListType.SCRIPT.id) {
         typeUriParam = 'script-contingency-lists';
-    } else if (
-        contingencyListType === ContingencyListTypeRefactor.EXPLICIT_NAMING.id
-    ) {
+    } else if (contingencyListType === ContingencyListType.EXPLICIT_NAMING.id) {
         typeUriParam = 'identifier-contingency-lists';
     }
 
@@ -548,7 +543,7 @@ export function duplicateContingencyList(
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     const typeUriParam =
-        contingencyListType === ContingencyListType.SCRIPT
+        contingencyListType === ContingencyListType.SCRIPT.id
             ? 'script-contingency-lists'
             : 'form-contingency-lists';
 
@@ -571,11 +566,11 @@ export function duplicateContingencyList(
  */
 export function getContingencyList(type, id) {
     let url = PREFIX_ACTIONS_QUERIES;
-    if (type === ContingencyListTypeRefactor.SCRIPT.id) {
+    if (type === ContingencyListType.SCRIPT.id) {
         url += '/v1/script-contingency-lists/';
-    } else if (type === ContingencyListTypeRefactor.CRITERIA_BASED.id) {
+    } else if (type === ContingencyListType.CRITERIA_BASED.id) {
         url += '/v1/form-contingency-lists/';
-    } else if (type === ContingencyListTypeRefactor.EXPLICIT_NAMING.id) {
+    } else if (type === ContingencyListType.EXPLICIT_NAMING.id) {
         url += '/v1/identifier-contingency-lists/';
     }
     url += id;
@@ -584,11 +579,11 @@ export function getContingencyList(type, id) {
 
 export function fetchContingencyList(type, id) {
     let url = PREFIX_ACTIONS_QUERIES;
-    if (type === ContingencyListTypeRefactor.SCRIPT.id) {
+    if (type === ContingencyListType.SCRIPT.id) {
         url += '/v1/script-contingency-lists/';
-    } else if (type === ContingencyListTypeRefactor.CRITERIA_BASED.id) {
+    } else if (type === ContingencyListType.CRITERIA_BASED.id) {
         url += '/v1/form-contingency-lists/';
-    } else if (type === ContingencyListTypeRefactor.EXPLICIT_NAMING.id) {
+    } else if (type === ContingencyListType.EXPLICIT_NAMING.id) {
         url += '/v1/identifier-contingency-lists/';
     }
     url += id;
@@ -604,7 +599,10 @@ export function saveFormContingencyList(form, name) {
     const { nominalVoltage, ...rest } = form;
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
-    urlSearchParams.append('contingencyListType', ContingencyListType.FORM);
+    urlSearchParams.append(
+        'contingencyListType',
+        ContingencyListType.CRITERIA_BASED.id
+    );
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
@@ -630,7 +628,10 @@ export function saveFormContingencyList(form, name) {
 export function saveScriptContingencyList(scriptContingencyList, name) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
-    urlSearchParams.append('contingencyListType', ContingencyListType.SCRIPT);
+    urlSearchParams.append(
+        'contingencyListType',
+        ContingencyListType.SCRIPT.id
+    );
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/contingency-lists/' +
@@ -656,7 +657,7 @@ export function saveExplicitNamingContingencyList(
     urlSearchParams.append('name', name);
     urlSearchParams.append(
         'contingencyListType',
-        ContingencyListType.EXPLICIT_NAMING
+        ContingencyListType.EXPLICIT_NAMING.id
     );
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +

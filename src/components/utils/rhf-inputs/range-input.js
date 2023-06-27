@@ -1,8 +1,8 @@
 import { useWatch } from 'react-hook-form';
-import { OPERATION_TYPE, VALUE_1, VALUE_2 } from './field-constants';
+import { OPERATION_TYPE, VALUE_1, VALUE_2 } from '../field-constants';
 import FloatInput from './float-input';
 import { Grid, InputLabel } from '@mui/material';
-import yup from './yup-config';
+import yup from '../yup-config';
 import FormControl from '@mui/material/FormControl';
 import { FormattedMessage } from 'react-intl';
 import React, { useMemo } from 'react';

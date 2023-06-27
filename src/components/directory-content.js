@@ -22,7 +22,6 @@ import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
 import VirtualizedTable from './virtualized-table';
 import {
     ContingencyListType,
-    ContingencyListTypeRefactor,
     ElementType,
     FilterType,
 } from '../utils/elementType';
@@ -133,7 +132,7 @@ const DirectoryContent = () => {
             setElementName(childrenMetadata[event.rowData.elementUuid]?.name);
             const subtype = childrenMetadata[event.rowData.elementUuid].subtype;
             console.log('subtype : ', subtype);
-            console.log('childrenMetadata : ', childrenMetadata)
+            console.log('childrenMetadata : ', childrenMetadata);
             /** set active directory on the store because it will be used while editing the contingency name */
             dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
             if (event.rowData.type === ElementType.STUDY) {
@@ -150,17 +149,17 @@ const DirectoryContent = () => {
                           )
                       );
             } else if (event.rowData.type === ElementType.CONTINGENCY_LIST) {
-                if (subtype === ContingencyListType.FORM) {
+                if (subtype === ContingencyListType.CRITERIA_BASED.id) {
                     setCurrentFiltersContingencyListId(
                         event.rowData.elementUuid
                     );
                     setOpenDialog(subtype);
-                } else if (subtype === ContingencyListType.SCRIPT) {
+                } else if (subtype === ContingencyListType.SCRIPT.id) {
                     setCurrentScriptContingencyListId(
                         event.rowData.elementUuid
                     );
                     setOpenDialog(subtype);
-                } else if (subtype === ContingencyListType.EXPLICIT_NAMING) {
+                } else if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
                     setCurrentExplicitNamingContingencyListId(
                         event.rowData.elementUuid
                     );
@@ -764,33 +763,31 @@ const DirectoryContent = () => {
         // TODO openDialog should also be aware of the dialog's type, not only its subtype, because
         // if/when two different dialogs have the same subtype, this function will display the wrong dialog.
         switch (openDialog) {
-            case ContingencyListType.FORM:
+            case ContingencyListType.CRITERIA_BASED.id:
                 return (
                     <ContingencyListEditionDialog
                         open={true}
                         titleId={'editContingencyList'}
                         contingencyListId={currentFiltersContingencyListId}
                         contingencyListType={
-                            ContingencyListTypeRefactor.CRITERIA_BASED.id
+                            ContingencyListType.CRITERIA_BASED.id
                         }
                         onClose={handleCloseFiltersContingency}
                         name={name}
                     />
                 );
-            case ContingencyListType.SCRIPT:
+            case ContingencyListType.SCRIPT.id:
                 return (
                     <ContingencyListEditionDialog
                         open={true}
                         titleId={'editContingencyList'}
                         contingencyListId={currentScriptContingencyListId}
-                        contingencyListType={
-                            ContingencyListTypeRefactor.SCRIPT.id
-                        }
+                        contingencyListType={ContingencyListType.SCRIPT.id}
                         onClose={handleCloseScriptContingency}
                         name={name}
                     />
                 );
-            case ContingencyListType.EXPLICIT_NAMING:
+            case ContingencyListType.EXPLICIT_NAMING.id:
                 return (
                     <ContingencyListEditionDialog
                         open={true}
@@ -799,7 +796,7 @@ const DirectoryContent = () => {
                             currentExplicitNamingContingencyListId
                         }
                         contingencyListType={
-                            ContingencyListTypeRefactor.EXPLICIT_NAMING.id
+                            ContingencyListType.EXPLICIT_NAMING.id
                         }
                         onClose={handleCloseExplicitNamingContingency}
                         name={name}
