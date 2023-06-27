@@ -33,7 +33,6 @@ const BottomRightButtons = ({
         rowData && gridApi?.api?.getRowNode(rowData[0]?.rowUuid)?.isSelected();
     const isLastSelected =
         rowData &&
-        gridApi &&
         gridApi?.api
             ?.getRowNode(rowData[rowData.length - 1]?.rowUuid)
             ?.isSelected();

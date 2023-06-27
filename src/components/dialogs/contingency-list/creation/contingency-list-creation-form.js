@@ -20,6 +20,7 @@ import CriteriaBasedForm from '../criteria-based/criteria-based-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import TextInput from '../../../utils/text-input';
 import ScriptInput from '../../../utils/script-input';
+import { CONTINGENCY_LIST_EQUIPMENTS } from '../contingency-list-utils';
 
 const ContingencyListCreationForm = () => {
     const watchContingencyListType = useWatch({
@@ -45,7 +46,7 @@ const ContingencyListCreationForm = () => {
     );
 
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} marginTop={'auto'}>
             <Grid container item>
                 {gridItem(nameField, 12)}
             </Grid>
@@ -54,7 +55,9 @@ const ContingencyListCreationForm = () => {
             </Grid>
             {watchContingencyListType ===
                 ContingencyListTypeRefactor.CRITERIA_BASED.id && (
-                <CriteriaBasedForm />
+                <CriteriaBasedForm
+                    equipmentsTypes={Object.values(CONTINGENCY_LIST_EQUIPMENTS)}
+                />
             )}
             {watchContingencyListType ===
                 ContingencyListTypeRefactor.EXPLICIT_NAMING.id && (

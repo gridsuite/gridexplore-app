@@ -7,6 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import makeStyles from '@mui/styles/makeStyles';
+import SubmitButton from '../utils/submitButton';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -76,10 +77,8 @@ const CustomMuiDialog = ({
                 fullWidth
             >
                 <DialogTitle>
-                    <Grid container>
-                        <Grid item xs={11}>
-                            <FormattedMessage id={titleId} />
-                        </Grid>
+                    <Grid item xs={11}>
+                        <FormattedMessage id={titleId} />
                     </Grid>
                 </DialogTitle>
                 <DialogContent>{dialogProps.children}</DialogContent>
@@ -87,7 +86,7 @@ const CustomMuiDialog = ({
                     <Button onClick={handleCancel}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button
+                    <SubmitButton
                         disabled={disabledSave}
                         onClick={handleSubmit(
                             handleValidate,
@@ -95,7 +94,7 @@ const CustomMuiDialog = ({
                         )}
                     >
                         <FormattedMessage id="validate" />
-                    </Button>
+                    </SubmitButton>
                 </DialogActions>
             </Dialog>
         </FormProvider>

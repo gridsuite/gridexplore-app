@@ -14,6 +14,7 @@ import ScriptInput from '../../../utils/script-input';
 import { NAME, SCRIPT } from '../../../utils/field-constants';
 import React from 'react';
 import TextInput from '../../../utils/text-input';
+import { CONTINGENCY_LIST_EQUIPMENTS } from '../contingency-list-utils';
 
 const ContingencyListEditionForm = ({ contingencyListType }) => {
     const nameField = (
@@ -34,7 +35,9 @@ const ContingencyListEditionForm = ({ contingencyListType }) => {
             </Grid>
             {contingencyListType ===
                 ContingencyListTypeRefactor.CRITERIA_BASED.id && (
-                <CriteriaBasedForm />
+                <CriteriaBasedForm
+                    equipmentsTypes={Object.values(CONTINGENCY_LIST_EQUIPMENTS)}
+                />
             )}
             {contingencyListType ===
                 ContingencyListTypeRefactor.EXPLICIT_NAMING.id && (

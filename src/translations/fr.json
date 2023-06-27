@@ -217,5 +217,21 @@
     "add" : "Ajouter",
     "replace": "Remplacer",
 
-    "temporaryContingencyWarning": "Dans la version actuelle, les noms des aléas ne sont pas sauvegardés et on ne peut renseigner que des N-1, pas de N-k."
+    "temporaryContingencyWarning": "Dans la version actuelle, les noms des aléas ne sont pas sauvegardés et on ne peut renseigner que des N-1, pas de N-k.",
+
+    "agGrid.contains": "Contient",
+    "agGrid.notContains": "Ne contient pas",
+    "agGrid.of": "sur",
+    "agGrid.to": "à",
+    "agGrid.equals": "Égal à",
+    "agGrid.notEqual": "N'est pas égal à",
+    "agGrid.startsWith": "Commence par",
+    "agGrid.endsWith": "Finit par",
+    "agGrid.blank": "Vide",
+    "agGrid.notBlank": "N'est pas vide",
+    "agGrid.noRowsToShow": "Aucune Donnée",
+    "agGrid.firstPage" : "première page",
+    "agGrid.previousPage" : "page précédente",
+    "agGrid.nextPage" : "page suivante",
+    "agGrid.lastPage" : "dernière page"
 }

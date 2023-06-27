@@ -33,7 +33,10 @@ const ContingencyListEditionDialog = ({
 }) => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const { snackError } = useSnackMessage();
-    const schema = useMemo(() => getSchema(activeDirectory), [activeDirectory]);
+    const schema = useMemo(
+        () => getSchema(activeDirectory, name),
+        [activeDirectory, name]
+    );
 
     const methods = useForm({
         defaultValues: emptyFormData,

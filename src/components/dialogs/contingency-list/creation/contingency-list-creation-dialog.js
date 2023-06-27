@@ -70,6 +70,7 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
             methods={methods}
             titleId={titleId}
             removeOptional={true}
+            //disabledSave={disableSave}
         >
             <ContingencyListCreationForm />
         </CustomMuiDialog>

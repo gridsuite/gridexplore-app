@@ -13,27 +13,11 @@ import React, {
 } from 'react';
 import { Chip } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
-import makeStyles from '@mui/styles/makeStyles';
 import TextField from '@mui/material/TextField';
 import { useController, useFieldArray } from 'react-hook-form';
 
-const useStyles = makeStyles({
-    input: {
-        '& .MuiOutlinedInput-notchedOutline': {
-            border: 'unset', // Remove the border
-        },
-        '&:hover .MuiOutlinedInput-root': {
-            border: 'unset', // Remove the border on hover
-        },
-        '& .Mui-focused .MuiOutlinedInput-root': {
-            border: 'unset', // Remove the border when focused
-        },
-    },
-});
-
 const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     const [unsavedInput, setUnsavedInput] = useState('');
-    const classes = useStyles();
     const {
         field: { value: equipments },
     } = useController({
@@ -96,8 +80,17 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
                 return (
                     <TextField
                         fullWidth
-                        className={classes.input}
-                        style={{ height: '100%' }}
+                        sx={{
+                            '& .MuiOutlinedInput-notchedOutline': {
+                                border: 'unset', // Remove the border
+                            },
+                            '&:hover .MuiOutlinedInput-root': {
+                                border: 'unset', // Remove the border on hover
+                            },
+                            '& .Mui-focused .MuiOutlinedInput-root': {
+                                border: 'unset', // Remove the border when focused
+                            },
+                        }}
                         {...params}
                     />
                 );

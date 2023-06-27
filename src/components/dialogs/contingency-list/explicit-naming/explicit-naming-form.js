@@ -11,14 +11,25 @@ import {
     EQUIPMENT_TABLE,
     ROW_UUID,
 } from '../../../utils/field-constants';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useCallback, useMemo } from 'react';
 import CustomAgGridTable, {
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
 } from '../../ag-grid-table-rhf/custom-ag-grid-table';
 import chipsArrayEditor from '../../ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { gridItem } from '../../../utils/dialog-utils';
+import yup from '../../../utils/yup-config';
+import { Grid } from '@mui/material';
+import Alert from '@mui/material/Alert';
 
+export const getExplicitNamingSchema = (id) => ({
+    [id]: yup.array().of(
+        yup.object().shape({
+            [CONTINGENCY_NAME]: yup.string().nullable(),
+            [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
+        })
+    ),
+});
 const suppressEnter = (params) => {
     const KEY_ENTER = 'Enter';
     const event = params.event;
@@ -103,7 +114,16 @@ const ExplicitNamingForm = () => {
         />
     );
 
-    return <>{gridItem(equipmentTableField, 12)}</>;
+    return (
+        <>
+            <Grid item xs={12}>
+                <Alert severity={'warning'}>
+                    <FormattedMessage id={'temporaryContingencyWarning'} />
+                </Alert>
+            </Grid>
+            {gridItem(equipmentTableField, 12)}
+        </>
+    );
 };
 
 export default ExplicitNamingForm;

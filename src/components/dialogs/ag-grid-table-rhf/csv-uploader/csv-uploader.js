@@ -70,16 +70,20 @@ const CsvUploader = ({
         return validateData(rows);
     };
 
+    const getResultsFromImportedData = () => {
+        return importedData.filter((row) => {
+            // We do not keep the comment rows
+            if (row[0].startsWith('#')) {
+                return false;
+            }
+            // We keep the row if at least one of its column has a value
+            return row.some((column) => !!column?.trim());
+        });
+    };
+
     const handleFileSubmit = (saveTableValues) => {
         if (importedData.length !== 0) {
-            const result = importedData.filter((row) => {
-                // We do not keep the comment rows
-                if (row[0].startsWith('#')) {
-                    return false;
-                }
-                // We keep the row if at least one of its column has a value
-                return row.some((column) => !!column?.trim());
-            });
+            const result = getResultsFromImportedData();
             if (validateCsvFile(result)) {
                 result.splice(0, 1);
                 const dataFromCsv = formatCsvData(result);
@@ -109,7 +113,7 @@ const CsvUploader = ({
                     )
             );
 
-        if (isValuesInTable) {
+        if (isValuesInTable && getResultsFromImportedData().length > 0) {
             setOpenConfirmationPopup(true);
         } else {
             setOpenConfirmationPopup(false);

@@ -13,45 +13,50 @@ import {
     NOMINAL_VOLTAGE_1,
     NOMINAL_VOLTAGE_2,
 } from '../../../utils/field-constants';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useWatch } from 'react-hook-form';
 import { gridItem } from '../../../utils/dialog-utils';
 import { Grid } from '@mui/material';
 import CountriesInput from '../../../utils/countries-input';
-import RangeInput from '../../../utils/range-input';
-import MuiSelectInput from '../../../utils/mui-select-input';
-import { CONTINGENCY_LIST_EQUIPMENTS } from '../contingency-list-utils';
+import RangeInput, { getRangeInputSchema } from '../../../utils/range-input';
+import yup from '../../../utils/yup-config';
+import SelectInput from '../../../utils/select-input';
 
-const CriteriaBasedForm = () => {
+export const getCriteriaBasedSchema = () => ({
+    [EQUIPMENT_TYPE]: yup.string().nullable(),
+    [COUNTRIES_1]: yup.array().of(yup.string().nullable()),
+    [COUNTRIES_2]: yup.array().of(yup.string().nullable()),
+    ...getRangeInputSchema(NOMINAL_VOLTAGE_1),
+    ...getRangeInputSchema(NOMINAL_VOLTAGE_2),
+});
+
+const CriteriaBasedForm = ({ equipmentsTypes }) => {
     const watchEquipmentType = useWatch({
         name: EQUIPMENT_TYPE,
     });
 
     const equipmentTypeSelectionField = (
-        <MuiSelectInput
+        <SelectInput
             name={EQUIPMENT_TYPE}
-            options={Object.values(CONTINGENCY_LIST_EQUIPMENTS)}
+            options={equipmentsTypes}
             label={'equipmentType'}
         />
     );
 
-    const isLineOrHvdc = useMemo(
-        () =>
-            watchEquipmentType === filterEquipmentDefinition.LINE.type ||
-            watchEquipmentType === filterEquipmentDefinition.HVDC_LINE.type,
-        [watchEquipmentType]
-    );
+    const isLineOrHvdc =
+        watchEquipmentType === filterEquipmentDefinition.LINE.type ||
+        watchEquipmentType === filterEquipmentDefinition.HVDC_LINE.type;
 
-    const isLineOrTransformer = useMemo(
-        () =>
-            watchEquipmentType === filterEquipmentDefinition.LINE.type ||
-            watchEquipmentType ===
-                filterEquipmentDefinition.TWO_WINDINGS_TRANSFORMER.type,
-        [watchEquipmentType]
-    );
+    const isLineOrTransformer =
+        watchEquipmentType === filterEquipmentDefinition.LINE.type ||
+        watchEquipmentType ===
+            filterEquipmentDefinition.TWO_WINDINGS_TRANSFORMER.type;
 
     const countries1 = (
-        <CountriesInput name={COUNTRIES_1} titleMessage={'Countries1'} />
+        <CountriesInput
+            name={COUNTRIES_1}
+            titleMessage={isLineOrHvdc ? 'Countries1' : 'Countries'}
+        />
     );
 
     const countries2 = (
@@ -59,7 +64,10 @@ const CriteriaBasedForm = () => {
     );
 
     const nominalValue1Field = (
-        <RangeInput name={NOMINAL_VOLTAGE_1} label={'nominalVoltage1'} />
+        <RangeInput
+            name={NOMINAL_VOLTAGE_1}
+            label={isLineOrTransformer ? 'nominalVoltage1' : 'nominalVoltage'}
+        />
     );
 
     const nominalValue2Field = (

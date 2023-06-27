@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { Grid } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
+import { makeStyles } from 'tss-react/mui';
 import { useTheme } from '@mui/styles';
 import BottomRightButtons from './bottom-right-buttons';
+import { useIntl } from 'react-intl';
 
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
@@ -28,7 +28,7 @@ export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     },
 ];
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme, _params, classes) => ({
     grid: {
         width: 'auto',
         height: '100%',
@@ -67,14 +67,6 @@ const useStyles = makeStyles((theme) => ({
         '& .ag-cell-edit-wrapper': {
             height: 'inherit',
         },
-        '& .ag-layout-auto-height': {
-            //height: '250px'
-            //height: '300px',
-        },
-    },
-    iconColor: {
-        color: theme.palette.primary.main,
-        justifyContent: 'flex-end',
     },
 }));
 
@@ -90,7 +82,7 @@ export const CustomAgGridTable = ({
     defaultRowsNumber = 0,
     ...props
 }) => {
-    const classes = useStyles();
+    const { classes, cx } = useStyles();
     const theme = useTheme();
     const [gridApi, setGridApi] = useState(null);
     const [selectedRows, setSelectedRows] = useState([]);
@@ -152,15 +144,25 @@ export const CustomAgGridTable = ({
         }
     }, [columnDefs, gridApi]);
 
+    const intl = useIntl();
+    const getLocaleText = useCallback(
+        (params) => {
+            const key = 'agGrid.' + params.key;
+            return intl.messages[key] || params.defaultValue;
+        },
+        [intl]
+    );
+
     return (
         <Grid container spacing={2}>
-            <Grid item xs={12} className={clsx([theme.aggrid, classes.grid])}>
+            <Grid item xs={12} className={cx([theme.aggrid, classes.grid])}>
                 <AgGridReact
                     rowData={getValues(name)}
                     onGridReady={(params) => {
                         setGridApi(params);
                         params.api.sizeColumnsToFit();
                     }}
+                    getLocaleText={getLocaleText}
                     defaultColDef={defaultColDef}
                     oncelled
                     rowSelection={'multiple'}

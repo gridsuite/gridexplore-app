@@ -31,10 +31,9 @@ import {
     saveScriptContingencyList,
 } from '../../../utils/rest-api';
 import yup from '../../utils/yup-config';
-import {
-    getRangeInputEmptyDataForm,
-    getRangeInputSchema,
-} from '../../utils/range-input';
+import { getRangeInputEmptyDataForm } from '../../utils/range-input';
+import { getExplicitNamingSchema } from './explicit-naming/explicit-naming-form';
+import { getCriteriaBasedSchema } from './criteria-based/criteria-based-form';
 
 export const DEFAULT_TABLE_ROWS = [];
 
@@ -50,10 +49,15 @@ export const CONTINGENCY_LIST_EQUIPMENTS = {
     BUSBAR_SECTION: { id: 'BUSBAR_SECTION', label: 'BusBarSections' },
     DANGLING_LINE: { id: 'DANGLING_LINE', label: 'DanglingLines' },
 };
-const checkNameIsUnique = (name, activeDirectory) => {
+const checkNameIsUnique = (name, activeDirectory, defaultName = null) => {
     if (!name) {
         return false;
     }
+
+    if (name === defaultName) {
+        return true;
+    }
+
     return new Promise((resolve) => {
         elementExists(activeDirectory, name, ElementType.CONTINGENCY_LIST).then(
             (val) => resolve(!val)
@@ -61,28 +65,19 @@ const checkNameIsUnique = (name, activeDirectory) => {
     });
 };
 
-export const getSchema = (activeDirectory) => {
+export const getSchema = (activeDirectory, defaultName = null) => {
     return yup.object().shape({
         [NAME]: yup
             .string()
             .nullable()
             .required('nameEmpty')
             .test('checkIfUniqueName', 'nameAlreadyUsed', (name) =>
-                checkNameIsUnique(name, activeDirectory)
+                checkNameIsUnique(name, activeDirectory, defaultName)
             ),
-        [EQUIPMENT_TYPE]: yup.string().nullable(),
         [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
-        [EQUIPMENT_TABLE]: yup.array().of(
-            yup.object().shape({
-                [CONTINGENCY_NAME]: yup.string().nullable(),
-                [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
-            })
-        ),
         [SCRIPT]: yup.string().nullable(),
-        [COUNTRIES_1]: yup.array().of(yup.string().nullable()),
-        [COUNTRIES_2]: yup.array().of(yup.string().nullable()),
-        ...getRangeInputSchema(NOMINAL_VOLTAGE_1),
-        ...getRangeInputSchema(NOMINAL_VOLTAGE_2),
+        ...getExplicitNamingSchema(EQUIPMENT_TABLE),
+        ...getCriteriaBasedSchema(),
     });
 };
 
@@ -113,8 +108,12 @@ export const getFormDataFromFetchedElement = (
                 [EQUIPMENT_TYPE]: response?.equipmentType,
                 [COUNTRIES_1]: response?.countries1,
                 [COUNTRIES_2]: response?.countries2,
-                [NOMINAL_VOLTAGE_1]: response?.nominalVoltage1,
-                [NOMINAL_VOLTAGE_2]: response?.nominalVoltage2,
+                [NOMINAL_VOLTAGE_1]:
+                    response?.nominalVoltage1 ??
+                    getRangeInputEmptyDataForm(NOMINAL_VOLTAGE_1),
+                [NOMINAL_VOLTAGE_2]:
+                    response?.nominalVoltage2 ??
+                    getRangeInputEmptyDataForm(NOMINAL_VOLTAGE_2),
             };
         case ContingencyListTypeRefactor.EXPLICIT_NAMING.id:
             const result =

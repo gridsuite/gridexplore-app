@@ -7,7 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import { FormattedMessage } from 'react-intl';
 import React, { useMemo } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
-import MuiSelectInput from './mui-select-input';
+import SelectInput from './select-input';
 
 const useStyles = makeStyles((theme) => ({
     inputLegend: {
@@ -91,12 +91,13 @@ const RangeInput = ({ name, label }) => {
     );
 
     const operationTypeField = (
-        <MuiSelectInput
+        <SelectInput
             name={`${name}.${OPERATION_TYPE}`}
             options={Object.values(RangeType)}
             style={{
                 borderRadius: '4px 0 0 4px',
             }}
+            disableClearable
         />
     );
 
