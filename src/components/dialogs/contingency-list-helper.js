@@ -9,8 +9,9 @@ export const getIdentifierContingencyListFromResponse = (response) => {
     const result = response?.identifierContingencyList?.identifiers?.map(
         (identifiers, index) => {
             return {
-                contingencyName: 'contingencyName' + index, // Temporary : at the moment, we do not save the name in the backend.
-                equipmentIDs: identifiers.identifierList.map(
+                //This field is named "contingencyId" in powsybl-core but it corresponds the "Name" column in the UI
+                contingencyId: identifiers.contingencyId,
+                identifierList: identifiers.identifierList.map(
                     (identifier) => identifier.identifier
                 ),
             };
@@ -23,10 +24,11 @@ export const prepareContingencyListForBackend = (id, name, values) => {
     const identifiersList = values
         .filter(
             (contingency) =>
-                contingency?.equipmentIDs && contingency.equipmentIDs.length > 0
-        ) // We only take contingencies that have an equipmentIDs value
+                contingency?.identifierList &&
+                contingency.identifierList.length > 0
+        ) // We only take contingencies that have an identifierList value
         .map((contingency) => {
-            const identifierList = contingency.equipmentIDs.map(
+            const identifierList = contingency.identifierList.map(
                 (identifier) => {
                     return {
                         type: 'ID_BASED',
@@ -37,7 +39,7 @@ export const prepareContingencyListForBackend = (id, name, values) => {
 
             return {
                 type: 'LIST',
-                // contingencyName: contingency.contingencyName, // Not used for now
+                contingencyId: contingency.contingencyId,
                 identifierList: identifierList,
             };
         });
@@ -46,9 +48,8 @@ export const prepareContingencyListForBackend = (id, name, values) => {
         id: id,
         identifierContingencyList: {
             type: 'identifier',
-            version: '1.0',
+            version: '1.2',
             name: name,
-            identifiableType: 'LINE', // hardcoded for the moment
             identifiers: identifiersList,
         },
         type: 'IDENTIFIERS',
