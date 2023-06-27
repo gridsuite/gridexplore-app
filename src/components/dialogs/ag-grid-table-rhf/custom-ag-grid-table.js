@@ -40,16 +40,9 @@ const useStyles = makeStyles()((theme, _params, classes) => ({
             maxHeight: '300px !important',
         },
 
-        //allows to hide the scrollbar in the pinned rows section as it is unecessary to our implementation
-        '& .ag-body-horizontal-scroll:not(.ag-scrollbar-invisible) .ag-horizontal-left-spacer:not(.ag-scroller-corner)':
-            {
-                visibility: 'hidden',
-            },
-        '& .ag-body-horizontal-scroll-viewport': {
-            visibility: 'hidden',
+        '& .ag-root-wrapper-body': {
+            maxHeight: '500px',
         },
-
-        // hides right border for header of "Edit" column due to column being pinned
 
         '& .ag-header-container': {
             backgroundColor: theme.agGridBackground.color,
@@ -172,6 +165,7 @@ export const CustomAgGridTable = ({
                     onRowDragEnd={(e) =>
                         move(getIndex(e.node.data), e.overIndex)
                     }
+                    alwaysShowVerticalScroll
                     suppressRowClickSelection
                     suppressBrowserResizeObserver
                     columnDefs={columnDefs}
