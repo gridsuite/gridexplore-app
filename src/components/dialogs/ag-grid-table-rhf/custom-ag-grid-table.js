@@ -49,7 +49,6 @@ const useStyles = makeStyles()((theme, _params, classes) => ({
         },
         '& .ag-body': {
             backgroundColor: theme.agGridBackground.color,
-            //overflowY: 'scroll',
         },
         '& .ag-row': {
             backgroundColor: theme.agGridBackground.color,

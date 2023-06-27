@@ -132,6 +132,8 @@ const DirectoryContent = () => {
         if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
             setElementName(childrenMetadata[event.rowData.elementUuid]?.name);
             const subtype = childrenMetadata[event.rowData.elementUuid].subtype;
+            console.log('subtype : ', subtype);
+            console.log('childrenMetadata : ', childrenMetadata)
             /** set active directory on the store because it will be used while editing the contingency name */
             dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
             if (event.rowData.type === ElementType.STUDY) {

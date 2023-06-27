@@ -19,7 +19,7 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { Draggable } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
 import { Alert, Checkbox, Chip, Input, Tooltip } from '@mui/material';
-import { ContingencyListType, ElementType } from '../../utils/elementType';
+import { ContingencyListType, ContingencyListTypeRefactor, ElementType } from "../../utils/elementType";
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { getIdentifierContingencyListFromResponse } from './contingency-list-helper';
@@ -270,7 +270,7 @@ const ExplicitNamingContingencyListDialogContent = ({
 
     useEffect(() => {
         if (id && fetchFilter.current) {
-            getContingencyList(ContingencyListType.EXPLICIT_NAMING, id)
+            getContingencyList(ContingencyListTypeRefactor.EXPLICIT_NAMING.id, id)
                 .then((response) => {
                     setDefaultValues(
                         getIdentifierContingencyListFromResponse(response)

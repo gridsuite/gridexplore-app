@@ -7,12 +7,17 @@
 
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { Input } from '@mui/material';
+import { useController } from "react-hook-form";
 
 const NumberEditor = forwardRef(({ ...props }, ref) => {
-    const [value, setValue] = useState(props.value ?? null);
+    const {
+        field: { value, onChange },
+    } = useController({
+        name: `${props.name}.${props.colDef.field}`,
+    });
 
     const handleChange = (event) => {
-        setValue(event.target.value);
+        onChange(event.target.value);
     };
 
     useImperativeHandle(

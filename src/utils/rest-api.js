@@ -571,11 +571,11 @@ export function duplicateContingencyList(
  */
 export function getContingencyList(type, id) {
     let url = PREFIX_ACTIONS_QUERIES;
-    if (type === ContingencyListType.SCRIPT) {
+    if (type === ContingencyListTypeRefactor.SCRIPT.id) {
         url += '/v1/script-contingency-lists/';
-    } else if (type === ContingencyListType.FORM) {
+    } else if (type === ContingencyListTypeRefactor.CRITERIA_BASED.id) {
         url += '/v1/form-contingency-lists/';
-    } else if (type === ContingencyListType.EXPLICIT_NAMING) {
+    } else if (type === ContingencyListTypeRefactor.EXPLICIT_NAMING.id) {
         url += '/v1/identifier-contingency-lists/';
     }
     url += id;

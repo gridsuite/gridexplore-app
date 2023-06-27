@@ -17,24 +17,21 @@ import TextField from '@mui/material/TextField';
 import { useController, useFieldArray } from 'react-hook-form';
 
 const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
+    const { name, rowIndex, colDef } = props;
     const [unsavedInput, setUnsavedInput] = useState('');
     const {
-        field: { value: equipments },
+        field: { value: chips },
     } = useController({
-        name: `${props.name}.${props.rowIndex}.${props.colDef.field}`,
+        name: `${name}.${rowIndex}.${colDef.field}`,
     });
 
     const { fields, append, remove } = useFieldArray({
-        name: `${props.name}.${props.rowIndex}.${props.colDef.field}`,
+        name: `${name}.${rowIndex}.${colDef.field}`,
     });
 
     const handleChipDeleted = (index) => {
         remove(index);
     };
-
-    useEffect(() => {
-        props.setValue(equipments);
-    }, [equipments, props]);
 
     const handleChipAdd = (_, newValue) => {
         append(newValue);
@@ -42,7 +39,7 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     };
 
     const handleOnChange = (event) => {
-        if (unsavedInput) {
+        if (unsavedInput && !chips.includes(unsavedInput)) {
             handleChipAdd(event, unsavedInput);
         }
     };
@@ -52,11 +49,11 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
         () => {
             return {
                 getValue: () => {
-                    return equipments;
+                    return chips;
                 },
             };
         },
-        [equipments]
+        [chips]
     );
 
     return (
@@ -67,7 +64,7 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
             multiple
             freeSolo
             options={[]}
-            value={equipments}
+            value={chips}
             size={'small'}
             clearOnBlur
             onChange={(event, newVal) => {
@@ -99,7 +96,7 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
                 return fields.map((val, index) => (
                     <Chip
                         key={val.id}
-                        label={equipments[index]}
+                        label={chips[index]}
                         size={'small'}
                         {...getTagProps({ index })}
                         onDelete={(i) => handleChipDeleted(i)}

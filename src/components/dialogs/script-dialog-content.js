@@ -13,7 +13,10 @@ import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import makeStyles from '@mui/styles/makeStyles';
 import { getContingencyList, getFilterById } from '../../utils/rest-api';
-import { ContingencyListType, ElementType } from '../../utils/elementType';
+import {
+    ContingencyListTypeRefactor,
+    ElementType,
+} from '../../utils/elementType';
 
 const useStyles = makeStyles(() => ({
     aceEditor: {
@@ -54,7 +57,7 @@ const ScriptDialogContent = ({ id, onError, type, onChange }) => {
             if (currentItemId != null) {
                 if (type === ElementType.CONTINGENCY_LIST) {
                     getContingencyList(
-                        ContingencyListType.SCRIPT,
+                        ContingencyListTypeRefactor.SCRIPT.id,
                         currentItemId
                     )
                         .then((data) => {
