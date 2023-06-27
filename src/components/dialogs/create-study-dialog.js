@@ -222,8 +222,8 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         FileField,
         providedCaseFileError,
         providedCaseFileOk,
-        setProvidedCaseFileOk,
         resetProvidedCaseFile,
+        setProvidedCaseFileOk,
     ] = useFileValue({
         label: 'Case',
         isLoading: isUploadingFileInProgress,

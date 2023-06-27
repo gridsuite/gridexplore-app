@@ -233,5 +233,15 @@
     "agGrid.firstPage" : "première page",
     "agGrid.previousPage" : "page précédente",
     "agGrid.nextPage" : "page suivante",
-    "agGrid.lastPage" : "dernière page"
+    "agGrid.lastPage" : "dernière page",
+
+    "DIE" : "ARCADE",
+    "XIIDM": "XIIDM",
+    "CGMES": "CGMES",
+    "PSS/E" : "PSS/E",
+    "UCTE" : "UCTE",
+    "MATPOWER": "MATPOWER",
+    "POWERFACTORY" : "POWERFACTORY",
+    "IEEE CDF": "IEEE CDF"
+
 }
