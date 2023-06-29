@@ -18,9 +18,9 @@ const InnerColoredButton = styled(IconButton)(({ theme, root }) => {
 
 const BottomRightButtons = ({
     name,
-    gridApi,
-    rowData,
-    selectedRows,
+    disableUp,
+    disableDown,
+    disableDelete,
     handleAddRow,
     handleDeleteRows,
     handleMoveRowUp,
@@ -29,13 +29,6 @@ const BottomRightButtons = ({
 }) => {
     const [uploaderOpen, setUploaderOpen] = useState(false);
     const intl = useIntl();
-    const isFirstSelected =
-        rowData && gridApi?.api?.getRowNode(rowData[0]?.rowUuid)?.isSelected();
-    const isLastSelected =
-        rowData &&
-        gridApi?.api
-            ?.getRowNode(rowData[rowData.length - 1]?.rowUuid)
-            ?.isSelected();
 
     return (
         <>
@@ -58,20 +51,20 @@ const BottomRightButtons = ({
                 <InnerColoredButton
                     key={'DeleteButton'}
                     onClick={handleDeleteRows}
-                    disabled={selectedRows.length === 0}
+                    disabled={disableDelete}
                 >
                     <DeleteIcon />
                 </InnerColoredButton>
                 <InnerColoredButton
                     key={'upButton'}
-                    disabled={isFirstSelected || selectedRows.length === 0}
+                    disabled={disableUp}
                     onClick={handleMoveRowUp}
                 >
                     <ArrowCircleUp />
                 </InnerColoredButton>
                 <InnerColoredButton
                     key={'downButton'}
-                    disabled={isLastSelected || selectedRows.length === 0}
+                    disabled={disableDown}
                     onClick={handleMoveRowDown}
                 >
                     <ArrowCircleDown />

@@ -12,7 +12,8 @@ import { useController } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import { FieldLabel } from '../inputs/hooks-helpers';
 
-const RadioInput = ({ name, label, id, options, formProps }) => {
+const RadioInput = ({ name, label, id, options, ...props }) => {
+  console.log('props : ', props);
     const {
         field: { onChange, value },
     } = useController({ name });
@@ -29,7 +30,7 @@ const RadioInput = ({ name, label, id, options, formProps }) => {
                 aria-labelledby={id ?? label}
                 value={value}
                 onChange={onChange}
-                {...formProps}
+                {...props}
             >
                 {options.map((option) => (
                     <FormControlLabel
@@ -49,7 +50,7 @@ RadioInput.propTypes = {
     label: PropTypes.string,
     id: PropTypes.string,
     options: PropTypes.array.isRequired,
-    formProps: PropTypes.object,
+    props: PropTypes.object
 };
 
 export default RadioInput;

@@ -6,11 +6,7 @@
  */
 
 import RadioInput from '../../../utils/rhf-inputs/radio-input';
-import {
-    CONTINGENCY_LIST_TYPE,
-    NAME,
-    SCRIPT,
-} from '../../../utils/field-constants';
+import { CONTINGENCY_LIST_TYPE, SCRIPT } from '../../../utils/field-constants';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { Grid } from '@mui/material';
 import { gridItem } from '../../../utils/dialog-utils';
@@ -18,25 +14,13 @@ import React from 'react';
 import { useWatch } from 'react-hook-form';
 import CriteriaBasedForm from '../criteria-based/criteria-based-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
-import TextInput from '../../../utils/rhf-inputs/text-input';
 import ScriptInput from '../../../utils/rhf-inputs/script-input';
 import { CONTINGENCY_LIST_EQUIPMENTS } from '../contingency-list-utils';
 
-const ContingencyListCreationForm = () => {
+const ContingencyListCreationForm = ({}) => {
     const watchContingencyListType = useWatch({
         name: CONTINGENCY_LIST_TYPE,
     });
-
-    const nameField = (
-        <TextInput
-            name={NAME}
-            label={'nameProperty'}
-            autoFocus
-            margin="dense"
-            type="text"
-            style={{ width: '100%', flexGrow: 1 }}
-        />
-    );
 
     const contingencyListTypeField = (
         <RadioInput
@@ -47,9 +31,6 @@ const ContingencyListCreationForm = () => {
 
     return (
         <Grid container spacing={2} marginTop={'auto'}>
-            <Grid container item>
-                {gridItem(nameField, 12)}
-            </Grid>
             <Grid container item>
                 {gridItem(contingencyListTypeField, 12)}
             </Grid>

@@ -6,9 +6,7 @@
  */
 
 export const ID = 'id';
-export const ROW_UUID = 'rowUuid';
 export const NAME = 'name';
-export const EQUIPMENT_ID = 'equipmentID';
 
 export const EQUIPMENT_TYPE = 'equipmentType';
 export const EQUIPMENT_TABLE = 'equipmentTable';
@@ -24,3 +22,4 @@ export const CONTINGENCY_LIST_TYPE = 'contingencyListType';
 export const NOMINAL_VOLTAGE_1 = 'nominalVoltage1';
 export const NOMINAL_VOLTAGE_2 = 'nominalVoltage2';
 export const SCRIPT = 'script';
+export const ROW_UUID = 'rowUuid';

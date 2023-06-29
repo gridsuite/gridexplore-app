@@ -40,7 +40,7 @@ const TextInput = ({
     previousValue,
     clearable,
     customAdornment,
-    ...props
+    inputProps,
 }) => {
     const { validationSchema, getValues, removeOptional } = useFormContext();
     const classes = useStyles();
@@ -102,7 +102,7 @@ const TextInput = ({
                         {customAdornment && { ...customAdornment }}
                     </InputAdornment>
                 ),
-                ...props.inputProps,
+                ...inputProps,
             }}
             inputRef={ref}
             {...(clearable &&

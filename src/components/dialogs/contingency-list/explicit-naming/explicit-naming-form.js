@@ -16,11 +16,12 @@ import React, { useCallback, useMemo } from 'react';
 import CustomAgGridTable, {
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
 } from '../../../utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
-import chipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
+import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { gridItem } from '../../../utils/dialog-utils';
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
 import Alert from '@mui/material/Alert';
+import { DEFAULT_ROW_VALUE } from '../contingency-list-utils';
 
 export const getExplicitNamingSchema = (id) => ({
     [id]: yup.array().of(
@@ -57,7 +58,7 @@ const ExplicitNamingForm = () => {
                 autoHeight: true,
                 wrapText: true,
                 singleClickEdit: true,
-                cellRenderer: chipsArrayEditor,
+                cellRenderer: ChipsArrayEditor,
                 cellRendererParams: {
                     name: EQUIPMENT_TABLE,
                 },
@@ -97,14 +98,24 @@ const ExplicitNamingForm = () => {
         [intl]
     );
 
+    const defaultColDef = useMemo(
+        () => ({
+            flex: 1,
+            suppressMovable: true,
+        }),
+        []
+    );
+
     const equipmentTableField = (
         <CustomAgGridTable
             name={EQUIPMENT_TABLE}
             columnDefs={columnDefs}
-            defaultRowData={{ [CONTINGENCY_NAME]: '', [EQUIPMENT_IDS]: [] }}
+            defaultRowData={DEFAULT_ROW_VALUE}
             pagination={true}
             paginationPageSize={100}
-            defaultRowsNumber={3}
+            suppressRowClickSelection
+            defaultColDef={defaultColDef}
+            alwaysShowVerticalScroll
             csvProps={{
                 fileName: intl.formatMessage({ id: 'contingencyListCreation' }),
                 fileHeaders: csvFileHeaders,

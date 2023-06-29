@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { elementExists } from '../../utils/rest-api';
@@ -12,7 +12,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
-import { Alert } from '@mui/material';
 import { useDebounce } from '@gridsuite/commons-ui';
 
 const NameWrapper = ({
@@ -21,6 +20,7 @@ const NameWrapper = ({
     contentType,
     children,
     handleNameValidation,
+    setError,
 }) => {
     const [value, setValue] = useState(initialValue);
     const [loadingCheckName, setLoadingCheckName] = useState(false);
@@ -30,6 +30,7 @@ const NameWrapper = ({
 
     const setFormState = useCallback(
         (errorMessage, isNameValid, name) => {
+            setError && setError(errorMessage);
             setErrorMessage(errorMessage);
             handleNameValidation(isNameValid, name);
         },
@@ -116,15 +117,13 @@ const NameWrapper = ({
                 margin="dense"
                 value={value}
                 type="text"
-                error={!!value && !errorMessage === '' && !loadingCheckName}
+                error={!!value && !(errorMessage === '') && !loadingCheckName}
                 style={{ width: '100%' }}
                 label={<FormattedMessage id={titleMessage} />}
+                helperText={errorMessage ?? ''}
             />
             {renderNameStatus()}
             {children}
-            {errorMessage !== '' && (
-                <Alert severity="error">{errorMessage}</Alert>
-            )}
         </>
     );
 };

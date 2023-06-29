@@ -7,20 +7,17 @@
 
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { Chip } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
-import { useController, useFieldArray } from 'react-hook-form';
+import { useFieldArray, useWatch } from 'react-hook-form';
+import AutocompleteInput from '../../autocomplete-input';
 
 const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     const { name, rowIndex, colDef } = props;
     const [unsavedInput, setUnsavedInput] = useState('');
-    const {
-        field: { value: chips },
-    } = useController({
+    const watchValues = useWatch({
         name: `${name}.${rowIndex}.${colDef.field}`,
     });
 
-    const { fields, append, remove } = useFieldArray({
+    const { append, remove } = useFieldArray({
         name: `${name}.${rowIndex}.${colDef.field}`,
     });
 
@@ -28,75 +25,54 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
         remove(index);
     };
 
-    const handleChipAdd = (_, newValue) => {
-        append(newValue);
-        setUnsavedInput('');
-    };
-
-    const handleOnChange = (event) => {
-        if (unsavedInput && !chips.includes(unsavedInput)) {
-            handleChipAdd(event, unsavedInput);
-        }
-    };
-
     useImperativeHandle(
         ref,
         () => {
             return {
                 getValue: () => {
-                    return chips;
+                    return watchValues;
                 },
             };
         },
-        [chips]
+        [watchValues]
     );
 
     return (
-        <Autocomplete
-            style={{
-                width: '100%',
-            }}
-            multiple
-            freeSolo
+        <AutocompleteInput
+            name={`${name}.${rowIndex}.${colDef.field}`}
             options={[]}
-            value={chips}
             size={'small'}
+            allowNewValue
+            multiple
             clearOnBlur
-            onChange={(event, newVal) => {
-                handleOnChange(event);
-            }}
             disableClearable={true}
             onInputChange={(_, val) => setUnsavedInput(val.trim() ?? '')}
-            onBlur={handleOnChange}
-            renderInput={(params) => {
-                return (
-                    <TextField
-                        fullWidth
-                        sx={{
-                            '& .MuiOutlinedInput-notchedOutline': {
-                                border: 'unset', // Remove the border
-                            },
-                            '&:hover .MuiOutlinedInput-root': {
-                                border: 'unset', // Remove the border on hover
-                            },
-                            '& .Mui-focused .MuiOutlinedInput-root': {
-                                border: 'unset', // Remove the border when focused
-                            },
-                        }}
-                        {...params}
-                    />
-                );
+            //onBlur={handleOnChange}
+            formProps={{
+                sx: {
+                    '& .MuiOutlinedInput-notchedOutline': {
+                        border: 'unset', // Remove the border
+                    },
+                    '&:hover .MuiOutlinedInput-root': {
+                        border: 'unset', // Remove the border on hover
+                    },
+                    '& .Mui-focused .MuiOutlinedInput-root': {
+                        border: 'unset', // Remove the border when focused
+                    },
+                },
             }}
             renderTags={(val, getTagProps) => {
-                return fields.map((val, index) => (
-                    <Chip
-                        key={val.id}
-                        label={chips[index]}
-                        size={'small'}
-                        {...getTagProps({ index })}
-                        onDelete={(i) => handleChipDeleted(i)}
-                    />
-                ));
+                return val.map((chip, index) => {
+                    return (
+                        <Chip
+                            key={chip.id}
+                            label={val[index]}
+                            size={'small'}
+                            {...getTagProps({ index })}
+                            onDelete={(i) => handleChipDeleted(i)}
+                        />
+                    );
+                });
             }}
         />
     );

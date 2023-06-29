@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { filterEquipmentDefinition } from '../../../../utils/equipment-types';
 import {
     COUNTRIES_1,
     COUNTRIES_2,
@@ -14,79 +13,69 @@ import {
     NOMINAL_VOLTAGE_2,
 } from '../../../utils/field-constants';
 import React from 'react';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { gridItem } from '../../../utils/dialog-utils';
 import { Grid } from '@mui/material';
-import CountriesInput from '../../../utils/rhf-inputs/countries-input';
-import RangeInput, {
-    getRangeInputSchema,
-} from '../../../utils/rhf-inputs/range-input';
-import yup from '../../../utils/yup-config';
 import SelectInput from '../../../utils/rhf-inputs/select-input';
-
-export const getCriteriaBasedSchema = () => ({
-    [EQUIPMENT_TYPE]: yup.string().nullable(),
-    [COUNTRIES_1]: yup.array().of(yup.string().nullable()),
-    [COUNTRIES_2]: yup.array().of(yup.string().nullable()),
-    ...getRangeInputSchema(NOMINAL_VOLTAGE_1),
-    ...getRangeInputSchema(NOMINAL_VOLTAGE_2),
-});
+import { EquipmentDefinition } from './criteria-based-utils';
+import InputWithPopupConfirmation from '../../../utils/rhf-inputs/input-with-popup-confirmation';
+import { DEFAULT_RANGE_VALUE } from '../../../utils/rhf-inputs/range-input';
 
 const CriteriaBasedForm = ({ equipmentsTypes }) => {
     const watchEquipmentType = useWatch({
         name: EQUIPMENT_TYPE,
     });
 
+    const { setValue, getValues } = useFormContext();
+
+    const openConfirmationPopup = () => {
+        const defaultRangeValue = JSON.stringify(DEFAULT_RANGE_VALUE);
+        return (
+            watchEquipmentType &&
+            (getValues(COUNTRIES_1).length > 0 ||
+                getValues(COUNTRIES_2).length > 0 ||
+                JSON.stringify(getValues(NOMINAL_VOLTAGE_1)) !==
+                    defaultRangeValue ||
+                JSON.stringify(getValues(NOMINAL_VOLTAGE_2)) !==
+                    defaultRangeValue)
+        );
+    };
+
+    const handleResetOnConfirmation = () => {
+        setValue(COUNTRIES_1, []);
+        setValue(COUNTRIES_2, []);
+        setValue(NOMINAL_VOLTAGE_1, DEFAULT_RANGE_VALUE);
+        setValue(NOMINAL_VOLTAGE_2, DEFAULT_RANGE_VALUE);
+    };
+
     const equipmentTypeSelectionField = (
-        <SelectInput
+        <InputWithPopupConfirmation
+            Input={SelectInput}
             name={EQUIPMENT_TYPE}
             options={equipmentsTypes}
             label={'equipmentType'}
+            shouldOpenPopup={openConfirmationPopup}
+            resetOnConfirmation={handleResetOnConfirmation}
         />
-    );
-
-    const isLineOrHvdc =
-        watchEquipmentType === filterEquipmentDefinition.LINE.type ||
-        watchEquipmentType === filterEquipmentDefinition.HVDC_LINE.type;
-
-    const isLineOrTransformer =
-        watchEquipmentType === filterEquipmentDefinition.LINE.type ||
-        watchEquipmentType ===
-            filterEquipmentDefinition.TWO_WINDINGS_TRANSFORMER.type;
-
-    const countries1 = (
-        <CountriesInput
-            name={COUNTRIES_1}
-            titleMessage={isLineOrHvdc ? 'Countries1' : 'Countries'}
-        />
-    );
-
-    const countries2 = (
-        <CountriesInput name={COUNTRIES_2} titleMessage={'Countries2'} />
-    );
-
-    const nominalValue1Field = (
-        <RangeInput
-            name={NOMINAL_VOLTAGE_1}
-            label={isLineOrTransformer ? 'nominalVoltage1' : 'nominalVoltage'}
-        />
-    );
-
-    const nominalValue2Field = (
-        <RangeInput name={NOMINAL_VOLTAGE_2} label={'nominalVoltage2'} />
     );
 
     return (
-        <Grid container item>
+        <Grid container item spacing={2}>
             {gridItem(equipmentTypeSelectionField, 12)}
-            {watchEquipmentType && (
-                <>
-                    {gridItem(countries1, 12)}
-                    {isLineOrHvdc && gridItem(countries2, 12)}
-                    {gridItem(nominalValue1Field, 12)}
-                    {isLineOrTransformer && gridItem(nominalValue2Field, 12)}
-                </>
-            )}
+            {watchEquipmentType &&
+                EquipmentDefinition[watchEquipmentType].map(
+                    (equipment, index) => {
+                        const EquipmentForm = equipment.renderer;
+                        return (
+                            <Grid item xs={12} key={index}>
+                                <EquipmentForm
+                                    name={equipment.name}
+                                    label={equipment.label}
+                                />
+                            </Grid>
+                        );
+                    }
+                )}
         </Grid>
     );
 };

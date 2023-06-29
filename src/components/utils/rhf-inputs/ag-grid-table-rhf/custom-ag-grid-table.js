@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -66,12 +66,8 @@ export const CustomAgGridTable = ({
     name,
     columnDefs,
     defaultRowData,
-    fromCsvDataToFormValues, // this used to transform rows from csv file, to data can be displayed in the table
-    csvFileHeaders,
-    csvInitialData, // this is used if csv file generated has some row by default (comments for example)
-    getRowID, // this used by Ag Grid to get the id of each row
     csvProps,
-    defaultRowsNumber = 0,
+    //getRowID, // this used by Ag Grid to get the id of each row
     ...props
 }) => {
     const { classes, cx } = useStyles();
@@ -84,6 +80,35 @@ export const CustomAgGridTable = ({
         control,
         name: name,
     });
+
+    const getRowData = () => {
+        // if the table has default values without rowUuid, we add it
+        const rowWithoutUuid = getValues(name).some((r) => !r.rowUuid);
+        if (rowWithoutUuid) {
+            return getValues(name).map((r) => {
+                if (r.rowUuid) {
+                    return r;
+                }
+                return {
+                    rowUuid: crypto.randomUUID(),
+                    ...r,
+                };
+            });
+        }
+        return getValues(name);
+    };
+
+    const isFirstSelected =
+        getRowData() &&
+        gridApi?.api?.getRowNode(getRowData()[0]?.rowUuid)?.isSelected();
+
+    const isLastSelected =
+        getRowData() &&
+        gridApi?.api
+            ?.getRowNode(getRowData()[getRowData().length - 1]?.rowUuid)
+            ?.isSelected();
+
+    const noRowSelected = selectedRows.length === 0;
 
     const handleMoveRowUp = () => {
         selectedRows
@@ -119,16 +144,8 @@ export const CustomAgGridTable = ({
     };
 
     const getIndex = (val) => {
-        return getValues(name).findIndex((row) => row.rowUuid === val.rowUuid);
+        return getRowData().findIndex((row) => row.rowUuid === val.rowUuid);
     };
-
-    const defaultColDef = useMemo(
-        () => ({
-            flex: 1,
-            suppressMovable: true,
-        }),
-        []
-    );
 
     useEffect(() => {
         if (gridApi) {
@@ -145,18 +162,18 @@ export const CustomAgGridTable = ({
         [intl]
     );
 
+    const onGridReady = (params) => {
+        setGridApi(params);
+        params.api.sizeColumnsToFit();
+    };
+
     return (
         <Grid container spacing={2}>
             <Grid item xs={12} className={cx([theme.aggrid, classes.grid])}>
                 <AgGridReact
-                    rowData={getValues(name)}
-                    onGridReady={(params) => {
-                        setGridApi(params);
-                        params.api.sizeColumnsToFit();
-                    }}
+                    rowData={getRowData()}
+                    onGridReady={onGridReady}
                     getLocaleText={getLocaleText}
-                    defaultColDef={defaultColDef}
-                    oncelled
                     rowSelection={'multiple'}
                     domLayout={'autoHeight'}
                     rowDragEntireRow
@@ -164,8 +181,6 @@ export const CustomAgGridTable = ({
                     onRowDragEnd={(e) =>
                         move(getIndex(e.node.data), e.overIndex)
                     }
-                    alwaysShowVerticalScroll
-                    suppressRowClickSelection
                     suppressBrowserResizeObserver
                     columnDefs={columnDefs}
                     detailRowAutoHeight={true}
@@ -175,21 +190,19 @@ export const CustomAgGridTable = ({
                     onCellEditingStopped={(event) => {
                         update(event.rowIndex, event.data);
                     }}
-                    getRowId={(row) => {
-                        return row.data.rowUuid;
-                    }}
+                    getRowId={(row) => row.data.rowUuid}
                     {...props}
                 ></AgGridReact>
             </Grid>
             <BottomRightButtons
                 name={name}
-                rowData={getValues(name)}
-                gridApi={gridApi}
-                selectedRows={selectedRows}
                 handleAddRow={handleAddRow}
                 handleDeleteRows={handleDeleteRows}
                 handleMoveRowDown={handleMoveRowDown}
                 handleMoveRowUp={handleMoveRowUp}
+                disableUp={noRowSelected || isFirstSelected}
+                disableDown={noRowSelected || isLastSelected}
+                disableDelete={noRowSelected}
                 csvProps={csvProps}
             />
         </Grid>

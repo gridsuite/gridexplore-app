@@ -2,19 +2,12 @@ import { useParameterState } from '../../dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import React, { useCallback, useMemo } from 'react';
 import { getComputedLanguage } from '../../../utils/language';
-import { Chip, FormControl } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
+import { Chip } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
-import { useController } from 'react-hook-form';
+import AutocompleteInput from './autocomplete-input';
 
-export const CountriesInput = ({ name, titleMessage }) => {
-    const {
-        field: { value, onChange },
-    } = useController({
-        name,
-    });
-
+export const CountriesInput = ({ name, label }) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const countriesListCB = useCallback(() => {
         try {
@@ -32,36 +25,26 @@ export const CountriesInput = ({ name, titleMessage }) => {
 
     const countriesList = useMemo(() => countriesListCB(), [countriesListCB]);
     return (
-        <>
-            <FormControl fullWidth margin="dense">
-                <Autocomplete
-                    id="select_countries"
-                    value={value}
-                    multiple
-                    onChange={(event, value) => {
-                        onChange(value);
-                    }}
-                    options={Object.keys(countriesList.object())}
-                    getOptionLabel={(code) => countriesList.get(code)}
-                    renderInput={(props) => (
-                        <TextField
-                            label={<FormattedMessage id={titleMessage} />}
-                            {...props}
-                        />
-                    )}
-                    renderTags={(val, getTagsProps) =>
-                        val.map((code, index) => (
-                            <Chip
-                                id={'chip_' + code}
-                                size={'small'}
-                                label={countriesList.get(code)}
-                                {...getTagsProps({ index })}
-                            />
-                        ))
-                    }
-                />
-            </FormControl>
-        </>
+        <AutocompleteInput
+            fullWidth
+            name={name}
+            multiple
+            options={Object.keys(countriesList.object())}
+            getOptionLabel={(code) => countriesList.get(code)}
+            renderInput={(props) => (
+                <TextField label={<FormattedMessage id={label} />} {...props} />
+            )}
+            renderTags={(val, getTagsProps) =>
+                val.map((code, index) => (
+                    <Chip
+                        id={'chip_' + code}
+                        size={'small'}
+                        label={countriesList.get(code)}
+                        {...getTagsProps({ index })}
+                    />
+                ))
+            }
+        />
     );
 };
 

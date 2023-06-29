@@ -29,12 +29,13 @@ export const RangeType = {
     RANGE: { id: 'RANGE', label: 'range' },
 };
 
+export const DEFAULT_RANGE_VALUE = {
+    [OPERATION_TYPE]: RangeType.EQUALITY.id,
+    [VALUE_1]: null,
+    [VALUE_2]: null,
+};
 export const getRangeInputEmptyDataForm = (name) => ({
-    [name]: {
-        [OPERATION_TYPE]: RangeType.EQUALITY.id,
-        [VALUE_1]: null,
-        [VALUE_2]: null,
-    },
+    [name]: DEFAULT_RANGE_VALUE,
 });
 
 export const getRangeInputSchema = (name) => ({
@@ -58,9 +59,12 @@ const RangeInput = ({ name, label }) => {
 
     const firstValueField = (
         <FloatInput
+            label={''}
             name={`${name}.${VALUE_1}`}
-            label={isOperationTypeRange ? 'Min' : ''}
             clearable={false}
+            formProps={{
+                placeholder: isOperationTypeRange ? 'Min' : '',
+            }}
             InputProps={
                 isOperationTypeRange
                     ? {
@@ -80,13 +84,16 @@ const RangeInput = ({ name, label }) => {
     const secondValueField = (
         <FloatInput
             name={`${name}.${VALUE_2}`}
-            label={'Max'}
-            InputProps={{
+            clearable={false}
+            label={''}
+            formProps={{
+                placeholder: 'Max',
+            }}
+            inputProps={{
                 style: {
                     borderRadius: '0 4px 4px 0',
                 },
             }}
-            clearable={false}
         />
     );
 
@@ -97,36 +104,33 @@ const RangeInput = ({ name, label }) => {
             style={{
                 borderRadius: '4px 0 0 4px',
             }}
+            fullWidth
             disableClearable
         />
     );
 
     return (
-        <>
-            <FormControl fullWidth margin="dense">
-                <InputLabel className={classes.inputLegend}>
-                    <FormattedMessage id={label} />
-                </InputLabel>
-                <Grid container spacing={0}>
-                    <Grid
-                        item
-                        style={
-                            isOperationTypeRange
-                                ? {
-                                      flex: 'min-content',
-                                  }
-                                : {}
-                        }
-                    >
-                        {operationTypeField}
-                    </Grid>
-                    <Grid item>{firstValueField}</Grid>
-                    {isOperationTypeRange && (
-                        <Grid item>{secondValueField}</Grid>
-                    )}
+        <FormControl>
+            <InputLabel className={classes.inputLegend}>
+                <FormattedMessage id={label} />
+            </InputLabel>
+            <Grid container spacing={0}>
+                <Grid
+                    item
+                    style={
+                        isOperationTypeRange
+                            ? {
+                                  flex: 'min-content',
+                              }
+                            : {}
+                    }
+                >
+                    {operationTypeField}
                 </Grid>
-            </FormControl>
-        </>
+                <Grid item>{firstValueField}</Grid>
+                {isOperationTypeRange && <Grid item>{secondValueField}</Grid>}
+            </Grid>
+        </FormControl>
     );
 };
 

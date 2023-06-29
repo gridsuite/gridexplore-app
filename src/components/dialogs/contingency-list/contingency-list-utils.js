@@ -13,26 +13,35 @@ import {
     EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
     EQUIPMENT_TYPE,
-    ID,
     NAME,
     NOMINAL_VOLTAGE_1,
     NOMINAL_VOLTAGE_2,
     SCRIPT,
 } from '../../utils/field-constants';
-import { ContingencyListType, ElementType } from '../../../utils/elementType';
+import { ContingencyListType } from '../../../utils/elementType';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import {
-    elementExists,
     saveExplicitNamingContingencyList,
     saveFormContingencyList,
     saveScriptContingencyList,
 } from '../../../utils/rest-api';
-import yup from '../../utils/yup-config';
 import { getRangeInputEmptyDataForm } from '../../utils/rhf-inputs/range-input';
+import {
+    getCriteriaBasedSchema,
+    getCriteriaEmptyFormData,
+} from './criteria-based/criteria-based-utils';
+import yup from '../../utils/yup-config';
 import { getExplicitNamingSchema } from './explicit-naming/explicit-naming-form';
-import { getCriteriaBasedSchema } from './criteria-based/criteria-based-form';
 
-export const DEFAULT_TABLE_ROWS = [];
+export const DEFAULT_ROW_VALUE = {
+    [CONTINGENCY_NAME]: '',
+    [EQUIPMENT_IDS]: [],
+};
+export const DEFAULT_TABLE_ROWS = [
+    DEFAULT_ROW_VALUE,
+    DEFAULT_ROW_VALUE,
+    DEFAULT_ROW_VALUE,
+];
 
 export const CONTINGENCY_LIST_EQUIPMENTS = {
     LINE: { id: 'LINE', label: 'Lines' },
@@ -46,65 +55,37 @@ export const CONTINGENCY_LIST_EQUIPMENTS = {
     BUSBAR_SECTION: { id: 'BUSBAR_SECTION', label: 'BusBarSections' },
     DANGLING_LINE: { id: 'DANGLING_LINE', label: 'DanglingLines' },
 };
-const checkNameIsUnique = (name, activeDirectory, defaultName = null) => {
-    if (!name) {
-        return false;
-    }
 
-    if (name === defaultName) {
-        return true;
-    }
-
-    return new Promise((resolve) => {
-        elementExists(activeDirectory, name, ElementType.CONTINGENCY_LIST).then(
-            (val) => resolve(!val)
-        );
-    });
-};
-
-export const getSchema = (activeDirectory, defaultName = null) => {
-    return yup.object().shape({
-        [NAME]: yup
-            .string()
-            .nullable()
-            .required('nameEmpty')
-            .test('checkIfUniqueName', 'nameAlreadyUsed', (name) =>
-                checkNameIsUnique(name, activeDirectory, defaultName)
-            ),
+export const getContingencyListSchema = () =>
+    yup.object().shape({
+        [NAME]: yup.string().required(),
         [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
         [SCRIPT]: yup.string().nullable(),
         ...getExplicitNamingSchema(EQUIPMENT_TABLE),
         ...getCriteriaBasedSchema(),
     });
-};
 
-export const getEmptyFormData = () => ({
+export const getContingencyListEmptyFormData = () => ({
     [NAME]: '',
-    [ID]: null,
     [EQUIPMENT_TABLE]: DEFAULT_TABLE_ROWS,
     [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
-    [EQUIPMENT_TYPE]: '',
-    [COUNTRIES_1]: [],
-    [COUNTRIES_2]: [],
     [SCRIPT]: null,
-    ...getRangeInputEmptyDataForm(NOMINAL_VOLTAGE_1),
-    ...getRangeInputEmptyDataForm(NOMINAL_VOLTAGE_2),
+    ...getCriteriaEmptyFormData(),
 });
 
 export const getFormDataFromFetchedElement = (
     response,
-    contingencyListType,
-    contingencyListId,
-    name
+    name,
+    contingencyListType
 ) => {
+    console.log('response : ', response);
     switch (contingencyListType) {
         case ContingencyListType.CRITERIA_BASED.id:
             return {
-                [ID]: contingencyListId,
                 [NAME]: name,
-                [EQUIPMENT_TYPE]: response?.equipmentType,
-                [COUNTRIES_1]: response?.countries1,
-                [COUNTRIES_2]: response?.countries2,
+                [EQUIPMENT_TYPE]: response.equipmentType,
+                [COUNTRIES_1]: response.countries1,
+                [COUNTRIES_2]: response.countries2,
                 [NOMINAL_VOLTAGE_1]:
                     response?.nominalVoltage1 ??
                     getRangeInputEmptyDataForm(NOMINAL_VOLTAGE_1),
@@ -127,18 +108,14 @@ export const getFormDataFromFetchedElement = (
                     }
                 );
             return {
-                [NAME]: name,
-                [ID]: contingencyListId,
                 [EQUIPMENT_TABLE]: result ?? [],
             };
         case ContingencyListType.SCRIPT.id:
             return {
-                [ID]: contingencyListId,
-                [NAME]: name,
                 [SCRIPT]: response?.script,
             };
         default:
-            return getEmptyFormData();
+            return getContingencyListEmptyFormData();
     }
 };
 
@@ -147,26 +124,25 @@ export const editContingencyList = (
     contingencyListType,
     contingencyList
 ) => {
+    console.log('contingencyList : ', contingencyList);
     switch (contingencyListType) {
         case ContingencyListType.CRITERIA_BASED.id:
             return saveFormContingencyList(
-                contingencyList,
-                contingencyList[NAME]
+                contingencyList[NAME],
+                contingencyList
             );
         case ContingencyListType.EXPLICIT_NAMING.id:
             const equipments = prepareContingencyListForBackend(
-                contingencyListId,
-                contingencyListId,
-                contingencyList[EQUIPMENT_TABLE] ?? []
+                contingencyList[EQUIPMENT_TABLE]
             );
             return saveExplicitNamingContingencyList(
-                equipments ?? [],
+                equipments,
                 contingencyList[NAME]
             );
         case ContingencyListType.SCRIPT.id:
             const newScript = {
                 id: contingencyListId,
-                script: contingencyList[SCRIPT] ?? '',
+                script: contingencyList[SCRIPT],
             };
             return saveScriptContingencyList(newScript, contingencyList[NAME]);
         default:
@@ -175,12 +151,13 @@ export const editContingencyList = (
 };
 
 export const getFormContent = (contingencyListId, contingencyList) => {
+    console.log('contingencyList : ', contingencyList);
     switch (contingencyList[CONTINGENCY_LIST_TYPE]) {
         case ContingencyListType.EXPLICIT_NAMING.id: {
             return prepareContingencyListForBackend(
-                contingencyListId ?? null,
+                contingencyListId,
                 contingencyList[NAME],
-                contingencyList[EQUIPMENT_TABLE] ?? []
+                contingencyList[EQUIPMENT_TABLE]
             );
         }
         case ContingencyListType.CRITERIA_BASED.id: {
@@ -196,7 +173,7 @@ export const getFormContent = (contingencyListId, contingencyList) => {
             return { script: contingencyList[SCRIPT] };
         }
         default: {
-            return;
+            return null;
         }
     }
 };

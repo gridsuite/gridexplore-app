@@ -5,23 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import {
     editContingencyList,
-    getEmptyFormData,
+    getContingencyListEmptyFormData,
+    getContingencyListSchema,
     getFormDataFromFetchedElement,
-    getSchema,
 } from '../contingency-list-utils';
-import { useEffect, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { fetchContingencyList } from '../../../../utils/rest-api';
 import CustomMuiDialog from '../../custom-mui-dialog';
 import ContingencyListEditionForm from './contingency-list-edition-form';
+import { ElementType } from '../../../../utils/elementType';
+import NameWrapper from '../../name-wrapper';
 import { NAME } from '../../../utils/field-constants';
 
-const emptyFormData = getEmptyFormData();
+const schema = getContingencyListSchema();
+
+const emptyFormData = getContingencyListEmptyFormData();
 
 const ContingencyListEditionDialog = ({
     contingencyListId,
@@ -31,43 +34,66 @@ const ContingencyListEditionDialog = ({
     titleId,
     name,
 }) => {
-    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const [isValidName, setIsValidName] = useState(false);
     const { snackError } = useSnackMessage();
-    const schema = useMemo(
-        () => getSchema(activeDirectory, name),
-        [activeDirectory, name]
-    );
 
     const methods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
     });
 
-    const { reset } = methods;
+    const {
+        reset,
+        setValue,
+        getValues,
+        formState: { defaultValues, isDirty },
+    } = methods;
 
     useEffect(() => {
         if (contingencyListId) {
-            fetchContingencyList(contingencyListType, contingencyListId).then(
-                (response) => {
+            fetchContingencyList(contingencyListType, contingencyListId)
+                .then((response) => {
                     if (response) {
                         const formData = getFormDataFromFetchedElement(
                             response,
-                            contingencyListType,
-                            contingencyListId,
-                            name
+                            name,
+                            contingencyListType
                         );
-                        reset(formData, { keepDefaultValues: true });
+                        reset(formData);
                     }
-                }
-            );
+                })
+                .catch((errorMessage) => {
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'contingencyListEditingError',
+                        headerValues: { name: getValues(NAME) },
+                    });
+                });
         }
-    }, [contingencyListId, contingencyListType, name, reset]);
+    }, [
+        contingencyListId,
+        contingencyListType,
+        name,
+        reset,
+        snackError,
+        getValues,
+    ]);
 
     const closeAndClear = (event) => {
-        reset(emptyFormData, { keepDefaultValues: true });
+        reset(emptyFormData);
         onClose(event);
     };
 
+    const checkName = (isValid, newName) => {
+        console.log('newName : ', newName, isValidName);
+        setIsValidName(isValid);
+        setValue(NAME, newName, { shouldDirty: isValid });
+    };
+
+    console.log('get values ', getValues(NAME));
+    console.log('defaultValues : ', defaultValues);
+    console.log('isDirty : ', isDirty);
+    useEffect(() => {}, []);
     const handleClose = (event) => {
         closeAndClear(event);
     };
@@ -85,7 +111,7 @@ const ContingencyListEditionDialog = ({
                 snackError({
                     messageTxt: errorMessage,
                     headerId: 'contingencyListEditingError',
-                    headerValues: { name: contingencyList[NAME] },
+                    headerValues: { name },
                 });
             });
     };
@@ -99,7 +125,14 @@ const ContingencyListEditionDialog = ({
             methods={methods}
             titleId={titleId}
             removeOptional={true}
+            disabledSave={!isValidName}
         >
+            <NameWrapper
+                titleMessage={'nameProperty'}
+                contentType={ElementType.CONTINGENCY_LIST}
+                initialValue={name}
+                handleNameValidation={checkName}
+            />
             <ContingencyListEditionForm
                 contingencyListType={contingencyListType}
             />
