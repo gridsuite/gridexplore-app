@@ -3,6 +3,9 @@ import AceEditor from 'react-ace';
 import React from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
+import 'ace-builds/src-noconflict/mode-groovy';
+import 'ace-builds/src-noconflict/theme-github';
+import 'ace-builds/src-noconflict/theme-clouds_midnight';
 
 const useStyles = makeStyles(() => ({
     aceEditor: {
