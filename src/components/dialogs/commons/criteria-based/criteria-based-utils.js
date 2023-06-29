@@ -21,38 +21,50 @@ import yup from '../../../utils/yup-config';
 
 const countries = {
     renderer: CountriesInput,
-    label: 'Countries',
-    name: COUNTRIES_1,
+    props: {
+        label: 'Countries',
+        name: COUNTRIES_1,
+    },
 };
 
 const countries1 = {
     renderer: CountriesInput,
-    label: 'Countries1',
-    name: COUNTRIES_1,
+    props: {
+        label: 'Countries1',
+        name: COUNTRIES_1,
+    },
 };
 
 const countries2 = {
     renderer: CountriesInput,
-    label: 'Countries2',
-    name: COUNTRIES_2,
+    props: {
+        label: 'Countries2',
+        name: COUNTRIES_2,
+    },
 };
 
 const nominalVoltage = {
     renderer: RangeInput,
-    label: 'nominalVoltage',
-    name: NOMINAL_VOLTAGE_1,
+    props: {
+        label: 'nominalVoltage',
+        name: NOMINAL_VOLTAGE_1,
+    },
 };
 
 const nominalVoltage1 = {
     renderer: RangeInput,
-    label: 'nominalVoltage1',
-    name: NOMINAL_VOLTAGE_1,
+    props: {
+        label: 'nominalVoltage1',
+        name: NOMINAL_VOLTAGE_1,
+    },
 };
 
 const nominalVoltage2 = {
     renderer: RangeInput,
-    label: 'nominalVoltage2',
-    name: NOMINAL_VOLTAGE_2,
+    props: {
+        label: 'nominalVoltage2',
+        name: NOMINAL_VOLTAGE_2,
+    },
 };
 
 export const CONTINGENCY_LIST_EQUIPMENTS = {

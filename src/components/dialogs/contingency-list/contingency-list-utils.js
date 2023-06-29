@@ -111,7 +111,6 @@ export const editContingencyList = (
     contingencyListType,
     contingencyList
 ) => {
-    console.log('contingencyList : ', contingencyList);
     switch (contingencyListType) {
         case ContingencyListType.CRITERIA_BASED.id:
             return saveFormContingencyList(
@@ -133,12 +132,11 @@ export const editContingencyList = (
             };
             return saveScriptContingencyList(newScript, contingencyList[NAME]);
         default:
-            return;
+            return null;
     }
 };
 
 export const getFormContent = (contingencyListId, contingencyList) => {
-    console.log('contingencyList : ', contingencyList);
     switch (contingencyList[CONTINGENCY_LIST_TYPE]) {
         case ContingencyListType.EXPLICIT_NAMING.id: {
             return prepareContingencyListForBackend(

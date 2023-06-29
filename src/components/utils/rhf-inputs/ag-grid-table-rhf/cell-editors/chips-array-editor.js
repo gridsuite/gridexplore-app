@@ -21,6 +21,11 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
         name: `${name}.${rowIndex}.${colDef.field}`,
     });
 
+    const handleOnBlur = () => {
+        append(unsavedInput);
+        setUnsavedInput('');
+    };
+
     const handleChipDeleted = (index) => {
         remove(index);
     };
@@ -47,7 +52,8 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
             clearOnBlur
             disableClearable={true}
             onInputChange={(_, val) => setUnsavedInput(val.trim() ?? '')}
-            //onBlur={handleOnChange}
+            onBlur={handleOnBlur}
+            blurOnSelect={false}
             formProps={{
                 sx: {
                     '& .MuiOutlinedInput-notchedOutline': {
