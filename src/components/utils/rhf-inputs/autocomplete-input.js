@@ -110,6 +110,9 @@ const AutocompleteInput = ({
                     {...rest}
                 />
             )}
+            style={{
+                borderRadius: '4px 0 0 4px',
+            }}
             {...props}
         />
     );

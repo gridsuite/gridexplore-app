@@ -41,7 +41,7 @@ const CriteriaBasedForm = ({
                     (equipment, index) => {
                         const EquipmentForm = equipment.renderer;
                         return (
-                            <Grid item xs={12} key={index}>
+                            <Grid item xs={12} key={index} flexGrow={1}>
                                 <EquipmentForm {...equipment.props} />
                             </Grid>
                         );

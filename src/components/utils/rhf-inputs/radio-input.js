@@ -13,7 +13,6 @@ import PropTypes from 'prop-types';
 import { FieldLabel } from '../inputs/hooks-helpers';
 
 const RadioInput = ({ name, label, id, options, ...props }) => {
-  console.log('props : ', props);
     const {
         field: { onChange, value },
     } = useController({ name });
@@ -50,7 +49,7 @@ RadioInput.propTypes = {
     label: PropTypes.string,
     id: PropTypes.string,
     options: PropTypes.array.isRequired,
-    props: PropTypes.object
+    props: PropTypes.object,
 };
 
 export default RadioInput;

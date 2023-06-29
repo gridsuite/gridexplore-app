@@ -42,12 +42,7 @@ const ContingencyListEditionDialog = ({
         resolver: yupResolver(schema),
     });
 
-    const {
-        reset,
-        setValue,
-        getValues,
-        formState: { defaultValues, isDirty },
-    } = methods;
+    const { reset, setValue, getValues } = methods;
 
     useEffect(() => {
         if (contingencyListId) {
@@ -85,14 +80,10 @@ const ContingencyListEditionDialog = ({
     };
 
     const checkName = (isValid, newName) => {
-        console.log('newName : ', newName, isValidName);
         setIsValidName(isValid);
         setValue(NAME, newName, { shouldDirty: isValid });
     };
 
-    console.log('get values ', getValues(NAME));
-    console.log('defaultValues : ', defaultValues);
-    console.log('isDirty : ', isDirty);
     const handleClose = (event) => {
         closeAndClear(event);
     };

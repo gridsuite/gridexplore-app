@@ -56,7 +56,7 @@ export const getContingencyListEmptyFormData = () => ({
     [NAME]: '',
     [EQUIPMENT_TABLE]: DEFAULT_TABLE_ROWS,
     [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
-    [SCRIPT]: null,
+    [SCRIPT]: '',
     ...getCriteriaEmptyFormData(),
 });
 
@@ -65,7 +65,6 @@ export const getFormDataFromFetchedElement = (
     name,
     contingencyListType
 ) => {
-    console.log('response : ', response);
     switch (contingencyListType) {
         case ContingencyListType.CRITERIA_BASED.id:
             return {

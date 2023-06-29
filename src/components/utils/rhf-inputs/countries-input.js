@@ -2,10 +2,7 @@ import { useParameterState } from '../../dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import React, { useCallback, useMemo } from 'react';
 import { getComputedLanguage } from '../../../utils/language';
-import { Chip } from '@mui/material';
-import TextField from '@mui/material/TextField';
-import { FormattedMessage } from 'react-intl';
-import AutocompleteInput from './autocomplete-input';
+import ChipsArrayInput from './chips-array-input';
 
 export const CountriesInput = ({ name, label }) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
@@ -24,26 +21,19 @@ export const CountriesInput = ({ name, label }) => {
     }, [languageLocal]);
 
     const countriesList = useMemo(() => countriesListCB(), [countriesListCB]);
+
+    const getLabel = (code) => {
+        return countriesList.get(code);
+    };
+
     return (
-        <AutocompleteInput
-            fullWidth
+        <ChipsArrayInput
             name={name}
-            multiple
+            label={label}
             options={Object.keys(countriesList.object())}
-            getOptionLabel={(code) => countriesList.get(code)}
-            renderInput={(props) => (
-                <TextField label={<FormattedMessage id={label} />} {...props} />
-            )}
-            renderTags={(val, getTagsProps) =>
-                val.map((code, index) => (
-                    <Chip
-                        id={'chip_' + code}
-                        size={'small'}
-                        label={countriesList.get(code)}
-                        {...getTagsProps({ index })}
-                    />
-                ))
-            }
+            getChipLabel={getLabel}
+            getOptionLabel={getLabel}
+            fullWidth
         />
     );
 };

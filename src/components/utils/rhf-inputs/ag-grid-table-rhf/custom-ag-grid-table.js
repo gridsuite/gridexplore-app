@@ -67,7 +67,6 @@ export const CustomAgGridTable = ({
     columnDefs,
     defaultRowData,
     csvProps,
-    //getRowID, // this used by Ag Grid to get the id of each row
     ...props
 }) => {
     const { classes, cx } = useStyles();
@@ -75,7 +74,7 @@ export const CustomAgGridTable = ({
     const [gridApi, setGridApi] = useState(null);
     const [selectedRows, setSelectedRows] = useState([]);
 
-    const { control, getValues } = useFormContext();
+    const { control, getValues, setValue } = useFormContext();
     const { append, remove, update, swap, move } = useFieldArray({
         control,
         name: name,
@@ -85,7 +84,7 @@ export const CustomAgGridTable = ({
         // if the table has default values without rowUuid, we add it
         const rowWithoutUuid = getValues(name).some((r) => !r.rowUuid);
         if (rowWithoutUuid) {
-            return getValues(name).map((r) => {
+            const rowsWithId = getValues(name).map((r) => {
                 if (r.rowUuid) {
                     return r;
                 }
@@ -94,6 +93,8 @@ export const CustomAgGridTable = ({
                     ...r,
                 };
             });
+            setValue(name, rowsWithId);
+            return rowsWithId;
         }
         return getValues(name);
     };

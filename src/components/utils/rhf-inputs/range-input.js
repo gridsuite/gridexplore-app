@@ -6,19 +6,19 @@ import yup from '../yup-config';
 import FormControl from '@mui/material/FormControl';
 import { FormattedMessage } from 'react-intl';
 import React, { useMemo } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import SelectInput from './select-input';
+import { styled } from '@mui/material/styles';
 
-const useStyles = makeStyles((theme) => ({
-    inputLegend: {
+const StyledInputLabel = styled(InputLabel)(({ theme, root }) => {
+    return {
         backgroundImage:
             'linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))',
         backgroundColor: theme.palette.background.paper,
         padding: '0 8px 0 8px',
         position: 'inherit',
         width: 'fit-content',
-    },
-}));
+    };
+});
 
 export const RangeType = {
     EQUALITY: { id: 'EQUALITY', label: 'equality' },
@@ -47,7 +47,6 @@ export const getRangeInputSchema = (name) => ({
 });
 
 const RangeInput = ({ name, label }) => {
-    const classes = useStyles();
     const watchOperationType = useWatch({
         name: `${name}.${OPERATION_TYPE}`,
     });
@@ -65,19 +64,13 @@ const RangeInput = ({ name, label }) => {
             formProps={{
                 placeholder: isOperationTypeRange ? 'Min' : '',
             }}
-            InputProps={
-                isOperationTypeRange
-                    ? {
-                          style: {
-                              borderRadius: '0 0 0 0',
-                          },
-                      }
-                    : {
-                          style: {
-                              borderRadius: '0 4px 4px 0',
-                          },
-                      }
-            }
+            inputProps={{
+                style: {
+                    borderRadius: isOperationTypeRange
+                        ? '0 0 0 0'
+                        : '0 4px 4px 0',
+                },
+            }}
         />
     );
 
@@ -101,20 +94,16 @@ const RangeInput = ({ name, label }) => {
         <SelectInput
             name={`${name}.${OPERATION_TYPE}`}
             options={Object.values(RangeType)}
-            style={{
-                borderRadius: '4px 0 0 4px',
-            }}
-            fullWidth
             disableClearable
         />
     );
 
     return (
-        <FormControl>
-            <InputLabel className={classes.inputLegend}>
+        <FormControl fullWidth>
+            <StyledInputLabel>
                 <FormattedMessage id={label} />
-            </InputLabel>
-            <Grid container spacing={0}>
+            </StyledInputLabel>
+            <Grid container spacing={0} flexGrow={1}>
                 <Grid
                     item
                     style={

@@ -6,9 +6,8 @@
  */
 
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
-import { Chip } from '@mui/material';
 import { useFieldArray, useWatch } from 'react-hook-form';
-import AutocompleteInput from '../../autocomplete-input';
+import ChipsArrayInput from '../../chips-array-input';
 
 const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     const { name, rowIndex, colDef } = props;
@@ -17,17 +16,15 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
         name: `${name}.${rowIndex}.${colDef.field}`,
     });
 
-    const { append, remove } = useFieldArray({
+    const { append } = useFieldArray({
         name: `${name}.${rowIndex}.${colDef.field}`,
     });
 
     const handleOnBlur = () => {
-        append(unsavedInput);
+        if (unsavedInput) {
+            append(unsavedInput);
+        }
         setUnsavedInput('');
-    };
-
-    const handleChipDeleted = (index) => {
-        remove(index);
     };
 
     useImperativeHandle(
@@ -43,17 +40,17 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     );
 
     return (
-        <AutocompleteInput
+        <ChipsArrayInput
             name={`${name}.${rowIndex}.${colDef.field}`}
+            fullWidth
             options={[]}
-            size={'small'}
             allowNewValue
-            multiple
             clearOnBlur
             disableClearable={true}
             onInputChange={(_, val) => setUnsavedInput(val.trim() ?? '')}
             onBlur={handleOnBlur}
             blurOnSelect={false}
+            size={'small'}
             formProps={{
                 sx: {
                     '& .MuiOutlinedInput-notchedOutline': {
@@ -66,19 +63,6 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
                         border: 'unset', // Remove the border when focused
                     },
                 },
-            }}
-            renderTags={(val, getTagProps) => {
-                return val.map((chip, index) => {
-                    return (
-                        <Chip
-                            key={chip.id}
-                            label={val[index]}
-                            size={'small'}
-                            {...getTagProps({ index })}
-                            onDelete={(i) => handleChipDeleted(i)}
-                        />
-                    );
-                });
             }}
         />
     );

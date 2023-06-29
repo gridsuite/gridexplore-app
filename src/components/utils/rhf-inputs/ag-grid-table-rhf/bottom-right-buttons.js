@@ -3,11 +3,12 @@ import IconButton from '@mui/material/IconButton';
 import { ArrowCircleDown, ArrowCircleUp, Upload } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ErrorInput from '../error-input';
 import CsvUploader from './csv-uploader/csv-uploader';
 import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
 import { styled } from '@mui/material/styles';
+import ErrorInput from '../error-inputs/error-input';
+import FieldErrorAlert from '../error-inputs/field-error-alert';
 
 const InnerColoredButton = styled(IconButton)(({ theme, root }) => {
     return {
@@ -71,7 +72,7 @@ const BottomRightButtons = ({
                 </InnerColoredButton>
             </Grid>
             <Grid item xs={12}>
-                <ErrorInput name={name} />
+                <ErrorInput name={name} InputField={FieldErrorAlert} />
             </Grid>
             <CsvUploader
                 open={uploaderOpen}
