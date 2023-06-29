@@ -55,14 +55,42 @@ const nominalVoltage2 = {
     name: NOMINAL_VOLTAGE_2,
 };
 
-export const EquipmentDefinition = {
-    LINE: [countries1, countries2, nominalVoltage1, nominalVoltage2],
-    TWO_WINDINGS_TRANSFORMER: [countries, nominalVoltage1, nominalVoltage2],
-    GENERATOR: [countries, nominalVoltage],
-    SHUNT_COMPENSATOR: [countries, nominalVoltage],
-    HVDC_LINE: [countries1, countries2, nominalVoltage],
-    BUSBAR_SECTION: [countries, nominalVoltage],
-    DANGLING_LINE: [countries, nominalVoltage],
+export const CONTINGENCY_LIST_EQUIPMENTS = {
+    LINE: {
+        id: 'LINE',
+        label: 'Lines',
+        fields: [countries1, countries2, nominalVoltage1, nominalVoltage2],
+    },
+    TWO_WINDINGS_TRANSFORMER: {
+        id: 'TWO_WINDINGS_TRANSFORMER',
+        label: 'TwoWindingsTransformers',
+        fields: [countries, nominalVoltage1, nominalVoltage2],
+    },
+    GENERATOR: {
+        id: 'GENERATOR',
+        label: 'Generators',
+        fields: [countries, nominalVoltage],
+    },
+    SHUNT_COMPENSATOR: {
+        id: 'SHUNT_COMPENSATOR',
+        label: 'ShuntCompensators',
+        fields: [countries, nominalVoltage],
+    },
+    HVDC_LINE: {
+        id: 'HVDC_LINE',
+        label: 'HvdcLines',
+        fields: [countries1, countries2, nominalVoltage],
+    },
+    BUSBAR_SECTION: {
+        id: 'BUSBAR_SECTION',
+        label: 'BusBarSections',
+        fields: [countries, nominalVoltage],
+    },
+    DANGLING_LINE: {
+        id: 'DANGLING_LINE',
+        label: 'DanglingLines',
+        fields: [countries, nominalVoltage],
+    },
 };
 
 export const getCriteriaBasedSchema = () => ({

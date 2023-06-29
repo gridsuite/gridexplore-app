@@ -17,11 +17,10 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { gridItem } from '../../../utils/dialog-utils';
 import { Grid } from '@mui/material';
 import SelectInput from '../../../utils/rhf-inputs/select-input';
-import { EquipmentDefinition } from './criteria-based-utils';
 import InputWithPopupConfirmation from '../../../utils/rhf-inputs/input-with-popup-confirmation';
 import { DEFAULT_RANGE_VALUE } from '../../../utils/rhf-inputs/range-input';
 
-const CriteriaBasedForm = ({ equipmentsTypes }) => {
+const CriteriaBasedForm = ({ equipments }) => {
     const watchEquipmentType = useWatch({
         name: EQUIPMENT_TYPE,
     });
@@ -52,7 +51,7 @@ const CriteriaBasedForm = ({ equipmentsTypes }) => {
         <InputWithPopupConfirmation
             Input={SelectInput}
             name={EQUIPMENT_TYPE}
-            options={equipmentsTypes}
+            options={Object.values(equipments)}
             label={'equipmentType'}
             shouldOpenPopup={openConfirmationPopup}
             resetOnConfirmation={handleResetOnConfirmation}
@@ -63,7 +62,7 @@ const CriteriaBasedForm = ({ equipmentsTypes }) => {
         <Grid container item spacing={2}>
             {gridItem(equipmentTypeSelectionField, 12)}
             {watchEquipmentType &&
-                EquipmentDefinition[watchEquipmentType].map(
+                equipments[watchEquipmentType].fields.map(
                     (equipment, index) => {
                         const EquipmentForm = equipment.renderer;
                         return (

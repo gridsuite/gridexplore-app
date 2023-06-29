@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import { useDebounce } from '@gridsuite/commons-ui';
 
 const NameWrapper = ({
-    initialValue,
+    initialValue = '',
     titleMessage,
     contentType,
     children,
@@ -30,7 +30,6 @@ const NameWrapper = ({
 
     const setFormState = useCallback(
         (errorMessage, isNameValid, name) => {
-            setError && setError(errorMessage);
             setErrorMessage(errorMessage);
             handleNameValidation(isNameValid, name);
         },

@@ -29,7 +29,7 @@ import { getRangeInputEmptyDataForm } from '../../utils/rhf-inputs/range-input';
 import {
     getCriteriaBasedSchema,
     getCriteriaEmptyFormData,
-} from './criteria-based/criteria-based-utils';
+} from '../commons/criteria-based/criteria-based-utils';
 import yup from '../../utils/yup-config';
 import { getExplicitNamingSchema } from './explicit-naming/explicit-naming-form';
 
@@ -42,19 +42,6 @@ export const DEFAULT_TABLE_ROWS = [
     DEFAULT_ROW_VALUE,
     DEFAULT_ROW_VALUE,
 ];
-
-export const CONTINGENCY_LIST_EQUIPMENTS = {
-    LINE: { id: 'LINE', label: 'Lines' },
-    TWO_WINDINGS_TRANSFORMER: {
-        id: 'TWO_WINDINGS_TRANSFORMER',
-        label: 'TwoWindingsTransformers',
-    },
-    GENERATOR: { id: 'GENERATOR', label: 'Generators' },
-    SHUNT_COMPENSATOR: { id: 'SHUNT_COMPENSATOR', label: 'ShuntCompensators' },
-    HVDC_LINE: { id: 'HVDC_LINE', label: 'HvdcLines' },
-    BUSBAR_SECTION: { id: 'BUSBAR_SECTION', label: 'BusBarSections' },
-    DANGLING_LINE: { id: 'DANGLING_LINE', label: 'DanglingLines' },
-};
 
 export const getContingencyListSchema = () =>
     yup.object().shape({

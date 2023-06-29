@@ -42,7 +42,6 @@ const InputWithPopupConfirmation = ({
                 {...props}
             />
             <PopupConfirmationDialog
-                name={name}
                 openConfirmationPopup={openPopup}
                 setOpenConfirmationPopup={setOpenPopup}
                 handlePopupConfirmation={handlePopupConfirmation}

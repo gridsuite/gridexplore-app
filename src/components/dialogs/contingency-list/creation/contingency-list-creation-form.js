@@ -12,12 +12,12 @@ import { Grid } from '@mui/material';
 import { gridItem } from '../../../utils/dialog-utils';
 import React from 'react';
 import { useWatch } from 'react-hook-form';
-import CriteriaBasedForm from '../criteria-based/criteria-based-form';
+import CriteriaBasedForm from '../../commons/criteria-based/criteria-based-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import ScriptInput from '../../../utils/rhf-inputs/script-input';
-import { CONTINGENCY_LIST_EQUIPMENTS } from '../contingency-list-utils';
+import { CONTINGENCY_LIST_EQUIPMENTS } from '../../commons/criteria-based/criteria-based-utils';
 
-const ContingencyListCreationForm = ({}) => {
+const ContingencyListCreationForm = () => {
     const watchContingencyListType = useWatch({
         name: CONTINGENCY_LIST_TYPE,
     });
@@ -36,9 +36,7 @@ const ContingencyListCreationForm = ({}) => {
             </Grid>
             {watchContingencyListType ===
                 ContingencyListType.CRITERIA_BASED.id && (
-                <CriteriaBasedForm
-                    equipmentsTypes={Object.values(CONTINGENCY_LIST_EQUIPMENTS)}
-                />
+                <CriteriaBasedForm equipments={CONTINGENCY_LIST_EQUIPMENTS} />
             )}
             {watchContingencyListType ===
                 ContingencyListType.EXPLICIT_NAMING.id && (

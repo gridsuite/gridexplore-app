@@ -27,7 +27,7 @@ import { ElementType } from '../../../../utils/elementType';
 import NameWrapper from '../../name-wrapper';
 import yup from '../../../utils/yup-config';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form';
-import { getCriteriaBasedSchema } from '../criteria-based/criteria-based-utils';
+import { getCriteriaBasedSchema } from '../../commons/criteria-based/criteria-based-utils';
 
 const schema = yup.object().shape({
     [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
