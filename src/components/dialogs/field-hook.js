@@ -343,7 +343,7 @@ function generateNamingArray(
                 values.push({ equipmentID: '' });
             }
         } else if (formType === ElementType.CONTINGENCY_LIST) {
-            values.push({ contingencyName: '', equipmentIDs: [] });
+            values.push({ contingencyId: '', identifierList: [] });
         }
     }
     return values;
@@ -374,7 +374,7 @@ export const useEquipmentTableValues = ({
         if (formType === ElementType.CONTINGENCY_LIST) {
             setValues((oldValues) => [
                 ...oldValues,
-                { contingencyName: '', equipmentIDs: [] },
+                { contingencyId: '', identifierList: [] },
             ]);
         } else {
             setValues((oldValues) => [...oldValues, {}]);
@@ -604,14 +604,14 @@ export const useEquipmentTableValues = ({
                         // TODO Refactor : we should not have hardcoded value parameters like this in this function.
                         newValues = newValues.filter(
                             (v) =>
-                                v?.contingencyName?.trim().length > 0 ||
-                                v?.equipmentIDs?.length > 0
+                                v?.contingencyId?.trim().length > 0 ||
+                                v?.identifierList?.length > 0
                         );
                     }
                     objects = Object.keys(csvData).map(function (key) {
                         return {
-                            contingencyName: csvData[key][0]?.trim() || '',
-                            equipmentIDs:
+                            contingencyId: csvData[key][0]?.trim() || '',
+                            identifierList:
                                 csvData[key][1]
                                     ?.split('|')
                                     .map((n) => n.trim())
