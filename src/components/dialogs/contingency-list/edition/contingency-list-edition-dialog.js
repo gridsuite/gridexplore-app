@@ -93,7 +93,6 @@ const ContingencyListEditionDialog = ({
     console.log('get values ', getValues(NAME));
     console.log('defaultValues : ', defaultValues);
     console.log('isDirty : ', isDirty);
-    useEffect(() => {}, []);
     const handleClose = (event) => {
         closeAndClear(event);
     };

@@ -7,18 +7,17 @@
 
 import { Grid } from '@mui/material';
 import { ContingencyListType } from '../../../../utils/elementType';
-import CriteriaBasedForm from '../../commons/criteria-based/criteria-based-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import ScriptInput from '../../../utils/rhf-inputs/script-input';
 import { SCRIPT } from '../../../utils/field-constants';
 import React from 'react';
-import { CONTINGENCY_LIST_EQUIPMENTS } from '../../commons/criteria-based/criteria-based-utils';
+import CriteriaBasedContingencyList from '../criteria-based-contingency-list';
 
 const ContingencyListEditionForm = ({ contingencyListType }) => {
     return (
         <Grid container spacing={2} marginTop={'auto'}>
             {contingencyListType === ContingencyListType.CRITERIA_BASED.id && (
-                <CriteriaBasedForm equipments={CONTINGENCY_LIST_EQUIPMENTS} />
+                <CriteriaBasedContingencyList />
             )}
             {contingencyListType === ContingencyListType.EXPLICIT_NAMING.id && (
                 <ExplicitNamingForm />
