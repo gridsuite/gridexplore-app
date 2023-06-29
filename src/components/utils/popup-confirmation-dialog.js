@@ -13,32 +13,27 @@ const PopupConfirmationDialog = ({
     handlePopupConfirmation,
 }) => {
     return (
-        <div>
-            <Dialog
-                open={openConfirmationPopup}
-                aria-labelledby="dialog-title-change-equipment-type"
-            >
-                <DialogTitle id={'dialog-title-change-equipment-type'}>
-                    {'Confirmation'}
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        <FormattedMessage id={'changeTypeMessage'} />
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenConfirmationPopup(false)}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button
-                        onClick={handlePopupConfirmation}
-                        variant="outlined"
-                    >
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </div>
+        <Dialog
+            open={openConfirmationPopup}
+            aria-labelledby="dialog-title-change-equipment-type"
+        >
+            <DialogTitle id={'dialog-title-change-equipment-type'}>
+                {'Confirmation'}
+            </DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    <FormattedMessage id={'changeTypeMessage'} />
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setOpenConfirmationPopup(false)}>
+                    <FormattedMessage id="cancel" />
+                </Button>
+                <Button onClick={handlePopupConfirmation} variant="outlined">
+                    <FormattedMessage id="validate" />
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 };
 
