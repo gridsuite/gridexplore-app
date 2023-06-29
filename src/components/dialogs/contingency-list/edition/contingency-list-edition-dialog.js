@@ -34,7 +34,7 @@ const ContingencyListEditionDialog = ({
     titleId,
     name,
 }) => {
-    const [isValidName, setIsValidName] = useState(false);
+    const [isValidName, setIsValidName] = useState(true);
     const { snackError } = useSnackMessage();
 
     const methods = useForm({
