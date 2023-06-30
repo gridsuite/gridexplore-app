@@ -2,7 +2,8 @@ import { useParameterState } from '../../dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import React, { useCallback, useMemo } from 'react';
 import { getComputedLanguage } from '../../../utils/language';
-import ChipsArrayInput from './chips-array-input';
+import { Chip } from '@mui/material';
+import AutocompleteInput from './autocomplete-input';
 
 export const CountriesInput = ({ name, label }) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
@@ -27,13 +28,23 @@ export const CountriesInput = ({ name, label }) => {
     };
 
     return (
-        <ChipsArrayInput
+        <AutocompleteInput
             name={name}
             label={label}
             options={Object.keys(countriesList.object())}
-            getChipLabel={getLabel}
             getOptionLabel={getLabel}
             fullWidth
+            multiple
+            renderTags={(val, getTagsProps) =>
+                val.map((code, index) => (
+                    <Chip
+                        id={'chip_' + code}
+                        size={'small'}
+                        label={getLabel(code)}
+                        {...getTagsProps({ index })}
+                    />
+                ))
+            }
         />
     );
 };

@@ -7,7 +7,8 @@
 
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
-import ChipsArrayInput from '../../chips-array-input';
+import { Chip } from '@mui/material';
+import AutocompleteInput from '../../autocomplete-input';
 
 const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     const { name, rowIndex, colDef } = props;
@@ -16,7 +17,7 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
         name: `${name}.${rowIndex}.${colDef.field}`,
     });
 
-    const { append } = useFieldArray({
+    const { append, remove } = useFieldArray({
         name: `${name}.${rowIndex}.${colDef.field}`,
     });
 
@@ -40,7 +41,7 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     );
 
     return (
-        <ChipsArrayInput
+        <AutocompleteInput
             name={`${name}.${rowIndex}.${colDef.field}`}
             fullWidth
             options={[]}
@@ -64,6 +65,22 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
                     },
                 },
             }}
+            multiple
+            renderTags={(val, getTagsProps) =>
+                val
+                    .filter((val) => val)
+                    .map((value, index) => (
+                        <Chip
+                            id={'chip_' + value}
+                            size={'small'}
+                            label={value}
+                            {...getTagsProps({ index })}
+                            onDelete={() => {
+                                remove(index);
+                            }}
+                        />
+                    ))
+            }
         />
     );
 });
