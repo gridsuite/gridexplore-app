@@ -66,18 +66,21 @@ const ExplicitNamingForm = () => {
         ];
     }, [intl]);
 
-    const fromCsvDataToFormValues = useCallback((results) => {
-        return results.map((value, index) => {
-            return {
-                [ROW_UUID]: 'csv_row_' + index,
-                [CONTINGENCY_NAME]: value[0]?.trim() || '',
-                [EQUIPMENT_IDS]:
-                    value[1]
-                        ?.split('|')
-                        .map((n) => n.trim())
-                        .filter((n) => n) || undefined,
-            };
-        });
+    const getDataFromCsvFile = useCallback((results) => {
+        if (results) {
+            return results.map((value, index) => {
+                return {
+                    [ROW_UUID]: 'csv_row_' + index,
+                    [CONTINGENCY_NAME]: value[0]?.trim() || '',
+                    [EQUIPMENT_IDS]:
+                        value[1]
+                            ?.split('|')
+                            .map((n) => n.trim())
+                            .filter((n) => n) || undefined,
+                };
+            });
+        }
+        return [];
     }, []);
 
     const csvFileHeaders = useMemo(
@@ -119,7 +122,7 @@ const ExplicitNamingForm = () => {
             csvProps={{
                 fileName: intl.formatMessage({ id: 'contingencyListCreation' }),
                 fileHeaders: csvFileHeaders,
-                formatCsvData: fromCsvDataToFormValues,
+                getDataFromCsv: getDataFromCsvFile,
                 csvData: csvInitialData,
             }}
         />

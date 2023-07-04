@@ -19,6 +19,7 @@ import Alert from '@mui/material/Alert';
 import PropTypes from 'prop-types';
 import { DialogContentText } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { ROW_UUID } from '../../../field-constants';
 
 const CsvUploader = ({
     name,
@@ -29,7 +30,7 @@ const CsvUploader = ({
     fileName,
     csvData,
     validateData = (rows) => true,
-    formatCsvData,
+    getDataFromCsv,
 }) => {
     const watchTableValues = useWatch({ name });
     const { getValues, setValue } = useFormContext();
@@ -86,7 +87,7 @@ const CsvUploader = ({
             const result = getResultsFromImportedData();
             if (validateCsvFile(result)) {
                 result.splice(0, 1);
-                const dataFromCsv = formatCsvData(result);
+                const dataFromCsv = getDataFromCsv(result);
                 const newValues = saveTableValues
                     ? [...getValues(name), ...dataFromCsv]
                     : dataFromCsv;
@@ -103,14 +104,16 @@ const CsvUploader = ({
         const isValuesInTable =
             Array.isArray(watchTableValues) &&
             watchTableValues.some(
-                (line) =>
-                    line &&
-                    Object.values(line).some(
-                        (e) =>
-                            e !== undefined &&
-                            e !== null &&
-                            String(e).trim().length > 0
-                    )
+                (val) =>
+                    val &&
+                    Object.keys(val)
+                        .filter((key) => key !== ROW_UUID)
+                        .some(
+                            (e) =>
+                                val[e] !== undefined &&
+                                val[e] !== null &&
+                                String(val[e]).trim().length > 0
+                        )
             );
 
         if (isValuesInTable && getResultsFromImportedData().length > 0) {
