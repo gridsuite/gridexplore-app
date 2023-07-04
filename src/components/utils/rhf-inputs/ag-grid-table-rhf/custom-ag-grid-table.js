@@ -14,7 +14,7 @@ import { Grid } from '@mui/material';
 import { useTheme } from '@mui/styles';
 import BottomRightButtons from './bottom-right-buttons';
 import { useIntl } from 'react-intl';
-import { AG_GRID_ROW_UUID } from "../../field-constants";
+import { AG_GRID_ROW_UUID } from '../../field-constants';
 
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
@@ -81,7 +81,9 @@ export const CustomAgGridTable = ({
 
     const getRowData = () => {
         // if the table has default values without rowUuid, we add it
-        const rowWithoutUuid = getValues(name).some((r) => !r[AG_GRID_ROW_UUID]);
+        const rowWithoutUuid = getValues(name).some(
+            (r) => !r[AG_GRID_ROW_UUID]
+        );
         if (rowWithoutUuid) {
             const rowsWithId = getValues(name).map((r) => {
                 if (r[AG_GRID_ROW_UUID]) {
@@ -144,7 +146,9 @@ export const CustomAgGridTable = ({
     };
 
     const getIndex = (val) => {
-        return getRowData().findIndex((row) => row.agGridRowUuid === val.agGridRowUuid);
+        return getRowData().findIndex(
+            (row) => row.agGridRowUuid === val.agGridRowUuid
+        );
     };
 
     useEffect(() => {
