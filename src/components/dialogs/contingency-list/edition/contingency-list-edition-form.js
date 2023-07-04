@@ -8,11 +8,11 @@
 import { Grid } from '@mui/material';
 import { ContingencyListType } from '../../../../utils/elementType';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
-import ScriptInput from '../../../utils/rhf-inputs/script-input';
 import { SCRIPT } from '../../../utils/field-constants';
 import React from 'react';
 import { CONTINGENCY_LIST_EQUIPMENTS } from '../../commons/criteria-based/criteria-based-utils';
 import CriteriaBasedForm from '../../commons/criteria-based/criteria-based-form';
+import ScriptInputForm from '../script/script-input-form';
 
 const ContingencyListEditionForm = ({ contingencyListType }) => {
     return (
@@ -24,7 +24,7 @@ const ContingencyListEditionForm = ({ contingencyListType }) => {
                 <ExplicitNamingForm />
             )}
             {contingencyListType === ContingencyListType.SCRIPT.id && (
-                <ScriptInput name={SCRIPT} />
+                <ScriptInputForm name={SCRIPT} />
             )}
         </Grid>
     );

@@ -13,9 +13,9 @@ import { gridItem } from '../../../utils/dialog-utils';
 import React from 'react';
 import { useWatch } from 'react-hook-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
-import ScriptInput from '../../../utils/rhf-inputs/script-input';
 import { CONTINGENCY_LIST_EQUIPMENTS } from '../../commons/criteria-based/criteria-based-utils';
 import CriteriaBasedForm from '../../commons/criteria-based/criteria-based-form';
+import ScriptInputForm from '../script/script-input-form';
 
 const ContingencyListCreationForm = () => {
     const watchContingencyListType = useWatch({
@@ -43,7 +43,7 @@ const ContingencyListCreationForm = () => {
                 <ExplicitNamingForm />
             )}
             {watchContingencyListType === ContingencyListType.SCRIPT.id && (
-                <ScriptInput name={SCRIPT} />
+                <ScriptInputForm name={SCRIPT} />
             )}
         </Grid>
     );
