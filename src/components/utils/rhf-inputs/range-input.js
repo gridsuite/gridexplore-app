@@ -4,23 +4,19 @@ import FloatInput from './float-input';
 import yup from '../yup-config';
 import { FormattedMessage } from 'react-intl';
 import React, { useMemo } from 'react';
-import SelectInput from './slect-inputs/select-input';
-import { styled } from '@mui/material/styles';
 import InputLabel from '@mui/material/InputLabel';
 import { Grid } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
+import MuiSelectInput from './slect-inputs/mui-select-input';
 
-const StyledInputLabel = styled(InputLabel)(({ theme, root }) => {
-    return {
+const style = {
+    inputLegend: (theme) => ({
         backgroundImage:
             'linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))',
         backgroundColor: theme.palette.background.paper,
-        padding: '8px 8px 4px 8px',
-        position: 'inherit',
-        width: 'fit-content',
-        fontSize: 'small',
-    };
-});
+        padding: '0 8px 0 8px',
+    }),
+};
 
 export const RangeType = {
     EQUALITY: { id: 'EQUALITY', label: 'equality' },
@@ -84,18 +80,21 @@ const RangeInput = ({ name, label }) => {
     );
 
     const operationTypeField = (
-        <SelectInput
+        <MuiSelectInput
             name={`${name}.${OPERATION_TYPE}`}
             options={Object.values(RangeType)}
-            disableClearable
+            fullWidth
+            style={{
+                borderRadius: '4px 0 0 4px',
+            }}
         />
     );
 
     return (
         <FormControl fullWidth>
-            <StyledInputLabel>
+            <InputLabel sx={style.inputLegend}>
                 <FormattedMessage id={label} />
-            </StyledInputLabel>
+            </InputLabel>
             <Grid container spacing={0}>
                 <Grid
                     item

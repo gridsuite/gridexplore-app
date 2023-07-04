@@ -54,7 +54,7 @@ const ContingencyListEditionDialog = ({
                             name,
                             contingencyListType
                         );
-                        reset(formData);
+                        reset({ ...formData, [NAME]: name });
                     }
                 })
                 .catch((errorMessage) => {

@@ -597,8 +597,8 @@ export function fetchContingencyList(type, id) {
  * @returns {Promise<Response>}
  */
 
-export function saveCriteriaBasedContingencyList(form) {
-    const { name, nominalVoltage, ...rest } = form;
+export function saveCriteriaBasedContingencyList(id, form) {
+    const { name, equipmentType, criteriaBased } = form;
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append(
@@ -609,7 +609,7 @@ export function saveCriteriaBasedContingencyList(form) {
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/contingency-lists/' +
-        form.id +
+        id +
         '?' +
         urlSearchParams.toString();
 
@@ -617,8 +617,12 @@ export function saveCriteriaBasedContingencyList(form) {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            ...rest,
-            nominalVoltage: nominalVoltage === '' ? -1 : nominalVoltage,
+            ...criteriaBased,
+            equipmentType,
+            nominalVoltage1:
+                criteriaBased.nominalVoltage1 === ''
+                    ? -1
+                    : criteriaBased.nominalVoltage1,
         }),
     });
 }
