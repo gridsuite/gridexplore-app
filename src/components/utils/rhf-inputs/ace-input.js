@@ -6,7 +6,7 @@ import 'ace-builds/src-noconflict/mode-groovy';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
 
-const ScriptInput = ({ name, ...props }) => {
+const AceInput = ({ name, ...props }) => {
     const selectedTheme = useSelector((state) => state.theme);
     /**
      * Set name of for the Ace Editor : if theme is light set "github theme" else set "clouds_midnight theme"
@@ -34,4 +34,4 @@ const ScriptInput = ({ name, ...props }) => {
     );
 };
 
-export default ScriptInput;
+export default AceInput;

@@ -1,9 +1,9 @@
-import ScriptInput from '../../../utils/rhf-inputs/script-input';
+import AceInput from '../../../utils/rhf-inputs/ace-input';
 import { SCRIPT } from '../../../utils/field-constants';
 
 const ScriptInputForm = () => {
     return (
-        <ScriptInput
+        <AceInput
             name={SCRIPT}
             placeholder="Insert your groovy script here"
             fontSize="18px"
