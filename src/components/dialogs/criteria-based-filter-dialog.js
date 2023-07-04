@@ -13,7 +13,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import { saveFilter, saveCriteriaBasedContingencyList } from '../../utils/rest-api';
+import {
+    saveFilter,
+    saveCriteriaBasedContingencyList,
+} from '../../utils/rest-api';
 import { ElementType } from '../../utils/elementType';
 import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
 import NameWrapper from './name-wrapper';
