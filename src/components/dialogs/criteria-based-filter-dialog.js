@@ -13,10 +13,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import {
-    saveFilter,
-    saveCriteriaBasedContingencyList,
-} from '../../utils/rest-api';
+import { saveFilter } from '../../utils/rest-api';
 import { ElementType } from '../../utils/elementType';
 import CriteriaBasedFilterDialogContent from './criteria-based-filter-dialog-content';
 import NameWrapper from './name-wrapper';
@@ -88,12 +85,6 @@ export const CriteriaBasedFilterDialog = ({
         } else {
             if (contentType === ElementType.FILTER) {
                 saveFilter(currentFilter, currentName)
-                    .then()
-                    .catch((errorMessage) => {
-                        onError(errorMessage);
-                    });
-            } else if (contentType === ElementType.CONTINGENCY_LIST) {
-                saveCriteriaBasedContingencyList(currentFilter, currentName)
                     .then()
                     .catch((errorMessage) => {
                         onError(errorMessage);

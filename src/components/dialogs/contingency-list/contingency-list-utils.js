@@ -113,10 +113,7 @@ export const editContingencyList = (
 ) => {
     switch (contingencyListType) {
         case ContingencyListType.CRITERIA_BASED.id:
-            return saveCriteriaBasedContingencyList(
-                contingencyList[NAME],
-                contingencyList
-            );
+            return saveCriteriaBasedContingencyList(contingencyList);
         case ContingencyListType.EXPLICIT_NAMING.id:
             const equipments = prepareContingencyListForBackend(
                 contingencyListId,
