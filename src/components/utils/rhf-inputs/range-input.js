@@ -1,22 +1,24 @@
 import { useWatch } from 'react-hook-form';
 import { OPERATION_TYPE, VALUE_1, VALUE_2 } from '../field-constants';
 import FloatInput from './float-input';
-import { Grid, InputLabel } from '@mui/material';
 import yup from '../yup-config';
-import FormControl from '@mui/material/FormControl';
 import { FormattedMessage } from 'react-intl';
 import React, { useMemo } from 'react';
 import SelectInput from './slect-inputs/select-input';
 import { styled } from '@mui/material/styles';
+import InputLabel from '@mui/material/InputLabel';
+import { Grid } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
 
 const StyledInputLabel = styled(InputLabel)(({ theme, root }) => {
     return {
         backgroundImage:
             'linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))',
         backgroundColor: theme.palette.background.paper,
-        padding: '0 8px 0 8px',
+        padding: '8px 8px 4px 8px',
         position: 'inherit',
         width: 'fit-content',
+        fontSize: 'small',
     };
 });
 
@@ -67,13 +69,6 @@ const RangeInput = ({ name, label }) => {
             formProps={{
                 placeholder: isOperationTypeRange ? 'Min' : '',
             }}
-            inputProps={{
-                style: {
-                    borderRadius: isOperationTypeRange
-                        ? '0 0 0 0'
-                        : '0 4px 4px 0',
-                },
-            }}
         />
     );
 
@@ -84,11 +79,6 @@ const RangeInput = ({ name, label }) => {
             label={''}
             formProps={{
                 placeholder: 'Max',
-            }}
-            inputProps={{
-                style: {
-                    borderRadius: '0 4px 4px 0',
-                },
             }}
         />
     );
@@ -106,7 +96,7 @@ const RangeInput = ({ name, label }) => {
             <StyledInputLabel>
                 <FormattedMessage id={label} />
             </StyledInputLabel>
-            <Grid container spacing={0} flexGrow={1}>
+            <Grid container spacing={0}>
                 <Grid
                     item
                     style={
