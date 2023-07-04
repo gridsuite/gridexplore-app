@@ -10,25 +10,27 @@ import {
     CONTINGENCY_NAME,
     COUNTRIES_1,
     COUNTRIES_2,
+    CRITERIA_BASED,
     EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
     EQUIPMENT_TYPE,
     NAME,
     NOMINAL_VOLTAGE_1,
     NOMINAL_VOLTAGE_2,
+    ROW_UUID,
     SCRIPT,
 } from '../../utils/field-constants';
 import { ContingencyListType } from '../../../utils/elementType';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import {
+    saveCriteriaBasedContingencyList,
     saveExplicitNamingContingencyList,
-    saveFormContingencyList,
     saveScriptContingencyList,
 } from '../../../utils/rest-api';
-import { getRangeInputEmptyDataForm } from '../../utils/rhf-inputs/range-input';
+import { DEFAULT_RANGE_VALUE } from '../../utils/rhf-inputs/range-input';
 import {
+    getCriteriaBasedFormData,
     getCriteriaBasedSchema,
-    getCriteriaEmptyFormData,
 } from '../commons/criteria-based/criteria-based-utils';
 import yup from '../../utils/yup-config';
 import { getExplicitNamingSchema } from './explicit-naming/explicit-naming-form';
@@ -57,7 +59,7 @@ export const getContingencyListEmptyFormData = () => ({
     [EQUIPMENT_TABLE]: DEFAULT_TABLE_ROWS,
     [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [SCRIPT]: '',
-    ...getCriteriaEmptyFormData(),
+    ...getCriteriaBasedFormData(),
 });
 
 export const getFormDataFromFetchedElement = (
@@ -69,15 +71,14 @@ export const getFormDataFromFetchedElement = (
         case ContingencyListType.CRITERIA_BASED.id:
             return {
                 [NAME]: name,
-                [EQUIPMENT_TYPE]: response.equipmentType,
-                [COUNTRIES_1]: response.countries1,
-                [COUNTRIES_2]: response.countries2,
-                [NOMINAL_VOLTAGE_1]:
-                    response?.nominalVoltage1 ??
-                    getRangeInputEmptyDataForm(NOMINAL_VOLTAGE_1),
-                [NOMINAL_VOLTAGE_2]:
-                    response?.nominalVoltage2 ??
-                    getRangeInputEmptyDataForm(NOMINAL_VOLTAGE_2),
+                ...getCriteriaBasedFormData(
+                    CRITERIA_BASED,
+                    response.equipmentType,
+                    response.countries1,
+                    response.countries2,
+                    response?.nominalVoltage1 ?? DEFAULT_RANGE_VALUE,
+                    response?.nominalVoltage2 ?? DEFAULT_RANGE_VALUE
+                ),
             };
         case ContingencyListType.EXPLICIT_NAMING.id:
             const result =
@@ -85,7 +86,7 @@ export const getFormDataFromFetchedElement = (
                     (identifiers, index) => {
                         const id = 'contingencyName' + index;
                         return {
-                            rowUuid: id,
+                            [ROW_UUID]: id,
                             [CONTINGENCY_NAME]: id, // Temporary : at the moment, we do not save the name in the backend.
                             [EQUIPMENT_IDS]: identifiers.identifierList.map(
                                 (identifier) => identifier.identifier
@@ -112,13 +113,14 @@ export const editContingencyList = (
 ) => {
     switch (contingencyListType) {
         case ContingencyListType.CRITERIA_BASED.id:
-            return saveFormContingencyList(
+            return saveCriteriaBasedContingencyList(
                 contingencyList[NAME],
                 contingencyList
             );
         case ContingencyListType.EXPLICIT_NAMING.id:
             const equipments = prepareContingencyListForBackend(
-                contingencyList[EQUIPMENT_TABLE]
+                contingencyListId,
+                contingencyList
             );
             return saveExplicitNamingContingencyList(
                 equipments,
@@ -140,17 +142,17 @@ export const getFormContent = (contingencyListId, contingencyList) => {
         case ContingencyListType.EXPLICIT_NAMING.id: {
             return prepareContingencyListForBackend(
                 contingencyListId,
-                contingencyList[NAME],
-                contingencyList[EQUIPMENT_TABLE]
+                contingencyList
             );
         }
         case ContingencyListType.CRITERIA_BASED.id: {
+            const criteriaBaseForm = contingencyList[CRITERIA_BASED];
             return {
                 equipmentType: contingencyList[EQUIPMENT_TYPE],
-                countries1: contingencyList[COUNTRIES_1],
-                countries2: contingencyList[COUNTRIES_2],
-                nominalVoltage1: contingencyList[NOMINAL_VOLTAGE_1],
-                nominalVoltage2: contingencyList[NOMINAL_VOLTAGE_2],
+                countries1: criteriaBaseForm[COUNTRIES_1],
+                countries2: criteriaBaseForm[COUNTRIES_2],
+                nominalVoltage1: criteriaBaseForm[NOMINAL_VOLTAGE_1],
+                nominalVoltage2: criteriaBaseForm[NOMINAL_VOLTAGE_2],
             };
         }
         case ContingencyListType.SCRIPT.id: {

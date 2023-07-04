@@ -7,7 +7,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import AutocompleteInput from './autocomplete-input';
+import AutocompleteInput from '../autocomplete-inputs/autocomplete-input';
 import { useIntl } from 'react-intl';
 
 // The difference between this file and the one in gridstudy app: label is not required

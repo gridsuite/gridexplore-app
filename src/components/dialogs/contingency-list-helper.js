@@ -4,31 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import {
+    EQUIPMENT_IDS,
+    EQUIPMENT_TABLE,
+    NAME,
+    ROW_UUID,
+} from '../utils/field-constants';
 
-export const getIdentifierContingencyListFromResponse = (response) => {
-    const result = response?.identifierContingencyList?.identifiers?.map(
-        (identifiers, index) => {
-            return {
-                //This field is named "contingencyId" in powsybl-core but it corresponds the "Name" column in the UI
-                contingencyId: identifiers.contingencyId,
-                identifierList: identifiers.identifierList.map(
-                    (identifier) => identifier.identifier
-                ),
-            };
-        }
-    );
-    return { identifierContingencyList: result ?? [] };
-};
-
-export const prepareContingencyListForBackend = (id, name, values) => {
-    const identifiersList = values
-        .filter(
-            (contingency) =>
-                contingency?.identifierList &&
-                contingency.identifierList.length > 0
-        ) // We only take contingencies that have an identifierList value
+export const prepareContingencyListForBackend = (id, contingencyList) => {
+    const identifiersList = contingencyList[EQUIPMENT_TABLE].filter(
+        (contingency) =>
+            contingency[EQUIPMENT_IDS] && contingency[EQUIPMENT_IDS].length > 0
+    ) // We only take contingencies that have an identifierList value
         .map((contingency) => {
-            const identifierList = contingency.identifierList.map(
+            const identifierList = contingency[EQUIPMENT_IDS].map(
                 (identifier) => {
                     return {
                         type: 'ID_BASED',
@@ -39,7 +28,7 @@ export const prepareContingencyListForBackend = (id, name, values) => {
 
             return {
                 type: 'LIST',
-                contingencyId: contingency.contingencyId,
+                contingencyId: contingency[ROW_UUID],
                 identifierList: identifierList,
             };
         });
@@ -49,7 +38,7 @@ export const prepareContingencyListForBackend = (id, name, values) => {
         identifierContingencyList: {
             type: 'identifier',
             version: '1.2',
-            name: name,
+            name: contingencyList[NAME],
             identifiers: identifiersList,
         },
         type: 'IDENTIFIERS',

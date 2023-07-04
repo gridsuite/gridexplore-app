@@ -6,7 +6,7 @@ import yup from '../yup-config';
 import FormControl from '@mui/material/FormControl';
 import { FormattedMessage } from 'react-intl';
 import React, { useMemo } from 'react';
-import SelectInput from './select-input';
+import SelectInput from './slect-inputs/select-input';
 import { styled } from '@mui/material/styles';
 
 const StyledInputLabel = styled(InputLabel)(({ theme, root }) => {
@@ -34,8 +34,11 @@ export const DEFAULT_RANGE_VALUE = {
     [VALUE_1]: null,
     [VALUE_2]: null,
 };
-export const getRangeInputEmptyDataForm = (name) => ({
-    [name]: DEFAULT_RANGE_VALUE,
+export const getRangeInputDataForm = (
+    name,
+    rangeValue = DEFAULT_RANGE_VALUE
+) => ({
+    [name]: rangeValue,
 });
 
 export const getRangeInputSchema = (name) => ({

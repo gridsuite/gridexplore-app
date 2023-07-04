@@ -5,22 +5,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPE } from '../../../utils/field-constants';
+import { CRITERIA_BASED, EQUIPMENT_TYPE } from '../../../utils/field-constants';
 import React from 'react';
-import { useWatch } from 'react-hook-form';
+import { useController, useFormContext, useWatch } from 'react-hook-form';
 import { gridItem } from '../../../utils/dialog-utils';
 import { Grid } from '@mui/material';
-import SelectInput from '../../../utils/rhf-inputs/select-input';
-import InputWithPopupConfirmation from '../../../utils/rhf-inputs/input-with-popup-confirmation';
+import SelectInput from '../../../utils/rhf-inputs/slect-inputs/select-input';
+import InputWithPopupConfirmation from '../../../utils/rhf-inputs/slect-inputs/input-with-popup-confirmation';
 
-const CriteriaBasedForm = ({
-    equipments,
-    openConfirmationPopup,
-    handleResetOnConfirmation,
-}) => {
+const CriteriaBasedForm = ({ equipments }) => {
+    const { resetField } = useFormContext();
+
+    const {
+        fieldState: { isDirty },
+    } = useController({
+        name: CRITERIA_BASED,
+    });
+
     const watchEquipmentType = useWatch({
         name: EQUIPMENT_TYPE,
     });
+
+    const openConfirmationPopup = () => {
+        return isDirty;
+    };
+
+    const handleResetOnConfirmation = () => {
+        equipments[watchEquipmentType].fields.forEach((field) =>
+            resetField(field.props.name)
+        );
+    };
 
     const equipmentTypeSelectionField = (
         <InputWithPopupConfirmation
@@ -42,7 +56,10 @@ const CriteriaBasedForm = ({
                         const EquipmentForm = equipment.renderer;
                         return (
                             <Grid item xs={12} key={index} flexGrow={1}>
-                                <EquipmentForm {...equipment.props} />
+                                <EquipmentForm
+                                    name={`${CRITERIA_BASED}.${equipment.props.name}`}
+                                    {...equipment.props}
+                                />
                             </Grid>
                         );
                     }

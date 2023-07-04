@@ -14,7 +14,8 @@ import React from 'react';
 import { useWatch } from 'react-hook-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import ScriptInput from '../../../utils/rhf-inputs/script-input';
-import CriteriaBasedContingencyList from '../criteria-based-contingency-list';
+import { CONTINGENCY_LIST_EQUIPMENTS } from "../../commons/criteria-based/criteria-based-utils";
+import CriteriaBasedForm from "../../commons/criteria-based/criteria-based-form";
 
 const ContingencyListCreationForm = () => {
     const watchContingencyListType = useWatch({
@@ -35,7 +36,9 @@ const ContingencyListCreationForm = () => {
             </Grid>
             {watchContingencyListType ===
                 ContingencyListType.CRITERIA_BASED.id && (
-                <CriteriaBasedContingencyList />
+                <CriteriaBasedForm
+                  equipments={CONTINGENCY_LIST_EQUIPMENTS}
+                />
             )}
             {watchContingencyListType ===
                 ContingencyListType.EXPLICIT_NAMING.id && (

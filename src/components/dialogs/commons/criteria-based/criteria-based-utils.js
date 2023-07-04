@@ -5,16 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import CountriesInput from '../../../utils/rhf-inputs/countries-input';
+import CountriesInput from '../../../utils/rhf-inputs/slect-inputs/countries-input';
 import {
     COUNTRIES_1,
     COUNTRIES_2,
+    CRITERIA_BASED,
     EQUIPMENT_TYPE,
     NOMINAL_VOLTAGE_1,
     NOMINAL_VOLTAGE_2,
 } from '../../../utils/field-constants';
 import RangeInput, {
-    getRangeInputEmptyDataForm,
+    DEFAULT_RANGE_VALUE,
+    getRangeInputDataForm,
     getRangeInputSchema,
 } from '../../../utils/rhf-inputs/range-input';
 import yup from '../../../utils/yup-config';
@@ -23,7 +25,7 @@ const countries = {
     renderer: CountriesInput,
     props: {
         label: 'Countries',
-        name: COUNTRIES_1,
+        name: `${CRITERIA_BASED}.${COUNTRIES_1}`,
     },
 };
 
@@ -31,7 +33,7 @@ const countries1 = {
     renderer: CountriesInput,
     props: {
         label: 'Countries1',
-        name: COUNTRIES_1,
+        name: `${CRITERIA_BASED}.${COUNTRIES_1}`,
     },
 };
 
@@ -39,7 +41,7 @@ const countries2 = {
     renderer: CountriesInput,
     props: {
         label: 'Countries2',
-        name: COUNTRIES_2,
+        name: `${CRITERIA_BASED}.${COUNTRIES_2}`,
     },
 };
 
@@ -47,7 +49,7 @@ const nominalVoltage = {
     renderer: RangeInput,
     props: {
         label: 'nominalVoltage',
-        name: NOMINAL_VOLTAGE_1,
+        name: `${CRITERIA_BASED}.${NOMINAL_VOLTAGE_1}`,
     },
 };
 
@@ -55,7 +57,7 @@ const nominalVoltage1 = {
     renderer: RangeInput,
     props: {
         label: 'nominalVoltage1',
-        name: NOMINAL_VOLTAGE_1,
+        name: `${CRITERIA_BASED}.${NOMINAL_VOLTAGE_1}`,
     },
 };
 
@@ -63,7 +65,7 @@ const nominalVoltage2 = {
     renderer: RangeInput,
     props: {
         label: 'nominalVoltage2',
-        name: NOMINAL_VOLTAGE_2,
+        name: `${CRITERIA_BASED}.${NOMINAL_VOLTAGE_2}`,
     },
 };
 
@@ -105,18 +107,29 @@ export const CONTINGENCY_LIST_EQUIPMENTS = {
     },
 };
 
-export const getCriteriaBasedSchema = () => ({
+export const getCriteriaBasedSchema = (id = CRITERIA_BASED) => ({
     [EQUIPMENT_TYPE]: yup.string().nullable(),
-    [COUNTRIES_1]: yup.array().of(yup.string().nullable()),
-    [COUNTRIES_2]: yup.array().of(yup.string().nullable()),
-    ...getRangeInputSchema(NOMINAL_VOLTAGE_1),
-    ...getRangeInputSchema(NOMINAL_VOLTAGE_2),
+    [id]: yup.object().shape({
+        [COUNTRIES_1]: yup.array().of(yup.string().nullable()),
+        [COUNTRIES_2]: yup.array().of(yup.string().nullable()),
+        ...getRangeInputSchema(NOMINAL_VOLTAGE_1),
+        ...getRangeInputSchema(NOMINAL_VOLTAGE_2),
+    }),
 });
 
-export const getCriteriaEmptyFormData = () => ({
-    [EQUIPMENT_TYPE]: '',
-    [COUNTRIES_1]: [],
-    [COUNTRIES_2]: [],
-    ...getRangeInputEmptyDataForm(NOMINAL_VOLTAGE_1),
-    ...getRangeInputEmptyDataForm(NOMINAL_VOLTAGE_2),
+export const getCriteriaBasedFormData = (
+    id = CRITERIA_BASED,
+    equipmentType = '',
+    countries1 = [],
+    countries2 = [],
+    nominalVoltage1 = DEFAULT_RANGE_VALUE,
+    nominalVoltage2 = DEFAULT_RANGE_VALUE
+) => ({
+    [EQUIPMENT_TYPE]: equipmentType,
+    [id]: {
+        [COUNTRIES_1]: countries1,
+        [COUNTRIES_2]: countries2,
+        ...getRangeInputDataForm(NOMINAL_VOLTAGE_1, nominalVoltage1),
+        ...getRangeInputDataForm(NOMINAL_VOLTAGE_2, nominalVoltage2),
+    },
 });

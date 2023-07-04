@@ -1,9 +1,9 @@
-import { useParameterState } from '../../dialogs/parameters-dialog';
-import { PARAM_LANGUAGE } from '../../../utils/config-params';
+import { useParameterState } from '../../../dialogs/parameters-dialog';
+import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 import React, { useCallback, useMemo } from 'react';
-import { getComputedLanguage } from '../../../utils/language';
+import { getComputedLanguage } from '../../../../utils/language';
 import { Chip } from '@mui/material';
-import AutocompleteInput from './autocomplete-input';
+import AutocompleteInput from '../autocomplete-inputs/autocomplete-input';
 
 export const CountriesInput = ({ name, label }) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);

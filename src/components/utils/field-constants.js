@@ -23,3 +23,4 @@ export const NOMINAL_VOLTAGE_1 = 'nominalVoltage1';
 export const NOMINAL_VOLTAGE_2 = 'nominalVoltage2';
 export const SCRIPT = 'script';
 export const ROW_UUID = 'rowUuid';
+export const CRITERIA_BASED = 'criteriaBased';

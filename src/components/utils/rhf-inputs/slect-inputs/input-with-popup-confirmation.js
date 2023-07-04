@@ -1,6 +1,6 @@
 import { useController } from 'react-hook-form';
 import { useState } from 'react';
-import PopupConfirmationDialog from '../popup-confirmation-dialog';
+import PopupConfirmationDialog from '../../popup-confirmation-dialog';
 
 const InputWithPopupConfirmation = ({
     Input,
@@ -36,10 +36,10 @@ const InputWithPopupConfirmation = ({
         <>
             <Input
                 name={name}
+                {...props}
                 onChange={(e, value) => {
                     handleOnChange(e, value.id ?? value);
                 }}
-                {...props}
             />
             <PopupConfirmationDialog
                 openConfirmationPopup={openPopup}

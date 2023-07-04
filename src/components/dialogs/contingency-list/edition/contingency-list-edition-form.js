@@ -11,13 +11,16 @@ import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import ScriptInput from '../../../utils/rhf-inputs/script-input';
 import { SCRIPT } from '../../../utils/field-constants';
 import React from 'react';
-import CriteriaBasedContingencyList from '../criteria-based-contingency-list';
+import { CONTINGENCY_LIST_EQUIPMENTS } from "../../commons/criteria-based/criteria-based-utils";
+import CriteriaBasedForm from "../../commons/criteria-based/criteria-based-form";
 
 const ContingencyListEditionForm = ({ contingencyListType }) => {
     return (
         <Grid container spacing={2} marginTop={'auto'}>
             {contingencyListType === ContingencyListType.CRITERIA_BASED.id && (
-                <CriteriaBasedContingencyList />
+              <CriteriaBasedForm
+                equipments={CONTINGENCY_LIST_EQUIPMENTS}
+              />
             )}
             {contingencyListType === ContingencyListType.EXPLICIT_NAMING.id && (
                 <ExplicitNamingForm />

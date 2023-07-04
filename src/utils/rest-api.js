@@ -597,7 +597,7 @@ export function fetchContingencyList(type, id) {
  * @returns {Promise<Response>}
  */
 
-export function saveFormContingencyList(form, name) {
+export function saveCriteriaBasedContingencyList(form, name) {
     const { nominalVoltage, ...rest } = form;
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);

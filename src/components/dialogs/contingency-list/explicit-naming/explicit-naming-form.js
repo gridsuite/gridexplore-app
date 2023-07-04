@@ -16,12 +16,12 @@ import React, { useCallback, useMemo } from 'react';
 import CustomAgGridTable, {
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
 } from '../../../utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
-import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { gridItem } from '../../../utils/dialog-utils';
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import { DEFAULT_ROW_VALUE } from '../contingency-list-utils';
+import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 
 export const getExplicitNamingSchema = (id) => ({
     [id]: yup.array().of(

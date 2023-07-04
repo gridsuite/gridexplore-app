@@ -11,7 +11,6 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { Grid } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
 import { useTheme } from '@mui/styles';
 import BottomRightButtons from './bottom-right-buttons';
 import { useIntl } from 'react-intl';
@@ -28,8 +27,8 @@ export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     },
 ];
 
-const useStyles = makeStyles()((theme, _params, classes) => ({
-    grid: {
+const style = {
+    grid: (theme) => ({
         width: 'auto',
         height: '100%',
         position: 'relative',
@@ -59,8 +58,8 @@ const useStyles = makeStyles()((theme, _params, classes) => ({
         '& .ag-cell-edit-wrapper': {
             height: 'inherit',
         },
-    },
-}));
+    }),
+};
 
 export const CustomAgGridTable = ({
     name,
@@ -69,7 +68,6 @@ export const CustomAgGridTable = ({
     csvProps,
     ...props
 }) => {
-    const { classes, cx } = useStyles();
     const theme = useTheme();
     const [gridApi, setGridApi] = useState(null);
     const [selectedRows, setSelectedRows] = useState([]);
@@ -170,7 +168,7 @@ export const CustomAgGridTable = ({
 
     return (
         <Grid container spacing={2}>
-            <Grid item xs={12} className={cx([theme.aggrid, classes.grid])}>
+            <Grid item xs={12} className={theme.aggrid} sx={style.grid}>
                 <AgGridReact
                     rowData={getRowData()}
                     onGridReady={onGridReady}
