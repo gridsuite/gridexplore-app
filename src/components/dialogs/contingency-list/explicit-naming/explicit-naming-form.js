@@ -9,7 +9,7 @@ import {
     CONTINGENCY_NAME,
     EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
-    ROW_UUID,
+    AG_GRID_ROW_UUID,
 } from '../../../utils/field-constants';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useCallback, useMemo } from 'react';
@@ -70,7 +70,7 @@ const ExplicitNamingForm = () => {
         if (results) {
             return results.map((value, index) => {
                 return {
-                    [ROW_UUID]: 'csv_row_' + index,
+                    [AG_GRID_ROW_UUID]: 'csv_row_' + index,
                     [CONTINGENCY_NAME]: value[0]?.trim() || '',
                     [EQUIPMENT_IDS]:
                         value[1]

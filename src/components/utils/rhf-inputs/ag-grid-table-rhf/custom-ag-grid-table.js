@@ -14,6 +14,7 @@ import { Grid } from '@mui/material';
 import { useTheme } from '@mui/styles';
 import BottomRightButtons from './bottom-right-buttons';
 import { useIntl } from 'react-intl';
+import { AG_GRID_ROW_UUID } from "../../field-constants";
 
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
@@ -80,14 +81,14 @@ export const CustomAgGridTable = ({
 
     const getRowData = () => {
         // if the table has default values without rowUuid, we add it
-        const rowWithoutUuid = getValues(name).some((r) => !r.rowUuid);
+        const rowWithoutUuid = getValues(name).some((r) => !r[AG_GRID_ROW_UUID]);
         if (rowWithoutUuid) {
             const rowsWithId = getValues(name).map((r) => {
-                if (r.rowUuid) {
+                if (r[AG_GRID_ROW_UUID]) {
                     return r;
                 }
                 return {
-                    rowUuid: crypto.randomUUID(),
+                    agGridRowUuid: crypto.randomUUID(),
                     ...r,
                 };
             });
@@ -99,12 +100,12 @@ export const CustomAgGridTable = ({
 
     const isFirstSelected =
         getRowData() &&
-        gridApi?.api?.getRowNode(getRowData()[0]?.rowUuid)?.isSelected();
+        gridApi?.api?.getRowNode(getRowData()[0]?.agGridRowUuid)?.isSelected();
 
     const isLastSelected =
         getRowData() &&
         gridApi?.api
-            ?.getRowNode(getRowData()[getRowData().length - 1]?.rowUuid)
+            ?.getRowNode(getRowData()[getRowData().length - 1]?.agGridRowUuid)
             ?.isSelected();
 
     const noRowSelected = selectedRows.length === 0;
@@ -137,13 +138,13 @@ export const CustomAgGridTable = ({
 
     const handleAddRow = () => {
         append({
-            rowUuid: crypto.randomUUID(),
+            agGridRowUuid: crypto.randomUUID(),
             ...defaultRowData,
         });
     };
 
     const getIndex = (val) => {
-        return getRowData().findIndex((row) => row.rowUuid === val.rowUuid);
+        return getRowData().findIndex((row) => row.agGridRowUuid === val.agGridRowUuid);
     };
 
     useEffect(() => {
@@ -189,7 +190,7 @@ export const CustomAgGridTable = ({
                     onCellEditingStopped={(event) => {
                         update(event.rowIndex, event.data);
                     }}
-                    getRowId={(row) => row.data.rowUuid}
+                    getRowId={(row) => row.data.agGridRowUuid}
                     {...props}
                 ></AgGridReact>
             </Grid>

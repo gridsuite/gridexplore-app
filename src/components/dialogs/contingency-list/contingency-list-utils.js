@@ -17,7 +17,7 @@ import {
     NAME,
     NOMINAL_VOLTAGE_1,
     NOMINAL_VOLTAGE_2,
-    ROW_UUID,
+    AG_GRID_ROW_UUID,
     SCRIPT,
 } from '../../utils/field-constants';
 import { ContingencyListType } from '../../../utils/elementType';
@@ -86,7 +86,7 @@ export const getFormDataFromFetchedElement = (
                     (identifiers, index) => {
                         const id = 'contingencyName' + index;
                         return {
-                            [ROW_UUID]: id,
+                            [AG_GRID_ROW_UUID]: id,
                             [CONTINGENCY_NAME]: id, // Temporary : at the moment, we do not save the name in the backend.
                             [EQUIPMENT_IDS]: identifiers.identifierList.map(
                                 (identifier) => identifier.identifier

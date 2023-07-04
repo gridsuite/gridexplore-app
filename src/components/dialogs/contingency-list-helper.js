@@ -8,7 +8,7 @@ import {
     EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
     NAME,
-    ROW_UUID,
+    AG_GRID_ROW_UUID,
 } from '../utils/field-constants';
 
 export const prepareContingencyListForBackend = (id, contingencyList) => {
@@ -28,7 +28,7 @@ export const prepareContingencyListForBackend = (id, contingencyList) => {
 
             return {
                 type: 'LIST',
-                contingencyId: contingency[ROW_UUID],
+                contingencyId: contingency[AG_GRID_ROW_UUID],
                 identifierList: identifierList,
             };
         });

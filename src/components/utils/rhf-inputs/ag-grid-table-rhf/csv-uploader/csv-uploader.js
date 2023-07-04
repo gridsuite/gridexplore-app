@@ -19,7 +19,7 @@ import Alert from '@mui/material/Alert';
 import PropTypes from 'prop-types';
 import { DialogContentText } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { ROW_UUID } from '../../../field-constants';
+import { AG_GRID_ROW_UUID } from '../../../field-constants';
 
 const CsvUploader = ({
     name,
@@ -107,7 +107,7 @@ const CsvUploader = ({
                 (val) =>
                     val &&
                     Object.keys(val)
-                        .filter((key) => key !== ROW_UUID)
+                        .filter((key) => key !== AG_GRID_ROW_UUID)
                         .some(
                             (e) =>
                                 val[e] !== undefined &&
