@@ -27,6 +27,7 @@ import {
  * @returns autocomplete field containing the options values
  */
 
+// The difference between this file and the one in gridstudy app: label is not required
 const AutocompleteInput = ({
     name,
     label,
@@ -83,16 +84,18 @@ const AutocompleteInput = ({
             options={options}
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
-                    label={FieldLabel({
-                        label: label,
-                        optional:
-                            !isFieldRequired(
-                                name,
-                                validationSchema,
-                                getValues()
-                            ) &&
-                            !props?.disabled &&
-                            !removeOptional,
+                    {...(label && {
+                        label: FieldLabel({
+                            label: label,
+                            optional:
+                                !isFieldRequired(
+                                    name,
+                                    validationSchema,
+                                    getValues()
+                                ) &&
+                                !props?.disabled &&
+                                !removeOptional,
+                        }),
                     })}
                     FormHelperTextProps={{
                         className: classes.helperText,
@@ -112,7 +115,7 @@ const AutocompleteInput = ({
 
 AutocompleteInput.propTypes = {
     name: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
+    label: PropTypes.string,
     isRequired: PropTypes.bool,
     options: PropTypes.array.isRequired,
     outputTransform: PropTypes.func,
