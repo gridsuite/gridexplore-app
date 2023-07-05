@@ -31,7 +31,7 @@ const CriteriaBasedForm = ({ equipments }) => {
     };
 
     const handleResetOnConfirmation = () => {
-        equipments[watchEquipmentType].fields.forEach((field) =>
+        equipments[watchEquipmentType]?.fields.forEach((field) =>
             resetField(field.props.name)
         );
     };

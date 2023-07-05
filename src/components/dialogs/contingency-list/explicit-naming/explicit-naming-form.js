@@ -68,9 +68,9 @@ const ExplicitNamingForm = () => {
 
     const getDataFromCsvFile = useCallback((results) => {
         if (results) {
-            return results.map((value, index) => {
+            return results.map((value) => {
                 return {
-                    [AG_GRID_ROW_UUID]: 'csv_row_' + index,
+                    [AG_GRID_ROW_UUID]: crypto.randomUUID(),
                     [CONTINGENCY_NAME]: value[0]?.trim() || '',
                     [EQUIPMENT_IDS]:
                         value[1]
@@ -128,16 +128,7 @@ const ExplicitNamingForm = () => {
         />
     );
 
-    return (
-        <>
-            <Grid item xs={12}>
-                <Alert severity={'warning'}>
-                    <FormattedMessage id={'temporaryContingencyWarning'} />
-                </Alert>
-            </Grid>
-            {gridItem(equipmentTableField, 12)}
-        </>
-    );
+    return gridItem(equipmentTableField, 12);
 };
 
 export default ExplicitNamingForm;

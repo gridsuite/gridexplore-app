@@ -38,7 +38,7 @@ const InputWithPopupConfirmation = ({
                 name={name}
                 {...props}
                 onChange={(e, value) => {
-                    handleOnChange(e, value.id ?? value);
+                    handleOnChange(e, value?.id ?? value);
                 }}
             />
             <PopupConfirmationDialog
