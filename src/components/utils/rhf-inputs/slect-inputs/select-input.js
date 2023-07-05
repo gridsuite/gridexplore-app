@@ -14,25 +14,25 @@ const SelectInput = ({ options, ...props }) => {
     const intl = useIntl();
 
     const inputTransform = (value) =>
-      options.find((option) => option?.id === value) || null;
+        options.find((option) => option?.id === value) || null;
 
     const outputTransform = (value) => {
         return value?.id ?? null;
     };
 
     return (
-      <AutocompleteInput
-        options={options}
-        getOptionLabel={(option) => {
-            return option?.label
-              ? intl.formatMessage({ id: option?.label }) // If the option has a label property, display the label using internationalization
-              : option?.id; // If the option doesn't have a label property, display the ID instead
-        }}
-        inputTransform={inputTransform}
-        outputTransform={outputTransform}
-        readOnly={true}
-        {...props}
-      />
+        <AutocompleteInput
+            options={options}
+            getOptionLabel={(option) => {
+                return option?.label
+                    ? intl.formatMessage({ id: option?.label }) // If the option has a label property, display the label using internationalization
+                    : option?.id; // If the option doesn't have a label property, display the ID instead
+            }}
+            inputTransform={inputTransform}
+            outputTransform={outputTransform}
+            readOnly={true}
+            {...props}
+        />
     );
 };
 

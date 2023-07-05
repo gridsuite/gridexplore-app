@@ -28,18 +28,18 @@ import {
  */
 
 const AutocompleteInput = ({
-                               name,
-                               label,
-                               outputTransform = func_identity, //transform materialUi input value before sending it to react hook form, mostly used to deal with select fields that need to return a string
-                               inputTransform = func_identity, //transform react hook form value before sending it to materialUi input, mostly used to deal with select fields that need to return a string
-                               options,
-                               readOnly = false,
-                               previousValue,
-                               formProps,
-                               allowNewValue,
-                               onChangeCallback, // method called when input value is changing
-                               ...props
-                           }) => {
+    name,
+    label,
+    outputTransform = func_identity, //transform materialUi input value before sending it to react hook form, mostly used to deal with select fields that need to return a string
+    inputTransform = func_identity, //transform react hook form value before sending it to materialUi input, mostly used to deal with select fields that need to return a string
+    options,
+    readOnly = false,
+    previousValue,
+    formProps,
+    allowNewValue,
+    onChangeCallback, // method called when input value is changing
+    ...props
+}) => {
     const { validationSchema, getValues, removeOptional } = useFormContext();
     const {
         field: { onChange, value, ref },
@@ -68,45 +68,45 @@ const AutocompleteInput = ({
     };
 
     return (
-      <Autocomplete
-        value={inputTransform(value)}
-        onChange={(_, data) => handleChange(data)}
-        {...(allowNewValue && {
-            freeSolo: true,
-            autoComplete: true,
-            blurOnSelect: true,
-            autoSelect: false,
-            onInputChange: (_, data) => {
-                handleChange(data);
-            },
-        })}
-        options={options}
-        renderInput={({ inputProps, ...rest }) => (
-          <TextField
-            label={FieldLabel({
-                label: label,
-                optional:
-                  !isFieldRequired(
-                    name,
-                    validationSchema,
-                    getValues()
-                  ) &&
-                  !props?.disabled &&
-                  !removeOptional,
+        <Autocomplete
+            value={inputTransform(value)}
+            onChange={(_, data) => handleChange(data)}
+            {...(allowNewValue && {
+                freeSolo: true,
+                autoComplete: true,
+                blurOnSelect: true,
+                autoSelect: false,
+                onInputChange: (_, data) => {
+                    handleChange(data);
+                },
             })}
-            FormHelperTextProps={{
-                className: classes.helperText,
-            }}
-            inputRef={ref}
-            inputProps={{ ...inputProps, readOnly: readOnly }}
-            {...genHelperPreviousValue(previousValue)}
-            {...genHelperError(error?.message)}
-            {...formProps}
-            {...rest}
-          />
-        )}
-        {...props}
-      />
+            options={options}
+            renderInput={({ inputProps, ...rest }) => (
+                <TextField
+                    label={FieldLabel({
+                        label: label,
+                        optional:
+                            !isFieldRequired(
+                                name,
+                                validationSchema,
+                                getValues()
+                            ) &&
+                            !props?.disabled &&
+                            !removeOptional,
+                    })}
+                    FormHelperTextProps={{
+                        className: classes.helperText,
+                    }}
+                    inputRef={ref}
+                    inputProps={{ ...inputProps, readOnly: readOnly }}
+                    {...genHelperPreviousValue(previousValue)}
+                    {...genHelperError(error?.message)}
+                    {...formProps}
+                    {...rest}
+                />
+            )}
+            {...props}
+        />
     );
 };
 
