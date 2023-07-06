@@ -32,7 +32,7 @@ const MultipleAutocompleteInput = ({ name, ...props }) => {
             multiple
             renderTags={(val, getTagsProps) =>
                 val
-                    .filter((val) => val)
+                    .filter((value) => value)
                     .map((value, index) => (
                         <Chip
                             id={'chip_' + value}

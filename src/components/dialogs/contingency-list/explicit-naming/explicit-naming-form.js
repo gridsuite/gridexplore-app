@@ -64,9 +64,9 @@ const ExplicitNamingForm = () => {
         ];
     }, [intl]);
 
-    const getDataFromCsvFile = useCallback((results) => {
-        if (results) {
-            return results.map((value) => {
+    const getDataFromCsvFile = useCallback((csvData) => {
+        if (csvData) {
+            return csvData.map((value) => {
                 return {
                     [AG_GRID_ROW_UUID]: crypto.randomUUID(),
                     [CONTINGENCY_NAME]: value[0]?.trim() || '',
