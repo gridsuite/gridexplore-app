@@ -10,6 +10,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     CONTINGENCY_LIST_TYPE,
     EQUIPMENT_TABLE,
+    EQUIPMENT_TYPE,
     NAME,
     SCRIPT,
 } from '../../../utils/field-constants';
@@ -32,6 +33,7 @@ import { getCriteriaBasedSchema } from '../../commons/criteria-based/criteria-ba
 const schema = yup.object().shape({
     [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
     [SCRIPT]: yup.string().nullable(),
+    [EQUIPMENT_TYPE]: yup.string().nullable(),
     ...getExplicitNamingSchema(EQUIPMENT_TABLE),
     ...getCriteriaBasedSchema(),
 });

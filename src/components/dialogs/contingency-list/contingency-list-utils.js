@@ -49,6 +49,7 @@ export const getContingencyListSchema = () =>
     yup.object().shape({
         [NAME]: yup.string().required(),
         [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
+        [EQUIPMENT_TYPE]: yup.string().nullable(),
         [SCRIPT]: yup.string().nullable(),
         ...getExplicitNamingSchema(EQUIPMENT_TABLE),
         ...getCriteriaBasedSchema(),
@@ -59,6 +60,7 @@ export const getContingencyListEmptyFormData = () => ({
     [EQUIPMENT_TABLE]: DEFAULT_TABLE_ROWS,
     [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [SCRIPT]: '',
+    [EQUIPMENT_TYPE]: '',
     ...getCriteriaBasedFormData(),
 });
 
@@ -71,9 +73,9 @@ export const getFormDataFromFetchedElement = (
         case ContingencyListType.CRITERIA_BASED.id:
             return {
                 [NAME]: name,
+                [EQUIPMENT_TYPE]: response.equipmentType,
                 ...getCriteriaBasedFormData(
                     CRITERIA_BASED,
-                    response.equipmentType,
                     response.countries1,
                     response.countries2,
                     response?.nominalVoltage1 ?? DEFAULT_RANGE_VALUE,
@@ -84,10 +86,9 @@ export const getFormDataFromFetchedElement = (
             const result =
                 response?.identifierContingencyList?.identifiers?.map(
                     (identifiers, index) => {
-                        const id = 'contingencyName' + index;
                         return {
-                            [AG_GRID_ROW_UUID]: id,
-                            [CONTINGENCY_NAME]: id, // Temporary : at the moment, we do not save the name in the backend.
+                            [AG_GRID_ROW_UUID]: 'contingencyName' + index,
+                            [CONTINGENCY_NAME]: identifiers.contingencyId,
                             [EQUIPMENT_IDS]: identifiers.identifierList.map(
                                 (identifier) => identifier.identifier
                             ),

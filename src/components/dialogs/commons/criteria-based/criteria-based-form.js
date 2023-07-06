@@ -7,32 +7,29 @@
 
 import { CRITERIA_BASED, EQUIPMENT_TYPE } from '../../../utils/field-constants';
 import React from 'react';
-import { useController, useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { gridItem } from '../../../utils/dialog-utils';
 import { Grid } from '@mui/material';
 import SelectInput from '../../../utils/rhf-inputs/slect-inputs/select-input';
 import InputWithPopupConfirmation from '../../../utils/rhf-inputs/slect-inputs/input-with-popup-confirmation';
 
-const CriteriaBasedForm = ({ equipments }) => {
-    const { resetField } = useFormContext();
-
-    const {
-        fieldState: { isDirty },
-    } = useController({
-        name: CRITERIA_BASED,
-    });
+const CriteriaBasedForm = ({ equipments, defaultValues }) => {
+    const { setValue, getValues } = useFormContext();
 
     const watchEquipmentType = useWatch({
         name: EQUIPMENT_TYPE,
     });
 
     const openConfirmationPopup = () => {
-        return isDirty;
+        return (
+            JSON.stringify(defaultValues) !==
+            JSON.stringify(getValues(CRITERIA_BASED))
+        );
     };
 
     const handleResetOnConfirmation = () => {
-        equipments[watchEquipmentType]?.fields.forEach((field) =>
-            resetField(field.props.name)
+        Object.keys(defaultValues).forEach((field) =>
+            setValue(`${CRITERIA_BASED}.${field}`, defaultValues[field])
         );
     };
 
@@ -57,7 +54,7 @@ const CriteriaBasedForm = ({ equipments }) => {
                         return (
                             <Grid item xs={12} key={index} flexGrow={1}>
                                 <EquipmentForm
-                                    name={`${CRITERIA_BASED}.${equipment.props.name}`}
+                                    name={equipment.props.name}
                                     {...equipment.props}
                                 />
                             </Grid>

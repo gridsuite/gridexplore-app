@@ -59,6 +59,9 @@ const style = {
         '& .ag-cell-edit-wrapper': {
             height: 'inherit',
         },
+        '& .ag-row-hover': {
+            cursor: 'text',
+        },
     }),
 };
 
@@ -74,7 +77,7 @@ export const CustomAgGridTable = ({
     const [selectedRows, setSelectedRows] = useState([]);
 
     const { control, getValues, setValue } = useFormContext();
-    const { append, remove, update, swap, move } = useFieldArray({
+    const { fields, append, remove, update, swap, move } = useFieldArray({
         control,
         name: name,
     });
@@ -137,6 +140,14 @@ export const CustomAgGridTable = ({
             remove(idx);
         });
     };
+
+    useEffect(() => {
+        if (gridApi) {
+            gridApi.api.refreshCells({
+                force: true,
+            });
+        }
+    }, [gridApi, fields]);
 
     const handleAddRow = () => {
         append({
@@ -208,6 +219,7 @@ export const CustomAgGridTable = ({
                 disableDown={noRowSelected || isLastSelected}
                 disableDelete={noRowSelected}
                 csvProps={csvProps}
+                justifyContent={'flex-end'}
             />
         </Grid>
     );

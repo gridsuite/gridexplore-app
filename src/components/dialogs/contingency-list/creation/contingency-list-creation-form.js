@@ -6,14 +6,21 @@
  */
 
 import RadioInput from '../../../utils/rhf-inputs/radio-input';
-import { CONTINGENCY_LIST_TYPE, SCRIPT } from '../../../utils/field-constants';
+import {
+    CONTINGENCY_LIST_TYPE,
+    CRITERIA_BASED,
+    SCRIPT,
+} from '../../../utils/field-constants';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { Grid } from '@mui/material';
 import { gridItem } from '../../../utils/dialog-utils';
 import React from 'react';
 import { useWatch } from 'react-hook-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
-import { CONTINGENCY_LIST_EQUIPMENTS } from '../../commons/criteria-based/criteria-based-utils';
+import {
+    CONTINGENCY_LIST_EQUIPMENTS,
+    getCriteriaBasedFormData,
+} from '../../commons/criteria-based/criteria-based-utils';
 import CriteriaBasedForm from '../../commons/criteria-based/criteria-based-form';
 import ScriptInputForm from '../script/script-input-form';
 
@@ -29,6 +36,7 @@ const ContingencyListCreationForm = () => {
         />
     );
 
+    const emptyValues = getCriteriaBasedFormData();
     return (
         <Grid container spacing={2} marginTop={'auto'}>
             <Grid container item>
@@ -36,7 +44,10 @@ const ContingencyListCreationForm = () => {
             </Grid>
             {watchContingencyListType ===
                 ContingencyListType.CRITERIA_BASED.id && (
-                <CriteriaBasedForm equipments={CONTINGENCY_LIST_EQUIPMENTS} />
+                <CriteriaBasedForm
+                    equipments={CONTINGENCY_LIST_EQUIPMENTS}
+                    defaultValues={emptyValues[CRITERIA_BASED]}
+                />
             )}
             {watchContingencyListType ===
                 ContingencyListType.EXPLICIT_NAMING.id && (

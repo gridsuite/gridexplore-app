@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
+    CONTINGENCY_NAME,
     EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
     NAME,
-    AG_GRID_ROW_UUID,
 } from '../utils/field-constants';
 
 export const prepareContingencyListForBackend = (id, contingencyList) => {
@@ -28,7 +28,7 @@ export const prepareContingencyListForBackend = (id, contingencyList) => {
 
             return {
                 type: 'LIST',
-                contingencyId: contingency[AG_GRID_ROW_UUID],
+                contingencyId: contingency[CONTINGENCY_NAME],
                 identifierList: identifierList,
             };
         });

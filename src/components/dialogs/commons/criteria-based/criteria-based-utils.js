@@ -10,7 +10,6 @@ import {
     COUNTRIES_1,
     COUNTRIES_2,
     CRITERIA_BASED,
-    EQUIPMENT_TYPE,
     NOMINAL_VOLTAGE_1,
     NOMINAL_VOLTAGE_2,
 } from '../../../utils/field-constants';
@@ -108,7 +107,6 @@ export const CONTINGENCY_LIST_EQUIPMENTS = {
 };
 
 export const getCriteriaBasedSchema = (id = CRITERIA_BASED) => ({
-    [EQUIPMENT_TYPE]: yup.string().nullable(),
     [id]: yup.object().shape({
         [COUNTRIES_1]: yup.array().of(yup.string().nullable()),
         [COUNTRIES_2]: yup.array().of(yup.string().nullable()),
@@ -119,13 +117,11 @@ export const getCriteriaBasedSchema = (id = CRITERIA_BASED) => ({
 
 export const getCriteriaBasedFormData = (
     id = CRITERIA_BASED,
-    equipmentType = '',
     countries1 = [],
     countries2 = [],
     nominalVoltage1 = DEFAULT_RANGE_VALUE,
     nominalVoltage2 = DEFAULT_RANGE_VALUE
 ) => ({
-    [EQUIPMENT_TYPE]: equipmentType,
     [id]: {
         [COUNTRIES_1]: countries1,
         [COUNTRIES_2]: countries2,
