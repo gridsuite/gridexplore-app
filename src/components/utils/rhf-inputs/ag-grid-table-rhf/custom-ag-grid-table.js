@@ -83,6 +83,7 @@ export const CustomAgGridTable = ({
     });
 
     const getRowData = () => {
+        console.log('getValues(name) : ', getValues(name));
         // if the table has default values without rowUuid, we add it
         const rowWithoutUuid = getValues(name).some(
             (r) => !r[AG_GRID_ROW_UUID]
