@@ -10,21 +10,21 @@ import React from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { gridItem } from '../../../utils/dialog-utils';
 import { Grid } from '@mui/material';
-import SelectInput from '../../../utils/rhf-inputs/slect-inputs/select-input';
-import InputWithPopupConfirmation from '../../../utils/rhf-inputs/slect-inputs/input-with-popup-confirmation';
+import SelectInput from '../../../utils/rhf-inputs/select-inputs/select-input';
+import InputWithPopupConfirmation from '../../../utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
 
 const CriteriaBasedForm = ({ equipments, defaultValues }) => {
-    const { setValue, getValues } = useFormContext();
+    const {
+        setValue,
+        formState: { dirtyFields },
+    } = useFormContext();
 
     const watchEquipmentType = useWatch({
         name: EQUIPMENT_TYPE,
     });
 
     const openConfirmationPopup = () => {
-        return (
-            JSON.stringify(defaultValues) !==
-            JSON.stringify(getValues(CRITERIA_BASED))
-        );
+        return dirtyFields[CRITERIA_BASED];
     };
 
     const handleResetOnConfirmation = () => {

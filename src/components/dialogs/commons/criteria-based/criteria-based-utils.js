@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import CountriesInput from '../../../utils/rhf-inputs/slect-inputs/countries-input';
+import CountriesInput from '../../../utils/rhf-inputs/select-inputs/countries-input';
 import {
     COUNTRIES_1,
     COUNTRIES_2,

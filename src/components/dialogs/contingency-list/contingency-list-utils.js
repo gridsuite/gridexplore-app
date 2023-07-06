@@ -60,7 +60,7 @@ export const getContingencyListEmptyFormData = () => ({
     [EQUIPMENT_TABLE]: DEFAULT_TABLE_ROWS,
     [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [SCRIPT]: '',
-    [EQUIPMENT_TYPE]: '',
+    [EQUIPMENT_TYPE]: null,
     ...getCriteriaBasedFormData(),
 });
 
@@ -78,8 +78,8 @@ export const getFormDataFromFetchedElement = (
                     CRITERIA_BASED,
                     response.countries1,
                     response.countries2,
-                    response?.nominalVoltage1 ?? DEFAULT_RANGE_VALUE,
-                    response?.nominalVoltage2 ?? DEFAULT_RANGE_VALUE
+                    response.nominalVoltage1 ?? DEFAULT_RANGE_VALUE,
+                    response.nominalVoltage2 ?? DEFAULT_RANGE_VALUE
                 ),
             };
         case ContingencyListType.EXPLICIT_NAMING.id:
