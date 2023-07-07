@@ -84,8 +84,8 @@ export const getFormDataFromFetchedElement = (
             };
         case ContingencyListType.EXPLICIT_NAMING.id:
             let result;
-            if (response?.identifierContingencyList?.identifiers?.length) {
-                result = response?.identifierContingencyList?.identifiers?.map(
+            if (response.identifierContingencyList?.identifiers?.length) {
+                result = response.identifierContingencyList?.identifiers?.map(
                     (identifiers, index) => {
                         return {
                             [AG_GRID_ROW_UUID]: 'contingencyName' + index,
@@ -101,11 +101,11 @@ export const getFormDataFromFetchedElement = (
             }
 
             return {
-                [EQUIPMENT_TABLE]: result ?? [],
+                [EQUIPMENT_TABLE]: result,
             };
         case ContingencyListType.SCRIPT.id:
             return {
-                [SCRIPT]: response?.script,
+                [SCRIPT]: response.script,
             };
         default:
             return getContingencyListEmptyFormData();
