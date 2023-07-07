@@ -83,22 +83,23 @@ export const getFormDataFromFetchedElement = (
                 ),
             };
         case ContingencyListType.EXPLICIT_NAMING.id:
-            console.log('response : ', response);
-            const result =
-                response?.identifierContingencyList?.identifiers.length === 0
-                    ? response?.identifierContingencyList?.identifiers?.map(
-                          (identifiers, index) => {
-                              return {
-                                  [AG_GRID_ROW_UUID]: 'contingencyName' + index,
-                                  [CONTINGENCY_NAME]: identifiers.contingencyId,
-                                  [EQUIPMENT_IDS]:
-                                      identifiers.identifierList.map(
-                                          (identifier) => identifier.identifier
-                                      ),
-                              };
-                          }
-                      )
-                    : DEFAULT_TABLE_ROWS;
+            let result;
+            if (response?.identifierContingencyList?.identifiers?.length) {
+                result = response?.identifierContingencyList?.identifiers?.map(
+                    (identifiers, index) => {
+                        return {
+                            [AG_GRID_ROW_UUID]: 'contingencyName' + index,
+                            [CONTINGENCY_NAME]: identifiers.contingencyId,
+                            [EQUIPMENT_IDS]: identifiers.identifierList.map(
+                                (identifier) => identifier.identifier
+                            ),
+                        };
+                    }
+                );
+            } else {
+                result = DEFAULT_TABLE_ROWS;
+            }
+
             return {
                 [EQUIPMENT_TABLE]: result ?? [],
             };
