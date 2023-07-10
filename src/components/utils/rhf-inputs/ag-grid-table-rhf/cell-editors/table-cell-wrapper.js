@@ -1,7 +1,7 @@
 import { useImperativeHandle } from 'react';
 import { useWatch } from 'react-hook-form';
 
-const TableCellWrapper = ({ agGridRef, name, ...props }) => {
+const TableCellWrapper = ({ agGridRef, name, children }) => {
     const watchValues = useWatch({
         name,
     });
@@ -18,7 +18,7 @@ const TableCellWrapper = ({ agGridRef, name, ...props }) => {
         [watchValues]
     );
 
-    return <>{props.children}</>;
+    return <>{children}</>;
 };
 
 export default TableCellWrapper;

@@ -6,7 +6,7 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     const { name, node, colDef } = props;
     const cellName = `${name}.${node.rowIndex}.${colDef.field}`;
     return (
-        <TableCellWrapper agGridRef={ref} name={cellName} {...props}>
+        <TableCellWrapper agGridRef={ref} name={cellName}>
             <MultipleAutocompleteInput
                 name={cellName}
                 formProps={{
