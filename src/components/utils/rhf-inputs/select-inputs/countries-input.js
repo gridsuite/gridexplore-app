@@ -38,7 +38,7 @@ export const CountriesInput = ({ name, label }) => {
             renderTags={(val, getTagsProps) =>
                 val.map((code, index) => (
                     <Chip
-                        id={'chip_' + code}
+                        key={code}
                         size={'small'}
                         label={getLabel(code)}
                         {...getTagsProps({ index })}
