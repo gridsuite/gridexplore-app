@@ -693,10 +693,10 @@ const DirectoryContent = () => {
                             }),
                             dataKey: 'elementName',
                             cellRenderer: nameCellRender,
-                            minWidth: '44%',
+                            minWidth: '39%',
                         },
                         {
-                            minWidth: '25%',
+                            minWidth: '20%',
                             label: intl.formatMessage({
                                 id: 'type',
                             }),
@@ -704,7 +704,7 @@ const DirectoryContent = () => {
                             cellRenderer: typeCellRender,
                         },
                         {
-                            minWidth: '5%',
+                            minWidth: '10%',
                             label: intl.formatMessage({
                                 id: 'creator',
                             }),
@@ -720,7 +720,7 @@ const DirectoryContent = () => {
                             cellRenderer: dateCellRender,
                         },
                         {
-                            minWidth: '5%',
+                            minWidth: '10%',
                             label: intl.formatMessage({
                                 id: 'modifiedBy',
                             }),
