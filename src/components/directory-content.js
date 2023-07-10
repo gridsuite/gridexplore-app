@@ -693,10 +693,10 @@ const DirectoryContent = () => {
                             }),
                             dataKey: 'elementName',
                             cellRenderer: nameCellRender,
-                            minWidth: '25%',
+                            minWidth: '44%',
                         },
                         {
-                            minWidth: '15%',
+                            minWidth: '25%',
                             label: intl.formatMessage({
                                 id: 'type',
                             }),
@@ -704,7 +704,7 @@ const DirectoryContent = () => {
                             cellRenderer: typeCellRender,
                         },
                         {
-                            minWidth: '15%',
+                            minWidth: '5%',
                             label: intl.formatMessage({
                                 id: 'creator',
                             }),
@@ -712,7 +712,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            minWidth: '15%',
+                            minWidth: '10%',
                             label: intl.formatMessage({
                                 id: 'created',
                             }),
@@ -720,7 +720,7 @@ const DirectoryContent = () => {
                             cellRenderer: dateCellRender,
                         },
                         {
-                            minWidth: '15%',
+                            minWidth: '5%',
                             label: intl.formatMessage({
                                 id: 'modifiedBy',
                             }),
@@ -728,7 +728,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            minWidth: '15%',
+                            minWidth: '8%',
                             label: intl.formatMessage({
                                 id: 'modified',
                             }),
