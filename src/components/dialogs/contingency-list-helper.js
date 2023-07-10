@@ -13,9 +13,8 @@ import {
 
 export const prepareContingencyListForBackend = (id, contingencyList) => {
     const identifiersList = contingencyList[EQUIPMENT_TABLE].filter(
-        (contingency) =>
-            contingency[EQUIPMENT_IDS] && contingency[EQUIPMENT_IDS].length > 0
-    ) // We only take contingencies that have an identifierList value
+        (contingency) => contingency[EQUIPMENT_IDS].length > 0
+    ) // We only take contingencies (rows) that are not empty
         .map((contingency) => {
             const identifierList = contingency[EQUIPMENT_IDS].map(
                 (identifier) => {

@@ -27,14 +27,13 @@ const BottomRightButtons = ({
     handleMoveRowUp,
     handleMoveRowDown,
     csvProps,
-    ...props
 }) => {
     const [uploaderOpen, setUploaderOpen] = useState(false);
     const intl = useIntl();
 
     return (
         <>
-            <Grid container item xs={12} {...props}>
+            <Grid container item xs={12}>
                 {csvProps && (
                     <InnerColoredButton onClick={() => setUploaderOpen(true)}>
                         <Tooltip

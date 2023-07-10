@@ -20,7 +20,6 @@ const NameWrapper = ({
     contentType,
     children,
     handleNameValidation,
-    setError,
 }) => {
     const [value, setValue] = useState(initialValue);
     const [loadingCheckName, setLoadingCheckName] = useState(false);

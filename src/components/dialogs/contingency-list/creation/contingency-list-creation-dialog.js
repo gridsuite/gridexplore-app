@@ -62,10 +62,6 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
         onClose(event);
     };
 
-    const handleClose = (event) => {
-        closeAndClear(event);
-    };
-
     const onSubmit = (data) => {
         const formContent = getFormContent(null, data);
         createContingencyList(
@@ -74,7 +70,7 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
             formContent,
             activeDirectory
         )
-            .then(() => handleClose())
+            .then(() => closeAndClear())
             .catch((errorMessage) => {
                 snackError({
                     messageTxt: errorMessage,

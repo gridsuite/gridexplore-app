@@ -87,10 +87,6 @@ const ContingencyListEditionDialog = ({
         setValue(NAME, newName, { shouldDirty: isValid });
     };
 
-    const handleClose = (event) => {
-        closeAndClear(event);
-    };
-
     const onSubmit = (contingencyList) => {
         editContingencyList(
             contingencyListId,
@@ -98,7 +94,7 @@ const ContingencyListEditionDialog = ({
             contingencyList
         )
             .then(() => {
-                handleClose();
+                closeAndClear();
             })
             .catch((errorMessage) => {
                 snackError({

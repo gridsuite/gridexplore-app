@@ -18,7 +18,7 @@ import CustomAgGridTable, {
 } from '../../../utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
 import { gridItem } from '../../../utils/dialog-utils';
 import yup from '../../../utils/yup-config';
-import { DEFAULT_ROW_VALUE } from '../contingency-list-utils';
+import { getDefaultRowValue } from '../contingency-list-utils';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 
 export const getExplicitNamingSchema = (id) => ({
@@ -111,7 +111,7 @@ const ExplicitNamingForm = () => {
         <CustomAgGridTable
             name={EQUIPMENT_TABLE}
             columnDefs={columnDefs}
-            defaultRowData={DEFAULT_ROW_VALUE}
+            getDefaultRowData={getDefaultRowValue}
             pagination={true}
             paginationPageSize={100}
             suppressRowClickSelection

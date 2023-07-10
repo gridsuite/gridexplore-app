@@ -68,7 +68,7 @@ const style = {
 export const CustomAgGridTable = ({
     name,
     columnDefs,
-    defaultRowData,
+    getDefaultRowData,
     csvProps,
     ...props
 }) => {
@@ -76,41 +76,22 @@ export const CustomAgGridTable = ({
     const [gridApi, setGridApi] = useState(null);
     const [selectedRows, setSelectedRows] = useState([]);
 
-    const { control, getValues, setValue } = useFormContext();
-    const { fields, append, remove, update, swap, move } = useFieldArray({
+    const { control, getValues, watch } = useFormContext();
+    const { append, remove, update, swap, move } = useFieldArray({
         control,
         name: name,
     });
 
-    const getRowData = () => {
-        // if the table has default values without rowUuid, we add it
-        const rowWithoutUuid = getValues(name).some(
-            (r) => !r[AG_GRID_ROW_UUID]
-        );
-        if (rowWithoutUuid) {
-            const rowsWithId = getValues(name).map((r) => {
-                if (r[AG_GRID_ROW_UUID]) {
-                    return r;
-                }
-                return {
-                    agGridRowUuid: crypto.randomUUID(),
-                    ...r,
-                };
-            });
-            setValue(name, rowsWithId);
-            return rowsWithId;
-        }
-        return getValues(name);
-    };
+    const rowData = watch(name);
 
     const isFirstSelected =
-        getRowData() &&
-        gridApi?.api?.getRowNode(getRowData()[0]?.agGridRowUuid)?.isSelected();
+        rowData.length &&
+        gridApi?.api.getRowNode(rowData[0][AG_GRID_ROW_UUID])?.isSelected();
 
     const isLastSelected =
-        getRowData() &&
+        rowData.length &&
         gridApi?.api
-            ?.getRowNode(getRowData()[getRowData().length - 1]?.agGridRowUuid)
+            .getRowNode(rowData[rowData.length - 1][AG_GRID_ROW_UUID])
             ?.isSelected();
 
     const noRowSelected = selectedRows.length === 0;
@@ -135,7 +116,7 @@ export const CustomAgGridTable = ({
     };
 
     const handleDeleteRows = () => {
-        selectedRows.forEach((val, index) => {
+        selectedRows.forEach((val) => {
             const idx = getIndex(val);
             remove(idx);
         });
@@ -147,18 +128,15 @@ export const CustomAgGridTable = ({
                 force: true,
             });
         }
-    }, [gridApi, fields]);
+    }, [gridApi, rowData]);
 
     const handleAddRow = () => {
-        append({
-            agGridRowUuid: crypto.randomUUID(),
-            ...defaultRowData,
-        });
+        append(getDefaultRowData());
     };
 
     const getIndex = (val) => {
-        return getRowData().findIndex(
-            (row) => row.agGridRowUuid === val.agGridRowUuid
+        return getValues(name).findIndex(
+            (row) => row[AG_GRID_ROW_UUID] === val[AG_GRID_ROW_UUID]
         );
     };
 
@@ -186,7 +164,7 @@ export const CustomAgGridTable = ({
         <Grid container spacing={2}>
             <Grid item xs={12} className={theme.aggrid} sx={style.grid}>
                 <AgGridReact
-                    rowData={getRowData()}
+                    rowData={rowData}
                     onGridReady={onGridReady}
                     getLocaleText={getLocaleText}
                     rowSelection={'multiple'}
@@ -205,7 +183,7 @@ export const CustomAgGridTable = ({
                     onCellEditingStopped={(event) => {
                         update(event.rowIndex, event.data);
                     }}
-                    getRowId={(row) => row.data.agGridRowUuid}
+                    getRowId={(row) => row.data[AG_GRID_ROW_UUID]}
                     {...props}
                 ></AgGridReact>
             </Grid>

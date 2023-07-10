@@ -82,13 +82,13 @@ const CsvUploader = ({
         });
     };
 
-    const handleFileSubmit = (saveTableValues) => {
+    const handleFileSubmit = (keepTableValues) => {
         if (importedData.length !== 0) {
             const result = getResultsFromImportedData();
             if (validateCsvFile(result)) {
                 result.splice(0, 1);
                 const dataFromCsv = getDataFromCsv(result);
-                const newValues = saveTableValues
+                const newValues = keepTableValues
                     ? [...getValues(name), ...dataFromCsv]
                     : dataFromCsv;
                 setValue(name, newValues);

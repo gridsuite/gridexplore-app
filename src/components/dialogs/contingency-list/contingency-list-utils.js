@@ -6,6 +6,7 @@
  */
 
 import {
+    AG_GRID_ROW_UUID,
     CONTINGENCY_LIST_TYPE,
     CONTINGENCY_NAME,
     COUNTRIES_1,
@@ -17,7 +18,6 @@ import {
     NAME,
     NOMINAL_VOLTAGE_1,
     NOMINAL_VOLTAGE_2,
-    AG_GRID_ROW_UUID,
     SCRIPT,
 } from '../../utils/field-constants';
 import { ContingencyListType } from '../../../utils/elementType';
@@ -35,14 +35,15 @@ import {
 import yup from '../../utils/yup-config';
 import { getExplicitNamingSchema } from './explicit-naming/explicit-naming-form';
 
-export const DEFAULT_ROW_VALUE = {
+export const getDefaultRowValue = () => ({
+    [AG_GRID_ROW_UUID]: crypto.randomUUID(),
     [CONTINGENCY_NAME]: '',
     [EQUIPMENT_IDS]: [],
-};
+});
 export const DEFAULT_TABLE_ROWS = [
-    DEFAULT_ROW_VALUE,
-    DEFAULT_ROW_VALUE,
-    DEFAULT_ROW_VALUE,
+    getDefaultRowValue(),
+    getDefaultRowValue(),
+    getDefaultRowValue(),
 ];
 
 export const getContingencyListSchema = () =>
@@ -86,9 +87,9 @@ export const getFormDataFromFetchedElement = (
             let result;
             if (response.identifierContingencyList?.identifiers?.length) {
                 result = response.identifierContingencyList?.identifiers?.map(
-                    (identifiers, index) => {
+                    (identifiers) => {
                         return {
-                            [AG_GRID_ROW_UUID]: 'contingencyName' + index,
+                            [AG_GRID_ROW_UUID]: crypto.randomUUID(),
                             [CONTINGENCY_NAME]: identifiers.contingencyId,
                             [EQUIPMENT_IDS]: identifiers.identifierList.map(
                                 (identifier) => identifier.identifier
@@ -108,6 +109,9 @@ export const getFormDataFromFetchedElement = (
                 [SCRIPT]: response.script,
             };
         default:
+            console.info(
+                "Unknown contingency list type '" + contingencyListType + "'"
+            );
             return getContingencyListEmptyFormData();
     }
 };
@@ -139,6 +143,9 @@ export const editContingencyList = (
             };
             return saveScriptContingencyList(newScript, contingencyList[NAME]);
         default:
+            console.info(
+                "Unknown contingency list type '" + contingencyListType + "'"
+            );
             return null;
     }
 };
@@ -165,6 +172,11 @@ export const getFormContent = (contingencyListId, contingencyList) => {
             return { script: contingencyList[SCRIPT] };
         }
         default: {
+            console.info(
+                "Unknown contingency list type '" +
+                    contingencyList[CONTINGENCY_LIST_TYPE] +
+                    "'"
+            );
             return null;
         }
     }
