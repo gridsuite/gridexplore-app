@@ -35,7 +35,7 @@ const MultipleAutocompleteInput = ({ name, ...props }) => {
                     .filter((value) => value)
                     .map((value, index) => (
                         <Chip
-                            id={'chip_' + value}
+                            key={index}
                             size={'small'}
                             label={value}
                             {...getTagsProps({ index })}
