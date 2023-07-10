@@ -68,7 +68,7 @@ const style = {
 export const CustomAgGridTable = ({
     name,
     columnDefs,
-    getDefaultRowData,
+    defaultRowData,
     csvProps,
     ...props
 }) => {
@@ -76,13 +76,30 @@ export const CustomAgGridTable = ({
     const [gridApi, setGridApi] = useState(null);
     const [selectedRows, setSelectedRows] = useState([]);
 
-    const { control, getValues, watch } = useFormContext();
+    const { control, getValues, setValue, watch } = useFormContext();
     const { append, remove, update, swap, move } = useFieldArray({
         control,
         name: name,
     });
 
     const rowData = watch(name);
+
+    useEffect(() => {
+        // if the table has default values without rowUuid, we add it
+        const rowWithoutUuid = rowData.some((r) => !r[AG_GRID_ROW_UUID]);
+        if (rowWithoutUuid) {
+            const rowsWithId = rowData.map((r) => {
+                if (r[AG_GRID_ROW_UUID]) {
+                    return r;
+                }
+                return {
+                    [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+                    ...r,
+                };
+            });
+            setValue(name, rowsWithId);
+        }
+    }, [name, rowData, setValue]);
 
     const isFirstSelected =
         rowData.length &&
@@ -131,7 +148,7 @@ export const CustomAgGridTable = ({
     }, [gridApi, rowData]);
 
     const handleAddRow = () => {
-        append(getDefaultRowData());
+        append(defaultRowData);
     };
 
     const getIndex = (val) => {

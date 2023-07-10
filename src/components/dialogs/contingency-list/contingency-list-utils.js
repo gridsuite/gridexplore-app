@@ -6,7 +6,6 @@
  */
 
 import {
-    AG_GRID_ROW_UUID,
     CONTINGENCY_LIST_TYPE,
     CONTINGENCY_NAME,
     COUNTRIES_1,
@@ -35,15 +34,14 @@ import {
 import yup from '../../utils/yup-config';
 import { getExplicitNamingSchema } from './explicit-naming/explicit-naming-form';
 
-export const getDefaultRowValue = () => ({
-    [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+export const DEFAULT_ROW_VALUE = {
     [CONTINGENCY_NAME]: '',
     [EQUIPMENT_IDS]: [],
-});
+};
 export const DEFAULT_TABLE_ROWS = [
-    getDefaultRowValue(),
-    getDefaultRowValue(),
-    getDefaultRowValue(),
+    DEFAULT_ROW_VALUE,
+    DEFAULT_ROW_VALUE,
+    DEFAULT_ROW_VALUE,
 ];
 
 export const getContingencyListSchema = () =>
@@ -89,7 +87,6 @@ export const getFormDataFromFetchedElement = (
                 result = response.identifierContingencyList?.identifiers?.map(
                     (identifiers) => {
                         return {
-                            [AG_GRID_ROW_UUID]: crypto.randomUUID(),
                             [CONTINGENCY_NAME]: identifiers.contingencyId,
                             [EQUIPMENT_IDS]: identifiers.identifierList.map(
                                 (identifier) => identifier.identifier
