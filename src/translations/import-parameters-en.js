@@ -75,6 +75,92 @@ const import_parameters_en = {
         'Combine phase and angle regulation',
     'ucte.import.combine-phase-angle-regulation.desc':
         'Combine phase and angle regulation',
+    // IIDM
+    'iidm.import.xml.throw-exception-if-extension-not-found':
+        'Throw exception if extension not found',
+    'iidm.import.xml.throw-exception-if-extension-not-found.desc':
+        'Throw exception if extension not found',
+    'iidm.import.xml.extensions': 'Extensions',
+    'iidm.import.xml.extensions.desc': 'Import with these extensions',
+    'iidm.import.xml.extensions.activePowerControl': 'Active power control',
+    'iidm.import.xml.extensions.baseVoltageMapping': 'Base voltage mapping',
+    'iidm.import.xml.extensions.branchObservability': 'Branch observability',
+    'iidm.import.xml.extensions.busbarSectionPosition':
+        'Busbar section position',
+    'iidm.import.xml.extensions.branchStatus': 'Branch status',
+    'iidm.import.xml.extensions.cgmesControlAreas': 'Cgmes control areas',
+    'iidm.import.xml.extensions.cgmesDanglingLineBoundaryNode':
+        'Cgmes dangling line boundary node',
+    'iidm.import.xml.extensions.cgmesLineBoundaryNode':
+        'Cgmes line boundary node',
+    'iidm.import.xml.extensions.cgmesSshMetadata': 'Cgmes ssh metadata',
+    'iidm.import.xml.extensions.cgmesSvMetadata': 'Cgmes sv metadata',
+    'iidm.import.xml.extensions.cgmesTapChangers': 'Cgmes tap changers',
+    'iidm.import.xml.extensions.cimCharacteristics': 'Cgmes characteristics',
+    'iidm.import.xml.extensions.coordinatedReactiveControl':
+        'Coordinated reactive control',
+    'iidm.import.xml.extensions.detail': 'Load detail',
+    'iidm.import.xml.extensions.discreteMeasurements': 'Discrete measurements',
+    'iidm.import.xml.extensions.entsoeArea': 'Entsoe area',
+    'iidm.import.xml.extensions.entsoeCategory': 'Entsoe category',
+    'iidm.import.xml.extensions.generatorActivePowerControl':
+        'Generator active power control',
+    // to remove after powsybl september release
+    'iidm.import.xml.extensions.generatorFortescue': 'Generator asymmetrical',
+    'iidm.import.xml.extensions.generatorAsymmetrical':
+        'Generator asymmetrical',
+    'iidm.import.xml.extensions.generatorShortCircuit':
+        'Generator short-circuit',
+    'iidm.import.xml.extensions.generatorShortCircuits':
+        'Generator short-circuit (IIDM version 1.0)',
+    'iidm.import.xml.extensions.hvdcAngleDroopActivePowerControl':
+        'HVDC angle droop active power control',
+    'iidm.import.xml.extensions.hvdcOperatorActivePowerRange':
+        'HVDC operator active power range',
+    'iidm.import.xml.extensions.identifiableShortCircuit':
+        'Identifiable short-circuit',
+    'iidm.import.xml.extensions.injectionObservability':
+        'Injection observability',
+    // to remove after powsybl september release
+    'iidm.import.xml.extensions.lineFortescue': 'Line asymmetrical',
+    'iidm.import.xml.extensions.lineAsymmetrical': 'Line asymmetrical',
+    'iidm.import.xml.extensions.linePosition': 'Line position',
+    // to remove after powsybl september release
+    'iidm.import.xml.extensions.loadFortescue': 'Load asymmetrical',
+    'iidm.import.xml.extensions.loadAsymmetrical': 'Load asymmetrical',
+    'iidm.import.xml.extensions.measurements': 'Measurements',
+    'iidm.import.xml.extensions.mergedXnode': 'Merged Xnode',
+    'iidm.import.xml.extensions.position': 'Connectable position',
+    'iidm.import.xml.extensions.secondaryVoltageControl':
+        'Secondary voltage control',
+    'iidm.import.xml.extensions.slackTerminal': 'Slack terminal',
+    'iidm.import.xml.extensions.standbyAutomaton':
+        'Static var compensators automaton',
+    'iidm.import.xml.extensions.startup': 'Generator startup',
+    'iidm.import.xml.extensions.substationPosition': 'Substation position',
+    // to remove after powsybl september release
+    'iidm.import.xml.extensions.threeWindingsTransformerFortescue':
+        'Three windings transformer asymmetrical',
+    'iidm.import.xml.extensions.threeWindingsTransformerAsymmetrical':
+        'Three windings transformer asymmetrical',
+    'iidm.import.xml.extensions.threeWindingsTransformerPhaseAngleClock':
+        'Three windings transformer phase angle clock',
+    'iidm.import.xml.extensions.threeWindingsTransformerToBeEstimated':
+        'Three windings transformer to be estimated',
+    // to remove after powsybl september release
+    'iidm.import.xml.extensions.twoWindingsTransformerFortescue':
+        'Two windings transformer asymmetrical',
+    'iidm.import.xml.extensions.twoWindingsTransformerAsymmetrical':
+        'Two windings transformer asymmetrical',
+    'iidm.import.xml.extensions.twoWindingsTransformerPhaseAngleClock':
+        'Two windings transformer phase angle clock',
+    'iidm.import.xml.extensions.twoWindingsTransformerToBeEstimated':
+        'Two windings transformer to be estimated',
+    'iidm.import.xml.extensions.voltageLevelShortCircuits':
+        'Voltage level short circuits',
+    'iidm.import.xml.extensions.voltagePerReactivePowerControl':
+        'Voltage per reactive power control',
+    'iidm.import.xml.extensions.xnode': 'Xnode',
 };
 
 export default import_parameters_en;
