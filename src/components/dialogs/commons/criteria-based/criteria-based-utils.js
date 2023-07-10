@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import CountriesInput from '../../../utils/rhf-inputs/slect-inputs/countries-input';
+import CountriesInput from '../../../utils/rhf-inputs/select-inputs/countries-input';
 import {
     COUNTRIES_1,
     COUNTRIES_2,
@@ -108,8 +108,8 @@ export const CONTINGENCY_LIST_EQUIPMENTS = {
 
 export const getCriteriaBasedSchema = (id = CRITERIA_BASED) => ({
     [id]: yup.object().shape({
-        [COUNTRIES_1]: yup.array().of(yup.string().nullable()),
-        [COUNTRIES_2]: yup.array().of(yup.string().nullable()),
+        [COUNTRIES_1]: yup.array().of(yup.string()),
+        [COUNTRIES_2]: yup.array().of(yup.string()),
         ...getRangeInputSchema(NOMINAL_VOLTAGE_1),
         ...getRangeInputSchema(NOMINAL_VOLTAGE_2),
     }),

@@ -60,7 +60,7 @@ export const getContingencyListEmptyFormData = () => ({
     [EQUIPMENT_TABLE]: DEFAULT_TABLE_ROWS,
     [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [SCRIPT]: '',
-    [EQUIPMENT_TYPE]: '',
+    [EQUIPMENT_TYPE]: null,
     ...getCriteriaBasedFormData(),
 });
 
@@ -78,13 +78,14 @@ export const getFormDataFromFetchedElement = (
                     CRITERIA_BASED,
                     response.countries1,
                     response.countries2,
-                    response?.nominalVoltage1 ?? DEFAULT_RANGE_VALUE,
-                    response?.nominalVoltage2 ?? DEFAULT_RANGE_VALUE
+                    response.nominalVoltage1 ?? DEFAULT_RANGE_VALUE,
+                    response.nominalVoltage2 ?? DEFAULT_RANGE_VALUE
                 ),
             };
         case ContingencyListType.EXPLICIT_NAMING.id:
-            const result =
-                response?.identifierContingencyList?.identifiers?.map(
+            let result;
+            if (response.identifierContingencyList?.identifiers?.length) {
+                result = response.identifierContingencyList?.identifiers?.map(
                     (identifiers, index) => {
                         return {
                             [AG_GRID_ROW_UUID]: 'contingencyName' + index,
@@ -95,12 +96,16 @@ export const getFormDataFromFetchedElement = (
                         };
                     }
                 );
+            } else {
+                result = DEFAULT_TABLE_ROWS;
+            }
+
             return {
-                [EQUIPMENT_TABLE]: result ?? [],
+                [EQUIPMENT_TABLE]: result,
             };
         case ContingencyListType.SCRIPT.id:
             return {
-                [SCRIPT]: response?.script,
+                [SCRIPT]: response.script,
             };
         default:
             return getContingencyListEmptyFormData();

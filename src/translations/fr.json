@@ -217,10 +217,6 @@
     "add" : "Ajouter",
     "replace": "Remplacer",
 
-    "temporaryContingencyWarning": "Dans la version actuelle, les noms des aléas ne sont pas sauvegardés et on ne peut renseigner que des N-1, pas de N-k.",
-
-    "agGrid.contains": "Contient",
-    "agGrid.notContains": "Ne contient pas",
     "agGrid.of": "sur",
     "agGrid.to": "à",
     "agGrid.equals": "Égal à",

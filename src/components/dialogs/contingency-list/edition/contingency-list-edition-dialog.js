@@ -35,6 +35,7 @@ const ContingencyListEditionDialog = ({
     name,
 }) => {
     const [isValidName, setIsValidName] = useState(true);
+    const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
 
     const methods = useForm({
@@ -46,6 +47,7 @@ const ContingencyListEditionDialog = ({
 
     useEffect(() => {
         if (contingencyListId) {
+            setIsFetching(true);
             fetchContingencyList(contingencyListType, contingencyListId)
                 .then((response) => {
                     if (response) {
@@ -63,7 +65,8 @@ const ContingencyListEditionDialog = ({
                         headerId: 'contingencyListEditingError',
                         headerValues: { name: getValues(NAME) },
                     });
-                });
+                })
+                .finally(() => setIsFetching(false));
         }
     }, [
         contingencyListId,
@@ -123,9 +126,11 @@ const ContingencyListEditionDialog = ({
                 initialValue={name}
                 handleNameValidation={checkName}
             />
-            <ContingencyListEditionForm
-                contingencyListType={contingencyListType}
-            />
+            {!isFetching && (
+                <ContingencyListEditionForm
+                    contingencyListType={contingencyListType}
+                />
+            )}
         </CustomMuiDialog>
     );
 };

@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import { Grid } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
-import MuiSelectInput from './slect-inputs/mui-select-input';
+import MuiSelectInput from './select-inputs/mui-select-input';
 
 const style = {
     inputLegend: (theme) => ({
