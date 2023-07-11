@@ -489,6 +489,7 @@ export function getNameCandidate(directoryUuid, elementName, type) {
         }
     });
 }
+
 export function rootDirectoryExists(directoryName) {
     const existsRootDirectoryUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
