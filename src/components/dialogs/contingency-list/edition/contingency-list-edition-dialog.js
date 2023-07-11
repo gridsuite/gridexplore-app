@@ -15,7 +15,7 @@ import {
     getFormDataFromFetchedElement,
 } from '../contingency-list-utils';
 import React, { useEffect, useState } from 'react';
-import { fetchContingencyList } from '../../../../utils/rest-api';
+import { getContingencyList } from "../../../../utils/rest-api";
 import CustomMuiDialog from '../../custom-mui-dialog';
 import ContingencyListEditionForm from './contingency-list-edition-form';
 import { ElementType } from '../../../../utils/elementType';
@@ -48,7 +48,7 @@ const ContingencyListEditionDialog = ({
     useEffect(() => {
         if (contingencyListId) {
             setIsFetching(true);
-            fetchContingencyList(contingencyListType, contingencyListId)
+            getContingencyList(contingencyListType, contingencyListId)
                 .then((response) => {
                     if (response) {
                         const formData = getFormDataFromFetchedElement(

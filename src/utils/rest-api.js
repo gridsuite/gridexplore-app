@@ -579,19 +579,6 @@ export function getContingencyList(type, id) {
     return backendFetchJson(url);
 }
 
-export function fetchContingencyList(type, id) {
-    let url = PREFIX_ACTIONS_QUERIES;
-    if (type === ContingencyListType.SCRIPT.id) {
-        url += '/v1/script-contingency-lists/';
-    } else if (type === ContingencyListType.CRITERIA_BASED.id) {
-        url += '/v1/form-contingency-lists/';
-    } else if (type === ContingencyListType.EXPLICIT_NAMING.id) {
-        url += '/v1/identifier-contingency-lists/';
-    }
-    url += id;
-
-    return backendFetchJson(url);
-}
 /**
  * Saves a Filter contingency list
  * @returns {Promise<Response>}
