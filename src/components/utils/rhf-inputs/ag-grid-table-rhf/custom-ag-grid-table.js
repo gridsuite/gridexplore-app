@@ -84,6 +84,7 @@ export const CustomAgGridTable = ({
 
     const rowData = watch(name);
 
+    // It is not optimal in terms of performance, but we made the decision to isolate the AG_GRID_ROW_UUID inside this component
     useEffect(() => {
         // if the table has default values without rowUuid, we add it
         const rowWithoutUuid = rowData.some((r) => !r[AG_GRID_ROW_UUID]);
