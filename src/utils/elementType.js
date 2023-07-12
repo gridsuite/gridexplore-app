@@ -19,7 +19,7 @@ export const FilterType = {
 };
 
 export const ContingencyListType = {
-    SCRIPT: 'SCRIPT',
-    FORM: 'FORM',
-    EXPLICIT_NAMING: 'IDENTIFIERS',
+    CRITERIA_BASED: { id: 'FORM', label: 'CriteriaBased' },
+    EXPLICIT_NAMING: { id: 'IDENTIFIERS', label: 'ExplicitNaming' },
+    SCRIPT: { id: 'SCRIPT', label: 'SCRIPT' },
 };

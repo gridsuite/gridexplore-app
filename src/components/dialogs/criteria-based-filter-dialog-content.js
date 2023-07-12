@@ -7,7 +7,7 @@
 
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useRef, useState } from 'react';
-import { MenuItem, Grid, Select, FormControl, InputLabel } from '@mui/material';
+import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
 import { getContingencyList, getFilterById } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
@@ -231,7 +231,7 @@ export const CriteriaBasedFilterDialogContent = ({
                         });
                     });
             } else if (contentType === ElementType.CONTINGENCY_LIST) {
-                getContingencyList(ContingencyListType.FORM, id)
+                getContingencyList(ContingencyListType.CRITERIA_BASED.id, id)
                     .then((response) => {
                         setInitialFilter({ ...response });
                         // onFetchedDataCallback is a callback to send response to the parent component when data is fetched.

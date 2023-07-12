@@ -129,11 +129,11 @@ export function backendFetchJson(url, init, token) {
 
 const getContingencyUriParamType = (contingencyListType) => {
     switch (contingencyListType) {
-        case ContingencyListType.SCRIPT:
+        case ContingencyListType.SCRIPT.id:
             return CONTINGENCY_ENDPOINTS.SCRIPT_CONTINGENCY_LISTS;
-        case ContingencyListType.FORM:
+        case ContingencyListType.CRITERIA_BASED.id:
             return CONTINGENCY_ENDPOINTS.FORM_CONTINGENCY_LISTS;
-        case ContingencyListType.EXPLICIT_NAMING:
+        case ContingencyListType.EXPLICIT_NAMING.id:
             return CONTINGENCY_ENDPOINTS.IDENTIFIER_CONTINGENCY_LISTS;
         default:
             return null;
@@ -489,6 +489,7 @@ export function getNameCandidate(directoryUuid, elementName, type) {
         }
     });
 }
+
 export function rootDirectoryExists(directoryName) {
     const existsRootDirectoryUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
@@ -575,6 +576,7 @@ export function getContingencyList(type, id) {
         getContingencyUriParamType(type) +
         '/' +
         id;
+
     return backendFetchJson(url);
 }
 
@@ -582,16 +584,20 @@ export function getContingencyList(type, id) {
  * Saves a Filter contingency list
  * @returns {Promise<Response>}
  */
-export function saveFormContingencyList(form, name) {
-    const { nominalVoltage, ...rest } = form;
+
+export function saveCriteriaBasedContingencyList(id, form) {
+    const { name, equipmentType, criteriaBased } = form;
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
-    urlSearchParams.append('contingencyListType', ContingencyListType.FORM);
+    urlSearchParams.append(
+        'contingencyListType',
+        ContingencyListType.CRITERIA_BASED.id
+    );
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/contingency-lists/' +
-        form.id +
+        id +
         '?' +
         urlSearchParams.toString();
 
@@ -599,8 +605,12 @@ export function saveFormContingencyList(form, name) {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            ...rest,
-            nominalVoltage: nominalVoltage === '' ? -1 : nominalVoltage,
+            ...criteriaBased,
+            equipmentType,
+            nominalVoltage1:
+                criteriaBased.nominalVoltage1 === ''
+                    ? -1
+                    : criteriaBased.nominalVoltage1,
         }),
     });
 }
@@ -612,7 +622,10 @@ export function saveFormContingencyList(form, name) {
 export function saveScriptContingencyList(scriptContingencyList, name) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
-    urlSearchParams.append('contingencyListType', ContingencyListType.SCRIPT);
+    urlSearchParams.append(
+        'contingencyListType',
+        ContingencyListType.SCRIPT.id
+    );
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/contingency-lists/' +
@@ -638,7 +651,7 @@ export function saveExplicitNamingContingencyList(
     urlSearchParams.append('name', name);
     urlSearchParams.append(
         'contingencyListType',
-        ContingencyListType.EXPLICIT_NAMING
+        ContingencyListType.EXPLICIT_NAMING.id
     );
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +

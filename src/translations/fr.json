@@ -121,6 +121,9 @@
     "CSVFileCommentContingencyList2": "# Ligne 1,ID_ligne1",
     "CSVFileCommentContingencyList3": "# Transformateur 2,ID_transformateur2",
     "CSVFileCommentContingencyList4": "# N-2 mixte,ID_ligne1|ID_groupe1",
+    "contingencyListCreationError": "Une erreur est survenue lors de la création de la liste d'aléas : {name}",
+    "contingencyListEditingError": "Une erreur est survenue lors de l'édition de la liste d'aléas : {name}",
+    "contingencyListCreation": "creationListeAleas",
 
     "equipmentType": "Type d'ouvrage",
     "equipmentName": "Nom d'ouvrage",
@@ -214,6 +217,20 @@
     "add" : "Ajouter",
     "replace": "Remplacer",
 
+    "agGrid.of": "sur",
+    "agGrid.to": "à",
+    "agGrid.equals": "Égal à",
+    "agGrid.notEqual": "N'est pas égal à",
+    "agGrid.startsWith": "Commence par",
+    "agGrid.endsWith": "Finit par",
+    "agGrid.blank": "Vide",
+    "agGrid.notBlank": "N'est pas vide",
+    "agGrid.noRowsToShow": "Aucune Donnée",
+    "agGrid.firstPage" : "première page",
+    "agGrid.previousPage" : "page précédente",
+    "agGrid.nextPage" : "page suivante",
+    "agGrid.lastPage" : "dernière page",
+
     "DIE" : "ARCADE",
     "XIIDM": "XIIDM",
     "CGMES": "CGMES",
@@ -222,4 +239,5 @@
     "MATPOWER": "MATPOWER",
     "POWERFACTORY" : "POWERFACTORY",
     "IEEE CDF": "IEEE CDF"
+
 }
