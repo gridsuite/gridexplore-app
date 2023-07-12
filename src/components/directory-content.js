@@ -346,16 +346,14 @@ const DirectoryContent = () => {
     }
 
     function typeCellRender(cellData) {
-        const elementUuid = cellData.rowData['elementUuid'];
-        const objectType = cellData.rowData[cellData.dataKey];
+        const { rowData = {} } = cellData || {};
+        const elementUuid = rowData['elementUuid'];
+        const objectType = rowData[cellData.dataKey];
+        const { subtype, format } = childrenMetadata[elementUuid] || {};
         return (
             <div className={classes.cell}>
                 {childrenMetadata[elementUuid] &&
-                    getElementTypeTranslation(
-                        objectType,
-                        childrenMetadata[elementUuid].subtype,
-                        childrenMetadata[elementUuid].format
-                    )}
+                    getElementTypeTranslation(objectType, subtype, format)}
             </div>
         );
     }
@@ -693,7 +691,7 @@ const DirectoryContent = () => {
                             }),
                             dataKey: 'elementName',
                             cellRenderer: nameCellRender,
-                            minWidth: '39%',
+                            minWidth: '36%',
                         },
                         {
                             minWidth: '20%',
@@ -720,7 +718,7 @@ const DirectoryContent = () => {
                             cellRenderer: dateCellRender,
                         },
                         {
-                            minWidth: '10%',
+                            minWidth: '11%',
                             label: intl.formatMessage({
                                 id: 'modifiedBy',
                             }),
@@ -728,7 +726,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            minWidth: '8%',
+                            minWidth: '10%',
                             label: intl.formatMessage({
                                 id: 'modified',
                             }),
