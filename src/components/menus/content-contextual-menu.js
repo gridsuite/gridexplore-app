@@ -20,7 +20,6 @@ import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
 
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
-import ScriptDialog from '../dialogs/script-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CriteriaBasedFilterDialog from '../dialogs/criteria-based-filter-dialog';
@@ -371,7 +370,8 @@ const ContentContextualMenu = (props) => {
         return (
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype === ContingencyListType.FORM
+            selectedElements[0].subtype ===
+                ContingencyListType.CRITERIA_BASED.id
         );
     }, [selectedElements]);
 
@@ -379,43 +379,11 @@ const ContentContextualMenu = (props) => {
         return (
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype === ContingencyListType.FORM &&
+            selectedElements[0].subtype ===
+                ContingencyListType.CRITERIA_BASED.id &&
             isUserAllowed()
         );
     }, [isUserAllowed, selectedElements]);
-
-    const getActiveContingencyScriptId = () => {
-        if (
-            activeElement?.type === ElementType.CONTINGENCY_LIST &&
-            activeElement?.subtype === ContingencyListType.SCRIPT
-        ) {
-            return activeElement.elementUuid;
-        } else {
-            return null;
-        }
-    };
-
-    const getActiveContingencyFormId = () => {
-        if (
-            activeElement?.type === ElementType.CONTINGENCY_LIST &&
-            activeElement?.subtype === ContingencyListType.FORM
-        ) {
-            return activeElement.elementUuid;
-        } else {
-            return null;
-        }
-    };
-
-    const getActiveFilterScriptId = () => {
-        if (
-            activeElement?.type === ElementType.FILTER &&
-            activeElement?.subtype === FilterType.SCRIPT
-        ) {
-            return activeElement.elementUuid;
-        } else {
-            return null;
-        }
-    };
 
     const getActiveFilterFormId = () => {
         if (
@@ -582,47 +550,6 @@ const ContentContextualMenu = (props) => {
                             handleCloseDialog();
                         }}
                         items={selectedElements}
-                    />
-                );
-            case DialogsId.FILTERS_CONTINGENCY:
-                return (
-                    <CriteriaBasedFilterDialog
-                        id={getActiveContingencyFormId()}
-                        open={true}
-                        onClose={handleCloseDialog}
-                        onError={handleLastError}
-                        title={intl.formatMessage({
-                            id: 'editContingencyList',
-                        })}
-                        contentType={ElementType.CONTINGENCY_LIST}
-                    />
-                );
-            case DialogsId.SCRIPT_CONTINGENCY:
-                return (
-                    <ScriptDialog
-                        id={getActiveContingencyScriptId()}
-                        open={true}
-                        isCreation
-                        onClose={handleCloseDialog}
-                        onError={handleLastError}
-                        title={intl.formatMessage({
-                            id: 'editContingencyList',
-                        })}
-                        type={ElementType.CONTINGENCY_LIST}
-                    />
-                );
-            case DialogsId.SCRIPT:
-                return (
-                    <ScriptDialog
-                        id={getActiveFilterScriptId()}
-                        open={true}
-                        isCreation
-                        onClose={handleCloseDialog}
-                        onError={handleLastError}
-                        title={intl.formatMessage({
-                            id: 'editFilterScript',
-                        })}
-                        type={ElementType.FILTER}
                     />
                 );
             case DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY:
