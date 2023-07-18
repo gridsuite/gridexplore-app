@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveDirectory } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -33,10 +33,7 @@ import {
 import { Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
-
-import ScriptDialog from './dialogs/script-dialog';
 import CriteriaBasedFilterDialog from './dialogs/criteria-based-filter-dialog';
-import ExplicitNamingFilterCreationDialog from './dialogs/explicit-naming-filter-creation-dialog';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
@@ -45,7 +42,8 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
-import ExplicitNamingContingencyListEditDialog from './dialogs/explicit-naming-contingency-list-edit-dialog';
+import ContingencyListEditionDialog from './dialogs/contingency-list/edition/contingency-list-edition-dialog';
+import ExplicitNamingFilterCreationDialog from './dialogs/explicit-naming-filter-creation-dialog';
 
 const circularProgressSize = '70px';
 
@@ -149,17 +147,17 @@ const DirectoryContent = () => {
                           )
                       );
             } else if (event.rowData.type === ElementType.CONTINGENCY_LIST) {
-                if (subtype === ContingencyListType.FORM) {
+                if (subtype === ContingencyListType.CRITERIA_BASED.id) {
                     setCurrentFiltersContingencyListId(
                         event.rowData.elementUuid
                     );
                     setOpenDialog(subtype);
-                } else if (subtype === ContingencyListType.SCRIPT) {
+                } else if (subtype === ContingencyListType.SCRIPT.id) {
                     setCurrentScriptContingencyListId(
                         event.rowData.elementUuid
                     );
                     setOpenDialog(subtype);
-                } else if (subtype === ContingencyListType.EXPLICIT_NAMING) {
+                } else if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
                     setCurrentExplicitNamingContingencyListId(
                         event.rowData.elementUuid
                     );
@@ -765,44 +763,42 @@ const DirectoryContent = () => {
         // TODO openDialog should also be aware of the dialog's type, not only its subtype, because
         // if/when two different dialogs have the same subtype, this function will display the wrong dialog.
         switch (openDialog) {
-            case ContingencyListType.FORM:
+            case ContingencyListType.CRITERIA_BASED.id:
                 return (
-                    <CriteriaBasedFilterDialog
-                        id={currentFiltersContingencyListId}
+                    <ContingencyListEditionDialog
                         open={true}
+                        titleId={'editContingencyList'}
+                        contingencyListId={currentFiltersContingencyListId}
+                        contingencyListType={
+                            ContingencyListType.CRITERIA_BASED.id
+                        }
                         onClose={handleCloseFiltersContingency}
-                        onError={handleError}
-                        title={intl.formatMessage({
-                            id: 'editContingencyList',
-                        })}
-                        contentType={ElementType.CONTINGENCY_LIST}
                         name={name}
                     />
                 );
-            case ContingencyListType.SCRIPT:
+            case ContingencyListType.SCRIPT.id:
                 return (
-                    <ScriptDialog
-                        id={currentScriptContingencyListId}
+                    <ContingencyListEditionDialog
                         open={true}
+                        titleId={'editContingencyList'}
+                        contingencyListId={currentScriptContingencyListId}
+                        contingencyListType={ContingencyListType.SCRIPT.id}
                         onClose={handleCloseScriptContingency}
-                        onError={handleError}
-                        title={intl.formatMessage({
-                            id: 'editContingencyList',
-                        })}
-                        type={ElementType.CONTINGENCY_LIST}
                         name={name}
                     />
                 );
-            case ContingencyListType.EXPLICIT_NAMING:
+            case ContingencyListType.EXPLICIT_NAMING.id:
                 return (
-                    <ExplicitNamingContingencyListEditDialog
-                        id={currentExplicitNamingContingencyListId}
+                    <ContingencyListEditionDialog
                         open={true}
+                        titleId={'editContingencyList'}
+                        contingencyListId={
+                            currentExplicitNamingContingencyListId
+                        }
+                        contingencyListType={
+                            ContingencyListType.EXPLICIT_NAMING.id
+                        }
                         onClose={handleCloseExplicitNamingContingency}
-                        title={intl.formatMessage({
-                            id: 'editContingencyList',
-                        })}
-                        isCreation={false}
                         name={name}
                     />
                 );

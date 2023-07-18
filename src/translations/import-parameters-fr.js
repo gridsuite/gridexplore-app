@@ -83,6 +83,103 @@ const import_parameters_fr = {
         'Combiner les lois de réglage et de déphasage',
     'ucte.import.combine-phase-angle-regulation.desc':
         'Combiner les lois de réglage et de déphasage',
+
+    // IIDM
+    'iidm.import.xml.throw-exception-if-extension-not-found':
+        "Exception si une extension n'est pas connue",
+    'iidm.import.xml.throw-exception-if-extension-not-found.desc':
+        "Lever une exception si on essaie d'importer une extension inconnue",
+    'iidm.import.xml.extensions': 'Extensions',
+    'iidm.import.xml.extensions.desc': 'Importer avec ces extensions',
+    'iidm.import.xml.extensions.activePowerControl': 'Compensation',
+    'iidm.import.xml.extensions.baseVoltageMapping': 'Tension nominale',
+    'iidm.import.xml.extensions.branchObservability':
+        'Observabilité des quadripôles',
+    'iidm.import.xml.extensions.busbarSectionPosition': 'Position des SJBs',
+    'iidm.import.xml.extensions.branchStatus':
+        'Statut de consignation et déclenchement',
+    'iidm.import.xml.extensions.cgmesControlAreas': 'Cgmes - zone géographique',
+    'iidm.import.xml.extensions.cgmesDanglingLineBoundaryNode':
+        'Code EIC des lignes frontières (ligne non mergée)',
+    'iidm.import.xml.extensions.cgmesLineBoundaryNode':
+        'Code EIC des lignes frontières (ligne complète)',
+    'iidm.import.xml.extensions.cgmesSshMetadata': 'Cgmes - ssh métadonnées',
+    'iidm.import.xml.extensions.cgmesSvMetadata': 'Cgmes - sv métadonnées',
+    'iidm.import.xml.extensions.cgmesTapChangers':
+        'Cgmes - lois de réglage et déphasage',
+    'iidm.import.xml.extensions.cimCharacteristics': 'Cgmes - caractéristiques',
+    'iidm.import.xml.extensions.coordinatedReactiveControl':
+        'Contrôle coordonné du réactif',
+    'iidm.import.xml.extensions.detail':
+        'Données détaillées des consommations (fixe | affine)',
+    'iidm.import.xml.extensions.discreteMeasurements':
+        'Télémesures (Régleurs et Déphaseurs)',
+    'iidm.import.xml.extensions.entsoeArea': 'Zone Entsoe',
+    'iidm.import.xml.extensions.entsoeCategory': 'Catégorie Entsoe des groupes',
+    'iidm.import.xml.extensions.generatorActivePowerControl':
+        'Compensation (Groupes)',
+    // to remove after powsybl september release
+    'iidm.import.xml.extensions.generatorFortescue':
+        'Données pour les calculs dissymétriques des groupes',
+    'iidm.import.xml.extensions.generatorAsymmetrical':
+        'Données pour les calculs dissymétriques des groupes',
+    'iidm.import.xml.extensions.generatorShortCircuit':
+        'Données de court-circuit des groupes',
+    'iidm.import.xml.extensions.generatorShortCircuits':
+        'Données de court-circuit des groupes (Version IIDM 1.0)',
+    'iidm.import.xml.extensions.hvdcAngleDroopActivePowerControl':
+        'Emulation AC pour les HVDCs',
+    'iidm.import.xml.extensions.hvdcOperatorActivePowerRange':
+        'Limites de transits des HVDCs',
+    'iidm.import.xml.extensions.identifiableShortCircuit':
+        'Données de court-circuit des postes',
+    'iidm.import.xml.extensions.injectionObservability':
+        'Observabilité des injections',
+    // to remove after powsybl september release
+    'iidm.import.xml.extensions.lineFortescue':
+        'Données pour les calculs dissymétriques des lignes',
+    'iidm.import.xml.extensions.lineAsymmetrical':
+        'Données pour les calculs dissymétriques des lignes',
+    'iidm.import.xml.extensions.linePosition':
+        'Coordonnées géographiques de lignes',
+    // to remove after powsybl september release
+    'iidm.import.xml.extensions.loadFortescue':
+        'Données pour les calculs dissymétriques des consommations',
+    'iidm.import.xml.extensions.loadAsymmetrical':
+        'Données pour les calculs dissymétriques des consommations',
+    'iidm.import.xml.extensions.measurements': 'Télémesures',
+    'iidm.import.xml.extensions.mergedXnode': 'Xnode mergé',
+    'iidm.import.xml.extensions.position': 'Position des départs',
+    'iidm.import.xml.extensions.secondaryVoltageControl':
+        'Réglage secondaire de tension',
+    'iidm.import.xml.extensions.slackTerminal': 'Noeud bilan',
+    'iidm.import.xml.extensions.standbyAutomaton': 'Automate des CSPRs',
+    'iidm.import.xml.extensions.startup': 'Coût de démarrage des groupes',
+    'iidm.import.xml.extensions.substationPosition':
+        'Coordonnées géographiques des sites',
+    // to remove after powsybl september release
+    'iidm.import.xml.extensions.threeWindingsTransformerFortescue':
+        'Données pour les calculs dissymétriques des transformateurs à trois enroulements',
+    'iidm.import.xml.extensions.threeWindingsTransformerAsymmetrical':
+        'Données pour les calculs dissymétriques des transformateurs à trois enroulements',
+    'iidm.import.xml.extensions.threeWindingsTransformerPhaseAngleClock':
+        "Angles de phase entre les enroulements (sous forme d'horloge) pour les transformateurs à trois enroulements",
+    'iidm.import.xml.extensions.threeWindingsTransformerToBeEstimated':
+        'Estimation des prises des régleurs et des déphaseurs des transformateurs à trois enroulements',
+    // to remove after powsybl september release
+    'iidm.import.xml.extensions.twoWindingsTransformerFortescue':
+        'Données pour les calculs dissymétriques des transformateurs à deux enroulements',
+    'iidm.import.xml.extensions.twoWindingsTransformerAsymmetrical':
+        'Données pour les calculs dissymétriques des transformateurs à deux enroulements',
+    'iidm.import.xml.extensions.twoWindingsTransformerPhaseAngleClock':
+        "Angle de phase entre les enroulements (sous forme d'horloge) pour les transformateurs à deux enroulements",
+    'iidm.import.xml.extensions.twoWindingsTransformerToBeEstimated':
+        'Estimation des prises des régleurs et des déphaseurs des transformateurs à deux enroulements',
+    'iidm.import.xml.extensions.voltageLevelShortCircuits':
+        'Données de court-circuit des postes (Version IIDM 1.0)',
+    'iidm.import.xml.extensions.voltagePerReactivePowerControl':
+        'Contrôle de la tension par le réactif',
+    'iidm.import.xml.extensions.xnode': 'Code Xnode',
 };
 
 export default import_parameters_fr;
