@@ -30,7 +30,7 @@ import {
     OverflowableText,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Checkbox, Typography } from '@mui/material';
+import { Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
 import CriteriaBasedFilterDialog from './dialogs/criteria-based-filter-dialog';
@@ -335,23 +335,23 @@ const DirectoryContent = () => {
                 ? intl.formatMessage({ id: subtype + '_' + type })
                 : intl.formatMessage({ id: type });
         const elementTypeLabel = `${elemType}${format}`;
-        return <Typography>{elementTypeLabel}</Typography>;
+        return (
+            <OverflowableText
+                text={elementTypeLabel}
+                tooltipStyle={classes.tooltip}
+            />
+        );
     }
 
     function typeCellRender(cellData) {
-        const elementUuid = cellData.rowData['elementUuid'];
-        const objectType = cellData.rowData[cellData.dataKey];
+        const { rowData = {} } = cellData || {};
+        const elementUuid = rowData['elementUuid'];
+        const objectType = rowData[cellData.dataKey];
+        const { subtype, format } = childrenMetadata[elementUuid] || {};
         return (
             <div className={classes.cell}>
-                {childrenMetadata[elementUuid] ? (
-                    <div>
-                        {getElementTypeTranslation(
-                            objectType,
-                            childrenMetadata[elementUuid].subtype,
-                            childrenMetadata[elementUuid].format
-                        )}
-                    </div>
-                ) : null}
+                {childrenMetadata[elementUuid] &&
+                    getElementTypeTranslation(objectType, subtype, format)}
             </div>
         );
     }
@@ -400,7 +400,7 @@ const DirectoryContent = () => {
         }
     }
 
-    function getElementIcon(objectType, objectSubtype) {
+    function getElementIcon(objectType) {
         if (objectType === ElementType.STUDY) {
             return <PhotoLibraryIcon className={classes.icon} />;
         } else if (objectType === ElementType.CONTINGENCY_LIST) {
@@ -681,7 +681,7 @@ const DirectoryContent = () => {
                             dataKey: 'selected',
                             label: '',
                             headerRenderer: selectionHeaderRenderer,
-                            minWidth: '4ex',
+                            minWidth: '3%',
                         },
                         {
                             label: intl.formatMessage({
@@ -689,9 +689,10 @@ const DirectoryContent = () => {
                             }),
                             dataKey: 'elementName',
                             cellRenderer: nameCellRender,
+                            minWidth: '36%',
                         },
                         {
-                            minWidth: '26ex',
+                            minWidth: '20%',
                             label: intl.formatMessage({
                                 id: 'type',
                             }),
@@ -699,7 +700,7 @@ const DirectoryContent = () => {
                             cellRenderer: typeCellRender,
                         },
                         {
-                            minWidth: '15ex',
+                            minWidth: '10%',
                             label: intl.formatMessage({
                                 id: 'creator',
                             }),
@@ -707,7 +708,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            minWidth: '14ex',
+                            minWidth: '10%',
                             label: intl.formatMessage({
                                 id: 'created',
                             }),
@@ -715,7 +716,7 @@ const DirectoryContent = () => {
                             cellRenderer: dateCellRender,
                         },
                         {
-                            minWidth: '16ex',
+                            minWidth: '11%',
                             label: intl.formatMessage({
                                 id: 'modifiedBy',
                             }),
@@ -723,7 +724,7 @@ const DirectoryContent = () => {
                             cellRenderer: userCellRender,
                         },
                         {
-                            minWidth: '14ex',
+                            minWidth: '10%',
                             label: intl.formatMessage({
                                 id: 'modified',
                             }),
