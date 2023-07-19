@@ -28,11 +28,13 @@ export const getExplicitNamingSchema = (id) => ({
         })
     ),
 });
-const suppressEnter = (params) => {
+const suppressKeyboardKey = (params) => {
     const KEY_ENTER = 'Enter';
+    const KEY_ARROW_LEFT = 'ArrowLeft';
+    const KEY_ARROW_RIGHT = 'ArrowRight';
     const event = params.event;
     const key = event.key;
-    return key === KEY_ENTER;
+    return key === KEY_ENTER || key === KEY_ARROW_LEFT || key === KEY_ARROW_RIGHT;
 };
 
 const ExplicitNamingForm = () => {
@@ -50,7 +52,8 @@ const ExplicitNamingForm = () => {
                 headerName: intl.formatMessage({ id: 'equipments' }),
                 field: EQUIPMENT_IDS,
                 suppressKeyboardEvent: (params) => {
-                    return suppressEnter(params);
+                    // we suppress the keys that are used by cellRenderer
+                    return suppressKeyboardKey(params);
                 },
                 autoHeight: true,
                 wrapText: true,
