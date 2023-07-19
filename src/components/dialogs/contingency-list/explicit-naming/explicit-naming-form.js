@@ -34,7 +34,9 @@ const suppressKeyboardKey = (params) => {
     const KEY_ARROW_RIGHT = 'ArrowRight';
     const event = params.event;
     const key = event.key;
-    return key === KEY_ENTER || key === KEY_ARROW_LEFT || key === KEY_ARROW_RIGHT;
+    return (
+        key === KEY_ENTER || key === KEY_ARROW_LEFT || key === KEY_ARROW_RIGHT
+    );
 };
 
 const ExplicitNamingForm = () => {
