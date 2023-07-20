@@ -29,14 +29,8 @@ export const getExplicitNamingSchema = (id) => ({
     ),
 });
 const suppressKeyboardEvent = (params) => {
-    const KEY_ENTER = 'Enter';
-    const KEY_ARROW_LEFT = 'ArrowLeft';
-    const KEY_ARROW_RIGHT = 'ArrowRight';
-    const event = params.event;
-    const key = event.key;
-    return (
-        key === KEY_ENTER || key === KEY_ARROW_LEFT || key === KEY_ARROW_RIGHT
-    );
+    const key = params.event.key;
+    return key === 'Enter' || key === 'ArrowLeft' || key === 'ArrowRight';
 };
 
 const ExplicitNamingForm = () => {
