@@ -8,7 +8,7 @@
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
@@ -311,12 +311,6 @@ const DirectoryTreeContextualMenu = (props) => {
                     <CreateFilterDialog
                         open={true}
                         onClose={handleCloseDialog}
-                        title={<FormattedMessage id="createNewFilter" />}
-                        inputLabelText={<FormattedMessage id="nameProperty" />}
-                        customTextValidationBtn={
-                            <FormattedMessage id="validate" />
-                        }
-                        customTextCancelBtn={<FormattedMessage id="cancel" />}
                     />
                 );
             case DialogsId.ADD_NEW_CASE:

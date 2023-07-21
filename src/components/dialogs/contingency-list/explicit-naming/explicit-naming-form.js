@@ -108,6 +108,7 @@ const ExplicitNamingForm = () => {
             name={EQUIPMENT_TABLE}
             columnDefs={columnDefs}
             defaultRowData={DEFAULT_ROW_VALUE}
+            defaultEmptyRowsNumber={3}
             pagination={true}
             paginationPageSize={100}
             suppressRowClickSelection

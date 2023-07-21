@@ -33,7 +33,7 @@ import {
 import { Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
-import CriteriaBasedFilterDialog from './dialogs/criteria-based-filter-dialog';
+import CriteriaBasedFilterEditionDialog from './dialogs/filter/criteria-based-filter-edition-dialog';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
@@ -43,7 +43,7 @@ import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
 import ContingencyListEditionDialog from './dialogs/contingency-list/edition/contingency-list-edition-dialog';
-import ExplicitNamingFilterCreationDialog from './dialogs/explicit-naming-filter-creation-dialog';
+import ExplicitNamingFilterEditionDialog from './dialogs/filter/explicit-naming-filter-edition-dialog';
 
 const circularProgressSize = '70px';
 
@@ -164,10 +164,10 @@ const DirectoryContent = () => {
                     setOpenDialog(subtype);
                 }
             } else if (event.rowData.type === ElementType.FILTER) {
-                if (subtype === FilterType.EXPLICIT_NAMING) {
+                if (subtype === FilterType.EXPLICIT_NAMING.id) {
                     setCurrentExplicitNamingFilterId(event.rowData.elementUuid);
                     setOpenDialog(subtype);
-                } else if (subtype === FilterType.CRITERIA) {
+                } else if (subtype === FilterType.CRITERIA_BASED.id) {
                     setCurrentCriteriaBasedFilterId(event.rowData.elementUuid);
                     setOpenDialog(subtype);
                 }
@@ -802,26 +802,23 @@ const DirectoryContent = () => {
                         name={name}
                     />
                 );
-            case FilterType.EXPLICIT_NAMING:
+            case FilterType.EXPLICIT_NAMING.id:
                 return (
-                    <ExplicitNamingFilterCreationDialog
+                    <ExplicitNamingFilterEditionDialog
                         id={currentExplicitNamingFilterId}
                         open={true}
                         onClose={handleCloseExplicitNamingFilterDialog}
-                        title={intl.formatMessage({ id: 'editFilter' })}
-                        isFilterCreation={false}
+                        titleId={'editFilter'}
                         name={name}
                     />
                 );
-            case FilterType.CRITERIA:
+            case FilterType.CRITERIA_BASED.id:
                 return (
-                    <CriteriaBasedFilterDialog
+                    <CriteriaBasedFilterEditionDialog
                         id={currentCriteriaBasedFilterId}
                         open={true}
                         onClose={handleCloseCriteriaBasedFilterDialog}
-                        onError={handleError}
-                        title={intl.formatMessage({ id: 'editFilter' })}
-                        contentType={ElementType.FILTER}
+                        titleId={'editFilter'}
                         name={name}
                     />
                 );

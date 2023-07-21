@@ -4,12 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { createFilter, saveFilter } from '../../utils/rest-api';
-import { FilterType } from '../../utils/elementType';
+import { createFilter, saveFilter } from '../../../utils/rest-api';
+import { FilterType } from '../../../utils/elementType';
+import { frontToBackTweak } from './criteria-based-filter-dialog-utils';
+import { NAME } from '../../utils/field-constants';
+import { Generator, Load } from '../../../utils/equipment-types';
 
-const filterSave = (
+export const saveExplicitNamingFilter = (
     tableValues,
-    isGeneratorOrLoad,
     isFilterCreation,
     equipmentType,
     name,
@@ -17,9 +19,10 @@ const filterSave = (
     setCreateFilterErr,
     activeDirectory,
     intl,
-    handleClose,
-    updatedName
+    handleClose
 ) => {
+    const isGeneratorOrLoad =
+        equipmentType === Generator.type || equipmentType === Load.type;
     let hasMissingIdWithDistrKey = tableValues.some(
         (el) => !el?.equipmentID?.trim() && el.distributionKey
     );
@@ -35,7 +38,6 @@ const filterSave = (
     let values = tableValues.filter(
         (el) => el?.equipmentID && el.equipmentID.trim().length > 0
     );
-
     if (values.length === 0) {
         setCreateFilterErr(
             intl.formatMessage({
@@ -59,7 +61,7 @@ const filterSave = (
     if (isFilterCreation) {
         createFilter(
             {
-                type: FilterType.EXPLICIT_NAMING,
+                type: FilterType.EXPLICIT_NAMING.id,
                 equipmentType: equipmentType,
                 filterEquipmentsAttributes: values,
             },
@@ -69,26 +71,40 @@ const filterSave = (
             .then(() => {
                 handleClose();
             })
-            .catch((message) => {
-                setCreateFilterErr(message);
+            .catch((error) => {
+                setCreateFilterErr(error.message);
             });
     } else {
         saveFilter(
             {
                 id: id,
-                type: FilterType.EXPLICIT_NAMING,
+                type: FilterType.EXPLICIT_NAMING.id,
                 equipmentType: equipmentType,
                 filterEquipmentsAttributes: values,
             },
-            updatedName
+            name
         )
             .then(() => {
                 handleClose();
             })
-            .catch((message) => {
-                setCreateFilterErr(message);
+            .catch((error) => {
+                setCreateFilterErr(error.message);
             });
     }
 };
 
-export default filterSave;
+export const saveCriteriaBasedFilter = (
+    filter,
+    activeDirectory,
+    onClose,
+    onError
+) => {
+    const filterForBack = frontToBackTweak(undefined, filter); // no need ID for creation
+    createFilter(filterForBack, filter[NAME], activeDirectory)
+        .then(() => {
+            onClose();
+        })
+        .catch((error) => {
+            onError(error.message);
+        });
+};

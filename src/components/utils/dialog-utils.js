@@ -31,3 +31,13 @@ export const isFloatNumber = (val) => {
 };
 
 export const func_identity = (e) => e;
+
+export const toIntOrNullValue = (value) => {
+    if (value === '-') {
+        return value;
+    }
+    if (value === '0') {
+        return 0;
+    }
+    return parseInt(value) || null;
+};
