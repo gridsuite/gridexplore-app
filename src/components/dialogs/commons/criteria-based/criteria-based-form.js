@@ -14,17 +14,17 @@ import SelectInput from '../../../utils/rhf-inputs/select-inputs/select-input';
 import InputWithPopupConfirmation from '../../../utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
 
 const CriteriaBasedForm = ({ equipments, defaultValues }) => {
-    const {
-        setValue,
-        formState: { dirtyFields },
-    } = useFormContext();
+    const { getValues, setValue } = useFormContext();
 
     const watchEquipmentType = useWatch({
         name: EQUIPMENT_TYPE,
     });
 
     const openConfirmationPopup = () => {
-        return dirtyFields[CRITERIA_BASED];
+        return (
+            JSON.stringify(getValues(CRITERIA_BASED)) !==
+            JSON.stringify(defaultValues)
+        );
     };
 
     const handleResetOnConfirmation = () => {

@@ -1,17 +1,20 @@
 import AutocompleteInput from './autocomplete-input';
 import { Chip } from '@mui/material';
 import React, { useState } from 'react';
-import { useFieldArray } from 'react-hook-form';
+import { useFieldArray, useWatch } from 'react-hook-form';
 
 const MultipleAutocompleteInput = ({ name, ...props }) => {
     const [unsavedInput, setUnsavedInput] = useState('');
+    const watchAutocompleteValues = useWatch({
+        name,
+    });
 
     const { append, remove } = useFieldArray({
         name,
     });
 
     const handleOnBlur = () => {
-        if (unsavedInput) {
+        if (unsavedInput && !watchAutocompleteValues.includes(unsavedInput)) {
             append(unsavedInput);
         }
         setUnsavedInput('');
@@ -25,6 +28,7 @@ const MultipleAutocompleteInput = ({ name, ...props }) => {
             allowNewValue
             clearOnBlur
             disableClearable={true}
+            outputTransform={(value) => value.trim()}
             onInputChange={(_, val) => setUnsavedInput(val.trim() ?? '')}
             onBlur={handleOnBlur}
             blurOnSelect={false}
