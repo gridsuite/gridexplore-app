@@ -9,7 +9,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { saveExplicitNamingFilter } from './filters-save';
-import { ElementType } from '../../../utils/elementType';
+import { ElementType, FilterType } from '../../../utils/elementType';
 import NameWrapper from '../name-wrapper';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -21,12 +21,13 @@ import ExplicitNamingFilterForm, {
     explicitNamingFilterSchema,
     FILTER_EQUIPMENTS_ATTRIBUTES,
 } from './explicit-naming-filter-form';
-import { EQUIPMENT_TYPE, NAME } from '../../utils/field-constants';
+import { EQUIPMENT_TYPE, FILTER_TYPE, NAME } from '../../utils/field-constants';
 
 const formSchema = yup
     .object()
     .shape({
         [NAME]: yup.string().required(),
+        [FILTER_TYPE]: yup.string().required(),
         [EQUIPMENT_TYPE]: yup.string().required(),
         ...explicitNamingFilterSchema,
     })
@@ -57,6 +58,7 @@ const ExplicitNamingFilterEditionDialog = ({
                 .then((response) => {
                     reset({
                         [NAME]: name,
+                        [FILTER_TYPE]: FilterType.EXPLICIT_NAMING.id,
                         [EQUIPMENT_TYPE]: response[EQUIPMENT_TYPE],
                         [FILTER_EQUIPMENTS_ATTRIBUTES]:
                             response[FILTER_EQUIPMENTS_ATTRIBUTES],

@@ -7,7 +7,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { getFilterById, saveFilter } from '../../../utils/rest-api';
-import { ElementType } from '../../../utils/elementType';
+import { ElementType, FilterType } from '../../../utils/elementType';
 import {
     backToFrontTweak,
     frontToBackTweak,
@@ -21,13 +21,14 @@ import CriteriaBasedFilterForm, {
     criteriaBasedFilterSchema,
 } from './criteria-based-filter-form';
 import yup from '../../utils/yup-config';
-import { EQUIPMENT_TYPE, NAME } from '../../utils/field-constants';
+import { EQUIPMENT_TYPE, FILTER_TYPE, NAME } from '../../utils/field-constants';
 import PropTypes from 'prop-types';
 
 const formSchema = yup
     .object()
     .shape({
         [NAME]: yup.string().required(),
+        [FILTER_TYPE]: yup.string().required(),
         [EQUIPMENT_TYPE]: yup.string().required(),
         ...criteriaBasedFilterSchema,
     })
@@ -57,6 +58,7 @@ export const CriteriaBasedFilterEditionDialog = ({
                 .then((response) => {
                     reset({
                         [NAME]: name,
+                        [FILTER_TYPE]: FilterType.CRITERIA_BASED.id,
                         ...backToFrontTweak(response),
                     });
                 })
