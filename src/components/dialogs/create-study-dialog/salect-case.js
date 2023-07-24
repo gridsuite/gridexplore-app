@@ -15,7 +15,7 @@ const SelectCase = ({
 
     useEffect(() => {
         handleFetchCases();
-    }, []);
+    }, [handleFetchCases]);
 
     const handleChange = (event) => {
         handleChangeSelectCase(event.target.value);

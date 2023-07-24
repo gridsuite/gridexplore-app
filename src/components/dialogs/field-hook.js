@@ -147,11 +147,6 @@ export const useFileValue = ({ fileExceedsLimitMessage, isLoading }) => {
     ];
 };
 
-const makeAdornmentEndIcon = (content) => {
-    return {
-        endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
-    };
-};
 export const useNameField = ({
     parentDirectoryId,
     elementType,
@@ -160,10 +155,10 @@ export const useNameField = ({
     alreadyExistingErrorMessage,
     ...props
 }) => {
-    const [error, setError] = useState();
+    const [error, setError] = useState('');
     const intl = useIntl();
     const [checking, setChecking] = useState(undefined);
-    const [adornment, setAdornment] = useState();
+    const [adornment, setAdornment] = useState(null);
 
     // if element is a root directory, we need to make a specific api rest call (elementType is directory, and no parent element)
     const doesElementExist = useCallback(
@@ -240,11 +235,15 @@ export const useNameField = ({
         }
         if (checking) {
             setAdornment(
-                makeAdornmentEndIcon(<CircularProgress size="1rem" />)
+                <InputAdornment position="end">
+                    <CircularProgress size="1rem" />
+                </InputAdornment>
             );
         } else {
             setAdornment(
-                makeAdornmentEndIcon(<CheckIcon style={{ color: 'green' }} />)
+                <InputAdornment position="end">
+                    <CheckIcon style={{ color: 'green' }} />
+                </InputAdornment>
             );
         }
     }, [checking, error]);

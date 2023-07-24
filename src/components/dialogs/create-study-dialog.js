@@ -7,18 +7,11 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
-import CheckIcon from '@mui/icons-material/Check';
-import SettingsIcon from '@mui/icons-material/Settings';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
 import Alert from '@mui/material/Alert';
 import DirectorySelector from './directory-selector.js';
 import {
@@ -34,16 +27,12 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     addUploadingElement,
-    loadCasesSuccess,
-    removeSelectedCase,
     removeUploadingElement,
-    selectCase,
     selectFile,
     setActiveDirectory,
 } from '../../redux/actions';
-import { store } from '../../redux/store';
 import PropTypes from 'prop-types';
-import { FlatParameters, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ElementType } from '../../utils/elementType';
 import {
     useFileValue,
@@ -52,22 +41,13 @@ import {
     useTextValue,
 } from './field-hook';
 import { keyGenerator } from '../../utils/functions.js';
-import { Divider, Grid } from '@mui/material';
 import {
     HTTP_CONNECTION_FAILED_MESSAGE,
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
 } from '../../utils/UIconstants.js';
 import SelectCase from './create-study-dialog/salect-case';
 import ImportParametersSection from './create-study-dialog/import-parameters-section';
-
-const useStyles = makeStyles((theme) => ({
-    addIcon: {
-        fontSize: '64px',
-    },
-    addButtonArea: {
-        height: '136px',
-    },
-}));
+import TextValue from './commons/text-value';
 
 /**
  * Dialog to create a study
@@ -76,22 +56,20 @@ const useStyles = makeStyles((theme) => ({
  * @param providedExistingCase
  */
 export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
-    const [caseExist, setCaseExist] = React.useState(false);
-
-    const { snackError } = useSnackMessage();
-    const [createStudyErr, setCreateStudyErr] = React.useState('');
-
-    const userId = useSelector((state) => state.user.profile.sub);
-
-    const classes = useStyles();
     const intl = useIntl();
     const dispatch = useDispatch();
+    const { snackError } = useSnackMessage();
 
+    const [selectedCase, setSelectedCase] = useState(null);
+    const [cases, setCases] = useState([]);
+    const [tempCaseUuid, setTempCaseUuid] = useState(null);
+
+    const [caseExist, setCaseExist] = useState(false);
+    const [createStudyErr, setCreateStudyErr] = useState('');
+
+    const userId = useSelector((state) => state.user.profile.sub);
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const selectedCase = useSelector((state) => state.selectedCase || '');
-
-    const [tempCaseUuid, setTempCaseUuid] = useState(null);
 
     const oldTempCaseUuid = useRef(null);
 
@@ -122,6 +100,18 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 width: '90%',
             },
         });
+
+    // const [description, setDescription] = useState('');
+    // const DescriptionField = (
+    //     <TextValue
+    //         label={'descriptionProperty'}
+    //         setValue={setDescription}
+    //         value={description}
+    //         style={{
+    //             width: '90%',
+    //         }}
+    //     />
+    // );
 
     const [description, DescriptionField] = useTextValue({
         label: 'descriptionProperty',
@@ -245,7 +235,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     useEffect(() => {
         if (open && providedExistingCase) {
             setCaseExist(true);
-            dispatch(selectCase(providedExistingCase.elementUuid));
+            setSelectedCase(providedExistingCase.elementUuid);
             getCaseImportParams(
                 providedExistingCase.elementUuid,
                 setFormatWithParameters
@@ -283,7 +273,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     ]);
 
     const handleCloseDialog = () => {
-        // if we have an oldTempCaseUuid here that means we cancelled the creation
+        // if we have an oldTempCaseUuid here that means we cancelled the creation,
         // so we need to delete the associated newly created case (if we created one)
         if (providedCaseFile && oldTempCaseUuid.current) {
             deleteCase(oldTempCaseUuid.current)
@@ -293,7 +283,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 );
         }
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-        dispatch(removeSelectedCase());
+        setSelectedCase(null);
         resetProvidedCaseFile();
         onClose();
     };
@@ -340,6 +330,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             lastModifiedBy: userId,
             uploading: true,
         };
+
         createStudy(
             studyName,
             description,
@@ -392,13 +383,13 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         );
     };
 
-    const cases = useSelector((state) => state.cases);
-    const handleChangeSelectCase = (value) => {
-        dispatch(selectCase(value));
+    const handleChangeSelectedCase = (value) => {
+        setSelectedCase(value);
     };
+
     const handleFetchCases = () => {
         fetchCases().then((cases) => {
-            dispatch(loadCasesSuccess(cases));
+            setCases(cases);
         });
     };
 
@@ -421,8 +412,10 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         caseExist ? (
                             <SelectCase
                                 cases={cases}
-                                handleChangeSelectCase={handleChangeSelectCase}
-                                selectedCase={selectCase}
+                                handleChangeSelectedCase={
+                                    handleChangeSelectedCase
+                                }
+                                selectedCase={selectedCase}
                                 handleFetchCases={handleFetchCases}
                             />
                         ) : (

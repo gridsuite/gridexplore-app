@@ -21,20 +21,18 @@ const AdvancedParametersButton = ({
     const classes = useStyles();
 
     return (
-        <>
-            <Grid item xs={12} className={classes.advancedParameterButton}>
-                <Button
-                    startIcon={<SettingsIcon />}
-                    endIcon={
-                        showOpenIcon && <CheckIcon style={{ color: 'green' }} />
-                    }
-                    onClick={callback}
-                    disabled={disabled}
-                >
-                    <FormattedMessage id={label} />
-                </Button>
-            </Grid>
-        </>
+        <Grid item xs={12} className={classes.advancedParameterButton}>
+            <Button
+                startIcon={<SettingsIcon />}
+                endIcon={
+                    showOpenIcon && <CheckIcon style={{ color: 'green' }} />
+                }
+                onClick={callback}
+                disabled={disabled}
+            >
+                <FormattedMessage id={label} />
+            </Button>
+        </Grid>
     );
 };
 
