@@ -52,7 +52,6 @@ const AutocompleteInput = ({
         onChangeCallback && onChangeCallback();
         //if free solo not enabled or if value is not of string type, we call onChange right away
         if (!allowNewValue || typeof value !== 'string') {
-            console.log('value  : ', outputTransform(value));
             onChange(outputTransform(value));
             return;
         }
@@ -65,7 +64,6 @@ const AutocompleteInput = ({
             return;
         }
 
-        console.log('value  : ', outputTransform(value));
         //otherwise, we send the user input
         onChange(outputTransform(value));
     };
