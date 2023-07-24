@@ -28,7 +28,6 @@ import {
     saveExplicitNamingContingencyList,
     saveScriptContingencyList,
 } from '../../../utils/rest-api';
-import { DEFAULT_RANGE_VALUE } from '../../utils/rhf-inputs/range-input';
 import {
     getCriteriaBasedFormData,
     getCriteriaBasedSchema,

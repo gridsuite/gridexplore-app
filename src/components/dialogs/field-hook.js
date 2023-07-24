@@ -8,27 +8,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
-import {
-    Checkbox,
-    CircularProgress,
-    IconButton,
-    InputAdornment,
-    TextField,
-    Tooltip,
-} from '@mui/material';
+import { CircularProgress, InputAdornment, TextField } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { useDispatch, useSelector } from 'react-redux';
 import { UploadCase } from './upload-case';
 import makeStyles from '@mui/styles/makeStyles';
 import { removeSelectedFile } from '../../redux/actions';
 import { ElementType } from '../../utils/elementType';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { ArrowCircleDown, ArrowCircleUp, Upload } from '@mui/icons-material';
-import AddIcon from '@mui/icons-material/ControlPoint';
-import CsvImportFilterCreationDialog from './csv-import-filter-creation-dialog';
 import { useDebounce } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({

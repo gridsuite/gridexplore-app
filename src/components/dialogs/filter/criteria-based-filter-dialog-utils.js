@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { FilterType } from '../../../utils/elementType';
 import {
     CRITERIA_BASED,

@@ -184,6 +184,7 @@
   "distributionKeyWithMissingIdError": "ID manquant avec une clé de répartition définie",
   "missingDistributionKeyError": "Clé de répartition manquante",
   "emptyFilterError": "Le filtre doit contenir au moins un ouvrage",
+  "emptyContingencyListError": "La liste d'aléas doit contenir au moins un ouvrage",
   "noEquipmentTypeFoundInCSVError": "Le type d'ouvrage est un champ obligatoire",
   "noDataInCsvFile": "Aucune donnée trouvée dans ce fichier",
   "noFilterTypeSelected": "La sélection du type de filtre est obligatoire",

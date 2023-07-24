@@ -18,7 +18,6 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import CriteriaBasedFilterForm, {
-    criteriaBasedFilterEmptyFormData,
     criteriaBasedFilterSchema,
 } from './criteria-based-filter-form';
 import yup from '../../utils/yup-config';
@@ -49,10 +48,8 @@ export const CriteriaBasedFilterEditionDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue, watch } = formMethods;
+    const { reset, setValue } = formMethods;
 
-    const totalForm = watch()
-    console.log("FM totalForm", totalForm);
     // Fetch the filter data from back-end if necessary and fill the form with it
     useEffect(() => {
         if (id && open) {
@@ -70,7 +67,7 @@ export const CriteriaBasedFilterEditionDialog = ({
                     });
                 });
         }
-    }, [id, name, open, snackError]);
+    }, [id, name, open, reset, snackError]);
 
     const onSubmit = useCallback(
         (filterForm) => {

@@ -22,7 +22,7 @@ import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
 import AccessRightsDialog from '../dialogs/access-rights-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
-import CreateFilterDialog from '../dialogs/create-filter-dialog';
+import CreateFilterDialog from '../dialogs/filter/create-filter-dialog';
 
 import { DialogsId } from '../../utils/UIconstants';
 

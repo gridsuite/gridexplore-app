@@ -18,7 +18,6 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomMuiDialog from '../custom-mui-dialog';
 import yup from '../../utils/yup-config';
 import ExplicitNamingFilterForm, {
-    explicitNamingFilterEmptyFormData,
     explicitNamingFilterSchema,
     FILTER_EQUIPMENTS_ATTRIBUTES,
 } from './explicit-naming-filter-form';
@@ -70,7 +69,7 @@ const ExplicitNamingFilterEditionDialog = ({
                     });
                 });
         }
-    }, [id, open, snackError]);
+    }, [id, name, open, reset, snackError]);
 
     const onSubmit = useCallback(
         (filterForm) => {
@@ -90,7 +89,7 @@ const ExplicitNamingFilterEditionDialog = ({
                 onClose
             );
         },
-        [snackError]
+        [id, intl, onClose, snackError]
     );
 
     const checkName = (isValid, newName) => {

@@ -71,9 +71,9 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
             activeDirectory
         )
             .then(() => closeAndClear())
-            .catch((errorMessage) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'contingencyListCreationError',
                     headerValues: { name: data[NAME] },
                 });

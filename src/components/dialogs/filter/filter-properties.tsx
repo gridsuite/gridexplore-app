@@ -12,13 +12,18 @@ import FilterProperty, {
     PROPERTY_VALUES_1,
     PROPERTY_VALUES_2,
 } from './filter-property';
-import { CRITERIA_BASED, EQUIPMENT_TYPE } from '../../utils/field-constants';
+import {
+    CRITERIA_BASED,
+    EQUIPMENT_TYPE,
+    FILTER_TYPE,
+} from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 import { areArrayElementsUnique } from '../../../utils/functions';
 import ErrorInput from '../../utils/rhf-inputs/error-inputs/error-input';
 import FieldErrorAlert from '../../utils/rhf-inputs/error-inputs/field-error-alert';
 import { ListItem } from '@mui/material';
 import { Hvdc, Line, Substation } from '../../../utils/equipment-types';
+import { FilterType } from '../../../utils/elementType';
 
 export const FILTER_PROPERTIES = 'freeProperties';
 
@@ -27,8 +32,14 @@ function propertyValuesTest(
     context: yup.TestContext<yup.AnyObject>,
     doublePropertyValues: boolean
 ) {
-    const equipmentType =
-        context!.from![context!.from!.length - 1].value[EQUIPMENT_TYPE];
+    // with context.from[length - 1], we can access to the root fields of the form
+    const rootLevelForm = context!.from![context!.from!.length - 1];
+    const filterType = rootLevelForm.value[FILTER_TYPE];
+    if (filterType !== FilterType.CRITERIA_BASED.id) {
+        // we don't test if we are not in a criteria based form
+        return true;
+    }
+    const equipmentType = rootLevelForm.value[EQUIPMENT_TYPE];
     const isForLineOrHvdcLine =
         equipmentType === Line.type || equipmentType === Hvdc.type;
     if (doublePropertyValues) {
@@ -76,7 +87,14 @@ export const filterPropertiesYupSchema = {
         .test(
             'distinct names',
             'filterPropertiesNameUniquenessError',
-            (properties) => {
+            (properties, context) => {
+                // with context.from[length - 1], we can access to the root fields of the form
+                const rootLevelForm = context!.from![context!.from!.length - 1];
+                const filterType = rootLevelForm.value[FILTER_TYPE];
+                if (filterType !== FilterType.CRITERIA_BASED.id) {
+                    // we don't test if we are not in a criteria based form
+                    return true;
+                }
                 const names = properties! // never null / undefined
                     .filter((prop) => !!prop[PROPERTY_NAME])
                     .map((prop) => prop[PROPERTY_NAME]);

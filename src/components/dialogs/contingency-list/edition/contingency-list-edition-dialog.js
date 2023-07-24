@@ -43,7 +43,7 @@ const ContingencyListEditionDialog = ({
         resolver: yupResolver(schema),
     });
 
-    const { reset, setValue, getValues } = methods;
+    const { reset, setValue } = methods;
 
     useEffect(() => {
         if (contingencyListId) {
@@ -59,23 +59,15 @@ const ContingencyListEditionDialog = ({
                         reset({ ...formData, [NAME]: name });
                     }
                 })
-                .catch((errorMessage) => {
+                .catch((error) => {
                     snackError({
-                        messageTxt: errorMessage,
-                        headerId: 'contingencyListEditingError',
-                        headerValues: { name: getValues(NAME) },
+                        messageTxt: error.message,
+                        headerId: 'cannotRetrieveContingencyList',
                     });
                 })
                 .finally(() => setIsFetching(false));
         }
-    }, [
-        contingencyListId,
-        contingencyListType,
-        name,
-        reset,
-        snackError,
-        getValues,
-    ]);
+    }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
     const closeAndClear = (event) => {
         reset(emptyFormData);

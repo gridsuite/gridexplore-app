@@ -9,28 +9,28 @@ import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { ElementType, FilterType } from '../../utils/elementType';
+import { ElementType, FilterType } from '../../../utils/elementType';
 import {
     saveCriteriaBasedFilter,
     saveExplicitNamingFilter,
-} from './filter/filters-save';
+} from './filters-save';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import NameWrapper from './name-wrapper';
-import CustomMuiDialog from './custom-mui-dialog';
+import NameWrapper from '../name-wrapper';
+import CustomMuiDialog from '../custom-mui-dialog';
 import CriteriaBasedFilterForm, {
     criteriaBasedFilterEmptyFormData,
     criteriaBasedFilterSchema,
-} from './filter/criteria-based-filter-form';
+} from './criteria-based-filter-form';
 import ExplicitNamingFilterForm, {
     explicitNamingFilterEmptyFormData,
     explicitNamingFilterSchema,
     FILTER_EQUIPMENTS_ATTRIBUTES,
-} from './filter/explicit-naming-filter-form';
-import { EQUIPMENT_TYPE, FILTER_TYPE, NAME } from '../utils/field-constants';
-import yup from '../utils/yup-config';
-import RadioInput from '../utils/rhf-inputs/radio-input';
+} from './explicit-naming-filter-form';
+import { EQUIPMENT_TYPE, FILTER_TYPE, NAME } from '../../utils/field-constants';
+import yup from '../../utils/yup-config';
+import RadioInput from '../../utils/rhf-inputs/radio-input';
 import Box from '@mui/material/Box';
 
 const emptyFormData = {
@@ -66,7 +66,7 @@ const CreateFilterDialog = ({ open, onClose }) => {
     const { setValue, watch } = formMethods;
     const filterType = watch(FILTER_TYPE);
 
-    const handleNameValidation = (isValid, newName) => {
+    const checkName = (isValid, newName) => {
         setFilterNameValid(isValid);
         setValue(NAME, newName);
     };
@@ -104,7 +104,7 @@ const CreateFilterDialog = ({ open, onClose }) => {
                 );
             }
         },
-        [activeDirectory, intl, onClose]
+        [activeDirectory, intl, snackError, onClose]
     );
 
     return (
@@ -121,7 +121,7 @@ const CreateFilterDialog = ({ open, onClose }) => {
             <NameWrapper
                 titleMessage="nameProperty"
                 contentType={ElementType.FILTER}
-                handleNameValidation={handleNameValidation}
+                handleNameValidation={checkName}
             >
                 <Box>
                     <RadioInput

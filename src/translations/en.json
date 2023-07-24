@@ -184,6 +184,7 @@
   "distributionKeyWithMissingIdError": "Missing ID with defined distribution key",
   "missingDistributionKeyError": "Missing distribution key",
   "emptyFilterError": "Filter should contain at least one equipment",
+  "emptyContingencyListError": "Contingency list should contain at least one equipment",
   "noEquipmentTypeFoundInCSVError": "Equipment type is required field",
   "noDataInCsvFile": "No data found in this file",
   "noFilterTypeSelected": "Filter type selection is required",

@@ -1,5 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
-import { EQUIPMENT_ID, EQUIPMENT_TYPE } from '../../utils/field-constants';
+import {
+    EQUIPMENT_ID,
+    EQUIPMENT_TYPE,
+    FILTER_TYPE,
+} from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 import CustomAgGridTable, {
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
@@ -11,7 +15,8 @@ import Grid from '@mui/material/Grid';
 import SelectInput from '../../utils/rhf-inputs/select-inputs/select-input';
 import { ValueParserParams } from 'ag-grid-community';
 import { toIntOrNullValue } from '../../utils/dialog-utils';
-import { Generator, Hvdc, Line, Load } from '../../../utils/equipment-types';
+import { Generator, Load } from '../../../utils/equipment-types';
+import { FilterType } from '../../../utils/elementType';
 
 export const FILTER_EQUIPMENTS_ATTRIBUTES = 'filterEquipmentsAttributes';
 export const DISTRIBUTION_KEY = 'distributionKey';
@@ -25,34 +30,31 @@ export const explicitNamingFilterSchema = {
                 [DISTRIBUTION_KEY]: yup.number().nullable(),
             })
         )
-        .when([EQUIPMENT_TYPE], {
-            is: (equipmentType: string) =>
-                equipmentType !== Line.type && equipmentType !== Hvdc.type,
+        // we remove empty lines
+        .compact((row) => !row[DISTRIBUTION_KEY] && !row[EQUIPMENT_ID])
+        .when([FILTER_TYPE], {
+            is: FilterType.EXPLICIT_NAMING.id,
             then: (schema) =>
-                schema.min(1, 'distributionKeyWithMissingIdError'),
-        })
-        .test(
-            'noKeyWithoutId',
-            'distributionKeyWithMissingIdError',
-            (array) => {
-                return !array!.some(
-                    (row) => row[DISTRIBUTION_KEY] && !row[EQUIPMENT_ID]?.trim()
-                );
-            }
-        )
-        .test(
-            'ifOneKeyThenKeyEverywhere',
-            'missingDistributionKeyError',
-            (array) => {
-                return !(
-                    array!.some((row) => row[DISTRIBUTION_KEY]) &&
-                    array!.some(
-                        (row) =>
-                            row[EQUIPMENT_ID]?.trim() && !row[DISTRIBUTION_KEY]
+                schema
+                    .min(1, 'emptyFilterError')
+                    .test(
+                        'noKeyWithoutId',
+                        'distributionKeyWithMissingIdError',
+                        (array) => {
+                            return !array!.some((row) => !row[EQUIPMENT_ID]);
+                        }
                     )
-                );
-            }
-        ),
+                    .test(
+                        'ifOneKeyThenKeyEverywhere',
+                        'missingDistributionKeyError',
+                        (array) => {
+                            return !(
+                                array!.some((row) => row[DISTRIBUTION_KEY]) &&
+                                array!.some((row) => !row[DISTRIBUTION_KEY])
+                            );
+                        }
+                    ),
+        }),
 };
 
 export const explicitNamingFilterEmptyFormData = {
@@ -71,20 +73,6 @@ function ExplicitNamingFilterForm() {
         name: EQUIPMENT_TYPE,
     });
 
-    // const {
-    //     fieldState: { error },
-    // } = useController({
-    //     name: FILTER_EQUIPMENTS_ATTRIBUTES,
-    // });
-    // console.log('FM error', error);
-    // // We get an eventual error message from yup on equipmentID
-    // const errorArray = error as any as
-    //     | [{ [EQUIPMENT_ID]: FieldError; [DISTRIBUTION_KEY]: FieldError }]
-    //     | undefined; // we know it's an array or undefined so we force the type
-    // const equipmentIdError = errorArray?.find(
-    //     (row) => row?.[EQUIPMENT_ID].message
-    // )?.[EQUIPMENT_ID].message;
-
     const isGeneratorOrLoad =
         watchEquipmentType === Generator.type ||
         watchEquipmentType === Load.type;
@@ -98,6 +86,8 @@ function ExplicitNamingFilterForm() {
                 suppressMovable: true,
                 editable: true,
                 singleClickEdit: true,
+                valueParser: (params: ValueParserParams) =>
+                    params.newValue?.trim() ?? null,
             },
         ];
         if (isGeneratorOrLoad) {
