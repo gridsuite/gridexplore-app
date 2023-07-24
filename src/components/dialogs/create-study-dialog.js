@@ -57,6 +57,8 @@ import {
     HTTP_CONNECTION_FAILED_MESSAGE,
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
 } from '../../utils/UIconstants.js';
+import SelectCase from './create-study-dialog/salect-case';
+import ImportParametersSection from './create-study-dialog/import-parameters-section';
 
 const useStyles = makeStyles((theme) => ({
     addIcon: {
@@ -65,71 +67,7 @@ const useStyles = makeStyles((theme) => ({
     addButtonArea: {
         height: '136px',
     },
-    paramDivider: {
-        marginTop: theme.spacing(2),
-    },
-    advancedParameterButton: {
-        marginTop: theme.spacing(3),
-        marginBottom: theme.spacing(1),
-    },
 }));
-
-const SelectCase = () => {
-    const dispatch = useDispatch();
-    const cases = useSelector((state) => state.cases);
-
-    const [openSelectCase, setSelectCase] = React.useState(false);
-
-    useEffect(() => {
-        fetchCases().then((cases) => {
-            dispatch(loadCasesSuccess(cases));
-        });
-        // Note: dispatch doesn't change
-    }, [dispatch]);
-
-    const handleChangeSelectCase = (event) => {
-        dispatch(selectCase(event.target.value));
-    };
-
-    const handleCloseSelectCase = () => {
-        setSelectCase(false);
-    };
-
-    const handleOpenSelectCase = () => {
-        setSelectCase(true);
-    };
-
-    return (
-        <div>
-            <FormControl fullWidth>
-                <InputLabel id="demo-controlled-open-select-label">
-                    <FormattedMessage id="caseName" />
-                </InputLabel>
-                <Select
-                    labelId="demo-controlled-open-select-label"
-                    id="demo-controlled-open-select"
-                    open={openSelectCase}
-                    onClose={handleCloseSelectCase}
-                    onOpen={handleOpenSelectCase}
-                    value={
-                        store.getState().selectedCase != null
-                            ? store.getState().selectedCase
-                            : ''
-                    }
-                    onChange={handleChangeSelectCase}
-                >
-                    {cases.map(function (element) {
-                        return (
-                            <MenuItem key={element.uuid} value={element.uuid}>
-                                {element.name}
-                            </MenuItem>
-                        );
-                    })}
-                </Select>
-            </FormControl>
-        </div>
-    );
-};
 
 /**
  * Dialog to create a study
@@ -151,7 +89,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const selectedCase = useSelector((state) => state.selectedCase);
+    const selectedCase = useSelector((state) => state.selectedCase || '');
 
     const [tempCaseUuid, setTempCaseUuid] = useState(null);
 
@@ -357,32 +295,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         onClose();
     };
 
-    const AdvancedParameterButton = ({
-        showOpenIcon,
-        label,
-        callback,
-        disabled = false,
-    }) => {
-        return (
-            <>
-                <Grid item xs={12} className={classes.advancedParameterButton}>
-                    <Button
-                        startIcon={<SettingsIcon />}
-                        endIcon={
-                            showOpenIcon && (
-                                <CheckIcon style={{ color: 'green' }} />
-                            )
-                        }
-                        onClick={callback}
-                        disabled={disabled}
-                    >
-                        <FormattedMessage id={label} />
-                    </Button>
-                </Grid>
-            </>
-        );
-    };
-
     //Updates the path display
     useEffect(() => {
         if (activeDirectory) {
@@ -477,37 +389,15 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         );
     };
 
-    const importParametersSection = (
-        AdvancedParameterButton,
-        isParamsCaseFileDisplayed,
-        handleShowParametersForCaseFileClick,
-        formatWithParameters,
-        paramDivider
-    ) => (
-        <>
-            <Divider className={paramDivider} />
-            <div
-                style={{
-                    marginTop: '10px',
-                }}
-            >
-                <AdvancedParameterButton
-                    showOpenIcon={isParamsCaseFileDisplayed}
-                    label={'importParameters'}
-                    callback={handleShowParametersForCaseFileClick}
-                    disabled={formatWithParameters.length === 0}
-                />
-                {isParamsCaseFileDisplayed && (
-                    <FlatParameters
-                        paramsAsArray={formatWithParameters}
-                        initValues={currentParameters}
-                        onChange={onChange}
-                        variant="standard"
-                    />
-                )}
-            </div>
-        </>
-    );
+    const cases = useSelector((state) => state.cases);
+    const handleChangeSelectCase = (value) => {
+        dispatch(selectCase(value));
+    };
+    const handleFetchCases = () => {
+        fetchCases().then((cases) => {
+            dispatch(loadCasesSuccess(cases));
+        });
+    };
 
     return (
         <div>
@@ -526,17 +416,26 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     {nameError && <Alert severity="error">{nameError}</Alert>}
                     {!selectedCase ? (
                         caseExist ? (
-                            <SelectCase />
+                            <SelectCase
+                                cases={cases}
+                                handleChangeSelectCase={handleChangeSelectCase}
+                                selectedCase={selectCase}
+                                handleFetchCases={handleFetchCases}
+                            />
                         ) : (
                             <>
                                 {FileField}
-                                {importParametersSection(
-                                    AdvancedParameterButton,
-                                    isParamsCaseFileDisplayed,
-                                    handleShowParametersForCaseFileClick,
-                                    formatWithParameters,
-                                    classes.paramDivider
-                                )}
+                                <ImportParametersSection
+                                    isParamsDisplayed={
+                                        isParamsCaseFileDisplayed
+                                    }
+                                    handleShowParametersClick={
+                                        handleShowParametersForCaseFileClick
+                                    }
+                                    formatWithParameters={formatWithParameters}
+                                    currentParameters={currentParameters}
+                                    onChange={onChange}
+                                />
                             </>
                         )
                     ) : (
@@ -584,13 +483,15 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                                     })}
                                 />
                             </div>
-                            {importParametersSection(
-                                AdvancedParameterButton,
-                                isParamsDisplayed,
-                                handleShowParametersClick,
-                                formatWithParameters,
-                                classes.paramDivider
-                            )}
+                            <ImportParametersSection
+                                isParamsDisplayed={isParamsDisplayed}
+                                handleShowParametersClick={
+                                    handleShowParametersClick
+                                }
+                                formatWithParameters={formatWithParameters}
+                                currentParameters={currentParameters}
+                                onChange={onChange}
+                            />
                         </>
                     )}
                     {createStudyErr !== '' && (
