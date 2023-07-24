@@ -28,7 +28,7 @@ const MultipleAutocompleteInput = ({ name, ...props }) => {
             allowNewValue
             clearOnBlur
             disableClearable={true}
-            outputTransform={(value) => value.trim()}
+            outputTransform={(values) => values.map((v) => v.trim())}
             onInputChange={(_, val) => setUnsavedInput(val.trim() ?? '')}
             onBlur={handleOnBlur}
             blurOnSelect={false}
