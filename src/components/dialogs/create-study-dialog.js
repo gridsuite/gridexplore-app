@@ -144,16 +144,19 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     };
 
     const [currentParameters, setCurrentParameters] = useState({});
-    const onChange = useCallback((paramName, value, isEdit) => {
-        if (!isEdit) {
-            setCurrentParameters((prevCurrentParameters) => {
-                return {
-                    ...prevCurrentParameters,
-                    ...{ [paramName]: value },
-                };
-            });
-        }
-    }, []);
+    const handleCurrentParametersChange = useCallback(
+        (paramName, value, isEdit) => {
+            if (!isEdit) {
+                setCurrentParameters((prevCurrentParameters) => {
+                    return {
+                        ...prevCurrentParameters,
+                        ...{ [paramName]: value },
+                    };
+                });
+            }
+        },
+        []
+    );
 
     const [
         providedCaseFile,
@@ -434,7 +437,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                                     }
                                     formatWithParameters={formatWithParameters}
                                     currentParameters={currentParameters}
-                                    onChange={onChange}
+                                    onChange={handleCurrentParametersChange}
                                 />
                             </>
                         )
@@ -490,7 +493,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                                 }
                                 formatWithParameters={formatWithParameters}
                                 currentParameters={currentParameters}
-                                onChange={onChange}
+                                onChange={handleCurrentParametersChange}
                             />
                         </>
                     )}
