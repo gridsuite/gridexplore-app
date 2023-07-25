@@ -85,8 +85,8 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
                 open={open}
                 onClose={closeAndClear}
                 onSave={onSubmit}
-                schema={schema}
-                methods={methods}
+                formSchema={schema}
+                formMethods={methods}
                 titleId={titleId}
                 removeOptional={true}
                 disabledSave={!isValidName}

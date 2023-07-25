@@ -17,7 +17,6 @@ export const saveExplicitNamingFilter = (
     id,
     setCreateFilterErr,
     activeDirectory,
-    intl,
     handleClose
 ) => {
     if (isFilterCreation) {

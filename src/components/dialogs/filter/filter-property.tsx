@@ -50,8 +50,8 @@ function FilterProperty(props: FilterPropertyProps) {
     }, [setValue, props.index, props.valuesFields]);
 
     return (
-        <Grid container item spacing={1} columns={20}>
-            <Grid item xs={5}>
+        <Grid container item spacing={1} columns={21}>
+            <Grid item xs={6}>
                 <AutocompleteInput
                     name={`${CRITERIA_BASED}.${FILTER_PROPERTIES}[${props.index}].${PROPERTY_NAME}`}
                     label={'PropertyName'}
@@ -74,7 +74,7 @@ function FilterProperty(props: FilterPropertyProps) {
                         freeSolo
                         forcePopupIcon
                         multiple
-                        renderTags={(val: any, getTagsProps: any) =>
+                        renderTags={(val: string[], getTagsProps: any) =>
                             val.map((option: string, index: number) => (
                                 <Chip
                                     size={'small'}

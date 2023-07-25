@@ -35,8 +35,8 @@ const useStyles = makeStyles((theme) => ({
 const CustomMuiDialog = ({
     name,
     open,
-    schema,
-    methods,
+    formSchema,
+    formMethods,
     onClose,
     onSave,
     onValidationError,
@@ -46,7 +46,7 @@ const CustomMuiDialog = ({
     ...dialogProps
 }) => {
     const classes = useStyles();
-    const { handleSubmit } = methods;
+    const { handleSubmit } = formMethods;
 
     const handleClose = (event) => {
         onClose(event);
@@ -66,8 +66,8 @@ const CustomMuiDialog = ({
     };
     return (
         <FormProvider
-            validationSchema={schema}
-            {...methods}
+            validationSchema={formSchema}
+            {...formMethods}
             removeOptional={removeOptional}
         >
             <Dialog

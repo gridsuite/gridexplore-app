@@ -33,7 +33,7 @@ function propertyValuesTest(
     doublePropertyValues: boolean
 ) {
     // with context.from[length - 1], we can access to the root fields of the form
-    const rootLevelForm = context!.from![context!.from!.length - 1];
+    const rootLevelForm = context.from![context.from!.length - 1];
     const filterType = rootLevelForm.value[FILTER_TYPE];
     if (filterType !== FilterType.CRITERIA_BASED.id) {
         // we don't test if we are not in a criteria based form
@@ -89,7 +89,7 @@ export const filterPropertiesYupSchema = {
             'filterPropertiesNameUniquenessError',
             (properties, context) => {
                 // with context.from[length - 1], we can access to the root fields of the form
-                const rootLevelForm = context!.from![context!.from!.length - 1];
+                const rootLevelForm = context.from![context.from!.length - 1];
                 const filterType = rootLevelForm.value[FILTER_TYPE];
                 if (filterType !== FilterType.CRITERIA_BASED.id) {
                     // we don't test if we are not in a criteria based form
@@ -144,12 +144,12 @@ function FilterProperties() {
     function addNewProp() {
         if (isForLineOrHvdcLine) {
             append({
-                [PROPERTY_NAME]: '',
+                [PROPERTY_NAME]: null,
                 [PROPERTY_VALUES_1]: [],
                 [PROPERTY_VALUES_2]: [],
             });
         } else {
-            append({ [PROPERTY_NAME]: '', [PROPERTY_VALUES]: [] });
+            append({ [PROPERTY_NAME]: null, [PROPERTY_VALUES]: [] });
         }
     }
 
@@ -197,7 +197,7 @@ function FilterProperties() {
                     <Button
                         fullWidth
                         startIcon={<AddIcon />}
-                        onClick={() => addNewProp()}
+                        onClick={addNewProp}
                     >
                         <FormattedMessage id={'AddFreePropCrit'} />
                     </Button>

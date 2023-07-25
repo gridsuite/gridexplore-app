@@ -112,8 +112,8 @@ const CreateFilterDialog = ({ open, onClose }) => {
             open={open}
             onClose={onClose}
             onSave={onSubmit}
-            schema={formSchema}
-            methods={formMethods}
+            formSchema={formSchema}
+            formMethods={formMethods}
             titleId={'createNewFilter'}
             removeOptional={true}
             disabledSave={!filterNameValid}
