@@ -21,9 +21,11 @@ const MultipleAutocompleteInput = ({ name, ...props }) => {
     };
 
     const outputTransform = (values) => {
-        return values
-            .map((val) => val.trim())
-            .filter((val, index) => values.indexOf(val) === index);
+        const newValues = values.map((val) => val.trim());
+
+        return newValues.filter(
+            (val, index) => newValues.indexOf(val) === index
+        );
     };
 
     return (
