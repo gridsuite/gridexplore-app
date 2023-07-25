@@ -14,7 +14,7 @@ import { FILTER_EQUIPMENTS } from '../commons/criteria-based/criteria-based-util
 import Grid from '@mui/material/Grid';
 import SelectInput from '../../utils/rhf-inputs/select-inputs/select-input';
 import { ValueParserParams } from 'ag-grid-community';
-import { toIntOrNullValue } from '../../utils/dialog-utils';
+import { toFloatOrNullValue } from '../../utils/dialog-utils';
 import { Generator, Load } from '../../../utils/equipment-types';
 import { FilterType } from '../../../utils/elementType';
 
@@ -98,7 +98,7 @@ function ExplicitNamingFilterForm() {
                 editable: true,
                 singleClickEdit: true,
                 valueParser: (params: ValueParserParams) =>
-                    toIntOrNullValue(params.newValue),
+                    toFloatOrNullValue(params.newValue),
                 maxWidth: 200,
             });
         }

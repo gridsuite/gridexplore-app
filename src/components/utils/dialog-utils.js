@@ -32,12 +32,13 @@ export const isFloatNumber = (val) => {
 
 export const func_identity = (e) => e;
 
-export const toIntOrNullValue = (value) => {
+export const toFloatOrNullValue = (value) => {
     if (value === '-') {
         return value;
     }
     if (value === '0') {
         return 0;
     }
-    return parseInt(value) || null;
+    const tmp = value?.replace(',', '.') || '';
+    return parseFloat(tmp) || null;
 };
