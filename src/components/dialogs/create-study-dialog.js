@@ -6,29 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-
-import makeStyles from '@mui/styles/makeStyles';
-import CheckIcon from '@mui/icons-material/Check';
-import SettingsIcon from '@mui/icons-material/Settings';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Alert from '@mui/material/Alert';
-import DirectorySelector from './directory-selector.js';
-import {
-    createCaseWithoutDirectoryElementCreation,
-    createStudy,
-    deleteCase,
-    fetchCases,
-    fetchPath,
-    getCaseImportParameters,
-} from '../../utils/rest-api';
+import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -42,17 +20,45 @@ import {
     setActiveDirectory,
 } from '../../redux/actions';
 import { store } from '../../redux/store';
-import PropTypes from 'prop-types';
-import { FlatParameters, useSnackMessage } from '@gridsuite/commons-ui';
-import { ElementType } from '../../utils/elementType';
+
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Select,
+    MenuItem,
+    InputLabel,
+    FormControl,
+    Alert,
+    Divider,
+    Grid,
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import CheckIcon from '@mui/icons-material/Check';
+import SettingsIcon from '@mui/icons-material/Settings';
+
+import DirectorySelector from './directory-selector.js';
+import {
+    createCaseWithoutDirectoryElementCreation,
+    createStudy,
+    deleteCase,
+    fetchCases,
+    fetchPath,
+    getCaseImportParameters,
+} from '../../utils/rest-api';
+
 import {
     useFileValue,
     useNameField,
     usePrefillNameField,
     useTextValue,
 } from './field-hook';
+
+import { FlatParameters, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementType } from '../../utils/elementType';
 import { keyGenerator } from '../../utils/functions.js';
-import { Divider, Grid } from '@mui/material';
 import {
     HTTP_CONNECTION_FAILED_MESSAGE,
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
@@ -78,7 +84,7 @@ const SelectCase = () => {
     const dispatch = useDispatch();
     const cases = useSelector((state) => state.cases);
 
-    const [openSelectCase, setSelectCase] = React.useState(false);
+    const [openSelectCase, setSelectCase] = useState(false);
 
     useEffect(() => {
         fetchCases().then((cases) => {
@@ -138,10 +144,10 @@ const SelectCase = () => {
  * @param providedExistingCase
  */
 export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
-    const [caseExist, setCaseExist] = React.useState(false);
+    const [caseExist, setCaseExist] = useState(false);
 
     const { snackError } = useSnackMessage();
-    const [createStudyErr, setCreateStudyErr] = React.useState('');
+    const [createStudyErr, setCreateStudyErr] = useState('');
 
     const userId = useSelector((state) => state.user.profile.sub);
 
@@ -192,7 +198,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         },
     });
 
-    const studyNameRef = React.useRef(studyName);
+    const studyNameRef = useRef(studyName);
 
     useEffect(() => {
         studyNameRef.current = studyName;
