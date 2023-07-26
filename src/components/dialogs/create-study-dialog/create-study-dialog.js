@@ -32,12 +32,8 @@ import {
     InputLabel,
     FormControl,
     Alert,
-    Divider,
-    Grid,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import CheckIcon from '@mui/icons-material/Check';
-import SettingsIcon from '@mui/icons-material/Settings';
 
 import DirectorySelector from '../directory-selector.js';
 import {
@@ -64,15 +60,6 @@ import {
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
 } from '../../../utils/UIconstants.js';
 import ImportParametersSection from './importParametersSection';
-
-const useStyles = makeStyles((theme) => ({
-    addIcon: {
-        fontSize: '64px',
-    },
-    addButtonArea: {
-        height: '136px',
-    },
-}));
 
 const SelectCase = () => {
     const dispatch = useDispatch();
@@ -145,7 +132,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const userId = useSelector((state) => state.user.profile.sub);
 
-    const classes = useStyles();
     const intl = useIntl();
     const dispatch = useDispatch();
 
