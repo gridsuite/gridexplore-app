@@ -294,6 +294,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         if (!studyNameOk) {
             return;
         }
+
         if (!!providedExistingCase && selectedCase === null) {
             setCreateStudyErr(intl.formatMessage({ id: 'caseNameErrorMsg' }));
             return;
