@@ -18,8 +18,8 @@ import {
     selectCase,
     selectFile,
     setActiveDirectory,
-} from '../../redux/actions';
-import { store } from '../../redux/store';
+} from '../../../redux/actions';
+import { store } from '../../../redux/store';
 
 import {
     Button,
@@ -39,7 +39,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
 import SettingsIcon from '@mui/icons-material/Settings';
 
-import DirectorySelector from './directory-selector.js';
+import DirectorySelector from '../directory-selector.js';
 import {
     createCaseWithoutDirectoryElementCreation,
     createStudy,
@@ -47,22 +47,22 @@ import {
     fetchCases,
     fetchPath,
     getCaseImportParameters,
-} from '../../utils/rest-api';
+} from '../../../utils/rest-api';
 
 import {
     useFileValue,
     useNameField,
     usePrefillNameField,
     useTextValue,
-} from './field-hook';
+} from '../field-hook';
 
 import { FlatParameters, useSnackMessage } from '@gridsuite/commons-ui';
-import { ElementType } from '../../utils/elementType';
-import { keyGenerator } from '../../utils/functions.js';
+import { ElementType } from '../../../utils/elementType';
+import { keyGenerator } from '../../../utils/functions.js';
 import {
     HTTP_CONNECTION_FAILED_MESSAGE,
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
-} from '../../utils/UIconstants.js';
+} from '../../../utils/UIconstants.js';
 
 const useStyles = makeStyles((theme) => ({
     addIcon: {
