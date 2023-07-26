@@ -12,9 +12,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     addUploadingElement,
-    removeSelectedCase,
     removeUploadingElement,
-    selectCase,
     selectFile,
     setActiveDirectory,
 } from '../../../redux/actions';
@@ -64,10 +62,12 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
+    const [selectedCase, setSelectedCase] = useState(null);
+
     const [createStudyErr, setCreateStudyErr] = useState('');
 
     const userId = useSelector((state) => state.user.profile.sub);
-    const { activeDirectory, selectedDirectory, selectedCase } = useSelector(
+    const { activeDirectory, selectedDirectory } = useSelector(
         (state) => state
     );
 
@@ -231,7 +231,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     //Inits the dialog
     useEffect(() => {
         if (open && providedExistingCase) {
-            dispatch(selectCase(providedExistingCase.elementUuid));
+            setSelectedCase(providedExistingCase.elementUuid);
             getCaseImportParams(
                 providedExistingCase.elementUuid,
                 setFormatWithParameters
@@ -279,7 +279,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 );
         }
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-        dispatch(removeSelectedCase());
+        setSelectedCase(null);
         resetProvidedCaseFile();
         onClose();
     };

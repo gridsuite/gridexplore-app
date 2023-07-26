@@ -23,8 +23,6 @@ import {
     SELECT_DIRECTORY,
     CURRENT_PATH,
     SET_APPS_AND_URLS,
-    SELECT_CASE,
-    REMOVE_SELECTED_CASE,
     SELECT_FILE,
     REMOVE_SELECTED_FILE,
     ACTIVE_DIRECTORY,
@@ -61,7 +59,6 @@ const initialState = {
     authenticationRouterError: null,
     showAuthenticationRouterLogin: false,
     appsAndUrls: [],
-    selectedCase: null,
     selectedFile: null,
     uploadingElements: {},
     directoryUpdated: { force: 0, eventData: {} },
@@ -133,14 +130,6 @@ export const reducer = createReducer(initialState, {
 
     [SET_APPS_AND_URLS]: (state, action) => {
         state.appsAndUrls = action.appsAndUrls;
-    },
-
-    [SELECT_CASE]: (state, action) => {
-        state.selectedCase = action.selectedCase;
-    },
-
-    [REMOVE_SELECTED_CASE]: (state) => {
-        state.selectedCase = null;
     },
 
     [SELECT_FILE]: (state, action) => {
