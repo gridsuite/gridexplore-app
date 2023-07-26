@@ -268,22 +268,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         setProvidedCaseFileOk,
     ]);
 
-    const handleCloseDialog = () => {
-        // if we have an oldTempCaseUuid here that means we cancelled the creation,
-        // so we need to delete the associated newly created case (if we created one)
-        if (providedCaseFile && oldTempCaseUuid.current) {
-            deleteCase(oldTempCaseUuid.current)
-                .then()
-                .catch((error) =>
-                    handleFileUploadError(error, setCreateStudyErr)
-                );
-        }
-        dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-        setSelectedCase(null);
-        resetProvidedCaseFile();
-        onClose();
-    };
-
     const handleCreateNewStudy = () => {
         //To manage the case when we never tried to enter a name
         if (studyName === '') {
@@ -353,6 +337,22 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             dispatch(setActiveDirectory(directory[0].id));
         }
         setFolderSelectorOpen(false);
+    };
+
+    const handleCloseDialog = () => {
+        // if we have an oldTempCaseUuid here that means we cancelled the creation,
+        // so we need to delete the associated newly created case (if we created one)
+        if (providedCaseFile && oldTempCaseUuid.current) {
+            deleteCase(oldTempCaseUuid.current)
+                .then()
+                .catch((error) =>
+                    handleFileUploadError(error, setCreateStudyErr)
+                );
+        }
+        dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
+        setSelectedCase(null);
+        resetProvidedCaseFile();
+        onClose();
     };
 
     const isCreationAllowed = () => {
