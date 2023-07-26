@@ -33,7 +33,6 @@ import {
     Alert,
 } from '@mui/material';
 
-import DirectorySelector from '../directory-selector.js';
 import {
     createCaseWithoutDirectoryElementCreation,
     createStudy,
@@ -130,7 +129,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const userId = useSelector((state) => state.user.profile.sub);
     const { activeDirectory, selectedDirectory, selectedCase } = useSelector(
-        (state) => state.activeDirectory
+        (state) => state
     );
 
     const oldTempCaseUuid = useRef(null);
@@ -138,6 +137,20 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const [tempCaseUuid, setTempCaseUuid] = useState(null);
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
+
+    //Updates the path display
+    useEffect(() => {
+        if (activeDirectory) {
+            fetchPath(activeDirectory).then((res) => {
+                setActiveDirectoryName(
+                    res
+                        .map((element) => element.elementName.trim())
+                        .reverse()
+                        .join('/')
+                );
+            });
+        }
+    }, [activeDirectory]);
 
     const [isUploadingFileInProgress, setUploadingFileInProgress] =
         useState(false);
@@ -210,13 +223,15 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             getCaseImportParameters(caseUuid)
                 .then((result) => {
                     // sort possible values alphabetically to display select options sorted
-                    result.parameters = result.parameters?.map((p) => {
-                        p.possibleValues = p.possibleValues?.sort((a, b) =>
-                            a.localeCompare(b)
-                        );
-                        return p;
+                    setFormatWithParameters({
+                        ...result,
+                        parameters: result.parameters?.map((parameter) => ({
+                            ...parameter,
+                            possibleValues: parameter.possibleValues?.sort(
+                                (a, b) => a.localeCompare(b)
+                            ),
+                        })),
                     });
-                    setFormatWithParameters(result.parameters);
                 })
                 .catch(() => {
                     setFormatWithParameters([]);
@@ -331,20 +346,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         onClose();
     };
 
-    //Updates the path display
-    useEffect(() => {
-        if (activeDirectory) {
-            fetchPath(activeDirectory).then((res) => {
-                setActiveDirectoryName(
-                    res
-                        .map((element) => element.elementName.trim())
-                        .reverse()
-                        .join('/')
-                );
-            });
-        }
-    }, [activeDirectory]);
-
     const handleCreateNewStudy = () => {
         //To manage the case when we never tried to enter a name
         if (studyName === '') {
@@ -373,6 +374,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             lastModifiedBy: userId,
             uploading: true,
         };
+
         createStudy(
             studyName,
             description,
