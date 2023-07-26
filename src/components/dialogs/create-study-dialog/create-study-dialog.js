@@ -12,7 +12,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     addUploadingElement,
-    loadCasesSuccess,
     removeSelectedCase,
     removeUploadingElement,
     selectCase,
@@ -26,10 +25,6 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Select,
-    MenuItem,
-    InputLabel,
-    FormControl,
     Alert,
 } from '@mui/material';
 
@@ -37,7 +32,6 @@ import {
     createCaseWithoutDirectoryElementCreation,
     createStudy,
     deleteCase,
-    fetchCases,
     fetchPath,
     getCaseImportParameters,
 } from '../../../utils/rest-api';
@@ -59,60 +53,6 @@ import {
 import ImportParametersSection from './importParametersSection';
 import DirectorySelect from './directory-select';
 
-const SelectCase = () => {
-    const dispatch = useDispatch();
-    const cases = useSelector((state) => state.cases);
-    const selectedCase = useSelector((state) => state.selectedCase);
-
-    const [openSelectCase, setSelectCase] = useState(false);
-
-    useEffect(() => {
-        fetchCases().then((cases) => {
-            dispatch(loadCasesSuccess(cases));
-        });
-        // Note: dispatch doesn't change
-    }, [dispatch]);
-
-    const handleChangeSelectCase = (event) => {
-        dispatch(selectCase(event.target.value));
-    };
-
-    const handleCloseSelectCase = () => {
-        setSelectCase(false);
-    };
-
-    const handleOpenSelectCase = () => {
-        setSelectCase(true);
-    };
-
-    return (
-        <div>
-            <FormControl fullWidth>
-                <InputLabel id="demo-controlled-open-select-label">
-                    <FormattedMessage id="caseName" />
-                </InputLabel>
-                <Select
-                    labelId="demo-controlled-open-select-label"
-                    id="demo-controlled-open-select"
-                    open={openSelectCase}
-                    onClose={handleCloseSelectCase}
-                    onOpen={handleOpenSelectCase}
-                    value={selectedCase || ''}
-                    onChange={handleChangeSelectCase}
-                >
-                    {cases.map(function (element) {
-                        return (
-                            <MenuItem key={element.uuid} value={element.uuid}>
-                                {element.name}
-                            </MenuItem>
-                        );
-                    })}
-                </Select>
-            </FormControl>
-        </div>
-    );
-};
-
 /**
  * Dialog to create a study
  * @param {Boolean} open Is the dialog open ?
@@ -124,7 +64,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
-    const [caseExist, setCaseExist] = useState(false);
     const [createStudyErr, setCreateStudyErr] = useState('');
 
     const userId = useSelector((state) => state.user.profile.sub);
@@ -292,7 +231,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     //Inits the dialog
     useEffect(() => {
         if (open && providedExistingCase) {
-            setCaseExist(true);
             dispatch(selectCase(providedExistingCase.elementUuid));
             getCaseImportParams(
                 providedExistingCase.elementUuid,
@@ -356,11 +294,11 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         if (!studyNameOk) {
             return;
         }
-        if (caseExist && selectedCase === null) {
+        if (!!providedExistingCase && selectedCase === null) {
             setCreateStudyErr(intl.formatMessage({ id: 'caseNameErrorMsg' }));
             return;
         }
-        if (!caseExist && providedCaseFile === null) {
+        if (!providedExistingCase && providedCaseFile === null) {
             setCreateStudyErr(intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
         }
@@ -442,42 +380,23 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     {DescriptionField}
                     {nameError && <Alert severity="error">{nameError}</Alert>}
                     {!selectedCase ? (
-                        caseExist ? (
-                            <SelectCase />
-                        ) : (
-                            <>
-                                {FileField}
-                                <ImportParametersSection
-                                    currentParameters={currentParameters}
-                                    onChange={onParametersChange}
-                                    isParamsDisplayed={isParamsDisplayed}
-                                    handleShowParametersClick={
-                                        handleShowParametersClick
-                                    }
-                                    formatWithParameters={formatWithParameters}
-                                />
-                            </>
-                        )
+                        FileField
                     ) : (
-                        <>
-                            <DirectorySelect
-                                handleSelectFolder={handleSelectFolder}
-                                activeDirectoryName={activeDirectoryName}
-                                open={folderSelectorOpen}
-                                onClose={handleSelectedDirectoryToCreateStudy}
-                                types={[ElementType.DIRECTORY]}
-                            />
-                            <ImportParametersSection
-                                currentParameters={currentParameters}
-                                onChange={onParametersChange}
-                                isParamsDisplayed={isParamsDisplayed}
-                                handleShowParametersClick={
-                                    handleShowParametersClick
-                                }
-                                formatWithParameters={formatWithParameters}
-                            />
-                        </>
+                        <DirectorySelect
+                            handleSelectFolder={handleSelectFolder}
+                            activeDirectoryName={activeDirectoryName}
+                            open={folderSelectorOpen}
+                            onClose={handleSelectedDirectoryToCreateStudy}
+                            types={[ElementType.DIRECTORY]}
+                        />
                     )}
+                    <ImportParametersSection
+                        currentParameters={currentParameters}
+                        onChange={onParametersChange}
+                        isParamsDisplayed={isParamsDisplayed}
+                        handleShowParametersClick={handleShowParametersClick}
+                        formatWithParameters={formatWithParameters}
+                    />
                     {createStudyErr !== '' && (
                         <Alert
                             style={{

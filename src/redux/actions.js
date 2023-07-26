@@ -73,12 +73,6 @@ export function setAppsAndUrls(appsAndUrls) {
     };
 }
 
-export const LOAD_CASES_SUCCESS = 'LOAD_CASES_SUCCESS';
-
-export function loadCasesSuccess(cases) {
-    return { type: LOAD_CASES_SUCCESS, cases: cases };
-}
-
 export const REMOVE_SELECTED_CASE = 'REMOVE_SELECTED_CASE';
 
 export function removeSelectedCase() {
