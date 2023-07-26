@@ -56,13 +56,14 @@ import {
     useTextValue,
 } from '../field-hook';
 
-import { FlatParameters, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ElementType } from '../../../utils/elementType';
 import { keyGenerator } from '../../../utils/functions.js';
 import {
     HTTP_CONNECTION_FAILED_MESSAGE,
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
 } from '../../../utils/UIconstants.js';
+import ImportParametersSection from './importParametersSection';
 
 const useStyles = makeStyles((theme) => ({
     addIcon: {
@@ -70,13 +71,6 @@ const useStyles = makeStyles((theme) => ({
     },
     addButtonArea: {
         height: '136px',
-    },
-    paramDivider: {
-        marginTop: theme.spacing(2),
-    },
-    advancedParameterButton: {
-        marginTop: theme.spacing(3),
-        marginBottom: theme.spacing(1),
     },
 }));
 
@@ -169,9 +163,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const [formatWithParameters, setFormatWithParameters] = useState([]);
 
     const [isParamsOk, setIsParamsOk] = useState(true);
-    const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
-    const [isParamsCaseFileDisplayed, setIsParamsCaseFileDisplayed] =
-        useState(false);
+
     const [isUploadingFileInProgress, setUploadingFileInProgress] =
         useState(false);
 
@@ -204,11 +196,10 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         studyNameRef.current = studyName;
     }, [studyName]);
 
+    const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
+
     const handleShowParametersClick = () => {
         setIsParamsDisplayed((oldValue) => !oldValue);
-    };
-    const handleShowParametersForCaseFileClick = () => {
-        setIsParamsCaseFileDisplayed((oldValue) => !oldValue);
     };
 
     const [currentParameters, setCurrentParameters] = useState({});
@@ -363,32 +354,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         onClose();
     };
 
-    const AdvancedParameterButton = ({
-        showOpenIcon,
-        label,
-        callback,
-        disabled = false,
-    }) => {
-        return (
-            <>
-                <Grid item xs={12} className={classes.advancedParameterButton}>
-                    <Button
-                        startIcon={<SettingsIcon />}
-                        endIcon={
-                            showOpenIcon && (
-                                <CheckIcon style={{ color: 'green' }} />
-                            )
-                        }
-                        onClick={callback}
-                        disabled={disabled}
-                    >
-                        <FormattedMessage id={label} />
-                    </Button>
-                </Grid>
-            </>
-        );
-    };
-
     //Updates the path display
     useEffect(() => {
         if (activeDirectory) {
@@ -437,8 +402,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             selectedCase ?? tempCaseUuid,
             !!providedExistingCase,
             activeDirectory,
-            currentParameters &&
-                (isParamsDisplayed || isParamsCaseFileDisplayed)
+            currentParameters && isParamsDisplayed
                 ? JSON.stringify(currentParameters)
                 : ''
         )
@@ -483,38 +447,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         );
     };
 
-    const importParametersSection = (
-        AdvancedParameterButton,
-        isParamsCaseFileDisplayed,
-        handleShowParametersForCaseFileClick,
-        formatWithParameters,
-        paramDivider
-    ) => (
-        <>
-            <Divider className={paramDivider} />
-            <div
-                style={{
-                    marginTop: '10px',
-                }}
-            >
-                <AdvancedParameterButton
-                    showOpenIcon={isParamsCaseFileDisplayed}
-                    label={'importParameters'}
-                    callback={handleShowParametersForCaseFileClick}
-                    disabled={formatWithParameters.length === 0}
-                />
-                {isParamsCaseFileDisplayed && (
-                    <FlatParameters
-                        paramsAsArray={formatWithParameters}
-                        initValues={currentParameters}
-                        onChange={onChange}
-                        variant="standard"
-                    />
-                )}
-            </div>
-        </>
-    );
-
     return (
         <div>
             <Dialog
@@ -536,13 +468,15 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         ) : (
                             <>
                                 {FileField}
-                                {importParametersSection(
-                                    AdvancedParameterButton,
-                                    isParamsCaseFileDisplayed,
-                                    handleShowParametersForCaseFileClick,
-                                    formatWithParameters,
-                                    classes.paramDivider
-                                )}
+                                <ImportParametersSection
+                                    currentParameters={currentParameters}
+                                    onChange={onChange}
+                                    isParamsDisplayed={isParamsDisplayed}
+                                    handleShowParametersClick={
+                                        handleShowParametersClick
+                                    }
+                                    formatWithParameters={formatWithParameters}
+                                />
                             </>
                         )
                     ) : (
@@ -590,13 +524,15 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                                     })}
                                 />
                             </div>
-                            {importParametersSection(
-                                AdvancedParameterButton,
-                                isParamsDisplayed,
-                                handleShowParametersClick,
-                                formatWithParameters,
-                                classes.paramDivider
-                            )}
+                            <ImportParametersSection
+                                currentParameters={currentParameters}
+                                onChange={onChange}
+                                isParamsDisplayed={isParamsDisplayed}
+                                handleShowParametersClick={
+                                    handleShowParametersClick
+                                }
+                                formatWithParameters={formatWithParameters}
+                            />
                         </>
                     )}
                     {createStudyErr !== '' && (
