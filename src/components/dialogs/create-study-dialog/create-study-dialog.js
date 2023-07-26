@@ -19,7 +19,6 @@ import {
     selectFile,
     setActiveDirectory,
 } from '../../../redux/actions';
-import { store } from '../../../redux/store';
 
 import {
     Button,
@@ -33,7 +32,6 @@ import {
     FormControl,
     Alert,
 } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 
 import DirectorySelector from '../directory-selector.js';
 import {
@@ -60,10 +58,12 @@ import {
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
 } from '../../../utils/UIconstants.js';
 import ImportParametersSection from './importParametersSection';
+import DirectorySelect from './directory-select';
 
 const SelectCase = () => {
     const dispatch = useDispatch();
     const cases = useSelector((state) => state.cases);
+    const selectedCase = useSelector((state) => state.selectedCase);
 
     const [openSelectCase, setSelectCase] = useState(false);
 
@@ -98,11 +98,7 @@ const SelectCase = () => {
                     open={openSelectCase}
                     onClose={handleCloseSelectCase}
                     onOpen={handleOpenSelectCase}
-                    value={
-                        store.getState().selectedCase != null
-                            ? store.getState().selectedCase
-                            : ''
-                    }
+                    value={selectedCase || ''}
                     onChange={handleChangeSelectCase}
                 >
                     {cases.map(function (element) {
@@ -125,30 +121,23 @@ const SelectCase = () => {
  * @param providedExistingCase
  */
 export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
-    const [caseExist, setCaseExist] = useState(false);
-
+    const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const dispatch = useDispatch();
+
+    const [caseExist, setCaseExist] = useState(false);
     const [createStudyErr, setCreateStudyErr] = useState('');
 
     const userId = useSelector((state) => state.user.profile.sub);
-
-    const intl = useIntl();
-    const dispatch = useDispatch();
-
-    const activeDirectory = useSelector((state) => state.activeDirectory);
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const selectedCase = useSelector((state) => state.selectedCase);
-
-    const [tempCaseUuid, setTempCaseUuid] = useState(null);
+    const { activeDirectory, selectedDirectory, selectedCase } = useSelector(
+        (state) => state.activeDirectory
+    );
 
     const oldTempCaseUuid = useRef(null);
 
+    const [tempCaseUuid, setTempCaseUuid] = useState(null);
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
-
-    const [formatWithParameters, setFormatWithParameters] = useState([]);
-
-    const [isParamsOk, setIsParamsOk] = useState(true);
 
     const [isUploadingFileInProgress, setUploadingFileInProgress] =
         useState(false);
@@ -157,17 +146,23 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         !!providedExistingCase
     );
 
-    const [studyName, NameField, nameError, nameOk, setStudyName, touched] =
-        useNameField({
-            label: 'nameProperty',
-            autoFocus: true,
-            elementType: ElementType.STUDY,
-            parentDirectoryId: activeDirectory,
-            active: open,
-            style: {
-                width: '90%',
-            },
-        });
+    const [
+        studyName,
+        NameField,
+        nameError,
+        studyNameOk,
+        setStudyName,
+        touched,
+    ] = useNameField({
+        label: 'nameProperty',
+        autoFocus: true,
+        elementType: ElementType.STUDY,
+        parentDirectoryId: activeDirectory,
+        active: open,
+        style: {
+            width: '90%',
+        },
+    });
 
     const [description, DescriptionField] = useTextValue({
         label: 'descriptionProperty',
@@ -183,22 +178,20 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     }, [studyName]);
 
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
+    const [currentParameters, setCurrentParameters] = useState({});
+    const [formatWithParameters, setFormatWithParameters] = useState([]);
+    const onParametersChange = useCallback((paramName, value, isEdit) => {
+        if (!isEdit) {
+            setCurrentParameters((prevCurrentParameters) => ({
+                ...prevCurrentParameters,
+                ...{ [paramName]: value },
+            }));
+        }
+    }, []);
 
     const handleShowParametersClick = () => {
         setIsParamsDisplayed((oldValue) => !oldValue);
     };
-
-    const [currentParameters, setCurrentParameters] = useState({});
-    const onChange = useCallback((paramName, value, isEdit) => {
-        if (!isEdit) {
-            setCurrentParameters((prevCurrentParameters) => {
-                return {
-                    ...prevCurrentParameters,
-                    ...{ [paramName]: value },
-                };
-            });
-        }
-    }, []);
 
     const [
         providedCaseFile,
@@ -224,11 +217,9 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         return p;
                     });
                     setFormatWithParameters(result.parameters);
-                    setIsParamsOk(true);
                 })
                 .catch(() => {
                     setFormatWithParameters([]);
-                    setIsParamsOk(false);
                     setCreateStudyErr(
                         intl.formatMessage({ id: 'parameterLoadingProblem' })
                     );
@@ -361,7 +352,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             return;
         }
         //We don't do anything if the checks are not over or the name is not valid
-        if (!nameOk) {
+        if (!studyNameOk) {
             return;
         }
         if (caseExist && selectedCase === null) {
@@ -426,8 +417,8 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const isCreationAllowed = () => {
         return !(
             studyName === '' ||
-            !nameOk ||
-            !isParamsOk ||
+            !studyNameOk ||
+            !formatWithParameters.length ||
             (!providedExistingCase && !providedCaseFileOk) ||
             isUploadingFileInProgress
         );
@@ -456,7 +447,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                                 {FileField}
                                 <ImportParametersSection
                                     currentParameters={currentParameters}
-                                    onChange={onChange}
+                                    onChange={onParametersChange}
                                     isParamsDisplayed={isParamsDisplayed}
                                     handleShowParametersClick={
                                         handleShowParametersClick
@@ -467,52 +458,16 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         )
                     ) : (
                         <>
-                            <div
-                                style={{
-                                    marginTop: '10px',
-                                }}
-                            >
-                                <Button
-                                    onClick={handleSelectFolder}
-                                    variant="contained"
-                                    style={{
-                                        paddingLeft: '30px',
-                                        paddingRight: '30px',
-                                    }}
-                                    color="primary"
-                                    component="label"
-                                >
-                                    <FormattedMessage id="showSelectDirectoryDialog" />
-                                </Button>
-                                <span
-                                    style={{
-                                        marginLeft: '10px',
-                                        fontWeight: 'bold',
-                                    }}
-                                >
-                                    {activeDirectoryName}
-                                </span>
-
-                                <DirectorySelector
-                                    open={folderSelectorOpen}
-                                    onClose={
-                                        handleSelectedDirectoryToCreateStudy
-                                    }
-                                    types={[ElementType.DIRECTORY]}
-                                    title={intl.formatMessage({
-                                        id: 'selectDirectoryDialogTitle',
-                                    })}
-                                    validationButtonText={intl.formatMessage({
-                                        id: 'confirmDirectoryDialog',
-                                    })}
-                                    contentText={intl.formatMessage({
-                                        id: 'moveItemContentText',
-                                    })}
-                                />
-                            </div>
+                            <DirectorySelect
+                                handleSelectFolder={handleSelectFolder}
+                                activeDirectoryName={activeDirectoryName}
+                                open={folderSelectorOpen}
+                                onClose={handleSelectedDirectoryToCreateStudy}
+                                types={[ElementType.DIRECTORY]}
+                            />
                             <ImportParametersSection
                                 currentParameters={currentParameters}
-                                onChange={onChange}
+                                onChange={onParametersChange}
                                 isParamsDisplayed={isParamsDisplayed}
                                 handleShowParametersClick={
                                     handleShowParametersClick
