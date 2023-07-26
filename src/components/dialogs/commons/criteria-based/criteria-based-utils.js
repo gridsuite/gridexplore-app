@@ -198,15 +198,15 @@ export const getCriteriaBasedFormData = (criteriaValues, extraFields) => ({
         [COUNTRIES_2]: criteriaValues?.[COUNTRIES_2] ?? [],
         ...getRangeInputDataForm(
             NOMINAL_VOLTAGE,
-            criteriaValues?.[NOMINAL_VOLTAGE] ?? DEFAULT_RANGE_VALUE
+            criteriaValues?.[NOMINAL_VOLTAGE]
         ),
         ...getRangeInputDataForm(
             NOMINAL_VOLTAGE_1,
-            criteriaValues?.[NOMINAL_VOLTAGE_1] ?? DEFAULT_RANGE_VALUE
+            criteriaValues?.[NOMINAL_VOLTAGE_1]
         ),
         ...getRangeInputDataForm(
             NOMINAL_VOLTAGE_2,
-            criteriaValues?.[NOMINAL_VOLTAGE_2] ?? DEFAULT_RANGE_VALUE
+            criteriaValues?.[NOMINAL_VOLTAGE_2]
         ),
         ...extraFields,
     },
