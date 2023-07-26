@@ -284,7 +284,6 @@ export const useNameField = ({
 };
 
 export const usePrefillNameField = ({
-    nameRef,
     selectedFile,
     setValue,
     selectedFileOk,
@@ -294,7 +293,7 @@ export const usePrefillNameField = ({
 }) => {
     useEffect(() => {
         if (setValue) {
-            //here selectedFile is a file the user choosed through a picker
+            //here selectedFile is a file the user chosen through a picker
             if (
                 selectedFile?.name &&
                 !creationError &&
@@ -314,7 +313,6 @@ export const usePrefillNameField = ({
             }
         }
     }, [
-        nameRef,
         selectedFile,
         setValue,
         touched,

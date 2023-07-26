@@ -123,12 +123,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         },
     });
 
-    const studyNameRef = useRef(studyName);
-
-    useEffect(() => {
-        studyNameRef.current = studyName;
-    }, [studyName]);
-
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
     const [currentParameters, setCurrentParameters] = useState({});
     const [formatWithParameters, setFormatWithParameters] = useState([]);
@@ -140,23 +134,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             }));
         }
     }, []);
-
-    const handleShowParametersClick = () => {
-        setIsParamsDisplayed((oldValue) => !oldValue);
-    };
-
-    const [
-        providedCaseFile,
-        FileField,
-        providedCaseFileError,
-        providedCaseFileOk,
-        resetProvidedCaseFile,
-        setProvidedCaseFileOk,
-    ] = useFileValue({
-        label: 'Case',
-        isLoading: isUploadingFileInProgress,
-    });
-
     const getCaseImportParams = useCallback(
         (caseUuid, setFormatWithParameters) => {
             getCaseImportParameters(caseUuid)
@@ -181,6 +158,22 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         },
         [intl]
     );
+
+    const handleShowParametersClick = () => {
+        setIsParamsDisplayed((oldValue) => !oldValue);
+    };
+
+    const [
+        providedCaseFile,
+        FileField,
+        providedCaseFileError,
+        providedCaseFileOk,
+        resetProvidedCaseFile,
+        setProvidedCaseFileOk,
+    ] = useFileValue({
+        label: 'Case',
+        isLoading: isUploadingFileInProgress,
+    });
 
     const handleFileUploadError = useCallback(
         (error, setCreateStudyErr) => {
@@ -219,13 +212,12 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     }, [tempCaseUuid, handleFileUploadError]);
 
     usePrefillNameField({
-        nameRef: studyNameRef,
         selectedFile: providedExistingCase ?? providedCaseFile,
         setValue: setStudyName,
         selectedFileOk: providedCaseFileOk,
         fileError: createStudyErr,
-        fileCheckedCase: fileCheckedCase,
-        touched: touched,
+        fileCheckedCase,
+        touched,
     });
 
     //Inits the dialog
