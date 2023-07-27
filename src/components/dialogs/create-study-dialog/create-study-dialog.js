@@ -102,13 +102,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         active: open,
     });
 
-    const [description, DescriptionField] = useTextValue({
-        label: 'descriptionProperty',
-        style: {
-            width: '90%',
-        },
-    });
-
     usePrefillNameField({
         selectedFile: providedExistingCase ?? providedCaseFile,
         setValue: setStudyName,
@@ -116,6 +109,13 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         fileError: error,
         fileCheckedCase,
         touched,
+    });
+
+    const [description, DescriptionField] = useTextValue({
+        label: 'descriptionProperty',
+        style: {
+            width: '90%',
+        },
     });
 
     const getCurrentCaseImportParams = useCallback(

@@ -72,7 +72,6 @@ export function CreateCaseDialog({ onClose, open }) {
     }, [name]);
 
     usePrefillNameField({
-        nameRef: nameRef,
         selectedFile: providedCaseFile,
         setValue: setCaseName,
         selectedFileOk: providedCaseFileOk,
