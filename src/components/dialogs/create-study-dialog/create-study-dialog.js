@@ -84,20 +84,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    //Updates the path display
-    useEffect(() => {
-        if (activeDirectory) {
-            fetchPath(activeDirectory).then((res) => {
-                setActiveDirectoryName(
-                    res
-                        .map((element) => element.elementName.trim())
-                        .reverse()
-                        .join('/')
-                );
-            });
-        }
-    }, [activeDirectory]);
-
     const [
         studyName,
         NameField,
@@ -108,12 +94,28 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     ] = useNameField({
         label: 'nameProperty',
         autoFocus: true,
-        elementType: ElementType.STUDY,
-        parentDirectoryId: activeDirectory,
-        active: open,
         style: {
             width: '90%',
         },
+        elementType: ElementType.STUDY,
+        parentDirectoryId: activeDirectory,
+        active: open,
+    });
+
+    const [description, DescriptionField] = useTextValue({
+        label: 'descriptionProperty',
+        style: {
+            width: '90%',
+        },
+    });
+
+    usePrefillNameField({
+        selectedFile: providedExistingCase ?? providedCaseFile,
+        setValue: setStudyName,
+        selectedFileOk: providedCaseFileOk,
+        fileError: error,
+        fileCheckedCase,
+        touched,
     });
 
     const getCurrentCaseImportParams = useCallback(
@@ -152,22 +154,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         },
         [intl]
     );
-
-    const [description, DescriptionField] = useTextValue({
-        label: 'descriptionProperty',
-        style: {
-            width: '90%',
-        },
-    });
-
-    usePrefillNameField({
-        selectedFile: providedExistingCase ?? providedCaseFile,
-        setValue: setStudyName,
-        selectedFileOk: providedCaseFileOk,
-        fileError: error,
-        fileCheckedCase,
-        touched,
-    });
 
     //Inits the dialog
     useEffect(() => {
@@ -219,6 +205,21 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         setStudyName,
         setProvidedCaseFileOk,
     ]);
+
+    //Updates the path display
+    useEffect(() => {
+        if (activeDirectory) {
+            fetchPath(activeDirectory).then((res) => {
+                setActiveDirectoryName(
+                    res
+                        .map((element) => element.elementName.trim())
+                        .reverse()
+                        .join('/')
+                );
+            });
+        }
+    }, [activeDirectory]);
+
     const handleCreateNewStudy = () => {
         //To manage the case when we never tried to enter a name
         if (studyName === '') {
