@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import { Divider } from '@mui/material';
 import { FlatParameters } from '@gridsuite/commons-ui';
-import React from 'react';
+import React, { useCallback } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import AdvancedParameterButton from './advancedParameterButton';
+import { getCaseImportParameters } from '../../../utils/rest-api';
 
 const useStyles = makeStyles((theme) => ({
     paramDivider: {
@@ -13,12 +14,28 @@ const useStyles = makeStyles((theme) => ({
 
 const ImportParametersSection = ({
     isParamsDisplayed,
-    handleShowParametersClick,
-    formatWithParameters,
+    setIsParamsDisplayed,
     currentParameters,
-    onChange,
+    setCurrentParameters,
+    formatWithParameters,
 }) => {
     const classes = useStyles();
+
+    const onChange = useCallback(
+        (paramName, value, isEdit) => {
+            if (!isEdit) {
+                setCurrentParameters((prevCurrentParameters) => ({
+                    ...prevCurrentParameters,
+                    ...{ [paramName]: value },
+                }));
+            }
+        },
+        [setCurrentParameters]
+    );
+
+    const handleShowParametersClick = () => {
+        setIsParamsDisplayed((prevIsParamsDisplayed) => !prevIsParamsDisplayed);
+    };
 
     return (
         <>

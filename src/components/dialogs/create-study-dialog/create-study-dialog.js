@@ -63,7 +63,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const dispatch = useDispatch();
 
     const [selectedCase, setSelectedCase] = useState(null);
-    const [createStudyErr, setCreateStudyErr] = useState('');
+    const [error, setError] = useState('');
 
     const userId = useSelector((state) => state.user.profile.sub);
     const { activeDirectory, selectedDirectory } = useSelector(
@@ -120,44 +120,34 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     });
 
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
-    const [currentParameters, setCurrentParameters] = useState({});
+
     const [formatWithParameters, setFormatWithParameters] = useState([]);
-    const onParametersChange = useCallback((paramName, value, isEdit) => {
-        if (!isEdit) {
-            setCurrentParameters((prevCurrentParameters) => ({
-                ...prevCurrentParameters,
-                ...{ [paramName]: value },
-            }));
-        }
-    }, []);
-    const getCaseImportParams = useCallback(
+
+    const [currentParameters, setCurrentParameters] = useState({});
+
+    const getCurrentCaseImportParams = useCallback(
         (caseUuid, setFormatWithParameters) => {
             getCaseImportParameters(caseUuid)
-                .then((result) => {
+                .then(({ parameters = [] }) => {
                     // sort possible values alphabetically to display select options sorted
-                    setFormatWithParameters({
-                        ...result,
-                        parameters: result.parameters?.map((parameter) => ({
+                    setFormatWithParameters(
+                        parameters?.map((parameter) => ({
                             ...parameter,
                             possibleValues: parameter.possibleValues?.sort(
                                 (a, b) => a.localeCompare(b)
                             ),
-                        })),
-                    });
+                        }))
+                    );
                 })
                 .catch(() => {
                     setFormatWithParameters([]);
-                    setCreateStudyErr(
+                    setError(
                         intl.formatMessage({ id: 'parameterLoadingProblem' })
                     );
                 });
         },
         [intl]
     );
-
-    const handleShowParametersClick = () => {
-        setIsParamsDisplayed((oldValue) => !oldValue);
-    };
 
     const [
         providedCaseFile,
@@ -174,15 +164,11 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const handleFileUploadError = useCallback(
         (error) => {
             if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
-                setCreateStudyErr(
-                    intl.formatMessage({ id: 'invalidFormatOrName' })
-                );
+                setError(intl.formatMessage({ id: 'invalidFormatOrName' }));
             } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
-                setCreateStudyErr(
-                    intl.formatMessage({ id: 'serverConnectionFailed' })
-                );
+                setError(intl.formatMessage({ id: 'serverConnectionFailed' }));
             } else {
-                setCreateStudyErr(error.message);
+                setError(error.message);
             }
         },
         [intl]
@@ -192,7 +178,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         selectedFile: providedExistingCase ?? providedCaseFile,
         setValue: setStudyName,
         selectedFileOk: providedCaseFileOk,
-        fileError: createStudyErr,
+        fileError: error,
         fileCheckedCase,
         touched,
     });
@@ -203,7 +189,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     useEffect(() => {
         if (open && providedExistingCase) {
             setSelectedCase(providedExistingCase.elementUuid);
-            getCaseImportParams(
+            getCurrentCaseImportParams(
                 providedExistingCase.elementUuid,
                 setFormatWithParameters
             );
@@ -220,8 +206,11 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
                         return newCaseUuid;
                     });
-                    getCaseImportParams(newCaseUuid, setFormatWithParameters);
-                    setCreateStudyErr('');
+                    getCurrentCaseImportParams(
+                        newCaseUuid,
+                        setFormatWithParameters
+                    );
+                    setError('');
                 })
                 .catch((error) => {
                     setCaseUuid(null);
@@ -238,19 +227,18 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     }, [
         open,
         dispatch,
-        selectedDirectory.elementName,
+        selectedDirectory?.elementName,
         providedExistingCase,
         providedCaseFile,
-        getCaseImportParams,
+        getCurrentCaseImportParams,
         handleFileUploadError,
         setStudyName,
         setProvidedCaseFileOk,
     ]);
-
     const handleCreateNewStudy = () => {
         //To manage the case when we never tried to enter a name
         if (studyName === '') {
-            setCreateStudyErr(intl.formatMessage({ id: 'nameEmpty' }));
+            setError(intl.formatMessage({ id: 'nameEmpty' }));
             return;
         }
         //We don't do anything if the checks are not over or the name is not valid
@@ -258,11 +246,11 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             return;
         }
         if (!!providedExistingCase && selectedCase === null) {
-            setCreateStudyErr(intl.formatMessage({ id: 'caseNameErrorMsg' }));
+            setError(intl.formatMessage({ id: 'caseNameErrorMsg' }));
             return;
         }
         if (!providedExistingCase && providedCaseFile === null) {
-            setCreateStudyErr(intl.formatMessage({ id: 'uploadErrorMsg' }));
+            setError(intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
         }
 
@@ -317,7 +305,30 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         setFolderSelectorOpen(false);
     };
 
-    const handleCloseDialog = () => {
+    const isCreationAllowed = () => {
+        return !(
+            studyName === '' ||
+            !studyNameOk ||
+            !formatWithParameters.length ||
+            (!providedExistingCase && !providedCaseFileOk) ||
+            isUploadingFileInProgress
+        );
+    };
+
+    const handleDeleteCase = () => {
+        // if we cancel case creation, we need to delete the associated newly created case (if we created one)
+        if (providedCaseFile && caseUuid) {
+            deleteCase(caseUuid)
+                .then()
+                .catch((error) => handleFileUploadError(error));
+        }
+    };
+
+    const handleCloseDialog = (_, reason) => {
+        if (reason && reason === 'backdropClick') {
+            handleDeleteCase();
+        }
+
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         setSelectedCase(null);
         resetProvidedCaseFile();
@@ -325,24 +336,8 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     };
 
     const handleCancelCreation = () => {
-        // if we cancel case creation, we need to delete the associated newly created case (if we created one)
-        if (providedCaseFile && caseUuid) {
-            deleteCase(caseUuid)
-                .then()
-                .catch((error) => handleFileUploadError(error));
-        }
-
+        handleDeleteCase();
         handleCloseDialog();
-    };
-
-    const isCreationAllowed = () => {
-        return !(
-            studyName === '' ||
-            !studyNameOk ||
-            !!formatWithParameters.length ||
-            (!providedExistingCase && !providedCaseFileOk) ||
-            isUploadingFileInProgress
-        );
     };
 
     return (
@@ -372,20 +367,20 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         />
                     )}
                     <ImportParametersSection
-                        currentParameters={currentParameters}
-                        onChange={onParametersChange}
                         isParamsDisplayed={isParamsDisplayed}
-                        handleShowParametersClick={handleShowParametersClick}
+                        setIsParamsDisplayed={setIsParamsDisplayed}
+                        currentParameters={currentParameters}
+                        setCurrentParameters={setCurrentParameters}
                         formatWithParameters={formatWithParameters}
                     />
-                    {createStudyErr !== '' && (
+                    {error !== '' && (
                         <Alert
                             style={{
                                 marginTop: '10px',
                             }}
                             severity="error"
                         >
-                            {createStudyErr}
+                            {error}
                         </Alert>
                     )}
                     {providedCaseFileError && (
