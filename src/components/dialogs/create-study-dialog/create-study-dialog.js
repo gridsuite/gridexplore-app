@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -63,7 +63,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const dispatch = useDispatch();
 
     const [selectedCase, setSelectedCase] = useState(null);
-
     const [createStudyErr, setCreateStudyErr] = useState('');
 
     const userId = useSelector((state) => state.user.profile.sub);
@@ -71,9 +70,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         (state) => state
     );
 
-    const oldTempCaseUuid = useRef(null);
-
-    const [tempCaseUuid, setTempCaseUuid] = useState(null);
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
 
@@ -176,7 +172,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     });
 
     const handleFileUploadError = useCallback(
-        (error, setCreateStudyErr) => {
+        (error) => {
             if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                 setCreateStudyErr(
                     intl.formatMessage({ id: 'invalidFormatOrName' })
@@ -192,25 +188,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         [intl]
     );
 
-    useEffect(() => {
-        if (!open) {
-            setTempCaseUuid(null);
-        }
-    }, [open]);
-
-    useEffect(() => {
-        if (oldTempCaseUuid.current !== tempCaseUuid) {
-            if (oldTempCaseUuid.current) {
-                deleteCase(oldTempCaseUuid.current)
-                    .then()
-                    .catch((error) =>
-                        handleFileUploadError(error, setCreateStudyErr)
-                    );
-            }
-            oldTempCaseUuid.current = tempCaseUuid;
-        }
-    }, [tempCaseUuid, handleFileUploadError]);
-
     usePrefillNameField({
         selectedFile: providedExistingCase ?? providedCaseFile,
         setValue: setStudyName,
@@ -219,6 +196,8 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         fileCheckedCase,
         touched,
     });
+
+    const [caseUuid, setCaseUuid] = useState(null);
 
     //Inits the dialog
     useEffect(() => {
@@ -231,14 +210,22 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         } else if (open && providedCaseFile) {
             setUploadingFileInProgress(true);
             createCaseWithoutDirectoryElementCreation(providedCaseFile)
-                .then((caseUuid) => {
-                    setTempCaseUuid(caseUuid);
-                    getCaseImportParams(caseUuid, setFormatWithParameters);
+                .then((newCaseUuid) => {
+                    setCaseUuid((prevCaseUuid) => {
+                        if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
+                            deleteCase(prevCaseUuid)
+                                .then()
+                                .catch((error) => handleFileUploadError(error));
+                        }
+
+                        return newCaseUuid;
+                    });
+                    getCaseImportParams(newCaseUuid, setFormatWithParameters);
                     setCreateStudyErr('');
                 })
                 .catch((error) => {
-                    setTempCaseUuid(null);
-                    handleFileUploadError(error, setCreateStudyErr);
+                    setCaseUuid(null);
+                    handleFileUploadError(error);
                     dispatch(selectFile(null));
                     setFormatWithParameters([]);
                     setProvidedCaseFileOk(false);
@@ -251,7 +238,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     }, [
         open,
         dispatch,
-        selectedDirectory?.elementName,
+        selectedDirectory.elementName,
         providedExistingCase,
         providedCaseFile,
         getCaseImportParams,
@@ -270,7 +257,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         if (!studyNameOk) {
             return;
         }
-
         if (!!providedExistingCase && selectedCase === null) {
             setCreateStudyErr(intl.formatMessage({ id: 'caseNameErrorMsg' }));
             return;
@@ -293,7 +279,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         createStudy(
             studyName,
             description,
-            selectedCase ?? tempCaseUuid,
+            selectedCase ?? caseUuid,
             !!providedExistingCase,
             activeDirectory,
             currentParameters && isParamsDisplayed
@@ -301,7 +287,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 : ''
         )
             .then(() => {
-                oldTempCaseUuid.current = null;
+                setCaseUuid(null);
                 handleCloseDialog();
             })
             .catch((error) => {
@@ -314,7 +300,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 });
             })
             .finally(() => {
-                setTempCaseUuid(null);
+                setCaseUuid(null);
                 dispatch(removeUploadingElement(uploadingStudy));
             });
         dispatch(addUploadingElement(uploadingStudy));
@@ -332,19 +318,21 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     };
 
     const handleCloseDialog = () => {
-        // if we have an oldTempCaseUuid here that means we cancelled the creation,
-        // so we need to delete the associated newly created case (if we created one)
-        if (providedCaseFile && oldTempCaseUuid.current) {
-            deleteCase(oldTempCaseUuid.current)
-                .then()
-                .catch((error) =>
-                    handleFileUploadError(error, setCreateStudyErr)
-                );
-        }
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         setSelectedCase(null);
         resetProvidedCaseFile();
         onClose();
+    };
+
+    const handleCancelCreation = () => {
+        // if we cancel case creation, we need to delete the associated newly created case (if we created one)
+        if (providedCaseFile && caseUuid) {
+            deleteCase(caseUuid)
+                .then()
+                .catch((error) => handleFileUploadError(error));
+        }
+
+        handleCloseDialog();
     };
 
     const isCreationAllowed = () => {
@@ -405,7 +393,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => handleCloseDialog()}>
+                    <Button onClick={() => handleCancelCreation()}>
                         <FormattedMessage id="cancel" />
                     </Button>
                     <Button
