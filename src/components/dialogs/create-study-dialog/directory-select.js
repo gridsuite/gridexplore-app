@@ -2,16 +2,23 @@ import PropTypes from 'prop-types';
 import { Button } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DirectorySelector from '../directory-selector';
-import React from 'react';
+import { setActiveDirectory } from '../../../redux/actions';
+import { useDispatch } from 'react-redux';
 
-const DirectorySelect = ({
-    handleSelectFolder,
-    activeDirectoryName,
-    open,
-    onClose,
-    types,
-}) => {
+const DirectorySelect = ({ activeDirectoryName, open, setOpen, types }) => {
     const intl = useIntl();
+    const dispatch = useDispatch();
+
+    const handleSelectFolder = () => {
+        setOpen(true);
+    };
+
+    const handleClose = (directory) => {
+        if (directory.length) {
+            dispatch(setActiveDirectory(directory[0]?.id));
+        }
+        setOpen(false);
+    };
 
     return (
         <div
@@ -42,7 +49,7 @@ const DirectorySelect = ({
 
             <DirectorySelector
                 open={open}
-                onClose={onClose}
+                onClose={handleClose}
                 types={types}
                 title={intl.formatMessage({
                     id: 'selectDirectoryDialogTitle',

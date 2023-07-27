@@ -4,7 +4,6 @@ import { FlatParameters } from '@gridsuite/commons-ui';
 import React, { useCallback } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import AdvancedParameterButton from './advancedParameterButton';
-import { getCaseImportParameters } from '../../../utils/rest-api';
 
 const useStyles = makeStyles((theme) => ({
     paramDivider: {

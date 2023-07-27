@@ -112,6 +112,8 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         },
     });
 
+    const [caseUuid, setCaseUuid] = useState(null);
+
     const [description, DescriptionField] = useTextValue({
         label: 'descriptionProperty',
         style: {
@@ -182,8 +184,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         fileCheckedCase,
         touched,
     });
-
-    const [caseUuid, setCaseUuid] = useState(null);
 
     //Inits the dialog
     useEffect(() => {
@@ -294,17 +294,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         dispatch(addUploadingElement(uploadingStudy));
     };
 
-    const handleSelectFolder = () => {
-        setFolderSelectorOpen(true);
-    };
-
-    const handleSelectedDirectoryToCreateStudy = (directory) => {
-        if (directory.length > 0) {
-            dispatch(setActiveDirectory(directory[0].id));
-        }
-        setFolderSelectorOpen(false);
-    };
-
     const isCreationAllowed = () => {
         return !(
             studyName === '' ||
@@ -359,10 +348,9 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         FileField
                     ) : (
                         <DirectorySelect
-                            handleSelectFolder={handleSelectFolder}
                             activeDirectoryName={activeDirectoryName}
                             open={folderSelectorOpen}
-                            onClose={handleSelectedDirectoryToCreateStudy}
+                            setOpen={setFolderSelectorOpen}
                             types={[ElementType.DIRECTORY]}
                         />
                     )}
