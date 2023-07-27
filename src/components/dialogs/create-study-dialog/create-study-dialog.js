@@ -86,8 +86,8 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const [
         studyName,
-        NameField,
-        nameError,
+        StudyNameField,
+        studyNameError,
         studyNameOk,
         setStudyName,
         touched,
@@ -327,9 +327,11 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     <FormattedMessage id="createNewStudy" />
                 </DialogTitle>
                 <DialogContent>
-                    {NameField}
+                    {StudyNameField}
                     {DescriptionField}
-                    {nameError && <Alert severity="error">{nameError}</Alert>}
+                    {studyNameError && (
+                        <Alert severity="error">{studyNameError}</Alert>
+                    )}
                     {!selectedCase ? (
                         <UploadCase
                             isLoading={isUploadingFileInProgress}
