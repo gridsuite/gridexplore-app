@@ -73,18 +73,6 @@ export function setAppsAndUrls(appsAndUrls) {
     };
 }
 
-export const SELECT_FILE = 'SELECT_FILE';
-
-export function selectFile(selectedFile) {
-    return { type: SELECT_FILE, selectedFile: selectedFile };
-}
-
-export const REMOVE_SELECTED_FILE = 'REMOVE_SELECTED_FILE';
-
-export function removeSelectedFile() {
-    return { type: REMOVE_SELECTED_FILE };
-}
-
 export const ADD_UPLOADING_ELEMENT = 'ADD_UPLOADING_ELEMENT';
 
 export function addUploadingElement(uploadingElement) {

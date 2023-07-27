@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,12 +16,7 @@ import Alert from '@mui/material/Alert';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { ElementType } from '../../utils/elementType';
-import {
-    useFileValue,
-    useNameField,
-    useTextValue,
-    usePrefillNameField,
-} from './field-hook';
+import { useNameField, useTextValue, usePrefillNameField } from './field-hook';
 import { createCase } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
@@ -30,6 +25,7 @@ import {
 } from '../../redux/actions';
 import { keyGenerator } from '../../utils/functions';
 import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../utils/UIconstants';
+import { UploadCase } from './upload-case';
 
 /**
  * Dialog to create a case
@@ -59,10 +55,12 @@ export function CreateCaseDialog({ onClose, open }) {
         },
     });
 
-    const [file, FileField, fileError, isFileOk, resetFile] = useFileValue({});
+    const [providedCaseFile, setProvidedCaseFile] = useState(null);
+    const [providedCaseFileOk, setProvidedCaseFileOk] = useState(false);
+    const [providedCaseFileError, setProvidedCaseFileError] = useState();
 
     function validate() {
-        return file && nameOk && isFileOk;
+        return providedCaseFile && nameOk && providedCaseFileOk;
     }
 
     const { snackError } = useSnackMessage();
@@ -75,12 +73,12 @@ export function CreateCaseDialog({ onClose, open }) {
 
     usePrefillNameField({
         nameRef: nameRef,
-        selectedFile: file,
+        selectedFile: providedCaseFile,
         setValue: setCaseName,
-        selectedFileOk: isFileOk,
-        creationError: fileError,
-        //fileCheckedCase is necessary for a test to succeed but always match isFileOk in this case since there is no intermediary validation
-        fileCheckedCase: isFileOk,
+        selectedFileOk: providedCaseFileOk,
+        creationError: providedCaseFileError,
+        //fileCheckedCase is necessary for a test to succeed but always match providedCaseFileOk in this case since there is no intermediary validation
+        fileCheckedCase: providedCaseFileOk,
         touched: touched,
     });
 
@@ -100,7 +98,7 @@ export function CreateCaseDialog({ onClose, open }) {
         createCase({
             name,
             description,
-            file,
+            file: providedCaseFile,
             parentDirectoryUuid: activeDirectory,
         })
             .then()
@@ -125,7 +123,7 @@ export function CreateCaseDialog({ onClose, open }) {
     };
 
     const handleCloseDialog = () => {
-        resetFile();
+        setProvidedCaseFile(null);
         onClose();
     };
 
@@ -142,9 +140,16 @@ export function CreateCaseDialog({ onClose, open }) {
             <DialogContent>
                 {NameField}
                 {DescriptionField}
-                {FileField}
+                <UploadCase
+                    providedCaseFile={providedCaseFile}
+                    setProvidedCaseFile={setProvidedCaseFile}
+                    setProvidedCaseFileOk={setProvidedCaseFileOk}
+                    setProvidedCaseFileError={setProvidedCaseFileError}
+                />
                 {nameError && <Alert severity="error">{nameError}</Alert>}
-                {fileError && <Alert severity="error">{fileError}</Alert>}
+                {providedCaseFileError && (
+                    <Alert severity="error">{providedCaseFileError}</Alert>
+                )}
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => handleCloseDialog()} variant="text">

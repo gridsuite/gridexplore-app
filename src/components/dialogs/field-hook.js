@@ -17,10 +17,7 @@ import {
     Tooltip,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import { useDispatch, useSelector } from 'react-redux';
-import { UploadCase } from './upload-case';
 import makeStyles from '@mui/styles/makeStyles';
-import { removeSelectedFile, selectFile } from '../../redux/actions';
 import { ElementType } from '../../utils/elementType';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -95,66 +92,6 @@ export const useTextValue = ({
     useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
 
     return [value, field, setValue, hasChanged];
-};
-
-export const useFileValue = ({ fileExceedsLimitMessage, isLoading }) => {
-    const selectedFile = useSelector((state) => state.selectedFile);
-    const intl = useIntl();
-    const dispatch = useDispatch();
-    const [fileOk, setFileOk] = useState(false);
-    const [fileError, setFileError] = useState();
-
-    const handleSelectFile = (value) => {
-        dispatch(selectFile(value));
-    };
-
-    const field = (
-        <UploadCase
-            isLoading={isLoading}
-            selectedFile={selectedFile}
-            handleSelectFile={handleSelectFile}
-        />
-    );
-
-    const resetSelectedFile = useCallback(
-        () => dispatch(removeSelectedFile()),
-        [dispatch]
-    );
-
-    useEffect(() => {
-        const MAX_FILE_SIZE_IN_MO = 100;
-        const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
-        if (!selectedFile) {
-            setFileError();
-            setFileOk(false);
-        } else if (selectedFile.size <= MAX_FILE_SIZE_IN_BYTES) {
-            setFileError();
-            setFileOk(true);
-        } else {
-            setFileError(
-                fileExceedsLimitMessage
-                    ? fileExceedsLimitMessage
-                    : intl.formatMessage(
-                          {
-                              id: 'uploadFileExceedingLimitSizeErrorMsg',
-                          },
-                          {
-                              maxSize: MAX_FILE_SIZE_IN_MO,
-                              br: <br />,
-                          }
-                      )
-            );
-            setFileOk(false);
-        }
-    }, [selectedFile, fileExceedsLimitMessage, intl]);
-    return [
-        selectedFile,
-        field,
-        fileError,
-        fileOk,
-        resetSelectedFile,
-        setFileOk,
-    ];
 };
 
 const makeAdornmentEndIcon = (content) => {

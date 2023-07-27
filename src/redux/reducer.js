@@ -23,8 +23,6 @@ import {
     SELECT_DIRECTORY,
     CURRENT_PATH,
     SET_APPS_AND_URLS,
-    SELECT_FILE,
-    REMOVE_SELECTED_FILE,
     ACTIVE_DIRECTORY,
     ADD_UPLOADING_ELEMENT,
     REMOVE_UPLOADING_ELEMENT,
@@ -130,14 +128,6 @@ export const reducer = createReducer(initialState, {
 
     [SET_APPS_AND_URLS]: (state, action) => {
         state.appsAndUrls = action.appsAndUrls;
-    },
-
-    [SELECT_FILE]: (state, action) => {
-        state.selectedFile = action.selectedFile;
-    },
-
-    [REMOVE_SELECTED_FILE]: (state) => {
-        state.selectedFile = null;
     },
 
     [ADD_UPLOADING_ELEMENT]: (state, action) => {
