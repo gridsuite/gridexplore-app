@@ -114,18 +114,18 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const [caseUuid, setCaseUuid] = useState(null);
 
+    const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
+
+    const [formatWithParameters, setFormatWithParameters] = useState([]);
+
+    const [currentParameters, setCurrentParameters] = useState({});
+
     const [description, DescriptionField] = useTextValue({
         label: 'descriptionProperty',
         style: {
             width: '90%',
         },
     });
-
-    const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
-
-    const [formatWithParameters, setFormatWithParameters] = useState([]);
-
-    const [currentParameters, setCurrentParameters] = useState({});
 
     const getCurrentCaseImportParams = useCallback(
         (caseUuid, setFormatWithParameters) => {
