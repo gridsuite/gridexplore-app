@@ -94,11 +94,6 @@ export const useTextValue = ({
     return [value, field, setValue, hasChanged];
 };
 
-const makeAdornmentEndIcon = (content) => {
-    return {
-        endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
-    };
-};
 export const useNameField = ({
     parentDirectoryId,
     elementType,
@@ -187,11 +182,15 @@ export const useNameField = ({
         }
         if (checking) {
             setAdornment(
-                makeAdornmentEndIcon(<CircularProgress size="1rem" />)
+                <InputAdornment position="end">
+                    <CircularProgress size="1rem" />
+                </InputAdornment>
             );
         } else {
             setAdornment(
-                makeAdornmentEndIcon(<CheckIcon style={{ color: 'green' }} />)
+                <InputAdornment position="end">
+                    <CheckIcon style={{ color: 'green' }} />
+                </InputAdornment>
             );
         }
     }, [checking, error]);

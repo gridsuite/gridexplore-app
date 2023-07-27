@@ -24,14 +24,10 @@ export const UploadCase = ({
         e.preventDefault();
         let files = e.target.files;
         if (files.size === 0) {
-            handleSelectFile(null);
+            setProvidedCaseFile(null);
         } else {
-            handleSelectFile(files[0]);
+            setProvidedCaseFile(files[0]);
         }
-    };
-
-    const handleSelectFile = (value) => {
-        setProvidedCaseFile(value);
     };
 
     useEffect(() => {
@@ -56,8 +52,8 @@ export const UploadCase = ({
             setProvidedCaseFileOk(false);
         }
     }, [
-        providedCaseFile,
         intl,
+        providedCaseFile,
         setProvidedCaseFileError,
         setProvidedCaseFileOk,
     ]);
