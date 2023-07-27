@@ -87,7 +87,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         }
     }, [activeDirectory]);
 
-    const [isUploadingFileInProgress, setUploadingFileInProgress] =
+    const [isUploadingFileInProgress, setIsUploadingFileInProgress] =
         useState(false);
 
     const [fileCheckedCase, setFileCheckedCase] = useState(
@@ -194,7 +194,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 setFormatWithParameters
             );
         } else if (open && providedCaseFile) {
-            setUploadingFileInProgress(true);
+            setIsUploadingFileInProgress(true);
             createCaseWithoutDirectoryElementCreation(providedCaseFile)
                 .then((newCaseUuid) => {
                     setCaseUuid((prevCaseUuid) => {
@@ -220,7 +220,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     setProvidedCaseFileOk(false);
                 })
                 .finally(() => {
-                    setUploadingFileInProgress(false);
+                    setIsUploadingFileInProgress(false);
                     setFileCheckedCase(true);
                 });
         }
