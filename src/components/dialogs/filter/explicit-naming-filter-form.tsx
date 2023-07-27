@@ -32,8 +32,10 @@ export const explicitNamingFilterSchema = {
         )
         // we remove empty lines
         .compact((row) => !row[DISTRIBUTION_KEY] && !row[EQUIPMENT_ID])
-        .when([FILTER_TYPE], {
-            is: FilterType.EXPLICIT_NAMING.id,
+        .when([FILTER_TYPE, EQUIPMENT_TYPE], {
+            is: (filterType: string, equipmentType: string) =>
+                filterType === FilterType.EXPLICIT_NAMING.id &&
+                isGeneratorOrLoad(equipmentType),
             then: (schema) =>
                 schema
                     .min(1, 'emptyFilterError')
@@ -57,6 +59,10 @@ export const explicitNamingFilterSchema = {
         }),
 };
 
+function isGeneratorOrLoad(equipmentType: string): boolean {
+    return equipmentType === Generator.type || equipmentType === Load.type;
+}
+
 export const explicitNamingFilterEmptyFormData = {
     [FILTER_EQUIPMENTS_ATTRIBUTES]: [],
 };
@@ -73,9 +79,7 @@ function ExplicitNamingFilterForm() {
         name: EQUIPMENT_TYPE,
     });
 
-    const isGeneratorOrLoad =
-        watchEquipmentType === Generator.type ||
-        watchEquipmentType === Load.type;
+    const forGeneratorOrLoad = isGeneratorOrLoad(watchEquipmentType);
 
     const columnDefs = useMemo(() => {
         const columnDefs: any[] = [
@@ -89,7 +93,7 @@ function ExplicitNamingFilterForm() {
                     params.newValue?.trim() ?? null,
             },
         ];
-        if (isGeneratorOrLoad) {
+        if (forGeneratorOrLoad) {
             columnDefs.push({
                 headerName: intl.formatMessage({ id: DISTRIBUTION_KEY }),
                 field: DISTRIBUTION_KEY,
@@ -106,7 +110,7 @@ function ExplicitNamingFilterForm() {
             });
         }
         return columnDefs;
-    }, [intl, isGeneratorOrLoad]);
+    }, [intl, forGeneratorOrLoad]);
 
     const defaultColDef = useMemo(
         () => ({
@@ -117,11 +121,11 @@ function ExplicitNamingFilterForm() {
 
     const csvFileHeaders = useMemo(() => {
         const csvFileHeaders = [intl.formatMessage({ id: EQUIPMENT_ID })];
-        if (isGeneratorOrLoad) {
+        if (forGeneratorOrLoad) {
             csvFileHeaders.push(intl.formatMessage({ id: DISTRIBUTION_KEY }));
         }
         return csvFileHeaders;
-    }, [intl, isGeneratorOrLoad]);
+    }, [intl, forGeneratorOrLoad]);
 
     const getDataFromCsvFile = useCallback((csvData: any) => {
         if (csvData) {

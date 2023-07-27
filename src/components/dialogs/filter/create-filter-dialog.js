@@ -7,7 +7,6 @@
 
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { ElementType, FilterType } from '../../../utils/elementType';
 import {
@@ -57,7 +56,6 @@ const CreateFilterDialog = ({ open, onClose }) => {
     const { snackError } = useSnackMessage();
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const [filterNameValid, setFilterNameValid] = useState(false);
-    const intl = useIntl();
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -86,7 +84,6 @@ const CreateFilterDialog = ({ open, onClose }) => {
                         });
                     },
                     activeDirectory,
-                    intl,
                     onClose
                 );
             } else if (
@@ -104,7 +101,7 @@ const CreateFilterDialog = ({ open, onClose }) => {
                 );
             }
         },
-        [activeDirectory, intl, snackError, onClose]
+        [activeDirectory, snackError, onClose]
     );
 
     return (

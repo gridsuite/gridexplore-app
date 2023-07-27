@@ -6,7 +6,6 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { saveExplicitNamingFilter } from './filters-save';
 import { ElementType, FilterType } from '../../../utils/elementType';
@@ -40,7 +39,6 @@ const ExplicitNamingFilterEditionDialog = ({
     open,
     onClose,
 }) => {
-    const intl = useIntl();
     const { snackError } = useSnackMessage();
     const [isNameValid, setIsNameValid] = useState(true);
 
@@ -87,11 +85,10 @@ const ExplicitNamingFilterEditionDialog = ({
                     });
                 },
                 null,
-                intl,
                 onClose
             );
         },
-        [id, intl, onClose, snackError]
+        [id, onClose, snackError]
     );
 
     const checkName = (isValid, newName) => {
