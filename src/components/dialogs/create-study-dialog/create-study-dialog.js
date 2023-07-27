@@ -120,13 +120,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const [currentParameters, setCurrentParameters] = useState({});
 
-    const [description, DescriptionField] = useTextValue({
-        label: 'descriptionProperty',
-        style: {
-            width: '90%',
-        },
-    });
-
     const getCurrentCaseImportParams = useCallback(
         (caseUuid, setFormatWithParameters) => {
             getCaseImportParameters(caseUuid)
@@ -151,18 +144,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         [intl]
     );
 
-    const [
-        providedCaseFile,
-        FileField,
-        providedCaseFileError,
-        providedCaseFileOk,
-        resetProvidedCaseFile,
-        setProvidedCaseFileOk,
-    ] = useFileValue({
-        label: 'Case',
-        isLoading: isUploadingFileInProgress,
-    });
-
     const handleFileUploadError = useCallback(
         (error) => {
             if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
@@ -175,6 +156,25 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         },
         [intl]
     );
+
+    const [description, DescriptionField] = useTextValue({
+        label: 'descriptionProperty',
+        style: {
+            width: '90%',
+        },
+    });
+
+    const [
+        providedCaseFile,
+        FileField,
+        providedCaseFileError,
+        providedCaseFileOk,
+        resetProvidedCaseFile,
+        setProvidedCaseFileOk,
+    ] = useFileValue({
+        label: 'Case',
+        isLoading: isUploadingFileInProgress,
+    });
 
     usePrefillNameField({
         selectedFile: providedExistingCase ?? providedCaseFile,
