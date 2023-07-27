@@ -14,7 +14,7 @@ import { FILTER_EQUIPMENTS } from '../commons/criteria-based/criteria-based-util
 import Grid from '@mui/material/Grid';
 import SelectInput from '../../utils/rhf-inputs/select-inputs/select-input';
 import { ValueParserParams } from 'ag-grid-community';
-import { toFloatOrNullValue } from '../../utils/dialog-utils';
+import { isFloatNumber, toFloatOrNullValue } from '../../utils/dialog-utils';
 import { Generator, Load } from '../../../utils/equipment-types';
 import { FilterType } from '../../../utils/elementType';
 
@@ -83,7 +83,6 @@ function ExplicitNamingFilterForm() {
             {
                 headerName: intl.formatMessage({ id: EQUIPMENT_ID }),
                 field: EQUIPMENT_ID,
-                suppressMovable: true,
                 editable: true,
                 singleClickEdit: true,
                 valueParser: (params: ValueParserParams) =>
@@ -94,16 +93,27 @@ function ExplicitNamingFilterForm() {
             columnDefs.push({
                 headerName: intl.formatMessage({ id: DISTRIBUTION_KEY }),
                 field: DISTRIBUTION_KEY,
-                suppressMovable: true,
                 editable: true,
                 singleClickEdit: true,
-                valueParser: (params: ValueParserParams) =>
-                    toFloatOrNullValue(params.newValue),
+                valueParser: (params: ValueParserParams) => {
+                    if (!isFloatNumber(params.newValue)) {
+                        return params.oldValue;
+                    } else {
+                        return toFloatOrNullValue(params.newValue);
+                    }
+                },
                 maxWidth: 200,
             });
         }
         return columnDefs;
     }, [intl, isGeneratorOrLoad]);
+
+    const defaultColDef = useMemo(
+        () => ({
+            suppressMovable: true,
+        }),
+        []
+    );
 
     const csvFileHeaders = useMemo(() => {
         const csvFileHeaders = [intl.formatMessage({ id: EQUIPMENT_ID })];
@@ -135,26 +145,29 @@ function ExplicitNamingFilterForm() {
                     label={'equipmentType'}
                 />
             </Grid>
-            <Grid item xs={12}>
-                <CustomAgGridTable
-                    name={FILTER_EQUIPMENTS_ATTRIBUTES}
-                    columnDefs={columnDefs}
-                    defaultRowData={defaultRowData}
-                    defaultEmptyRowsNumber={3}
-                    pagination={true}
-                    paginationPageSize={100}
-                    minNumberOfRows={3}
-                    suppressRowClickSelection
-                    alwaysShowVerticalScroll
-                    csvProps={{
-                        fileName: intl.formatMessage({
-                            id: 'filterCsvFileName',
-                        }),
-                        fileHeaders: csvFileHeaders,
-                        getDataFromCsv: getDataFromCsvFile,
-                    }}
-                />
-            </Grid>
+            {watchEquipmentType && (
+                <Grid item xs={12}>
+                    <CustomAgGridTable
+                        name={FILTER_EQUIPMENTS_ATTRIBUTES}
+                        columnDefs={columnDefs}
+                        defaultColDef={defaultColDef}
+                        defaultRowData={defaultRowData}
+                        defaultEmptyRowsNumber={3}
+                        pagination={true}
+                        paginationPageSize={100}
+                        minNumberOfRows={3}
+                        suppressRowClickSelection
+                        alwaysShowVerticalScroll
+                        csvProps={{
+                            fileName: intl.formatMessage({
+                                id: 'filterCsvFileName',
+                            }),
+                            fileHeaders: csvFileHeaders,
+                            getDataFromCsv: getDataFromCsvFile,
+                        }}
+                    />
+                </Grid>
+            )}
         </Grid>
     );
 }
