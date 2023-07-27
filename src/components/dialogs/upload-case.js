@@ -13,7 +13,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
 export const UploadCase = ({
-    isLoading,
+    isLoading = false,
     providedCaseFile,
     setProvidedCaseFile,
     setProvidedCaseFileOk,

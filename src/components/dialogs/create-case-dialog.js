@@ -58,9 +58,8 @@ export function CreateCaseDialog({ onClose, open }) {
             width: '90%',
         },
     });
-    const [file, FileField, fileError, isFileOk, resetFile] = useFileValue({
-        label: 'Case',
-    });
+
+    const [file, FileField, fileError, isFileOk, resetFile] = useFileValue({});
 
     function validate() {
         return file && nameOk && isFileOk;
