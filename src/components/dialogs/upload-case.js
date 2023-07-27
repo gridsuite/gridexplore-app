@@ -5,27 +5,62 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useDispatch, useSelector } from 'react-redux';
-import { selectFile } from '../../redux/actions';
 import Button from '@mui/material/Button';
-import { FormattedMessage } from 'react-intl';
-import React from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import { makeStyles } from '@mui/styles';
-const useStyles = makeStyles(() => ({}));
-export const UploadCase = ({ isLoading }) => {
-    const classes = useStyles();
-    const dispatch = useDispatch();
-    const selectedFile = useSelector((state) => state.selectedFile);
+
+const MAX_FILE_SIZE_IN_MO = 100;
+const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
+export const UploadCase = ({
+    isLoading,
+    providedCaseFile,
+    setProvidedCaseFile,
+    setProvidedCaseFileOk,
+    setProvidedCaseFileError,
+}) => {
+    const intl = useIntl();
     const handleFileUpload = (e) => {
         e.preventDefault();
         let files = e.target.files;
         if (files.size === 0) {
-            dispatch(selectFile(null));
+            handleSelectFile(null);
         } else {
-            dispatch(selectFile(files[0]));
+            handleSelectFile(files[0]);
         }
     };
+
+    const handleSelectFile = (value) => {
+        setProvidedCaseFile(value);
+    };
+
+    useEffect(() => {
+        if (!providedCaseFile) {
+            setProvidedCaseFileError(null);
+            setProvidedCaseFileOk(false);
+        } else if (providedCaseFile.size <= MAX_FILE_SIZE_IN_BYTES) {
+            setProvidedCaseFileError(null);
+            setProvidedCaseFileOk(true);
+        } else {
+            setProvidedCaseFileError(
+                intl.formatMessage(
+                    {
+                        id: 'uploadFileExceedingLimitSizeErrorMsg',
+                    },
+                    {
+                        maxSize: MAX_FILE_SIZE_IN_MO,
+                        br: <br />,
+                    }
+                )
+            );
+            setProvidedCaseFileOk(false);
+        }
+    }, [
+        providedCaseFile,
+        intl,
+        setProvidedCaseFileError,
+        setProvidedCaseFileOk,
+    ]);
 
     return (
         <table>
@@ -48,15 +83,12 @@ export const UploadCase = ({ isLoading }) => {
                     </th>
                     <th>
                         <p>
-                            {selectedFile?.name === undefined ? (
+                            {providedCaseFile?.name === undefined ? (
                                 <FormattedMessage id="uploadMessage" />
                             ) : isLoading ? (
-                                <CircularProgress
-                                    className={classes.progress}
-                                    size="1rem"
-                                />
+                                <CircularProgress size="1rem" />
                             ) : (
-                                selectedFile.name
+                                providedCaseFile.name
                             )}
                         </p>
                     </th>

@@ -20,7 +20,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import { useDispatch, useSelector } from 'react-redux';
 import { UploadCase } from './upload-case';
 import makeStyles from '@mui/styles/makeStyles';
-import { removeSelectedFile } from '../../redux/actions';
+import { removeSelectedFile, selectFile } from '../../redux/actions';
 import { ElementType } from '../../utils/elementType';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -104,7 +104,17 @@ export const useFileValue = ({ fileExceedsLimitMessage, isLoading }) => {
     const [fileOk, setFileOk] = useState(false);
     const [fileError, setFileError] = useState();
 
-    const field = <UploadCase isLoading={isLoading} />;
+    const handleSelectFile = (value) => {
+        dispatch(selectFile(value));
+    };
+
+    const field = (
+        <UploadCase
+            isLoading={isLoading}
+            selectedFile={selectedFile}
+            handleSelectFile={handleSelectFile}
+        />
+    );
 
     const resetSelectedFile = useCallback(
         () => dispatch(removeSelectedFile()),

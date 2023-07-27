@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     addUploadingElement,
     removeUploadingElement,
-    selectFile,
     setActiveDirectory,
 } from '../../../redux/actions';
 
@@ -34,12 +33,7 @@ import {
     getCaseImportParameters,
 } from '../../../utils/rest-api';
 
-import {
-    useFileValue,
-    useNameField,
-    usePrefillNameField,
-    useTextValue,
-} from '../field-hook';
+import { useNameField, usePrefillNameField, useTextValue } from '../field-hook';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ElementType } from '../../../utils/elementType';
@@ -50,6 +44,7 @@ import {
 } from '../../../utils/UIconstants.js';
 import ImportParametersSection from './importParametersSection';
 import DirectorySelect from './directory-select';
+import { UploadCase } from '../upload-case';
 
 /**
  * Dialog to create a study
@@ -63,15 +58,31 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const dispatch = useDispatch();
 
     const [selectedCase, setSelectedCase] = useState(null);
-    const [error, setError] = useState('');
+    const [caseUuid, setCaseUuid] = useState(null);
 
-    const userId = useSelector((state) => state.user.profile.sub);
-    const { activeDirectory, selectedDirectory } = useSelector(
-        (state) => state
-    );
+    const [providedCaseFile, setProvidedCaseFile] = useState(null);
+    const [providedCaseFileOk, setProvidedCaseFileOk] = useState(false);
 
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
+
+    const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
+    const [formatWithParameters, setFormatWithParameters] = useState([]);
+    const [currentParameters, setCurrentParameters] = useState({});
+
+    const [isUploadingFileInProgress, setIsUploadingFileInProgress] =
+        useState(false);
+
+    const [fileCheckedCase, setFileCheckedCase] = useState(
+        !!providedExistingCase
+    );
+
+    const [error, setError] = useState('');
+    const [providedCaseFileError, setProvidedCaseFileError] = useState(null);
+
+    const userId = useSelector((state) => state.user.profile.sub);
+    const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const activeDirectory = useSelector((state) => state.activeDirectory);
 
     //Updates the path display
     useEffect(() => {
@@ -86,13 +97,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             });
         }
     }, [activeDirectory]);
-
-    const [isUploadingFileInProgress, setIsUploadingFileInProgress] =
-        useState(false);
-
-    const [fileCheckedCase, setFileCheckedCase] = useState(
-        !!providedExistingCase
-    );
 
     const [
         studyName,
@@ -111,14 +115,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             width: '90%',
         },
     });
-
-    const [caseUuid, setCaseUuid] = useState(null);
-
-    const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
-
-    const [formatWithParameters, setFormatWithParameters] = useState([]);
-
-    const [currentParameters, setCurrentParameters] = useState({});
 
     const getCurrentCaseImportParams = useCallback(
         (caseUuid, setFormatWithParameters) => {
@@ -164,18 +160,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         },
     });
 
-    const [
-        providedCaseFile,
-        FileField,
-        providedCaseFileError,
-        providedCaseFileOk,
-        resetProvidedCaseFile,
-        setProvidedCaseFileOk,
-    ] = useFileValue({
-        label: 'Case',
-        isLoading: isUploadingFileInProgress,
-    });
-
     usePrefillNameField({
         selectedFile: providedExistingCase ?? providedCaseFile,
         setValue: setStudyName,
@@ -215,7 +199,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 .catch((error) => {
                     setCaseUuid(null);
                     handleFileUploadError(error);
-                    dispatch(selectFile(null));
+                    setProvidedCaseFile(null);
                     setFormatWithParameters([]);
                     setProvidedCaseFileOk(false);
                 })
@@ -275,7 +259,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 : ''
         )
             .then(() => {
-                setCaseUuid(null);
                 handleCloseDialog();
             })
             .catch((error) => {
@@ -291,6 +274,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 setCaseUuid(null);
                 dispatch(removeUploadingElement(uploadingStudy));
             });
+
         dispatch(addUploadingElement(uploadingStudy));
     };
 
@@ -310,6 +294,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             deleteCase(caseUuid)
                 .then()
                 .catch((error) => handleFileUploadError(error));
+            setCaseUuid(null);
         }
     };
 
@@ -320,7 +305,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
         dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         setSelectedCase(null);
-        resetProvidedCaseFile();
+        setProvidedCaseFile(null);
         onClose();
     };
 
@@ -345,7 +330,13 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     {DescriptionField}
                     {nameError && <Alert severity="error">{nameError}</Alert>}
                     {!selectedCase ? (
-                        FileField
+                        <UploadCase
+                            isLoading={isUploadingFileInProgress}
+                            providedCaseFile={providedCaseFile}
+                            setProvidedCaseFile={setProvidedCaseFile}
+                            setProvidedCaseFileError={setProvidedCaseFileError}
+                            setProvidedCaseFileOk={setProvidedCaseFileOk}
+                        />
                     ) : (
                         <DirectorySelect
                             activeDirectoryName={activeDirectoryName}
