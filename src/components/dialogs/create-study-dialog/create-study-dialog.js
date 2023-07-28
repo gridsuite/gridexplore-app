@@ -65,6 +65,8 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const [caseUuid, setCaseUuid] = useState(null);
 
     const [providedCaseFile, setProvidedCaseFile] = useState(null);
+    const [providedCaseFileLoading, setProvidedCaseFileLoading] =
+        useState(false);
     const [providedCaseFileOk, setProvidedCaseFileOk] = useState(false);
     const [providedCaseFileError, setProvidedCaseFileError] = useState('');
     const [providedCaseFileChecking, setProvidedCaseFileChecking] =
@@ -80,9 +82,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const [areParamsDisplayed, setAreParamsDisplayed] = useState(false);
     const [formattedParams, setFormattedParams] = useState([]);
     const [currentParams, setCurrentParams] = useState({});
-
-    const [isUploadingFileInProgress, setIsUploadingFileInProgress] =
-        useState(false);
 
     const [fileCheckedCase, setFileCheckedCase] = useState(
         !!providedExistingCase
@@ -215,7 +214,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             !studyNameOk ||
             !formattedParams.length ||
             (!providedExistingCase && !providedCaseFileOk) ||
-            isUploadingFileInProgress
+            providedCaseFileLoading
         );
     };
 
@@ -271,7 +270,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 setFormattedParams
             );
         } else if (providedCaseFile) {
-            setIsUploadingFileInProgress(true);
+            setProvidedCaseFileLoading(true);
             createCaseWithoutDirectoryElementCreation(providedCaseFile)
                 .then((newCaseUuid) => {
                     setCaseUuid((prevCaseUuid) => {
@@ -295,7 +294,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     handleFileUploadError(error);
                 })
                 .finally(() => {
-                    setIsUploadingFileInProgress(false);
+                    setProvidedCaseFileLoading(false);
                     setFileCheckedCase(true);
                 });
         }
@@ -414,7 +413,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     )}
                     {!selectedCase ? (
                         <UploadCase
-                            isLoading={isUploadingFileInProgress}
+                            isLoading={providedCaseFileLoading}
                             providedCaseFile={providedCaseFile}
                             setProvidedCaseFile={setProvidedCaseFile}
                             setProvidedCaseFileError={setProvidedCaseFileError}

@@ -71,7 +71,7 @@ export const UploadCase = ({
                             <input
                                 type="file"
                                 name="file"
-                                onChange={(e) => handleFileUpload(e)}
+                                onChange={handleFileUpload}
                                 style={{ display: 'none' }}
                             />
                         </Button>
