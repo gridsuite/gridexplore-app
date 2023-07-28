@@ -154,7 +154,6 @@ function ExplicitNamingFilterForm() {
                         defaultRowData={defaultRowData}
                         pagination={true}
                         paginationPageSize={100}
-                        minNumberOfRows={3}
                         suppressRowClickSelection
                         alwaysShowVerticalScroll
                         csvProps={{
