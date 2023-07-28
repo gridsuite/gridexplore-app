@@ -40,6 +40,12 @@ export const DEFAULT_ROW_VALUE = {
     [EQUIPMENT_IDS]: [],
 };
 
+export const DEFAULT_TABLE_ROWS = [
+    DEFAULT_ROW_VALUE,
+    DEFAULT_ROW_VALUE,
+    DEFAULT_ROW_VALUE,
+];
+
 export const getContingencyListSchema = () =>
     yup.object().shape({
         [NAME]: yup.string().required(),
@@ -52,7 +58,7 @@ export const getContingencyListSchema = () =>
 
 export const getContingencyListEmptyFormData = () => ({
     [NAME]: '',
-    [EQUIPMENT_TABLE]: [],
+    [EQUIPMENT_TABLE]: DEFAULT_TABLE_ROWS,
     [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [SCRIPT]: '',
     [EQUIPMENT_TYPE]: null,
@@ -85,7 +91,7 @@ export const getFormDataFromFetchedElement = (
                     }
                 );
             } else {
-                result = [];
+                result = DEFAULT_TABLE_ROWS;
             }
 
             return {

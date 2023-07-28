@@ -63,13 +63,15 @@ function isGeneratorOrLoad(equipmentType: string): boolean {
     return equipmentType === Generator.type || equipmentType === Load.type;
 }
 
-export const explicitNamingFilterEmptyFormData = {
-    [FILTER_EQUIPMENTS_ATTRIBUTES]: [],
-};
-
 const defaultRowData = {
     [EQUIPMENT_ID]: null,
     [DISTRIBUTION_KEY]: null,
+};
+
+const defaultTableRows = [defaultRowData, defaultRowData, defaultRowData];
+
+export const explicitNamingFilterEmptyFormData = {
+    [FILTER_EQUIPMENTS_ATTRIBUTES]: defaultTableRows,
 };
 
 function ExplicitNamingFilterForm() {
@@ -150,7 +152,6 @@ function ExplicitNamingFilterForm() {
                         columnDefs={columnDefs}
                         defaultColDef={defaultColDef}
                         defaultRowData={defaultRowData}
-                        defaultEmptyRowsNumber={3}
                         pagination={true}
                         paginationPageSize={100}
                         minNumberOfRows={3}

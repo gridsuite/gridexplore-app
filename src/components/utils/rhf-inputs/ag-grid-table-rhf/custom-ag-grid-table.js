@@ -78,7 +78,6 @@ export const CustomAgGridTable = ({
     name,
     columnDefs,
     defaultRowData,
-    defaultEmptyRowsNumber,
     csvProps,
     ...props
 }) => {
@@ -103,27 +102,21 @@ export const CustomAgGridTable = ({
 
     // It is not optimal in terms of performance, but we made the decision to isolate the AG_GRID_ROW_UUID inside this component
     useEffect(() => {
-        if (!rowData?.length) {
-            for (let i = 0; i < defaultEmptyRowsNumber; i++) {
-                append(makeEmptyRow());
-            }
-        } else {
-            // if the table has default values without rowUuid, we add it
-            const rowWithoutUuid = rowData.some((r) => !r[AG_GRID_ROW_UUID]);
-            if (rowWithoutUuid) {
-                const rowsWithId = rowData.map((r) => {
-                    if (r[AG_GRID_ROW_UUID]) {
-                        return r;
-                    }
-                    return {
-                        [AG_GRID_ROW_UUID]: crypto.randomUUID(),
-                        ...r,
-                    };
-                });
-                setValue(name, rowsWithId);
-            }
+        // if the table has default values without rowUuid, we add it
+        const rowWithoutUuid = rowData.some((r) => !r[AG_GRID_ROW_UUID]);
+        if (rowWithoutUuid) {
+            const rowsWithId = rowData.map((r) => {
+                if (r[AG_GRID_ROW_UUID]) {
+                    return r;
+                }
+                return {
+                    [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+                    ...r,
+                };
+            });
+            setValue(name, rowsWithId);
         }
-    }, [name, defaultEmptyRowsNumber, makeEmptyRow, rowData, append, setValue]);
+    }, [name, rowData, setValue]);
 
     const isFirstSelected =
         rowData?.length &&
