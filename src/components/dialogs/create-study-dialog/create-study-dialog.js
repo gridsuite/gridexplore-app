@@ -66,6 +66,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const [providedCaseFile, setProvidedCaseFile] = useState(null);
     const [providedCaseFileOk, setProvidedCaseFileOk] = useState(false);
+    const [providedCaseFileError, setProvidedCaseFileError] = useState('');
     const [providedCaseFileChecking, setProvidedCaseFileChecking] =
         useState(false);
     const [
@@ -76,9 +77,9 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
 
-    const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
-    const [formatWithParameters, setFormatWithParameters] = useState([]);
-    const [currentParameters, setCurrentParameters] = useState({});
+    const [areParamsDisplayed, setAreParamsDisplayed] = useState(false);
+    const [formattedParams, setFormattedParams] = useState([]);
+    const [currentParams, setCurrentParams] = useState({});
 
     const [isUploadingFileInProgress, setIsUploadingFileInProgress] =
         useState(false);
@@ -87,13 +88,12 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         !!providedExistingCase
     );
 
-    const [touched, setTouched] = useState(false);
     const [studyName, setStudyName] = useState('');
+    const [isStudyNameChanged, setIsStudyNameChanged] = useState(false);
+    const [studyNameError, setStudyNameError] = useState('');
     const [description, setDescription] = useState('');
 
     const [error, setError] = useState('');
-    const [studyNameError, setStudyNameError] = useState('');
-    const [providedCaseFileError, setProvidedCaseFileError] = useState(null);
 
     const userId = useSelector((state) => state.user.profile.sub);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -110,74 +110,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         !providedCaseFileChecking;
 
     const selectedFile = providedExistingCase ?? providedCaseFile;
-
-    useEffect(() => {
-        const nameFormatted = studyName.replace(/ /g, '');
-
-        if (!nameFormatted || studyNameError) {
-            // studyName is not valid
-            setProvidedCaseFileCheckingAdornment(false);
-
-            if (touched) {
-                setStudyNameError(intl.formatMessage({ id: 'nameEmpty' }));
-            }
-        } else {
-            setProvidedCaseFileChecking(true);
-            setProvidedCaseFileCheckingAdornment(
-                <InputAdornment position="end">
-                    <CircularProgress size="1rem" />
-                </InputAdornment>
-            );
-            //If the studyName is not only white spaces
-            isElementExists(studyName)
-                .then((data) => {
-                    setStudyNameError(
-                        data
-                            ? intl.formatMessage({
-                                  id: 'nameAlreadyUsed',
-                              })
-                            : ''
-                    );
-                    setProvidedCaseFileCheckingAdornment(
-                        <InputAdornment position="end">
-                            <CheckIcon style={{ color: 'green' }} />
-                        </InputAdornment>
-                    );
-                })
-                .catch((error) => {
-                    setStudyNameError(
-                        intl.formatMessage({
-                            id: 'nameValidityCheckErrorMsg',
-                        }) + error.message
-                    );
-                    setProvidedCaseFileCheckingAdornment(false);
-                })
-                .finally(() => {
-                    setProvidedCaseFileChecking(false);
-                });
-        }
-    }, [studyName, touched]);
-    // setting studyName
-    useEffect(() => {
-        //here selectedFile is a file the user chosen through a picker
-        if (
-            selectedFile?.name &&
-            !error &&
-            providedCaseFileOk &&
-            fileCheckedCase &&
-            !touched
-        ) {
-            setStudyName(
-                selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
-            );
-        }
-        //here selectedFile is an already stored case
-        else if (selectedFile?.elementName && !error) {
-            setStudyName(selectedFile.elementName);
-        } else if (!selectedFile && !touched) {
-            setStudyName('');
-        }
-    }, [error, fileCheckedCase, providedCaseFileOk, selectedFile, touched]);
 
     const handleFileUploadError = useCallback(
         (error) => {
@@ -216,69 +148,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         [intl]
     );
 
-    //Inits the dialog
-    useEffect(() => {
-        setStudyNameError('');
-
-        if (providedExistingCase) {
-            setSelectedCase(providedExistingCase.elementUuid);
-            getCurrentCaseImportParams(
-                providedExistingCase.elementUuid,
-                setFormatWithParameters
-            );
-        } else if (providedCaseFile) {
-            setIsUploadingFileInProgress(true);
-            createCaseWithoutDirectoryElementCreation(providedCaseFile)
-                .then((newCaseUuid) => {
-                    setCaseUuid((prevCaseUuid) => {
-                        if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
-                            deleteCase(prevCaseUuid)
-                                .then()
-                                .catch((error) => handleFileUploadError(error));
-                        }
-
-                        return newCaseUuid;
-                    });
-                    getCurrentCaseImportParams(
-                        newCaseUuid,
-                        setFormatWithParameters
-                    );
-                    setError('');
-                    setTouched(false);
-                })
-                .catch((error) => {
-                    setCaseUuid(null);
-                    setProvidedCaseFile(null);
-                    setFormatWithParameters([]);
-                    setProvidedCaseFileOk(false);
-                    handleFileUploadError(error);
-                })
-                .finally(() => {
-                    setIsUploadingFileInProgress(false);
-                    setFileCheckedCase(true);
-                });
-        }
-    }, [
-        getCurrentCaseImportParams,
-        handleFileUploadError,
-        providedCaseFile,
-        providedExistingCase,
-    ]);
-
-    //Updates the path display
-    useEffect(() => {
-        if (activeDirectory) {
-            fetchPath(activeDirectory).then((res) => {
-                setActiveDirectoryName(
-                    res
-                        .map((element) => element.elementName.trim())
-                        .reverse()
-                        .join('/')
-                );
-            });
-        }
-    }, [activeDirectory]);
-
+    /* Functions */
     const handleCreateNewStudy = () => {
         //To manage the case when we never tried to enter a name
         if (studyName === '') {
@@ -314,8 +184,8 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             selectedCase ?? caseUuid,
             !!providedExistingCase,
             activeDirectory,
-            currentParameters && isParamsDisplayed
-                ? JSON.stringify(currentParameters)
+            currentParams && areParamsDisplayed
+                ? JSON.stringify(currentParams)
                 : ''
         )
             .then(() => {
@@ -342,7 +212,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         return !(
             studyName === '' ||
             !studyNameOk ||
-            !formatWithParameters.length ||
+            !formattedParams.length ||
             (!providedExistingCase && !providedCaseFileOk) ||
             isUploadingFileInProgress
         );
@@ -374,6 +244,144 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         handleCloseDialog();
     };
 
+    /* Effects */
+    //Updates the path display
+    useEffect(() => {
+        if (activeDirectory) {
+            fetchPath(activeDirectory).then((res) => {
+                setActiveDirectoryName(
+                    res
+                        .map((element) => element.elementName.trim())
+                        .reverse()
+                        .join('/')
+                );
+            });
+        }
+    }, [activeDirectory]);
+
+    // Inits the dialog
+    useEffect(() => {
+        setStudyNameError('');
+
+        if (providedExistingCase) {
+            setSelectedCase(providedExistingCase.elementUuid);
+            getCurrentCaseImportParams(
+                providedExistingCase.elementUuid,
+                setFormattedParams
+            );
+        } else if (providedCaseFile) {
+            setIsUploadingFileInProgress(true);
+            createCaseWithoutDirectoryElementCreation(providedCaseFile)
+                .then((newCaseUuid) => {
+                    setCaseUuid((prevCaseUuid) => {
+                        if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
+                            deleteCase(prevCaseUuid)
+                                .then()
+                                .catch((error) => handleFileUploadError(error));
+                        }
+
+                        return newCaseUuid;
+                    });
+                    getCurrentCaseImportParams(newCaseUuid, setFormattedParams);
+                    setError('');
+                    setIsStudyNameChanged(false);
+                })
+                .catch((error) => {
+                    setCaseUuid(null);
+                    setProvidedCaseFile(null);
+                    setFormattedParams([]);
+                    setProvidedCaseFileOk(false);
+                    handleFileUploadError(error);
+                })
+                .finally(() => {
+                    setIsUploadingFileInProgress(false);
+                    setFileCheckedCase(true);
+                });
+        }
+    }, [
+        getCurrentCaseImportParams,
+        handleFileUploadError,
+        providedCaseFile,
+        providedExistingCase,
+    ]);
+
+    // setting studyName
+    useEffect(() => {
+        //here selectedFile is a file the user chosen through a picker
+        if (
+            selectedFile?.name &&
+            !error &&
+            providedCaseFileOk &&
+            fileCheckedCase &&
+            !isStudyNameChanged
+        ) {
+            setStudyName(
+                selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
+            );
+        }
+        //here selectedFile is an already stored case
+        else if (selectedFile?.elementName && !error) {
+            setStudyName(selectedFile.elementName);
+        } else if (!selectedFile && !isStudyNameChanged) {
+            setStudyName('');
+        }
+    }, [
+        error,
+        fileCheckedCase,
+        providedCaseFileOk,
+        selectedFile,
+        isStudyNameChanged,
+        studyName,
+    ]);
+
+    // StudyName checking (using adornment on input)
+    useEffect(() => {
+        const nameFormatted = studyName.replace(/ /g, '');
+
+        if (!nameFormatted || studyNameError) {
+            // studyName is not valid
+            setProvidedCaseFileCheckingAdornment(false);
+
+            if (isStudyNameChanged) {
+                setStudyNameError(intl.formatMessage({ id: 'nameEmpty' }));
+            }
+        } else {
+            setProvidedCaseFileChecking(true);
+            setProvidedCaseFileCheckingAdornment(
+                <InputAdornment position="end">
+                    <CircularProgress size="1rem" />
+                </InputAdornment>
+            );
+            //If the studyName is not only white spaces
+            isElementExists(studyName)
+                .then((data) => {
+                    setStudyNameError(
+                        data
+                            ? intl.formatMessage({
+                                  id: 'nameAlreadyUsed',
+                              })
+                            : ''
+                    );
+                    setProvidedCaseFileCheckingAdornment(
+                        <InputAdornment position="end">
+                            <CheckIcon style={{ color: 'green' }} />
+                        </InputAdornment>
+                    );
+                })
+                .catch((error) => {
+                    setStudyNameError(
+                        intl.formatMessage({
+                            id: 'nameValidityCheckErrorMsg',
+                        }) + error.message
+                    );
+                    setProvidedCaseFileCheckingAdornment(false);
+                })
+                .finally(() => {
+                    setProvidedCaseFileChecking(false);
+                });
+        }
+    }, [intl, isElementExists, studyName, studyNameError, isStudyNameChanged]);
+
     return (
         <div>
             <Dialog
@@ -391,7 +399,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         autoFocus
                         adornment={providedCaseFileCheckingAdornment}
                         error={!!studyNameError}
-                        setHasChanged={setTouched}
+                        setHasChanged={setIsStudyNameChanged}
                         value={studyName}
                         setValue={setStudyName}
                     />
@@ -420,11 +428,11 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         />
                     )}
                     <ImportParametersSection
-                        isParamsDisplayed={isParamsDisplayed}
-                        setIsParamsDisplayed={setIsParamsDisplayed}
-                        currentParameters={currentParameters}
-                        setCurrentParameters={setCurrentParameters}
-                        formatWithParameters={formatWithParameters}
+                        isParamsDisplayed={areParamsDisplayed}
+                        setIsParamsDisplayed={setAreParamsDisplayed}
+                        currentParameters={currentParams}
+                        setCurrentParameters={setCurrentParams}
+                        formatWithParameters={formattedParams}
                     />
                     <CreateStudyDialogError
                         error={error}
