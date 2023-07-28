@@ -91,6 +91,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const [studyName, setStudyName] = useState('');
     const [isStudyNameChanged, setIsStudyNameChanged] = useState(false);
     const [studyNameError, setStudyNameError] = useState('');
+
     const [description, setDescription] = useState('');
 
     const [error, setError] = useState('');
@@ -396,12 +397,12 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 <DialogContent>
                     <TextFieldInput
                         label={'nameProperty'}
+                        value={studyName}
+                        setValue={setStudyName}
+                        setHasChanged={setIsStudyNameChanged}
                         autoFocus
                         adornment={providedCaseFileCheckingAdornment}
                         error={!!studyNameError}
-                        setHasChanged={setIsStudyNameChanged}
-                        value={studyName}
-                        setValue={setStudyName}
                     />
                     <TextFieldInput
                         label={'descriptionProperty'}
