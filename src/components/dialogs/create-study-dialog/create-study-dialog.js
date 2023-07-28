@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -23,17 +23,18 @@ import {
     DialogContent,
     DialogTitle,
     Alert,
+    InputAdornment,
+    CircularProgress,
 } from '@mui/material';
 
 import {
     createCaseWithoutDirectoryElementCreation,
     createStudy,
     deleteCase,
+    elementExists,
     fetchPath,
     getCaseImportParameters,
 } from '../../../utils/rest-api';
-
-import { useNameField, usePrefillNameField, useTextValue } from '../field-hook';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ElementType } from '../../../utils/elementType';
@@ -45,6 +46,8 @@ import {
 import ImportParametersSection from './importParametersSection';
 import DirectorySelect from './directory-select';
 import { UploadCase } from '../upload-case';
+import CheckIcon from '@mui/icons-material/Check';
+import TextFieldInput from '../commons/text-field-input';
 
 /**
  * Dialog to create a study
@@ -62,6 +65,12 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const [providedCaseFile, setProvidedCaseFile] = useState(null);
     const [providedCaseFileOk, setProvidedCaseFileOk] = useState(false);
+    const [providedCaseFileChecking, setProvidedCaseFileChecking] =
+        useState(false);
+    const [
+        providedCaseFileCheckingAdornment,
+        setProvidedCaseFileCheckingAdornment,
+    ] = useState(null);
 
     const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState(null);
@@ -77,46 +86,110 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         !!providedExistingCase
     );
 
+    const [touched, setTouched] = useState(false);
+    const [studyName, setStudyName] = useState('');
+    const [description, setDescription] = useState('');
+
     const [error, setError] = useState('');
+    const [studyNameError, setStudyNameError] = useState('');
     const [providedCaseFileError, setProvidedCaseFileError] = useState(null);
 
     const userId = useSelector((state) => state.user.profile.sub);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    const [
-        studyName,
-        StudyNameField,
-        studyNameError,
-        studyNameOk,
-        setStudyName,
-        touched,
-    ] = useNameField({
-        label: 'nameProperty',
-        autoFocus: true,
-        style: {
-            width: '90%',
-        },
-        elementType: ElementType.STUDY,
-        parentDirectoryId: activeDirectory,
-        active: open,
-    });
+    const isElementExists = useCallback(
+        (name) => elementExists(activeDirectory, name, ElementType.STUDY),
+        [activeDirectory]
+    );
 
-    usePrefillNameField({
-        selectedFile: providedExistingCase ?? providedCaseFile,
-        setValue: setStudyName,
-        selectedFileOk: providedCaseFileOk,
-        fileError: error,
-        fileCheckedCase,
-        touched,
-    });
+    const studyNameOk =
+        studyName?.replace(/ /g, '') !== '' &&
+        !studyNameError &&
+        !providedCaseFileChecking;
 
-    const [description, DescriptionField] = useTextValue({
-        label: 'descriptionProperty',
-        style: {
-            width: '90%',
+    const selectedFile = providedExistingCase ?? providedCaseFile;
+
+    useEffect(() => {
+        const nameFormatted = studyName.replace(/ /g, '');
+
+        if (!nameFormatted || studyNameError) {
+            // studyName is not valid
+            setProvidedCaseFileCheckingAdornment(false);
+
+            if (touched) {
+                setStudyNameError(intl.formatMessage({ id: 'nameEmpty' }));
+            }
+        } else {
+            setProvidedCaseFileChecking(true);
+            setProvidedCaseFileCheckingAdornment(
+                <InputAdornment position="end">
+                    <CircularProgress size="1rem" />
+                </InputAdornment>
+            );
+            //If the studyName is not only white spaces
+            isElementExists(studyName)
+                .then((data) => {
+                    setStudyNameError(
+                        data
+                            ? intl.formatMessage({
+                                  id: 'nameAlreadyUsed',
+                              })
+                            : ''
+                    );
+                    setProvidedCaseFileCheckingAdornment(
+                        <InputAdornment position="end">
+                            <CheckIcon style={{ color: 'green' }} />
+                        </InputAdornment>
+                    );
+                })
+                .catch((error) => {
+                    setStudyNameError(
+                        intl.formatMessage({
+                            id: 'nameValidityCheckErrorMsg',
+                        }) + error.message
+                    );
+                    setProvidedCaseFileCheckingAdornment(false);
+                })
+                .finally(() => {
+                    setProvidedCaseFileChecking(false);
+                });
+        }
+    }, [studyName, touched]);
+    // setting studyName
+    useEffect(() => {
+        //here selectedFile is a file the user chosen through a picker
+        if (
+            selectedFile?.name &&
+            !error &&
+            providedCaseFileOk &&
+            fileCheckedCase &&
+            !touched
+        ) {
+            setStudyName(
+                selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
+            );
+        }
+        //here selectedFile is an already stored case
+        else if (selectedFile?.elementName && !error) {
+            setStudyName(selectedFile.elementName);
+        } else if (!selectedFile && !touched) {
+            setStudyName('');
+        }
+    }, [error, fileCheckedCase, providedCaseFileOk, selectedFile, touched]);
+
+    const handleFileUploadError = useCallback(
+        (error) => {
+            if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
+                setError(intl.formatMessage({ id: 'invalidFormatOrName' }));
+            } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
+                setError(intl.formatMessage({ id: 'serverConnectionFailed' }));
+            } else {
+                setError(error.message);
+            }
         },
-    });
+        [intl]
+    );
 
     const getCurrentCaseImportParams = useCallback(
         (caseUuid, setFormatWithParameters) => {
@@ -142,28 +215,15 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         [intl]
     );
 
-    const handleFileUploadError = useCallback(
-        (error) => {
-            if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
-                setError(intl.formatMessage({ id: 'invalidFormatOrName' }));
-            } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
-                setError(intl.formatMessage({ id: 'serverConnectionFailed' }));
-            } else {
-                setError(error.message);
-            }
-        },
-        [intl]
-    );
-
     //Inits the dialog
     useEffect(() => {
-        if (open && providedExistingCase) {
+        if (providedExistingCase) {
             setSelectedCase(providedExistingCase.elementUuid);
             getCurrentCaseImportParams(
                 providedExistingCase.elementUuid,
                 setFormatWithParameters
             );
-        } else if (open && providedCaseFile) {
+        } else if (providedCaseFile) {
             setIsUploadingFileInProgress(true);
             createCaseWithoutDirectoryElementCreation(providedCaseFile)
                 .then((newCaseUuid) => {
@@ -181,13 +241,14 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         setFormatWithParameters
                     );
                     setError('');
+                    setTouched(false);
                 })
                 .catch((error) => {
                     setCaseUuid(null);
-                    handleFileUploadError(error);
                     setProvidedCaseFile(null);
                     setFormatWithParameters([]);
                     setProvidedCaseFileOk(false);
+                    handleFileUploadError(error);
                 })
                 .finally(() => {
                     setIsUploadingFileInProgress(false);
@@ -195,15 +256,10 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 });
         }
     }, [
-        open,
-        dispatch,
-        selectedDirectory?.elementName,
-        providedExistingCase,
-        providedCaseFile,
         getCurrentCaseImportParams,
         handleFileUploadError,
-        setStudyName,
-        setProvidedCaseFileOk,
+        providedCaseFile,
+        providedExistingCase,
     ]);
 
     //Updates the path display
@@ -327,8 +383,20 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     <FormattedMessage id="createNewStudy" />
                 </DialogTitle>
                 <DialogContent>
-                    {StudyNameField}
-                    {DescriptionField}
+                    <TextFieldInput
+                        label={'nameProperty'}
+                        autoFocus
+                        adornment={providedCaseFileCheckingAdornment}
+                        error={!!studyNameError}
+                        setHasChanged={setTouched}
+                        value={studyName}
+                        setValue={setStudyName}
+                    />
+                    <TextFieldInput
+                        label={'descriptionProperty'}
+                        value={description}
+                        setValue={setDescription}
+                    />
                     {studyNameError && (
                         <Alert severity="error">{studyNameError}</Alert>
                     )}

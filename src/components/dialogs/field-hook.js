@@ -216,6 +216,7 @@ export const useNameField = ({
         setChecking(undefined);
         setAdornment(undefined);
     }, [triggerReset]);
+
     return [
         name,
         field,
