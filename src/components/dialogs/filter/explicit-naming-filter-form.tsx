@@ -64,7 +64,7 @@ function isGeneratorOrLoad(equipmentType: string): boolean {
 }
 
 const defaultRowData = {
-    [EQUIPMENT_ID]: null,
+    [EQUIPMENT_ID]: '',
     [DISTRIBUTION_KEY]: null,
 };
 
