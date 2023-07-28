@@ -7,7 +7,9 @@
 import { createFilter, saveFilter } from '../../../utils/rest-api';
 import { FilterType } from '../../../utils/elementType';
 import { frontToBackTweak } from './criteria-based-filter-dialog-utils';
-import { NAME } from '../../utils/field-constants';
+import { EQUIPMENT_ID, NAME } from '../../utils/field-constants';
+import { Generator, Load } from '../../../utils/equipment-types';
+import { DISTRIBUTION_KEY } from './explicit-naming-filter-form';
 
 export const saveExplicitNamingFilter = (
     tableValues,
@@ -19,12 +21,26 @@ export const saveExplicitNamingFilter = (
     activeDirectory,
     handleClose
 ) => {
+    // we remove unnecessary fields from the table
+    let cleanedTableValues;
+    const isGeneratorOrLoad =
+        equipmentType === Generator.type || equipmentType === Load.type;
+    if (isGeneratorOrLoad) {
+        cleanedTableValues = tableValues.map((row) => ({
+            [EQUIPMENT_ID]: row[EQUIPMENT_ID],
+            [DISTRIBUTION_KEY]: row[DISTRIBUTION_KEY],
+        }));
+    } else {
+        cleanedTableValues = tableValues.map((row) => ({
+            [EQUIPMENT_ID]: row[EQUIPMENT_ID],
+        }));
+    }
     if (isFilterCreation) {
         createFilter(
             {
                 type: FilterType.EXPLICIT_NAMING.id,
                 equipmentType: equipmentType,
-                filterEquipmentsAttributes: tableValues,
+                filterEquipmentsAttributes: cleanedTableValues,
             },
             name,
             activeDirectory
@@ -41,7 +57,7 @@ export const saveExplicitNamingFilter = (
                 id: id,
                 type: FilterType.EXPLICIT_NAMING.id,
                 equipmentType: equipmentType,
-                filterEquipmentsAttributes: tableValues,
+                filterEquipmentsAttributes: cleanedTableValues,
             },
             name
         )

@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "re
 const KEY_BACKSPACE = 'Backspace';
 const KEY_F2 = 'F2';
 
+//TODO TO REMOVE
 /**
  * This is a modified version of the cell editor proposed by AGGrid itself
  * https://www.ag-grid.com/react-data-grid/component-cell-editor/#cell-editor-example
