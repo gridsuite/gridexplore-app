@@ -3,11 +3,31 @@ import { Button } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DirectorySelector from '../directory-selector';
 import { setActiveDirectory } from '../../../redux/actions';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { fetchPath } from '../../../utils/rest-api';
 
-const DirectorySelect = ({ activeDirectoryName, open, setOpen, types }) => {
+const DirectorySelect = ({ types }) => {
     const intl = useIntl();
     const dispatch = useDispatch();
+
+    const [open, setOpen] = useState(false);
+    const [activeDirectoryName, setActiveDirectoryName] = useState('');
+
+    const activeDirectory = useSelector((state) => state.activeDirectory);
+
+    useEffect(() => {
+        if (activeDirectory) {
+            fetchPath(activeDirectory).then((res) => {
+                setActiveDirectoryName(
+                    res
+                        .map((element) => element.elementName.trim())
+                        .reverse()
+                        .join('/')
+                );
+            });
+        }
+    }, [activeDirectory]);
 
     const handleSelectFolder = () => {
         setOpen(true);

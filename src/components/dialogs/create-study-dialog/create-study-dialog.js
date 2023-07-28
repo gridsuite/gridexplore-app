@@ -1,458 +1,352 @@
-/**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
-import { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
-
-import { useDispatch, useSelector } from 'react-redux';
 import {
-    addUploadingElement,
-    removeUploadingElement,
-    setActiveDirectory,
-} from '../../../redux/actions';
-
-import {
-    Button,
     Dialog,
-    DialogActions,
-    DialogContent,
     DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
     Alert,
+    Grid,
     InputAdornment,
     CircularProgress,
 } from '@mui/material';
-
+import { useCallback, useEffect, useState } from 'react';
+import TextFieldInput from '../commons/text-field-input';
+import UploadNewCase from '../commons/upload-new-case';
 import {
     createCaseWithoutDirectoryElementCreation,
-    createStudy,
     deleteCase,
     elementExists,
-    fetchPath,
     getCaseImportParameters,
 } from '../../../utils/rest-api';
-
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { ElementType } from '../../../utils/elementType';
-import { keyGenerator } from '../../../utils/functions.js';
 import {
     HTTP_CONNECTION_FAILED_MESSAGE,
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
-} from '../../../utils/UIconstants.js';
-import ImportParametersSection from './importParametersSection';
+} from '../../../utils/UIconstants';
+import { ElementType } from '../../../utils/elementType';
 import DirectorySelect from './directory-select';
-import { UploadCase } from '../upload-case';
+import ImportParametersSection from './importParametersSection';
+import { useSelector } from 'react-redux';
 import CheckIcon from '@mui/icons-material/Check';
-import TextFieldInput from '../commons/text-field-input';
-import CreateStudyDialogError from './create-study-dialog-error';
 
-/**
- * Dialog to create a study
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
- * @param providedExistingCase
- */
-export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
+const MAX_FILE_SIZE_IN_MO = 100;
+const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
+
+const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const intl = useIntl();
-    const { snackError } = useSnackMessage();
-    const dispatch = useDispatch();
 
-    const [selectedCase, setSelectedCase] = useState(null);
-    const [caseUuid, setCaseUuid] = useState(null);
-
-    const [providedCaseFile, setProvidedCaseFile] = useState(null);
-    const [providedCaseFileLoading, setProvidedCaseFileLoading] =
-        useState(false);
-    const [providedCaseFileOk, setProvidedCaseFileOk] = useState(false);
-    const [providedCaseFileError, setProvidedCaseFileError] = useState('');
-    const [providedCaseFileChecking, setProvidedCaseFileChecking] =
-        useState(false);
-    const [
-        providedCaseFileCheckingAdornment,
-        setProvidedCaseFileCheckingAdornment,
-    ] = useState(null);
-
-    const [folderSelectorOpen, setFolderSelectorOpen] = useState(false);
-    const [activeDirectoryName, setActiveDirectoryName] = useState(null);
-
-    const [areParamsDisplayed, setAreParamsDisplayed] = useState(false);
-    const [formattedParams, setFormattedParams] = useState([]);
-    const [currentParams, setCurrentParams] = useState({});
-
-    const [fileCheckedCase, setFileCheckedCase] = useState(
-        !!providedExistingCase
-    );
-
+    // States
+    const [isCreationAllowed, setIsCreationAllowed] = useState(false);
     const [studyName, setStudyName] = useState('');
-    const [isStudyNameChanged, setIsStudyNameChanged] = useState(false);
     const [studyNameError, setStudyNameError] = useState('');
-
+    const [studyNameChanged, setStudyNameChanged] = useState(false);
+    const [studyNameChecking, setStudyNameChecking] = useState(false);
     const [description, setDescription] = useState('');
 
-    const [error, setError] = useState('');
+    const [caseFile, setCaseFile] = useState(null);
+    const [caseFileLoading, setCaseFileLoading] = useState(false);
+    const [caseFileError, setCaseFileError] = useState('');
+    const [caseFileAdornment, setCaseFileAdornment] = useState(null);
+    const [caseUuid, setCaseUuid] = useState('');
 
-    const userId = useSelector((state) => state.user.profile.sub);
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const [currentParams, setCurrentParams] = useState({});
+    const [formattedCaseParams, setFormattedCaseParams] = useState([]);
+
+    const [apiCallError, setApiCallError] = useState('');
+
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    const isElementExists = useCallback(
-        (name) => elementExists(activeDirectory, name, ElementType.STUDY),
-        [activeDirectory]
-    );
-
-    const studyNameOk =
-        studyName?.replace(/ /g, '') !== '' &&
-        !studyNameError &&
-        !providedCaseFileChecking;
-
-    const selectedFile = providedExistingCase ?? providedCaseFile;
-
-    const handleFileUploadError = useCallback(
+    // Functions
+    const handleApiCallError = useCallback(
         (error) => {
             if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
-                setError(intl.formatMessage({ id: 'invalidFormatOrName' }));
+                setApiCallError(
+                    intl.formatMessage({ id: 'invalidFormatOrName' })
+                );
             } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
-                setError(intl.formatMessage({ id: 'serverConnectionFailed' }));
+                setApiCallError(
+                    intl.formatMessage({ id: 'serverConnectionFailed' })
+                );
             } else {
-                setError(error.message);
+                setApiCallError(error.message);
             }
         },
         [intl]
     );
 
     const getCurrentCaseImportParams = useCallback(
-        (caseUuid, setFormatWithParameters) => {
-            getCaseImportParameters(caseUuid)
-                .then(({ parameters = [] }) => {
-                    // sort possible values alphabetically to display select options sorted
-                    setFormatWithParameters(
-                        parameters?.map((parameter) => ({
-                            ...parameter,
-                            possibleValues: parameter.possibleValues?.sort(
-                                (a, b) => a.localeCompare(b)
-                            ),
-                        }))
-                    );
-                })
-                .catch(() => {
-                    setFormatWithParameters([]);
-                    setError(
-                        intl.formatMessage({ id: 'parameterLoadingProblem' })
-                    );
-                });
+        async (uuid) => {
+            try {
+                const { parameters = [] } = await getCaseImportParameters(uuid);
+
+                // sort possible values alphabetically to display select options sorted
+                setFormattedCaseParams(
+                    parameters.map((parameter) => ({
+                        ...parameter,
+                        possibleValues: parameter.possibleValues?.sort((a, b) =>
+                            a.localeCompare(b)
+                        ),
+                    }))
+                );
+            } catch (error) {
+                setFormattedCaseParams([]);
+                setApiCallError(
+                    intl.formatMessage({ id: 'parameterLoadingProblem' })
+                );
+            }
         },
         [intl]
     );
 
-    /* Functions */
-    const handleCreateNewStudy = () => {
-        //To manage the case when we never tried to enter a name
-        if (studyName === '') {
-            setError(intl.formatMessage({ id: 'nameEmpty' }));
-            return;
-        }
-        //We don't do anything if the checks are not over or the name is not valid
-        if (!studyNameOk) {
-            return;
-        }
-        if (!!providedExistingCase && selectedCase === null) {
-            setError(intl.formatMessage({ id: 'caseNameErrorMsg' }));
-            return;
-        }
-        if (!providedExistingCase && providedCaseFile === null) {
-            setError(intl.formatMessage({ id: 'uploadErrorMsg' }));
-            return;
-        }
-
-        const uploadingStudy = {
-            id: keyGenerator(),
-            elementName: studyName,
-            directory: activeDirectory,
-            type: 'STUDY',
-            owner: userId,
-            lastModifiedBy: userId,
-            uploading: true,
-        };
-
-        createStudy(
-            studyName,
-            description,
-            selectedCase ?? caseUuid,
-            !!providedExistingCase,
-            activeDirectory,
-            currentParams && areParamsDisplayed
-                ? JSON.stringify(currentParams)
-                : ''
-        )
-            .then(() => {
-                handleCloseDialog();
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'studyCreationError',
-                    headerValues: {
-                        studyName,
-                    },
-                });
-            })
-            .finally(() => {
-                setCaseUuid(null);
-                dispatch(removeUploadingElement(uploadingStudy));
-            });
-
-        dispatch(addUploadingElement(uploadingStudy));
-    };
-
-    const isCreationAllowed = () => {
-        return !(
-            studyName === '' ||
-            !studyNameOk ||
-            !formattedParams.length ||
-            (!providedExistingCase && !providedCaseFileOk) ||
-            providedCaseFileLoading
-        );
-    };
-
-    const handleDeleteCase = () => {
-        // if we cancel case creation, we need to delete the associated newly created case (if we created one)
-        if (providedCaseFile && caseUuid) {
-            deleteCase(caseUuid)
-                .then()
-                .catch((error) => handleFileUploadError(error));
-            setCaseUuid(null);
-        }
-    };
-
-    const handleCloseDialog = (_, reason) => {
-        if (reason && reason === 'backdropClick') {
-            handleDeleteCase();
-        }
-
-        dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-        setSelectedCase(null);
-        setProvidedCaseFile(null);
-        onClose();
-    };
-
-    const handleCancelCreation = () => {
-        handleDeleteCase();
-        handleCloseDialog();
-    };
-
-    /* Effects */
-    //Updates the path display
-    useEffect(() => {
-        if (activeDirectory) {
-            fetchPath(activeDirectory).then((res) => {
-                setActiveDirectoryName(
-                    res
-                        .map((element) => element.elementName.trim())
-                        .reverse()
-                        .join('/')
-                );
-            });
-        }
-    }, [activeDirectory]);
-
-    // Inits the dialog
-    useEffect(() => {
+    const handleStudyNameCheck = useCallback(async () => {
+        const nameFormatted = studyName.replace(/ /g, '');
         setStudyNameError('');
 
-        if (providedExistingCase) {
-            setSelectedCase(providedExistingCase.elementUuid);
-            getCurrentCaseImportParams(
-                providedExistingCase.elementUuid,
-                setFormattedParams
-            );
-        } else if (providedCaseFile) {
-            setProvidedCaseFileLoading(true);
-            createCaseWithoutDirectoryElementCreation(providedCaseFile)
-                .then((newCaseUuid) => {
-                    setCaseUuid((prevCaseUuid) => {
-                        if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
-                            deleteCase(prevCaseUuid)
-                                .then()
-                                .catch((error) => handleFileUploadError(error));
-                        }
+        if (!nameFormatted) {
+            setCaseFileAdornment(false);
 
-                        return newCaseUuid;
-                    });
-                    getCurrentCaseImportParams(newCaseUuid, setFormattedParams);
-                    setError('');
-                    setIsStudyNameChanged(false);
-                })
-                .catch((error) => {
-                    setCaseUuid(null);
-                    setProvidedCaseFile(null);
-                    setFormattedParams([]);
-                    setProvidedCaseFileOk(false);
-                    handleFileUploadError(error);
-                })
-                .finally(() => {
-                    setProvidedCaseFileLoading(false);
-                    setFileCheckedCase(true);
-                });
-        }
-    }, [
-        getCurrentCaseImportParams,
-        handleFileUploadError,
-        providedCaseFile,
-        providedExistingCase,
-    ]);
-
-    // setting studyName
-    useEffect(() => {
-        //here selectedFile is a file the user chosen through a picker
-        if (
-            selectedFile?.name &&
-            !error &&
-            providedCaseFileOk &&
-            fileCheckedCase &&
-            !isStudyNameChanged
-        ) {
-            setStudyName(
-                selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
-            );
-        }
-        //here selectedFile is an already stored case
-        else if (selectedFile?.elementName && !error) {
-            setStudyName(selectedFile.elementName);
-        } else if (!selectedFile && !isStudyNameChanged) {
-            setStudyName('');
-        }
-    }, [
-        error,
-        fileCheckedCase,
-        providedCaseFileOk,
-        selectedFile,
-        isStudyNameChanged,
-        studyName,
-    ]);
-
-    // StudyName checking (using adornment on input)
-    useEffect(() => {
-        const nameFormatted = studyName.replace(/ /g, '');
-
-        if (!nameFormatted || studyNameError) {
-            // studyName is not valid
-            setProvidedCaseFileCheckingAdornment(false);
-
-            if (isStudyNameChanged) {
+            if (studyNameChanged) {
                 setStudyNameError(intl.formatMessage({ id: 'nameEmpty' }));
             }
         } else {
-            setProvidedCaseFileChecking(true);
-            setProvidedCaseFileCheckingAdornment(
+            setStudyNameChecking(true);
+
+            setCaseFileAdornment(
                 <InputAdornment position="end">
                     <CircularProgress size="1rem" />
                 </InputAdornment>
             );
-            //If the studyName is not only white spaces
-            isElementExists(studyName)
-                .then((data) => {
+
+            try {
+                const isElementExists = await elementExists(
+                    activeDirectory,
+                    studyName,
+                    ElementType.STUDY
+                );
+
+                if (isElementExists) {
                     setStudyNameError(
-                        data
-                            ? intl.formatMessage({
-                                  id: 'nameAlreadyUsed',
-                              })
-                            : ''
+                        intl.formatMessage({
+                            id: 'nameAlreadyUsed',
+                        })
                     );
-                    setProvidedCaseFileCheckingAdornment(
+                    setCaseFileAdornment(false);
+                } else {
+                    setCaseFileAdornment(
                         <InputAdornment position="end">
                             <CheckIcon style={{ color: 'green' }} />
                         </InputAdornment>
                     );
-                })
-                .catch((error) => {
-                    setStudyNameError(
-                        intl.formatMessage({
-                            id: 'nameValidityCheckErrorMsg',
-                        }) + error.message
-                    );
-                    setProvidedCaseFileCheckingAdornment(false);
-                })
-                .finally(() => {
-                    setProvidedCaseFileChecking(false);
-                });
+                }
+            } catch (error) {
+                setStudyNameError(
+                    intl.formatMessage({
+                        id: 'nameValidityCheckErrorMsg',
+                    }) + error.message
+                );
+            } finally {
+                setStudyNameChecking(false);
+            }
         }
-    }, [intl, isElementExists, studyName, studyNameError, isStudyNameChanged]);
+    }, [activeDirectory, intl, studyName, studyNameChanged]);
+
+    const handleCloseDialog = () => {
+        onClose();
+    };
+
+    const handleCreateNewStudy = () => {};
+
+    const handleCaseFileUpload = async (event) => {
+        event.preventDefault();
+
+        setCaseFile(null);
+        setCaseFileError('');
+
+        const files = event.target.files;
+        if (files?.length) {
+            const currentFile = files[0];
+
+            if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
+                setCaseFileLoading(true);
+                setCaseFile(currentFile);
+
+                // Create new case
+                try {
+                    const newCaseUuid =
+                        await createCaseWithoutDirectoryElementCreation(
+                            currentFile
+                        );
+
+                    setCaseUuid((prevCaseUuid) => {
+                        if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
+                            deleteCase(prevCaseUuid)
+                                .then()
+                                .catch((error) => handleApiCallError(error));
+                        }
+
+                        return newCaseUuid;
+                    });
+                    getCurrentCaseImportParams(newCaseUuid);
+                } catch (e) {
+                    handleApiCallError(apiCallError);
+                } finally {
+                    setCaseFileLoading(false);
+                }
+            } else {
+                setCaseFileError(
+                    intl.formatMessage(
+                        {
+                            id: 'uploadFileExceedingLimitSizeErrorMsg',
+                        },
+                        {
+                            maxSize: MAX_FILE_SIZE_IN_MO,
+                            br: <br />,
+                        }
+                    )
+                );
+            }
+        }
+    };
+
+    const handleParamsChange = (paramName, value, isEdit) => {
+        if (!isEdit) {
+            setCurrentParams((prevCurrentParameters) => ({
+                ...prevCurrentParameters,
+                ...{ [paramName]: value },
+            }));
+        }
+    };
+
+    /* Effects */
+    // handle create study from existing case
+    useEffect(() => {
+        if (providedExistingCase) {
+            const { elementUuid } = providedExistingCase;
+            setCaseFile(providedExistingCase);
+
+            setCaseUuid(elementUuid);
+            getCurrentCaseImportParams(elementUuid);
+        }
+    }, [getCurrentCaseImportParams, providedExistingCase]);
+
+    // handle set study name
+    useEffect(() => {
+        if (caseFile && !apiCallError && !caseFileError) {
+            const { name: caseFileName } = caseFile;
+
+            if (caseFileName) {
+                setStudyName(
+                    caseFileName.substring(0, caseFileName.indexOf('.'))
+                );
+            }
+        }
+
+        if (providedExistingCase) {
+            const { elementName: existingCaseName } = providedExistingCase;
+            setStudyName(existingCaseName);
+        }
+    }, [caseFile, apiCallError, caseFileError, providedExistingCase]);
+
+    // handle check studyName
+    useEffect(() => {
+        handleStudyNameCheck();
+    }, [handleStudyNameCheck]);
+
+    console.log(
+        studyName,
+        formattedCaseParams.length,
+        caseFileLoading,
+        studyNameChecking,
+        !caseUuid
+    );
+    // handle change possibility to create new study
+    useEffect(() => {
+        if (
+            studyName &&
+            formattedCaseParams.length &&
+            !caseFileLoading &&
+            !studyNameChecking &&
+            caseUuid &&
+            !studyNameError &&
+            !apiCallError
+        ) {
+            setIsCreationAllowed(true);
+        } else {
+            setIsCreationAllowed(false);
+        }
+    }, [
+        caseFileLoading,
+        caseUuid,
+        formattedCaseParams.length,
+        studyName,
+        studyNameChecking,
+    ]);
 
     return (
-        <div>
-            <Dialog
-                fullWidth={true}
-                open={open}
-                onClose={handleCloseDialog}
-                aria-labelledby="form-dialog-title"
-            >
-                <DialogTitle id="form-dialog-title">
-                    <FormattedMessage id="createNewStudy" />
-                </DialogTitle>
-                <DialogContent>
-                    <TextFieldInput
-                        label={'nameProperty'}
-                        value={studyName}
-                        setValue={setStudyName}
-                        setHasChanged={setIsStudyNameChanged}
-                        autoFocus
-                        adornment={providedCaseFileCheckingAdornment}
-                        error={!!studyNameError}
+        <Dialog
+            fullWidth={true}
+            open={open}
+            onClose={handleCloseDialog}
+            aria-labelledby="create-study-form-dialog-title"
+        >
+            <DialogTitle id="create-study-form-dialog-title">
+                <FormattedMessage id="createNewStudy" />
+            </DialogTitle>
+            <DialogContent>
+                <TextFieldInput
+                    label={'nameProperty'}
+                    value={studyName}
+                    setValue={setStudyName}
+                    error={!!studyNameError}
+                    autoFocus
+                    adornment={caseFileAdornment}
+                    setValueHasChanged={setStudyNameChanged}
+                />
+                <TextFieldInput
+                    label={'descriptionProperty'}
+                    value={description}
+                    setValue={setDescription}
+                />
+                {studyNameError && (
+                    <Alert severity="error">{studyNameError}</Alert>
+                )}
+                {providedExistingCase ? (
+                    <DirectorySelect types={[ElementType.DIRECTORY]} />
+                ) : (
+                    <UploadNewCase
+                        caseFile={caseFile}
+                        caseFileLoading={caseFileLoading}
+                        handleCaseFileUpload={handleCaseFileUpload}
                     />
-                    <TextFieldInput
-                        label={'descriptionProperty'}
-                        value={description}
-                        setValue={setDescription}
-                    />
-                    {studyNameError && (
-                        <Alert severity="error">{studyNameError}</Alert>
+                )}
+                <ImportParametersSection
+                    onChange={handleParamsChange}
+                    currentParameters={currentParams}
+                    formatWithParameters={formattedCaseParams}
+                />
+                <Grid pt={1}>
+                    {!!apiCallError && (
+                        <Alert severity="error">{apiCallError}</Alert>
                     )}
-                    {!selectedCase ? (
-                        <UploadCase
-                            isLoading={providedCaseFileLoading}
-                            providedCaseFile={providedCaseFile}
-                            setProvidedCaseFile={setProvidedCaseFile}
-                            setProvidedCaseFileError={setProvidedCaseFileError}
-                            setProvidedCaseFileOk={setProvidedCaseFileOk}
-                        />
-                    ) : (
-                        <DirectorySelect
-                            activeDirectoryName={activeDirectoryName}
-                            open={folderSelectorOpen}
-                            setOpen={setFolderSelectorOpen}
-                            types={[ElementType.DIRECTORY]}
-                        />
+                    {caseFileError && (
+                        <Alert severity="error">{caseFileError}</Alert>
                     )}
-                    <ImportParametersSection
-                        isParamsDisplayed={areParamsDisplayed}
-                        setIsParamsDisplayed={setAreParamsDisplayed}
-                        currentParameters={currentParams}
-                        setCurrentParameters={setCurrentParams}
-                        formatWithParameters={formattedParams}
-                    />
-                    <CreateStudyDialogError
-                        error={error}
-                        providedCaseFileError={providedCaseFileError}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => handleCancelCreation()}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button
-                        onClick={handleCreateNewStudy}
-                        disabled={!isCreationAllowed()}
-                        variant="outlined"
-                    >
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </div>
+                </Grid>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleCloseDialog}>
+                    <FormattedMessage id="cancel" />
+                </Button>
+                <Button
+                    onClick={handleCreateNewStudy}
+                    disabled={!isCreationAllowed}
+                    variant="outlined"
+                >
+                    <FormattedMessage id="validate" />
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 };
 

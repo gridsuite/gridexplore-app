@@ -20,24 +20,27 @@ const TextFieldInput = ({
     error,
     value,
     setValue,
-    setHasChanged,
+    setValueHasChanged,
 }) => {
     const classes = useStyles();
 
     const handleChangeValue = useCallback(
         (event) => {
-            setValue(event.target.value);
-            if (setHasChanged) {
-                setHasChanged(true);
+            const newValue = event.target.value;
+            setValue(newValue);
+
+            if (setValueHasChanged && newValue) {
+                setValueHasChanged(true);
             }
         },
-        [setHasChanged, setValue]
+        [setValue, setValueHasChanged]
     );
 
-    useEffect(
-        () => setValue(defaultValue),
-        [triggerReset, defaultValue, setValue]
-    );
+    useEffect(() => {
+        if (triggerReset) {
+            setValue(defaultValue);
+        }
+    }, [triggerReset, defaultValue, setValue]);
 
     return (
         <TextField
