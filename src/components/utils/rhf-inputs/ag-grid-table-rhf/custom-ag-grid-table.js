@@ -77,7 +77,7 @@ export const CustomAgGridTable = ({
     const [selectedRows, setSelectedRows] = useState([]);
 
     const { control, getValues, setValue, watch } = useFormContext();
-    const { append, remove, update, swap, move } = useFieldArray({
+    const { append, remove, swap, move } = useFieldArray({
         control,
         name: name,
     });
@@ -197,9 +197,6 @@ export const CustomAgGridTable = ({
                     detailRowAutoHeight={true}
                     onSelectionChanged={(event) => {
                         setSelectedRows(gridApi.api.getSelectedRows());
-                    }}
-                    onCellEditingStopped={(event) => {
-                        update(event.rowIndex, event.data);
                     }}
                     getRowId={(row) => row.data[AG_GRID_ROW_UUID]}
                     {...props}
