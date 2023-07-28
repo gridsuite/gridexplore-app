@@ -59,10 +59,6 @@ function FilterProperty(props: FilterPropertyProps) {
                     freeSolo
                     forcePopupIcon
                     onChangeCallback={onNameChange}
-                    // we have to fill these fields even if we don't use it because we use strict TS
-                    previousValue={undefined}
-                    formProps={undefined}
-                    allowNewValue={undefined}
                 />
             </Grid>
             {props.valuesFields.map((valuesField) => (
@@ -83,11 +79,6 @@ function FilterProperty(props: FilterPropertyProps) {
                                 />
                             ))
                         }
-                        // we have to fill these fields even if we don't use it because we use strict TS
-                        previousValue={undefined}
-                        formProps={undefined}
-                        allowNewValue={undefined}
-                        onChangeCallback={undefined}
                     />
                 </Grid>
             ))}
