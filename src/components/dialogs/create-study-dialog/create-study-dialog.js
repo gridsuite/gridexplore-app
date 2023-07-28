@@ -48,6 +48,7 @@ import DirectorySelect from './directory-select';
 import { UploadCase } from '../upload-case';
 import CheckIcon from '@mui/icons-material/Check';
 import TextFieldInput from '../commons/text-field-input';
+import CreateStudyDialogError from './create-study-dialog-error';
 
 /**
  * Dialog to create a study
@@ -217,6 +218,8 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     //Inits the dialog
     useEffect(() => {
+        setStudyNameError('');
+
         if (providedExistingCase) {
             setSelectedCase(providedExistingCase.elementUuid);
             getCurrentCaseImportParams(
@@ -423,19 +426,10 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         setCurrentParameters={setCurrentParameters}
                         formatWithParameters={formatWithParameters}
                     />
-                    {error !== '' && (
-                        <Alert
-                            style={{
-                                marginTop: '10px',
-                            }}
-                            severity="error"
-                        >
-                            {error}
-                        </Alert>
-                    )}
-                    {providedCaseFileError && (
-                        <Alert severity="error">{providedCaseFileError}</Alert>
-                    )}
+                    <CreateStudyDialogError
+                        error={error}
+                        providedCaseFileError={providedCaseFileError}
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => handleCancelCreation()}>

@@ -20,12 +20,11 @@ export const UploadCase = ({
     setProvidedCaseFileError,
 }) => {
     const intl = useIntl();
-    const handleFileUpload = (e) => {
-        e.preventDefault();
-        let files = e.target.files;
-        if (files.size === 0) {
-            setProvidedCaseFile(null);
-        } else {
+    const handleFileUpload = (event) => {
+        event.preventDefault();
+        const files = event.target.files;
+
+        if (files?.length) {
             setProvidedCaseFile(files[0]);
         }
     };
