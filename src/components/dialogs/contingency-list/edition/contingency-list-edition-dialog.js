@@ -74,7 +74,7 @@ const ContingencyListEditionDialog = ({
         onClose(event);
     };
 
-    const checkName = (isValid, newName) => {
+    const handleNameChange = (isValid, newName) => {
         setIsValidName(isValid);
         setValue(NAME, newName, { shouldDirty: isValid });
     };
@@ -112,7 +112,7 @@ const ContingencyListEditionDialog = ({
                 titleMessage={'nameProperty'}
                 contentType={ElementType.CONTINGENCY_LIST}
                 initialValue={name}
-                handleNameValidation={checkName}
+                handleNameValidation={handleNameChange}
             />
             {!isFetching && (
                 <ContingencyListEditionForm

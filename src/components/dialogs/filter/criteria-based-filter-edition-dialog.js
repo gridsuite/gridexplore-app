@@ -85,7 +85,7 @@ export const CriteriaBasedFilterEditionDialog = ({
         [id, snackError]
     );
 
-    const checkName = (isValid, newName) => {
+    const handleNameChange = (isValid, newName) => {
         setIsNameValid(isValid);
         setValue(NAME, newName);
     };
@@ -105,7 +105,7 @@ export const CriteriaBasedFilterEditionDialog = ({
                 titleMessage="nameProperty"
                 initialValue={name}
                 contentType={ElementType.FILTER}
-                handleNameValidation={checkName}
+                handleNameValidation={handleNameChange}
             >
                 <CriteriaBasedFilterForm />
             </NameWrapper>

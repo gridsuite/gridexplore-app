@@ -52,7 +52,7 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
 
     const { reset, setValue } = methods;
 
-    const checkName = (isValid, newName) => {
+    const handleNameChange = (isValid, newName) => {
         setIsValidName(isValid);
         setValue(NAME, newName, { shouldDirty: isValid });
     };
@@ -94,7 +94,7 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
                 <NameWrapper
                     titleMessage={'nameProperty'}
                     contentType={ElementType.CONTINGENCY_LIST}
-                    handleNameValidation={checkName}
+                    handleNameValidation={handleNameChange}
                 />
                 <ContingencyListCreationForm />
             </CustomMuiDialog>

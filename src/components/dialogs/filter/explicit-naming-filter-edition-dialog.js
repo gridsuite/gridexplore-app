@@ -91,7 +91,7 @@ const ExplicitNamingFilterEditionDialog = ({
         [id, onClose, snackError]
     );
 
-    const checkName = (isValid, newName) => {
+    const handleNameChange = (isValid, newName) => {
         setIsNameValid(isValid);
         setValue(NAME, newName);
     };
@@ -111,7 +111,7 @@ const ExplicitNamingFilterEditionDialog = ({
                 titleMessage="nameProperty"
                 initialValue={name}
                 contentType={ElementType.FILTER}
-                handleNameValidation={checkName}
+                handleNameValidation={handleNameChange}
             >
                 <ExplicitNamingFilterForm />
             </NameWrapper>

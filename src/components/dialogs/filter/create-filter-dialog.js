@@ -64,7 +64,7 @@ const CreateFilterDialog = ({ open, onClose }) => {
     const { setValue, watch } = formMethods;
     const filterType = watch(FILTER_TYPE);
 
-    const checkName = (isValid, newName) => {
+    const handleNameChange = (isValid, newName) => {
         setFilterNameValid(isValid);
         setValue(NAME, newName);
     };
@@ -118,7 +118,7 @@ const CreateFilterDialog = ({ open, onClose }) => {
             <NameWrapper
                 titleMessage="nameProperty"
                 contentType={ElementType.FILTER}
-                handleNameValidation={checkName}
+                handleNameValidation={handleNameChange}
             >
                 <Box>
                     <RadioInput
