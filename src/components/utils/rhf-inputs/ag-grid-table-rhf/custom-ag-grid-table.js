@@ -62,6 +62,15 @@ const style = {
         '& .ag-row-hover': {
             cursor: 'text',
         },
+        '& .numeric-input': {
+            fontSize: 'calc(var(--ag-font-size) + 1px)',
+            paddingLeft: 'calc(var(--ag-cell-horizontal-padding) - 1px)',
+            boxSizing: 'border-box',
+            width: '100%',
+            height: '100%',
+            border: 'inherit',
+            outline: 'inherit',
+        },
     }),
 };
 

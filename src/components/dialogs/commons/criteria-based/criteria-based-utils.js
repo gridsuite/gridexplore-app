@@ -18,7 +18,6 @@ import {
     NOMINAL_VOLTAGE_3,
 } from '../../../utils/field-constants';
 import RangeInput, {
-    DEFAULT_RANGE_VALUE,
     getRangeInputDataForm,
     getRangeInputSchema,
 } from '../../../utils/rhf-inputs/range-input';

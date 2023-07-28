@@ -14,9 +14,9 @@ import { FILTER_EQUIPMENTS } from '../commons/criteria-based/criteria-based-util
 import Grid from '@mui/material/Grid';
 import SelectInput from '../../utils/rhf-inputs/select-inputs/select-input';
 import { ValueParserParams } from 'ag-grid-community';
-import { isFloatNumber, toFloatOrNullValue } from '../../utils/dialog-utils';
 import { Generator, Load } from '../../../utils/equipment-types';
 import { FilterType } from '../../../utils/elementType';
+import { NumericEditor } from '../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/numericEditor';
 
 export const FILTER_EQUIPMENTS_ATTRIBUTES = 'filterEquipmentsAttributes';
 export const DISTRIBUTION_KEY = 'distributionKey';
@@ -99,13 +99,7 @@ function ExplicitNamingFilterForm() {
                 field: DISTRIBUTION_KEY,
                 editable: true,
                 singleClickEdit: true,
-                valueParser: (params: ValueParserParams) => {
-                    if (!isFloatNumber(params.newValue)) {
-                        return params.oldValue;
-                    } else {
-                        return toFloatOrNullValue(params.newValue);
-                    }
-                },
+                cellEditor: NumericEditor,
                 maxWidth: 200,
             });
         }
