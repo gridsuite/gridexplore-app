@@ -35,10 +35,10 @@ const AutocompleteInput = ({
     inputTransform = func_identity, //transform react hook form value before sending it to materialUi input, mostly used to deal with select fields that need to return a string
     options,
     readOnly = false,
-    previousValue = undefined,
-    formProps = undefined,
-    allowNewValue = undefined,
-    onChangeCallback = () => {}, // method called when input value is changing
+    previousValue,
+    formProps,
+    allowNewValue,
+    onChangeCallback, // method called when input value is changing
     ...props
 }) => {
     const { validationSchema, getValues, removeOptional } = useFormContext();

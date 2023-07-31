@@ -156,6 +156,7 @@ function ExplicitNamingFilterForm() {
                         paginationPageSize={100}
                         suppressRowClickSelection
                         alwaysShowVerticalScroll
+                        stopEditingWhenCellsLoseFocus
                         csvProps={{
                             fileName: intl.formatMessage({
                                 id: 'filterCsvFileName',
