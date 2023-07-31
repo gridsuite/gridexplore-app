@@ -52,7 +52,7 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
 
     const { reset, setValue } = methods;
 
-    const checkName = (isValid, newName) => {
+    const handleNameChange = (isValid, newName) => {
         setIsValidName(isValid);
         setValue(NAME, newName, { shouldDirty: isValid });
     };
@@ -71,9 +71,9 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
             activeDirectory
         )
             .then(() => closeAndClear())
-            .catch((errorMessage) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'contingencyListCreationError',
                     headerValues: { name: data[NAME] },
                 });
@@ -85,8 +85,8 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
                 open={open}
                 onClose={closeAndClear}
                 onSave={onSubmit}
-                schema={schema}
-                methods={methods}
+                formSchema={schema}
+                formMethods={methods}
                 titleId={titleId}
                 removeOptional={true}
                 disabledSave={!isValidName}
@@ -94,7 +94,7 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
                 <NameWrapper
                     titleMessage={'nameProperty'}
                     contentType={ElementType.CONTINGENCY_LIST}
-                    handleNameValidation={checkName}
+                    handleNameValidation={handleNameChange}
                 />
                 <ContingencyListCreationForm />
             </CustomMuiDialog>

@@ -123,6 +123,7 @@ AutocompleteInput.propTypes = {
     readOnly: PropTypes.bool,
     previousValue: PropTypes.any,
     allowNewValue: PropTypes.bool,
+    onChangeCallback: PropTypes.func,
     formProps: PropTypes.object,
 };
 

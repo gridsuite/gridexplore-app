@@ -31,3 +31,14 @@ export const isFloatNumber = (val) => {
 };
 
 export const func_identity = (e) => e;
+
+export const toFloatOrNullValue = (value) => {
+    if (value === '-') {
+        return value;
+    }
+    if (value === '0') {
+        return 0;
+    }
+    const tmp = value?.replace(',', '.') || '';
+    return parseFloat(tmp) || null;
+};

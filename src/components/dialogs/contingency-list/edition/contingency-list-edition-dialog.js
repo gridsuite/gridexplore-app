@@ -43,7 +43,7 @@ const ContingencyListEditionDialog = ({
         resolver: yupResolver(schema),
     });
 
-    const { reset, setValue, getValues } = methods;
+    const { reset, setValue } = methods;
 
     useEffect(() => {
         if (contingencyListId) {
@@ -59,30 +59,22 @@ const ContingencyListEditionDialog = ({
                         reset({ ...formData, [NAME]: name });
                     }
                 })
-                .catch((errorMessage) => {
+                .catch((error) => {
                     snackError({
-                        messageTxt: errorMessage,
-                        headerId: 'contingencyListEditingError',
-                        headerValues: { name: getValues(NAME) },
+                        messageTxt: error.message,
+                        headerId: 'cannotRetrieveContingencyList',
                     });
                 })
                 .finally(() => setIsFetching(false));
         }
-    }, [
-        contingencyListId,
-        contingencyListType,
-        name,
-        reset,
-        snackError,
-        getValues,
-    ]);
+    }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
     const closeAndClear = (event) => {
         reset(emptyFormData);
         onClose(event);
     };
 
-    const checkName = (isValid, newName) => {
+    const handleNameChange = (isValid, newName) => {
         setIsValidName(isValid);
         setValue(NAME, newName, { shouldDirty: isValid });
     };
@@ -110,8 +102,8 @@ const ContingencyListEditionDialog = ({
             open={open}
             onClose={closeAndClear}
             onSave={onSubmit}
-            schema={schema}
-            methods={methods}
+            formSchema={schema}
+            formMethods={methods}
             titleId={titleId}
             removeOptional={true}
             disabledSave={!isValidName}
@@ -120,7 +112,7 @@ const ContingencyListEditionDialog = ({
                 titleMessage={'nameProperty'}
                 contentType={ElementType.CONTINGENCY_LIST}
                 initialValue={name}
-                handleNameValidation={checkName}
+                handleNameValidation={handleNameChange}
             />
             {!isFetching && (
                 <ContingencyListEditionForm
