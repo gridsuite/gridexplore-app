@@ -41,8 +41,8 @@ const ExplicitNamingForm = () => {
             {
                 headerName: intl.formatMessage({ id: 'elementName' }),
                 field: CONTINGENCY_NAME,
-                singleClickEdit: true,
                 editable: true,
+                singleClickEdit: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'equipments' }),

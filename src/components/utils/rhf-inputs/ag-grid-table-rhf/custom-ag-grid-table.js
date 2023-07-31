@@ -60,7 +60,7 @@ const style = {
             backgroundColor: theme.agGridBackground.color,
         },
         '& .ag-cell': {
-            boxShadow: 'none'
+            boxShadow: 'none',
         },
         '& .ag-cell-edit-wrapper': {
             height: 'inherit',
@@ -203,6 +203,9 @@ export const CustomAgGridTable = ({
                     detailRowAutoHeight={true}
                     onSelectionChanged={(event) => {
                         setSelectedRows(gridApi.api.getSelectedRows());
+                    }}
+                    onCellEditingStopped={(event) => {
+                        update(event.rowIndex, event.data);
                     }}
                     getRowId={(row) => row.data[AG_GRID_ROW_UUID]}
                     {...props}
