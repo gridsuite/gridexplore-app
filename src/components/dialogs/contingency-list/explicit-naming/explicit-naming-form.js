@@ -19,6 +19,7 @@ import { gridItem } from '../../../utils/dialog-utils';
 import yup from '../../../utils/yup-config';
 import { DEFAULT_ROW_VALUE } from '../contingency-list-utils';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
+import TextEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/text-editor';
 
 export const getExplicitNamingSchema = (id) => ({
     [id]: yup.array().of(
@@ -41,8 +42,11 @@ const ExplicitNamingForm = () => {
             {
                 headerName: intl.formatMessage({ id: 'elementName' }),
                 field: CONTINGENCY_NAME,
-                editable: true,
                 singleClickEdit: true,
+                cellRenderer: TextEditor,
+                cellRendererParams: {
+                    name: EQUIPMENT_TABLE,
+                },
             },
             {
                 headerName: intl.formatMessage({ id: 'equipments' }),
