@@ -6,6 +6,7 @@
  */
 
 import {
+    CONTINGENCY_LIST_TYPE,
     CONTINGENCY_NAME,
     EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
@@ -19,17 +20,28 @@ import { gridItem } from '../../../utils/dialog-utils';
 import yup from '../../../utils/yup-config';
 import { DEFAULT_ROW_VALUE } from '../contingency-list-utils';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
+import { ContingencyListType } from '../../../../utils/elementType';
 
 export const getExplicitNamingSchema = (id) => ({
-    [id]: yup.array().of(
-        yup.object().shape({
-            [CONTINGENCY_NAME]: yup.string().nullable(),
-            [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
-        })
-    ).compact(
-        (row) => !row[CONTINGENCY_NAME] && row[EQUIPMENT_IDS].length === 0
-    )
-        .min(1, 'emptyContingencyListError'),
+    [id]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [CONTINGENCY_NAME]: yup.string().nullable(),
+                [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
+            })
+        )
+        .when([CONTINGENCY_LIST_TYPE], {
+            is: ContingencyListType.EXPLICIT_NAMING.id,
+            then: (schema) =>
+                schema
+                    .compact(
+                        (row) =>
+                            !row[CONTINGENCY_NAME] &&
+                            row[EQUIPMENT_IDS].length === 0
+                    )
+                    .min(1, 'emptyContingencyListError'),
+        }),
 });
 const suppressKeyboardEvent = (params) => {
     const key = params.event.key;
