@@ -83,7 +83,7 @@ export const CustomAgGridTable = ({
     const [selectedRows, setSelectedRows] = useState([]);
 
     const { control, getValues, setValue, watch } = useFormContext();
-    const { append, remove, swap, move } = useFieldArray({
+    const { append, remove, update, swap, move } = useFieldArray({
         control,
         name: name,
     });
