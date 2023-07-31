@@ -32,13 +32,16 @@ export const explicitNamingFilterSchema = {
         )
         // we remove empty lines
         .compact((row) => !row[DISTRIBUTION_KEY] && !row[EQUIPMENT_ID])
+        .when([FILTER_TYPE], {
+            is: FilterType.EXPLICIT_NAMING.id,
+            then: (schema) => schema.min(1, 'emptyFilterError'),
+        })
         .when([FILTER_TYPE, EQUIPMENT_TYPE], {
             is: (filterType: string, equipmentType: string) =>
                 filterType === FilterType.EXPLICIT_NAMING.id &&
                 isGeneratorOrLoad(equipmentType),
             then: (schema) =>
                 schema
-                    .min(1, 'emptyFilterError')
                     .test(
                         'noKeyWithoutId',
                         'distributionKeyWithMissingIdError',
