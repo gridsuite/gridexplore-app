@@ -8,6 +8,7 @@
 import {
     CONTINGENCY_LIST_TYPE,
     CONTINGENCY_NAME,
+    COUNTRIES,
     COUNTRIES_1,
     COUNTRIES_2,
     CRITERIA_BASED,
@@ -15,6 +16,7 @@ import {
     EQUIPMENT_TABLE,
     EQUIPMENT_TYPE,
     NAME,
+    NOMINAL_VOLTAGE,
     NOMINAL_VOLTAGE_1,
     NOMINAL_VOLTAGE_2,
     SCRIPT,
@@ -26,7 +28,6 @@ import {
     saveExplicitNamingContingencyList,
     saveScriptContingencyList,
 } from '../../../utils/rest-api';
-import { DEFAULT_RANGE_VALUE } from '../../utils/rhf-inputs/range-input';
 import {
     getCriteriaBasedFormData,
     getCriteriaBasedSchema,
@@ -38,6 +39,7 @@ export const DEFAULT_ROW_VALUE = {
     [CONTINGENCY_NAME]: '',
     [EQUIPMENT_IDS]: [],
 };
+
 export const DEFAULT_TABLE_ROWS = [
     DEFAULT_ROW_VALUE,
     DEFAULT_ROW_VALUE,
@@ -73,13 +75,7 @@ export const getFormDataFromFetchedElement = (
             return {
                 [NAME]: name,
                 [EQUIPMENT_TYPE]: response.equipmentType,
-                ...getCriteriaBasedFormData(
-                    CRITERIA_BASED,
-                    response.countries1,
-                    response.countries2,
-                    response.nominalVoltage1 ?? DEFAULT_RANGE_VALUE,
-                    response.nominalVoltage2 ?? DEFAULT_RANGE_VALUE
-                ),
+                ...getCriteriaBasedFormData(response),
             };
         case ContingencyListType.EXPLICIT_NAMING.id:
             let result;
@@ -159,8 +155,10 @@ export const getFormContent = (contingencyListId, contingencyList) => {
             const criteriaBaseForm = contingencyList[CRITERIA_BASED];
             return {
                 equipmentType: contingencyList[EQUIPMENT_TYPE],
+                countries: criteriaBaseForm[COUNTRIES],
                 countries1: criteriaBaseForm[COUNTRIES_1],
                 countries2: criteriaBaseForm[COUNTRIES_2],
+                nominalVoltage: criteriaBaseForm[NOMINAL_VOLTAGE],
                 nominalVoltage1: criteriaBaseForm[NOMINAL_VOLTAGE_1],
                 nominalVoltage2: criteriaBaseForm[NOMINAL_VOLTAGE_2],
             };

@@ -68,6 +68,15 @@ const style = {
         '& .ag-row-hover': {
             cursor: 'text',
         },
+        '& .numeric-input': {
+            fontSize: 'calc(var(--ag-font-size) + 1px)',
+            paddingLeft: 'calc(var(--ag-cell-horizontal-padding) - 1px)',
+            boxSizing: 'border-box',
+            width: '100%',
+            height: '100%',
+            border: 'inherit',
+            outline: 'inherit',
+        },
     }),
 };
 
@@ -90,6 +99,13 @@ export const CustomAgGridTable = ({
 
     const rowData = watch(name);
 
+    const makeEmptyRow = useCallback(() => {
+        return {
+            [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+            ...defaultRowData,
+        };
+    }, [defaultRowData]);
+
     // It is not optimal in terms of performance, but we made the decision to isolate the AG_GRID_ROW_UUID inside this component
     useEffect(() => {
         // if the table has default values without rowUuid, we add it
@@ -109,11 +125,11 @@ export const CustomAgGridTable = ({
     }, [name, rowData, setValue]);
 
     const isFirstSelected =
-        rowData.length &&
+        rowData?.length &&
         gridApi?.api.getRowNode(rowData[0][AG_GRID_ROW_UUID])?.isSelected();
 
     const isLastSelected =
-        rowData.length &&
+        rowData?.length &&
         gridApi?.api
             .getRowNode(rowData[rowData.length - 1][AG_GRID_ROW_UUID])
             ?.isSelected();
@@ -155,7 +171,7 @@ export const CustomAgGridTable = ({
     }, [gridApi, rowData]);
 
     const handleAddRow = () => {
-        append(defaultRowData);
+        append(makeEmptyRow());
     };
 
     const getIndex = (val) => {

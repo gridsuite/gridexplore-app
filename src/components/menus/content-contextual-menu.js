@@ -22,7 +22,6 @@ import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
-import CriteriaBasedFilterDialog from '../dialogs/criteria-based-filter-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog';
 
 import { DialogsId } from '../../utils/UIconstants';
@@ -43,11 +42,7 @@ import {
     getNameCandidate,
 } from '../../utils/rest-api';
 
-import {
-    ContingencyListType,
-    ElementType,
-    FilterType,
-} from '../../utils/elementType';
+import { ContingencyListType, ElementType } from '../../utils/elementType';
 
 import CommonContextualMenu from './common-contextual-menu';
 import {
@@ -385,17 +380,6 @@ const ContentContextualMenu = (props) => {
         );
     }, [isUserAllowed, selectedElements]);
 
-    const getActiveFilterFormId = () => {
-        if (
-            activeElement?.type === ElementType.FILTER &&
-            activeElement?.subtype === FilterType.CRITERIA
-        ) {
-            return activeElement.elementUuid;
-        } else {
-            return null;
-        }
-    };
-
     const buildMenu = () => {
         if (selectedElements.length === 0) {
             return;
@@ -621,17 +605,6 @@ const ContentContextualMenu = (props) => {
                             activeElement ? activeElement.elementName : ''
                         }
                         title={intl.formatMessage({ id: 'copyToScriptList' })}
-                    />
-                );
-            case DialogsId.GENERIC_FILTER:
-                return (
-                    <CriteriaBasedFilterDialog
-                        id={getActiveFilterFormId()}
-                        open={true}
-                        onClose={handleCloseDialog}
-                        onError={handleLastError}
-                        title={intl.formatMessage({ id: 'editFilter' })}
-                        contentType={ElementType.FILTER}
                     />
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:
