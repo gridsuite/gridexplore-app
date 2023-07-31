@@ -13,13 +13,13 @@ import { Grid } from '@mui/material';
 
 interface UploadNewCaseProps {
     caseFile: File | null;
-    caseFileLoading: boolean;
+    caseFileLoading?: boolean;
     handleCaseFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const UploadNewCase: React.FC<UploadNewCaseProps> = ({
     caseFile,
-    caseFileLoading,
+    caseFileLoading = false,
     handleCaseFileUpload,
 }) => {
     const { name: caseFileName } = caseFile || {};

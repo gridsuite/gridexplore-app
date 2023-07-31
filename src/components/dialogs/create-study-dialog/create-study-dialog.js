@@ -15,8 +15,6 @@ import {
     Button,
     Alert,
     Grid,
-    InputAdornment,
-    CircularProgress,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import TextFieldInput from '../commons/text-field-input';
@@ -25,7 +23,6 @@ import {
     createCaseWithoutDirectoryElementCreation,
     createStudy,
     deleteCase,
-    elementExists,
     getCaseImportParameters,
 } from '../../../utils/rest-api';
 import {
@@ -36,7 +33,6 @@ import { ElementType } from '../../../utils/elementType';
 import DirectorySelect from './directory-select';
 import ImportParametersSection from './importParametersSection';
 import { useDispatch, useSelector } from 'react-redux';
-import CheckIcon from '@mui/icons-material/Check';
 import { keyGenerator } from '../../../utils/functions';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
@@ -44,6 +40,7 @@ import {
     removeUploadingElement,
     setActiveDirectory,
 } from '../../../redux/actions';
+import { useNameCheck } from '../commons/useNameCheck';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -56,15 +53,12 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     // States
     const [isCreationAllowed, setIsCreationAllowed] = useState(false);
     const [studyName, setStudyName] = useState('');
-    const [studyNameError, setStudyNameError] = useState('');
     const [studyNameChanged, setStudyNameChanged] = useState(false);
-    const [studyNameChecking, setStudyNameChecking] = useState(false);
     const [description, setDescription] = useState('');
 
     const [caseFile, setCaseFile] = useState(null);
     const [caseFileLoading, setCaseFileLoading] = useState(false);
     const [caseFileError, setCaseFileError] = useState('');
-    const [caseFileAdornment, setCaseFileAdornment] = useState(null);
     const [caseUuid, setCaseUuid] = useState('');
 
     const [currentParams, setCurrentParams] = useState({});
@@ -118,57 +112,15 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         [intl]
     );
 
-    const handleStudyNameCheck = useCallback(async () => {
-        const nameFormatted = studyName.replace(/ /g, '');
-        setStudyNameError('');
-
-        if (!nameFormatted) {
-            setCaseFileAdornment(false);
-
-            if (studyNameChanged) {
-                setStudyNameError(intl.formatMessage({ id: 'nameEmpty' }));
-            }
-        } else {
-            setStudyNameChecking(true);
-
-            setCaseFileAdornment(
-                <InputAdornment position="end">
-                    <CircularProgress size="1rem" />
-                </InputAdornment>
-            );
-
-            try {
-                const isElementExists = await elementExists(
-                    activeDirectory,
-                    studyName,
-                    ElementType.STUDY
-                );
-
-                if (isElementExists) {
-                    setStudyNameError(
-                        intl.formatMessage({
-                            id: 'nameAlreadyUsed',
-                        })
-                    );
-                    setCaseFileAdornment(false);
-                } else {
-                    setCaseFileAdornment(
-                        <InputAdornment position="end">
-                            <CheckIcon style={{ color: 'green' }} />
-                        </InputAdornment>
-                    );
-                }
-            } catch (error) {
-                setStudyNameError(
-                    intl.formatMessage({
-                        id: 'nameValidityCheckErrorMsg',
-                    }) + error.message
-                );
-            } finally {
-                setStudyNameChecking(false);
-            }
+    // handle check studyName
+    const [caseFileAdornment, studyNameError, studyNameChecking] = useNameCheck(
+        {
+            name: studyName,
+            nameChanged: studyNameChanged,
+            activeDirectory,
+            elementType: ElementType.STUDY,
         }
-    }, [activeDirectory, intl, studyName, studyNameChanged]);
+    );
 
     const handleDeleteCase = () => {
         // if we cancel case creation, we need to delete the associated newly created case (if we created one)
@@ -251,7 +203,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             const currentFile = files[0];
 
             if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
-                setCaseFile(null);
                 setCaseFileLoading(true);
                 setCaseFile(currentFile);
 
@@ -331,11 +282,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             setStudyName(existingCaseName);
         }
     }, [caseFile, apiCallError, caseFileError, providedExistingCase]);
-
-    // handle check studyName
-    useEffect(() => {
-        handleStudyNameCheck();
-    }, [handleStudyNameCheck]);
 
     // handle change possibility to create new study
     useEffect(() => {
