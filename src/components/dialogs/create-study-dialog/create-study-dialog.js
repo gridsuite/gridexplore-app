@@ -244,7 +244,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const handleCaseFileUpload = async (event) => {
         event.preventDefault();
 
-        setCaseFile(null);
         setCaseFileError('');
 
         const files = event.target.files;
@@ -252,6 +251,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             const currentFile = files[0];
 
             if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
+                setCaseFile(null);
                 setCaseFileLoading(true);
                 setCaseFile(currentFile);
 
