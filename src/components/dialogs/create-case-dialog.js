@@ -25,7 +25,7 @@ import {
 } from '../../redux/actions';
 import { keyGenerator } from '../../utils/functions';
 import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../utils/UIconstants';
-import { UploadCase } from './upload-case';
+import { UploadCase } from './create-study-dialog/upload-case';
 
 /**
  * Dialog to create a case

@@ -16,6 +16,7 @@ import TextFieldInput from '../commons/text-field-input';
 import UploadNewCase from '../commons/upload-new-case';
 import {
     createCaseWithoutDirectoryElementCreation,
+    createStudy,
     deleteCase,
     elementExists,
     getCaseImportParameters,
@@ -27,14 +28,23 @@ import {
 import { ElementType } from '../../../utils/elementType';
 import DirectorySelect from './directory-select';
 import ImportParametersSection from './importParametersSection';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CheckIcon from '@mui/icons-material/Check';
+import { keyGenerator } from '../../../utils/functions';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    addUploadingElement,
+    removeUploadingElement,
+    setActiveDirectory,
+} from '../../../redux/actions';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
 
 const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
+    const dispatch = useDispatch();
 
     // States
     const [isCreationAllowed, setIsCreationAllowed] = useState(false);
@@ -56,6 +66,8 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const [apiCallError, setApiCallError] = useState('');
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
+    const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const userId = useSelector((state) => state.user.profile.sub);
 
     // Functions
     const handleApiCallError = useCallback(
@@ -151,11 +163,76 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         }
     }, [activeDirectory, intl, studyName, studyNameChanged]);
 
-    const handleCloseDialog = () => {
+    const handleDeleteCase = () => {
+        // if we cancel case creation, we need to delete the associated newly created case (if we created one)
+        if (caseUuid) {
+            deleteCase(caseUuid).then().catch(handleApiCallError);
+        }
+    };
+
+    const handleCloseDialog = (_, reason) => {
+        if (reason && reason === 'backdropClick') {
+            handleDeleteCase();
+        }
+
         onClose();
     };
 
-    const handleCreateNewStudy = () => {};
+    const handleCancelStudyCreation = () => {
+        handleDeleteCase();
+        onClose();
+    };
+
+    const handleCreateNewStudy = () => {
+        //We don't do anything if the checks are not over or the name is not valid
+        if (providedExistingCase?.elementUuid) {
+            setApiCallError(intl.formatMessage({ id: 'caseNameErrorMsg' }));
+            return;
+        }
+        if (!providedExistingCase && !caseUuid) {
+            setApiCallError(intl.formatMessage({ id: 'uploadErrorMsg' }));
+            return;
+        }
+
+        const uploadingStudy = {
+            id: keyGenerator(),
+            elementName: studyName,
+            directory: activeDirectory,
+            type: 'STUDY',
+            owner: userId,
+            lastModifiedBy: userId,
+            uploading: true,
+        };
+
+        createStudy(
+            studyName,
+            description,
+            caseUuid,
+            !!providedExistingCase,
+            activeDirectory,
+            currentParams ? JSON.stringify(currentParams) : ''
+        )
+            .then(() => {
+                dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
+                handleCloseDialog();
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'studyCreationError',
+                    headerValues: {
+                        studyName,
+                    },
+                });
+            })
+
+            .finally(() => {
+                setCaseUuid(null);
+                dispatch(removeUploadingElement(uploadingStudy));
+            });
+
+        dispatch(addUploadingElement(uploadingStudy));
+    };
 
     const handleCaseFileUpload = async (event) => {
         event.preventDefault();
@@ -187,7 +264,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
                         return newCaseUuid;
                     });
-                    getCurrentCaseImportParams(newCaseUuid);
+                    await getCurrentCaseImportParams(newCaseUuid);
                 } catch (e) {
                     handleApiCallError(apiCallError);
                 } finally {
@@ -253,34 +330,23 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         handleStudyNameCheck();
     }, [handleStudyNameCheck]);
 
-    console.log(
-        studyName,
-        formattedCaseParams.length,
-        caseFileLoading,
-        studyNameChecking,
-        !caseUuid
-    );
     // handle change possibility to create new study
     useEffect(() => {
-        if (
-            studyName &&
-            formattedCaseParams.length &&
-            !caseFileLoading &&
-            !studyNameChecking &&
-            caseUuid &&
-            !studyNameError &&
-            !apiCallError
-        ) {
-            setIsCreationAllowed(true);
-        } else {
-            setIsCreationAllowed(false);
-        }
+        setIsCreationAllowed(
+            !!studyName &&
+                formattedCaseParams.length &&
+                !caseFileLoading &&
+                !studyNameChecking &&
+                !studyNameError &&
+                !apiCallError
+        );
     }, [
         caseFileLoading,
-        caseUuid,
         formattedCaseParams.length,
         studyName,
         studyNameChecking,
+        apiCallError,
+        studyNameError,
     ]);
 
     return (
@@ -335,7 +401,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCloseDialog}>
+                <Button onClick={handleCancelStudyCreation}>
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button
