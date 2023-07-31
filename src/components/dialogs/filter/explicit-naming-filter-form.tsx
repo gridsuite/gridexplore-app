@@ -34,31 +34,36 @@ export const explicitNamingFilterSchema = {
         .compact((row) => !row[DISTRIBUTION_KEY] && !row[EQUIPMENT_ID])
         .when([FILTER_TYPE], {
             is: FilterType.EXPLICIT_NAMING.id,
-            then: (schema) => schema.min(1, 'emptyFilterError'),
-        })
-        .when([FILTER_TYPE, EQUIPMENT_TYPE], {
-            is: (filterType: string, equipmentType: string) =>
-                filterType === FilterType.EXPLICIT_NAMING.id &&
-                isGeneratorOrLoad(equipmentType),
             then: (schema) =>
-                schema
-                    .test(
-                        'noKeyWithoutId',
-                        'distributionKeyWithMissingIdError',
-                        (array) => {
-                            return !array!.some((row) => !row[EQUIPMENT_ID]);
-                        }
-                    )
-                    .test(
-                        'ifOneKeyThenKeyEverywhere',
-                        'missingDistributionKeyError',
-                        (array) => {
-                            return !(
-                                array!.some((row) => row[DISTRIBUTION_KEY]) &&
-                                array!.some((row) => !row[DISTRIBUTION_KEY])
-                            );
-                        }
-                    ),
+                schema.min(1, 'emptyFilterError').when([EQUIPMENT_TYPE], {
+                    is: (equipmentType: string) =>
+                        isGeneratorOrLoad(equipmentType),
+                    then: (schema) =>
+                        schema
+                            .test(
+                                'noKeyWithoutId',
+                                'distributionKeyWithMissingIdError',
+                                (array) => {
+                                    return !array!.some(
+                                        (row) => !row[EQUIPMENT_ID]
+                                    );
+                                }
+                            )
+                            .test(
+                                'ifOneKeyThenKeyEverywhere',
+                                'missingDistributionKeyError',
+                                (array) => {
+                                    return !(
+                                        array!.some(
+                                            (row) => row[DISTRIBUTION_KEY]
+                                        ) &&
+                                        array!.some(
+                                            (row) => !row[DISTRIBUTION_KEY]
+                                        )
+                                    );
+                                }
+                            ),
+                }),
         }),
 };
 
