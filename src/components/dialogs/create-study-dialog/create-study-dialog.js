@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
@@ -165,7 +172,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const handleDeleteCase = () => {
         // if we cancel case creation, we need to delete the associated newly created case (if we created one)
-        if (caseUuid) {
+        if (caseUuid && !providedExistingCase) {
             deleteCase(caseUuid).then().catch(handleApiCallError);
         }
     };
@@ -185,11 +192,11 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const handleCreateNewStudy = () => {
         //We don't do anything if the checks are not over or the name is not valid
-        if (providedExistingCase?.elementUuid) {
+        if (!caseUuid && !providedExistingCase?.elementUuid) {
             setApiCallError(intl.formatMessage({ id: 'caseNameErrorMsg' }));
             return;
         }
-        if (!providedExistingCase && !caseUuid) {
+        if (!caseUuid && !providedExistingCase) {
             setApiCallError(intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
         }
