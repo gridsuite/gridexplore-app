@@ -21,12 +21,18 @@ import { DEFAULT_ROW_VALUE } from '../contingency-list-utils';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 
 export const getExplicitNamingSchema = (id) => ({
-    [id]: yup.array().of(
-        yup.object().shape({
-            [CONTINGENCY_NAME]: yup.string().nullable(),
-            [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
-        })
-    ),
+    [id]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [CONTINGENCY_NAME]: yup.string().nullable(),
+                [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
+            })
+        )
+        .compact(
+            (row) => !row[CONTINGENCY_NAME] && row[EQUIPMENT_IDS].length === 0
+        )
+        .min(1, 'emptyContingencyListError'),
 });
 const suppressKeyboardEvent = (params) => {
     const key = params.event.key;
