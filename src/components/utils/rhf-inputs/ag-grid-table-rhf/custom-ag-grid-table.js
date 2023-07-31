@@ -56,6 +56,12 @@ const style = {
         '& .ag-checkbox-input-wrapper': {
             backgroundColor: theme.agGridBackground.color,
         },
+        '& .ag-input-field-input': {
+            backgroundColor: theme.agGridBackground.color,
+        },
+        '& .ag-cell': {
+            boxShadow: 'none',
+        },
         '& .ag-cell-edit-wrapper': {
             height: 'inherit',
         },

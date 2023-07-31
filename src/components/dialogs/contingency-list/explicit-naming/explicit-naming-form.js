@@ -113,6 +113,7 @@ const ExplicitNamingForm = () => {
             suppressRowClickSelection
             defaultColDef={defaultColDef}
             alwaysShowVerticalScroll
+            stopEditingWhenCellsLoseFocus
             csvProps={{
                 fileName: intl.formatMessage({ id: 'contingencyListCreation' }),
                 fileHeaders: csvFileHeaders,
