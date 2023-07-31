@@ -26,7 +26,10 @@ export const getExplicitNamingSchema = (id) => ({
             [CONTINGENCY_NAME]: yup.string().nullable(),
             [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
         })
-    ),
+    ).compact(
+        (row) => !row[CONTINGENCY_NAME] && row[EQUIPMENT_IDS].length === 0
+    )
+        .min(1, 'emptyContingencyListError'),
 });
 const suppressKeyboardEvent = (params) => {
     const key = params.event.key;
