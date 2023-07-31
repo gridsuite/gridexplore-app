@@ -33,9 +33,16 @@ import { UploadCase } from './create-study-dialog/upload-case';
  * @param {EventListener} onClose Event to close the dialog
  */
 export function CreateCaseDialog({ onClose, open }) {
+    const { snackError } = useSnackMessage();
+    const dispatch = useDispatch();
+
+    const [providedCaseFile, setProvidedCaseFile] = useState(null);
+    const [providedCaseFileOk, setProvidedCaseFileOk] = useState(false);
+    const [providedCaseFileError, setProvidedCaseFileError] = useState();
+
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
-    const dispatch = useDispatch();
+
     const [name, NameField, nameError, nameOk, setCaseName, touched] =
         useNameField({
             label: 'nameProperty',
@@ -48,28 +55,7 @@ export function CreateCaseDialog({ onClose, open }) {
             },
         });
 
-    const [description, DescriptionField] = useTextValue({
-        label: 'descriptionProperty',
-        style: {
-            width: '90%',
-        },
-    });
-
-    const [providedCaseFile, setProvidedCaseFile] = useState(null);
-    const [providedCaseFileOk, setProvidedCaseFileOk] = useState(false);
-    const [providedCaseFileError, setProvidedCaseFileError] = useState();
-
-    function validate() {
-        return providedCaseFile && nameOk && providedCaseFileOk;
-    }
-
-    const { snackError } = useSnackMessage();
-
     const nameRef = useRef(name);
-
-    useEffect(() => {
-        nameRef.current = name;
-    }, [name]);
 
     usePrefillNameField({
         selectedFile: providedCaseFile,
@@ -80,6 +66,17 @@ export function CreateCaseDialog({ onClose, open }) {
         fileCheckedCase: providedCaseFileOk,
         touched: touched,
     });
+
+    const [description, DescriptionField] = useTextValue({
+        label: 'descriptionProperty',
+        style: {
+            width: '90%',
+        },
+    });
+
+    const validate = () => {
+        return providedCaseFile && nameOk && providedCaseFileOk;
+    };
 
     const handleCreateNewCase = () => {
         if (!validate()) {
@@ -125,6 +122,10 @@ export function CreateCaseDialog({ onClose, open }) {
         setProvidedCaseFile(null);
         onClose();
     };
+
+    useEffect(() => {
+        nameRef.current = name;
+    }, [name]);
 
     return (
         <Dialog
