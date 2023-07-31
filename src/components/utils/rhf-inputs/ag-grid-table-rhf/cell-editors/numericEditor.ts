@@ -93,4 +93,9 @@ export class NumericEditor implements ICellEditorComp {
         const charStr = event.key;
         return this.isCharNumeric(charStr);
     }
+
+    // force call when focus is leaving the editor
+    focusOut() {
+        return true;
+    }
 }
