@@ -51,6 +51,10 @@ const ImportParametersSection = ({
     );
 };
 
-ImportParametersSection.propTypes = {};
+ImportParametersSection.propTypes = {
+    onChange: PropTypes.func.isRequired,
+    currentParameters: PropTypes.object.isRequired,
+    formatWithParameters: PropTypes.array.isRequired,
+};
 
 export default ImportParametersSection;
