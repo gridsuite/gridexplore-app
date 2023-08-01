@@ -59,6 +59,9 @@ const style = {
         '& .ag-input-field-input': {
             backgroundColor: theme.agGridBackground.color,
         },
+        '& .ag-cell-focus': {
+            backgroundColor: theme.agGridBackground.color,
+        },
         '& .ag-cell': {
             boxShadow: 'none',
         },
