@@ -13,7 +13,7 @@ import {
     DialogActions,
     Button,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TextFieldInput from './commons/text-field-input';
 import Alert from '@mui/material/Alert';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,7 +26,7 @@ import {
 } from '../../redux/actions';
 import UploadNewCase from './commons/upload-new-case';
 import { ElementType } from '../../utils/elementType';
-// @ts-ignore
+
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NameCheckReturn, useNameCheck } from './commons/useNameCheck';
 
@@ -86,12 +86,14 @@ const CreateCaseDialog: React.FC<CreateCaseDialogProps> = ({
                     snackError({
                         messageId: 'invalidFormatOrName',
                         headerId: 'caseCreationError',
+                        // @ts-ignore
                         headerValues: { caseName },
                     });
                 } else {
                     snackError({
                         messageTxt: err?.message,
                         headerId: 'caseCreationError',
+                        // @ts-ignore
                         headerValues: { caseName },
                     });
                 }
