@@ -92,7 +92,7 @@ const RangeInput = ({ name, label }) => {
 
     return (
         <FormControl fullWidth>
-            <InputLabel sx={style.inputLegend}>
+            <InputLabel sx={style.inputLegend} shrink>
                 <FormattedMessage id={label} />
             </InputLabel>
             <Grid container spacing={0}>
