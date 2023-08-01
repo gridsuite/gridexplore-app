@@ -9,6 +9,8 @@ import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     CONTINGENCY_LIST_TYPE,
+    CONTINGENCY_NAME,
+    EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
     EQUIPMENT_TYPE,
     NAME,
@@ -24,7 +26,10 @@ import {
     getContingencyListEmptyFormData,
     getFormContent,
 } from '../contingency-list-utils';
-import { ElementType } from '../../../../utils/elementType';
+import {
+    ContingencyListType,
+    ElementType,
+} from '../../../../utils/elementType';
 import NameWrapper from '../../name-wrapper';
 import yup from '../../../utils/yup-config';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form';
@@ -33,7 +38,13 @@ import { getCriteriaBasedSchema } from '../../commons/criteria-based/criteria-ba
 const schema = yup.object().shape({
     [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
     [SCRIPT]: yup.string().nullable(),
-    [EQUIPMENT_TYPE]: yup.string().nullable().required(),
+    [EQUIPMENT_TYPE]: yup
+        .string()
+        .nullable()
+        .when([CONTINGENCY_LIST_TYPE], {
+            is: ContingencyListType.CRITERIA_BASED.id,
+            then: (schema) => schema.required(),
+        }),
     ...getExplicitNamingSchema(EQUIPMENT_TABLE),
     ...getCriteriaBasedSchema(),
 });
