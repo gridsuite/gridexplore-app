@@ -20,11 +20,17 @@ export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
         rowDrag: true,
         maxWidth: 35,
+        cellStyle: {
+            backgroundColor: 'transparent',
+        },
     },
     {
         headerCheckboxSelection: true,
         checkboxSelection: true,
         maxWidth: 50,
+        cellStyle: {
+            backgroundColor: 'transparent',
+        },
     },
 ];
 
