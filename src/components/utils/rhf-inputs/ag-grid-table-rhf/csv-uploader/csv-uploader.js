@@ -18,7 +18,7 @@ import CsvDownloader from 'react-csv-downloader';
 import Alert from '@mui/material/Alert';
 import PropTypes from 'prop-types';
 import { DialogContentText } from '@mui/material';
-import { useFieldArray, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 import { AG_GRID_ROW_UUID } from '../../../field-constants';
 
 const CsvUploader = ({
@@ -31,11 +31,10 @@ const CsvUploader = ({
     csvData,
     validateData = (rows) => true,
     getDataFromCsv,
+    useFieldArrayOutput,
 }) => {
     const watchTableValues = useWatch({ name });
-    const { append, replace } = useFieldArray({
-        name,
-    });
+    const { append, replace } = useFieldArrayOutput;
     const [createError, setCreateError] = React.useState('');
     const intl = useIntl();
     const { CSVReader } = useCSVReader();

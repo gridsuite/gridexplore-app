@@ -103,10 +103,11 @@ export const CustomAgGridTable = ({
     const [selectedRows, setSelectedRows] = useState([]);
 
     const { control, getValues, setValue, watch } = useFormContext();
-    const { append, remove, update, swap, move } = useFieldArray({
+    const useFieldArrayOutput = useFieldArray({
         control,
         name: name,
     });
+    const { append, remove, update, swap, move } = useFieldArrayOutput;
 
     const rowData = watch(name);
 
@@ -253,7 +254,7 @@ export const CustomAgGridTable = ({
                 disableDown={noRowSelected || isLastSelected}
                 disableDelete={noRowSelected}
                 csvProps={csvProps}
-                justifyContent={'flex-end'}
+                useFieldArrayOutput={useFieldArrayOutput}
             />
         </Grid>
     );

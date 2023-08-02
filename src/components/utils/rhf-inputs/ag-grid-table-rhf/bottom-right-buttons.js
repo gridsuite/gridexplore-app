@@ -26,6 +26,7 @@ const BottomRightButtons = ({
     handleDeleteRows,
     handleMoveRowUp,
     handleMoveRowDown,
+    useFieldArrayOutput,
     csvProps,
 }) => {
     const [uploaderOpen, setUploaderOpen] = useState(false);
@@ -78,6 +79,7 @@ const BottomRightButtons = ({
                 open={uploaderOpen}
                 onClose={() => setUploaderOpen(false)}
                 name={name}
+                useFieldArrayOutput={useFieldArrayOutput}
                 {...csvProps}
             />
         </>
