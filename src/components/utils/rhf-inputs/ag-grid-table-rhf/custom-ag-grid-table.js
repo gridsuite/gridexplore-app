@@ -20,11 +20,17 @@ export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
         rowDrag: true,
         maxWidth: 35,
+        cellStyle: {
+            backgroundColor: 'transparent',
+        },
     },
     {
         headerCheckboxSelection: true,
         checkboxSelection: true,
         maxWidth: 50,
+        cellStyle: {
+            backgroundColor: 'transparent',
+        },
     },
 ];
 
@@ -97,10 +103,11 @@ export const CustomAgGridTable = ({
     const [selectedRows, setSelectedRows] = useState([]);
 
     const { control, getValues, setValue, watch } = useFormContext();
-    const { append, remove, update, swap, move } = useFieldArray({
+    const useFieldArrayOutput = useFieldArray({
         control,
         name: name,
     });
+    const { append, remove, update, swap, move } = useFieldArrayOutput;
 
     const rowData = watch(name);
 
@@ -247,7 +254,7 @@ export const CustomAgGridTable = ({
                 disableDown={noRowSelected || isLastSelected}
                 disableDelete={noRowSelected}
                 csvProps={csvProps}
-                justifyContent={'flex-end'}
+                useFieldArrayOutput={useFieldArrayOutput}
             />
         </Grid>
     );
