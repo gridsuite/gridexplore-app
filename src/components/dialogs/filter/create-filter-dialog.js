@@ -30,7 +30,6 @@ import ExplicitNamingFilterForm, {
 import { EQUIPMENT_TYPE, FILTER_TYPE, NAME } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 import RadioInput from '../../utils/rhf-inputs/radio-input';
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 
 const emptyFormData = {
