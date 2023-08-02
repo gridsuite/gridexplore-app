@@ -28,7 +28,7 @@ export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     },
 ];
 
-const style = {
+const style = (customProps) => ({
     grid: (theme) => ({
         width: 'auto',
         height: '100%',
@@ -80,14 +80,16 @@ const style = {
             border: 'inherit',
             outline: 'inherit',
         },
+        ...customProps,
     }),
-};
+});
 
 export const CustomAgGridTable = ({
     name,
     columnDefs,
     defaultRowData,
     csvProps,
+    cssProps,
     ...props
 }) => {
     const theme = useTheme();
@@ -205,7 +207,12 @@ export const CustomAgGridTable = ({
 
     return (
         <Grid container spacing={2}>
-            <Grid item xs={12} className={theme.aggrid} sx={style.grid}>
+            <Grid
+                item
+                xs={12}
+                className={theme.aggrid}
+                sx={style(cssProps).grid}
+            >
                 <AgGridReact
                     rowData={rowData}
                     onGridReady={onGridReady}

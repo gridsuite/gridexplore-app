@@ -25,7 +25,7 @@ export const criteriaBasedFilterEmptyFormData = getCriteriaBasedFormData(null, {
 
 function CriteriaBasedFilterForm() {
     return (
-        <Grid container>
+        <Grid container item spacing={1}>
             <CriteriaBasedForm
                 equipments={FILTER_EQUIPMENTS}
                 defaultValues={criteriaBasedFilterEmptyFormData[CRITERIA_BASED]}

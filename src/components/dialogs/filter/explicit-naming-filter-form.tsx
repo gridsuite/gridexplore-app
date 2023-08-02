@@ -145,7 +145,7 @@ function ExplicitNamingFilterForm() {
     }, []);
 
     return (
-        <Grid container spacing={1}>
+        <Grid container item spacing={2}>
             <Grid item xs={12}>
                 <SelectInput
                     name={EQUIPMENT_TYPE}
@@ -171,6 +171,11 @@ function ExplicitNamingFilterForm() {
                             }),
                             fileHeaders: csvFileHeaders,
                             getDataFromCsv: getDataFromCsvFile,
+                        }}
+                        cssProps={{
+                            '& .ag-root-wrapper-body': {
+                                maxHeight: '430px',
+                            },
                         }}
                     />
                 </Grid>
