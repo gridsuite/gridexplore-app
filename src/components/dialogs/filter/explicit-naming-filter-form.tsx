@@ -17,6 +17,7 @@ import { ValueParserParams } from 'ag-grid-community';
 import { Generator, Load } from '../../../utils/equipment-types';
 import { FilterType } from '../../../utils/elementType';
 import { NumericEditor } from '../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/numericEditor';
+import { toFloatOrNullValue } from '../../utils/dialog-utils';
 
 export const FILTER_EQUIPMENTS_ATTRIBUTES = 'filterEquipmentsAttributes';
 export const DISTRIBUTION_KEY = 'distributionKey';
@@ -136,7 +137,7 @@ function ExplicitNamingFilterForm() {
             return csvData.map((value: any) => {
                 return {
                     [EQUIPMENT_ID]: value[0]?.trim(),
-                    [DISTRIBUTION_KEY]: value[1]?.trim(),
+                    [DISTRIBUTION_KEY]: toFloatOrNullValue(value[1]?.trim()),
                 };
             });
         } else {
