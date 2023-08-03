@@ -238,6 +238,19 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         p.possibleValues = p.possibleValues?.sort((a, b) =>
                             a.localeCompare(b)
                         );
+                        // we check if the param is for extension, in that case we select all possible values by default.
+                        // the only way for the moment to check if the param is for extension, is by checking his type is STRING_LIST.
+                        // STRING_LIST is the type of extension only but if this change in the future, it will cause problems.
+                        // It should be change when we have a better way to identify params.
+                        if (p.type === 'STRING_LIST') {
+                            p.defaultValue = p.possibleValues;
+                            setCurrentParameters((prevCurrentParameters) => {
+                                return {
+                                    ...prevCurrentParameters,
+                                    ...{ [p.name]: p.defaultValue },
+                                };
+                            });
+                        }
                         return p;
                     });
                     setFormatWithParameters(result.parameters);
