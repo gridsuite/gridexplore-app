@@ -9,7 +9,7 @@ import CustomAgGridTable, {
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
 } from '../../utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
 import { useIntl } from 'react-intl';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { FILTER_EQUIPMENTS } from '../commons/criteria-based/criteria-based-utils';
 import Grid from '@mui/material/Grid';
 import SelectInput from '../../utils/rhf-inputs/select-inputs/select-input';
@@ -18,6 +18,7 @@ import { Generator, Load } from '../../../utils/equipment-types';
 import { FilterType } from '../../../utils/elementType';
 import { NumericEditor } from '../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/numericEditor';
 import { toFloatOrNullValue } from '../../utils/dialog-utils';
+import InputWithPopupConfirmation from '../../utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
 
 export const FILTER_EQUIPMENTS_ATTRIBUTES = 'filterEquipmentsAttributes';
 export const DISTRIBUTION_KEY = 'distributionKey';
@@ -72,7 +73,12 @@ function isGeneratorOrLoad(equipmentType: string): boolean {
     return equipmentType === Generator.type || equipmentType === Load.type;
 }
 
-const defaultRowData = {
+interface FilterTableRow {
+    [EQUIPMENT_ID]: string;
+    [DISTRIBUTION_KEY]: number | null;
+}
+
+const defaultRowData: FilterTableRow = {
     [EQUIPMENT_ID]: '',
     [DISTRIBUTION_KEY]: null,
 };
@@ -85,6 +91,8 @@ export const explicitNamingFilterEmptyFormData = {
 
 function ExplicitNamingFilterForm() {
     const intl = useIntl();
+
+    const { getValues, setValue } = useFormContext();
 
     const watchEquipmentType = useWatch({
         name: EQUIPMENT_TYPE,
@@ -145,13 +153,26 @@ function ExplicitNamingFilterForm() {
         }
     }, []);
 
+    const openConfirmationPopup = () => {
+        return getValues(FILTER_EQUIPMENTS_ATTRIBUTES).some(
+            (row: FilterTableRow) => row[DISTRIBUTION_KEY] || row[EQUIPMENT_ID]
+        );
+    };
+
+    const handleResetOnConfirmation = () => {
+        setValue(FILTER_EQUIPMENTS_ATTRIBUTES, defaultTableRows);
+    };
+
     return (
         <Grid container item spacing={2}>
             <Grid item xs={12}>
-                <SelectInput
+                <InputWithPopupConfirmation
+                    Input={SelectInput}
                     name={EQUIPMENT_TYPE}
                     options={Object.values(FILTER_EQUIPMENTS)}
                     label={'equipmentType'}
+                    shouldOpenPopup={openConfirmationPopup}
+                    resetOnConfirmation={handleResetOnConfirmation}
                 />
             </Grid>
             {watchEquipmentType && (
