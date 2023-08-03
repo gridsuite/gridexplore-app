@@ -154,7 +154,7 @@ function ExplicitNamingFilterForm() {
     }, []);
 
     const openConfirmationPopup = () => {
-        return !!getValues(FILTER_EQUIPMENTS_ATTRIBUTES).find(
+        return getValues(FILTER_EQUIPMENTS_ATTRIBUTES).some(
             (row: FilterTableRow) => row[DISTRIBUTION_KEY] || row[EQUIPMENT_ID]
         );
     };
