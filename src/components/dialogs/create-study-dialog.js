@@ -244,12 +244,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         // It should be change when we have a better way to identify params.
                         if (p.type === 'STRING_LIST') {
                             p.defaultValue = p.possibleValues;
-                            setCurrentParameters((prevCurrentParameters) => {
-                                return {
-                                    ...prevCurrentParameters,
-                                    ...{ [p.name]: p.defaultValue },
-                                };
-                            });
                         }
                         return p;
                     });
