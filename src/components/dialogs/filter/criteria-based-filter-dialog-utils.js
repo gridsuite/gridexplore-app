@@ -125,16 +125,16 @@ export const frontToBackTweak = (id, filter) => {
 // The server expect them to be null if the user don't fill them, unlike contingency list
 function cleanNominalVoltages(formValues) {
     if (isNominalVoltageEmpty(formValues[NOMINAL_VOLTAGE])) {
-        delete formValues[NOMINAL_VOLTAGE];
+        formValues[NOMINAL_VOLTAGE] = null;
     }
     if (isNominalVoltageEmpty(formValues[NOMINAL_VOLTAGE_1])) {
-        delete formValues[NOMINAL_VOLTAGE_1];
+        formValues[NOMINAL_VOLTAGE_1] = null;
     }
     if (isNominalVoltageEmpty(formValues[NOMINAL_VOLTAGE_2])) {
-        delete formValues[NOMINAL_VOLTAGE_2];
+        formValues[NOMINAL_VOLTAGE_2] = null;
     }
     if (isNominalVoltageEmpty(formValues[NOMINAL_VOLTAGE_3])) {
-        delete formValues[NOMINAL_VOLTAGE_3];
+        formValues[NOMINAL_VOLTAGE_3] = null;
     }
     return formValues;
 }
