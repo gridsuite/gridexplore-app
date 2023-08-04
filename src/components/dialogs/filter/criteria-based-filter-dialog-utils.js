@@ -10,6 +10,12 @@ import {
     CRITERIA_BASED,
     ENERGY_SOURCE,
     EQUIPMENT_TYPE,
+    NOMINAL_VOLTAGE,
+    NOMINAL_VOLTAGE_1,
+    NOMINAL_VOLTAGE_2,
+    NOMINAL_VOLTAGE_3,
+    VALUE_1,
+    VALUE_2,
 } from '../../utils/field-constants';
 import { FILTER_PROPERTIES } from './filter-properties';
 import {
@@ -88,7 +94,7 @@ export const frontToBackTweak = (id, filter) => {
     const ret = { id, type: FilterType.CRITERIA_BASED.id };
     const eff = {
         [EQUIPMENT_TYPE]: filter[EQUIPMENT_TYPE],
-        ...filter[CRITERIA_BASED],
+        ...cleanNominalVoltages(filter[CRITERIA_BASED]),
     };
     // in the back end we store everything in a field called equipmentFilterForm
     ret.equipmentFilterForm = eff;
@@ -115,3 +121,24 @@ export const frontToBackTweak = (id, filter) => {
     eff.freeProperties2 = props2;
     return ret;
 };
+
+// The server expect them to be null if the user don't fill them, unlike contingency list
+function cleanNominalVoltages(formValues) {
+    if (isNominalVoltageEmpty(formValues[NOMINAL_VOLTAGE])) {
+        delete formValues[NOMINAL_VOLTAGE];
+    }
+    if (isNominalVoltageEmpty(formValues[NOMINAL_VOLTAGE_1])) {
+        delete formValues[NOMINAL_VOLTAGE_1];
+    }
+    if (isNominalVoltageEmpty(formValues[NOMINAL_VOLTAGE_2])) {
+        delete formValues[NOMINAL_VOLTAGE_2];
+    }
+    if (isNominalVoltageEmpty(formValues[NOMINAL_VOLTAGE_3])) {
+        delete formValues[NOMINAL_VOLTAGE_3];
+    }
+    return formValues;
+}
+
+function isNominalVoltageEmpty(nominalVoltage) {
+    return nominalVoltage[VALUE_1] === null && nominalVoltage[VALUE_2] === null;
+}
