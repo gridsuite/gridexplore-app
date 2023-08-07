@@ -37,11 +37,24 @@ export const getRangeInputDataForm = (name, rangeValue) => ({
 });
 
 export const getRangeInputSchema = (name) => ({
-    [name]: yup.object().shape({
-        [OPERATION_TYPE]: yup.string(),
-        [VALUE_1]: yup.number().nullable(),
-        [VALUE_2]: yup.number().nullable(),
-    }),
+    [name]: yup.object().shape(
+        {
+            [OPERATION_TYPE]: yup.string(),
+            [VALUE_1]: yup.number().when([OPERATION_TYPE, VALUE_2], {
+                is: (operationType, value2) =>
+                    operationType === RangeType.RANGE.id && value2 !== null,
+                then: (schema) => schema.required(),
+                otherwise: (schema) => schema.nullable(),
+            }),
+            [VALUE_2]: yup.number().when([OPERATION_TYPE, VALUE_1], {
+                is: (operationType, value1) =>
+                    operationType === RangeType.RANGE.id && value1 !== null,
+                then: (schema) => schema.required(),
+                otherwise: (schema) => schema.nullable(),
+            }),
+        },
+        [VALUE_1, VALUE_2]
+    ),
 });
 
 const RangeInput = ({ name, label }) => {
