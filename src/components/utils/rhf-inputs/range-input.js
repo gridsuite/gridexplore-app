@@ -32,10 +32,7 @@ export const DEFAULT_RANGE_VALUE = {
     [VALUE_1]: null,
     [VALUE_2]: null,
 };
-export const getRangeInputDataForm = (
-    name,
-    rangeValue = DEFAULT_RANGE_VALUE
-) => ({
+export const getRangeInputDataForm = (name, rangeValue) => ({
     [name]: rangeValue,
 });
 

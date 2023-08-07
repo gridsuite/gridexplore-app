@@ -18,6 +18,7 @@ import {
     NOMINAL_VOLTAGE_3,
 } from '../../../utils/field-constants';
 import RangeInput, {
+    DEFAULT_RANGE_VALUE,
     getRangeInputDataForm,
     getRangeInputSchema,
 } from '../../../utils/rhf-inputs/range-input';
@@ -186,6 +187,7 @@ export const getCriteriaBasedSchema = (extraFields) => ({
         ...getRangeInputSchema(NOMINAL_VOLTAGE),
         ...getRangeInputSchema(NOMINAL_VOLTAGE_1),
         ...getRangeInputSchema(NOMINAL_VOLTAGE_2),
+        ...getRangeInputSchema(NOMINAL_VOLTAGE_3),
         ...extraFields,
     }),
 });
@@ -197,15 +199,19 @@ export const getCriteriaBasedFormData = (criteriaValues, extraFields) => ({
         [COUNTRIES_2]: criteriaValues?.[COUNTRIES_2] ?? [],
         ...getRangeInputDataForm(
             NOMINAL_VOLTAGE,
-            criteriaValues?.[NOMINAL_VOLTAGE]
+            criteriaValues?.[NOMINAL_VOLTAGE] ?? DEFAULT_RANGE_VALUE
         ),
         ...getRangeInputDataForm(
             NOMINAL_VOLTAGE_1,
-            criteriaValues?.[NOMINAL_VOLTAGE_1]
+            criteriaValues?.[NOMINAL_VOLTAGE_1] ?? DEFAULT_RANGE_VALUE
         ),
         ...getRangeInputDataForm(
             NOMINAL_VOLTAGE_2,
-            criteriaValues?.[NOMINAL_VOLTAGE_2]
+            criteriaValues?.[NOMINAL_VOLTAGE_2] ?? DEFAULT_RANGE_VALUE
+        ),
+        ...getRangeInputDataForm(
+            NOMINAL_VOLTAGE_3,
+            criteriaValues?.[NOMINAL_VOLTAGE_3] ?? DEFAULT_RANGE_VALUE
         ),
         ...extraFields,
     },
