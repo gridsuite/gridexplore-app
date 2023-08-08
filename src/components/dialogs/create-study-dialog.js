@@ -242,7 +242,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         // the only way for the moment to check if the param is for extension, is by checking his type is STRING_LIST.
                         // Only extensions has STRING_LIST as a type for the moment.
                         //TODO to be removed when extensions param default value corrected in backend to include all possible values
-                        if (p.type === 'STRING_LIST') {
+                        if (p.type === 'STRING_LIST' && !p.defaultValue) {
                             p.defaultValue = p.possibleValues;
                         }
                         return p;
