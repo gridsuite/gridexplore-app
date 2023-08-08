@@ -32,7 +32,7 @@ export const useNameCheck = ({
     const [nameError, setNameError] = useState<string>('');
     const [isChecking, setIsChecking] = useState<boolean>(false);
 
-    const handleCheckName = useCallback(async () => {
+    const handleCheckName = useCallback(() => {
         const nameFormatted = name.replace(/ /g, '');
         setNameError('');
 
@@ -51,36 +51,31 @@ export const useNameCheck = ({
                 </InputAdornment>
             );
 
-            try {
-                const isElementExists = await elementExists(
-                    activeDirectory,
-                    name,
-                    elementType
-                );
-
-                if (isElementExists) {
+            elementExists(activeDirectory, name, elementType)
+                .then((isElementExists) => {
+                    if (isElementExists) {
+                        setNameError(
+                            intl.formatMessage({
+                                id: 'nameAlreadyUsed',
+                            })
+                        );
+                        setAdornment(false);
+                    } else {
+                        setAdornment(
+                            <InputAdornment position="end">
+                                <CheckIcon style={{ color: 'green' }} />
+                            </InputAdornment>
+                        );
+                    }
+                })
+                .catch((error) =>
                     setNameError(
                         intl.formatMessage({
-                            id: 'nameAlreadyUsed',
-                        })
-                    );
-                    setAdornment(false);
-                } else {
-                    setAdornment(
-                        <InputAdornment position="end">
-                            <CheckIcon style={{ color: 'green' }} />
-                        </InputAdornment>
-                    );
-                }
-            } catch (error) {
-                setNameError(
-                    intl.formatMessage({
-                        id: 'nameValidityCheckErrorMsg',
-                    }) + (error as Error).message
-                );
-            } finally {
-                setIsChecking(false);
-            }
+                            id: 'nameValidityCheckErrorMsg',
+                        }) + (error as Error).message
+                    )
+                )
+                .finally(() => setIsChecking(false));
         }
     }, [activeDirectory, elementType, intl, name, nameChanged]);
 

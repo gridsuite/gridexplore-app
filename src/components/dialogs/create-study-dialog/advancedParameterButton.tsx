@@ -27,12 +27,9 @@ interface AdvancedParameterButtonProps {
     disabled?: boolean;
 }
 
-const AdvancedParameterButton: React.FC<AdvancedParameterButtonProps> = ({
-    showOpenIcon,
-    label,
-    callback,
-    disabled = false,
-}) => {
+const AdvancedParameterButton: React.FunctionComponent<
+    AdvancedParameterButtonProps
+> = ({ showOpenIcon, label, callback, disabled = false }) => {
     const classes = useStyles();
 
     return (

@@ -7,15 +7,7 @@
 
 import { FormattedMessage } from 'react-intl';
 import { TextField } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import React, { useCallback, useEffect } from 'react';
-
-const useStyles = makeStyles(() => ({
-    helperText: {
-        margin: 0,
-        marginTop: 4,
-    },
-}));
 
 interface TextFieldInputProps {
     label: string;
@@ -29,7 +21,7 @@ interface TextFieldInputProps {
     setValueHasChanged?: (value: boolean) => void;
 }
 
-const TextFieldInput: React.FC<TextFieldInputProps> = ({
+const TextFieldInput: React.FunctionComponent<TextFieldInputProps> = ({
     label,
     defaultValue = '',
     adornment,
@@ -40,8 +32,6 @@ const TextFieldInput: React.FC<TextFieldInputProps> = ({
     setValue,
     setValueHasChanged,
 }) => {
-    const classes = useStyles();
-
     const handleChangeValue = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
             const newValue = event.target.value;
@@ -68,9 +58,7 @@ const TextFieldInput: React.FC<TextFieldInputProps> = ({
             label={label && <FormattedMessage id={label} />}
             value={value}
             onChange={handleChangeValue}
-            FormHelperTextProps={{
-                className: classes.helperText,
-            }}
+            sx={{ margin: 0, marginTop: 4 }}
             style={{ width: '90%' }}
             error={error}
             autoFocus={autoFocus}

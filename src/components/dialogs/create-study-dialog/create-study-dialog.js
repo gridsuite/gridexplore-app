@@ -40,7 +40,7 @@ import {
     removeUploadingElement,
     setActiveDirectory,
 } from '../../../redux/actions';
-import { useNameCheck } from '../commons/useNameCheck';
+import { useNameCheck } from '../commons/use-name-check';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -89,25 +89,24 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     );
 
     const getCurrentCaseImportParams = useCallback(
-        async (uuid) => {
-            try {
-                const { parameters = [] } = await getCaseImportParameters(uuid);
-
-                // sort possible values alphabetically to display select options sorted
-                setFormattedCaseParams(
-                    parameters.map((parameter) => ({
-                        ...parameter,
-                        possibleValues: parameter.possibleValues?.sort((a, b) =>
-                            a.localeCompare(b)
-                        ),
-                    }))
-                );
-            } catch (error) {
-                setFormattedCaseParams([]);
-                setApiCallError(
-                    intl.formatMessage({ id: 'parameterLoadingProblem' })
-                );
-            }
+        (uuid) => {
+            getCaseImportParameters(uuid)
+                .then(({ parameters = [] }) => {
+                    setFormattedCaseParams(
+                        parameters.map((parameter) => ({
+                            ...parameter,
+                            possibleValues: parameter.possibleValues?.sort(
+                                (a, b) => a.localeCompare(b)
+                            ),
+                        }))
+                    );
+                })
+                .catch((error) => {
+                    setFormattedCaseParams([]);
+                    setApiCallError(
+                        intl.formatMessage({ id: 'parameterLoadingProblem' })
+                    );
+                });
         },
         [intl]
     );
@@ -193,7 +192,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         dispatch(addUploadingElement(uploadingStudy));
     };
 
-    const handleCaseFileUpload = async (event) => {
+    const handleCaseFileUpload = (event) => {
         event.preventDefault();
 
         setCaseFileError('');
@@ -207,27 +206,28 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 setCaseFile(currentFile);
 
                 // Create new case
-                try {
-                    const newCaseUuid =
-                        await createCaseWithoutDirectoryElementCreation(
-                            currentFile
-                        );
+                createCaseWithoutDirectoryElementCreation(currentFile)
+                    .then((newCaseUuid) => {
+                        setCaseUuid((prevCaseUuid) => {
+                            if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
+                                deleteCase(prevCaseUuid)
+                                    .then()
+                                    .catch((error) =>
+                                        handleApiCallError(error)
+                                    );
+                            }
 
-                    setCaseUuid((prevCaseUuid) => {
-                        if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
-                            deleteCase(prevCaseUuid)
-                                .then()
-                                .catch((error) => handleApiCallError(error));
-                        }
+                            return newCaseUuid;
+                        });
 
-                        return newCaseUuid;
+                        getCurrentCaseImportParams(newCaseUuid);
+                    })
+                    .catch(() => {
+                        handleApiCallError(apiCallError);
+                    })
+                    .finally(() => {
+                        setCaseFileLoading(false);
                     });
-                    await getCurrentCaseImportParams(newCaseUuid);
-                } catch (e) {
-                    handleApiCallError(apiCallError);
-                } finally {
-                    setCaseFileLoading(false);
-                }
             } else {
                 setCaseFileError(
                     intl.formatMessage(

@@ -9,7 +9,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Grid } from '@mui/material';
+import { Grid, Input } from '@mui/material';
 
 interface UploadNewCaseProps {
     caseFile: File | null;
@@ -29,7 +29,7 @@ const UploadNewCase: React.FC<UploadNewCaseProps> = ({
             <Grid item>
                 <Button variant="contained" color="primary" component="label">
                     <FormattedMessage id="uploadCase" />
-                    <input
+                    <Input
                         type="file"
                         name="file"
                         onChange={handleCaseFileUpload}

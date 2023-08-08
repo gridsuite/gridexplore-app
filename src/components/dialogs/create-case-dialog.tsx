@@ -28,7 +28,7 @@ import UploadNewCase from './commons/upload-new-case';
 import { ElementType } from '../../utils/elementType';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { NameCheckReturn, useNameCheck } from './commons/useNameCheck';
+import { NameCheckReturn, useNameCheck } from './commons/use-name-check';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
