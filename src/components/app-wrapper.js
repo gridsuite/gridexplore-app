@@ -28,6 +28,8 @@ import {
     card_error_boundary_en,
     flat_parameters_en,
     flat_parameters_fr,
+    multiple_selection_dialog_en,
+    multiple_selection_dialog_fr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -128,6 +130,7 @@ const messages = {
         ...card_error_boundary_en,
         ...import_parameters_en,
         ...flat_parameters_en,
+        ...multiple_selection_dialog_en,
         ...messages_plugins_en, // keep it at the end to allow translation overwritting
     },
     fr: {
@@ -139,6 +142,7 @@ const messages = {
         ...card_error_boundary_fr,
         ...import_parameters_fr,
         ...flat_parameters_fr,
+        ...multiple_selection_dialog_fr,
         ...messages_plugins_fr, // keep it at the end to allow translation overwritting
     },
 };
