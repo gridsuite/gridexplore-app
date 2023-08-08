@@ -238,11 +238,14 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         p.possibleValues = p.possibleValues?.sort((a, b) =>
                             a.localeCompare(b)
                         );
-                        // we check if the param is for extension, in that case we select all possible values by default.
-                        // the only way for the moment to check if the param is for extension, is by checking his type is STRING_LIST.
-                        // Only extensions has STRING_LIST as a type for the moment.
+                        // we check if the param is for extension, if it is, we select all possible values by default.
+                        // the only way for the moment to check if the param is for extension, is by checking his name.
                         //TODO to be removed when extensions param default value corrected in backend to include all possible values
-                        if (p.type === 'STRING_LIST' && !p.defaultValue) {
+                        if (
+                            p.type === 'STRING_LIST' &&
+                            p?.name?.endsWith('extensions')
+                        ) {
+                            console.log('name : ', p.name);
                             p.defaultValue = p.possibleValues;
                         }
                         return p;
@@ -510,6 +513,9 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         initValues={currentParameters}
                         onChange={onChange}
                         variant="standard"
+                        useSelectionDialog={(param) =>
+                            param.possibleValues.length > 15
+                        }
                     />
                 )}
             </div>
