@@ -16,7 +16,7 @@ import {
     Alert,
     Grid,
 } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import TextFieldInput from '../commons/text-field-input';
 import UploadNewCase from '../commons/upload-new-case';
 import {
@@ -116,7 +116,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         {
             name: studyName,
             nameChanged: studyNameChanged,
-            activeDirectory,
             elementType: ElementType.STUDY,
         }
     );

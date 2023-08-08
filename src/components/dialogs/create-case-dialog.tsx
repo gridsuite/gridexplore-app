@@ -145,7 +145,6 @@ const CreateCaseDialog: React.FC<CreateCaseDialogProps> = ({
     ]: NameCheckReturn = useNameCheck({
         name: caseName,
         nameChanged: caseNameChanged,
-        activeDirectory,
         elementType: ElementType.CASE,
     });
 

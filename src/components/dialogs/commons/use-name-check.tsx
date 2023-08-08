@@ -10,11 +10,11 @@ import { useIntl } from 'react-intl';
 import { CircularProgress, InputAdornment } from '@mui/material';
 import { elementExists } from '../../../utils/rest-api';
 import CheckIcon from '@mui/icons-material/Check';
+import { useSelector } from 'react-redux';
 
 interface NameCheckProps {
     name: string;
     nameChanged: boolean;
-    activeDirectory: string;
     elementType: string;
 }
 
@@ -23,7 +23,6 @@ export type NameCheckReturn = [React.ReactNode | null, string, boolean];
 export const useNameCheck = ({
     name,
     nameChanged,
-    activeDirectory,
     elementType,
 }: NameCheckProps): NameCheckReturn => {
     const intl = useIntl();
@@ -31,6 +30,8 @@ export const useNameCheck = ({
     const [adornment, setAdornment] = useState<React.ReactNode | null>(null);
     const [nameError, setNameError] = useState<string>('');
     const [isChecking, setIsChecking] = useState<boolean>(false);
+
+    const activeDirectory = useSelector((state: any) => state.activeDirectory);
 
     const handleCheckName = useCallback(() => {
         const nameFormatted = name.replace(/ /g, '');
