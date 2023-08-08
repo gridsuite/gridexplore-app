@@ -221,6 +221,7 @@
   "agGrid.previousPage": "page précédente",
   "agGrid.nextPage": "page suivante",
   "agGrid.lastPage": "dernière page",
+  "agGrid.thousandSeparator": " ",
   "DIE": "ARCADE",
   "XIIDM": "XIIDM",
   "CGMES": "CGMES",

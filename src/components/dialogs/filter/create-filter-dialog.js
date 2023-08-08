@@ -30,7 +30,7 @@ import ExplicitNamingFilterForm, {
 import { EQUIPMENT_TYPE, FILTER_TYPE, NAME } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 import RadioInput from '../../utils/rhf-inputs/radio-input';
-import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 
 const emptyFormData = {
     [NAME]: null,
@@ -120,17 +120,19 @@ const CreateFilterDialog = ({ open, onClose }) => {
                 contentType={ElementType.FILTER}
                 handleNameValidation={handleNameChange}
             >
-                <Box>
-                    <RadioInput
-                        name={FILTER_TYPE}
-                        options={Object.values(FilterType)}
-                    />
+                <Grid container spacing={2} marginTop={'auto'}>
+                    <Grid item>
+                        <RadioInput
+                            name={FILTER_TYPE}
+                            options={Object.values(FilterType)}
+                        />
+                    </Grid>
                     {filterType === FilterType.CRITERIA_BASED.id ? (
                         <CriteriaBasedFilterForm />
                     ) : (
                         <ExplicitNamingFilterForm />
                     )}
-                </Box>
+                </Grid>
             </NameWrapper>
         </CustomMuiDialog>
     );
