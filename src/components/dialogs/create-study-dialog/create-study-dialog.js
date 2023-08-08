@@ -101,7 +101,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         }))
                     );
                 })
-                .catch((error) => {
+                .catch(() => {
                     setFormattedCaseParams([]);
                     setApiCallError(
                         intl.formatMessage({ id: 'parameterLoadingProblem' })
