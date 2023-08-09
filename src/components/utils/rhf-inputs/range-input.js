@@ -73,6 +73,7 @@ const RangeInput = ({ name, label }) => {
             name={`${name}.${VALUE_1}`}
             clearable={false}
             formProps={{
+                size: 'medium',
                 placeholder: isOperationTypeRange ? 'Min' : '',
             }}
         />
@@ -84,6 +85,7 @@ const RangeInput = ({ name, label }) => {
             clearable={false}
             label={''}
             formProps={{
+                size: 'medium',
                 placeholder: 'Max',
             }}
         />
