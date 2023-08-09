@@ -4,20 +4,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
-import PropTypes from 'prop-types';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormProvider, useForm } from 'react-hook-form';
 import {
+    Button,
     Dialog,
-    DialogTitle,
     DialogContent,
     DialogActions,
-    Button,
+    DialogTitle,
     Alert,
     Grid,
 } from '@mui/material';
+import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useState } from 'react';
-import TextFieldInput from '../commons/text-field-input';
 import UploadNewCase from '../commons/upload-new-case';
 import {
     createCaseWithoutDirectoryElementCreation,
@@ -29,18 +27,29 @@ import {
     HTTP_CONNECTION_FAILED_MESSAGE,
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
 } from '../../../utils/UIconstants';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useDispatch, useSelector } from 'react-redux';
+import ImportParametersSection from './importParametersSection';
 import { ElementType } from '../../../utils/elementType';
 import DirectorySelect from './directory-select';
-import ImportParametersSection from './importParametersSection';
-import { useDispatch, useSelector } from 'react-redux';
+import TextFieldInput from '../commons/text-field-input';
+import { useNameCheck } from '../commons/use-name-check';
 import { keyGenerator } from '../../../utils/functions';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     addUploadingElement,
     removeUploadingElement,
     setActiveDirectory,
 } from '../../../redux/actions';
-import { useNameCheck } from '../commons/use-name-check';
+import { getCreateStudyDialogFormDefaultValues } from './create-study-dialog-utils';
+import {
+    API_CALL,
+    CASE_FILE,
+    CASE_UUID,
+    CURRENT_PARAMETERS,
+    DESCRIPTION,
+    FORMATTED_CASE_PARAMETERS,
+    STUDY_NAME,
+} from '../../utils/field-constants';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -50,49 +59,70 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
-    // States
-    const [isCreationAllowed, setIsCreationAllowed] = useState(false);
-    const [studyName, setStudyName] = useState('');
-    const [studyNameChanged, setStudyNameChanged] = useState(false);
-    const [description, setDescription] = useState('');
-
-    const [caseFile, setCaseFile] = useState(null);
     const [caseFileLoading, setCaseFileLoading] = useState(false);
-    const [caseFileError, setCaseFileError] = useState('');
-    const [caseUuid, setCaseUuid] = useState('');
-
-    const [currentParams, setCurrentParams] = useState({});
-    const [formattedCaseParams, setFormattedCaseParams] = useState([]);
-
-    const [apiCallError, setApiCallError] = useState('');
+    const [studyNameChanged, setStudyNameChanged] = useState(false);
+    const [isCreationAllowed, setIsCreationAllowed] = useState(false);
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
 
-    // Functions
+    const createStudyFormMethods = useForm({
+        defaultValues: getCreateStudyDialogFormDefaultValues(),
+    });
+
+    const {
+        handleSubmit,
+        setValue,
+        formState: { errors },
+        setError,
+        watch,
+        clearErrors,
+    } = createStudyFormMethods;
+
+    // Constants
+    const caseFileErrorMessage = errors.caseFile?.message;
+    const apiCallErrorMessage = errors.apiCall?.message;
+    const studyNameErrorMessage = errors.studyName?.message;
+
+    const caseFile = watch(CASE_FILE);
+    const caseUuid = watch(CASE_UUID);
+    const currentParameters = watch(CURRENT_PARAMETERS);
+    const formattedCaseParameters = watch(FORMATTED_CASE_PARAMETERS);
+    const studyName = watch(STUDY_NAME);
+    const description = watch(DESCRIPTION);
+
+    // callbacks
     const handleApiCallError = useCallback(
         (error) => {
             if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
-                setApiCallError(
-                    intl.formatMessage({ id: 'invalidFormatOrName' })
-                );
+                setError(API_CALL, {
+                    type: 'invalidFormatOrName',
+                    message: intl.formatMessage({ id: 'invalidFormatOrName' }),
+                });
             } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
-                setApiCallError(
-                    intl.formatMessage({ id: 'serverConnectionFailed' })
-                );
+                setError(API_CALL, {
+                    type: 'serverConnectionFailed',
+                    message: intl.formatMessage({
+                        id: 'serverConnectionFailed',
+                    }),
+                });
             } else {
-                setApiCallError(error.message);
+                setError(API_CALL, {
+                    type: 'apiCall',
+                    message: error.message,
+                });
             }
         },
-        [intl]
+        [intl, setError]
     );
 
     const getCurrentCaseImportParams = useCallback(
         (uuid) => {
             getCaseImportParameters(uuid)
                 .then(({ parameters = [] }) => {
-                    setFormattedCaseParams(
+                    setValue(
+                        FORMATTED_CASE_PARAMETERS,
                         parameters.map((parameter) => ({
                             ...parameter,
                             possibleValues: parameter.possibleValues?.sort(
@@ -102,23 +132,19 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     );
                 })
                 .catch(() => {
-                    setFormattedCaseParams([]);
-                    setApiCallError(
-                        intl.formatMessage({ id: 'parameterLoadingProblem' })
-                    );
+                    setValue(FORMATTED_CASE_PARAMETERS, []);
+                    setError(API_CALL, {
+                        type: 'parameterLoadingProblem',
+                        message: intl.formatMessage({
+                            id: 'parameterLoadingProblem',
+                        }),
+                    });
                 });
         },
-        [intl]
+        [intl, setError, setValue]
     );
 
-    // handle check studyName
-    const [studyNameAdornment, studyNameError, studyNameChecking] =
-        useNameCheck({
-            name: studyName,
-            nameChanged: studyNameChanged,
-            elementType: ElementType.STUDY,
-        });
-
+    // Methods
     const handleDeleteCase = () => {
         // if we cancel case creation, we need to delete the associated newly created case (if we created one)
         if (caseUuid && !providedExistingCase) {
@@ -139,14 +165,18 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         onClose();
     };
 
-    const handleCreateNewStudy = () => {
-        //We don't do anything if the checks are not over or the name is not valid
+    const handleCreateNewStudy = ({
+        caseUuid,
+        studyName,
+        description,
+        currentParameters,
+    }) => {
         if (!caseUuid && !providedExistingCase?.elementUuid) {
-            setApiCallError(intl.formatMessage({ id: 'caseNameErrorMsg' }));
+            setError(API_CALL, intl.formatMessage({ id: 'caseNameErrorMsg' }));
             return;
         }
         if (!caseUuid && !providedExistingCase) {
-            setApiCallError(intl.formatMessage({ id: 'uploadErrorMsg' }));
+            setError(API_CALL, intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
         }
 
@@ -154,7 +184,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             id: keyGenerator(),
             elementName: studyName,
             directory: activeDirectory,
-            type: 'STUDY',
+            type: ElementType.STUDY,
             owner: userId,
             lastModifiedBy: userId,
             uploading: true,
@@ -166,7 +196,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             caseUuid,
             !!providedExistingCase,
             activeDirectory,
-            currentParams ? JSON.stringify(currentParams) : ''
+            currentParameters ? JSON.stringify(currentParameters) : ''
         )
             .then(() => {
                 dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
@@ -183,7 +213,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             })
 
             .finally(() => {
-                setCaseUuid(null);
+                setValue(CASE_UUID, null);
                 dispatch(removeUploadingElement(uploadingStudy));
             });
 
@@ -193,7 +223,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const handleCaseFileUpload = (event) => {
         event.preventDefault();
 
-        setCaseFileError('');
+        clearErrors(CASE_FILE);
 
         const files = event.target.files;
         if (files?.length) {
@@ -201,34 +231,33 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
             if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
                 setCaseFileLoading(true);
-                setCaseFile(currentFile);
+                setValue(CASE_FILE, currentFile);
 
                 // Create new case
                 createCaseWithoutDirectoryElementCreation(currentFile)
                     .then((newCaseUuid) => {
-                        setCaseUuid((prevCaseUuid) => {
-                            if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
-                                deleteCase(prevCaseUuid)
-                                    .then()
-                                    .catch((error) =>
-                                        handleApiCallError(error)
-                                    );
-                            }
+                        const prevCaseUuid =
+                            createStudyFormMethods.getValues().caseUuid;
 
-                            return newCaseUuid;
-                        });
+                        if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
+                            deleteCase(prevCaseUuid).catch((error) =>
+                                handleApiCallError(error)
+                            );
+                        }
+                        setValue(CASE_UUID, newCaseUuid);
 
                         getCurrentCaseImportParams(newCaseUuid);
                     })
                     .catch(() => {
-                        handleApiCallError(apiCallError);
+                        handleApiCallError(errors.apiCallError);
                     })
                     .finally(() => {
                         setCaseFileLoading(false);
                     });
             } else {
-                setCaseFileError(
-                    intl.formatMessage(
+                setError(CASE_FILE, {
+                    type: 'caseFileSize',
+                    message: intl.formatMessage(
                         {
                             id: 'uploadFileExceedingLimitSizeErrorMsg',
                         },
@@ -236,40 +265,51 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                             maxSize: MAX_FILE_SIZE_IN_MO,
                             br: <br />,
                         }
-                    )
-                );
+                    ),
+                });
             }
         }
     };
 
     const handleParamsChange = (paramName, value, isEdit) => {
         if (!isEdit) {
-            setCurrentParams((prevCurrentParameters) => ({
-                ...prevCurrentParameters,
+            setValue(CURRENT_PARAMETERS, {
+                ...currentParameters,
                 ...{ [paramName]: value },
-            }));
+            });
         }
     };
+
+    // handle check studyName
+    const [studyNameAdornment, studyNameChecking] = useNameCheck({
+        field: STUDY_NAME,
+        name: studyName,
+        nameChanged: studyNameChanged,
+        elementType: ElementType.STUDY,
+        setError,
+        clearErrors,
+    });
 
     /* Effects */
     // handle create study from existing case
     useEffect(() => {
         if (providedExistingCase) {
             const { elementUuid } = providedExistingCase;
-            setCaseFile(providedExistingCase);
+            setValue(CASE_FILE, providedExistingCase);
+            setValue(CASE_UUID, elementUuid);
 
-            setCaseUuid(elementUuid);
             getCurrentCaseImportParams(elementUuid);
         }
-    }, [getCurrentCaseImportParams, providedExistingCase]);
+    }, [getCurrentCaseImportParams, providedExistingCase, setValue]);
 
     // handle set study name
     useEffect(() => {
-        if (caseFile && !apiCallError && !caseFileError) {
+        if (caseFile && !apiCallErrorMessage && !caseFileErrorMessage) {
             const { name: caseFileName } = caseFile;
 
             if (caseFileName) {
-                setStudyName(
+                setValue(
+                    STUDY_NAME,
                     caseFileName.substring(0, caseFileName.indexOf('.'))
                 );
             }
@@ -277,100 +317,103 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
         if (providedExistingCase) {
             const { elementName: existingCaseName } = providedExistingCase;
-            setStudyName(existingCaseName);
+            setValue(STUDY_NAME, existingCaseName);
         }
-    }, [caseFile, apiCallError, caseFileError, providedExistingCase]);
+    }, [
+        caseFile,
+        apiCallErrorMessage,
+        caseFileErrorMessage,
+        providedExistingCase,
+        setValue,
+    ]);
 
     // handle change possibility to create new study
     useEffect(() => {
         setIsCreationAllowed(
             !!studyName &&
-                formattedCaseParams.length &&
+                formattedCaseParameters.length &&
                 !caseFileLoading &&
                 !studyNameChecking &&
-                !studyNameError &&
-                !apiCallError
+                !studyNameErrorMessage &&
+                !apiCallErrorMessage
         );
     }, [
+        apiCallErrorMessage,
         caseFileLoading,
-        formattedCaseParams.length,
+        formattedCaseParameters.length,
         studyName,
         studyNameChecking,
-        apiCallError,
-        studyNameError,
+        studyNameErrorMessage,
     ]);
 
     return (
-        <Dialog
-            fullWidth={true}
-            open={open}
-            onClose={handleCloseDialog}
-            aria-labelledby="create-study-form-dialog-title"
-        >
-            <DialogTitle id="create-study-form-dialog-title">
-                <FormattedMessage id="createNewStudy" />
-            </DialogTitle>
-            <DialogContent>
-                <TextFieldInput
-                    label={'nameProperty'}
-                    value={studyName}
-                    setValue={setStudyName}
-                    error={!!studyNameError}
-                    autoFocus
-                    adornment={studyNameAdornment}
-                    setValueHasChanged={setStudyNameChanged}
-                />
-                <TextFieldInput
-                    label={'descriptionProperty'}
-                    value={description}
-                    setValue={setDescription}
-                />
-                {studyNameError && (
-                    <Alert severity="error">{studyNameError}</Alert>
-                )}
-                {providedExistingCase ? (
-                    <DirectorySelect types={[ElementType.DIRECTORY]} />
-                ) : (
-                    <UploadNewCase
-                        caseFile={caseFile}
-                        caseFileLoading={caseFileLoading}
-                        handleCaseFileUpload={handleCaseFileUpload}
+        <FormProvider {...createStudyFormMethods}>
+            <Dialog
+                fullWidth={true}
+                open={open}
+                onClose={handleCloseDialog}
+                aria-labelledby="create-study-form-dialog-title"
+            >
+                <DialogTitle id="create-study-form-dialog-title">
+                    <FormattedMessage id="createNewStudy" />
+                </DialogTitle>
+                <DialogContent>
+                    <TextFieldInput
+                        label={'nameProperty'}
+                        value={studyName}
+                        setValue={(newValue) => setValue(STUDY_NAME, newValue)}
+                        error={studyNameErrorMessage}
+                        autoFocus
+                        adornment={studyNameAdornment}
+                        setValueHasChanged={setStudyNameChanged}
                     />
-                )}
-                <ImportParametersSection
-                    onChange={handleParamsChange}
-                    currentParameters={currentParams}
-                    formatWithParameters={formattedCaseParams}
-                />
-                <Grid pt={1}>
-                    {!!apiCallError && (
-                        <Alert severity="error">{apiCallError}</Alert>
+                    <TextFieldInput
+                        label={'descriptionProperty'}
+                        value={description}
+                        setValue={(newValue) => setValue(DESCRIPTION, newValue)}
+                    />
+                    {providedExistingCase ? (
+                        <DirectorySelect types={[ElementType.DIRECTORY]} />
+                    ) : (
+                        <UploadNewCase
+                            caseFile={caseFile}
+                            caseFileLoading={caseFileLoading}
+                            handleCaseFileUpload={handleCaseFileUpload}
+                        />
                     )}
-                    {caseFileError && (
-                        <Alert severity="error">{caseFileError}</Alert>
-                    )}
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCancelStudyCreation}>
-                    <FormattedMessage id="cancel" />
-                </Button>
-                <Button
-                    onClick={handleCreateNewStudy}
-                    disabled={!isCreationAllowed}
-                    variant="outlined"
-                >
-                    <FormattedMessage id="validate" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+                    <ImportParametersSection
+                        onChange={handleParamsChange}
+                        currentParameters={currentParameters}
+                        formatWithParameters={formattedCaseParameters}
+                    />
+                    <Grid pt={1}>
+                        {!!apiCallErrorMessage && (
+                            <Alert severity="error">
+                                {apiCallErrorMessage}
+                            </Alert>
+                        )}
+                        {caseFileErrorMessage && (
+                            <Alert severity="error">
+                                {caseFileErrorMessage}
+                            </Alert>
+                        )}
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelStudyCreation}>
+                        <FormattedMessage id="cancel" />
+                    </Button>
+                    <Button
+                        onClick={handleSubmit(handleCreateNewStudy)}
+                        disabled={!isCreationAllowed}
+                        variant="outlined"
+                    >
+                        <FormattedMessage id="validate" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </FormProvider>
     );
-};
-
-CreateStudyDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    providedExistingCase: PropTypes.any,
 };
 
 export default CreateStudyDialog;

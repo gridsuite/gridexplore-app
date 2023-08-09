@@ -29,16 +29,18 @@ import { ElementType } from '../../utils/elementType';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NameCheckReturn, useNameCheck } from './commons/use-name-check';
+import { FormProvider, useForm } from 'react-hook-form';
+import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../utils/field-constants';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
 
-interface CreateCaseDialogProps {
+interface ICreateCaseDialogProps {
     onClose: () => void;
     open: boolean;
 }
 
-const CreateCaseDialog: React.FC<CreateCaseDialogProps> = ({
+const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     onClose,
     open,
 }) => {
@@ -46,27 +48,54 @@ const CreateCaseDialog: React.FC<CreateCaseDialogProps> = ({
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
 
+    const createCaseFormMethods = useForm({
+        defaultValues: {
+            [CASE_NAME]: '',
+            [DESCRIPTION]: '',
+            [CASE_FILE]: null,
+        },
+    });
+
+    const {
+        handleSubmit,
+        setValue,
+        formState: { errors },
+        setError,
+        watch,
+        clearErrors,
+    } = createCaseFormMethods;
+
     const [isCreationAllowed, setIsCreationAllowed] = useState(false);
-    const [caseName, setCaseName] = useState<string>('');
-    const [caseFile, setCaseFile] = useState<File | null>(null);
-    const [caseFileError, setCaseFileError] = useState<string>('');
     const [caseNameChanged, setCaseNameChanged] = useState(false);
-    const [description, setDescription] = useState<string>('');
 
     const activeDirectory = useSelector((state: any) => state.activeDirectory);
     const userId = useSelector((state: any) => state.user.profile.sub);
 
+    const caseNameErrorMessage = errors.caseName?.message;
+    const caseFileErrorMessage = errors.caseFile?.message;
+    const caseName = watch(CASE_NAME);
+    const caseFile = watch(CASE_FILE);
+    const description = watch(DESCRIPTION);
+
     const handleCloseDialog = () => {
-        setCaseFile(null);
+        setValue(CASE_FILE, null);
         onClose();
     };
 
-    const handleCreateNewCase = () => {
+    const handleCreateNewCase = ({
+        caseName,
+        description,
+        caseFile,
+    }: {
+        caseName: string;
+        description: string;
+        caseFile: File | null;
+    }): void => {
         const uploadingCase = {
             id: keyGenerator(),
             elementName: caseName,
             directory: activeDirectory,
-            type: 'CASE',
+            type: ElementType.CASE,
             owner: userId,
             lastModifiedBy: userId,
             uploading: true,
@@ -99,6 +128,7 @@ const CreateCaseDialog: React.FC<CreateCaseDialogProps> = ({
                 }
             })
             .finally(() => dispatch(removeUploadingElement(uploadingCase)));
+
         dispatch(addUploadingElement(uploadingCase));
     };
 
@@ -106,23 +136,26 @@ const CreateCaseDialog: React.FC<CreateCaseDialogProps> = ({
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         event.preventDefault();
-        setCaseFileError('');
+        clearErrors(CASE_FILE);
         const files = event.target.files;
         if (files?.length) {
-            const currentFile = files[0];
+            const currentFile = files[0]!;
 
             if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
-                setCaseFile(currentFile);
+                // @ts-ignore
+                setValue(CASE_FILE, currentFile);
                 const { name: caseFileName } = currentFile;
 
                 if (caseFileName) {
-                    setCaseName(
+                    setValue(
+                        CASE_NAME,
                         caseFileName.substring(0, caseFileName.indexOf('.'))
                     );
                 }
             } else {
-                setCaseFileError(
-                    intl
+                setError(CASE_FILE, {
+                    type: 'caseFileSize',
+                    message: intl
                         .formatMessage(
                             {
                                 id: 'uploadFileExceedingLimitSizeErrorMsg',
@@ -132,77 +165,85 @@ const CreateCaseDialog: React.FC<CreateCaseDialogProps> = ({
                                 br: <br />,
                             }
                         )
-                        .toString()
-                );
+                        .toString(),
+                });
             }
         }
     };
 
-    const [
-        caseFileAdornment,
-        caseNameError,
-        caseNameChecking,
-    ]: NameCheckReturn = useNameCheck({
-        name: caseName,
-        nameChanged: caseNameChanged,
-        elementType: ElementType.CASE,
-    });
+    const [caseFileAdornment, caseNameChecking]: NameCheckReturn = useNameCheck(
+        {
+            field: CASE_NAME,
+            name: caseName,
+            nameChanged: caseNameChanged,
+            elementType: ElementType.CASE,
+            setError,
+            clearErrors,
+        }
+    );
 
     useEffect(() => {
         setIsCreationAllowed(
-            !!caseFile && !caseNameError && !caseNameChecking && !caseFileError
+            !!caseFile &&
+                !caseNameErrorMessage &&
+                !caseNameChecking &&
+                !caseFileErrorMessage
         );
-    }, [caseFile, caseFileError, caseNameChecking, caseNameError]);
+    }, [
+        caseFile,
+        caseNameErrorMessage,
+        caseNameChecking,
+        caseFileErrorMessage,
+    ]);
 
     return (
-        <Dialog
-            fullWidth={true}
-            open={open}
-            onClose={handleCloseDialog}
-            aria-labelledby="create-case-form-dialog-title"
-        >
-            <DialogTitle id="create-case-form-dialog-title">
-                <FormattedMessage id="ImportNewCase" />
-            </DialogTitle>
-            <DialogContent>
-                <TextFieldInput
-                    label={'nameProperty'}
-                    value={caseName}
-                    setValue={setCaseName}
-                    error={!!caseFileError}
-                    autoFocus
-                    adornment={caseFileAdornment}
-                    setValueHasChanged={setCaseNameChanged}
-                />
-                <TextFieldInput
-                    label={'descriptionProperty'}
-                    value={description}
-                    setValue={setDescription}
-                />
-                {caseNameError && (
-                    <Alert severity="error">{caseNameError}</Alert>
-                )}
-                {caseFileError && (
-                    <Alert severity="error">{caseFileError}</Alert>
-                )}
-                <UploadNewCase
-                    caseFile={caseFile}
-                    handleCaseFileUpload={handleCaseFileUpload}
-                />
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseDialog} variant="text">
-                    <FormattedMessage id="cancel" />
-                </Button>
-                <Button
-                    onClick={handleCreateNewCase}
-                    disabled={!isCreationAllowed}
-                    variant="outlined"
-                >
-                    <FormattedMessage id="validate" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <FormProvider {...createCaseFormMethods}>
+            <Dialog
+                fullWidth={true}
+                open={open}
+                onClose={handleCloseDialog}
+                aria-labelledby="create-case-form-dialog-title"
+            >
+                <DialogTitle id="create-case-form-dialog-title">
+                    <FormattedMessage id="ImportNewCase" />
+                </DialogTitle>
+                <DialogContent>
+                    <TextFieldInput
+                        label={'nameProperty'}
+                        value={caseName}
+                        setValue={(newValue) => setValue(CASE_NAME, newValue)}
+                        error={caseNameErrorMessage}
+                        autoFocus
+                        adornment={caseFileAdornment}
+                        setValueHasChanged={setCaseNameChanged}
+                    />
+                    <TextFieldInput
+                        label={'descriptionProperty'}
+                        value={description}
+                        setValue={(newValue) => setValue(DESCRIPTION, newValue)}
+                    />
+                    {caseFileErrorMessage && (
+                        <Alert severity="error">{caseFileErrorMessage}</Alert>
+                    )}
+                    <UploadNewCase
+                        caseFile={caseFile}
+                        handleCaseFileUpload={handleCaseFileUpload}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} variant="text">
+                        <FormattedMessage id="cancel" />
+                    </Button>
+                    <Button
+                        onClick={handleSubmit(handleCreateNewCase)}
+                        disabled={!isCreationAllowed}
+                        variant="outlined"
+                    >
+                        <FormattedMessage id="validate" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </FormProvider>
     );
 };
 

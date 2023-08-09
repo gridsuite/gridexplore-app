@@ -17,7 +17,7 @@ interface UploadNewCaseProps {
     handleCaseFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const UploadNewCase: React.FC<UploadNewCaseProps> = ({
+const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
     caseFile,
     caseFileLoading = false,
     handleCaseFileUpload,

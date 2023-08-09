@@ -15,7 +15,7 @@ interface ITextFieldInputProps {
     adornment?: React.ReactNode;
     triggerReset?: boolean;
     autoFocus?: boolean;
-    error?: boolean;
+    error?: string;
     value: string;
     setValue: (value: string) => void;
     setValueHasChanged?: (value: boolean) => void;
@@ -63,7 +63,8 @@ const TextFieldInput: React.FunctionComponent<ITextFieldInputProps> = ({
             onChange={handleChangeValue}
             sx={{ margin: 0, marginTop: 4 }}
             style={{ width: maxWidth ? '100%' : '90%' }}
-            error={error}
+            error={!!error}
+            helperText={error ?? ''}
             autoFocus={autoFocus}
             {...(adornment && { InputProps: { endAdornment: adornment } })}
             {...props}

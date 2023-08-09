@@ -14,36 +14,45 @@ import { useSelector } from 'react-redux';
 // @ts-ignore
 import { useDebounce } from '@gridsuite/commons-ui';
 
-interface NameCheckProps {
+interface INameCheckProps {
+    field: string;
     name: string;
     nameChanged: boolean;
     elementType: string;
+    setError: any;
+    clearErrors: any;
 }
 
-export type NameCheckReturn = [React.ReactNode | null, string, boolean];
+export type NameCheckReturn = [React.ReactNode | null, boolean];
 
 export const useNameCheck = ({
+    field,
     name,
     nameChanged,
     elementType,
-}: NameCheckProps): NameCheckReturn => {
+    setError,
+    clearErrors,
+}: INameCheckProps): NameCheckReturn => {
     const intl = useIntl();
 
     const [adornment, setAdornment] = useState<React.ReactNode | null>(null);
-    const [nameError, setNameError] = useState<string>('');
     const [isChecking, setIsChecking] = useState<boolean>(false);
 
     const activeDirectory = useSelector((state: any) => state.activeDirectory);
 
     const handleCheckName = useCallback(() => {
         const nameFormatted = name.replace(/ /g, '');
-        setNameError('');
+
+        clearErrors(field);
 
         if (!nameFormatted) {
             setAdornment(false);
 
             if (nameChanged) {
-                setNameError(intl.formatMessage({ id: 'nameEmpty' }));
+                setError(field, {
+                    type: 'nameEmpty',
+                    message: intl.formatMessage({ id: 'nameEmpty' }),
+                });
             }
         } else {
             setIsChecking(true);
@@ -57,11 +66,12 @@ export const useNameCheck = ({
             elementExists(activeDirectory, name, elementType)
                 .then((isElementExists) => {
                     if (isElementExists) {
-                        setNameError(
-                            intl.formatMessage({
+                        setError(field, {
+                            type: 'nameAlreadyUsed',
+                            message: intl.formatMessage({
                                 id: 'nameAlreadyUsed',
-                            })
-                        );
+                            }),
+                        });
                         setAdornment(false);
                     } else {
                         setAdornment(
@@ -72,15 +82,26 @@ export const useNameCheck = ({
                     }
                 })
                 .catch((error) =>
-                    setNameError(
-                        intl.formatMessage({
-                            id: 'nameValidityCheckErrorMsg',
-                        }) + (error as Error).message
-                    )
+                    setError(field, {
+                        type: 'nameValidityCheckErrorMsg',
+                        message:
+                            intl.formatMessage({
+                                id: 'nameValidityCheckErrorMsg',
+                            }) + (error as Error).message,
+                    })
                 )
                 .finally(() => setIsChecking(false));
         }
-    }, [activeDirectory, elementType, intl, name, nameChanged]);
+    }, [
+        name,
+        clearErrors,
+        field,
+        nameChanged,
+        setError,
+        intl,
+        activeDirectory,
+        elementType,
+    ]);
 
     const debouncedHandleCheckName = useDebounce(handleCheckName, 700);
 
@@ -89,5 +110,5 @@ export const useNameCheck = ({
         debouncedHandleCheckName();
     }, [debouncedHandleCheckName]);
 
-    return [adornment, nameError, isChecking];
+    return [adornment, isChecking];
 };

@@ -17,7 +17,9 @@ interface DirectorySelectProps {
     types: string[];
 }
 
-const DirectorySelect: React.FC<DirectorySelectProps> = ({ types }) => {
+const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
+    types,
+}) => {
     const intl = useIntl();
     const dispatch = useDispatch();
 
