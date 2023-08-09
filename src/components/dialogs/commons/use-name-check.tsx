@@ -11,6 +11,8 @@ import { CircularProgress, InputAdornment } from '@mui/material';
 import { elementExists } from '../../../utils/rest-api';
 import CheckIcon from '@mui/icons-material/Check';
 import { useSelector } from 'react-redux';
+// @ts-ignore
+import { useDebounce } from '@gridsuite/commons-ui';
 
 interface NameCheckProps {
     name: string;
@@ -80,10 +82,12 @@ export const useNameCheck = ({
         }
     }, [activeDirectory, elementType, intl, name, nameChanged]);
 
+    const debouncedHandleCheckName = useDebounce(handleCheckName, 700);
+
     // handle check case name
     useEffect(() => {
-        handleCheckName();
-    }, [handleCheckName]);
+        debouncedHandleCheckName();
+    }, [debouncedHandleCheckName]);
 
     return [adornment, nameError, isChecking];
 };
