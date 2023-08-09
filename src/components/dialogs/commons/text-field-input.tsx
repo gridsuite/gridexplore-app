@@ -9,7 +9,7 @@ import { FormattedMessage } from 'react-intl';
 import { TextField } from '@mui/material';
 import React, { useCallback, useEffect } from 'react';
 
-interface TextFieldInputProps {
+interface ITextFieldInputProps {
     label: string;
     defaultValue?: string;
     adornment?: React.ReactNode;
@@ -19,9 +19,10 @@ interface TextFieldInputProps {
     value: string;
     setValue: (value: string) => void;
     setValueHasChanged?: (value: boolean) => void;
+    maxWidth?: boolean;
 }
 
-const TextFieldInput: React.FunctionComponent<TextFieldInputProps> = ({
+const TextFieldInput: React.FunctionComponent<ITextFieldInputProps> = ({
     label,
     defaultValue = '',
     adornment,
@@ -31,6 +32,8 @@ const TextFieldInput: React.FunctionComponent<TextFieldInputProps> = ({
     value,
     setValue,
     setValueHasChanged,
+    maxWidth = false,
+    ...props
 }) => {
     const handleChangeValue = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,10 +62,11 @@ const TextFieldInput: React.FunctionComponent<TextFieldInputProps> = ({
             value={value}
             onChange={handleChangeValue}
             sx={{ margin: 0, marginTop: 4 }}
-            style={{ width: '90%' }}
+            style={{ width: maxWidth ? '100%' : '90%' }}
             error={error}
             autoFocus={autoFocus}
             {...(adornment && { InputProps: { endAdornment: adornment } })}
+            {...props}
         />
     );
 };
