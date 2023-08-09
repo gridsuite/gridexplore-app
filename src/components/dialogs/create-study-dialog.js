@@ -245,7 +245,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                             p.type === 'STRING_LIST' &&
                             p?.name?.endsWith('extensions')
                         ) {
-                            console.log('name : ', p.name);
                             p.defaultValue = p.possibleValues;
                         }
                         return p;
@@ -513,7 +512,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         initValues={currentParameters}
                         onChange={onChange}
                         variant="standard"
-                        useSelectionDialog={(param) =>
+                        selectionWithDialog={(param) =>
                             param.possibleValues.length > 15
                         }
                     />
