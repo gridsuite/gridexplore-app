@@ -114,4 +114,10 @@ declare module '@gridsuite/commons-ui' {
         onClick: () => void;
         disabled?: boolean;
     });
+
+    export function FieldLabel(props: {
+        label: string;
+        optional?: boolean;
+        values?: any; // it's for values from https://formatjs.io/docs/react-intl/components/#formattedmessage
+    });
 }
