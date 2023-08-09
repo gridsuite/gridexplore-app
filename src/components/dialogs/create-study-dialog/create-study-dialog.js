@@ -112,13 +112,12 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     );
 
     // handle check studyName
-    const [caseFileAdornment, studyNameError, studyNameChecking] = useNameCheck(
-        {
+    const [studyNameAdornment, studyNameError, studyNameChecking] =
+        useNameCheck({
             name: studyName,
             nameChanged: studyNameChanged,
             elementType: ElementType.STUDY,
-        }
-    );
+        });
 
     const handleDeleteCase = () => {
         // if we cancel case creation, we need to delete the associated newly created case (if we created one)
@@ -318,7 +317,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     setValue={setStudyName}
                     error={!!studyNameError}
                     autoFocus
-                    adornment={caseFileAdornment}
+                    adornment={studyNameAdornment}
                     setValueHasChanged={setStudyNameChanged}
                 />
                 <TextFieldInput
