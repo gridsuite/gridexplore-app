@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FILTER_PROPERTIES } from './filter-properties';
 import { CRITERIA_BASED } from '../../utils/field-constants';
-import AutocompleteInput from '../../utils/rhf-inputs/autocomplete-inputs/autocomplete-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 
 export const PROPERTY_NAME = 'name_property';
 export const PROPERTY_VALUES = 'prop_values';
@@ -16,7 +16,7 @@ export const PROPERTY_VALUES_2 = 'prop_values2';
 interface FilterPropertyProps {
     index: number;
     valuesFields: Array<{ name: string; label: string }>;
-    handleDelete: Function;
+    handleDelete: (index: number) => void;
     predefined: any;
 }
 

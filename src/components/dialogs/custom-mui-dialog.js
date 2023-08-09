@@ -7,7 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import makeStyles from '@mui/styles/makeStyles';
-import SubmitButton from '../utils/submitButton';
+import { SubmitButton } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     root: {

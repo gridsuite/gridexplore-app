@@ -1,6 +1,6 @@
 import { useWatch } from 'react-hook-form';
 import { OPERATION_TYPE, VALUE_1, VALUE_2 } from '../field-constants';
-import FloatInput from './float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import yup from '../yup-config';
 import { FormattedMessage } from 'react-intl';
 import React, { useMemo } from 'react';

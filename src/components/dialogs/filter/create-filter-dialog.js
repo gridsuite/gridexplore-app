@@ -29,7 +29,7 @@ import ExplicitNamingFilterForm, {
 } from './explicit-naming-filter-form';
 import { EQUIPMENT_TYPE, FILTER_TYPE, NAME } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
-import RadioInput from '../../utils/rhf-inputs/radio-input';
+import { RadioInput } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
 
 const emptyFormData = {
