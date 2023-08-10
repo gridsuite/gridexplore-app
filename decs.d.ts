@@ -39,7 +39,6 @@ declare module '@gridsuite/commons-ui' {
         > {
         name: string;
         label?: string;
-        options: Array<any>; // https://mui.com/material-ui/react-autocomplete/#options-structure
         outputTransform?: (value: string) => string;
         inputTransform?: (value: string) => string;
         readOnly?: boolean;
