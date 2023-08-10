@@ -35,7 +35,10 @@ declare module '@gridsuite/commons-ui' {
                 boolean | undefined,
                 boolean | undefined
             >,
-            'renderInput' // we already defined it in our custom Autocomplete
+            // we already defined them in our custom Autocomplete
+            'value',
+            'onChange',
+            'renderInput'
         > {
         name: string;
         label?: string;
