@@ -48,7 +48,14 @@ declare module '@gridsuite/commons-ui' {
         previousValue?: string;
         allowNewValue?: boolean;
         onChangeCallback?: () => void;
-        formProps?: TextFieldProps;
+        formProps?: Omit<
+            TextFieldProps,
+            'value',
+            'onChange',
+            'inputRef',
+            'inputProps',
+            'InputProps'
+        >;
     }
 
     export function AutocompleteInput(props: AutocompleteInputProps);
@@ -90,7 +97,14 @@ declare module '@gridsuite/commons-ui' {
         acceptValue?: (value: string) => boolean;
         previousValue?: Input;
         clearable?: boolean;
-        formProps?: TextFieldWithAdornmentProps | TextFieldProps;
+        formProps?: Omit<
+            TextFieldWithAdornmentProps | TextFieldProps,
+            'value',
+            'onChange',
+            'inputRef',
+            'inputProps',
+            'InputProps'
+        >;
     }
 
     export function TextInput(props: TextInputProps);
