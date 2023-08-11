@@ -51,23 +51,21 @@ declare module '@gridsuite/commons-ui' {
         >;
     }
 
-    export function AutocompleteInput(
-        props: AutocompleteInputProps
-    ): ReactElement;
+    export const AutocompleteInput: FunctionComponent<AutocompleteInputProps>;
 
     interface ErrorInputProps {
         name: string;
         InputField?: FunctionComponent;
     }
 
-    export function ErrorInput(props: ErrorInputProps): ReactElement;
+    export const ErrorInput: FunctionComponent<ErrorInputProps>;
 
-    export function SelectInput(
-        props: Omit<
+    export const SelectInput: FunctionComponent<
+        Omit<
             AutocompleteInputProps,
             'outputTransform' | 'inputTransform' | 'readOnly' | 'getOptionLabel' // already defined in SelectInput
         >
-    ): ReactElement;
+    >;
 
     interface TextFieldWithAdornmentProps extends TextFieldProps {
         // variant already included in TextFieldProps
@@ -98,14 +96,14 @@ declare module '@gridsuite/commons-ui' {
         >;
     }
 
-    export function TextInput(props: TextInputProps): ReactElement;
+    export const TextInput: FunctionComponent<TextInputProps>;
 
-    export function FloatInput(
-        props: Omit<
+    export const FloatInput: FunctionComponent<
+        Omit<
             TextInputProps,
             'outputTransform' | 'inputTransform' | 'acceptValue' // already defined in FloatInput
         >
-    ): ReactElement;
+    >;
 
     interface RadioInputProps {
         name: string;
@@ -115,16 +113,16 @@ declare module '@gridsuite/commons-ui' {
         formProps?: RadioGroupProps;
     }
 
-    export function RadioInput(props: RadioInputProps): ReactElement;
+    export const RadioInput: FunctionComponent<RadioInputProps>;
 
-    export function SubmitButton(props: {
+    export const SubmitButton: FunctionComponent<{
         onClick: () => void;
         disabled?: boolean;
-    }): ReactElement;
+    }>;
 
-    export function FieldLabel(props: {
+    export const FieldLabel: FunctionComponent<{
         label: string;
         optional?: boolean;
         values?: any; // it's for values from https://formatjs.io/docs/react-intl/components/#formattedmessage
-    }): ReactElement;
+    }>;
 }
