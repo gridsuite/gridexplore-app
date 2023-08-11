@@ -1,8 +1,7 @@
 declare module '@gridsuite/commons-ui' {
-    import { ReactElement } from 'react';
+    import { FunctionComponent, ReactElement } from 'react';
     import { AutocompleteProps } from '@mui/material/Autocomplete/Autocomplete';
-    import { TextFieldProps } from '@mui/material';
-    import { RadioGroupProps } from '@mui/material';
+    import { RadioGroupProps, TextFieldProps } from '@mui/material';
 
     interface SnackInputs {
         messageTxt?: string;
@@ -52,21 +51,23 @@ declare module '@gridsuite/commons-ui' {
         >;
     }
 
-    export function AutocompleteInput(props: AutocompleteInputProps);
+    export function AutocompleteInput(
+        props: AutocompleteInputProps
+    ): ReactElement;
 
     interface ErrorInputProps {
         name: string;
-        InputField?: ReactElement;
+        InputField?: FunctionComponent;
     }
 
-    export function ErrorInput(props: ErrorInputProps);
+    export function ErrorInput(props: ErrorInputProps): ReactElement;
 
     export function SelectInput(
         props: Omit<
             AutocompleteInputProps,
             'outputTransform' | 'inputTransform' | 'readOnly' | 'getOptionLabel' // already defined in SelectInput
         >
-    );
+    ): ReactElement;
 
     interface TextFieldWithAdornmentProps extends TextFieldProps {
         // variant already included in TextFieldProps
@@ -97,14 +98,14 @@ declare module '@gridsuite/commons-ui' {
         >;
     }
 
-    export function TextInput(props: TextInputProps);
+    export function TextInput(props: TextInputProps): ReactElement;
 
     export function FloatInput(
         props: Omit<
             TextInputProps,
             'outputTransform' | 'inputTransform' | 'acceptValue' // already defined in FloatInput
         >
-    );
+    ): ReactElement;
 
     interface RadioInputProps {
         name: string;
@@ -114,16 +115,16 @@ declare module '@gridsuite/commons-ui' {
         formProps?: RadioGroupProps;
     }
 
-    export function RadioInput(props: RadioInputProps);
+    export function RadioInput(props: RadioInputProps): ReactElement;
 
     export function SubmitButton(props: {
         onClick: () => void;
         disabled?: boolean;
-    });
+    }): ReactElement;
 
     export function FieldLabel(props: {
         label: string;
         optional?: boolean;
         values?: any; // it's for values from https://formatjs.io/docs/react-intl/components/#formattedmessage
-    });
+    }): ReactElement;
 }
