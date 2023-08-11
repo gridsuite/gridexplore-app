@@ -36,9 +36,7 @@ declare module '@gridsuite/commons-ui' {
                 boolean | undefined
             >,
             // we already defined them in our custom Autocomplete
-            'value',
-            'onChange',
-            'renderInput'
+            'value' | 'onChange' | 'renderInput'
         > {
         name: string;
         label?: string;
@@ -50,11 +48,7 @@ declare module '@gridsuite/commons-ui' {
         onChangeCallback?: () => void;
         formProps?: Omit<
             TextFieldProps,
-            'value',
-            'onChange',
-            'inputRef',
-            'inputProps',
-            'InputProps'
+            'value' | 'onChange' | 'inputRef' | 'inputProps' | 'InputProps'
         >;
     }
 
@@ -99,11 +93,7 @@ declare module '@gridsuite/commons-ui' {
         clearable?: boolean;
         formProps?: Omit<
             TextFieldWithAdornmentProps | TextFieldProps,
-            'value',
-            'onChange',
-            'inputRef',
-            'inputProps',
-            'InputProps'
+            'value' | 'onChange' | 'inputRef' | 'inputProps' | 'InputProps'
         >;
     }
 
