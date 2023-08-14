@@ -19,7 +19,7 @@ import { AG_GRID_ROW_UUID } from '../../field-constants';
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
         rowDrag: true,
-        maxWidth: 35,
+        maxWidth: 0,
         cellStyle: {
             backgroundColor: 'transparent',
         },
