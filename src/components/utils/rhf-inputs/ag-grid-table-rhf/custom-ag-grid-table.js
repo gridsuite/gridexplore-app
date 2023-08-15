@@ -40,7 +40,7 @@ const style = (customProps) => ({
         height: '100%',
         position: 'relative',
 
-        //overrides the default computed max heigt for ag grid default selector editor to make it more usable
+        //overrides the default computed max height for ag grid default selector editor to make it more usable
         //can be removed if a custom selector editor is implemented
         '& .ag-select-list': {
             maxHeight: '300px !important',
@@ -101,6 +101,7 @@ export const CustomAgGridTable = ({
     const theme = useTheme();
     const [gridApi, setGridApi] = useState(null);
     const [selectedRows, setSelectedRows] = useState([]);
+    const [newRowAdded, setNewRowAdded] = useState(false);
 
     const { control, getValues, setValue, watch } = useFormContext();
     const useFieldArrayOutput = useFieldArray({
@@ -184,6 +185,7 @@ export const CustomAgGridTable = ({
 
     const handleAddRow = () => {
         append(makeEmptyRow());
+        setNewRowAdded(true);
     };
 
     const getIndex = (val) => {
@@ -212,6 +214,17 @@ export const CustomAgGridTable = ({
         params.api.sizeColumnsToFit();
     };
 
+    const onRowDataUpdated = () => {
+        if (newRowAdded) {
+            setNewRowAdded(false);
+            const lastIndex = rowData.length - 1;
+            if (gridApi?.api) {
+                gridApi.api.paginationGoToLastPage();
+                gridApi.api.ensureIndexVisible(lastIndex, 'bottom');
+            }
+        }
+    };
+
     return (
         <Grid container spacing={2}>
             <Grid
@@ -237,6 +250,7 @@ export const CustomAgGridTable = ({
                     onSelectionChanged={(event) => {
                         setSelectedRows(gridApi.api.getSelectedRows());
                     }}
+                    onRowDataUpdated={onRowDataUpdated}
                     onCellEditingStopped={(event) => {
                         update(event.rowIndex, event.data);
                     }}
