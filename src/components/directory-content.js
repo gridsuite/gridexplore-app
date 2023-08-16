@@ -14,7 +14,6 @@ import * as constants from '../utils/UIconstants';
 
 import Chip from '@mui/material/Chip';
 import Tooltip from '@mui/material/Tooltip';
-import makeStyles from '@mui/styles/makeStyles';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
@@ -30,7 +29,7 @@ import {
     OverflowableText,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Checkbox } from '@mui/material';
+import { Box, Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
 import CriteriaBasedFilterEditionDialog from './dialogs/filter/criteria-based-filter-edition-dialog';
@@ -47,11 +46,11 @@ import ExplicitNamingFilterEditionDialog from './dialogs/filter/explicit-naming-
 
 const circularProgressSize = '70px';
 
-const useStyles = makeStyles((theme) => ({
-    link: {
+const styles = {
+    link: (theme) => ({
         color: theme.link.color,
         textDecoration: 'none',
-    },
+    }),
     cell: {
         display: 'flex',
         alignItems: 'center',
@@ -59,21 +58,21 @@ const useStyles = makeStyles((theme) => ({
         boxSizing: 'border-box',
         flex: 1,
         height: '48px',
-        padding: DEFAULT_CELL_PADDING,
+        padding: `${DEFAULT_CELL_PADDING}px`,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
     chip: {
         cursor: 'pointer',
     },
-    icon: {
+    icon: (theme) => ({
         marginRight: theme.spacing(1),
         width: '18px',
         height: '18px',
-    },
-    circularRoot: {
+    }),
+    circularRoot: (theme) => ({
         marginRight: theme.spacing(1),
-    },
+    }),
     checkboxes: {
         width: '100%',
         justifyContent: 'center',
@@ -91,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
     tooltip: {
         maxWidth: '1000px',
     },
-}));
+};
 
 const initialMousePosition = {
     mouseX: null,
@@ -117,7 +116,6 @@ const DirectoryContent = () => {
     const [isMissingDataAfterDirChange, setIsMissingDataAfterDirChange] =
         useState(true);
 
-    const classes = useStyles();
     const intl = useIntl();
     const todayStart = new Date().setHours(0, 0, 0, 0);
 
@@ -338,7 +336,7 @@ const DirectoryContent = () => {
         return (
             <OverflowableText
                 text={elementTypeLabel}
-                tooltipStyle={classes.tooltip}
+                tooltipStyle={styles.tooltip}
             />
         );
     }
@@ -349,24 +347,24 @@ const DirectoryContent = () => {
         const objectType = rowData[cellData.dataKey];
         const { subtype, format } = childrenMetadata[elementUuid] || {};
         return (
-            <div className={classes.cell}>
+            <Box sx={styles.cell}>
                 {childrenMetadata[elementUuid] &&
                     getElementTypeTranslation(objectType, subtype, format)}
-            </div>
+            </Box>
         );
     }
 
     function userCellRender(cellData) {
         const user = cellData.rowData[cellData.dataKey];
         return (
-            <div className={classes.cell}>
+            <Box sx={styles.cell}>
                 <Tooltip title={user} placement="right">
                     <Chip
-                        className={classes.chip}
+                        sx={styles.chip}
                         label={abbreviationFromUserName(user)}
                     />
                 </Tooltip>
-            </div>
+            </Box>
         );
     }
 
@@ -391,24 +389,24 @@ const DirectoryContent = () => {
             }).format(data);
 
             return (
-                <div className={classes.cell}>
+                <Box sx={styles.cell}>
                     <Tooltip title={fullDate} placement="right">
                         <span>{cellText}</span>
                     </Tooltip>
-                </div>
+                </Box>
             );
         }
     }
 
     function getElementIcon(objectType) {
         if (objectType === ElementType.STUDY) {
-            return <PhotoLibraryIcon className={classes.icon} />;
+            return <PhotoLibraryIcon sx={styles.icon} />;
         } else if (objectType === ElementType.CONTINGENCY_LIST) {
-            return <OfflineBoltIcon className={classes.icon} />;
+            return <OfflineBoltIcon sx={styles.icon} />;
         } else if (objectType === ElementType.FILTER) {
-            return <ArticleIcon className={classes.icon} />;
+            return <ArticleIcon sx={styles.icon} />;
         } else if (objectType === ElementType.CASE) {
-            return <PhotoIcon className={classes.icon} />;
+            return <PhotoIcon sx={styles.icon} />;
         }
     }
 
@@ -436,14 +434,11 @@ const DirectoryContent = () => {
         const elementUuid = cellData.rowData['elementUuid'];
         const objectType = cellData.rowData['type'];
         return (
-            <div className={classes.cell}>
+            <Box sx={styles.cell}>
                 {/*  Icon */}
                 {!childrenMetadata[elementUuid] &&
                     isElementCaseOrStudy(objectType) && (
-                        <CircularProgress
-                            size={18}
-                            className={classes.circularRoot}
-                        />
+                        <CircularProgress size={18} sx={styles.circularRoot} />
                     )}
                 {childrenMetadata[elementUuid] &&
                     getElementIcon(
@@ -453,9 +448,9 @@ const DirectoryContent = () => {
                 {/* Name */}
                 <OverflowableText
                     text={getDisplayedElementName(cellData)}
-                    tooltipStyle={classes.tooltip}
+                    tooltipStyle={styles.tooltip}
                 />
-            </div>
+            </Box>
         );
     };
 
@@ -489,12 +484,12 @@ const DirectoryContent = () => {
 
     function selectionHeaderRenderer() {
         return (
-            <div
+            <Box
                 onClick={(e) => {
                     toggleSelectAll();
                     e.stopPropagation();
                 }}
-                className={classes.checkboxes}
+                sx={styles.checkboxes}
             >
                 <Checkbox
                     checked={selectedUuids.size > 0}
@@ -503,22 +498,22 @@ const DirectoryContent = () => {
                         selectedUuids.size !== currentChildren.length
                     }
                 />
-            </div>
+            </Box>
         );
     }
 
     function selectionRenderer(cellData) {
         const elementUuid = cellData.rowData['elementUuid'];
         return (
-            <div
+            <Box
                 onClick={(e) => {
                     toggleSelection(elementUuid);
                     e.stopPropagation();
                 }}
-                className={classes.checkboxes}
+                sx={styles.checkboxes}
             >
                 <Checkbox checked={selectedUuids.has(elementUuid)} />
-            </div>
+            </Box>
         );
     }
 
@@ -636,13 +631,13 @@ const DirectoryContent = () => {
 
     const renderLoadingContent = () => {
         return (
-            <div className={classes.circularProgressContainer}>
+            <Box sx={styles.circularProgressContainer}>
                 <CircularProgress
                     size={circularProgressSize}
                     color="inherit"
-                    className={classes.centeredCircularProgress}
+                    sx={styles.centeredCircularProgress}
                 />
-            </div>
+            </Box>
         );
     };
 
