@@ -6,21 +6,19 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 
-const useStyles = makeStyles((theme) => ({
-    midFormErrorMessage: {
+const styles = {
+    midFormErrorMessage: (theme) => ({
         color: theme.palette.error.main,
         fontSize: 'small',
         marginLeft: theme.spacing(2),
         marginRight: theme.spacing(2),
-    },
-}));
+    }),
+};
 
 // component to display error message in the middle of dialogue
 const MidFormError = ({ message }) => {
-    const classes = useStyles();
-    return <div className={classes.midFormErrorMessage}>{message}</div>;
+    return <Box sx={styles.midFormErrorMessage}>{message}</Box>;
 };
 
 export default MidFormError;

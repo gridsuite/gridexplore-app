@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import withStyles from '@mui/styles/withStyles';
 import {
     DEFAULT_CELL_PADDING,
     MuiVirtualizedTable,
 } from '@gridsuite/commons-ui';
+import { withStyles } from '@mui/material';
 
 const styles = (theme) => ({
     flexContainer: {

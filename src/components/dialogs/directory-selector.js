@@ -9,20 +9,19 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { TreeViewFinder } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { fetchDirectoryContent } from '../../utils/rest-api';
-import makeStyles from '@mui/styles/makeStyles';
 import { getFileIcon, elementType } from '@gridsuite/commons-ui';
 import { useSelector, useDispatch } from 'react-redux';
 import { updatedTree } from '../tree-views-container';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { setTreeData } from '../../redux/actions';
 
-const useStyles = makeStyles((theme) => ({
-    icon: {
+const styles = {
+    icon: (theme) => ({
         marginRight: theme.spacing(1),
         width: '18px',
         height: '18px',
-    },
-}));
+    }),
+};
 
 function sortAlphabetically(a, b) {
     return a.name.localeCompare(b.name);
@@ -30,7 +29,6 @@ function sortAlphabetically(a, b) {
 
 const DirectorySelector = (props) => {
     const [data, setData] = useState([]);
-    const classes = useStyles();
     const contentFilter = useCallback(
         () => new Set([elementType.DIRECTORY]),
         []
@@ -40,26 +38,23 @@ const DirectorySelector = (props) => {
     const treeData = useSelector((state) => state.treeData);
     const dispatch = useDispatch();
 
-    const convertChildren = useCallback(
-        (children) => {
-            return children.map((e) => {
-                return {
-                    id: e.elementUuid,
-                    name: e.elementName,
-                    icon: getFileIcon(e.type, classes.icon),
-                    children:
-                        e.type === elementType.DIRECTORY
-                            ? convertChildren(e.children)
-                            : undefined,
-                    childrenCount:
-                        e.type === elementType.DIRECTORY
-                            ? e.subdirectoriesCount
-                            : undefined,
-                };
-            });
-        },
-        [classes.icon]
-    );
+    const convertChildren = useCallback((children) => {
+        return children.map((e) => {
+            return {
+                id: e.elementUuid,
+                name: e.elementName,
+                icon: getFileIcon(e.type, styles.icon),
+                children:
+                    e.type === elementType.DIRECTORY
+                        ? convertChildren(e.children)
+                        : undefined,
+                childrenCount:
+                    e.type === elementType.DIRECTORY
+                        ? e.subdirectoriesCount
+                        : undefined,
+            };
+        });
+    }, []);
 
     const convertRoots = useCallback(
         (newRoots) => {
@@ -67,7 +62,7 @@ const DirectorySelector = (props) => {
                 return {
                     id: e.elementUuid,
                     name: e.elementName,
-                    icon: getFileIcon(e.type, classes.icon),
+                    icon: getFileIcon(e.type, styles.icon),
                     children:
                         e.type === elementType.DIRECTORY
                             ? convertChildren(
@@ -81,7 +76,7 @@ const DirectorySelector = (props) => {
                 };
             });
         },
-        [classes.icon, convertChildren, treeData.mapData]
+        [convertChildren, treeData.mapData]
     );
 
     useEffect(() => {

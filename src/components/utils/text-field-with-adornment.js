@@ -11,9 +11,8 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     inputRight: {
         textAlign: 'end',
     },
@@ -27,10 +26,9 @@ const useStyles = makeStyles((theme) => ({
     adornRightOther: {
         marginBottom: '0.3em',
     },
-}));
+};
 
 const TextFieldWithAdornment = (props) => {
-    const classes = useStyles();
     const {
         adornmentPosition,
         adornmentText,
@@ -41,18 +39,15 @@ const TextFieldWithAdornment = (props) => {
     } = props;
     const [isFocused, setIsFocused] = useState(false);
 
-    const getAdornmentClassName = useCallback(
-        (variant) => {
-            if (variant === 'filled') {
-                return classes.adornRightFilled;
-            }
-            if (variant === 'standard') {
-                return classes.adornRightOther;
-            }
-            return null;
-        },
-        [classes.adornRightFilled, classes.adornRightOther]
-    );
+    const getAdornmentStyle = useCallback((variant) => {
+        if (variant === 'filled') {
+            return styles.adornRightFilled;
+        }
+        if (variant === 'standard') {
+            return styles.adornRightOther;
+        }
+        return null;
+    }, []);
 
     const getClearAdornment = useCallback(
         (position) => {
@@ -72,13 +67,13 @@ const TextFieldWithAdornment = (props) => {
             return (
                 <InputAdornment
                     position={position}
-                    className={getAdornmentClassName(variant)}
+                    sx={getAdornmentStyle(variant)}
                 >
                     {adornmentText}
                 </InputAdornment>
             );
         },
-        [adornmentText, variant, getAdornmentClassName]
+        [adornmentText, variant, getAdornmentStyle]
     );
 
     const withEndAdornmentText = useCallback(() => {
@@ -89,7 +84,7 @@ const TextFieldWithAdornment = (props) => {
                           ? getClearAdornment('start')
                           : undefined,
                   endAdornment: getTextAdornment('end'),
-                  classes: { input: classes.inputRight },
+                  sx: { input: styles.inputRight },
               }
             : {};
     }, [
@@ -98,7 +93,6 @@ const TextFieldWithAdornment = (props) => {
         getClearAdornment,
         isFocused,
         getTextAdornment,
-        classes.inputRight,
     ]);
 
     const withStartAdornmentText = useCallback(() => {
@@ -107,7 +101,7 @@ const TextFieldWithAdornment = (props) => {
                   startAdornment: getTextAdornment('start'),
                   endAdornment:
                       value && handleClearValue && getClearAdornment('end'),
-                  classes: { input: classes.inputLeft },
+                  sx: { input: styles.inputLeft },
               }
             : {};
     }, [
@@ -116,7 +110,6 @@ const TextFieldWithAdornment = (props) => {
         getClearAdornment,
         isFocused,
         getTextAdornment,
-        classes,
     ]);
 
     return (

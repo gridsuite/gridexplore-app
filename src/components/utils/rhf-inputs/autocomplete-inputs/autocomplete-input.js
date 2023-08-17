@@ -9,7 +9,11 @@ import { Autocomplete, TextField } from '@mui/material';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useController, useFormContext } from 'react-hook-form';
-import { func_identity, isFieldRequired, useStyles } from '../../dialog-utils';
+import {
+    func_identity,
+    isFieldRequired,
+    helperTextStyle,
+} from '../../dialog-utils';
 import {
     FieldLabel,
     genHelperError,
@@ -46,7 +50,6 @@ const AutocompleteInput = ({
         field: { onChange, value, ref },
         fieldState: { error },
     } = useController({ name });
-    const classes = useStyles();
 
     const handleChange = (value) => {
         onChangeCallback && onChangeCallback();
@@ -98,7 +101,7 @@ const AutocompleteInput = ({
                         }),
                     })}
                     FormHelperTextProps={{
-                        className: classes.helperText,
+                        sx: helperTextStyle.helperText,
                     }}
                     inputRef={ref}
                     inputProps={{ ...inputProps, readOnly: readOnly }}

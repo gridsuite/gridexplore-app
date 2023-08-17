@@ -1,13 +1,12 @@
 import { Grid } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import { getIn } from 'yup';
 
-export const useStyles = makeStyles((theme) => ({
+export const helperTextStyle = {
     helperText: {
         margin: 0,
         marginTop: 4,
     },
-}));
+};
 
 export const isFieldRequired = (fieldName, schema, values) => {
     const { schema: fieldSchema, parent: parentValues } =

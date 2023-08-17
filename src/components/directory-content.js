@@ -336,7 +336,7 @@ const DirectoryContent = () => {
         return (
             <OverflowableText
                 text={elementTypeLabel}
-                tooltipStyle={styles.tooltip}
+                tooltipSx={styles.tooltip}
             />
         );
     }
@@ -448,7 +448,7 @@ const DirectoryContent = () => {
                 {/* Name */}
                 <OverflowableText
                     text={getDisplayedElementName(cellData)}
-                    tooltipStyle={styles.tooltip}
+                    tooltipSx={styles.tooltip}
                 />
             </Box>
         );
