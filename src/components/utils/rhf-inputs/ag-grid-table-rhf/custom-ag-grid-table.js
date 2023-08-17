@@ -229,6 +229,16 @@ export const CustomAgGridTable = ({
         }
     };
 
+    const readyToDisplay =
+        // We may have a display issue because we receive the rows 2 times:
+        // at init time and once we have added uuid for all rows.
+        // We can display rows in the table when:
+        // - it's a small nb of lines (even if we have 2 updates)
+        // - it's a bigger number, so we wait for the row uuid to be set (Loading... in the meantime)
+        rowData &&
+        (rowData.length <= 200 ||
+            rowData.at(0)[AG_GRID_ROW_UUID] !== undefined);
+
     return (
         <Grid container spacing={2}>
             <Grid
@@ -238,9 +248,10 @@ export const CustomAgGridTable = ({
                 sx={style(cssProps).grid}
             >
                 <AgGridReact
-                    rowData={rowData}
+                    rowData={readyToDisplay ? rowData : null}
                     onGridReady={onGridReady}
                     getLocaleText={getLocaleText}
+                    cacheOverflowSize={10}
                     rowSelection={'multiple'}
                     domLayout={'autoHeight'}
                     rowDragEntireRow
