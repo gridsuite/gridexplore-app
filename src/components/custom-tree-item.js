@@ -8,14 +8,15 @@
 import React from 'react';
 
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import TreeItem, { useTreeItem } from '@mui/lab/TreeItem';
 import Typography from '@mui/material/Typography';
+import { Box } from '@mui/material';
+import { mergeSx } from 'utils/functions';
 
 const CustomContent = React.forwardRef(function CustomContent(props, ref) {
     const {
-        classes,
         className,
+        styles,
         label,
         nodeId,
         icon: iconProp,
@@ -44,31 +45,30 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
 
     return (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-        <div
-            className={clsx(className, classes.root, {
-                [classes.expanded]: expanded,
-                [classes.selected]: selected,
-                [classes.focused]: focused,
-                [classes.disabled]: disabled,
-            })}
+        <Box
+            sx={mergeSx(
+                className,
+                styles.root,
+                expanded && styles.expanded,
+                selected && styles.selected,
+                focused && styles.focused,
+                disabled && styles.disabled
+            )}
             onMouseDown={handleMouseDown}
             ref={ref}
         >
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-            <div
-                onClick={handleExpansionClick}
-                className={classes.iconContainer}
-            >
+            <Box onClick={handleExpansionClick} sx={styles.iconContainer}>
                 {icon}
-            </div>
+            </Box>
             <Typography
                 onClick={handleSelectionClick}
                 component="div"
-                className={classes.label}
+                sx={styles.label}
             >
                 {label}
             </Typography>
-        </div>
+        </Box>
     );
 });
 

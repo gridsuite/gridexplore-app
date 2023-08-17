@@ -16,6 +16,7 @@ import Typography from '@mui/material/Typography';
 import { emphasize } from '@mui/material/styles/';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import { Box, Tooltip } from '@mui/material';
+import { mergeSx } from 'utils/functions';
 
 const styles = {
     link: (theme) => ({
@@ -125,10 +126,10 @@ const DirectoryBreadcrumbs = () => {
                 >
                     <Box sx={styles.directory}>
                         <Typography
-                            sx={{
-                                ...styles.selectedLabel,
-                                ...styles.limitTextSize,
-                            }}
+                            sx={mergeSx(
+                                styles.selectedLabel,
+                                styles.limitTextSize
+                            )}
                             color="textPrimary"
                         >
                             {currentPath.length === 1 && (
