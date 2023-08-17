@@ -76,7 +76,7 @@ CustomContent.propTypes = {
     /**
      * Override or extend the styles applied to the component.
      */
-    classes: PropTypes.object.isRequired,
+    styles: PropTypes.object.isRequired,
     /**
      * className applied to the root element.
      */

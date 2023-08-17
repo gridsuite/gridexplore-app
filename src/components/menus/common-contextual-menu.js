@@ -16,13 +16,13 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
-import { withStyles } from '@mui/material';
+import { styled } from '@mui/material';
 
-const StyledMenu = withStyles({
-    paper: {
+const StyledMenu = styled((props) => <Menu elevation={0} {...props} />)({
+    '.MuiMenu-paper': {
         border: '1px solid #d3d4d5',
     },
-})((props) => <Menu elevation={0} {...props} />);
+});
 
 /**
  * Generic Contextual Menu View
