@@ -86,6 +86,9 @@ const style = (customProps) => ({
             border: 'inherit',
             outline: 'inherit',
         },
+        '& .ag-row-selected::before': {
+            backgroundColor: 'var(--ag-row-background-color)',
+        },
         ...customProps,
     }),
 });
@@ -217,8 +220,9 @@ export const CustomAgGridTable = ({
     const onRowDataUpdated = () => {
         if (newRowAdded) {
             setNewRowAdded(false);
-            const lastIndex = rowData.length - 1;
             if (gridApi?.api) {
+                // update due to new appended row, let's scroll
+                const lastIndex = rowData.length - 1;
                 gridApi.api.paginationGoToLastPage();
                 gridApi.api.ensureIndexVisible(lastIndex, 'bottom');
             }
