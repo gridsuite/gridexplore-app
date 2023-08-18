@@ -75,6 +75,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         [CASE_UUID]: yup.string(),
         [CASE_FILE]: yup.mixed(),
     });
+
     const createStudyFormMethods = useForm({
         mode: 'onChange',
         defaultValues: getCreateStudyDialogFormDefaultValues(),
