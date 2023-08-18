@@ -43,16 +43,21 @@ const CustomMuiDialog = ({
     titleId,
     disabledSave,
     removeOptional,
+    onCancel,
     ...dialogProps
 }) => {
     const classes = useStyles();
     const { handleSubmit } = formMethods;
 
-    const handleClose = (event) => {
+    const handleClose = (event, reason) => {
+        if (reason && reason === 'backdropClick' && onCancel) {
+            handleCancel();
+        }
         onClose(event);
     };
 
     const handleCancel = (event) => {
+        onCancel && onCancel();
         onClose(event);
     };
 

@@ -5,14 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    DialogTitle,
-    Dialog,
-    DialogContent,
-    DialogActions,
-    Button,
-} from '@mui/material';
+import { useIntl } from 'react-intl';
 import React, { useEffect, useState } from 'react';
 import Alert from '@mui/material/Alert';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,11 +20,12 @@ import UploadNewCase from './commons/upload-new-case';
 import { ElementType } from '../../utils/elementType';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NameCheckReturn, useNameCheck } from './commons/use-name-check';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../utils/field-constants';
 import TextInput from '../utils/rhf-inputs/text-input';
 import yup from '../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import CustomMuiDialog from './custom-mui-dialog';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -71,7 +65,6 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     });
 
     const {
-        handleSubmit,
         setValue,
         formState: { errors },
         setError,
@@ -119,7 +112,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
             file: caseFile,
             parentDirectoryUuid: activeDirectory,
         })
-            .then(() => {
+            .then((e) => {
                 onClose();
             })
             .catch((err) => {
@@ -160,7 +153,8 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
                     clearErrors(CASE_NAME);
                     setValue(
                         CASE_NAME,
-                        caseFileName.substring(0, caseFileName.indexOf('.'))
+                        caseFileName.substring(0, caseFileName.indexOf('.')),
+                        { shouldDirty: true }
                     );
                 }
             } else {
@@ -206,58 +200,39 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     ]);
 
     return (
-        <FormProvider
-            {...createCaseFormMethods}
-            // @ts-ignore
-            validationSchema={schema!}
+        // @ts-ignore
+        <CustomMuiDialog
+            titleId={'ImportNewCase'}
+            formSchema={schema}
+            formMethods={createCaseFormMethods}
             removeOptional={true}
+            open={open}
+            onClose={handleCloseDialog}
+            onSave={handleCreateNewCase}
+            disabledSave={!isCreationAllowed}
         >
-            <Dialog
-                fullWidth={true}
-                open={open}
-                onClose={handleCloseDialog}
-                aria-labelledby="create-case-form-dialog-title"
-            >
-                <DialogTitle id="create-case-form-dialog-title">
-                    <FormattedMessage id="ImportNewCase" />
-                </DialogTitle>
-                <DialogContent>
-                    <TextInput
-                        label={'nameProperty'}
-                        name={CASE_NAME}
-                        customAdornment={caseFileAdornment}
-                        inputProps={{
-                            autoFocus: true,
-                        }}
-                        withMargin
-                    />
-                    <TextInput
-                        name={DESCRIPTION}
-                        label={'descriptionProperty'}
-                        withMargin
-                    />
-                    {caseFileErrorMessage && (
-                        <Alert severity="error">{caseFileErrorMessage}</Alert>
-                    )}
-                    <UploadNewCase
-                        caseFile={caseFile}
-                        handleCaseFileUpload={handleCaseFileUpload}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDialog} variant="text">
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button
-                        onClick={handleSubmit(handleCreateNewCase)}
-                        disabled={!isCreationAllowed}
-                        variant="outlined"
-                    >
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </FormProvider>
+            <TextInput
+                label={'nameProperty'}
+                name={CASE_NAME}
+                customAdornment={caseFileAdornment}
+                inputProps={{
+                    autoFocus: true,
+                }}
+                withMargin
+            />
+            <TextInput
+                name={DESCRIPTION}
+                label={'descriptionProperty'}
+                withMargin
+            />
+            {caseFileErrorMessage && (
+                <Alert severity="error">{caseFileErrorMessage}</Alert>
+            )}
+            <UploadNewCase
+                caseFile={caseFile}
+                handleCaseFileUpload={handleCaseFileUpload}
+            />
+        </CustomMuiDialog>
     );
 };
 

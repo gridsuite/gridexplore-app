@@ -4,17 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FormProvider, useForm } from 'react-hook-form';
-import {
-    Button,
-    Dialog,
-    DialogContent,
-    DialogActions,
-    DialogTitle,
-    Alert,
-    Grid,
-} from '@mui/material';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useForm } from 'react-hook-form';
+import { Alert, Grid } from '@mui/material';
+import { useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useState } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
 import {
@@ -52,6 +44,7 @@ import {
 import TextInput from '../../utils/rhf-inputs/text-input';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import yup from '../../utils/yup-config';
+import CustomMuiDialog from '../custom-mui-dialog';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -89,7 +82,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     });
 
     const {
-        handleSubmit,
         setValue,
         formState: { errors },
         setError,
@@ -168,17 +160,12 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         }
     };
 
-    const handleCloseDialog = (_, reason) => {
-        if (reason && reason === 'backdropClick') {
-            handleDeleteCase();
-        }
-
+    const handleCloseDialog = () => {
         onClose();
     };
 
     const handleCancelStudyCreation = () => {
         handleDeleteCase();
-        onClose();
     };
 
     const handleCreateNewStudy = ({
@@ -325,14 +312,15 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 clearErrors(STUDY_NAME);
                 setValue(
                     STUDY_NAME,
-                    caseFileName.substring(0, caseFileName.indexOf('.'))
+                    caseFileName.substring(0, caseFileName.indexOf('.')),
+                    { shouldDirty: true }
                 );
             }
         }
 
         if (providedExistingCase) {
             const { elementName: existingCaseName } = providedExistingCase;
-            setValue(STUDY_NAME, existingCaseName);
+            setValue(STUDY_NAME, existingCaseName, { shouldDirty: true });
         }
     }, [
         caseFile,
@@ -363,76 +351,54 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     ]);
 
     return (
-        <FormProvider
-            {...createStudyFormMethods}
-            validationSchema={schema}
+        <CustomMuiDialog
+            titleId={'createNewStudy'}
+            formSchema={schema}
+            formMethods={createStudyFormMethods}
             removeOptional={true}
+            open={open}
+            onClose={onClose}
+            onSave={handleCreateNewStudy}
+            onCancel={handleCancelStudyCreation}
+            disabledSave={!isCreationAllowed}
         >
-            <Dialog
-                fullWidth={true}
-                open={open}
-                onClose={handleCloseDialog}
-                aria-labelledby="create-study-form-dialog-title"
-            >
-                <DialogTitle id="create-study-form-dialog-title">
-                    <FormattedMessage id="createNewStudy" />
-                </DialogTitle>
-                <DialogContent>
-                    <TextInput
-                        label={'nameProperty'}
-                        name={STUDY_NAME}
-                        customAdornment={studyNameAdornment}
-                        inputProps={{
-                            autoFocus: true,
-                        }}
-                        withMargin
-                    />
-                    <TextInput
-                        name={DESCRIPTION}
-                        label={'descriptionProperty'}
-                        withMargin
-                    />
-                    {providedExistingCase ? (
-                        <DirectorySelect types={[ElementType.DIRECTORY]} />
-                    ) : (
-                        <UploadNewCase
-                            caseFile={caseFile}
-                            caseFileLoading={caseFileLoading}
-                            handleCaseFileUpload={handleCaseFileUpload}
-                        />
-                    )}
-                    <ImportParametersSection
-                        onChange={handleParamsChange}
-                        currentParameters={currentParameters}
-                        formatWithParameters={formattedCaseParameters}
-                    />
-                    <Grid pt={1}>
-                        {!!apiCallErrorMessage && (
-                            <Alert severity="error">
-                                {apiCallErrorMessage}
-                            </Alert>
-                        )}
-                        {caseFileErrorMessage && (
-                            <Alert severity="error">
-                                {caseFileErrorMessage}
-                            </Alert>
-                        )}
-                    </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCancelStudyCreation}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button
-                        onClick={handleSubmit(handleCreateNewStudy)}
-                        disabled={!isCreationAllowed}
-                        variant="outlined"
-                    >
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </FormProvider>
+            <TextInput
+                label={'nameProperty'}
+                name={STUDY_NAME}
+                customAdornment={studyNameAdornment}
+                inputProps={{
+                    autoFocus: true,
+                }}
+                withMargin
+            />
+            <TextInput
+                name={DESCRIPTION}
+                label={'descriptionProperty'}
+                withMargin
+            />
+            {providedExistingCase ? (
+                <DirectorySelect types={[ElementType.DIRECTORY]} />
+            ) : (
+                <UploadNewCase
+                    caseFile={caseFile}
+                    caseFileLoading={caseFileLoading}
+                    handleCaseFileUpload={handleCaseFileUpload}
+                />
+            )}
+            <ImportParametersSection
+                onChange={handleParamsChange}
+                currentParameters={currentParameters}
+                formatWithParameters={formattedCaseParameters}
+            />
+            <Grid pt={1}>
+                {!!apiCallErrorMessage && (
+                    <Alert severity="error">{apiCallErrorMessage}</Alert>
+                )}
+                {caseFileErrorMessage && (
+                    <Alert severity="error">{caseFileErrorMessage}</Alert>
+                )}
+            </Grid>
+        </CustomMuiDialog>
     );
 };
 
