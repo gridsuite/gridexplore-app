@@ -43,7 +43,6 @@ import { getCreateStudyDialogFormDefaultValues } from './create-study-dialog-uti
 import {
     API_CALL,
     CASE_FILE,
-    CASE_NAME,
     CASE_UUID,
     CURRENT_PARAMETERS,
     DESCRIPTION,
@@ -341,6 +340,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         caseFileErrorMessage,
         providedExistingCase,
         setValue,
+        clearErrors,
     ]);
 
     // handle change possibility to create new study
