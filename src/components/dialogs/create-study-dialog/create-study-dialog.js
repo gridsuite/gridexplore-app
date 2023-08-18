@@ -32,7 +32,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
 import { ElementType } from '../../../utils/elementType';
 import DirectorySelect from './directory-select';
-import TextFieldInput from '../commons/text-field-input';
 import { useNameCheck } from '../commons/use-name-check';
 import { keyGenerator } from '../../../utils/functions';
 import {
@@ -44,12 +43,16 @@ import { getCreateStudyDialogFormDefaultValues } from './create-study-dialog-uti
 import {
     API_CALL,
     CASE_FILE,
+    CASE_NAME,
     CASE_UUID,
     CURRENT_PARAMETERS,
     DESCRIPTION,
     FORMATTED_CASE_PARAMETERS,
     STUDY_NAME,
 } from '../../utils/field-constants';
+import TextInput from '../../utils/rhf-inputs/text-input';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import yup from '../../utils/yup-config';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -60,15 +63,30 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const dispatch = useDispatch();
 
     const [caseFileLoading, setCaseFileLoading] = useState(false);
-    const [studyNameChanged, setStudyNameChanged] = useState(false);
     const [isCreationAllowed, setIsCreationAllowed] = useState(false);
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
 
+    const schema = yup.object().shape({
+        [STUDY_NAME]: yup
+            .string()
+            .test(
+                'empty-check',
+                intl.formatMessage({ id: 'nameEmpty' }),
+                (studyName) => !!studyName.length
+            ),
+        [FORMATTED_CASE_PARAMETERS]: yup.mixed(),
+        [DESCRIPTION]: yup.string(),
+        [CURRENT_PARAMETERS]: yup.mixed(),
+        [CASE_UUID]: yup.string(),
+        [CASE_FILE]: yup.mixed(),
+    });
     const createStudyFormMethods = useForm({
+        mode: 'onChange',
         defaultValues: getCreateStudyDialogFormDefaultValues(),
+        resolver: yupResolver(schema),
     });
 
     const {
@@ -90,7 +108,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const currentParameters = watch(CURRENT_PARAMETERS);
     const formattedCaseParameters = watch(FORMATTED_CASE_PARAMETERS);
     const studyName = watch(STUDY_NAME);
-    const description = watch(DESCRIPTION);
 
     // callbacks
     const handleApiCallError = useCallback(
@@ -284,10 +301,8 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const [studyNameAdornment, studyNameChecking] = useNameCheck({
         field: STUDY_NAME,
         name: studyName,
-        nameChanged: studyNameChanged,
         elementType: ElementType.STUDY,
         setError,
-        clearErrors,
     });
 
     /* Effects */
@@ -308,6 +323,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             const { name: caseFileName } = caseFile;
 
             if (caseFileName) {
+                clearErrors(STUDY_NAME);
                 setValue(
                     STUDY_NAME,
                     caseFileName.substring(0, caseFileName.indexOf('.'))
@@ -347,7 +363,11 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     ]);
 
     return (
-        <FormProvider {...createStudyFormMethods}>
+        <FormProvider
+            {...createStudyFormMethods}
+            validationSchema={schema}
+            removeOptional={true}
+        >
             <Dialog
                 fullWidth={true}
                 open={open}
@@ -358,19 +378,19 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     <FormattedMessage id="createNewStudy" />
                 </DialogTitle>
                 <DialogContent>
-                    <TextFieldInput
+                    <TextInput
                         label={'nameProperty'}
-                        value={studyName}
-                        setValue={(newValue) => setValue(STUDY_NAME, newValue)}
-                        error={studyNameErrorMessage}
-                        autoFocus
-                        adornment={studyNameAdornment}
-                        setValueHasChanged={setStudyNameChanged}
+                        name={STUDY_NAME}
+                        customAdornment={studyNameAdornment}
+                        inputProps={{
+                            autoFocus: true,
+                        }}
+                        withMargin
                     />
-                    <TextFieldInput
+                    <TextInput
+                        name={DESCRIPTION}
                         label={'descriptionProperty'}
-                        value={description}
-                        setValue={(newValue) => setValue(DESCRIPTION, newValue)}
+                        withMargin
                     />
                     {providedExistingCase ? (
                         <DirectorySelect types={[ElementType.DIRECTORY]} />

@@ -33,6 +33,7 @@ const TextInput = ({
     clearable,
     customAdornment,
     inputProps,
+    withMargin = false,
 }) => {
     const { validationSchema, getValues, removeOptional } = useFormContext();
     const classes = useStyles();
@@ -96,6 +97,7 @@ const TextInput = ({
                 ),
                 ...inputProps,
             }}
+            sx={withMargin ? { margin: '10px 0' } : {}}
             inputRef={ref}
             {...(clearable &&
                 adornment && {
@@ -109,18 +111,21 @@ const TextInput = ({
 };
 
 TextInput.propTypes = {
+    id: PropTypes.string,
     label: PropTypes.string,
     labelValues: PropTypes.object,
     errorMessage: PropTypes.string,
     value: PropTypes.any,
     onChange: PropTypes.func,
     adornment: PropTypes.object,
-    customAdornment: PropTypes.object,
+    customAdornment: PropTypes.oneOfType([PropTypes.object, PropTypes.node]),
     transformValue: PropTypes.func,
     acceptValue: PropTypes.func,
     formProps: PropTypes.object,
     previousValue: PropTypes.any,
     clearable: PropTypes.bool,
+    inputProps: PropTypes.object,
+    withMargin: PropTypes.bool,
 };
 
 export default TextInput;

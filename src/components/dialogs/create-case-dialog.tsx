@@ -14,7 +14,6 @@ import {
     Button,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import TextFieldInput from './commons/text-field-input';
 import Alert from '@mui/material/Alert';
 import { useDispatch, useSelector } from 'react-redux';
 import { keyGenerator } from '../../utils/functions';
@@ -26,11 +25,13 @@ import {
 } from '../../redux/actions';
 import UploadNewCase from './commons/upload-new-case';
 import { ElementType } from '../../utils/elementType';
-
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NameCheckReturn, useNameCheck } from './commons/use-name-check';
 import { FormProvider, useForm } from 'react-hook-form';
 import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../utils/field-constants';
+import TextInput from '../utils/rhf-inputs/text-input';
+import yup from '../utils/yup-config';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -48,12 +49,25 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
 
+    const schema = yup.object().shape({
+        [CASE_NAME]: yup
+            .string()
+            .test(
+                'empty-check',
+                intl.formatMessage({ id: 'nameEmpty' }),
+                (caseName) => !!caseName?.length
+            ),
+        [DESCRIPTION]: yup.string(),
+        [CASE_FILE]: yup.mixed(),
+    });
     const createCaseFormMethods = useForm({
+        mode: 'onChange',
         defaultValues: {
             [CASE_NAME]: '',
             [DESCRIPTION]: '',
             [CASE_FILE]: null,
         },
+        resolver: yupResolver(schema),
     });
 
     const {
@@ -66,7 +80,6 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     } = createCaseFormMethods;
 
     const [isCreationAllowed, setIsCreationAllowed] = useState(false);
-    const [caseNameChanged, setCaseNameChanged] = useState(false);
 
     const activeDirectory = useSelector((state: any) => state.activeDirectory);
     const userId = useSelector((state: any) => state.user.profile.sub);
@@ -75,7 +88,6 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     const caseFileErrorMessage = errors.caseFile?.message;
     const caseName = watch(CASE_NAME);
     const caseFile = watch(CASE_FILE);
-    const description = watch(DESCRIPTION);
 
     const handleCloseDialog = () => {
         setValue(CASE_FILE, null);
@@ -115,15 +127,13 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
                     snackError({
                         messageId: 'invalidFormatOrName',
                         headerId: 'caseCreationError',
-                        // @ts-ignore
-                        headerValues: { caseName },
+                        headerValues: [caseName],
                     });
                 } else {
                     snackError({
                         messageTxt: err?.message,
                         headerId: 'caseCreationError',
-                        // @ts-ignore
-                        headerValues: { caseName },
+                        headerValues: [caseName],
                     });
                 }
             })
@@ -147,6 +157,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
                 const { name: caseFileName } = currentFile;
 
                 if (caseFileName) {
+                    clearErrors(CASE_NAME);
                     setValue(
                         CASE_NAME,
                         caseFileName.substring(0, caseFileName.indexOf('.'))
@@ -175,10 +186,8 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
         {
             field: CASE_NAME,
             name: caseName,
-            nameChanged: caseNameChanged,
             elementType: ElementType.CASE,
             setError,
-            clearErrors,
         }
     );
 
@@ -197,7 +206,12 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     ]);
 
     return (
-        <FormProvider {...createCaseFormMethods}>
+        <FormProvider
+            {...createCaseFormMethods}
+            // @ts-ignore
+            validationSchema={schema!}
+            removeOptional={true}
+        >
             <Dialog
                 fullWidth={true}
                 open={open}
@@ -208,19 +222,19 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
                     <FormattedMessage id="ImportNewCase" />
                 </DialogTitle>
                 <DialogContent>
-                    <TextFieldInput
+                    <TextInput
                         label={'nameProperty'}
-                        value={caseName}
-                        setValue={(newValue) => setValue(CASE_NAME, newValue)}
-                        error={caseNameErrorMessage}
-                        autoFocus
-                        adornment={caseFileAdornment}
-                        setValueHasChanged={setCaseNameChanged}
+                        name={CASE_NAME}
+                        customAdornment={caseFileAdornment}
+                        inputProps={{
+                            autoFocus: true,
+                        }}
+                        withMargin
                     />
-                    <TextFieldInput
+                    <TextInput
+                        name={DESCRIPTION}
                         label={'descriptionProperty'}
-                        value={description}
-                        setValue={(newValue) => setValue(DESCRIPTION, newValue)}
+                        withMargin
                     />
                     {caseFileErrorMessage && (
                         <Alert severity="error">{caseFileErrorMessage}</Alert>

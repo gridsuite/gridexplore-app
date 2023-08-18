@@ -17,10 +17,8 @@ import { useDebounce } from '@gridsuite/commons-ui';
 interface INameCheckProps {
     field: string;
     name: string;
-    nameChanged: boolean;
     elementType: string;
     setError: any;
-    clearErrors: any;
 }
 
 export type NameCheckReturn = [React.ReactNode | null, boolean];
@@ -28,10 +26,8 @@ export type NameCheckReturn = [React.ReactNode | null, boolean];
 export const useNameCheck = ({
     field,
     name,
-    nameChanged,
     elementType,
     setError,
-    clearErrors,
 }: INameCheckProps): NameCheckReturn => {
     const intl = useIntl();
 
@@ -43,17 +39,8 @@ export const useNameCheck = ({
     const handleCheckName = useCallback(() => {
         const nameFormatted = name.replace(/ /g, '');
 
-        clearErrors(field);
-
         if (!nameFormatted) {
             setAdornment(false);
-
-            if (nameChanged) {
-                setError(field, {
-                    type: 'nameEmpty',
-                    message: intl.formatMessage({ id: 'nameEmpty' }),
-                });
-            }
         } else {
             setIsChecking(true);
 
@@ -92,23 +79,18 @@ export const useNameCheck = ({
                 )
                 .finally(() => setIsChecking(false));
         }
-    }, [
-        name,
-        clearErrors,
-        field,
-        nameChanged,
-        setError,
-        intl,
-        activeDirectory,
-        elementType,
-    ]);
+    }, [name, field, setError, intl, activeDirectory, elementType]);
 
     const debouncedHandleCheckName = useDebounce(handleCheckName, 700);
 
     // handle check case name
     useEffect(() => {
         debouncedHandleCheckName();
-    }, [debouncedHandleCheckName]);
+
+        if (!name) {
+            setAdornment(false);
+        }
+    }, [debouncedHandleCheckName, name]);
 
     return [adornment, isChecking];
 };
