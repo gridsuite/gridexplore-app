@@ -31,7 +31,7 @@ export const useNameCheck = ({
 }: INameCheckProps): NameCheckReturn => {
     const intl = useIntl();
 
-    const [adornment, setAdornment] = useState<React.ReactNode | null>(null);
+    const [adornment, setAdornment] = useState<React.ReactNode>(null);
     const [isChecking, setIsChecking] = useState<boolean>(false);
 
     const activeDirectory = useSelector((state: any) => state.activeDirectory);
