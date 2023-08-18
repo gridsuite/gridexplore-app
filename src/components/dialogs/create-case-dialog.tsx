@@ -112,9 +112,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
             file: caseFile,
             parentDirectoryUuid: activeDirectory,
         })
-            .then((e) => {
-                onClose();
-            })
+            .then(onClose)
             .catch((err) => {
                 if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                     snackError({
