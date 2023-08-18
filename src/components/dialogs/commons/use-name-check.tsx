@@ -21,7 +21,7 @@ interface INameCheckProps {
     setError: any;
 }
 
-export type NameCheckReturn = [React.ReactNode | null, boolean];
+export type NameCheckReturn = [React.ReactNode, boolean];
 
 export const useNameCheck = ({
     field,

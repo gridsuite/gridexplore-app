@@ -1,24 +1,26 @@
-import PropTypes from 'prop-types';
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { Divider } from '@mui/material';
+// @ts-ignore
 import { FlatParameters } from '@gridsuite/commons-ui';
-import React, { useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import React, { useState, FunctionComponent } from 'react';
 import AdvancedParameterButton from './advancedParameterButton';
 
-const useStyles = makeStyles((theme) => ({
-    paramDivider: {
-        marginTop: theme.spacing(2),
-    },
-}));
+interface ImportParametersSectionProps {
+    onChange: () => void;
+    currentParameters: Record<string, any>;
+    formatWithParameters: any[]; // You can replace `any` with a more specific type if available.
+}
 
-const ImportParametersSection = ({
-    onChange,
-    currentParameters,
-    formatWithParameters,
-}) => {
-    const classes = useStyles();
-
-    const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
+const ImportParametersSection: FunctionComponent<
+    ImportParametersSectionProps
+> = ({ onChange, currentParameters, formatWithParameters }) => {
+    const [isParamsDisplayed, setIsParamsDisplayed] = useState<boolean>(false);
 
     const handleShowParametersClick = () => {
         setIsParamsDisplayed((prevIsParamsDisplayed) => !prevIsParamsDisplayed);
@@ -26,7 +28,7 @@ const ImportParametersSection = ({
 
     return (
         <>
-            <Divider className={classes.paramDivider} />
+            <Divider sx={{ marginTop: '20px' }} />
             <div
                 style={{
                     marginTop: '10px',
@@ -49,12 +51,6 @@ const ImportParametersSection = ({
             </div>
         </>
     );
-};
-
-ImportParametersSection.propTypes = {
-    onChange: PropTypes.func.isRequired,
-    currentParameters: PropTypes.object.isRequired,
-    formatWithParameters: PropTypes.array.isRequired,
 };
 
 export default ImportParametersSection;

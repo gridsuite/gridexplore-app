@@ -165,7 +165,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const handleDeleteCase = () => {
         // if we cancel case creation, we need to delete the associated newly created case (if we created one)
         if (caseUuid && !providedExistingCase) {
-            deleteCase(caseUuid).then().catch(handleApiCallError);
+            deleteCase(caseUuid).catch(handleApiCallError);
         }
     };
 
