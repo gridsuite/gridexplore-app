@@ -70,7 +70,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 (studyName) => !!studyName.length
             ),
         [FORMATTED_CASE_PARAMETERS]: yup.mixed(),
-        [DESCRIPTION]: yup.string(),
+        [DESCRIPTION]: yup.string().nullable(),
         [CURRENT_PARAMETERS]: yup.mixed(),
         [CASE_UUID]: yup.string(),
         [CASE_FILE]: yup.mixed(),
