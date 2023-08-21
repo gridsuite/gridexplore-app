@@ -95,7 +95,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const caseFile = watch(CASE_FILE);
     const caseUuid = watch(CASE_UUID);
-    const currentParameters = watch(CURRENT_PARAMETERS);
     const formattedCaseParameters = watch(FORMATTED_CASE_PARAMETERS);
     const studyName = watch(STUDY_NAME);
 
@@ -213,7 +212,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     },
                 });
             })
-
             .finally(() => {
                 setValue(CASE_UUID, null);
                 dispatch(removeUploadingElement(uploadingStudy));
@@ -273,15 +271,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         .toString(),
                 });
             }
-        }
-    };
-
-    const handleParamsChange = (paramName, value, isEdit) => {
-        if (!isEdit) {
-            setValue(CURRENT_PARAMETERS, {
-                ...currentParameters,
-                ...{ [paramName]: value },
-            });
         }
     };
 
@@ -388,8 +377,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 />
             )}
             <ImportParametersSection
-                onChange={handleParamsChange}
-                currentParameters={currentParameters}
                 formatWithParameters={formattedCaseParameters}
             />
             <Grid pt={1}>

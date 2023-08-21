@@ -10,18 +10,36 @@ import { Divider } from '@mui/material';
 import { FlatParameters } from '@gridsuite/commons-ui';
 import React, { useState, FunctionComponent } from 'react';
 import AdvancedParameterButton from './advancedParameterButton';
+import { CURRENT_PARAMETERS } from '../../utils/field-constants';
+import { useFormContext } from 'react-hook-form';
 
 interface ImportParametersSectionProps {
-    onChange: () => void;
-    currentParameters: Record<string, any>;
     formatWithParameters: any[]; // You can replace `any` with a more specific type if available.
 }
 
 const ImportParametersSection: FunctionComponent<
     ImportParametersSectionProps
-> = ({ onChange, currentParameters, formatWithParameters }) => {
+> = ({ formatWithParameters }) => {
     const [isParamsDisplayed, setIsParamsDisplayed] = useState<boolean>(false);
 
+    const { setValue, watch } = useFormContext();
+
+    const currentParameters = watch(CURRENT_PARAMETERS);
+
+    const handleParamsChange = (
+        paramName: string,
+        value: string,
+        isEdit: boolean
+    ): void => {
+        if (!isEdit) {
+            setValue(CURRENT_PARAMETERS, {
+                ...currentParameters,
+                ...{ [paramName]: value },
+            });
+        }
+    };
+
+    // useFormContext;
     const handleShowParametersClick = () => {
         setIsParamsDisplayed((prevIsParamsDisplayed) => !prevIsParamsDisplayed);
     };
@@ -44,7 +62,7 @@ const ImportParametersSection: FunctionComponent<
                     <FlatParameters
                         paramsAsArray={formatWithParameters}
                         initValues={currentParameters}
-                        onChange={onChange}
+                        onChange={handleParamsChange}
                         variant="standard"
                     />
                 )}
