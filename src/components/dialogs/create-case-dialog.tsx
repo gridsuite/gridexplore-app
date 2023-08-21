@@ -7,7 +7,6 @@
 
 import { useIntl } from 'react-intl';
 import React, { useEffect, useState } from 'react';
-import Alert from '@mui/material/Alert';
 import { useDispatch, useSelector } from 'react-redux';
 import { keyGenerator } from '../../utils/functions';
 import { createCase } from '../../utils/rest-api';
@@ -26,6 +25,8 @@ import TextInput from '../utils/rhf-inputs/text-input';
 import yup from '../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import CustomMuiDialog from './custom-mui-dialog';
+import ErrorInput from '../utils/rhf-inputs/error-inputs/error-input';
+import FieldErrorAlert from '../utils/rhf-inputs/error-inputs/field-error-alert';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -46,15 +47,15 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     const schema = yup.object().shape({
         [CASE_NAME]: yup
             .string()
-            .test(
-                'empty-check',
-                intl.formatMessage({ id: 'nameEmpty' }),
-                (caseName) => !!caseName?.length
-            ),
+            .required(intl.formatMessage({ id: 'nameEmpty' })),
         [DESCRIPTION]: yup.string(),
         [CASE_FILE]: yup.mixed(),
     });
-    const createCaseFormMethods = useForm({
+    const createCaseFormMethods = useForm<{
+        [CASE_NAME]: string;
+        [DESCRIPTION]: string;
+        [CASE_FILE]: File | null;
+    }>({
         mode: 'onChange',
         defaultValues: {
             [CASE_NAME]: '',
@@ -143,7 +144,6 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
             const currentFile = files[0]!;
 
             if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
-                // @ts-ignore
                 setValue(CASE_FILE, currentFile);
                 const { name: caseFileName } = currentFile;
 
@@ -198,7 +198,6 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     ]);
 
     return (
-        // @ts-ignore
         <CustomMuiDialog
             titleId={'ImportNewCase'}
             formSchema={schema}
@@ -223,9 +222,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
                 label={'descriptionProperty'}
                 withMargin
             />
-            {caseFileErrorMessage && (
-                <Alert severity="error">{caseFileErrorMessage}</Alert>
-            )}
+            <ErrorInput name={CASE_FILE} InputField={FieldErrorAlert} />
             <UploadNewCase
                 caseFile={caseFile}
                 handleCaseFileUpload={handleCaseFileUpload}

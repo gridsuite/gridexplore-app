@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useForm } from 'react-hook-form';
-import { Alert, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useState } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
@@ -45,6 +45,8 @@ import TextInput from '../../utils/rhf-inputs/text-input';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import yup from '../../utils/yup-config';
 import CustomMuiDialog from '../custom-mui-dialog';
+import FieldErrorAlert from '../../utils/rhf-inputs/error-inputs/field-error-alert';
+import ErrorInput from '../../utils/rhf-inputs/error-inputs/error-input';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -64,11 +66,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const schema = yup.object().shape({
         [STUDY_NAME]: yup
             .string()
-            .test(
-                'empty-check',
-                intl.formatMessage({ id: 'nameEmpty' }),
-                (studyName) => !!studyName.length
-            ),
+            .required(intl.formatMessage({ id: 'nameEmpty' })),
         [FORMATTED_CASE_PARAMETERS]: yup.mixed(),
         [DESCRIPTION]: yup.string().nullable(),
         [CURRENT_PARAMETERS]: yup.mixed(),
@@ -228,6 +226,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         event.preventDefault();
 
         clearErrors(CASE_FILE);
+        clearErrors(API_CALL);
 
         const files = event.target.files;
         if (files?.length) {
@@ -261,15 +260,17 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             } else {
                 setError(CASE_FILE, {
                     type: 'caseFileSize',
-                    message: intl.formatMessage(
-                        {
-                            id: 'uploadFileExceedingLimitSizeErrorMsg',
-                        },
-                        {
-                            maxSize: MAX_FILE_SIZE_IN_MO,
-                            br: <br />,
-                        }
-                    ),
+                    message: intl
+                        .formatMessage(
+                            {
+                                id: 'uploadFileExceedingLimitSizeErrorMsg',
+                            },
+                            {
+                                maxSize: MAX_FILE_SIZE_IN_MO,
+                                br: <br />,
+                            }
+                        )
+                        .toString(),
                 });
             }
         }
@@ -392,12 +393,8 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 formatWithParameters={formattedCaseParameters}
             />
             <Grid pt={1}>
-                {!!apiCallErrorMessage && (
-                    <Alert severity="error">{apiCallErrorMessage}</Alert>
-                )}
-                {caseFileErrorMessage && (
-                    <Alert severity="error">{caseFileErrorMessage}</Alert>
-                )}
+                <ErrorInput name={API_CALL} InputField={FieldErrorAlert} />
+                <ErrorInput name={CASE_FILE} InputField={FieldErrorAlert} />
             </Grid>
         </CustomMuiDialog>
     );

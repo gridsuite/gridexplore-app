@@ -8,13 +8,24 @@
 import { Button } from '@mui/material';
 import { useFormState } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
+import { FunctionComponent, ReactNode } from 'react';
 
-const SubmitButton = ({ onClick, disabled = false }) => {
+interface ISubmitButton {
+    onClick: () => void;
+    disabled?: boolean;
+    children: ReactNode;
+}
+
+const SubmitButton: FunctionComponent<ISubmitButton> = ({
+    onClick,
+    disabled = false,
+    children,
+}) => {
     const { isDirty } = useFormState();
 
     return (
         <Button onClick={onClick} disabled={!isDirty || disabled}>
-            <FormattedMessage id="validate" />
+            {children ? children : <FormattedMessage id="validate" />}
         </Button>
     );
 };
