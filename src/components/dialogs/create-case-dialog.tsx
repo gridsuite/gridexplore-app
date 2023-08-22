@@ -45,9 +45,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     const { snackError } = useSnackMessage();
 
     const schema = yup.object().shape({
-        [CASE_NAME]: yup
-            .string()
-            .required(intl.formatMessage({ id: 'nameEmpty' })),
+        [CASE_NAME]: yup.string().required(),
         [DESCRIPTION]: yup.string(),
         [CASE_FILE]: yup.mixed(),
     });

@@ -64,9 +64,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const userId = useSelector((state) => state.user.profile.sub);
 
     const schema = yup.object().shape({
-        [STUDY_NAME]: yup
-            .string()
-            .required(intl.formatMessage({ id: 'nameEmpty' })),
+        [STUDY_NAME]: yup.string().required(),
         [FORMATTED_CASE_PARAMETERS]: yup.mixed(),
         [DESCRIPTION]: yup.string().nullable(),
         [CURRENT_PARAMETERS]: yup.mixed(),

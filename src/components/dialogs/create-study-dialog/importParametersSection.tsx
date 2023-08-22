@@ -39,7 +39,6 @@ const ImportParametersSection: FunctionComponent<
         }
     };
 
-    // useFormContext;
     const handleShowParametersClick = () => {
         setIsParamsDisplayed((prevIsParamsDisplayed) => !prevIsParamsDisplayed);
     };
