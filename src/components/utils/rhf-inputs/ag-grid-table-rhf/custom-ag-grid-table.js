@@ -218,14 +218,12 @@ export const CustomAgGridTable = ({
     };
 
     const onRowDataUpdated = () => {
-        if (newRowAdded) {
-            setNewRowAdded(false);
-            if (gridApi?.api) {
-                // update due to new appended row, let's scroll
-                const lastIndex = rowData.length - 1;
-                gridApi.api.paginationGoToLastPage();
-                gridApi.api.ensureIndexVisible(lastIndex, 'bottom');
-            }
+        setNewRowAdded(false);
+        if (gridApi?.api) {
+            // update due to new appended row, let's scroll
+            const lastIndex = rowData.length - 1;
+            gridApi.api.paginationGoToLastPage();
+            gridApi.api.ensureIndexVisible(lastIndex, 'bottom');
         }
     };
 
@@ -265,7 +263,9 @@ export const CustomAgGridTable = ({
                     onSelectionChanged={(event) => {
                         setSelectedRows(gridApi.api.getSelectedRows());
                     }}
-                    onRowDataUpdated={onRowDataUpdated}
+                    onRowDataUpdated={
+                        newRowAdded ? onRowDataUpdated : undefined
+                    }
                     onCellEditingStopped={(event) => {
                         update(event.rowIndex, event.data);
                     }}
