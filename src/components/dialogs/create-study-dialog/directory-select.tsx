@@ -56,6 +56,7 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
         <Grid
             sx={{
                 marginTop: '10px',
+                display: 'flex',
                 alignItems: 'center',
             }}
         >
