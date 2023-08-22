@@ -12,7 +12,7 @@ import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FILTER_EQUIPMENTS } from '../commons/criteria-based/criteria-based-utils';
 import Grid from '@mui/material/Grid';
-import SelectInput from '../../utils/rhf-inputs/select-inputs/select-input';
+import { SelectInput } from '@gridsuite/commons-ui';
 import { ValueParserParams } from 'ag-grid-community';
 import { Generator, Load } from '../../../utils/equipment-types';
 import { FilterType } from '../../../utils/elementType';

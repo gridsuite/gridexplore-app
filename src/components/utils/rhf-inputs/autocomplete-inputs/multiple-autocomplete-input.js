@@ -1,4 +1,4 @@
-import AutocompleteInput from './autocomplete-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { Chip } from '@mui/material';
 import React, { useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';

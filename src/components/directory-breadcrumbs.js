@@ -14,7 +14,7 @@ import { setSelectedDirectory } from '../redux/actions';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import { emphasize } from '@mui/material/styles/';
+import { emphasize } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import { Tooltip } from '@mui/material';
