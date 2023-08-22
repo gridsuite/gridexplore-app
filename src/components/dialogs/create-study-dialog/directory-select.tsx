@@ -81,7 +81,6 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
 
             <DirectorySelector
                 open={open}
-                // @ts-ignore
                 onClose={handleClose}
                 types={types}
                 title={intl.formatMessage({

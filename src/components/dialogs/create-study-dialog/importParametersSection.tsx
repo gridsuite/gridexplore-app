@@ -6,7 +6,6 @@
  */
 
 import { Divider } from '@mui/material';
-// @ts-ignore
 import { FlatParameters } from '@gridsuite/commons-ui';
 import React, { useState, FunctionComponent } from 'react';
 import AdvancedParameterButton from './advancedParameterButton';

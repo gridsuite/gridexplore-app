@@ -11,7 +11,6 @@ import { CircularProgress, InputAdornment } from '@mui/material';
 import { elementExists } from '../../../utils/rest-api';
 import CheckIcon from '@mui/icons-material/Check';
 import { useSelector } from 'react-redux';
-// @ts-ignore
 import { useDebounce } from '@gridsuite/commons-ui';
 
 interface INameCheckProps {
