@@ -62,7 +62,7 @@ export const useNameCheck = ({
                     } else {
                         setAdornment(
                             <InputAdornment position="end">
-                                <CheckIcon style={{ color: 'green' }} />
+                                <CheckIcon sx={{ color: 'green' }} />
                             </InputAdornment>
                         );
                     }

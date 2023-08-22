@@ -33,7 +33,7 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                         type="file"
                         name="file"
                         onChange={handleCaseFileUpload}
-                        style={{ display: 'none' }}
+                        sx={{ display: 'none' }}
                     />
                 </Button>
             </Grid>

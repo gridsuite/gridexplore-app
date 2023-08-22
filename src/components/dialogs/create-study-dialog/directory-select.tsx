@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Button } from '@mui/material';
+import { Button, Typography, Box } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DirectorySelector from '../directory-selector';
 import { setActiveDirectory } from '../../../redux/actions';
@@ -53,31 +53,30 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
     };
 
     return (
-        <div
-            style={{
+        <Box
+            sx={{
                 marginTop: '10px',
             }}
         >
             <Button
                 onClick={handleSelectFolder}
                 variant="contained"
-                style={{
-                    paddingLeft: '30px',
-                    paddingRight: '30px',
+                sx={{
+                    padding: '0 30px',
                 }}
                 color="primary"
                 component="label"
             >
                 <FormattedMessage id="showSelectDirectoryDialog" />
             </Button>
-            <span
-                style={{
+            <Typography
+                sx={{
                     marginLeft: '10px',
                     fontWeight: 'bold',
                 }}
             >
                 {activeDirectoryName}
-            </span>
+            </Typography>
 
             <DirectorySelector
                 open={open}
@@ -93,7 +92,7 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
                     id: 'moveItemContentText',
                 })}
             />
-        </div>
+        </Box>
     );
 };
 

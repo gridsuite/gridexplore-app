@@ -11,6 +11,7 @@ import React, { useState, FunctionComponent } from 'react';
 import AdvancedParameterButton from './advancedParameterButton';
 import { CURRENT_PARAMETERS } from '../../utils/field-constants';
 import { useFormContext } from 'react-hook-form';
+import Box from '@mui/material/Box';
 
 interface ImportParametersSectionProps {
     formatWithParameters: any[]; // You can replace `any` with a more specific type if available.
@@ -45,8 +46,8 @@ const ImportParametersSection: FunctionComponent<
     return (
         <>
             <Divider sx={{ marginTop: '20px' }} />
-            <div
-                style={{
+            <Box
+                sx={{
                     marginTop: '10px',
                 }}
             >
@@ -64,7 +65,7 @@ const ImportParametersSection: FunctionComponent<
                         variant="standard"
                     />
                 )}
-            </div>
+            </Box>
         </>
     );
 };

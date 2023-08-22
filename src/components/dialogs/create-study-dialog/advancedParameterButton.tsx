@@ -10,15 +10,6 @@ import { Button, Grid } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from '@mui/styles';
-import { Theme } from '@mui/material/styles';
-
-const useStyles = makeStyles((theme: Theme) => ({
-    advancedParameterButton: {
-        marginTop: theme.spacing(3),
-        marginBottom: theme.spacing(1),
-    },
-}));
 
 interface AdvancedParameterButtonProps {
     showOpenIcon: boolean;
@@ -30,15 +21,11 @@ interface AdvancedParameterButtonProps {
 const AdvancedParameterButton: React.FunctionComponent<
     AdvancedParameterButtonProps
 > = ({ showOpenIcon, label, callback, disabled = false }) => {
-    const classes = useStyles();
-
     return (
-        <Grid item xs={12} className={classes.advancedParameterButton}>
+        <Grid item xs={12} sx={{ marginTop: '30px', marginBottom: '10px' }}>
             <Button
                 startIcon={<SettingsIcon />}
-                endIcon={
-                    showOpenIcon && <CheckIcon style={{ color: 'green' }} />
-                }
+                endIcon={showOpenIcon && <CheckIcon sx={{ color: 'green' }} />}
                 onClick={callback}
                 disabled={disabled}
             >
