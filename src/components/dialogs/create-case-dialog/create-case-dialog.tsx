@@ -6,26 +6,29 @@
  */
 
 import { useIntl } from 'react-intl';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { keyGenerator } from '../../utils/functions';
-import { createCase } from '../../utils/rest-api';
-import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../utils/UIconstants';
+import { keyGenerator } from '../../../utils/functions';
+import { createCase } from '../../../utils/rest-api';
+import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import { Grid } from '@mui/material';
 import {
     addUploadingElement,
     removeUploadingElement,
-} from '../../redux/actions';
-import UploadNewCase from './commons/upload-new-case';
-import { ElementType } from '../../utils/elementType';
+} from '../../../redux/actions';
+import UploadNewCase from '../commons/upload-new-case';
+import { ElementType } from '../../../utils/elementType';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { NameCheckReturn, useNameCheck } from './commons/use-name-check';
+import { NameCheckReturn, useNameCheck } from '../commons/use-name-check';
 import { useForm } from 'react-hook-form';
-import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../utils/field-constants';
+import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../../utils/field-constants';
 import { ErrorInput, TextInput, FieldErrorAlert } from '@gridsuite/commons-ui';
-import yup from '../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import CustomMuiDialog from './custom-mui-dialog';
+import CustomMuiDialog from '../custom-mui-dialog';
+import {
+    createCaseDialogFormValidationSchema,
+    getCreateCaseDialogFormValidationDefaultValues,
+} from './create-case-dialog-utils';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -43,42 +46,30 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
 
-    const schema = yup.object().shape({
-        [CASE_NAME]: yup.string().required(),
-        [DESCRIPTION]: yup.string(),
-        [CASE_FILE]: yup.mixed(),
-    });
     const createCaseFormMethods = useForm<{
         [CASE_NAME]: string;
         [DESCRIPTION]: string;
         [CASE_FILE]: File | null;
     }>({
         mode: 'onChange',
-        defaultValues: {
-            [CASE_NAME]: '',
-            [DESCRIPTION]: '',
-            [CASE_FILE]: null,
-        },
-        resolver: yupResolver(schema),
+        defaultValues: getCreateCaseDialogFormValidationDefaultValues(),
+        resolver: yupResolver(createCaseDialogFormValidationSchema),
     });
 
     const {
         setValue,
         formState: { errors },
         setError,
-        watch,
+        getValues,
         clearErrors,
     } = createCaseFormMethods;
-
-    const [isCreationAllowed, setIsCreationAllowed] = useState(false);
 
     const activeDirectory = useSelector((state: any) => state.activeDirectory);
     const userId = useSelector((state: any) => state.user.profile.sub);
 
     const caseNameErrorMessage = errors.caseName?.message;
     const caseFileErrorMessage = errors.caseFile?.message;
-    const caseName = watch(CASE_NAME);
-    const caseFile = watch(CASE_FILE);
+    const { caseName, caseFile } = getValues();
 
     const handleCloseDialog = () => {
         setValue(CASE_FILE, null);
@@ -180,24 +171,19 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
         }
     );
 
-    useEffect(() => {
-        setIsCreationAllowed(
+    const isCreationAllowed = useMemo(
+        () =>
             !!caseFile &&
-                !caseNameErrorMessage &&
-                !caseNameChecking &&
-                !caseFileErrorMessage
-        );
-    }, [
-        caseFile,
-        caseNameErrorMessage,
-        caseNameChecking,
-        caseFileErrorMessage,
-    ]);
+            !caseNameErrorMessage &&
+            !caseNameChecking &&
+            !caseFileErrorMessage,
+        [caseFile, caseNameErrorMessage, caseNameChecking, caseFileErrorMessage]
+    );
 
     return (
         <CustomMuiDialog
             titleId={'ImportNewCase'}
-            formSchema={schema}
+            formSchema={createCaseDialogFormValidationSchema}
             formMethods={createCaseFormMethods}
             removeOptional={true}
             open={open}

@@ -31,20 +31,23 @@ import {
     removeUploadingElement,
     setActiveDirectory,
 } from '../../../redux/actions';
-import { getCreateStudyDialogFormDefaultValues } from './create-study-dialog-utils';
+import {
+    createStudyDialogFormValidationSchema,
+    getCreateStudyDialogFormDefaultValues,
+} from './create-study-dialog-utils';
 import {
     API_CALL,
     CASE_FILE,
+    CASE_NAME,
     CASE_UUID,
-    CURRENT_PARAMETERS,
     DESCRIPTION,
     FORMATTED_CASE_PARAMETERS,
     STUDY_NAME,
 } from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import yup from '../../utils/yup-config';
 import CustomMuiDialog from '../custom-mui-dialog';
 import { ErrorInput, FieldErrorAlert, TextInput } from '@gridsuite/commons-ui';
+import PrefilledTextInput from '../../utils/rhf-inputs/prefilled-text-input';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -60,58 +63,46 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
 
-    const schema = yup.object().shape({
-        [STUDY_NAME]: yup.string().required(),
-        [FORMATTED_CASE_PARAMETERS]: yup.mixed(),
-        [DESCRIPTION]: yup.string().nullable(),
-        [CURRENT_PARAMETERS]: yup.mixed(),
-        [CASE_UUID]: yup.string(),
-        [CASE_FILE]: yup.mixed(),
-    });
-
     const createStudyFormMethods = useForm({
         mode: 'onChange',
         defaultValues: getCreateStudyDialogFormDefaultValues(),
-        resolver: yupResolver(schema),
+        resolver: yupResolver(createStudyDialogFormValidationSchema),
     });
 
     const {
         setValue,
         formState: { errors },
         setError,
-        watch,
         clearErrors,
+        getValues,
     } = createStudyFormMethods;
 
     // Constants
-    const caseFileErrorMessage = errors.caseFile?.message;
-    const apiCallErrorMessage = errors.apiCall?.message;
+    const apiCallErrorMessage = errors.root?.apiCall?.message;
     const studyNameErrorMessage = errors.studyName?.message;
 
-    const caseFile = watch(CASE_FILE);
-    const caseUuid = watch(CASE_UUID);
-    const formattedCaseParameters = watch(FORMATTED_CASE_PARAMETERS);
-    const studyName = watch(STUDY_NAME);
+    const { caseFile, caseUuid, formattedCaseParameters, studyName } =
+        getValues();
 
     // callbacks
     const handleApiCallError = useCallback(
         (error) => {
             if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
-                setError(API_CALL, {
+                setError(`root.${API_CALL}`, {
                     type: 'invalidFormatOrName',
                     message: intl.formatMessage({ id: 'invalidFormatOrName' }),
                 });
             } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
-                setError(API_CALL, {
+                setError(`root.${API_CALL}`, {
                     type: 'serverConnectionFailed',
                     message: intl.formatMessage({
                         id: 'serverConnectionFailed',
                     }),
                 });
             } else {
-                setError(API_CALL, {
+                setError(`root.${API_CALL}`, {
                     type: 'apiCall',
-                    message: error.message,
+                    message: intl.formatMessage({ id: 'error.message' }),
                 });
             }
         },
@@ -134,7 +125,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 })
                 .catch(() => {
                     setValue(FORMATTED_CASE_PARAMETERS, []);
-                    setError(API_CALL, {
+                    setError(`root.${API_CALL}`, {
                         type: 'parameterLoadingProblem',
                         message: intl.formatMessage({
                             id: 'parameterLoadingProblem',
@@ -153,14 +144,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         }
     };
 
-    const handleCloseDialog = () => {
-        onClose();
-    };
-
-    const handleCancelStudyCreation = () => {
-        handleDeleteCase();
-    };
-
     const handleCreateNewStudy = ({
         caseUuid,
         studyName,
@@ -168,11 +151,17 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         currentParameters,
     }) => {
         if (!caseUuid && !providedExistingCase?.elementUuid) {
-            setError(API_CALL, intl.formatMessage({ id: 'caseNameErrorMsg' }));
+            setError(CASE_NAME, {
+                type: 'custom',
+                message: intl.formatMessage({ id: 'caseNameErrorMsg' }),
+            });
             return;
         }
         if (!caseUuid && !providedExistingCase) {
-            setError(API_CALL, intl.formatMessage({ id: 'uploadErrorMsg' }));
+            setError(CASE_FILE, {
+                type: 'custom',
+                message: intl.formatMessage({ id: 'uploadErrorMsg' }),
+            });
             return;
         }
 
@@ -196,7 +185,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         )
             .then(() => {
                 dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-                handleCloseDialog();
+                onClose();
             })
             .catch((error) => {
                 snackError({
@@ -244,9 +233,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
                         getCurrentCaseImportParams(newCaseUuid);
                     })
-                    .catch(() => {
-                        handleApiCallError(errors.apiCallError);
-                    })
+                    .catch(handleApiCallError)
                     .finally(() => {
                         setCaseFileLoading(false);
                     });
@@ -289,34 +276,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         }
     }, [getCurrentCaseImportParams, providedExistingCase, setValue]);
 
-    // handle set study name
-    useEffect(() => {
-        if (caseFile && !apiCallErrorMessage && !caseFileErrorMessage) {
-            const { name: caseFileName } = caseFile;
-
-            if (caseFileName) {
-                clearErrors(STUDY_NAME);
-                setValue(
-                    STUDY_NAME,
-                    caseFileName.substring(0, caseFileName.indexOf('.')),
-                    { shouldDirty: true }
-                );
-            }
-        }
-
-        if (providedExistingCase) {
-            const { elementName: existingCaseName } = providedExistingCase;
-            setValue(STUDY_NAME, existingCaseName, { shouldDirty: true });
-        }
-    }, [
-        caseFile,
-        apiCallErrorMessage,
-        caseFileErrorMessage,
-        providedExistingCase,
-        setValue,
-        clearErrors,
-    ]);
-
     // handle change possibility to create new study
     const isCreationAllowed = useMemo(
         () =>
@@ -339,26 +298,20 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     return (
         <CustomMuiDialog
             titleId={'createNewStudy'}
-            formSchema={schema}
+            formSchema={createStudyDialogFormValidationSchema}
             formMethods={createStudyFormMethods}
             removeOptional={true}
             open={open}
             onClose={onClose}
             onSave={handleCreateNewStudy}
-            onCancel={handleCancelStudyCreation}
+            onCancel={handleDeleteCase}
             disabledSave={!isCreationAllowed}
         >
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>
-                    <TextInput
-                        label={'nameProperty'}
-                        name={STUDY_NAME}
-                        customAdornment={studyNameAdornment}
-                        formProps={{
-                            size: 'medium',
-
-                            autoFocus: true,
-                        }}
+                    <PrefilledTextInput
+                        providedExistingCase={providedExistingCase}
+                        studyNameAdornment={studyNameAdornment}
                     />
                 </Grid>
                 <Grid item>

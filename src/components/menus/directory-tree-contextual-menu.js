@@ -38,7 +38,7 @@ import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
 import { ElementType } from '../../utils/elementType';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
-import CreateCaseDialog from '../dialogs/create-case-dialog';
+import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =

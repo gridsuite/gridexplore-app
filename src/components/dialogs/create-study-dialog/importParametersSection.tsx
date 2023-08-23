@@ -22,9 +22,9 @@ const ImportParametersSection: FunctionComponent<
 > = ({ formatWithParameters }) => {
     const [isParamsDisplayed, setIsParamsDisplayed] = useState<boolean>(false);
 
-    const { setValue, watch } = useFormContext();
+    const { setValue, getValues } = useFormContext();
 
-    const currentParameters = watch(CURRENT_PARAMETERS);
+    const { currentParameters } = getValues();
 
     const handleParamsChange = (
         paramName: string,

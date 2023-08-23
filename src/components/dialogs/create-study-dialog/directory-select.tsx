@@ -79,7 +79,6 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
             >
                 {activeDirectoryName}
             </Typography>
-
             <DirectorySelector
                 open={open}
                 onClose={handleClose}
