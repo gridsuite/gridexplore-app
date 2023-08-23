@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { keyGenerator } from '../../utils/functions';
 import { createCase } from '../../utils/rest-api';
 import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../utils/UIconstants';
+import { Grid } from '@mui/material';
 import {
     addUploadingElement,
     removeUploadingElement,
@@ -25,7 +26,6 @@ import { ErrorInput, TextInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import yup from '../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import CustomMuiDialog from './custom-mui-dialog';
-import Box from '@mui/material/Box';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -194,7 +194,6 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
         caseFileErrorMessage,
     ]);
 
-    // @ts-ignore
     return (
         <CustomMuiDialog
             titleId={'ImportNewCase'}
@@ -206,19 +205,28 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
             onSave={handleCreateNewCase}
             disabledSave={!isCreationAllowed}
         >
-            <Box sx={{ margin: '10px 0' }}>
-                <TextInput
-                    label={'nameProperty'}
-                    name={CASE_NAME}
-                    customAdornment={caseFileAdornment}
-                    inputProps={{
-                        autoFocus: true,
-                    }}
-                />
-            </Box>
-            <Box sx={{ margin: '10px 0' }}>
-                <TextInput name={DESCRIPTION} label={'descriptionProperty'} />
-            </Box>
+            <Grid container spacing={2} marginTop={'auto'} direction="column">
+                <Grid item>
+                    <TextInput
+                        label={'nameProperty'}
+                        name={CASE_NAME}
+                        customAdornment={caseFileAdornment}
+                        formProps={{
+                            size: 'medium',
+                            autoFocus: true,
+                        }}
+                    />
+                </Grid>
+                <Grid item>
+                    <TextInput
+                        name={DESCRIPTION}
+                        label={'descriptionProperty'}
+                        formProps={{
+                            size: 'medium',
+                        }}
+                    />
+                </Grid>
+            </Grid>
             <ErrorInput name={CASE_FILE} InputField={FieldErrorAlert} />
             <UploadNewCase
                 caseFile={caseFile}

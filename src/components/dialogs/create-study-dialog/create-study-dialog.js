@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useForm } from 'react-hook-form';
-import { Grid, Box } from '@mui/material';
+import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
@@ -348,19 +348,29 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             onCancel={handleCancelStudyCreation}
             disabledSave={!isCreationAllowed}
         >
-            <Box sx={{ margin: '10px 0' }}>
-                <TextInput
-                    label={'nameProperty'}
-                    name={STUDY_NAME}
-                    customAdornment={studyNameAdornment}
-                    inputProps={{
-                        autoFocus: true,
-                    }}
-                />
-            </Box>
-            <Box sx={{ margin: '10px 0' }}>
-                <TextInput name={DESCRIPTION} label={'descriptionProperty'} />
-            </Box>
+            <Grid container spacing={2} marginTop={'auto'} direction="column">
+                <Grid item>
+                    <TextInput
+                        label={'nameProperty'}
+                        name={STUDY_NAME}
+                        customAdornment={studyNameAdornment}
+                        formProps={{
+                            size: 'medium',
+
+                            autoFocus: true,
+                        }}
+                    />
+                </Grid>
+                <Grid item>
+                    <TextInput
+                        name={DESCRIPTION}
+                        label={'descriptionProperty'}
+                        formProps={{
+                            size: 'medium',
+                        }}
+                    />
+                </Grid>
+            </Grid>
             {providedExistingCase ? (
                 <DirectorySelect types={[ElementType.DIRECTORY]} />
             ) : (
