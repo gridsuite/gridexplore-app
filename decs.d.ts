@@ -41,7 +41,6 @@ declare module '@gridsuite/commons-ui' {
 
     export function useDebounce(
         [string]: () => void,
-        [string]: number,
-        ...args: any[]
+        [string]: number
     ): () => void;
 }

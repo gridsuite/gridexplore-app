@@ -7,7 +7,7 @@
 import { useForm } from 'react-hook-form';
 import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
 import {
     createCaseWithoutDirectoryElementCreation,
@@ -57,7 +57,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const dispatch = useDispatch();
 
     const [caseFileLoading, setCaseFileLoading] = useState(false);
-    const [isCreationAllowed, setIsCreationAllowed] = useState(false);
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -321,23 +320,23 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     ]);
 
     // handle change possibility to create new study
-    useEffect(() => {
-        setIsCreationAllowed(
-            !!studyName &&
-                formattedCaseParameters.length &&
-                !caseFileLoading &&
-                !studyNameChecking &&
-                !studyNameErrorMessage &&
-                !apiCallErrorMessage
-        );
-    }, [
-        apiCallErrorMessage,
-        caseFileLoading,
-        formattedCaseParameters.length,
-        studyName,
-        studyNameChecking,
-        studyNameErrorMessage,
-    ]);
+    const isCreationAllowed = useMemo(
+        () =>
+            studyName &&
+            formattedCaseParameters.length &&
+            !caseFileLoading &&
+            !studyNameChecking &&
+            !studyNameErrorMessage &&
+            !apiCallErrorMessage,
+        [
+            apiCallErrorMessage,
+            caseFileLoading,
+            formattedCaseParameters.length,
+            studyName,
+            studyNameChecking,
+            studyNameErrorMessage,
+        ]
+    );
 
     return (
         <CustomMuiDialog
