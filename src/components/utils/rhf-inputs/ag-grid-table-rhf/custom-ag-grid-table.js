@@ -34,6 +34,11 @@ const style = (customProps) => ({
         height: '100%',
         position: 'relative',
 
+        // It shouldn't be like this, but I couldn't make it works
+        // https://www.ag-grid.com/react-data-grid/global-style-customisation/
+        '--ag-checkbox-checked-color':
+            theme.palette.primary.main + ' !important',
+
         //overrides the default computed max height for ag grid default selector editor to make it more usable
         //can be removed if a custom selector editor is implemented
         '& .ag-select-list': {
