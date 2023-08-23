@@ -10,7 +10,7 @@ import React from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { gridItem } from '../../../utils/dialog-utils';
 import { Grid } from '@mui/material';
-import SelectInput from '../../../utils/rhf-inputs/select-inputs/select-input';
+import { SelectInput } from '@gridsuite/commons-ui';
 import InputWithPopupConfirmation from '../../../utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
 
 const CriteriaBasedForm = ({ equipments, defaultValues }) => {
