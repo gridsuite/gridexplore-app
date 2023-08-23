@@ -41,12 +41,10 @@ import {
     FORMATTED_CASE_PARAMETERS,
     STUDY_NAME,
 } from '../../utils/field-constants';
-import TextInput from '../../utils/rhf-inputs/text-input';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import yup from '../../utils/yup-config';
 import CustomMuiDialog from '../custom-mui-dialog';
-import FieldErrorAlert from '../../utils/rhf-inputs/error-inputs/field-error-alert';
-import ErrorInput from '../../utils/rhf-inputs/error-inputs/error-input';
+import { ErrorInput, FieldErrorAlert, TextInput } from '@gridsuite/commons-ui';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -357,13 +355,8 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 inputProps={{
                     autoFocus: true,
                 }}
-                withMargin
             />
-            <TextInput
-                name={DESCRIPTION}
-                label={'descriptionProperty'}
-                withMargin
-            />
+            <TextInput name={DESCRIPTION} label={'descriptionProperty'} />
             {providedExistingCase ? (
                 <DirectorySelect types={[ElementType.DIRECTORY]} />
             ) : (

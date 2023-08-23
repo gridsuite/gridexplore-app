@@ -112,9 +112,7 @@ const CustomMuiDialog: FunctionComponent<ICustomMuiDialog> = ({
                             handleValidate,
                             handleValidationError
                         )}
-                    >
-                        <FormattedMessage id="validate" />
-                    </SubmitButton>
+                    />
                 </DialogActions>
             </Dialog>
         </FormProvider>

@@ -1,7 +1,7 @@
 declare module '@gridsuite/commons-ui' {
     import { FunctionComponent, ReactElement } from 'react';
     import { AutocompleteProps } from '@mui/material/Autocomplete/Autocomplete';
-    import { RadioGroupProps, TextFieldProps } from '@mui/material';
+    import { InputProps, RadioGroupProps, TextFieldProps } from '@mui/material';
 
     interface SnackInputs {
         messageTxt?: string;
@@ -35,6 +35,10 @@ declare module '@gridsuite/commons-ui' {
         ) => void;
         variant?: 'outlined' | 'standard' | 'filled';
         showSeparator?: boolean;
+    }
+
+    interface IFieldErrorAlert {
+        message: string;
     }
 
     export function useSnackMessage(): UseSnackMessageReturn;
@@ -74,7 +78,7 @@ declare module '@gridsuite/commons-ui' {
 
     interface ErrorInputProps {
         name: string;
-        InputField?: FunctionComponent;
+        InputField?: FunctionComponent<IFieldErrorAlert>;
     }
 
     export const ErrorInput: FunctionComponent<ErrorInputProps>;
@@ -103,7 +107,7 @@ declare module '@gridsuite/commons-ui' {
             position: string;
             text: string;
         };
-        customAdornment?: ReactElement;
+        customAdornment?: ReactElement | null;
         outputTransform?: (value: string) => Input;
         inputTransform?: (value: Input) => string;
         acceptValue?: (value: string) => boolean;
@@ -113,6 +117,7 @@ declare module '@gridsuite/commons-ui' {
             TextFieldWithAdornmentProps | TextFieldProps,
             'value' | 'onChange' | 'inputRef' | 'inputProps' | 'InputProps'
         >;
+        inputProps?: InputProps;
     }
 
     export const TextInput: FunctionComponent<TextInputProps>;
@@ -123,6 +128,8 @@ declare module '@gridsuite/commons-ui' {
             'outputTransform' | 'inputTransform' | 'acceptValue' // already defined in FloatInput
         >
     >;
+
+    export const FieldErrorAlert: FunctionComponent<IFieldErrorAlert>;
 
     interface RadioInputProps {
         name: string;

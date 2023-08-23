@@ -21,12 +21,10 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NameCheckReturn, useNameCheck } from './commons/use-name-check';
 import { useForm } from 'react-hook-form';
 import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../utils/field-constants';
-import TextInput from '../utils/rhf-inputs/text-input';
+import { ErrorInput, TextInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import yup from '../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import CustomMuiDialog from './custom-mui-dialog';
-import ErrorInput from '../utils/rhf-inputs/error-inputs/error-input';
-import FieldErrorAlert from '../utils/rhf-inputs/error-inputs/field-error-alert';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -195,6 +193,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
         caseFileErrorMessage,
     ]);
 
+    // @ts-ignore
     return (
         <CustomMuiDialog
             titleId={'ImportNewCase'}
@@ -213,13 +212,8 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
                 inputProps={{
                     autoFocus: true,
                 }}
-                withMargin
             />
-            <TextInput
-                name={DESCRIPTION}
-                label={'descriptionProperty'}
-                withMargin
-            />
+            <TextInput name={DESCRIPTION} label={'descriptionProperty'} />
             <ErrorInput name={CASE_FILE} InputField={FieldErrorAlert} />
             <UploadNewCase
                 caseFile={caseFile}

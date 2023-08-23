@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { CircularProgress, InputAdornment } from '@mui/material';
 import { elementExists } from '../../../utils/rest-api';
@@ -20,7 +20,7 @@ interface INameCheckProps {
     setError: any;
 }
 
-export type NameCheckReturn = [React.ReactNode, boolean];
+export type NameCheckReturn = [ReactElement | null, boolean];
 
 export const useNameCheck = ({
     field,
@@ -30,7 +30,7 @@ export const useNameCheck = ({
 }: INameCheckProps): NameCheckReturn => {
     const intl = useIntl();
 
-    const [adornment, setAdornment] = useState<React.ReactNode>(null);
+    const [adornment, setAdornment] = useState<ReactElement | null>(null);
     const [isChecking, setIsChecking] = useState<boolean>(false);
 
     const activeDirectory = useSelector((state: any) => state.activeDirectory);
@@ -39,7 +39,7 @@ export const useNameCheck = ({
         const nameFormatted = name.replace(/ /g, '');
 
         if (!nameFormatted) {
-            setAdornment(false);
+            setAdornment(null);
         } else {
             setIsChecking(true);
 
@@ -58,7 +58,7 @@ export const useNameCheck = ({
                                 id: 'nameAlreadyUsed',
                             }),
                         });
-                        setAdornment(false);
+                        setAdornment(null);
                     } else {
                         setAdornment(
                             <InputAdornment position="end">
@@ -87,7 +87,7 @@ export const useNameCheck = ({
         debouncedHandleCheckName();
 
         if (!name) {
-            setAdornment(false);
+            setAdornment(null);
         }
     }, [debouncedHandleCheckName, name]);
 
