@@ -25,6 +25,7 @@ import { ErrorInput, TextInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import yup from '../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import CustomMuiDialog from './custom-mui-dialog';
+import Box from '@mui/material/Box';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -205,15 +206,19 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
             onSave={handleCreateNewCase}
             disabledSave={!isCreationAllowed}
         >
-            <TextInput
-                label={'nameProperty'}
-                name={CASE_NAME}
-                customAdornment={caseFileAdornment}
-                inputProps={{
-                    autoFocus: true,
-                }}
-            />
-            <TextInput name={DESCRIPTION} label={'descriptionProperty'} />
+            <Box sx={{ margin: '10px 0' }}>
+                <TextInput
+                    label={'nameProperty'}
+                    name={CASE_NAME}
+                    customAdornment={caseFileAdornment}
+                    inputProps={{
+                        autoFocus: true,
+                    }}
+                />
+            </Box>
+            <Box sx={{ margin: '10px 0' }}>
+                <TextInput name={DESCRIPTION} label={'descriptionProperty'} />
+            </Box>
             <ErrorInput name={CASE_FILE} InputField={FieldErrorAlert} />
             <UploadNewCase
                 caseFile={caseFile}

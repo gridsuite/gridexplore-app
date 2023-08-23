@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useForm } from 'react-hook-form';
-import { Grid } from '@mui/material';
+import { Grid, Box } from '@mui/material';
 import { useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
@@ -348,15 +348,19 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             onCancel={handleCancelStudyCreation}
             disabledSave={!isCreationAllowed}
         >
-            <TextInput
-                label={'nameProperty'}
-                name={STUDY_NAME}
-                customAdornment={studyNameAdornment}
-                inputProps={{
-                    autoFocus: true,
-                }}
-            />
-            <TextInput name={DESCRIPTION} label={'descriptionProperty'} />
+            <Box sx={{ margin: '10px 0' }}>
+                <TextInput
+                    label={'nameProperty'}
+                    name={STUDY_NAME}
+                    customAdornment={studyNameAdornment}
+                    inputProps={{
+                        autoFocus: true,
+                    }}
+                />
+            </Box>
+            <Box sx={{ margin: '10px 0' }}>
+                <TextInput name={DESCRIPTION} label={'descriptionProperty'} />
+            </Box>
             {providedExistingCase ? (
                 <DirectorySelect types={[ElementType.DIRECTORY]} />
             ) : (
