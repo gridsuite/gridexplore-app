@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FILTER_PROPERTIES } from './filter-properties';
 import { CRITERIA_BASED } from '../../utils/field-constants';
-import AutocompleteInput from '../../utils/rhf-inputs/autocomplete-inputs/autocomplete-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 
 export const PROPERTY_NAME = 'name_property';
 export const PROPERTY_VALUES = 'prop_values';
@@ -16,7 +16,7 @@ export const PROPERTY_VALUES_2 = 'prop_values2';
 interface FilterPropertyProps {
     index: number;
     valuesFields: Array<{ name: string; label: string }>;
-    handleDelete: Function;
+    handleDelete: (index: number) => void;
     predefined: any;
 }
 
@@ -32,7 +32,7 @@ function FilterProperty(props: FilterPropertyProps) {
     }, [props.predefined]);
 
     const predefinedValues = useMemo(() => {
-        const predefinedForName = props.predefined?.[watchName];
+        const predefinedForName: string[] = props.predefined?.[watchName];
         if (!predefinedForName) {
             return [];
         }
@@ -59,10 +59,6 @@ function FilterProperty(props: FilterPropertyProps) {
                     freeSolo
                     forcePopupIcon
                     onChangeCallback={onNameChange}
-                    // we have to fill these fields even if we don't use it because we use strict TS
-                    previousValue={undefined}
-                    formProps={undefined}
-                    allowNewValue={undefined}
                 />
             </Grid>
             {props.valuesFields.map((valuesField) => (
@@ -83,11 +79,6 @@ function FilterProperty(props: FilterPropertyProps) {
                                 />
                             ))
                         }
-                        // we have to fill these fields even if we don't use it because we use strict TS
-                        previousValue={undefined}
-                        formProps={undefined}
-                        allowNewValue={undefined}
-                        onChangeCallback={undefined}
                     />
                 </Grid>
             ))}

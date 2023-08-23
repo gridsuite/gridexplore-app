@@ -23,7 +23,7 @@ import RangeInput, {
     getRangeInputSchema,
 } from '../../../utils/rhf-inputs/range-input';
 import yup from '../../../utils/yup-config';
-import SelectInput from '../../../utils/rhf-inputs/select-inputs/select-input';
+import { SelectInput } from '@gridsuite/commons-ui';
 
 const countries = {
     renderer: CountriesInput,

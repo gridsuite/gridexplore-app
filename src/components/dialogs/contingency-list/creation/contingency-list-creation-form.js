@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import RadioInput from '../../../utils/rhf-inputs/radio-input';
+import { RadioInput } from '@gridsuite/commons-ui';
 import {
     CONTINGENCY_LIST_TYPE,
     CRITERIA_BASED,
