@@ -8,11 +8,7 @@
 import { InputAdornment, TextField } from '@mui/material';
 import React from 'react';
 import { useController, useFormContext } from 'react-hook-form';
-import {
-    func_identity,
-    isFieldRequired,
-    helperTextStyle,
-} from '../dialog-utils';
+import { func_identity, isFieldRequired } from '../dialog-utils';
 import IconButton from '@mui/material/IconButton';
 import {
     FieldLabel,
@@ -81,9 +77,6 @@ const TextInput = ({
             })}
             value={transformedValue}
             onChange={handleValueChanged}
-            FormHelperTextProps={{
-                sx: helperTextStyle.helperText,
-            }}
             InputProps={{
                 endAdornment: (
                     <InputAdornment position="end">

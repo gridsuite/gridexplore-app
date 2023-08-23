@@ -9,11 +9,7 @@ import { Autocomplete, TextField } from '@mui/material';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useController, useFormContext } from 'react-hook-form';
-import {
-    func_identity,
-    isFieldRequired,
-    helperTextStyle,
-} from '../../dialog-utils';
+import { func_identity, isFieldRequired } from '../../dialog-utils';
 import {
     FieldLabel,
     genHelperError,
@@ -100,9 +96,6 @@ const AutocompleteInput = ({
                                 !removeOptional,
                         }),
                     })}
-                    FormHelperTextProps={{
-                        sx: helperTextStyle.helperText,
-                    }}
                     inputRef={ref}
                     inputProps={{ ...inputProps, readOnly: readOnly }}
                     {...genHelperPreviousValue(previousValue)}
