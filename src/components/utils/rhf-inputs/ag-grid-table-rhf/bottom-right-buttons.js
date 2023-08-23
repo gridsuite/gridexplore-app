@@ -7,8 +7,7 @@ import CsvUploader from './csv-uploader/csv-uploader';
 import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
 import { styled } from '@mui/material/styles';
-import ErrorInput from '../error-inputs/error-input';
-import FieldErrorAlert from '../error-inputs/field-error-alert';
+import { ErrorInput } from '@gridsuite/commons-ui';
 
 const InnerColoredButton = styled(IconButton)(({ theme, root }) => {
     return {
@@ -73,7 +72,7 @@ const BottomRightButtons = ({
                 </InnerColoredButton>
             </Grid>
             <Grid item xs={12}>
-                <ErrorInput name={name} InputField={FieldErrorAlert} />
+                <ErrorInput name={name} />
             </Grid>
             <CsvUploader
                 open={uploaderOpen}
