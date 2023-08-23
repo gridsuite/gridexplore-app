@@ -19,12 +19,6 @@ import { AG_GRID_ROW_UUID } from '../../field-constants';
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
         rowDrag: true,
-        maxWidth: 0,
-        cellStyle: {
-            backgroundColor: 'transparent',
-        },
-    },
-    {
         headerCheckboxSelection: true,
         checkboxSelection: true,
         maxWidth: 50,
