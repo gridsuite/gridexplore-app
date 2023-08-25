@@ -13,7 +13,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 import { useDebounce } from '@gridsuite/commons-ui';
-import {InputAdornment} from "@mui/material";
+import { InputAdornment } from '@mui/material';
 
 const NameWrapper = ({
     initialValue = '',
@@ -115,7 +115,7 @@ const NameWrapper = ({
                 style={{ width: '100%' }}
                 label={<FormattedMessage id={titleMessage} />}
                 helperText={errorMessage ?? ''}
-                InputProps={{ endAdornment: renderNameStatus()}}
+                InputProps={{ endAdornment: renderNameStatus() }}
             />
             {children}
         </>
