@@ -56,7 +56,7 @@ const CustomMuiDialog: FunctionComponent<ICustomMuiDialog> = ({
     onValidationError,
     titleId,
     disabledSave,
-    removeOptional,
+    removeOptional = false,
     onCancel,
     children,
 }) => {
