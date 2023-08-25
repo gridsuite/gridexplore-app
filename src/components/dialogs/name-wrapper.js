@@ -13,6 +13,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 import { useDebounce } from '@gridsuite/commons-ui';
+import {InputAdornment} from "@mui/material";
 
 const NameWrapper = ({
     initialValue = '',
@@ -96,15 +97,10 @@ const NameWrapper = ({
     const renderNameStatus = () => {
         const showOk = value !== '' && !loadingCheckName && errorMessage === '';
         return (
-            <div
-                style={{
-                    display: 'inline-block',
-                    verticalAlign: 'bottom',
-                }}
-            >
+            <InputAdornment position="end">
                 {loadingCheckName && <CircularProgress size="1rem" />}
                 {showOk && <CheckIcon style={{ color: 'green' }} />}
-            </div>
+            </InputAdornment>
         );
     };
 
@@ -119,8 +115,8 @@ const NameWrapper = ({
                 style={{ width: '100%' }}
                 label={<FormattedMessage id={titleMessage} />}
                 helperText={errorMessage ?? ''}
+                InputProps={{ endAdornment: renderNameStatus()}}
             />
-            {renderNameStatus()}
             {children}
         </>
     );
