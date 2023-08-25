@@ -22,9 +22,6 @@ export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
         headerCheckboxSelection: true,
         checkboxSelection: true,
         maxWidth: 50,
-        cellStyle: {
-            backgroundColor: 'transparent',
-        },
     },
 ];
 
@@ -34,38 +31,27 @@ const style = (customProps) => ({
         height: '100%',
         position: 'relative',
 
-        // It shouldn't exactly be like this, but I couldn't make it works otherwise
+        // - AG Grid colors override -
+        // It shouldn't be exactly like this, but I couldn't make it works otherwise
         // https://www.ag-grid.com/react-data-grid/global-style-customisation/
-        '--ag-checkbox-checked-color':
-            theme.palette.primary.main + ' !important',
+        '--ag-alpine-active-color': theme.palette.primary.main + ' !important',
+        '--ag-background-color': theme.agGridBackground.color + ' !important',
+        '--ag-header-background-color':
+            theme.agGridBackground.color + ' !important',
+        '--ag-odd-row-background-color':
+            theme.agGridBackground.color + ' !important',
+        '--ag-modal-overlay-background-color':
+            theme.agGridBackground.color + ' !important',
+        '--ag-selected-row-background-color': 'transparent !important',
+        '--ag-range-selection-border-color': 'transparent !important',
 
         //overrides the default computed max height for ag grid default selector editor to make it more usable
         //can be removed if a custom selector editor is implemented
         '& .ag-select-list': {
             maxHeight: '300px !important',
         },
-
         '& .ag-root-wrapper-body': {
             maxHeight: '500px',
-        },
-
-        '& .ag-header-container': {
-            backgroundColor: theme.agGridBackground.color,
-        },
-        '& .ag-body': {
-            backgroundColor: theme.agGridBackground.color,
-        },
-        '& .ag-row': {
-            backgroundColor: theme.agGridBackground.color,
-        },
-        '& .ag-checkbox-input-wrapper': {
-            backgroundColor: theme.agGridBackground.color,
-        },
-        '& .ag-input-field-input': {
-            backgroundColor: theme.agGridBackground.color,
-        },
-        '& .ag-cell-focus': {
-            backgroundColor: theme.agGridBackground.color,
         },
         '& .ag-cell': {
             boxShadow: 'none',
@@ -76,17 +62,25 @@ const style = (customProps) => ({
         '& .ag-row-hover': {
             cursor: 'text',
         },
+        '& .ag-overlay-loading-center': {
+            border: 'none',
+            boxShadow: 'none',
+        },
         '& .numeric-input': {
             fontSize: 'calc(var(--ag-font-size) + 1px)',
             paddingLeft: 'calc(var(--ag-cell-horizontal-padding) - 1px)',
-            boxSizing: 'border-box',
             width: '100%',
             height: '100%',
             border: 'inherit',
             outline: 'inherit',
+            backgroundColor: theme.agGridBackground.color,
         },
-        '& .ag-row-selected::before': {
-            backgroundColor: 'var(--ag-row-background-color)',
+        '& .Mui-focused .MuiOutlinedInput-root': {
+            // borders moves row height
+            outline:
+                'var(--ag-borders-input) var(--ag-input-focus-border-color)',
+            outlineOffset: '-1px',
+            backgroundColor: theme.agGridBackground.color,
         },
         ...customProps,
     }),
@@ -95,7 +89,7 @@ const style = (customProps) => ({
 export const CustomAgGridTable = ({
     name,
     columnDefs,
-    defaultRowData,
+    makeDefaultRowData,
     csvProps,
     cssProps,
     ...props
@@ -105,7 +99,7 @@ export const CustomAgGridTable = ({
     const [selectedRows, setSelectedRows] = useState([]);
     const [newRowAdded, setNewRowAdded] = useState(false);
 
-    const { control, getValues, setValue, watch } = useFormContext();
+    const { control, getValues, watch } = useFormContext();
     const useFieldArrayOutput = useFieldArray({
         control,
         name: name,
@@ -113,31 +107,6 @@ export const CustomAgGridTable = ({
     const { append, remove, update, swap, move } = useFieldArrayOutput;
 
     const rowData = watch(name);
-
-    const makeEmptyRow = useCallback(() => {
-        return {
-            [AG_GRID_ROW_UUID]: crypto.randomUUID(),
-            ...defaultRowData,
-        };
-    }, [defaultRowData]);
-
-    // It is not optimal in terms of performance, but we made the decision to isolate the AG_GRID_ROW_UUID inside this component
-    useEffect(() => {
-        // if the table has default values without rowUuid, we add it
-        const rowWithoutUuid = rowData.some((r) => !r[AG_GRID_ROW_UUID]);
-        if (rowWithoutUuid) {
-            const rowsWithId = rowData.map((r) => {
-                if (r[AG_GRID_ROW_UUID]) {
-                    return r;
-                }
-                return {
-                    [AG_GRID_ROW_UUID]: crypto.randomUUID(),
-                    ...r,
-                };
-            });
-            setValue(name, rowsWithId);
-        }
-    }, [name, rowData, setValue]);
 
     const isFirstSelected =
         rowData?.length &&
@@ -171,10 +140,14 @@ export const CustomAgGridTable = ({
     };
 
     const handleDeleteRows = () => {
-        selectedRows.forEach((val) => {
-            const idx = getIndex(val);
-            remove(idx);
-        });
+        if (selectedRows.length === rowData.length) {
+            remove();
+        } else {
+            selectedRows.forEach((val) => {
+                const idx = getIndex(val);
+                remove(idx);
+            });
+        }
     };
 
     useEffect(() => {
@@ -186,7 +159,7 @@ export const CustomAgGridTable = ({
     }, [gridApi, rowData]);
 
     const handleAddRow = () => {
-        append(makeEmptyRow());
+        append(makeDefaultRowData());
         setNewRowAdded(true);
     };
 
@@ -213,7 +186,6 @@ export const CustomAgGridTable = ({
 
     const onGridReady = (params) => {
         setGridApi(params);
-        params.api.sizeColumnsToFit();
     };
 
     const onRowDataUpdated = () => {
@@ -226,16 +198,6 @@ export const CustomAgGridTable = ({
         }
     };
 
-    const readyToDisplay =
-        // We may have a display issue because we receive the rows 2 times:
-        // at init time and once we have added uuid for all rows.
-        // We can display rows in the table when:
-        // - it's a small nb of lines (even if we have 2 updates)
-        // - it's a bigger number, so we wait for the row uuid to be set (Loading... in the meantime)
-        rowData &&
-        (rowData.length <= 200 ||
-            rowData.at(0)[AG_GRID_ROW_UUID] !== undefined);
-
     return (
         <Grid container spacing={2}>
             <Grid
@@ -245,7 +207,7 @@ export const CustomAgGridTable = ({
                 sx={style(cssProps).grid}
             >
                 <AgGridReact
-                    rowData={readyToDisplay ? rowData : null}
+                    rowData={gridApi && rowData?.length ? rowData : null} // to display loader at first render before we get the initial data and before the columns are sized to avoid glitch
                     onGridReady={onGridReady}
                     getLocaleText={getLocaleText}
                     cacheOverflowSize={10}

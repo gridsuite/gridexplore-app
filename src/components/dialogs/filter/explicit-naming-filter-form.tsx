@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import {
+    AG_GRID_ROW_UUID,
     EQUIPMENT_ID,
     EQUIPMENT_TYPE,
     FILTER_TYPE,
@@ -74,20 +75,28 @@ function isGeneratorOrLoad(equipmentType: string): boolean {
 }
 
 interface FilterTableRow {
+    [AG_GRID_ROW_UUID]: string;
     [EQUIPMENT_ID]: string;
     [DISTRIBUTION_KEY]: number | null;
 }
 
-const defaultRowData: FilterTableRow = {
-    [EQUIPMENT_ID]: '',
-    [DISTRIBUTION_KEY]: null,
-};
+function makeDefaultRowData(): FilterTableRow {
+    return {
+        [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+        [EQUIPMENT_ID]: '',
+        [DISTRIBUTION_KEY]: null,
+    };
+}
 
-const defaultTableRows = [defaultRowData, defaultRowData, defaultRowData];
+function makeDefaultTableRows() {
+    return [makeDefaultRowData(), makeDefaultRowData(), makeDefaultRowData()];
+}
 
-export const explicitNamingFilterEmptyFormData = {
-    [FILTER_EQUIPMENTS_ATTRIBUTES]: defaultTableRows,
-};
+export function getExplicitNamingFilterEmptyFormData() {
+    return {
+        [FILTER_EQUIPMENTS_ATTRIBUTES]: makeDefaultTableRows(),
+    };
+}
 
 function ExplicitNamingFilterForm() {
     const intl = useIntl();
@@ -144,6 +153,7 @@ function ExplicitNamingFilterForm() {
         if (csvData) {
             return csvData.map((value: any) => {
                 return {
+                    [AG_GRID_ROW_UUID]: crypto.randomUUID(),
                     [EQUIPMENT_ID]: value[0]?.trim(),
                     [DISTRIBUTION_KEY]: toFloatOrNullValue(value[1]?.trim()),
                 };
@@ -160,7 +170,7 @@ function ExplicitNamingFilterForm() {
     };
 
     const handleResetOnConfirmation = () => {
-        setValue(FILTER_EQUIPMENTS_ATTRIBUTES, defaultTableRows);
+        setValue(FILTER_EQUIPMENTS_ATTRIBUTES, makeDefaultTableRows());
     };
 
     return (
@@ -175,33 +185,31 @@ function ExplicitNamingFilterForm() {
                     resetOnConfirmation={handleResetOnConfirmation}
                 />
             </Grid>
-            {watchEquipmentType && (
-                <Grid item xs={12}>
-                    <CustomAgGridTable
-                        name={FILTER_EQUIPMENTS_ATTRIBUTES}
-                        columnDefs={columnDefs}
-                        defaultColDef={defaultColDef}
-                        defaultRowData={defaultRowData}
-                        pagination={true}
-                        paginationPageSize={100}
-                        suppressRowClickSelection
-                        alwaysShowVerticalScroll
-                        stopEditingWhenCellsLoseFocus
-                        csvProps={{
-                            fileName: intl.formatMessage({
-                                id: 'filterCsvFileName',
-                            }),
-                            fileHeaders: csvFileHeaders,
-                            getDataFromCsv: getDataFromCsvFile,
-                        }}
-                        cssProps={{
-                            '& .ag-root-wrapper-body': {
-                                maxHeight: '430px',
-                            },
-                        }}
-                    />
-                </Grid>
-            )}
+            <Grid item xs={12}>
+                <CustomAgGridTable
+                    name={FILTER_EQUIPMENTS_ATTRIBUTES}
+                    columnDefs={columnDefs}
+                    defaultColDef={defaultColDef}
+                    makeDefaultRowData={makeDefaultRowData}
+                    pagination={true}
+                    paginationPageSize={100}
+                    suppressRowClickSelection
+                    alwaysShowVerticalScroll
+                    stopEditingWhenCellsLoseFocus
+                    csvProps={{
+                        fileName: intl.formatMessage({
+                            id: 'filterCsvFileName',
+                        }),
+                        fileHeaders: csvFileHeaders,
+                        getDataFromCsv: getDataFromCsvFile,
+                    }}
+                    cssProps={{
+                        '& .ag-root-wrapper-body': {
+                            maxHeight: '430px',
+                        },
+                    }}
+                />
+            </Grid>
         </Grid>
     );
 }

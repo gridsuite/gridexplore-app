@@ -20,7 +20,12 @@ import ExplicitNamingFilterForm, {
     explicitNamingFilterSchema,
     FILTER_EQUIPMENTS_ATTRIBUTES,
 } from './explicit-naming-filter-form';
-import { EQUIPMENT_TYPE, FILTER_TYPE, NAME } from '../../utils/field-constants';
+import {
+    AG_GRID_ROW_UUID,
+    EQUIPMENT_TYPE,
+    FILTER_TYPE,
+    NAME,
+} from '../../utils/field-constants';
 
 const formSchema = yup
     .object()
@@ -58,8 +63,12 @@ const ExplicitNamingFilterEditionDialog = ({
                         [NAME]: name,
                         [FILTER_TYPE]: FilterType.EXPLICIT_NAMING.id,
                         [EQUIPMENT_TYPE]: response[EQUIPMENT_TYPE],
-                        [FILTER_EQUIPMENTS_ATTRIBUTES]:
-                            response[FILTER_EQUIPMENTS_ATTRIBUTES],
+                        [FILTER_EQUIPMENTS_ATTRIBUTES]: response[
+                            FILTER_EQUIPMENTS_ATTRIBUTES
+                        ].map((row) => ({
+                            [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+                            ...row,
+                        })),
                     });
                 })
                 .catch((error) => {
