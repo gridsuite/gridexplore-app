@@ -23,7 +23,7 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
     const intl = useIntl();
 
     const [open, setOpen] = useState<boolean>(false);
-    const [activeDirectoryName, setActiveDirectoryName] = useState<string>('');
+    const [activeDirectoryName, setActiveDirectoryName] = useState('');
 
     const { setValue, getValues } = useFormContext();
 

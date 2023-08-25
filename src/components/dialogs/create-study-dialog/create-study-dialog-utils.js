@@ -29,6 +29,6 @@ export const createStudyDialogFormValidationSchema = yup.object().shape({
     [DESCRIPTION]: yup.string().nullable(),
     [CURRENT_PARAMETERS]: yup.mixed(),
     [CASE_UUID]: yup.string(),
-    [CASE_FILE]: yup.mixed(),
+    [CASE_FILE]: yup.mixed().nullable(),
     [ACTIVE_DIRECTORY]: yup.string(),
 });

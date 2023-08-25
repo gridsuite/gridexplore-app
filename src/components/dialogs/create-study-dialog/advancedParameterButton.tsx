@@ -14,19 +14,19 @@ import { FormattedMessage } from 'react-intl';
 interface AdvancedParameterButtonProps {
     showOpenIcon: boolean;
     label: string;
-    callback: () => void;
+    onClick: () => void;
     disabled?: boolean;
 }
 
 const AdvancedParameterButton: React.FunctionComponent<
     AdvancedParameterButtonProps
-> = ({ showOpenIcon, label, callback, disabled = false }) => {
+> = ({ showOpenIcon, label, onClick, disabled = false }) => {
     return (
         <Grid item xs={12} sx={{ marginTop: '30px', marginBottom: '10px' }}>
             <Button
                 startIcon={<SettingsIcon />}
                 endIcon={showOpenIcon && <CheckIcon sx={{ color: 'green' }} />}
-                onClick={callback}
+                onClick={onClick}
                 disabled={disabled}
             >
                 <FormattedMessage id={label} />

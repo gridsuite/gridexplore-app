@@ -20,7 +20,7 @@ interface ImportParametersSectionProps {
 const ImportParametersSection: FunctionComponent<
     ImportParametersSectionProps
 > = ({ formatWithParameters }) => {
-    const [isParamsDisplayed, setIsParamsDisplayed] = useState<boolean>(false);
+    const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
 
     const { setValue, getValues } = useFormContext();
 
@@ -54,7 +54,7 @@ const ImportParametersSection: FunctionComponent<
                 <AdvancedParameterButton
                     showOpenIcon={isParamsDisplayed}
                     label={'importParameters'}
-                    callback={handleShowParametersClick}
+                    onClick={handleShowParametersClick}
                     disabled={formatWithParameters.length === 0}
                 />
                 {isParamsDisplayed && (
