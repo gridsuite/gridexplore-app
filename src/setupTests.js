@@ -6,3 +6,12 @@
  */
 
 global.IS_REACT_ACT_ENVIRONMENT = true;
+
+// make crypto.randomUUID() available in tests
+import crypto from 'crypto';
+
+window.crypto = {
+    randomUUID: function () {
+        return crypto.randomUUID();
+    },
+};
