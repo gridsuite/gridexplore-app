@@ -1,5 +1,4 @@
 import React, { FunctionComponent, ReactElement, useEffect } from 'react';
-import { STUDY_NAME } from '../field-constants';
 import { TextInput } from '@gridsuite/commons-ui';
 import { useFormContext } from 'react-hook-form';
 
@@ -20,13 +19,17 @@ interface IProvidedExistingCase {
 }
 
 interface IPrefilledTextInput {
+    label: string;
+    name: string;
     providedExistingCase: IProvidedExistingCase;
-    studyNameAdornment: ReactElement | null;
+    adornment: ReactElement | null;
 }
 
 const PrefilledTextInput: FunctionComponent<IPrefilledTextInput> = ({
+    label,
+    name,
     providedExistingCase,
-    studyNameAdornment,
+    adornment,
 }) => {
     const {
         setValue,
@@ -44,9 +47,9 @@ const PrefilledTextInput: FunctionComponent<IPrefilledTextInput> = ({
             const { name: caseFileName } = caseFile;
 
             if (caseFileName) {
-                clearErrors(STUDY_NAME);
+                clearErrors(name);
                 setValue(
-                    STUDY_NAME,
+                    name,
                     caseFileName.substring(0, caseFileName.indexOf('.')),
                     { shouldDirty: true }
                 );
@@ -55,7 +58,7 @@ const PrefilledTextInput: FunctionComponent<IPrefilledTextInput> = ({
 
         if (providedExistingCase) {
             const { elementName: existingCaseName } = providedExistingCase;
-            setValue(STUDY_NAME, existingCaseName, { shouldDirty: true });
+            setValue(name, existingCaseName, { shouldDirty: true });
         }
     }, [
         caseFile,
@@ -64,13 +67,14 @@ const PrefilledTextInput: FunctionComponent<IPrefilledTextInput> = ({
         providedExistingCase,
         setValue,
         clearErrors,
+        name,
     ]);
 
     return (
         <TextInput
-            label={'nameProperty'}
-            name={STUDY_NAME}
-            customAdornment={studyNameAdornment}
+            label={label}
+            name={name}
+            customAdornment={adornment}
             formProps={{
                 size: 'medium',
                 autoFocus: true,

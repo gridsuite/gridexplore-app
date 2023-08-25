@@ -9,9 +9,9 @@ import React, { useEffect, useState } from 'react';
 import { Button, Typography, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DirectorySelector from '../directory-selector';
-import { setActiveDirectory } from '../../../redux/actions';
-import { useDispatch, useSelector } from 'react-redux';
 import { fetchPath } from '../../../utils/rest-api';
+import { useFormContext } from 'react-hook-form';
+import { ACTIVE_DIRECTORY } from '../../utils/field-constants';
 
 interface DirectorySelectProps {
     types: string[];
@@ -21,12 +21,13 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
     types,
 }) => {
     const intl = useIntl();
-    const dispatch = useDispatch();
 
     const [open, setOpen] = useState<boolean>(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState<string>('');
 
-    const activeDirectory = useSelector((state: any) => state.activeDirectory);
+    const { setValue, getValues } = useFormContext();
+
+    const { activeDirectory } = getValues();
 
     useEffect(() => {
         if (activeDirectory) {
@@ -47,7 +48,9 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
 
     const handleClose = (directory: any) => {
         if (directory.length) {
-            dispatch(setActiveDirectory(directory[0]?.id));
+            setValue(ACTIVE_DIRECTORY, directory[0]?.id, {
+                shouldDirty: true,
+            });
         }
         setOpen(false);
     };

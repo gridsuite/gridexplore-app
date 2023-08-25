@@ -47,7 +47,7 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import CustomMuiDialog from '../custom-mui-dialog';
 import { ErrorInput, FieldErrorAlert, TextInput } from '@gridsuite/commons-ui';
-import PrefilledTextInput from '../../utils/rhf-inputs/prefilled-text-input';
+import PrefilledTextInput from './prefilled-text-input';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -65,7 +65,9 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const createStudyFormMethods = useForm({
         mode: 'onChange',
-        defaultValues: getCreateStudyDialogFormDefaultValues(),
+        defaultValues: getCreateStudyDialogFormDefaultValues({
+            activeDirectory,
+        }),
         resolver: yupResolver(createStudyDialogFormValidationSchema),
     });
 
@@ -75,14 +77,16 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         setError,
         clearErrors,
         getValues,
+        watch,
     } = createStudyFormMethods;
 
     // Constants
     const apiCallErrorMessage = errors.root?.apiCall?.message;
     const studyNameErrorMessage = errors.studyName?.message;
 
-    const { caseFile, caseUuid, formattedCaseParameters, studyName } =
-        getValues();
+    const { caseFile, caseUuid, formattedCaseParameters } = getValues();
+
+    const studyName = watch(STUDY_NAME);
 
     // callbacks
     const handleApiCallError = useCallback(
@@ -149,6 +153,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         studyName,
         description,
         currentParameters,
+        activeDirectory,
     }) => {
         if (!caseUuid && !providedExistingCase?.elementUuid) {
             setError(CASE_NAME, {
@@ -310,8 +315,10 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>
                     <PrefilledTextInput
+                        name={STUDY_NAME}
+                        label={'nameProperty'}
                         providedExistingCase={providedExistingCase}
-                        studyNameAdornment={studyNameAdornment}
+                        adornment={studyNameAdornment}
                     />
                 </Grid>
                 <Grid item>
