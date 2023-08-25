@@ -131,6 +131,8 @@ const SelectCase = () => {
     );
 };
 
+const STRING_LIST = 'STRING_LIST';
+
 /**
  * Dialog to create a study
  * @param {Boolean} open Is the dialog open ?
@@ -234,20 +236,20 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             getCaseImportParameters(caseUuid)
                 .then((result) => {
                     // sort possible values alphabetically to display select options sorted
-                    result.parameters = result.parameters?.map((p) => {
-                        p.possibleValues = p.possibleValues?.sort((a, b) =>
+                    result.parameters = result.parameters?.map((parameter) => {
+                        parameter.possibleValues = parameter.possibleValues?.sort((a, b) =>
                             a.localeCompare(b)
                         );
                         // we check if the param is for extension, if it is, we select all possible values by default.
                         // the only way for the moment to check if the param is for extension, is by checking his name.
                         //TODO to be removed when extensions param default value corrected in backend to include all possible values
                         if (
-                            p.type === 'STRING_LIST' &&
-                            p?.name?.endsWith('extensions')
+                            parameter.type === STRING_LIST &&
+                            parameter.name?.endsWith('extensions')
                         ) {
-                            p.defaultValue = p.possibleValues;
+                            parameter.defaultValue = parameter.possibleValues;
                         }
-                        return p;
+                        return parameter;
                     });
                     setFormatWithParameters(result.parameters);
                     setIsParamsOk(true);
@@ -513,7 +515,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         onChange={onChange}
                         variant="standard"
                         selectionWithDialog={(param) =>
-                            param.possibleValues.length > 15
+                            param.possibleValues.length > 10
                         }
                     />
                 )}
