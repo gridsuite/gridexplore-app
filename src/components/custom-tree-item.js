@@ -46,8 +46,8 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
     return (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
         <Box
+            className={className}
             sx={mergeSx(
-                className,
                 styles.root,
                 expanded && styles.expanded,
                 selected && styles.selected,
