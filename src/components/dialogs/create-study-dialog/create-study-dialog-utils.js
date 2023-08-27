@@ -5,13 +5,11 @@ import {
     DESCRIPTION,
     FORMATTED_CASE_PARAMETERS,
     STUDY_NAME,
-    ACTIVE_DIRECTORY,
+    DIRECTORY,
 } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 
-export const getCreateStudyDialogFormDefaultValues = ({
-    activeDirectory = '',
-}) => {
+export const getCreateStudyDialogFormDefaultValues = ({ directory = '' }) => {
     return {
         [STUDY_NAME]: '',
         [DESCRIPTION]: '',
@@ -19,16 +17,16 @@ export const getCreateStudyDialogFormDefaultValues = ({
         [CASE_UUID]: '',
         [FORMATTED_CASE_PARAMETERS]: [],
         [CURRENT_PARAMETERS]: {},
-        [ACTIVE_DIRECTORY]: activeDirectory,
+        [DIRECTORY]: directory,
     };
 };
 
 export const createStudyDialogFormValidationSchema = yup.object().shape({
     [STUDY_NAME]: yup.string().required(),
-    [FORMATTED_CASE_PARAMETERS]: yup.mixed(),
+    [FORMATTED_CASE_PARAMETERS]: yup.mixed().required(),
     [DESCRIPTION]: yup.string().nullable(),
-    [CURRENT_PARAMETERS]: yup.mixed(),
-    [CASE_UUID]: yup.string(),
-    [CASE_FILE]: yup.mixed().nullable(),
-    [ACTIVE_DIRECTORY]: yup.string(),
+    [CURRENT_PARAMETERS]: yup.mixed().required(),
+    [CASE_UUID]: yup.string().required(),
+    [CASE_FILE]: yup.mixed().required(),
+    [DIRECTORY]: yup.string().required(),
 });

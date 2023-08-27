@@ -10,18 +10,21 @@ import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Grid, Input } from '@mui/material';
+import { useFormContext } from 'react-hook-form';
+import { CASE_FILE } from '../../utils/field-constants';
 
 interface UploadNewCaseProps {
-    caseFile: File | null;
     caseFileLoading?: boolean;
     handleCaseFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
-    caseFile,
     caseFileLoading = false,
     handleCaseFileUpload,
 }) => {
+    const { getValues } = useFormContext();
+
+    const caseFile = getValues(CASE_FILE) as File;
     const { name: caseFileName } = caseFile || {};
 
     return (
@@ -37,7 +40,7 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                     />
                 </Button>
             </Grid>
-            <Grid item>
+            <Grid item sx={{ fontWeight: 'bold' }}>
                 <p>
                     {caseFileLoading ? (
                         <CircularProgress size="1rem" />

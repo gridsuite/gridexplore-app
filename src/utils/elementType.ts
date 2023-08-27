@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const ElementType = {
-    DIRECTORY: 'DIRECTORY',
-    STUDY: 'STUDY',
-    FILTER: 'FILTER',
-    CONTINGENCY_LIST: 'CONTINGENCY_LIST',
-    CASE: 'CASE',
-};
+export enum ElementType {
+    DIRECTORY = 'DIRECTORY',
+    STUDY = 'STUDY',
+    FILTER = 'FILTER',
+    CONTINGENCY_LIST = 'CONTINGENCY_LIST',
+    CASE = 'CASE',
+}
 
 export const FilterType = {
     CRITERIA_BASED: { id: 'CRITERIA', label: 'CriteriaBased' },

@@ -11,10 +11,11 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import DirectorySelector from '../directory-selector';
 import { fetchPath } from '../../../utils/rest-api';
 import { useFormContext } from 'react-hook-form';
-import { ACTIVE_DIRECTORY } from '../../utils/field-constants';
+import { DIRECTORY } from '../../utils/field-constants';
+import { ElementType } from '../../../utils/elementType';
 
 interface DirectorySelectProps {
-    types: string[];
+    types: ElementType[];
 }
 
 const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
@@ -25,13 +26,13 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
     const [open, setOpen] = useState<boolean>(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState('');
 
-    const { setValue, getValues } = useFormContext();
+    const { setValue, watch } = useFormContext();
 
-    const { activeDirectory } = getValues();
+    const { activeDirectory: directory } = watch(DIRECTORY);
 
     useEffect(() => {
-        if (activeDirectory) {
-            fetchPath(activeDirectory).then((res: any) => {
+        if (directory) {
+            fetchPath(directory).then((res: any) => {
                 setActiveDirectoryName(
                     res
                         .map((element: any) => element.elementName.trim())
@@ -40,7 +41,7 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
                 );
             });
         }
-    }, [activeDirectory]);
+    }, [directory]);
 
     const handleSelectFolder = () => {
         setOpen(true);
@@ -48,7 +49,7 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
 
     const handleClose = (directory: any) => {
         if (directory.length) {
-            setValue(ACTIVE_DIRECTORY, directory[0]?.id, {
+            setValue(DIRECTORY, directory[0]?.id, {
                 shouldDirty: true,
             });
         }

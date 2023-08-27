@@ -7,7 +7,7 @@
 import { useForm } from 'react-hook-form';
 import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
 import {
     createCaseWithoutDirectoryElementCreation,
@@ -47,7 +47,7 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import CustomMuiDialog from '../custom-mui-dialog';
 import { ErrorInput, FieldErrorAlert, TextInput } from '@gridsuite/commons-ui';
-import PrefilledTextInput from './prefilled-text-input';
+import StudyNamePrefilledInput from './study-name-prefilled-input';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
@@ -66,14 +66,14 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const createStudyFormMethods = useForm({
         mode: 'onChange',
         defaultValues: getCreateStudyDialogFormDefaultValues({
-            activeDirectory,
+            directory: activeDirectory,
         }),
         resolver: yupResolver(createStudyDialogFormValidationSchema),
     });
 
     const {
         setValue,
-        formState: { errors },
+        formState: { isValid },
         setError,
         clearErrors,
         getValues,
@@ -81,11 +81,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     } = createStudyFormMethods;
 
     // Constants
-    const apiCallErrorMessage = errors.root?.apiCall?.message;
-    const studyNameErrorMessage = errors.studyName?.message;
-
-    const { caseFile, caseUuid, formattedCaseParameters } = getValues();
-
+    const formattedCaseParameters = getValues(FORMATTED_CASE_PARAMETERS);
     const studyName = watch(STUDY_NAME);
 
     // callbacks
@@ -142,6 +138,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     // Methods
     const handleDeleteCase = () => {
+        const caseUuid = getValues(CASE_UUID);
         // if we cancel case creation, we need to delete the associated newly created case (if we created one)
         if (caseUuid && !providedExistingCase) {
             deleteCase(caseUuid).catch(handleApiCallError);
@@ -153,7 +150,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         studyName,
         description,
         currentParameters,
-        activeDirectory,
+        directory,
     }) => {
         if (!caseUuid && !providedExistingCase?.elementUuid) {
             setError(CASE_NAME, {
@@ -173,7 +170,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         const uploadingStudy = {
             id: keyGenerator(),
             elementName: studyName,
-            directory: activeDirectory,
+            directory,
             type: ElementType.STUDY,
             owner: userId,
             lastModifiedBy: userId,
@@ -185,7 +182,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             description,
             caseUuid,
             !!providedExistingCase,
-            activeDirectory,
+            directory,
             currentParameters ? JSON.stringify(currentParameters) : ''
         )
             .then(() => {
@@ -213,7 +210,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         event.preventDefault();
 
         clearErrors(CASE_FILE);
-        clearErrors(API_CALL);
+        clearErrors(`root.${API_CALL}`);
 
         const files = event.target.files;
         if (files?.length) {
@@ -226,15 +223,16 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 // Create new case
                 createCaseWithoutDirectoryElementCreation(currentFile)
                     .then((newCaseUuid) => {
-                        const prevCaseUuid =
-                            createStudyFormMethods.getValues().caseUuid;
+                        const prevCaseUuid = getValues(CASE_UUID);
 
                         if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
                             deleteCase(prevCaseUuid).catch((error) =>
                                 handleApiCallError(error)
                             );
                         }
-                        setValue(CASE_UUID, newCaseUuid);
+                        setValue(CASE_UUID, newCaseUuid, {
+                            shouldValidate: true,
+                        });
 
                         getCurrentCaseImportParams(newCaseUuid);
                     })
@@ -252,7 +250,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                             },
                             {
                                 maxSize: MAX_FILE_SIZE_IN_MO,
-                                br: <br />,
                             }
                         )
                         .toString(),
@@ -264,7 +261,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     // handle check studyName
     const [studyNameAdornment, studyNameChecking] = useNameCheck({
         field: STUDY_NAME,
-        name: studyName,
+        value: studyName,
         elementType: ElementType.STUDY,
         setError,
     });
@@ -281,25 +278,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         }
     }, [getCurrentCaseImportParams, providedExistingCase, setValue]);
 
-    // handle change possibility to create new study
-    const isCreationAllowed = useMemo(
-        () =>
-            studyName &&
-            formattedCaseParameters.length &&
-            !caseFileLoading &&
-            !studyNameChecking &&
-            !studyNameErrorMessage &&
-            !apiCallErrorMessage,
-        [
-            apiCallErrorMessage,
-            caseFileLoading,
-            formattedCaseParameters.length,
-            studyName,
-            studyNameChecking,
-            studyNameErrorMessage,
-        ]
-    );
-
     return (
         <CustomMuiDialog
             titleId={'createNewStudy'}
@@ -310,14 +288,16 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             onClose={onClose}
             onSave={handleCreateNewStudy}
             onCancel={handleDeleteCase}
-            disabledSave={!isCreationAllowed}
+            disabledSave={!isValid || studyNameChecking}
         >
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>
-                    <PrefilledTextInput
-                        name={STUDY_NAME}
+                    <StudyNamePrefilledInput
+                        fieldName={STUDY_NAME}
                         label={'nameProperty'}
-                        providedExistingCase={providedExistingCase}
+                        providedExistingCaseName={
+                            providedExistingCase?.elementName
+                        }
                         adornment={studyNameAdornment}
                     />
                 </Grid>
@@ -335,7 +315,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 <DirectorySelect types={[ElementType.DIRECTORY]} />
             ) : (
                 <UploadNewCase
-                    caseFile={caseFile}
                     caseFileLoading={caseFileLoading}
                     handleCaseFileUpload={handleCaseFileUpload}
                 />

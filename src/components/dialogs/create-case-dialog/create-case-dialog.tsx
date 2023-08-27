@@ -6,7 +6,7 @@
  */
 
 import { useIntl } from 'react-intl';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { keyGenerator } from '../../../utils/functions';
 import { createCase } from '../../../utils/rest-api';
@@ -29,9 +29,16 @@ import {
     createCaseDialogFormValidationSchema,
     getCreateCaseDialogFormValidationDefaultValues,
 } from './create-case-dialog-utils';
+import { ReduxState } from '../../../redux/reducer.type';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
+
+interface IFormData {
+    [CASE_NAME]: string;
+    [DESCRIPTION]: string;
+    [CASE_FILE]: File | null;
+}
 
 interface ICreateCaseDialogProps {
     onClose: () => void;
@@ -46,11 +53,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
 
-    const createCaseFormMethods = useForm<{
-        [CASE_NAME]: string;
-        [DESCRIPTION]: string;
-        [CASE_FILE]: File | null;
-    }>({
+    const createCaseFormMethods = useForm<IFormData>({
         mode: 'onChange',
         defaultValues: getCreateCaseDialogFormValidationDefaultValues(),
         resolver: yupResolver(createCaseDialogFormValidationSchema),
@@ -58,18 +61,16 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
 
     const {
         setValue,
-        formState: { errors },
+        formState: { isValid },
         setError,
         getValues,
         clearErrors,
     } = createCaseFormMethods;
 
-    const activeDirectory = useSelector((state: any) => state.activeDirectory);
-    const userId = useSelector((state: any) => state.user.profile.sub);
-
-    const caseNameErrorMessage = errors.caseName?.message;
-    const caseFileErrorMessage = errors.caseFile?.message;
-    const { caseName, caseFile } = getValues();
+    const activeDirectory = useSelector(
+        (state: ReduxState) => state.activeDirectory
+    );
+    const userId = useSelector((state: ReduxState) => state.user.profile.sub);
 
     const handleCloseDialog = () => {
         setValue(CASE_FILE, null);
@@ -80,11 +81,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
         caseName,
         description,
         caseFile,
-    }: {
-        caseName: string;
-        description: string;
-        caseFile: File | null;
-    }): void => {
+    }: IFormData): void => {
         const uploadingCase = {
             id: keyGenerator(),
             elementName: caseName,
@@ -140,7 +137,10 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
                     setValue(
                         CASE_NAME,
                         caseFileName.substring(0, caseFileName.indexOf('.')),
-                        { shouldDirty: true }
+                        {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                        }
                     );
                 }
             } else {
@@ -153,7 +153,6 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
                             },
                             {
                                 maxSize: MAX_FILE_SIZE_IN_MO,
-                                br: <br />,
                             }
                         )
                         .toString(),
@@ -162,23 +161,13 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
         }
     };
 
-    const [caseFileAdornment, caseNameChecking]: NameCheckReturn = useNameCheck(
-        {
+    const [caseFileAdornment, caseNameChecking]: NameCheckReturn =
+        useNameCheck<IFormData>({
             field: CASE_NAME,
-            name: caseName,
+            value: getValues(CASE_NAME),
             elementType: ElementType.CASE,
             setError,
-        }
-    );
-
-    const isCreationAllowed = useMemo(
-        () =>
-            !!caseFile &&
-            !caseNameErrorMessage &&
-            !caseNameChecking &&
-            !caseFileErrorMessage,
-        [caseFile, caseNameErrorMessage, caseNameChecking, caseFileErrorMessage]
-    );
+        });
 
     return (
         <CustomMuiDialog
@@ -189,7 +178,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
             open={open}
             onClose={handleCloseDialog}
             onSave={handleCreateNewCase}
-            disabledSave={!isCreationAllowed}
+            disabledSave={!isValid || caseNameChecking}
         >
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>
@@ -214,10 +203,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
                 </Grid>
             </Grid>
             <ErrorInput name={CASE_FILE} InputField={FieldErrorAlert} />
-            <UploadNewCase
-                caseFile={caseFile}
-                handleCaseFileUpload={handleCaseFileUpload}
-            />
+            <UploadNewCase handleCaseFileUpload={handleCaseFileUpload} />
         </CustomMuiDialog>
     );
 };

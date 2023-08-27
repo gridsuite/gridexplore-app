@@ -18,25 +18,21 @@ declare module '@gridsuite/commons-ui' {
         snackInfo: (snackInputs: SnackInputs) => void;
     }
 
-    type ParameterType = {
+    export type ParameterType = {
         type: string;
         name: string;
-        possibleValues: string[];
+        description: string;
+        possibleValues: string[] | null;
         defaultValue: string;
     };
 
-    interface IFlatParameters {
+    interface IFlatParameters extends Pick<TextFieldProps, 'variant'> {
         paramsAsArray: ParameterType[];
-        initValues: Record<string, string | boolean>;
-        onChange: (
-            paramName: string,
-            newValue: string,
-            isInEdition: boolean
-        ) => void;
+        initValues: Record<string, any>;
+        onChange: (paramName: string, value: any, isEdit: boolean) => void;
         variant?: 'outlined' | 'standard' | 'filled';
         showSeparator?: boolean;
     }
-
     interface IFieldErrorAlert {
         message: string;
     }

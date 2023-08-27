@@ -80,6 +80,11 @@ export const useTextValue = ({
     return [value, field, setValue, hasChanged];
 };
 
+const makeAdornmentEndIcon = (content) => {
+    return {
+        endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
+    };
+};
 export const useNameField = ({
     parentDirectoryId,
     elementType,
@@ -88,10 +93,10 @@ export const useNameField = ({
     alreadyExistingErrorMessage,
     ...props
 }) => {
-    const [error, setError] = useState('');
+    const [error, setError] = useState();
     const intl = useIntl();
     const [checking, setChecking] = useState(undefined);
-    const [adornment, setAdornment] = useState(null);
+    const [adornment, setAdornment] = useState();
 
     // if element is a root directory, we need to make a specific api rest call (elementType is directory, and no parent element)
     const doesElementExist = useCallback(
@@ -168,15 +173,11 @@ export const useNameField = ({
         }
         if (checking) {
             setAdornment(
-                <InputAdornment position="end">
-                    <CircularProgress size="1rem" />
-                </InputAdornment>
+                makeAdornmentEndIcon(<CircularProgress size="1rem" />)
             );
         } else {
             setAdornment(
-                <InputAdornment position="end">
-                    <CheckIcon style={{ color: 'green' }} />
-                </InputAdornment>
+                makeAdornmentEndIcon(<CheckIcon style={{ color: 'green' }} />)
             );
         }
     }, [checking, error]);
@@ -202,7 +203,6 @@ export const useNameField = ({
         setChecking(undefined);
         setAdornment(undefined);
     }, [triggerReset]);
-
     return [
         name,
         field,

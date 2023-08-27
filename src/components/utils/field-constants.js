@@ -38,4 +38,4 @@ export const FORMATTED_CASE_PARAMETERS = 'formattedCaseParameters';
 export const CURRENT_PARAMETERS = 'currentParameters';
 export const API_CALL = 'apiCall';
 export const CASE_NAME = 'caseName';
-export const ACTIVE_DIRECTORY = 'activeDirectory';
+export const DIRECTORY = 'directory';

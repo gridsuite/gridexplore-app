@@ -12,44 +12,47 @@ import { elementExists } from '../../../utils/rest-api';
 import CheckIcon from '@mui/icons-material/Check';
 import { useSelector } from 'react-redux';
 import { useDebounce } from '@gridsuite/commons-ui';
-
-interface INameCheckProps {
-    field: string;
-    name: string;
-    elementType: string;
-    setError: any;
-}
+import { FieldError } from 'react-hook-form';
+import { ElementType } from '../../../utils/elementType';
+import { ReduxState } from '../../../redux/reducer.type';
 
 export type NameCheckReturn = [ReactElement | null, boolean];
 
-export const useNameCheck = ({
+interface INameCheckProps<T> {
+    field: keyof T;
+    value: string;
+    elementType: ElementType;
+    setError: (field: keyof T, error: FieldError) => void;
+}
+
+export const useNameCheck = <T extends Record<string, any>>({
     field,
-    name,
+    value,
     elementType,
     setError,
-}: INameCheckProps): NameCheckReturn => {
+}: INameCheckProps<T>): NameCheckReturn => {
     const intl = useIntl();
 
     const [adornment, setAdornment] = useState<ReactElement | null>(null);
     const [isChecking, setIsChecking] = useState(false);
 
-    const activeDirectory = useSelector((state: any) => state.activeDirectory);
+    const activeDirectory = useSelector(
+        (state: ReduxState) => state.activeDirectory
+    );
 
     const handleCheckName = useCallback(() => {
-        const nameFormatted = name.replace(/ /g, '');
+        const valueFormatted = value.replace(/ /g, '');
 
-        if (!nameFormatted) {
+        if (!valueFormatted) {
             setAdornment(null);
         } else {
-            setIsChecking(true);
-
             setAdornment(
                 <InputAdornment position="end">
                     <CircularProgress size="1rem" />
                 </InputAdornment>
             );
 
-            elementExists(activeDirectory, name, elementType)
+            elementExists(activeDirectory, value, elementType)
                 .then((isElementExists) => {
                     if (isElementExists) {
                         setError(field, {
@@ -75,21 +78,23 @@ export const useNameCheck = ({
                                 id: 'nameValidityCheckErrorMsg',
                             }) + (error as Error).message,
                     })
-                )
-                .finally(() => setIsChecking(false));
+                );
         }
-    }, [name, field, setError, intl, activeDirectory, elementType]);
+
+        setIsChecking(false);
+    }, [value, field, setError, intl, activeDirectory, elementType]);
 
     const debouncedHandleCheckName = useDebounce(handleCheckName, 700);
 
     // handle check case name
     useEffect(() => {
+        setIsChecking(true);
         debouncedHandleCheckName();
 
-        if (!name) {
+        if (!value) {
             setAdornment(null);
         }
-    }, [debouncedHandleCheckName, name]);
+    }, [debouncedHandleCheckName, value]);
 
     return [adornment, isChecking];
 };
