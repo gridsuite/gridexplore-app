@@ -28,12 +28,7 @@ import {
     saveExplicitNamingContingencyList,
     saveScriptContingencyList,
 } from '../../../utils/rest-api';
-import {
-    getCriteriaBasedFormData,
-    getCriteriaBasedSchema,
-} from '../commons/criteria-based/criteria-based-utils';
-import yup from '../../utils/yup-config';
-import { getExplicitNamingSchema } from './explicit-naming/explicit-naming-form';
+import { getCriteriaBasedFormData } from '../commons/criteria-based/criteria-based-utils';
 
 export const DEFAULT_ROW_VALUE = {
     [CONTINGENCY_NAME]: '',
@@ -45,16 +40,6 @@ export const DEFAULT_TABLE_ROWS = [
     DEFAULT_ROW_VALUE,
     DEFAULT_ROW_VALUE,
 ];
-
-export const getContingencyListSchema = () =>
-    yup.object().shape({
-        [NAME]: yup.string().required(),
-        [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
-        [EQUIPMENT_TYPE]: yup.string().nullable(),
-        [SCRIPT]: yup.string().nullable(),
-        ...getExplicitNamingSchema(EQUIPMENT_TABLE),
-        ...getCriteriaBasedSchema(),
-    });
 
 export const getContingencyListEmptyFormData = () => ({
     [NAME]: '',

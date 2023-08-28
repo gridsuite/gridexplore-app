@@ -6,6 +6,7 @@
  */
 
 import {
+    CONTINGENCY_LIST_TYPE,
     CONTINGENCY_NAME,
     EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
@@ -19,15 +20,60 @@ import { gridItem } from '../../../utils/dialog-utils';
 import yup from '../../../utils/yup-config';
 import { DEFAULT_ROW_VALUE } from '../contingency-list-utils';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
+import { ContingencyListType } from 'utils/elementType';
+
+const getSchema = (additionalTests) => {
+    let schema = yup
+        .array()
+        .of(
+            yup.object().shape({
+                [CONTINGENCY_NAME]: yup.string().nullable(),
+                [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
+            })
+        )
+        .test(
+            'rowWithoutNameOrEquipments',
+            'contingencyTablePartiallyDefinedError',
+            (array) => {
+                return !array.some(
+                    (row) =>
+                        (!row[CONTINGENCY_NAME]?.trim() &&
+                            row[EQUIPMENT_IDS]?.length) ||
+                        (row[CONTINGENCY_NAME]?.trim() &&
+                            !row[EQUIPMENT_IDS]?.length)
+                );
+            }
+        )
+        .test(
+            'noRowWithNameAndEquipments',
+            'contingencyTableContainAtLeastOneRowError',
+            (array) => {
+                return array.some(
+                    (row) =>
+                        row[CONTINGENCY_NAME]?.trim() &&
+                        row[EQUIPMENT_IDS]?.length
+                );
+            }
+        );
+
+    if (additionalTests) {
+        schema = schema.when([CONTINGENCY_LIST_TYPE], additionalTests);
+    }
+
+    return schema;
+};
 
 export const getExplicitNamingSchema = (id) => ({
-    [id]: yup.array().of(
-        yup.object().shape({
-            [CONTINGENCY_NAME]: yup.string().nullable(),
-            [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
-        })
-    ),
+    [id]: getSchema({
+        is: ContingencyListType.EXPLICIT_NAMING.id,
+        then: (schema) => schema,
+    }),
 });
+
+export const getExplicitNamingEditSchema = (id) => ({
+    [id]: getSchema(),
+});
+
 const suppressKeyboardEvent = (params) => {
     const key = params.event.key;
     return key === 'Enter' || key === 'ArrowLeft' || key === 'ArrowRight';

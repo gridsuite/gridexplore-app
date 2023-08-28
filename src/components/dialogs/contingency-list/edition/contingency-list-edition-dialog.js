@@ -11,7 +11,6 @@ import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import {
     editContingencyList,
     getContingencyListEmptyFormData,
-    getContingencyListSchema,
     getFormDataFromFetchedElement,
 } from '../contingency-list-utils';
 import React, { useEffect, useState } from 'react';
@@ -20,9 +19,24 @@ import CustomMuiDialog from '../../custom-mui-dialog';
 import ContingencyListEditionForm from './contingency-list-edition-form';
 import { ElementType } from '../../../../utils/elementType';
 import NameWrapper from '../../name-wrapper';
-import { NAME } from '../../../utils/field-constants';
+import {
+    CONTINGENCY_LIST_TYPE,
+    EQUIPMENT_TABLE,
+    NAME,
+    SCRIPT,
+} from '../../../utils/field-constants';
+import yup from 'components/utils/yup-config';
+import { getCriteriaBasedSchema } from 'components/dialogs/commons/criteria-based/criteria-based-utils';
+import { getExplicitNamingEditSchema } from '../explicit-naming/explicit-naming-form';
 
-const schema = getContingencyListSchema();
+const schema = yup.object().shape({
+    [NAME]: yup.string().required(),
+    [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
+    [EQUIPMENT_TABLE]: yup.string().nullable(),
+    [SCRIPT]: yup.string().nullable(),
+    ...getCriteriaBasedSchema(),
+    ...getExplicitNamingEditSchema(EQUIPMENT_TABLE),
+});
 
 const emptyFormData = getContingencyListEmptyFormData();
 
