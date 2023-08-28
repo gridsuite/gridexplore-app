@@ -16,7 +16,7 @@ import {
 } from '../contingency-list-utils';
 import React, { useEffect, useState } from 'react';
 import { getContingencyList } from '../../../../utils/rest-api';
-import CustomMuiDialog from '../../custom-mui-dialog';
+import CustomMuiDialog from '../../commons/custom-mui-dialog/custom-mui-dialog';
 import ContingencyListEditionForm from './contingency-list-edition-form';
 import { ElementType } from '../../../../utils/elementType';
 import NameWrapper from '../../name-wrapper';

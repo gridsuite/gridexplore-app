@@ -14,7 +14,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { getFilterById } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import CustomMuiDialog from '../custom-mui-dialog';
+import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
 import yup from '../../utils/yup-config';
 import ExplicitNamingFilterForm, {
     explicitNamingFilterSchema,

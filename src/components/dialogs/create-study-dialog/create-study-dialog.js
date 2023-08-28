@@ -45,7 +45,7 @@ import {
     STUDY_NAME,
 } from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import CustomMuiDialog from '../custom-mui-dialog';
+import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
 import { ErrorInput, FieldErrorAlert, TextInput } from '@gridsuite/commons-ui';
 import StudyNamePrefilledInput from './study-name-prefilled-input';
 

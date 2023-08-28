@@ -24,7 +24,7 @@ import { useForm } from 'react-hook-form';
 import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../../utils/field-constants';
 import { ErrorInput, TextInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import CustomMuiDialog from '../custom-mui-dialog';
+import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
 import {
     createCaseDialogFormValidationSchema,
     getCreateCaseDialogFormValidationDefaultValues,
