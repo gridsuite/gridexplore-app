@@ -10,7 +10,10 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
+import { useDispatch, useSelector } from 'react-redux';
+import { UploadCase } from './upload-case';
 import makeStyles from '@mui/styles/makeStyles';
+import { removeSelectedFile } from '../../redux/actions';
 import { ElementType } from '../../utils/elementType';
 import { useDebounce } from '@gridsuite/commons-ui';
 
@@ -80,11 +83,6 @@ export const useTextValue = ({
     return [value, field, setValue, hasChanged];
 };
 
-const makeAdornmentEndIcon = (content) => {
-    return {
-        endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
-    };
-};
 export const useNameField = ({
     parentDirectoryId,
     elementType,
@@ -173,11 +171,15 @@ export const useNameField = ({
         }
         if (checking) {
             setAdornment(
-                makeAdornmentEndIcon(<CircularProgress size="1rem" />)
+                <InputAdornment position="end">
+                    <CircularProgress size="1rem" />
+                </InputAdornment>
             );
         } else {
             setAdornment(
-                makeAdornmentEndIcon(<CheckIcon style={{ color: 'green' }} />)
+                <InputAdornment position="end">
+                    <CheckIcon style={{ color: 'green' }} />
+                </InputAdornment>
             );
         }
     }, [checking, error]);

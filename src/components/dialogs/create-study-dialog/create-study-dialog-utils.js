@@ -24,9 +24,9 @@ export const getCreateStudyDialogFormDefaultValues = ({ directory = '' }) => {
 export const createStudyDialogFormValidationSchema = yup.object().shape({
     [STUDY_NAME]: yup.string().required(),
     [FORMATTED_CASE_PARAMETERS]: yup.mixed().required(),
-    [DESCRIPTION]: yup.string().nullable(),
+    [DESCRIPTION]: yup.string(),
     [CURRENT_PARAMETERS]: yup.mixed().required(),
     [CASE_UUID]: yup.string().required(),
-    [CASE_FILE]: yup.mixed().required(),
+    [CASE_FILE]: yup.mixed().nullable().required(),
     [DIRECTORY]: yup.string().required(),
 });

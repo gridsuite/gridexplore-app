@@ -315,6 +315,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 <DirectorySelect types={[ElementType.DIRECTORY]} />
             ) : (
                 <UploadNewCase
+                    name={CASE_FILE}
                     caseFileLoading={caseFileLoading}
                     handleCaseFileUpload={handleCaseFileUpload}
                 />
