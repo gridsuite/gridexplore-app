@@ -7,6 +7,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { FILTER_PROPERTIES } from './filter-properties';
 import { CRITERIA_BASED } from '../../utils/field-constants';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
+import MultipleAutocompleteInput from "../../utils/rhf-inputs/autocomplete-inputs/multiple-autocomplete-input";
 
 export const PROPERTY_NAME = 'name_property';
 export const PROPERTY_VALUES = 'prop_values';
@@ -63,22 +64,10 @@ function FilterProperty(props: FilterPropertyProps) {
             </Grid>
             {props.valuesFields.map((valuesField) => (
                 <Grid item xs key={valuesField.name}>
-                    <AutocompleteInput
+                    <MultipleAutocompleteInput
                         name={`${CRITERIA_BASED}.${FILTER_PROPERTIES}[${props.index}].${valuesField.name}`}
                         label={valuesField.label}
                         options={predefinedValues}
-                        freeSolo
-                        forcePopupIcon
-                        multiple
-                        renderTags={(val: string[], getTagsProps: any) =>
-                            val.map((option: string, index: number) => (
-                                <Chip
-                                    size={'small'}
-                                    label={option}
-                                    {...getTagsProps({ index })}
-                                />
-                            ))
-                        }
                     />
                 </Grid>
             ))}
