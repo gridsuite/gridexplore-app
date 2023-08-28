@@ -30,7 +30,6 @@ declare module '@gridsuite/commons-ui' {
         paramsAsArray: ParameterType[];
         initValues: Record<string, any>;
         onChange: (paramName: string, value: any, isEdit: boolean) => void;
-        variant?: 'outlined' | 'standard' | 'filled';
         showSeparator?: boolean;
     }
     interface IFieldErrorAlert {
