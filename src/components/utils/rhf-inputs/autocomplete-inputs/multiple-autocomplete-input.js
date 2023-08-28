@@ -8,7 +8,7 @@ const MultipleAutocompleteInput = ({ name, ...props }) => {
         name,
     });
 
-    const { append, remove } = useFieldArray({
+    const { append } = useFieldArray({
         name,
     });
 
