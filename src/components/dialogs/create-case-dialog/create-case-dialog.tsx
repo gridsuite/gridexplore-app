@@ -73,7 +73,6 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     const userId = useSelector((state: ReduxState) => state.user.profile.sub);
 
     const handleCloseDialog = () => {
-        setValue(CASE_FILE, null);
         onClose();
     };
 
