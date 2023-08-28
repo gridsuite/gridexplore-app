@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { FormProvider } from 'react-hook-form';
+import { FieldErrors, FormProvider } from 'react-hook-form';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Grid } from '@mui/material';
@@ -16,7 +16,7 @@ interface ICustomMuiDialog {
     formMethods: any;
     onClose: (event: React.MouseEvent) => void;
     onSave: (data: any) => void;
-    onValidationError?: (errors: any) => void;
+    onValidationError?: (errors: FieldErrors) => void;
     titleId: string;
     disabledSave: boolean;
     removeOptional?: boolean;
@@ -80,7 +80,7 @@ const CustomMuiDialog: FunctionComponent<ICustomMuiDialog> = ({
         onClose(data);
     };
 
-    const handleValidationError = (errors: any) => {
+    const handleValidationError = (errors: FieldErrors) => {
         onValidationError && onValidationError(errors);
     };
 
