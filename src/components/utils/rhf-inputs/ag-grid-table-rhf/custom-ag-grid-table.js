@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
-import { useFieldArray, useFormContext } from "react-hook-form";
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import { Grid } from "@mui/material";
-import { useTheme } from "@mui/styles";
-import BottomRightButtons from "./bottom-right-buttons";
-import { useIntl } from "react-intl";
-import { AG_GRID_ROW_UUID } from "../../field-constants";
+import React, { useCallback, useEffect, useState } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
+import { Grid } from '@mui/material';
+import { useTheme } from '@mui/styles';
+import BottomRightButtons from './bottom-right-buttons';
+import { useIntl } from 'react-intl';
+import { AG_GRID_ROW_UUID } from '../../field-constants';
 
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
@@ -35,7 +35,8 @@ const style = (customProps) => ({
         // It shouldn't be exactly like this, but I couldn't make it works otherwise
         // https://www.ag-grid.com/react-data-grid/global-style-customisation/
         '--ag-alpine-active-color': theme.palette.primary.main + ' !important',
-        '--ag-checkbox-indeterminate-color': theme.palette.primary.main + ' !important',
+        '--ag-checkbox-indeterminate-color':
+            theme.palette.primary.main + ' !important',
         '--ag-background-color': theme.agGridBackground.color + ' !important',
         '--ag-header-background-color':
             theme.agGridBackground.color + ' !important',
