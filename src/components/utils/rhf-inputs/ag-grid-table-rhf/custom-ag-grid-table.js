@@ -35,6 +35,7 @@ const style = (customProps) => ({
         // It shouldn't be exactly like this, but I couldn't make it works otherwise
         // https://www.ag-grid.com/react-data-grid/global-style-customisation/
         '--ag-alpine-active-color': theme.palette.primary.main + ' !important',
+        '--ag-checkbox-indeterminate-color': theme.palette.primary.main + ' !important',
         '--ag-background-color': theme.agGridBackground.color + ' !important',
         '--ag-header-background-color':
             theme.agGridBackground.color + ' !important',
