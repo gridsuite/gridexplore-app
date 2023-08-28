@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
-import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
-import { Grid } from '@mui/material';
-import { useTheme } from '@mui/styles';
-import BottomRightButtons from './bottom-right-buttons';
-import { useIntl } from 'react-intl';
-import { AG_GRID_ROW_UUID } from '../../field-constants';
+import React, { useCallback, useEffect, useState } from "react";
+import { useFieldArray, useFormContext } from "react-hook-form";
+import { AgGridReact } from "ag-grid-react";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import { Grid } from "@mui/material";
+import { useTheme } from "@mui/styles";
+import BottomRightButtons from "./bottom-right-buttons";
+import { useIntl } from "react-intl";
+import { AG_GRID_ROW_UUID } from "../../field-constants";
 
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
