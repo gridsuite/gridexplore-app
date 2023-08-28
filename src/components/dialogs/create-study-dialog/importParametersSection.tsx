@@ -6,26 +6,29 @@
  */
 
 import { Divider } from '@mui/material';
-import { FlatParameters, ParameterType } from '@gridsuite/commons-ui';
+import { FlatParameters } from '@gridsuite/commons-ui';
 import React, { useState, FunctionComponent } from 'react';
 import AdvancedParameterButton from './advancedParameterButton';
-import { CURRENT_PARAMETERS } from '../../utils/field-constants';
+import {
+    CURRENT_PARAMETERS,
+    FORMATTED_CASE_PARAMETERS,
+} from '../../utils/field-constants';
 import { useController } from 'react-hook-form';
 import Box from '@mui/material/Box';
 
-interface ImportParametersSectionProps {
-    formatWithParameters: ParameterType[];
-}
-
-const ImportParametersSection: FunctionComponent<
-    ImportParametersSectionProps
-> = ({ formatWithParameters }) => {
+const ImportParametersSection: FunctionComponent = () => {
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
 
     const {
         field: { onChange, value: currentParameters },
     } = useController({
         name: CURRENT_PARAMETERS,
+    });
+
+    const {
+        field: { value: formatWithParameters },
+    } = useController({
+        name: FORMATTED_CASE_PARAMETERS,
     });
 
     const handleParamsChange = (

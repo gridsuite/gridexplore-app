@@ -81,7 +81,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     } = createStudyFormMethods;
 
     // Constants
-    const formattedCaseParameters = watch(FORMATTED_CASE_PARAMETERS);
     const studyName = watch(STUDY_NAME);
     const caseUuid = watch(CASE_UUID);
 
@@ -317,9 +316,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     handleCaseFileUpload={handleCaseFileUpload}
                 />
             )}
-            <ImportParametersSection
-                formatWithParameters={formattedCaseParameters}
-            />
+            <ImportParametersSection />
             <Grid pt={1}>
                 <ErrorInput name={API_CALL} InputField={FieldErrorAlert} />
                 <ErrorInput name={CASE_FILE} InputField={FieldErrorAlert} />
