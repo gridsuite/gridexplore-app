@@ -63,18 +63,16 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
         setValue,
         formState: { isValid },
         setError,
-        getValues,
+        watch,
         clearErrors,
     } = createCaseFormMethods;
+
+    const caseName = watch(CASE_NAME);
 
     const activeDirectory = useSelector(
         (state: ReduxState) => state.activeDirectory
     );
     const userId = useSelector((state: ReduxState) => state.user.profile.sub);
-
-    const handleCloseDialog = () => {
-        onClose();
-    };
 
     const handleCreateNewCase = ({
         caseName,
@@ -131,7 +129,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
                 setValue(CASE_FILE, currentFile);
                 const { name: caseFileName } = currentFile;
 
-                if (caseFileName) {
+                if (caseFileName && !caseName) {
                     clearErrors(CASE_NAME);
                     setValue(
                         CASE_NAME,
@@ -163,7 +161,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     const [caseFileAdornment, caseNameChecking]: NameCheckReturn =
         useNameCheck<IFormData>({
             field: CASE_NAME,
-            value: getValues(CASE_NAME),
+            value: caseName,
             elementType: ElementType.CASE,
             setError,
         });
@@ -175,7 +173,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
             formMethods={createCaseFormMethods}
             removeOptional={true}
             open={open}
-            onClose={handleCloseDialog}
+            onClose={onClose}
             onSave={handleCreateNewCase}
             disabledSave={!isValid || caseNameChecking}
         >

@@ -67,6 +67,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         mode: 'onChange',
         defaultValues: getCreateStudyDialogFormDefaultValues({
             directory: activeDirectory,
+            studyName: providedExistingCase?.elementName,
         }),
         resolver: yupResolver(createStudyDialogFormValidationSchema),
     });
@@ -76,13 +77,13 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         formState: { isValid },
         setError,
         clearErrors,
-        getValues,
         watch,
     } = createStudyFormMethods;
 
     // Constants
-    const formattedCaseParameters = getValues(FORMATTED_CASE_PARAMETERS);
+    const formattedCaseParameters = watch(FORMATTED_CASE_PARAMETERS);
     const studyName = watch(STUDY_NAME);
+    const caseUuid = watch(CASE_UUID);
 
     // callbacks
     const handleApiCallError = useCallback(
@@ -138,7 +139,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     // Methods
     const handleDeleteCase = () => {
-        const caseUuid = getValues(CASE_UUID);
         // if we cancel case creation, we need to delete the associated newly created case (if we created one)
         if (caseUuid && !providedExistingCase) {
             deleteCase(caseUuid).catch(handleApiCallError);
@@ -223,7 +223,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 // Create new case
                 createCaseWithoutDirectoryElementCreation(currentFile)
                     .then((newCaseUuid) => {
-                        const prevCaseUuid = getValues(CASE_UUID);
+                        const prevCaseUuid = caseUuid;
 
                         if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
                             deleteCase(prevCaseUuid).catch((error) =>
@@ -295,9 +295,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     <StudyNamePrefilledInput
                         fieldName={STUDY_NAME}
                         label={'nameProperty'}
-                        providedExistingCaseName={
-                            providedExistingCase?.elementName
-                        }
                         adornment={studyNameAdornment}
                     />
                 </Grid>

@@ -10,7 +10,7 @@ import { Button, Typography, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DirectorySelector from '../directory-selector';
 import { fetchPath } from '../../../utils/rest-api';
-import { useFormContext } from 'react-hook-form';
+import { useController } from 'react-hook-form';
 import { DIRECTORY } from '../../utils/field-constants';
 import { ElementType } from '../../../utils/elementType';
 
@@ -26,9 +26,11 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
     const [open, setOpen] = useState<boolean>(false);
     const [activeDirectoryName, setActiveDirectoryName] = useState('');
 
-    const { setValue, watch } = useFormContext();
-
-    const { activeDirectory: directory } = watch(DIRECTORY);
+    const {
+        field: { onChange, value: directory },
+    } = useController({
+        name: DIRECTORY,
+    });
 
     useEffect(() => {
         if (directory) {
@@ -49,9 +51,7 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
 
     const handleClose = (directory: any) => {
         if (directory.length) {
-            setValue(DIRECTORY, directory[0]?.id, {
-                shouldDirty: true,
-            });
+            onChange(directory[0]?.id);
         }
         setOpen(false);
     };

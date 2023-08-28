@@ -10,7 +10,7 @@ import { FlatParameters, ParameterType } from '@gridsuite/commons-ui';
 import React, { useState, FunctionComponent } from 'react';
 import AdvancedParameterButton from './advancedParameterButton';
 import { CURRENT_PARAMETERS } from '../../utils/field-constants';
-import { useFormContext } from 'react-hook-form';
+import { useController } from 'react-hook-form';
 import Box from '@mui/material/Box';
 
 interface ImportParametersSectionProps {
@@ -22,9 +22,11 @@ const ImportParametersSection: FunctionComponent<
 > = ({ formatWithParameters }) => {
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
 
-    const { setValue, watch } = useFormContext();
-
-    const currentParameters = watch(CURRENT_PARAMETERS);
+    const {
+        field: { onChange, value: currentParameters },
+    } = useController({
+        name: CURRENT_PARAMETERS,
+    });
 
     const handleParamsChange = (
         paramName: string,
@@ -32,7 +34,7 @@ const ImportParametersSection: FunctionComponent<
         isEdit: boolean
     ): void => {
         if (!isEdit) {
-            setValue(CURRENT_PARAMETERS, {
+            onChange({
                 ...currentParameters,
                 ...{ [paramName]: value },
             });

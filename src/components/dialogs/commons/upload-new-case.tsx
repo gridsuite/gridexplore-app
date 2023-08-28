@@ -24,12 +24,12 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
     handleCaseFileUpload,
 }) => {
     const {
-        field: { ref, ...inputProps },
+        field: { ref, value },
     } = useController({
         name,
     });
 
-    const caseFile = inputProps.value as File;
+    const caseFile = value as File;
     const { name: caseFileName } = caseFile || {};
 
     return (

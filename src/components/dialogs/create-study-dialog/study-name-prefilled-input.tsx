@@ -6,14 +6,12 @@ import { CASE_FILE } from '../../utils/field-constants';
 interface IPrefilledTextInput {
     label: string;
     fieldName: string;
-    providedExistingCaseName: string;
     adornment: ReactElement | null;
 }
 
 const StudyNamePrefilledInput: FunctionComponent<IPrefilledTextInput> = ({
     label,
     fieldName,
-    providedExistingCaseName,
     adornment,
 }) => {
     const {
@@ -35,21 +33,14 @@ const StudyNamePrefilledInput: FunctionComponent<IPrefilledTextInput> = ({
                 clearErrors(fieldName);
                 setValue(fieldName, name.substring(0, name.indexOf('.')), {
                     shouldDirty: true,
+                    shouldValidate: true,
                 });
             }
-        }
-
-        if (providedExistingCaseName) {
-            setValue(fieldName, providedExistingCaseName, {
-                shouldValidate: true,
-                shouldDirty: true,
-            });
         }
     }, [
         caseFile,
         apiCallErrorMessage,
         caseFileErrorMessage,
-        providedExistingCaseName,
         setValue,
         clearErrors,
         fieldName,
