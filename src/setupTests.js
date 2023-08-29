@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-global.IS_REACT_ACT_ENVIRONMENT = true;
-
-// make crypto.randomUUID() available in tests
 import crypto from 'crypto';
 
+// make crypto.randomUUID() available in tests
 window.crypto = {
     randomUUID: function () {
         return crypto.randomUUID();
     },
 };
+
+global.IS_REACT_ACT_ENVIRONMENT = true;
