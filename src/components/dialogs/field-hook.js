@@ -10,25 +10,18 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import makeStyles from '@mui/styles/makeStyles';
+import { useDispatch, useSelector } from 'react-redux';
+import { UploadCase } from './upload-case';
+import { removeSelectedFile } from '../../redux/actions';
 import { ElementType } from '../../utils/elementType';
 import { useDebounce } from '@gridsuite/commons-ui';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     helperText: {
         margin: 0,
         marginTop: 4,
     },
-    dragIcon: {
-        padding: theme.spacing(0),
-        border: theme.spacing(1),
-        borderRadius: theme.spacing(0),
-        zIndex: 90,
-    },
-    iconColor: {
-        color: theme.palette.primary.main,
-    },
-}));
+};
 
 export const useTextValue = ({
     label,
@@ -40,8 +33,6 @@ export const useTextValue = ({
 }) => {
     const [value, setValue] = useState(defaultValue);
     const [hasChanged, setHasChanged] = useState(false);
-
-    const classes = useStyles();
 
     const handleChangeValue = useCallback((event) => {
         setValue(event.target.value);
@@ -59,21 +50,13 @@ export const useTextValue = ({
                 style={{ width: '100%' }}
                 onChange={handleChangeValue}
                 FormHelperTextProps={{
-                    className: classes.helperText,
+                    sx: styles.helperText,
                 }}
                 {...formProps}
                 {...(adornment && { InputProps: adornment })}
             />
         );
-    }, [
-        id,
-        label,
-        value,
-        handleChangeValue,
-        classes.helperText,
-        formProps,
-        adornment,
-    ]);
+    }, [id, label, value, handleChangeValue, formProps, adornment]);
 
     useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
 

@@ -14,21 +14,12 @@ import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Alert from '@mui/material/Alert';
-import makeStyles from '@mui/styles/makeStyles';
 import FormControl from '@mui/material/FormControl';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import { ElementType } from '../../utils/elementType';
 import { useNameField } from './field-hook';
-
-const useStyles = makeStyles((theme) => ({
-    paper: {
-        padding: theme.spacing(2),
-        textAlign: 'center',
-        color: theme.palette.text.secondary,
-    },
-}));
 
 /**
  * Dialog to create a directory
@@ -46,8 +37,6 @@ export const CreateDirectoryDialog = ({
     parentDirectory,
     error,
 }) => {
-    const classes = useStyles();
-
     const [isPrivate, setIsPrivate] = React.useState(true);
 
     const [name, nameField, nameError, nameOk] = useNameField({
@@ -87,7 +76,7 @@ export const CreateDirectoryDialog = ({
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 {nameField}
-                <FormControl className={classes.formControl}>
+                <FormControl>
                     <RadioGroup
                         aria-label=""
                         name="DirectoryAccessRights"
