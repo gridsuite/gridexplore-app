@@ -6,12 +6,11 @@
     "dependencies": {
         "@emotion/react": "^11.8.2",
         "@emotion/styled": "^11.8.1",
-        "@gridsuite/commons-ui": "0.33.0",
+        "@gridsuite/commons-ui": "0.35.4",
         "@hookform/resolvers": "^3.0.0",
         "@mui/icons-material": "^5.5.0",
         "@mui/lab": "^5.0.0-alpha.72",
         "@mui/material": "^5.5.0",
-        "@mui/styles": "^5.5.0",
         "@reduxjs/toolkit": "^1.2.3",
         "@types/node": "^20.2.5",
         "@types/react": "^18.2.9",
@@ -44,7 +43,7 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
-        "test": "react-scripts test --watchAll=false",
+        "test": "react-scripts test --watchAll=false --transformIgnorePatterns \"node_modules/(?!@gridsuite/commons-ui)/\"",
         "eject": "react-scripts eject"
     },
     "eslintConfig": {
@@ -59,7 +58,7 @@
     },
     "browserslist": {
         "production": [
-            ">0.2%",
+            ">0.2% and supports es6-class",
             "not dead",
             "not op_mini all"
         ],
@@ -70,7 +69,6 @@
         ]
     },
     "devDependencies": {
-        "clsx": "^1.1.1",
         "http-proxy-middleware": "^2.0.0",
         "prettier": "^2.0.0",
         "eslint-config-prettier": "^8.0.0",

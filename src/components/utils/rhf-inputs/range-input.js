@@ -1,6 +1,6 @@
 import { useWatch } from 'react-hook-form';
 import { OPERATION_TYPE, VALUE_1, VALUE_2 } from '../field-constants';
-import FloatInput from './float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import yup from '../yup-config';
 import { FormattedMessage } from 'react-intl';
 import React, { useMemo } from 'react';
@@ -37,11 +37,24 @@ export const getRangeInputDataForm = (name, rangeValue) => ({
 });
 
 export const getRangeInputSchema = (name) => ({
-    [name]: yup.object().shape({
-        [OPERATION_TYPE]: yup.string(),
-        [VALUE_1]: yup.number().nullable(),
-        [VALUE_2]: yup.number().nullable(),
-    }),
+    [name]: yup.object().shape(
+        {
+            [OPERATION_TYPE]: yup.string(),
+            [VALUE_1]: yup.number().when([OPERATION_TYPE, VALUE_2], {
+                is: (operationType, value2) =>
+                    operationType === RangeType.RANGE.id && value2 !== null,
+                then: (schema) => schema.required(),
+                otherwise: (schema) => schema.nullable(),
+            }),
+            [VALUE_2]: yup.number().when([OPERATION_TYPE, VALUE_1], {
+                is: (operationType, value1) =>
+                    operationType === RangeType.RANGE.id && value1 !== null,
+                then: (schema) => schema.required(),
+                otherwise: (schema) => schema.nullable(),
+            }),
+        },
+        [VALUE_1, VALUE_2]
+    ),
 });
 
 const RangeInput = ({ name, label }) => {
@@ -60,6 +73,7 @@ const RangeInput = ({ name, label }) => {
             name={`${name}.${VALUE_1}`}
             clearable={false}
             formProps={{
+                size: 'medium',
                 placeholder: isOperationTypeRange ? 'Min' : '',
             }}
         />
@@ -71,6 +85,7 @@ const RangeInput = ({ name, label }) => {
             clearable={false}
             label={''}
             formProps={{
+                size: 'medium',
                 placeholder: 'Max',
             }}
         />

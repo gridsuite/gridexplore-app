@@ -7,7 +7,6 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Button from '@mui/material/Button';
@@ -58,21 +57,21 @@ import {
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
 } from '../../utils/UIconstants.js';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     addIcon: {
         fontSize: '64px',
     },
     addButtonArea: {
         height: '136px',
     },
-    paramDivider: {
+    paramDivider: (theme) => ({
         marginTop: theme.spacing(2),
-    },
-    advancedParameterButton: {
+    }),
+    advancedParameterButton: (theme) => ({
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(1),
-    },
-}));
+    }),
+};
 
 const SelectCase = () => {
     const dispatch = useDispatch();
@@ -147,7 +146,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const userId = useSelector((state) => state.user.profile.sub);
 
-    const classes = useStyles();
     const intl = useIntl();
     const dispatch = useDispatch();
 
@@ -376,7 +374,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     }) => {
         return (
             <>
-                <Grid item xs={12} className={classes.advancedParameterButton}>
+                <Grid item xs={12} sx={styles.advancedParameterButton}>
                     <Button
                         startIcon={<SettingsIcon />}
                         endIcon={
@@ -496,7 +494,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         paramDivider
     ) => (
         <>
-            <Divider className={paramDivider} />
+            <Divider sx={paramDivider} />
             <div
                 style={{
                     marginTop: '10px',
@@ -549,7 +547,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                                     isParamsCaseFileDisplayed,
                                     handleShowParametersForCaseFileClick,
                                     formatWithParameters,
-                                    classes.paramDivider
+                                    styles.paramDivider
                                 )}
                             </>
                         )
@@ -603,7 +601,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                                 isParamsDisplayed,
                                 handleShowParametersClick,
                                 formatWithParameters,
-                                classes.paramDivider
+                                styles.paramDivider
                             )}
                         </>
                     )}

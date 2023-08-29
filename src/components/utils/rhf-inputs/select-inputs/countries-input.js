@@ -3,7 +3,7 @@ import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 import React, { useCallback, useMemo } from 'react';
 import { getComputedLanguage } from '../../../../utils/language';
 import { Chip } from '@mui/material';
-import AutocompleteInput from '../autocomplete-inputs/autocomplete-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 
 export const CountriesInput = ({ name, label }) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);

@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useEffect } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -30,11 +29,11 @@ import PropTypes from 'prop-types';
  * @param {String} error error message if there is a fail
  */
 
-const useStyles = makeStyles(() => ({
+const styles = {
     formControl: {
         minWidth: 300,
     },
-}));
+};
 
 const AccessRightsDialog = ({
     open,
@@ -44,8 +43,6 @@ const AccessRightsDialog = ({
     isPrivate,
     error,
 }) => {
-    const classes = useStyles();
-
     const [loading, setLoading] = React.useState(false);
     const [selected, setSelected] = React.useState(
         // on purpose use of == with null, in stead of ===, idiomatic
@@ -79,7 +76,7 @@ const AccessRightsDialog = ({
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <FormControl className={classes.formControl}>
+                <FormControl sx={styles.formControl}>
                     <RadioGroup
                         aria-label=""
                         name="elementAccessRights"
