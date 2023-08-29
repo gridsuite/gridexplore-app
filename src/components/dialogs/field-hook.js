@@ -10,9 +10,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import { useDispatch, useSelector } from 'react-redux';
-import { UploadCase } from './upload-case';
-import { removeSelectedFile } from '../../redux/actions';
 import { ElementType } from '../../utils/elementType';
 import { useDebounce } from '@gridsuite/commons-ui';
 
