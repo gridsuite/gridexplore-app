@@ -8,20 +8,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 
 import EditIcon from '@mui/icons-material/Edit';
 
 import IconButton from '@mui/material/IconButton';
 import { Toolbar, Tooltip } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
-    icon: {
+const styles = {
+    icon: (theme) => ({
         marginRight: theme.spacing(1),
         width: '18px',
         height: '18px',
-    },
-}));
+    }),
+};
 
 /**
  * Generic CommonToolbar
@@ -29,8 +28,6 @@ const useStyles = makeStyles((theme) => ({
  */
 const CommonToolbar = (props) => {
     const { items, ...others } = props;
-
-    const classes = useStyles();
 
     function makeToolbarButton(
         key,
@@ -48,7 +45,7 @@ const CommonToolbar = (props) => {
                 {/* to make tooltips works with disabled buttons, add a simple wrapper span */}
                 <span>
                     <IconButton
-                        className={classes.icon}
+                        sx={styles.icon}
                         onClick={() => callback()}
                         size="large"
                         disabled={disabledItem}

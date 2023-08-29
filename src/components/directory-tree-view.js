@@ -7,7 +7,6 @@
 
 import React, { useCallback, useEffect, useRef } from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
 import TreeView from '@mui/lab/TreeView';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LockIcon from '@mui/icons-material/Lock';
@@ -21,14 +20,15 @@ import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory } from '../redux/actions';
 import CustomTreeItem from './custom-tree-item';
+import { Box } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
-    treeViewRoot: {
+const styles = {
+    treeViewRoot: (theme) => ({
         padding: theme.spacing(0.5),
-    },
-    treeItemRoot: {
+    }),
+    treeItemRoot: (theme) => ({
         userSelect: 'none',
-        '&:focus > $treeItemContent $treeItemLabel, .focused': {
+        '&:focus > .MuiTreeItem-content .MuiTreeItem-label, .focused': {
             borderRadius: theme.spacing(2),
             backgroundColor: theme.row.primary,
         },
@@ -36,44 +36,44 @@ const useStyles = makeStyles((theme) => ({
             borderRadius: theme.spacing(2),
             backgroundColor: theme.row.primary,
         },
-    },
-    treeItemSelected: {
+    }),
+    treeItemSelected: (theme) => ({
         borderRadius: theme.spacing(2),
         backgroundColor: theme.row.hover,
         fontWeight: 'bold',
-    },
-    treeItemContent: {
+    }),
+    treeItemContent: (theme) => ({
         paddingRight: theme.spacing(1),
         paddingLeft: theme.spacing(1),
-    },
+    }),
     treeItemIconContainer: {
         width: '18px',
         display: 'flex',
         justifyContent: 'center',
     },
-    treeItemLabel: {
+    treeItemLabel: (theme) => ({
         flexGrow: 1,
         overflow: 'hidden',
         paddingRight: theme.spacing(1),
         paddingLeft: theme.spacing(1),
         fontWeight: 'inherit',
         color: 'inherit',
-    },
-    treeItemLabelRoot: {
+    }),
+    treeItemLabelRoot: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(0.5, 0),
-    },
+    }),
     treeItemLabelText: {
         fontWeight: 'inherit',
         flexGrow: 1,
     },
-    icon: {
+    icon: (theme) => ({
         marginRight: theme.spacing(1),
         width: '18px',
         height: '18px',
-    },
-}));
+    }),
+};
 
 const DirectoryTreeView = ({
     treeViewUuid,
@@ -81,7 +81,6 @@ const DirectoryTreeView = ({
     onContextMenu,
     onDirectoryUpdate,
 }) => {
-    const classes = useStyles();
     const dispatch = useDispatch();
 
     const [expanded, setExpanded] = React.useState([]);
@@ -171,8 +170,8 @@ const DirectoryTreeView = ({
                 key={node.elementUuid}
                 nodeId={node.elementUuid}
                 label={
-                    <div
-                        className={classes.treeItemLabelRoot}
+                    <Box
+                        sx={styles.treeItemLabelRoot}
                         onContextMenu={(e) =>
                             handleContextMenuClick(e, node.elementUuid)
                         }
@@ -188,7 +187,7 @@ const DirectoryTreeView = ({
                                 placement="bottom"
                                 arrow
                             >
-                                <LockIcon className={classes.icon} />
+                                <LockIcon sx={styles.icon} />
                             </Tooltip>
                         ) : null}
                         <Tooltip
@@ -201,33 +200,30 @@ const DirectoryTreeView = ({
                             arrow
                             placement="bottom-start"
                         >
-                            <Typography
-                                noWrap
-                                className={classes.treeItemLabelText}
-                            >
+                            <Typography noWrap sx={styles.treeItemLabelText}>
                                 {node.elementName}
                             </Typography>
                         </Tooltip>
-                    </div>
+                    </Box>
                 }
                 ContentProps={{
                     onExpand: handleIconClick,
                     onSelect: handleLabelClick,
-                    classes: {
-                        root: classes.treeItemRoot,
-                        selected: classes.treeItemSelected,
-                        focused: classes.treeItemFocused,
-                        label: classes.treeItemLabel,
-                        iconContainer: classes.treeItemIconContainer,
+                    styles: {
+                        root: styles.treeItemRoot,
+                        selected: styles.treeItemSelected,
+                        focused: styles.treeItemFocused,
+                        label: styles.treeItemLabel,
+                        iconContainer: styles.treeItemIconContainer,
                     },
                 }}
                 endIcon={
                     node.subdirectoriesCount > 0 ? (
-                        <ChevronRightIcon className={classes.icon} />
+                        <ChevronRightIcon sx={styles.icon} />
                     ) : null
                 }
-                classes={{
-                    content: classes.treeItemContent,
+                sx={{
+                    content: styles.treeItemContent,
                 }}
             >
                 {Array.isArray(node.children)
@@ -242,13 +238,9 @@ const DirectoryTreeView = ({
     return (
         <>
             <TreeView
-                className={classes.treeViewRoot}
-                defaultCollapseIcon={
-                    <ExpandMoreIcon className={classes.icon} />
-                }
-                defaultExpandIcon={
-                    <ChevronRightIcon className={classes.icon} />
-                }
+                sx={styles.treeViewRoot}
+                defaultCollapseIcon={<ExpandMoreIcon sx={styles.icon} />}
+                defaultExpandIcon={<ChevronRightIcon sx={styles.icon} />}
                 expanded={expanded}
                 selected={
                     selectedDirectory ? selectedDirectory.elementUuid : null
