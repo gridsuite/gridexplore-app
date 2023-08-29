@@ -60,6 +60,8 @@ declare module '@gridsuite/commons-ui' {
 
     export const ErrorInput: FunctionComponent<ErrorInputProps>;
 
+    export const FieldErrorAlert: FunctionComponent;
+
     export const SelectInput: FunctionComponent<
         Omit<
             AutocompleteInputProps,
