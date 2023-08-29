@@ -46,12 +46,6 @@ export const useNameCheck = <T extends Record<string, any>>({
         if (!valueFormatted) {
             setAdornment(null);
         } else {
-            setAdornment(
-                <InputAdornment position="end">
-                    <CircularProgress size="1rem" />
-                </InputAdornment>
-            );
-
             elementExists(activeDirectory, value, elementType)
                 .then((isElementExists) => {
                     if (isElementExists) {
@@ -89,6 +83,12 @@ export const useNameCheck = <T extends Record<string, any>>({
     // handle check case name
     useEffect(() => {
         setIsChecking(true);
+        setAdornment(
+            <InputAdornment position="end">
+                <CircularProgress size="1rem" />
+            </InputAdornment>
+        );
+
         debouncedHandleCheckName();
 
         if (!value) {

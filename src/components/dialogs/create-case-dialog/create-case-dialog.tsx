@@ -65,7 +65,10 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
         setError,
         getValues,
         clearErrors,
+        watch,
     } = createCaseFormMethods;
+
+    const caseName = watch(CASE_NAME);
 
     const activeDirectory = useSelector(
         (state: ReduxState) => state.activeDirectory
@@ -160,7 +163,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     const [caseFileAdornment, caseNameChecking]: NameCheckReturn =
         useNameCheck<IFormData>({
             field: CASE_NAME,
-            value: getValues(CASE_NAME),
+            value: caseName,
             elementType: ElementType.CASE,
             setError,
         });
