@@ -18,7 +18,6 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
-import makeStyles from '@mui/styles/makeStyles';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
@@ -26,20 +25,17 @@ import Typography from '@mui/material/Typography';
 import { updateConfigParameter } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
-const useStyles = makeStyles((theme) => ({
-    title: {
+const styles = {
+    title: (theme) => ({
         padding: theme.spacing(2),
-    },
-    grid: {
+    }),
+    grid: (theme) => ({
         padding: theme.spacing(2),
-    },
-    controlItem: {
-        justifyContent: 'flex-end',
-    },
+    }),
     button: {
         marginBottom: '30px',
     },
-}));
+};
 
 export function useParameterState(paramName) {
     const { snackError } = useSnackMessage();
@@ -70,8 +66,6 @@ export function useParameterState(paramName) {
 }
 
 const ParametersDialog = ({ showParameters, hideParameters }) => {
-    const classes = useStyles();
-
     const [tabIndex, setTabIndex] = useState(0);
 
     function TabPanel(props) {
@@ -92,7 +86,7 @@ const ParametersDialog = ({ showParameters, hideParameters }) => {
     }
 
     function GUITab() {
-        return <Grid container spacing={2} className={classes.grid} />;
+        return <Grid container spacing={2} sx={styles.grid} />;
     }
 
     return (
@@ -104,11 +98,7 @@ const ParametersDialog = ({ showParameters, hideParameters }) => {
             fullWidth={true}
         >
             <DialogTitle id="form-dialog-title">
-                <Typography
-                    component="span"
-                    variant="h5"
-                    className={classes.title}
-                >
+                <Typography component="span" variant="h5" sx={styles.title}>
                     <FormattedMessage id="parameters" />
                 </Typography>
             </DialogTitle>
@@ -131,7 +121,7 @@ const ParametersDialog = ({ showParameters, hideParameters }) => {
                         <Button
                             onClick={hideParameters}
                             variant="contained"
-                            className={classes.button}
+                            sx={styles.button}
                         >
                             <FormattedMessage id="close" />
                         </Button>

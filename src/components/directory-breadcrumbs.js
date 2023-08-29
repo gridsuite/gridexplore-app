@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import clsx from 'clsx';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory } from '../redux/actions';
@@ -14,13 +13,13 @@ import { setSelectedDirectory } from '../redux/actions';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import { emphasize } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { emphasize } from '@mui/material/styles/';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import { Tooltip } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
+import { mergeSx } from 'utils/functions';
 
-const useStyles = makeStyles((theme) => ({
-    link: {
+const styles = {
+    link: (theme) => ({
         display: 'inline-grid',
         alignItems: 'center',
         textAlign: 'center',
@@ -37,8 +36,8 @@ const useStyles = makeStyles((theme) => ({
         '&:active': {
             backgroundColor: emphasize(theme.row.hover, 0.15),
         },
-    },
-    directory: {
+    }),
+    directory: (theme) => ({
         display: 'inline-grid',
         alignItems: 'center',
         textAlign: 'center',
@@ -48,30 +47,29 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.spacing(2),
 
         cursor: 'initial',
-    },
+    }),
     selectedLabel: {
         fontWeight: 'bold',
     },
-    icon: {
+    icon: (theme) => ({
         marginRight: theme.spacing(1),
         width: theme.spacing(2.25),
         height: theme.spacing(2.25),
         position: 'relative',
         top: theme.spacing(0.5),
-    },
-    breadcrumbs: {
+    }),
+    breadcrumbs: (theme) => ({
         padding: theme.spacing(0.5, 0, 0.5),
         marginLeft: theme.spacing(1),
-    },
+    }),
     limitTextSize: {
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
     },
-}));
+};
 
 const DirectoryBreadcrumbs = () => {
-    const classes = useStyles();
     const dispatch = useDispatch();
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -94,7 +92,7 @@ const DirectoryBreadcrumbs = () => {
                 .slice(0, currentPath.length - 1)
                 .map((dir, index) => (
                     <Link
-                        className={classes.link}
+                        sx={styles.link}
                         key={dir.elementUuid}
                         href="/"
                         onClick={(event) => handleSelect(event, dir)}
@@ -104,12 +102,12 @@ const DirectoryBreadcrumbs = () => {
                         underline="hover"
                     >
                         <Tooltip title={dir.elementName}>
-                            <div className={classes.limitTextSize}>
+                            <Box sx={styles.limitTextSize}>
                                 {index === 0 ? (
-                                    <FolderOpenIcon className={classes.icon} />
+                                    <FolderOpenIcon sx={styles.icon} />
                                 ) : null}
                                 {dir.elementName}
-                            </div>
+                            </Box>
                         </Tooltip>
                     </Link>
                 ));
@@ -126,20 +124,20 @@ const DirectoryBreadcrumbs = () => {
                 <Tooltip
                     title={currentPath[currentPath.length - 1].elementName}
                 >
-                    <div className={classes.directory}>
+                    <Box sx={styles.directory}>
                         <Typography
-                            className={clsx(
-                                classes.selectedLabel,
-                                classes.limitTextSize
+                            sx={mergeSx(
+                                styles.selectedLabel,
+                                styles.limitTextSize
                             )}
                             color="textPrimary"
                         >
                             {currentPath.length === 1 && (
-                                <FolderOpenIcon className={classes.icon} />
+                                <FolderOpenIcon sx={styles.icon} />
                             )}
                             {currentPath[currentPath.length - 1].elementName}
                         </Typography>
-                    </div>
+                    </Box>
                 </Tooltip>
             );
         }
@@ -152,7 +150,7 @@ const DirectoryBreadcrumbs = () => {
                 currentPath.length > 0 && (
                     <Breadcrumbs
                         aria-label="breadcrumb"
-                        className={classes.breadcrumbs}
+                        sx={styles.breadcrumbs}
                     >
                         {renderBreadCrumbsLinks()}
                         {renderBreadCrumbsTypography()}

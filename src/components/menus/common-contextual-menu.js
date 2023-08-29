@@ -11,18 +11,18 @@ import { FormattedMessage } from 'react-intl';
 
 import EditIcon from '@mui/icons-material/Edit';
 
-import withStyles from '@mui/styles/withStyles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
+import { styled } from '@mui/material';
 
-const StyledMenu = withStyles({
-    paper: {
+const StyledMenu = styled((props) => <Menu elevation={0} {...props} />)({
+    '.MuiMenu-paper': {
         border: '1px solid #d3d4d5',
     },
-})((props) => <Menu elevation={0} {...props} />);
+});
 
 /**
  * Generic Contextual Menu View
