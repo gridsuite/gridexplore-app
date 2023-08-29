@@ -235,9 +235,10 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 .then((result) => {
                     // sort possible values alphabetically to display select options sorted
                     result.parameters = result.parameters?.map((parameter) => {
-                        parameter.possibleValues = parameter.possibleValues?.sort((a, b) =>
-                            a.localeCompare(b)
-                        );
+                        parameter.possibleValues =
+                            parameter.possibleValues?.sort((a, b) =>
+                                a.localeCompare(b)
+                            );
                         // we check if the param is for extension, if it is, we select all possible values by default.
                         // the only way for the moment to check if the param is for extension, is by checking his name.
                         //TODO to be removed when extensions param default value corrected in backend to include all possible values
