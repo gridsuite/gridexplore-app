@@ -26,6 +26,7 @@ import {
     FILTER_TYPE,
     NAME,
 } from '../../utils/field-constants';
+import { FetchStatus } from '../../../utils/custom-hooks';
 
 const formSchema = yup
     .object()
@@ -46,6 +47,7 @@ const ExplicitNamingFilterEditionDialog = ({
 }) => {
     const { snackError } = useSnackMessage();
     const [isNameValid, setIsNameValid] = useState(true);
+    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     // default values are set via reset when we fetch data
     const formMethods = useForm({
@@ -57,8 +59,10 @@ const ExplicitNamingFilterEditionDialog = ({
     // Fetch the filter data from back-end if necessary and fill the form with it
     useEffect(() => {
         if (id && open) {
+            setDataFetchStatus(FetchStatus.FETCHING);
             getFilterById(id)
                 .then((response) => {
+                    setDataFetchStatus(FetchStatus.FETCH_SUCCESS);
                     reset({
                         [NAME]: name,
                         [FILTER_TYPE]: FilterType.EXPLICIT_NAMING.id,
@@ -72,6 +76,7 @@ const ExplicitNamingFilterEditionDialog = ({
                     });
                 })
                 .catch((error) => {
+                    setDataFetchStatus(FetchStatus.FETCH_ERROR);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'cannotRetrieveFilter',
@@ -105,6 +110,8 @@ const ExplicitNamingFilterEditionDialog = ({
         setValue(NAME, newName);
     };
 
+    const isDataReady = dataFetchStatus === FetchStatus.FETCH_SUCCESS;
+
     return (
         <CustomMuiDialog
             open={open}
@@ -115,6 +122,7 @@ const ExplicitNamingFilterEditionDialog = ({
             titleId={titleId}
             removeOptional={true}
             disabledSave={!isNameValid}
+            isDataFetching={dataFetchStatus === FetchStatus.FETCHING}
         >
             <NameWrapper
                 titleMessage="nameProperty"
@@ -122,7 +130,7 @@ const ExplicitNamingFilterEditionDialog = ({
                 contentType={ElementType.FILTER}
                 handleNameValidation={handleNameChange}
             >
-                <ExplicitNamingFilterForm />
+                {isDataReady && <ExplicitNamingFilterForm />}
             </NameWrapper>
         </CustomMuiDialog>
     );

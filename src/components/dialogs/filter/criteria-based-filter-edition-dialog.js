@@ -23,6 +23,7 @@ import CriteriaBasedFilterForm, {
 import yup from '../../utils/yup-config';
 import { EQUIPMENT_TYPE, FILTER_TYPE, NAME } from '../../utils/field-constants';
 import PropTypes from 'prop-types';
+import { FetchStatus } from '../../../utils/custom-hooks';
 
 const formSchema = yup
     .object()
@@ -43,6 +44,7 @@ export const CriteriaBasedFilterEditionDialog = ({
 }) => {
     const { snackError } = useSnackMessage();
     const [isNameValid, setIsNameValid] = useState(true);
+    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     // default values are set via reset when we fetch data
     const formMethods = useForm({
@@ -54,8 +56,10 @@ export const CriteriaBasedFilterEditionDialog = ({
     // Fetch the filter data from back-end if necessary and fill the form with it
     useEffect(() => {
         if (id && open) {
+            setDataFetchStatus(FetchStatus.FETCHING);
             getFilterById(id)
                 .then((response) => {
+                    setDataFetchStatus(FetchStatus.FETCH_SUCCESS);
                     reset({
                         [NAME]: name,
                         [FILTER_TYPE]: FilterType.CRITERIA_BASED.id,
@@ -63,6 +67,7 @@ export const CriteriaBasedFilterEditionDialog = ({
                     });
                 })
                 .catch((error) => {
+                    setDataFetchStatus(FetchStatus.FETCH_ERROR);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'cannotRetrieveFilter',
@@ -90,6 +95,8 @@ export const CriteriaBasedFilterEditionDialog = ({
         setValue(NAME, newName);
     };
 
+    const isDataReady = dataFetchStatus === FetchStatus.FETCH_SUCCESS;
+
     return (
         <CustomMuiDialog
             open={open}
@@ -100,6 +107,7 @@ export const CriteriaBasedFilterEditionDialog = ({
             titleId={titleId}
             removeOptional={true}
             disabledSave={!isNameValid}
+            isDataFetching={dataFetchStatus === FetchStatus.FETCHING}
         >
             <NameWrapper
                 titleMessage="nameProperty"
@@ -107,7 +115,7 @@ export const CriteriaBasedFilterEditionDialog = ({
                 contentType={ElementType.FILTER}
                 handleNameValidation={handleNameChange}
             >
-                <CriteriaBasedFilterForm />
+                {isDataReady && <CriteriaBasedFilterForm />}
             </NameWrapper>
         </CustomMuiDialog>
     );

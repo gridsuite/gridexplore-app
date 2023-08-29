@@ -185,31 +185,33 @@ function ExplicitNamingFilterForm() {
                     resetOnConfirmation={handleResetOnConfirmation}
                 />
             </Grid>
-            <Grid item xs={12}>
-                <CustomAgGridTable
-                    name={FILTER_EQUIPMENTS_ATTRIBUTES}
-                    columnDefs={columnDefs}
-                    defaultColDef={defaultColDef}
-                    makeDefaultRowData={makeDefaultRowData}
-                    pagination={true}
-                    paginationPageSize={100}
-                    suppressRowClickSelection
-                    alwaysShowVerticalScroll
-                    stopEditingWhenCellsLoseFocus
-                    csvProps={{
-                        fileName: intl.formatMessage({
-                            id: 'filterCsvFileName',
-                        }),
-                        fileHeaders: csvFileHeaders,
-                        getDataFromCsv: getDataFromCsvFile,
-                    }}
-                    cssProps={{
-                        '& .ag-root-wrapper-body': {
-                            maxHeight: '430px',
-                        },
-                    }}
-                />
-            </Grid>
+            {watchEquipmentType && (
+                <Grid item xs={12}>
+                    <CustomAgGridTable
+                        name={FILTER_EQUIPMENTS_ATTRIBUTES}
+                        columnDefs={columnDefs}
+                        defaultColDef={defaultColDef}
+                        makeDefaultRowData={makeDefaultRowData}
+                        pagination={true}
+                        paginationPageSize={100}
+                        suppressRowClickSelection
+                        alwaysShowVerticalScroll
+                        stopEditingWhenCellsLoseFocus
+                        csvProps={{
+                            fileName: intl.formatMessage({
+                                id: 'filterCsvFileName',
+                            }),
+                            fileHeaders: csvFileHeaders,
+                            getDataFromCsv: getDataFromCsvFile,
+                        }}
+                        cssProps={{
+                            '& .ag-root-wrapper-body': {
+                                maxHeight: '430px',
+                            },
+                        }}
+                    />
+                </Grid>
+            )}
         </Grid>
     );
 }
