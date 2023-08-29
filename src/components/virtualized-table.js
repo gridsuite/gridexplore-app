@@ -5,19 +5,33 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import withStyles from '@mui/styles/withStyles';
 import {
     DEFAULT_CELL_PADDING,
     MuiVirtualizedTable,
 } from '@gridsuite/commons-ui';
+import { styled } from '@mui/material';
 
-const styles = (theme) => ({
-    flexContainer: {
+const PREFIX = 'MuiVirtualizedTable';
+const classes = {
+    flexContainer: `${PREFIX}-flexContainer`,
+    table: `${PREFIX}-table`,
+    tableRow: `${PREFIX}-tableRow`,
+    tableRowHover: `${PREFIX}-tableRowHover`,
+    tableCell: `${PREFIX}-tableCell`,
+    noClick: `${PREFIX}-noClick`,
+    tableCellColor: `${PREFIX}-tableCellColor`,
+    header: `${PREFIX}-header`,
+    rowBackgroundDark: `${PREFIX}-rowBackgroundDark`,
+    rowBackgroundLight: `${PREFIX}-rowBackgroundLight`,
+};
+
+const VirtualizedTable = styled(MuiVirtualizedTable)(({ theme }) => ({
+    [`.${classes.flexContainer}`]: {
         display: 'flex',
         alignItems: 'center',
         boxSizing: 'border-box',
     },
-    table: {
+    [`.${classes.table}`]: {
         // temporary right-to-left patch, waiting for
         // https://github.com/bvaughn/react-virtualized/issues/454
         '& .ReactVirtualized__Table__headerRow': {
@@ -29,34 +43,33 @@ const styles = (theme) => ({
             outline: 'none',
         },
     },
-    tableRow: {
+    [`.${classes.tableRow}`]: {
         cursor: 'pointer',
     },
-    tableRowHover: {
+    [`.${classes.tableRowHover}`]: {
         '&:hover': {
             backgroundColor: theme.row.hover,
         },
     },
-    tableCell: {
+    [`.${classes.tableCell}`]: {
         flex: 1,
         padding: DEFAULT_CELL_PADDING,
     },
-    noClick: {
+    [`.${classes.noClick}`]: {
         cursor: 'initial',
     },
-    tableCellColor: {
+    [`.${classes.tableCellColor}`]: {
         color: theme.link.color,
     },
-    header: {
+    [`.${classes.header}`]: {
         backgroundColor: 'inherit',
     },
-    rowBackgroundDark: {
+    [`.${classes.rowBackgroundDark}`]: {
         backgroundColor: theme.row.primary,
     },
-    rowBackgroundLight: {
+    [`.${classes.rowBackgroundLight}`]: {
         backgroundColor: theme.row.secondary,
     },
-});
+}));
 
-const VirtualizedTable = withStyles(styles)(MuiVirtualizedTable);
 export default VirtualizedTable;
