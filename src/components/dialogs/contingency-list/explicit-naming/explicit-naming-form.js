@@ -6,6 +6,7 @@
  */
 
 import {
+    AG_GRID_ROW_UUID,
     CONTINGENCY_NAME,
     EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
@@ -17,7 +18,7 @@ import CustomAgGridTable, {
 } from '../../../utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
 import { gridItem } from '../../../utils/dialog-utils';
 import yup from '../../../utils/yup-config';
-import { DEFAULT_ROW_VALUE } from '../contingency-list-utils';
+import { makeDefaultRowData } from '../contingency-list-utils';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 
 export const getExplicitNamingSchema = (id) => ({
@@ -57,6 +58,7 @@ const ExplicitNamingForm = () => {
                 cellRendererParams: {
                     name: EQUIPMENT_TABLE,
                 },
+                cellStyle: { padding: 0 },
             },
         ];
     }, [intl]);
@@ -65,6 +67,7 @@ const ExplicitNamingForm = () => {
         if (csvData) {
             return csvData.map((value) => {
                 return {
+                    [AG_GRID_ROW_UUID]: crypto.randomUUID(),
                     [CONTINGENCY_NAME]: value[0]?.trim() || '',
                     [EQUIPMENT_IDS]:
                         value[1]
@@ -107,7 +110,7 @@ const ExplicitNamingForm = () => {
         <CustomAgGridTable
             name={EQUIPMENT_TABLE}
             columnDefs={columnDefs}
-            defaultRowData={DEFAULT_ROW_VALUE}
+            makeDefaultRowData={makeDefaultRowData}
             pagination={true}
             paginationPageSize={100}
             suppressRowClickSelection

@@ -23,7 +23,7 @@ import CriteriaBasedFilterForm, {
     criteriaBasedFilterSchema,
 } from './criteria-based-filter-form';
 import ExplicitNamingFilterForm, {
-    explicitNamingFilterEmptyFormData,
+    getExplicitNamingFilterEmptyFormData,
     explicitNamingFilterSchema,
     FILTER_EQUIPMENTS_ATTRIBUTES,
 } from './explicit-naming-filter-form';
@@ -37,7 +37,7 @@ const emptyFormData = {
     [FILTER_TYPE]: FilterType.CRITERIA_BASED.id,
     [EQUIPMENT_TYPE]: null,
     ...criteriaBasedFilterEmptyFormData,
-    ...explicitNamingFilterEmptyFormData,
+    ...getExplicitNamingFilterEmptyFormData(),
 };
 
 // we use both schemas then we can change the type of filter without losing the filled form fields
