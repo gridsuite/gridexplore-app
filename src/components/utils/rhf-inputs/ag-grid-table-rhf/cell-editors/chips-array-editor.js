@@ -9,6 +9,7 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
         <TableCellWrapper agGridRef={ref} name={cellName}>
             <MultipleAutocompleteInput
                 name={cellName}
+                size={'small'}
                 formProps={{
                     sx: {
                         '& .MuiOutlinedInput-notchedOutline': {
