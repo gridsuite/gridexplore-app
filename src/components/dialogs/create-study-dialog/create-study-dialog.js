@@ -25,7 +25,7 @@ import ImportParametersSection from './importParametersSection';
 import { ElementType } from '../../../utils/elementType';
 import DirectorySelect from './directory-select';
 import { useNameCheck } from '../commons/use-name-check';
-import { keyGenerator } from '../../../utils/functions';
+import { isObjectEmpty, keyGenerator } from '../../../utils/functions';
 import {
     addUploadingElement,
     removeUploadingElement,
@@ -74,7 +74,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const {
         setValue,
-        formState: { isValid },
+        formState: { errors },
         setError,
         clearErrors,
         getValues,
@@ -82,6 +82,8 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     } = createStudyFormMethods;
 
     const studyName = watch(STUDY_NAME);
+
+    const isValid = isObjectEmpty(errors);
 
     // callbacks
     const handleApiCallError = useCallback(

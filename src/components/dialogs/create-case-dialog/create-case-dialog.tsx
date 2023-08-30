@@ -8,7 +8,7 @@
 import { useIntl } from 'react-intl';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { keyGenerator } from '../../../utils/functions';
+import { isObjectEmpty, keyGenerator } from '../../../utils/functions';
 import { createCase } from '../../../utils/rest-api';
 import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import { Grid } from '@mui/material';
@@ -61,12 +61,14 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
 
     const {
         setValue,
-        formState: { isValid },
+        formState: { errors },
         setError,
         getValues,
         clearErrors,
         watch,
     } = createCaseFormMethods;
+
+    const isValid = isObjectEmpty(errors);
 
     const caseName = watch(CASE_NAME);
 
