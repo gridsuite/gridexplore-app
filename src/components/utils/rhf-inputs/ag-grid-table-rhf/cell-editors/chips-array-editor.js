@@ -15,12 +15,6 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
                         '& .MuiOutlinedInput-notchedOutline': {
                             border: 'unset', // Remove the border
                         },
-                        '&:hover .MuiOutlinedInput-root': {
-                            border: 'unset', // Remove the border on hover
-                        },
-                        '& .Mui-focused .MuiOutlinedInput-root': {
-                            border: 'unset', // Remove the border when focused
-                        },
                     },
                 }}
             />
