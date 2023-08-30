@@ -18,3 +18,5 @@ export const areArrayElementsUnique = (array) => {
     let uniqueValues = [...new Set(array)];
     return uniqueValues.length === array.length;
 };
+
+export const mergeSx = (...allSx) => allSx.flat();

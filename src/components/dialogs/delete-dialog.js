@@ -16,7 +16,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress';
 import { OverflowableText } from '@gridsuite/commons-ui';
-import { makeStyles } from '@mui/styles';
 
 /**
  * Dialog to delete an element
@@ -28,11 +27,11 @@ import { makeStyles } from '@mui/styles';
  * @param {String} simpleDeleteFormatMessageId Format message id for simple delete
  * @param {String} error Error message
  */
-const useStyles = makeStyles((theme) => ({
+const styles = {
     tooltip: {
         maxWidth: '1000px',
     },
-}));
+};
 const DeleteDialog = ({
     open,
     onClose,
@@ -43,8 +42,6 @@ const DeleteDialog = ({
     error,
 }) => {
     const intl = useIntl();
-
-    const classes = useStyles();
 
     const [itemsState, setItemState] = useState([]);
 
@@ -86,7 +83,7 @@ const DeleteDialog = ({
                           <OverflowableText
                               text={items[0].elementName}
                               style={{ marginLeft: '1%' }}
-                              tooltipStyle={classes.tooltip}
+                              tooltipSx={styles.tooltip}
                           />
                       ),
                   }
@@ -113,7 +110,7 @@ const DeleteDialog = ({
             <OverflowableText
                 text={items[0].elementName}
                 style={style}
-                tooltipStyle={classes.tooltip}
+                tooltipSx={styles.tooltip}
             />
         );
     };
@@ -151,7 +148,7 @@ const DeleteDialog = ({
                                             <OverflowableText
                                                 text={file.elementName}
                                                 style={{ width: '100%' }}
-                                                tooltipStyle={classes.tooltip}
+                                                tooltipSx={styles.tooltip}
                                             />
                                         }
                                     </div>
