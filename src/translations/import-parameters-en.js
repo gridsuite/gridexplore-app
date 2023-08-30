@@ -81,6 +81,7 @@ const import_parameters_en = {
     'iidm.import.xml.throw-exception-if-extension-not-found.desc':
         'Throw exception if extension not found',
     'iidm.import.xml.extensions': 'Extensions',
+    'iidm.import.xml.extensions.selectionDialog.name': 'Extensions selection',
     'iidm.import.xml.extensions.desc': 'Import with these extensions',
     'iidm.import.xml.extensions.activePowerControl': 'Active power control',
     'iidm.import.xml.extensions.baseVoltageMapping': 'Base voltage mapping',
