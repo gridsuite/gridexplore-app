@@ -90,6 +90,8 @@ const import_parameters_fr = {
     'iidm.import.xml.throw-exception-if-extension-not-found.desc':
         "Lever une exception si on essaie d'importer une extension inconnue",
     'iidm.import.xml.extensions': 'Extensions',
+    'iidm.import.xml.extensions.selectionDialog.name':
+        'Sélection des extensions',
     'iidm.import.xml.extensions.desc': 'Importer avec ces extensions',
     'iidm.import.xml.extensions.activePowerControl': 'Compensation',
     'iidm.import.xml.extensions.baseVoltageMapping': 'Tension nominale',

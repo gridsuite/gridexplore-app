@@ -218,6 +218,7 @@
   "agGrid.endsWith": "Finit par",
   "agGrid.blank": "Vide",
   "agGrid.notBlank": "N'est pas vide",
+  "agGrid.loadingOoo": "Chargement...",
   "agGrid.noRowsToShow": "Aucune Donnée",
   "agGrid.firstPage": "première page",
   "agGrid.previousPage": "page précédente",

@@ -1,36 +1,22 @@
 import { FormProvider } from 'react-hook-form';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Grid } from '@mui/material';
+import { Grid, LinearProgress } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import makeStyles from '@mui/styles/makeStyles';
 import { SubmitButton } from '@gridsuite/commons-ui';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        margin: 0,
-        padding: theme.spacing(2),
-    },
-    closeButton: {
-        position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
-        color: theme.palette.grey[500],
-    },
+const styles = {
     dialogPaper: {
-        width: 'auto',
-        minWidth: '800px',
-        margin: 'auto',
+        '.MuiDialog-paper': {
+            width: 'auto',
+            minWidth: '800px',
+            margin: 'auto',
+        },
     },
-    content: {
-        overflow: 'auto',
-        justifyContent: 'space-around',
-        flexGrow: 1,
-    },
-}));
+};
 
 const CustomMuiDialog = ({
     name,
@@ -39,13 +25,13 @@ const CustomMuiDialog = ({
     formMethods,
     onClose,
     onSave,
+    isDataFetching = false,
     onValidationError,
     titleId,
     disabledSave,
     removeOptional,
     ...dialogProps
 }) => {
-    const classes = useStyles();
     const { handleSubmit } = formMethods;
 
     const handleClose = (event) => {
@@ -71,11 +57,12 @@ const CustomMuiDialog = ({
             removeOptional={removeOptional}
         >
             <Dialog
-                classes={{ paper: classes.dialogPaper }}
+                sx={styles.dialogPaper}
                 open={open}
                 onClose={handleClose}
                 fullWidth
             >
+                {isDataFetching && <LinearProgress />}
                 <DialogTitle>
                     <Grid item xs={11}>
                         <FormattedMessage id={titleId} />

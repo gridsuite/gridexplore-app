@@ -9,16 +9,11 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
         <TableCellWrapper agGridRef={ref} name={cellName}>
             <MultipleAutocompleteInput
                 name={cellName}
+                size={'small'}
                 formProps={{
                     sx: {
                         '& .MuiOutlinedInput-notchedOutline': {
                             border: 'unset', // Remove the border
-                        },
-                        '&:hover .MuiOutlinedInput-root': {
-                            border: 'unset', // Remove the border on hover
-                        },
-                        '& .Mui-focused .MuiOutlinedInput-root': {
-                            border: 'unset', // Remove the border when focused
                         },
                     },
                 }}

@@ -1,5 +1,4 @@
 import { AutocompleteInput } from '@gridsuite/commons-ui';
-import { Chip } from '@mui/material';
 import React, { useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 
@@ -9,7 +8,7 @@ const MultipleAutocompleteInput = ({ name, ...props }) => {
         name,
     });
 
-    const { append, remove } = useFieldArray({
+    const { append } = useFieldArray({
         name,
     });
 
@@ -40,23 +39,8 @@ const MultipleAutocompleteInput = ({ name, ...props }) => {
             onInputChange={(_, val) => setUnsavedInput(val.trim() ?? '')}
             onBlur={handleOnBlur}
             blurOnSelect={false}
-            size={'small'}
             multiple
-            renderTags={(val, getTagsProps) =>
-                val
-                    .filter((value) => value)
-                    .map((value, index) => (
-                        <Chip
-                            key={index}
-                            size={'small'}
-                            label={value}
-                            {...getTagsProps({ index })}
-                            onDelete={() => {
-                                remove(index);
-                            }}
-                        />
-                    ))
-            }
+            ChipProps={{ size: 'small' }}
             {...props}
         />
     );

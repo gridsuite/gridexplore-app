@@ -7,7 +7,6 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
 import CheckIcon from '@mui/icons-material/Check';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Button from '@mui/material/Button';
@@ -58,21 +57,21 @@ import {
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
 } from '../../utils/UIconstants.js';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     addIcon: {
         fontSize: '64px',
     },
     addButtonArea: {
         height: '136px',
     },
-    paramDivider: {
+    paramDivider: (theme) => ({
         marginTop: theme.spacing(2),
-    },
-    advancedParameterButton: {
+    }),
+    advancedParameterButton: (theme) => ({
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(1),
-    },
-}));
+    }),
+};
 
 const SelectCase = () => {
     const dispatch = useDispatch();
@@ -131,6 +130,8 @@ const SelectCase = () => {
     );
 };
 
+const STRING_LIST = 'STRING_LIST';
+
 /**
  * Dialog to create a study
  * @param {Boolean} open Is the dialog open ?
@@ -145,7 +146,6 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const userId = useSelector((state) => state.user.profile.sub);
 
-    const classes = useStyles();
     const intl = useIntl();
     const dispatch = useDispatch();
 
@@ -234,11 +234,21 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             getCaseImportParameters(caseUuid)
                 .then((result) => {
                     // sort possible values alphabetically to display select options sorted
-                    result.parameters = result.parameters?.map((p) => {
-                        p.possibleValues = p.possibleValues?.sort((a, b) =>
-                            a.localeCompare(b)
-                        );
-                        return p;
+                    result.parameters = result.parameters?.map((parameter) => {
+                        parameter.possibleValues =
+                            parameter.possibleValues?.sort((a, b) =>
+                                a.localeCompare(b)
+                            );
+                        // we check if the param is for extension, if it is, we select all possible values by default.
+                        // the only way for the moment to check if the param is for extension, is by checking his name.
+                        //TODO to be removed when extensions param default value corrected in backend to include all possible values
+                        if (
+                            parameter.type === STRING_LIST &&
+                            parameter.name?.endsWith('extensions')
+                        ) {
+                            parameter.defaultValue = parameter.possibleValues;
+                        }
+                        return parameter;
                     });
                     setFormatWithParameters(result.parameters);
                     setIsParamsOk(true);
@@ -365,7 +375,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     }) => {
         return (
             <>
-                <Grid item xs={12} className={classes.advancedParameterButton}>
+                <Grid item xs={12} sx={styles.advancedParameterButton}>
                     <Button
                         startIcon={<SettingsIcon />}
                         endIcon={
@@ -485,7 +495,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         paramDivider
     ) => (
         <>
-            <Divider className={paramDivider} />
+            <Divider sx={paramDivider} />
             <div
                 style={{
                     marginTop: '10px',
@@ -503,6 +513,9 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         initValues={currentParameters}
                         onChange={onChange}
                         variant="standard"
+                        selectionWithDialog={(param) =>
+                            param.possibleValues.length > 10
+                        }
                     />
                 )}
             </div>
@@ -535,7 +548,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                                     isParamsCaseFileDisplayed,
                                     handleShowParametersForCaseFileClick,
                                     formatWithParameters,
-                                    classes.paramDivider
+                                    styles.paramDivider
                                 )}
                             </>
                         )
@@ -589,7 +602,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                                 isParamsDisplayed,
                                 handleShowParametersClick,
                                 formatWithParameters,
-                                classes.paramDivider
+                                styles.paramDivider
                             )}
                         </>
                     )}
