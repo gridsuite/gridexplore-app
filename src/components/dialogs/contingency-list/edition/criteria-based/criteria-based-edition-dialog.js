@@ -11,19 +11,20 @@ import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
 import React, { useEffect, useState } from 'react';
 import {
-    editContingencyList,
-    getContingencyListEditionSchema,
     getContingencyListEmptyFormData,
-    getFormDataFromFetchedElement,
+    getCriteriaBasedFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
-import { getContingencyList } from 'utils/rest-api';
+import {
+    getContingencyList,
+    saveCriteriaBasedContingencyList,
+} from 'utils/rest-api';
 import { EQUIPMENT_TYPE, NAME } from 'components/utils/field-constants';
 import CustomMuiDialog from 'components/dialogs/custom-mui-dialog';
 import NameWrapper from 'components/dialogs/name-wrapper';
 import { ElementType } from 'utils/elementType';
-import ContingencyListEditionForm from '../contingency-list-edition-form';
 import { getCriteriaBasedSchema } from 'components/dialogs/commons/criteria-based/criteria-based-utils';
 import yup from 'components/utils/yup-config';
+import CriteriaBasedEditionForm from './criteria-based-edition-form';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().required(),
@@ -41,8 +42,6 @@ const CriteriaBasedEditionDialog = ({
     titleId,
     name,
 }) => {
-    //const schema = getContingencyListEditionSchema(contingencyListType);
-
     const [isValidName, setIsValidName] = useState(true);
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
@@ -60,11 +59,11 @@ const CriteriaBasedEditionDialog = ({
             getContingencyList(contingencyListType, contingencyListId)
                 .then((response) => {
                     if (response) {
-                        const formData = getFormDataFromFetchedElement(
-                            response,
-                            name,
-                            contingencyListType
-                        );
+                        const formData =
+                            getCriteriaBasedFormDataFromFetchedElement(
+                                response,
+                                name
+                            );
                         reset({ ...formData, [NAME]: name });
                     }
                 })
@@ -88,12 +87,15 @@ const CriteriaBasedEditionDialog = ({
         setValue(NAME, newName, { shouldDirty: isValid });
     };
 
-    const onSubmit = (contingencyList) => {
-        editContingencyList(
+    const editContingencyList = (contingencyListId, contingencyList) => {
+        return saveCriteriaBasedContingencyList(
             contingencyListId,
-            contingencyListType,
             contingencyList
-        )
+        );
+    };
+
+    const onSubmit = (contingencyList) => {
+        editContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 closeAndClear();
             })
@@ -124,11 +126,7 @@ const CriteriaBasedEditionDialog = ({
                 initialValue={name}
                 handleNameValidation={handleNameChange}
             />
-            {!isFetching && (
-                <ContingencyListEditionForm
-                    contingencyListType={contingencyListType}
-                />
-            )}
+            {!isFetching && <CriteriaBasedEditionForm />}
         </CustomMuiDialog>
     );
 };

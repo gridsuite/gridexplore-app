@@ -11,12 +11,13 @@ import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
 import React, { useEffect, useState } from 'react';
 import {
-    editContingencyList,
-    getContingencyListEditionSchema,
     getContingencyListEmptyFormData,
-    getFormDataFromFetchedElement,
+    getExplicitNamingFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
-import { getContingencyList } from 'utils/rest-api';
+import {
+    getContingencyList,
+    saveExplicitNamingContingencyList,
+} from 'utils/rest-api';
 import {
     EQUIPMENT_TABLE,
     EQUIPMENT_TYPE,
@@ -25,15 +26,15 @@ import {
 import CustomMuiDialog from 'components/dialogs/custom-mui-dialog';
 import NameWrapper from 'components/dialogs/name-wrapper';
 import { ElementType } from 'utils/elementType';
-import ContingencyListEditionForm from '../contingency-list-edition-form';
-import { getCriteriaBasedSchema } from 'components/dialogs/commons/criteria-based/criteria-based-utils';
 import yup from 'components/utils/yup-config';
 import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-form';
+import ExplicitNamingEditionForm from './explicit-naming-edition-form';
+import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().required(),
     [EQUIPMENT_TYPE]: yup.string().nullable(),
-    [EQUIPMENT_TABLE]: yup.string().required(),
+    [EQUIPMENT_TABLE]: yup.string().nullable(),
     ...getExplicitNamingEditSchema(EQUIPMENT_TABLE),
 });
 
@@ -47,8 +48,6 @@ const ExplicitNamingEditionDialog = ({
     titleId,
     name,
 }) => {
-    //const schema = getContingencyListEditionSchema(contingencyListType);
-
     const [isValidName, setIsValidName] = useState(true);
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
@@ -66,11 +65,10 @@ const ExplicitNamingEditionDialog = ({
             getContingencyList(contingencyListType, contingencyListId)
                 .then((response) => {
                     if (response) {
-                        const formData = getFormDataFromFetchedElement(
-                            response,
-                            name,
-                            contingencyListType
-                        );
+                        const formData =
+                            getExplicitNamingFormDataFromFetchedElement(
+                                response
+                            );
                         reset({ ...formData, [NAME]: name });
                     }
                 })
@@ -94,12 +92,19 @@ const ExplicitNamingEditionDialog = ({
         setValue(NAME, newName, { shouldDirty: isValid });
     };
 
-    const onSubmit = (contingencyList) => {
-        editContingencyList(
+    const editContingencyList = (contingencyListId, contingencyList) => {
+        const equipments = prepareContingencyListForBackend(
             contingencyListId,
-            contingencyListType,
             contingencyList
-        )
+        );
+        return saveExplicitNamingContingencyList(
+            equipments,
+            contingencyList[NAME]
+        );
+    };
+
+    const onSubmit = (contingencyList) => {
+        editContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 closeAndClear();
             })
@@ -130,11 +135,7 @@ const ExplicitNamingEditionDialog = ({
                 initialValue={name}
                 handleNameValidation={handleNameChange}
             />
-            {!isFetching && (
-                <ContingencyListEditionForm
-                    contingencyListType={contingencyListType}
-                />
-            )}
+            {!isFetching && <ExplicitNamingEditionForm />}
         </CustomMuiDialog>
     );
 };

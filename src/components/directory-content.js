@@ -41,9 +41,10 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
-import ContingencyListEditionDialog from './dialogs/contingency-list/edition/contingency-list-edition-dialog';
 import ExplicitNamingFilterEditionDialog from './dialogs/filter/explicit-naming-filter-edition-dialog';
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
+import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explict-naming/explicit-naming-edition-dialog';
+import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
 
 const circularProgressSize = '70px';
 
@@ -774,7 +775,7 @@ const DirectoryContent = () => {
                 );
             case ContingencyListType.SCRIPT.id:
                 return (
-                    <ContingencyListEditionDialog
+                    <ScriptEditionDialog
                         open={true}
                         titleId={'editContingencyList'}
                         contingencyListId={currentScriptContingencyListId}
@@ -785,7 +786,7 @@ const DirectoryContent = () => {
                 );
             case ContingencyListType.EXPLICIT_NAMING.id:
                 return (
-                    <ContingencyListEditionDialog
+                    <ExplicitNamingEditionDialog
                         open={true}
                         titleId={'editContingencyList'}
                         contingencyListId={

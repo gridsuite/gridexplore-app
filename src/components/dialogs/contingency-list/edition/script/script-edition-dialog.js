@@ -8,23 +8,29 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import {
-    editContingencyList,
-    getContingencyListEditionSchema,
-    getContingencyListEmptyFormData,
-    getFormDataFromFetchedElement,
-} from '../contingency-list-utils';
+
 import React, { useEffect, useState } from 'react';
-import { getContingencyList } from '../../../../utils/rest-api';
-import CustomMuiDialog from '../../custom-mui-dialog';
-import ContingencyListEditionForm from './contingency-list-edition-form';
-import { ElementType } from '../../../../utils/elementType';
-import NameWrapper from '../../name-wrapper';
-import { NAME } from '../../../utils/field-constants';
+import {
+    getContingencyListEmptyFormData,
+    getScriptFormDataFromFetchedElement,
+} from '../../contingency-list-utils';
+import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
+import { EQUIPMENT_TYPE, NAME, SCRIPT } from 'components/utils/field-constants';
+import CustomMuiDialog from 'components/dialogs/custom-mui-dialog';
+import NameWrapper from 'components/dialogs/name-wrapper';
+import { ElementType } from 'utils/elementType';
+import yup from 'components/utils/yup-config';
+import ScriptEditionForm from './script-edition-form';
+
+const schema = yup.object().shape({
+    [NAME]: yup.string().required(),
+    [EQUIPMENT_TYPE]: yup.string().nullable(),
+    [SCRIPT]: yup.string().nullable(),
+});
 
 const emptyFormData = getContingencyListEmptyFormData();
 
-const ContingencyListEditionDialog = ({
+const ScriptEditionDialog = ({
     contingencyListId,
     contingencyListType,
     open,
@@ -32,8 +38,6 @@ const ContingencyListEditionDialog = ({
     titleId,
     name,
 }) => {
-    const schema = getContingencyListEditionSchema(contingencyListType);
-
     const [isValidName, setIsValidName] = useState(true);
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
@@ -51,11 +55,8 @@ const ContingencyListEditionDialog = ({
             getContingencyList(contingencyListType, contingencyListId)
                 .then((response) => {
                     if (response) {
-                        const formData = getFormDataFromFetchedElement(
-                            response,
-                            name,
-                            contingencyListType
-                        );
+                        const formData =
+                            getScriptFormDataFromFetchedElement(response);
                         reset({ ...formData, [NAME]: name });
                     }
                 })
@@ -79,12 +80,16 @@ const ContingencyListEditionDialog = ({
         setValue(NAME, newName, { shouldDirty: isValid });
     };
 
+    const editContingencyList = (contingencyListId, contingencyList) => {
+        const newScript = {
+            id: contingencyListId,
+            script: contingencyList[SCRIPT],
+        };
+        return saveScriptContingencyList(newScript, contingencyList[NAME]);
+    };
+
     const onSubmit = (contingencyList) => {
-        editContingencyList(
-            contingencyListId,
-            contingencyListType,
-            contingencyList
-        )
+        editContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 closeAndClear();
             })
@@ -115,13 +120,9 @@ const ContingencyListEditionDialog = ({
                 initialValue={name}
                 handleNameValidation={handleNameChange}
             />
-            {!isFetching && (
-                <ContingencyListEditionForm
-                    contingencyListType={contingencyListType}
-                />
-            )}
+            {!isFetching && <ScriptEditionForm />}
         </CustomMuiDialog>
     );
 };
 
-export default ContingencyListEditionDialog;
+export default ScriptEditionDialog;
