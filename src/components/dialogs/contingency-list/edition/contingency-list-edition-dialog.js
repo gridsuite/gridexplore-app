@@ -107,6 +107,7 @@ const ContingencyListEditionDialog = ({
             titleId={titleId}
             removeOptional={true}
             disabledSave={!isValidName}
+            isDataFetching={isFetching}
         >
             <NameWrapper
                 titleMessage={'nameProperty'}
