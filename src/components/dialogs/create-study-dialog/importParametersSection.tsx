@@ -68,6 +68,9 @@ const ImportParametersSection: FunctionComponent = () => {
                         initValues={currentParameters}
                         onChange={handleParamsChange}
                         variant="standard"
+                        selectionWithDialog={(param) =>
+                            param.possibleValues?.length > 10
+                        }
                     />
                 )}
             </Box>

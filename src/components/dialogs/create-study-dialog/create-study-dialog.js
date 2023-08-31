@@ -51,6 +51,7 @@ import StudyNamePrefilledInput from './study-name-prefilled-input';
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
+const STRING_LIST = 'STRING_LIST';
 
 const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const intl = useIntl();
@@ -113,16 +114,25 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const getCurrentCaseImportParams = useCallback(
         (uuid) => {
             getCaseImportParameters(uuid)
-                .then(({ parameters = [] }) => {
-                    setValue(
-                        FORMATTED_CASE_PARAMETERS,
-                        parameters.map((parameter) => ({
-                            ...parameter,
-                            possibleValues: parameter.possibleValues?.sort(
-                                (a, b) => a.localeCompare(b)
-                            ),
-                        }))
-                    );
+                .then((result) => {
+                    result.parameters = result.parameters?.map((parameter) => {
+                        parameter.possibleValues =
+                            parameter.possibleValues?.sort((a, b) =>
+                                a.localeCompare(b)
+                            );
+                        // we check if the param is for extension, if it is, we select all possible values by default.
+                        // the only way for the moment to check if the param is for extension, is by checking his name.
+                        //TODO to be removed when extensions param default value corrected in backend to include all possible values
+                        if (
+                            parameter.type === STRING_LIST &&
+                            parameter.name?.endsWith('extensions')
+                        ) {
+                            parameter.defaultValue = parameter.possibleValues;
+                        }
+                        return parameter;
+                    });
+
+                    setValue(FORMATTED_CASE_PARAMETERS, result.parameters);
                 })
                 .catch(() => {
                     setValue(FORMATTED_CASE_PARAMETERS, []);

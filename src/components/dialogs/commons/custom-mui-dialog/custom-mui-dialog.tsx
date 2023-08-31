@@ -21,6 +21,7 @@ interface ICustomMuiDialog {
     removeOptional?: boolean;
     onCancel?: () => void;
     children: React.ReactNode;
+    isDataFetching?: boolean;
 }
 
 const styles = {

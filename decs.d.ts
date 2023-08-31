@@ -22,7 +22,7 @@ declare module '@gridsuite/commons-ui' {
         type: string;
         name: string;
         description: string;
-        possibleValues: string[] | null;
+        possibleValues: string[];
         defaultValue: string;
     };
 
@@ -31,6 +31,7 @@ declare module '@gridsuite/commons-ui' {
         initValues: Record<string, any>;
         onChange: (paramName: string, value: any, isEdit: boolean) => void;
         showSeparator?: boolean;
+        selectionWithDialog: (parameter: ParameterType) => boolean;
     }
     interface IFieldErrorAlert {
         message: string;
