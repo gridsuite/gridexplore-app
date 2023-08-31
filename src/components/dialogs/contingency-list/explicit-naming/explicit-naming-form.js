@@ -23,57 +23,84 @@ import { makeDefaultRowData } from '../contingency-list-utils';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { ContingencyListType } from 'utils/elementType';
 
-const getSchema = (additionalTests) => {
-    let schema = yup
-        .array()
-        .of(
-            yup.object().shape({
-                [CONTINGENCY_NAME]: yup.string().nullable(),
-                [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
-            })
-        )
-        .test(
-            'rowWithoutNameOrEquipments',
-            'contingencyTablePartiallyDefinedError',
-            (array) => {
-                return !array.some(
-                    (row) =>
-                        (!row[CONTINGENCY_NAME]?.trim() &&
-                            row[EQUIPMENT_IDS]?.length) ||
-                        (row[CONTINGENCY_NAME]?.trim() &&
-                            !row[EQUIPMENT_IDS]?.length)
-                );
-            }
-        )
-        .test(
-            'noRowWithNameAndEquipments',
-            'contingencyTableContainAtLeastOneRowError',
-            (array) => {
-                return array.some(
-                    (row) =>
-                        row[CONTINGENCY_NAME]?.trim() &&
-                        row[EQUIPMENT_IDS]?.length
-                );
-            }
-        );
-
-    if (additionalTests) {
-        schema = schema.when([CONTINGENCY_LIST_TYPE], additionalTests);
-    }
-
-    return schema;
+export const getExplicitNamingSchema = (id) => {
+    return {
+        [id]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [CONTINGENCY_NAME]: yup.string().nullable(),
+                    [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
+                })
+            )
+            .when([CONTINGENCY_LIST_TYPE], {
+                is: ContingencyListType.EXPLICIT_NAMING.id,
+                then: (schema) =>
+                    schema
+                        .test(
+                            'rowWithoutNameOrEquipments',
+                            'contingencyTablePartiallyDefinedError',
+                            (array) => {
+                                return !array.some(
+                                    (row) =>
+                                        (!row[CONTINGENCY_NAME]?.trim() &&
+                                            row[EQUIPMENT_IDS]?.length) ||
+                                        (row[CONTINGENCY_NAME]?.trim() &&
+                                            !row[EQUIPMENT_IDS]?.length)
+                                );
+                            }
+                        )
+                        .test(
+                            'noRowWithNameAndEquipments',
+                            'contingencyTableContainAtLeastOneRowError',
+                            (array) => {
+                                return array.some(
+                                    (row) =>
+                                        row[CONTINGENCY_NAME]?.trim() &&
+                                        row[EQUIPMENT_IDS]?.length
+                                );
+                            }
+                        ),
+            }),
+    };
 };
 
-export const getExplicitNamingSchema = (id) => ({
-    [id]: getSchema({
-        is: ContingencyListType.EXPLICIT_NAMING.id,
-        then: (schema) => schema,
-    }),
-});
-
-export const getExplicitNamingEditSchema = (id) => ({
-    [id]: getSchema(),
-});
+export const getExplicitNamingEditSchema = (id) => {
+    return {
+        [id]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [CONTINGENCY_NAME]: yup.string().nullable(),
+                    [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
+                })
+            )
+            .test(
+                'rowWithoutNameOrEquipments',
+                'contingencyTablePartiallyDefinedError',
+                (array) => {
+                    return !array.some(
+                        (row) =>
+                            (!row[CONTINGENCY_NAME]?.trim() &&
+                                row[EQUIPMENT_IDS]?.length) ||
+                            (row[CONTINGENCY_NAME]?.trim() &&
+                                !row[EQUIPMENT_IDS]?.length)
+                    );
+                }
+            )
+            .test(
+                'noRowWithNameAndEquipments',
+                'contingencyTableContainAtLeastOneRowError',
+                (array) => {
+                    return array.some(
+                        (row) =>
+                            row[CONTINGENCY_NAME]?.trim() &&
+                            row[EQUIPMENT_IDS]?.length
+                    );
+                }
+            ),
+    };
+};
 
 const suppressKeyboardEvent = (params) => {
     const key = params.event.key;

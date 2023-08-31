@@ -43,6 +43,7 @@ import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
 import ContingencyListEditionDialog from './dialogs/contingency-list/edition/contingency-list-edition-dialog';
 import ExplicitNamingFilterEditionDialog from './dialogs/filter/explicit-naming-filter-edition-dialog';
+import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 
 const circularProgressSize = '70px';
 
@@ -760,7 +761,7 @@ const DirectoryContent = () => {
         switch (openDialog) {
             case ContingencyListType.CRITERIA_BASED.id:
                 return (
-                    <ContingencyListEditionDialog
+                    <CriteriaBasedEditionDialog
                         open={true}
                         titleId={'editContingencyList'}
                         contingencyListId={currentFiltersContingencyListId}

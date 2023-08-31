@@ -8,23 +8,38 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+
+import React, { useEffect, useState } from 'react';
 import {
     editContingencyList,
     getContingencyListEditionSchema,
     getContingencyListEmptyFormData,
     getFormDataFromFetchedElement,
-} from '../contingency-list-utils';
-import React, { useEffect, useState } from 'react';
-import { getContingencyList } from '../../../../utils/rest-api';
-import CustomMuiDialog from '../../custom-mui-dialog';
-import ContingencyListEditionForm from './contingency-list-edition-form';
-import { ElementType } from '../../../../utils/elementType';
-import NameWrapper from '../../name-wrapper';
-import { NAME } from '../../../utils/field-constants';
+} from '../../contingency-list-utils';
+import { getContingencyList } from 'utils/rest-api';
+import {
+    EQUIPMENT_TABLE,
+    EQUIPMENT_TYPE,
+    NAME,
+} from 'components/utils/field-constants';
+import CustomMuiDialog from 'components/dialogs/custom-mui-dialog';
+import NameWrapper from 'components/dialogs/name-wrapper';
+import { ElementType } from 'utils/elementType';
+import ContingencyListEditionForm from '../contingency-list-edition-form';
+import { getCriteriaBasedSchema } from 'components/dialogs/commons/criteria-based/criteria-based-utils';
+import yup from 'components/utils/yup-config';
+import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-form';
+
+const schema = yup.object().shape({
+    [NAME]: yup.string().required(),
+    [EQUIPMENT_TYPE]: yup.string().nullable(),
+    [EQUIPMENT_TABLE]: yup.string().required(),
+    ...getExplicitNamingEditSchema(EQUIPMENT_TABLE),
+});
 
 const emptyFormData = getContingencyListEmptyFormData();
 
-const ContingencyListEditionDialog = ({
+const ExplicitNamingEditionDialog = ({
     contingencyListId,
     contingencyListType,
     open,
@@ -32,7 +47,7 @@ const ContingencyListEditionDialog = ({
     titleId,
     name,
 }) => {
-    const schema = getContingencyListEditionSchema(contingencyListType);
+    //const schema = getContingencyListEditionSchema(contingencyListType);
 
     const [isValidName, setIsValidName] = useState(true);
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
@@ -124,4 +139,4 @@ const ContingencyListEditionDialog = ({
     );
 };
 
-export default ContingencyListEditionDialog;
+export default ExplicitNamingEditionDialog;

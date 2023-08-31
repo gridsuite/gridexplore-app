@@ -29,7 +29,12 @@ import {
     saveExplicitNamingContingencyList,
     saveScriptContingencyList,
 } from '../../../utils/rest-api';
-import { getCriteriaBasedFormData } from '../commons/criteria-based/criteria-based-utils';
+import {
+    getCriteriaBasedFormData,
+    getCriteriaBasedSchema,
+} from '../commons/criteria-based/criteria-based-utils';
+import yup from 'components/utils/yup-config';
+import { getExplicitNamingEditSchema } from './explicit-naming/explicit-naming-form';
 
 export const makeDefaultRowData = () => ({
     [AG_GRID_ROW_UUID]: crypto.randomUUID(),
@@ -42,6 +47,30 @@ export const makeDefaultTableRows = () => [
     makeDefaultRowData(),
     makeDefaultRowData(),
 ];
+
+export const getContingencyListEditionSchema = (contingencyListType) => {
+    switch (contingencyListType) {
+        case ContingencyListType.CRITERIA_BASED.id:
+            return yup.object().shape({
+                [NAME]: yup.string().required(),
+                [EQUIPMENT_TYPE]: yup.string().required(),
+                ...getCriteriaBasedSchema(),
+            });
+        case ContingencyListType.EXPLICIT_NAMING.id:
+            return yup.object().shape({
+                [NAME]: yup.string().required(),
+                [EQUIPMENT_TYPE]: yup.string().nullable(),
+                [EQUIPMENT_TABLE]: yup.string().required(),
+                ...getExplicitNamingEditSchema(EQUIPMENT_TABLE),
+            });
+        default:
+            return yup.object().shape({
+                [NAME]: yup.string().required(),
+                [EQUIPMENT_TYPE]: yup.string().nullable(),
+                [SCRIPT]: yup.string().nullable(),
+            });
+    }
+};
 
 export const getContingencyListEmptyFormData = () => ({
     [NAME]: '',
@@ -61,6 +90,7 @@ export const getFormDataFromFetchedElement = (
         case ContingencyListType.CRITERIA_BASED.id:
             return {
                 [NAME]: name,
+                [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
                 [EQUIPMENT_TYPE]: response.equipmentType,
                 ...getCriteriaBasedFormData(response),
             };
@@ -71,6 +101,8 @@ export const getFormDataFromFetchedElement = (
                     (identifiers) => {
                         return {
                             [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+                            [CONTINGENCY_LIST_TYPE]:
+                                ContingencyListType.EXPLICIT_NAMING.id,
                             [CONTINGENCY_NAME]: identifiers.contingencyId,
                             [EQUIPMENT_IDS]: identifiers.identifierList.map(
                                 (identifier) => identifier.identifier
