@@ -24,17 +24,8 @@ import {
 } from '../../utils/field-constants';
 import { ContingencyListType } from '../../../utils/elementType';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
-import {
-    saveCriteriaBasedContingencyList,
-    saveExplicitNamingContingencyList,
-    saveScriptContingencyList,
-} from '../../../utils/rest-api';
-import {
-    getCriteriaBasedFormData,
-    getCriteriaBasedSchema,
-} from '../commons/criteria-based/criteria-based-utils';
-import yup from '../../utils/yup-config';
-import { getExplicitNamingSchema } from './explicit-naming/explicit-naming-form';
+
+import { getCriteriaBasedFormData } from '../commons/criteria-based/criteria-based-utils';
 
 export const makeDefaultRowData = () => ({
     [AG_GRID_ROW_UUID]: crypto.randomUUID(),
@@ -48,16 +39,6 @@ export const makeDefaultTableRows = () => [
     makeDefaultRowData(),
 ];
 
-export const getContingencyListSchema = () =>
-    yup.object().shape({
-        [NAME]: yup.string().required(),
-        [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
-        [EQUIPMENT_TYPE]: yup.string().nullable(),
-        [SCRIPT]: yup.string().nullable(),
-        ...getExplicitNamingSchema(EQUIPMENT_TABLE),
-        ...getCriteriaBasedSchema(),
-    });
-
 export const getContingencyListEmptyFormData = () => ({
     [NAME]: '',
     [EQUIPMENT_TABLE]: makeDefaultTableRows(),
@@ -67,83 +48,44 @@ export const getContingencyListEmptyFormData = () => ({
     ...getCriteriaBasedFormData(),
 });
 
-export const getFormDataFromFetchedElement = (
-    response,
-    name,
-    contingencyListType
-) => {
-    switch (contingencyListType) {
-        case ContingencyListType.CRITERIA_BASED.id:
-            return {
-                [NAME]: name,
-                [EQUIPMENT_TYPE]: response.equipmentType,
-                ...getCriteriaBasedFormData(response),
-            };
-        case ContingencyListType.EXPLICIT_NAMING.id:
-            let result;
-            if (response.identifierContingencyList?.identifiers?.length) {
-                result = response.identifierContingencyList?.identifiers?.map(
-                    (identifiers) => {
-                        return {
-                            [AG_GRID_ROW_UUID]: crypto.randomUUID(),
-                            [CONTINGENCY_NAME]: identifiers.contingencyId,
-                            [EQUIPMENT_IDS]: identifiers.identifierList.map(
-                                (identifier) => identifier.identifier
-                            ),
-                        };
-                    }
-                );
-            } else {
-                result = makeDefaultTableRows();
-            }
-
-            return {
-                [EQUIPMENT_TABLE]: result,
-            };
-        case ContingencyListType.SCRIPT.id:
-            return {
-                [SCRIPT]: response.script,
-            };
-        default:
-            console.info(
-                "Unknown contingency list type '" + contingencyListType + "'"
-            );
-            return getContingencyListEmptyFormData();
-    }
+export const getCriteriaBasedFormDataFromFetchedElement = (response, name) => {
+    return {
+        [NAME]: name,
+        [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
+        [EQUIPMENT_TYPE]: response.equipmentType,
+        ...getCriteriaBasedFormData(response),
+    };
 };
 
-export const editContingencyList = (
-    contingencyListId,
-    contingencyListType,
-    contingencyList
-) => {
-    switch (contingencyListType) {
-        case ContingencyListType.CRITERIA_BASED.id:
-            return saveCriteriaBasedContingencyList(
-                contingencyListId,
-                contingencyList
-            );
-        case ContingencyListType.EXPLICIT_NAMING.id:
-            const equipments = prepareContingencyListForBackend(
-                contingencyListId,
-                contingencyList
-            );
-            return saveExplicitNamingContingencyList(
-                equipments,
-                contingencyList[NAME]
-            );
-        case ContingencyListType.SCRIPT.id:
-            const newScript = {
-                id: contingencyListId,
-                script: contingencyList[SCRIPT],
-            };
-            return saveScriptContingencyList(newScript, contingencyList[NAME]);
-        default:
-            console.info(
-                "Unknown contingency list type '" + contingencyListType + "'"
-            );
-            return null;
+export const getExplicitNamingFormDataFromFetchedElement = (response) => {
+    let result;
+    if (response.identifierContingencyList?.identifiers?.length) {
+        result = response.identifierContingencyList?.identifiers?.map(
+            (identifiers) => {
+                return {
+                    [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+                    [CONTINGENCY_LIST_TYPE]:
+                        ContingencyListType.EXPLICIT_NAMING.id,
+                    [CONTINGENCY_NAME]: identifiers.contingencyId,
+                    [EQUIPMENT_IDS]: identifiers.identifierList.map(
+                        (identifier) => identifier.identifier
+                    ),
+                };
+            }
+        );
+    } else {
+        result = makeDefaultTableRows();
     }
+
+    return {
+        [EQUIPMENT_TABLE]: result,
+    };
+};
+
+export const getScriptFormDataFromFetchedElement = (response) => {
+    return {
+        [SCRIPT]: response.script,
+    };
 };
 
 export const getFormContent = (contingencyListId, contingencyList) => {
