@@ -8,25 +8,39 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import {
-    editContingencyList,
-    getContingencyListEmptyFormData,
-    getContingencyListSchema,
-    getFormDataFromFetchedElement,
-} from '../contingency-list-utils';
-import React, { useEffect, useState } from 'react';
-import { getContingencyList } from '../../../../utils/rest-api';
-import CustomMuiDialog from '../../commons/custom-mui-dialog/custom-mui-dialog';
-import ContingencyListEditionForm from './contingency-list-edition-form';
-import { ElementType } from '../../../../utils/elementType';
-import NameWrapper from '../../name-wrapper';
-import { NAME } from '../../../utils/field-constants';
 
-const schema = getContingencyListSchema();
+import React, { useEffect, useState } from 'react';
+import {
+    getContingencyListEmptyFormData,
+    getExplicitNamingFormDataFromFetchedElement,
+} from '../../contingency-list-utils';
+import {
+    getContingencyList,
+    saveExplicitNamingContingencyList,
+} from 'utils/rest-api';
+import {
+    EQUIPMENT_TABLE,
+    EQUIPMENT_TYPE,
+    NAME,
+} from 'components/utils/field-constants';
+import CustomMuiDialog from 'components/dialogs/custom-mui-dialog';
+import NameWrapper from 'components/dialogs/name-wrapper';
+import { ElementType } from 'utils/elementType';
+import yup from 'components/utils/yup-config';
+import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-form';
+import ExplicitNamingEditionForm from './explicit-naming-edition-form';
+import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
+
+const schema = yup.object().shape({
+    [NAME]: yup.string().required(),
+    [EQUIPMENT_TYPE]: yup.string().nullable(),
+    [EQUIPMENT_TABLE]: yup.string().nullable(),
+    ...getExplicitNamingEditSchema(EQUIPMENT_TABLE),
+});
 
 const emptyFormData = getContingencyListEmptyFormData();
 
-const ContingencyListEditionDialog = ({
+const ExplicitNamingEditionDialog = ({
     contingencyListId,
     contingencyListType,
     open,
@@ -51,11 +65,10 @@ const ContingencyListEditionDialog = ({
             getContingencyList(contingencyListType, contingencyListId)
                 .then((response) => {
                     if (response) {
-                        const formData = getFormDataFromFetchedElement(
-                            response,
-                            name,
-                            contingencyListType
-                        );
+                        const formData =
+                            getExplicitNamingFormDataFromFetchedElement(
+                                response
+                            );
                         reset({ ...formData, [NAME]: name });
                     }
                 })
@@ -79,12 +92,19 @@ const ContingencyListEditionDialog = ({
         setValue(NAME, newName, { shouldDirty: isValid });
     };
 
-    const onSubmit = (contingencyList) => {
-        editContingencyList(
+    const editContingencyList = (contingencyListId, contingencyList) => {
+        const equipments = prepareContingencyListForBackend(
             contingencyListId,
-            contingencyListType,
             contingencyList
-        )
+        );
+        return saveExplicitNamingContingencyList(
+            equipments,
+            contingencyList[NAME]
+        );
+    };
+
+    const onSubmit = (contingencyList) => {
+        editContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 closeAndClear();
             })
@@ -115,13 +135,9 @@ const ContingencyListEditionDialog = ({
                 initialValue={name}
                 handleNameValidation={handleNameChange}
             />
-            {!isFetching && (
-                <ContingencyListEditionForm
-                    contingencyListType={contingencyListType}
-                />
-            )}
+            {!isFetching && <ExplicitNamingEditionForm />}
         </CustomMuiDialog>
     );
 };
 
-export default ContingencyListEditionDialog;
+export default ExplicitNamingEditionDialog;

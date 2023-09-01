@@ -182,6 +182,8 @@
   "multipleEquipmentTypeError": "Every filter should have one equipment type only",
   "missingEquipmentsIdsError": "ID is required field for all equipments",
   "distributionKeyWithMissingIdError": "Missing ID with defined distribution key",
+  "contingencyTablePartiallyDefinedError": "At least one contingency is partially defined",
+  "contingencyTableContainAtLeastOneRowError": "Contingency list should contain at least one contingency ",
   "missingDistributionKeyError": "Missing distribution key",
   "emptyFilterError": "Filter should contain at least one equipment",
   "emptyContingencyListError": "Contingency list should contain at least one equipment",

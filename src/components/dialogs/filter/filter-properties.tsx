@@ -19,7 +19,7 @@ import {
 } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 import { areArrayElementsUnique } from '../../../utils/functions';
-import { ErrorInput } from '@gridsuite/commons-ui';
+import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import { ListItem } from '@mui/material';
 import { Hvdc, Line, Substation } from '../../../utils/equipment-types';
 import { FilterType } from '../../../utils/elementType';
@@ -202,7 +202,7 @@ function FilterProperties() {
                     </Button>
                 </Grid>
                 <Grid item>
-                    <ErrorInput name={fieldName} />
+                    <ErrorInput name={fieldName} InputField={FieldErrorAlert} />
                 </Grid>
             </Grid>
         )

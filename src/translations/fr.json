@@ -182,6 +182,8 @@
   "multipleEquipmentTypeError": "Chaque filtre ne doit avoir qu'un seul type d'ouvrage",
   "missingEquipmentsIdsError": "L'ID est un champ obligatoire pour tous les ouvrages",
   "distributionKeyWithMissingIdError": "ID manquant avec une clé de répartition définie",
+  "contingencyTablePartiallyDefinedError": "Au moins un des aléas est défini de manière incomplète",
+  "contingencyTableContainAtLeastOneRowError": "La liste d'aléas doit contenir au moins un aléa",
   "missingDistributionKeyError": "Clé de répartition manquante",
   "emptyFilterError": "Le filtre doit contenir au moins un ouvrage",
   "emptyContingencyListError": "La liste d'aléas doit contenir au moins un ouvrage",

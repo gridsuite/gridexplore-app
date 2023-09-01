@@ -12,10 +12,8 @@ import {
 } from '../utils/field-constants';
 
 export const prepareContingencyListForBackend = (id, contingencyList) => {
-    const identifiersList = contingencyList[EQUIPMENT_TABLE].filter(
-        (contingency) => contingency[EQUIPMENT_IDS].length > 0
-    ) // We only take contingencies (rows) that are not empty
-        .map((contingency) => {
+    const identifiersList = contingencyList[EQUIPMENT_TABLE].map(
+        (contingency) => {
             const identifierList = contingency[EQUIPMENT_IDS].map(
                 (identifier) => {
                     return {
@@ -30,7 +28,8 @@ export const prepareContingencyListForBackend = (id, contingencyList) => {
                 contingencyId: contingency[CONTINGENCY_NAME],
                 identifierList: identifierList,
             };
-        });
+        }
+    );
 
     return {
         id: id,

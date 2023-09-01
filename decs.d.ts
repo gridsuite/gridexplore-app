@@ -33,9 +33,6 @@ declare module '@gridsuite/commons-ui' {
         showSeparator?: boolean;
         selectionWithDialog?: (parameter: Parameter) => boolean;
     }
-    interface IFieldErrorAlert {
-        message: string;
-    }
 
     export function useSnackMessage(): UseSnackMessageReturn;
 
@@ -72,9 +69,15 @@ declare module '@gridsuite/commons-ui' {
 
     export const AutocompleteInput: FunctionComponent<AutocompleteInputProps>;
 
+    interface FieldErrorAlertProps {
+        name: string;
+    }
+    export const FieldErrorAlert: FunctionComponent<FieldErrorAlertProps>;
+
     interface ErrorInputProps {
         name: string;
-        InputField?: FunctionComponent<IFieldErrorAlert>;
+        InputField?: FunctionComponent<FieldErrorAlertProps>;
+        InputField?: FunctionComponent;
     }
 
     export const ErrorInput: FunctionComponent<ErrorInputProps>;
@@ -123,8 +126,6 @@ declare module '@gridsuite/commons-ui' {
             'outputTransform' | 'inputTransform' | 'acceptValue' // already defined in FloatInput
         >
     >;
-
-    export const FieldErrorAlert: FunctionComponent<IFieldErrorAlert>;
 
     interface RadioInputProps {
         name: string;
