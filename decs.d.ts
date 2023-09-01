@@ -1,7 +1,7 @@
 declare module '@gridsuite/commons-ui' {
     import { FunctionComponent, ReactElement } from 'react';
     import { AutocompleteProps } from '@mui/material/Autocomplete/Autocomplete';
-    import { InputProps, RadioGroupProps, TextFieldProps } from '@mui/material';
+    import { RadioGroupProps, TextFieldProps } from '@mui/material';
 
     interface SnackInputs {
         messageTxt?: string;
