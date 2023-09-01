@@ -33,73 +33,53 @@ export const getExplicitNamingSchema = (id) => {
                     [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
                 })
             )
+            // we remove empty lines
+            .compact(
+                (row) => !row[CONTINGENCY_NAME] && !row[EQUIPMENT_IDS]?.length
+            )
             .when([CONTINGENCY_LIST_TYPE], {
                 is: ContingencyListType.EXPLICIT_NAMING.id,
-                then: (schema) =>
-                    schema
-                        .test(
-                            'rowWithoutNameOrEquipments',
-                            'contingencyTablePartiallyDefinedError',
-                            (array) => {
-                                return !array.some(
-                                    (row) =>
-                                        (!row[CONTINGENCY_NAME]?.trim() &&
-                                            row[EQUIPMENT_IDS]?.length) ||
-                                        (row[CONTINGENCY_NAME]?.trim() &&
-                                            !row[EQUIPMENT_IDS]?.length)
-                                );
-                            }
-                        )
-                        .test(
-                            'noRowWithNameAndEquipments',
-                            'contingencyTableContainAtLeastOneRowError',
-                            (array) => {
-                                return array.some(
-                                    (row) =>
-                                        row[CONTINGENCY_NAME]?.trim() &&
-                                        row[EQUIPMENT_IDS]?.length
-                                );
-                            }
-                        ),
+                then: (schema) => getExplicitNamingConditionSchema(schema),
             }),
     };
 };
 
 export const getExplicitNamingEditSchema = (id) => {
+    const schema = yup
+        .array()
+        .of(
+            yup.object().shape({
+                [CONTINGENCY_NAME]: yup.string().nullable(),
+                [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
+            })
+        ) // we remove empty lines
+        .compact(
+            (row) => !row[CONTINGENCY_NAME] && !row[EQUIPMENT_IDS]?.length
+        );
+
     return {
-        [id]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [CONTINGENCY_NAME]: yup.string().nullable(),
-                    [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
-                })
-            )
-            .test(
-                'rowWithoutNameOrEquipments',
-                'contingencyTablePartiallyDefinedError',
-                (array) => {
-                    return !array.some(
-                        (row) =>
-                            (!row[CONTINGENCY_NAME]?.trim() &&
-                                row[EQUIPMENT_IDS]?.length) ||
-                            (row[CONTINGENCY_NAME]?.trim() &&
-                                !row[EQUIPMENT_IDS]?.length)
-                    );
-                }
-            )
-            .test(
-                'noRowWithNameAndEquipments',
-                'contingencyTableContainAtLeastOneRowError',
-                (array) => {
-                    return array.some(
-                        (row) =>
-                            row[CONTINGENCY_NAME]?.trim() &&
-                            row[EQUIPMENT_IDS]?.length
-                    );
-                }
-            ),
+        [id]: getExplicitNamingConditionSchema(schema),
     };
+};
+
+const getExplicitNamingConditionSchema = (schema) => {
+    return schema
+
+        .min(1, 'emptyFilterError')
+        .test(
+            'rowWithoutName',
+            'contingencyTablePartiallyDefinedError',
+            (array) => {
+                return !array.some((row) => !row[CONTINGENCY_NAME]?.trim());
+            }
+        )
+        .test(
+            'rowWithoutEquipments',
+            'contingencyTablePartiallyDefinedError',
+            (array) => {
+                return !array.some((row) => !row[EQUIPMENT_IDS]?.length);
+            }
+        );
 };
 
 const suppressKeyboardEvent = (params) => {
