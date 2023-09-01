@@ -64,8 +64,7 @@ export const getExplicitNamingEditSchema = (id) => {
 
 const getExplicitNamingConditionSchema = (schema) => {
     return schema
-
-        .min(1, 'emptyFilterError')
+        .min(1, 'contingencyTableContainAtLeastOneRowError')
         .test(
             'rowWithoutName',
             'contingencyTablePartiallyDefinedError',
