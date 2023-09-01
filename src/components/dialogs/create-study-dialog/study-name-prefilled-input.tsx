@@ -27,7 +27,7 @@ const StudyNamePrefilledInput: FunctionComponent<
         if (caseFile && !apiCallErrorMessage && !caseFileErrorMessage) {
             const { name: caseName } = caseFile;
 
-            if (name) {
+            if (caseName) {
                 clearErrors(name);
                 setValue(name, caseName.substring(0, caseName.indexOf('.')), {
                     shouldDirty: true,

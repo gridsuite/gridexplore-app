@@ -13,12 +13,13 @@ export const getCreateStudyDialogFormDefaultValues = ({
     directory = '',
     studyName = '',
     caseFile = null,
+    caseUuid = '',
 }) => {
     return {
         [STUDY_NAME]: studyName,
         [DESCRIPTION]: '',
         [CASE_FILE]: caseFile,
-        [CASE_UUID]: '',
+        [CASE_UUID]: caseUuid,
         [FORMATTED_CASE_PARAMETERS]: [],
         [CURRENT_PARAMETERS]: {},
         [DIRECTORY]: directory,

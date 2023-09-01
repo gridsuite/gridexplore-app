@@ -59,12 +59,15 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
 
+    const { elementUuid, elementName } = providedExistingCase || {};
+
     const createStudyFormMethods = useForm({
         mode: 'onChange',
         defaultValues: getCreateStudyDialogFormDefaultValues({
             directory: activeDirectory,
-            studyName: providedExistingCase?.elementName,
+            studyName: elementName,
             caseFile: providedExistingCase,
+            caseUuid: elementUuid,
         }),
         resolver: yupResolver(createStudyDialogFormValidationSchema),
     });
@@ -227,7 +230,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         if (providedExistingCase) {
             const { elementUuid } = providedExistingCase;
             setValue(CASE_UUID, elementUuid);
-
             getCurrentCaseImportParams(elementUuid);
         }
     }, [getCurrentCaseImportParams, providedExistingCase, setValue]);
@@ -266,7 +268,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 <DirectorySelect types={[ElementType.DIRECTORY]} />
             ) : (
                 <UploadNewCase
-                    name={CASE_FILE}
                     isNewStudyCreation={true}
                     getCurrentCaseImportParams={getCurrentCaseImportParams}
                     handleApiCallError={handleApiCallError}

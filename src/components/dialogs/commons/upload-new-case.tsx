@@ -23,7 +23,6 @@ import {
 } from '../../../utils/rest-api';
 
 interface UploadNewCaseProps {
-    name: string;
     isNewStudyCreation?: boolean;
     getCurrentCaseImportParams?: (uuid: string) => void;
     handleApiCallError?: ErrorCallback;
@@ -33,7 +32,6 @@ const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
 
 const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
-    name,
     isNewStudyCreation = false,
     getCurrentCaseImportParams,
     handleApiCallError,
@@ -45,7 +43,7 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
     const {
         field: { ref, value },
     } = useController({
-        name,
+        name: CASE_FILE,
     });
 
     const { clearErrors, setError, getValues, setValue } = useFormContext();

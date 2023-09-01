@@ -153,7 +153,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
                 </Grid>
             </Grid>
             <ErrorInput name={CASE_FILE} InputField={FieldErrorAlert} />
-            <UploadNewCase name={CASE_FILE} />
+            <UploadNewCase />
         </CustomMuiDialog>
     );
 };
