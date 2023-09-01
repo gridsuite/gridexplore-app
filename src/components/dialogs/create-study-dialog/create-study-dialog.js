@@ -7,10 +7,9 @@
 import { useForm } from 'react-hook-form';
 import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
 import {
-    createCaseWithoutDirectoryElementCreation,
     createStudy,
     deleteCase,
     getCaseImportParameters,
@@ -49,16 +48,12 @@ import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
 import { ErrorInput, FieldErrorAlert, TextInput } from '@gridsuite/commons-ui';
 import StudyNamePrefilledInput from './study-name-prefilled-input';
 
-const MAX_FILE_SIZE_IN_MO = 100;
-const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
 const STRING_LIST = 'STRING_LIST';
 
 const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
-
-    const [caseFileLoading, setCaseFileLoading] = useState(false);
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -76,16 +71,15 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const {
         setValue,
-        formState: { errors },
+        formState: { errors, isValid },
         setError,
-        clearErrors,
         getValues,
         watch,
     } = createStudyFormMethods;
 
     const studyName = watch(STUDY_NAME);
 
-    const isValid = isObjectEmpty(errors);
+    const isFormValid = isObjectEmpty(errors) && isValid;
 
     // callbacks
     const handleApiCallError = useCallback(
@@ -219,58 +213,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         dispatch(addUploadingElement(uploadingStudy));
     };
 
-    const handleCaseFileUpload = (event) => {
-        event.preventDefault();
-
-        clearErrors(CASE_FILE);
-        clearErrors(`root.${API_CALL}`);
-
-        const files = event.target.files;
-        if (files?.length) {
-            const currentFile = files[0];
-
-            if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
-                setCaseFileLoading(true);
-                setValue(CASE_FILE, currentFile);
-
-                // Create new case
-                createCaseWithoutDirectoryElementCreation(currentFile)
-                    .then((newCaseUuid) => {
-                        const prevCaseUuid = getValues(CASE_UUID);
-
-                        if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
-                            deleteCase(prevCaseUuid).catch((error) =>
-                                handleApiCallError(error)
-                            );
-                        }
-                        setValue(CASE_UUID, newCaseUuid, {
-                            shouldValidate: true,
-                        });
-
-                        getCurrentCaseImportParams(newCaseUuid);
-                    })
-                    .catch(handleApiCallError)
-                    .finally(() => {
-                        setCaseFileLoading(false);
-                    });
-            } else {
-                setError(CASE_FILE, {
-                    type: 'caseFileSize',
-                    message: intl
-                        .formatMessage(
-                            {
-                                id: 'uploadFileExceedingLimitSizeErrorMsg',
-                            },
-                            {
-                                maxSize: MAX_FILE_SIZE_IN_MO,
-                            }
-                        )
-                        .toString(),
-                });
-            }
-        }
-    };
-
     // handle check studyName
     const [studyNameAdornment, studyNameChecking] = useNameCheck({
         field: STUDY_NAME,
@@ -300,7 +242,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             onClose={onClose}
             onSave={handleCreateNewStudy}
             onCancel={handleDeleteCase}
-            disabledSave={!isValid || studyNameChecking}
+            disabledSave={!isFormValid || studyNameChecking}
         >
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>
@@ -325,8 +267,9 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             ) : (
                 <UploadNewCase
                     name={CASE_FILE}
-                    caseFileLoading={caseFileLoading}
-                    handleCaseFileUpload={handleCaseFileUpload}
+                    isNewStudyCreation={true}
+                    getCurrentCaseImportParams={getCurrentCaseImportParams}
+                    handleApiCallError={handleApiCallError}
                 />
             )}
             <ImportParametersSection />

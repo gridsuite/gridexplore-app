@@ -25,11 +25,11 @@ const StudyNamePrefilledInput: FunctionComponent<
 
     useEffect(() => {
         if (caseFile && !apiCallErrorMessage && !caseFileErrorMessage) {
-            const { name } = caseFile;
+            const { name: caseName } = caseFile;
 
             if (name) {
                 clearErrors(name);
-                setValue(name, name.substring(0, name.indexOf('.')), {
+                setValue(name, caseName.substring(0, caseName.indexOf('.')), {
                     shouldDirty: true,
                     shouldValidate: true,
                 });

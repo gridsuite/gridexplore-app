@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useIntl } from 'react-intl';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { isObjectEmpty, keyGenerator } from '../../../utils/functions';
@@ -31,9 +30,6 @@ import {
 } from './create-case-dialog-utils';
 import { ReduxState } from '../../../redux/reducer.type';
 
-const MAX_FILE_SIZE_IN_MO = 100;
-const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
-
 interface IFormData {
     [CASE_NAME]: string;
     [DESCRIPTION]: string;
@@ -49,7 +45,6 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     onClose,
     open,
 }) => {
-    const intl = useIntl();
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
 
@@ -60,15 +55,12 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
     });
 
     const {
-        setValue,
-        formState: { errors },
+        formState: { errors, isValid },
         setError,
-        getValues,
-        clearErrors,
         watch,
     } = createCaseFormMethods;
 
-    const isValid = isObjectEmpty(errors);
+    const isFormValid = isObjectEmpty(errors) && isValid;
 
     const caseName = watch(CASE_NAME);
 
@@ -119,48 +111,6 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
         dispatch(addUploadingElement(uploadingCase));
     };
 
-    const handleCaseFileUpload = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        event.preventDefault();
-        clearErrors(CASE_FILE);
-        const files = event.target.files;
-        if (files?.length) {
-            const currentFile = files[0]!;
-
-            if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
-                setValue(CASE_FILE, currentFile);
-                const { name: caseFileName } = currentFile;
-
-                const caseName = getValues(CASE_NAME);
-                if (caseFileName && !caseName) {
-                    clearErrors(CASE_NAME);
-                    setValue(
-                        CASE_NAME,
-                        caseFileName.substring(0, caseFileName.indexOf('.')),
-                        {
-                            shouldDirty: true,
-                        }
-                    );
-                }
-            } else {
-                setError(CASE_FILE, {
-                    type: 'caseFileSize',
-                    message: intl
-                        .formatMessage(
-                            {
-                                id: 'uploadFileExceedingLimitSizeErrorMsg',
-                            },
-                            {
-                                maxSize: MAX_FILE_SIZE_IN_MO,
-                            }
-                        )
-                        .toString(),
-                });
-            }
-        }
-    };
-
     const [caseFileAdornment, caseNameChecking]: NameCheckReturn =
         useNameCheck<IFormData>({
             field: CASE_NAME,
@@ -178,7 +128,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
             open={open}
             onClose={onClose}
             onSave={handleCreateNewCase}
-            disabledSave={!isValid || caseNameChecking}
+            disabledSave={!isFormValid || caseNameChecking}
         >
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>
@@ -203,10 +153,7 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
                 </Grid>
             </Grid>
             <ErrorInput name={CASE_FILE} InputField={FieldErrorAlert} />
-            <UploadNewCase
-                name={CASE_FILE}
-                handleCaseFileUpload={handleCaseFileUpload}
-            />
+            <UploadNewCase name={CASE_FILE} />
         </CustomMuiDialog>
     );
 };
