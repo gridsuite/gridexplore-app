@@ -57,7 +57,7 @@ const CustomMuiDialog: FunctionComponent<ICustomMuiDialog> = ({
 
     const handleClose = (event: React.MouseEvent, reason?: string) => {
         if (reason === 'backdropClick' && onCancel) {
-            handleCancel(event);
+            onCancel();
         }
         onClose(event);
     };

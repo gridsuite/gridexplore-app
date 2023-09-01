@@ -69,6 +69,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         defaultValues: getCreateStudyDialogFormDefaultValues({
             directory: activeDirectory,
             studyName: providedExistingCase?.elementName,
+            caseFile: providedExistingCase,
         }),
         resolver: yupResolver(createStudyDialogFormValidationSchema),
     });
@@ -115,6 +116,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         (uuid) => {
             getCaseImportParameters(uuid)
                 .then((result) => {
+                    // sort possible values alphabetically to display select options sorted
                     result.parameters = result.parameters?.map((parameter) => {
                         parameter.possibleValues =
                             parameter.possibleValues?.sort((a, b) =>
@@ -282,7 +284,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     useEffect(() => {
         if (providedExistingCase) {
             const { elementUuid } = providedExistingCase;
-            setValue(CASE_FILE, providedExistingCase);
             setValue(CASE_UUID, elementUuid);
 
             getCurrentCaseImportParams(elementUuid);
@@ -304,7 +305,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>
                     <StudyNamePrefilledInput
-                        fieldName={STUDY_NAME}
+                        name={STUDY_NAME}
                         label={'nameProperty'}
                         adornment={studyNameAdornment}
                     />

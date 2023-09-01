@@ -12,11 +12,12 @@ import yup from '../../utils/yup-config';
 export const getCreateStudyDialogFormDefaultValues = ({
     directory = '',
     studyName = '',
+    caseFile = null,
 }) => {
     return {
         [STUDY_NAME]: studyName,
         [DESCRIPTION]: '',
-        [CASE_FILE]: null,
+        [CASE_FILE]: caseFile,
         [CASE_UUID]: '',
         [FORMATTED_CASE_PARAMETERS]: [],
         [CURRENT_PARAMETERS]: {},

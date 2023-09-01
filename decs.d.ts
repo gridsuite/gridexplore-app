@@ -18,7 +18,7 @@ declare module '@gridsuite/commons-ui' {
         snackInfo: (snackInputs: SnackInputs) => void;
     }
 
-    export type ParameterType = {
+    export type Parameter = {
         type: string;
         name: string;
         description: string;
@@ -26,12 +26,12 @@ declare module '@gridsuite/commons-ui' {
         defaultValue: string;
     };
 
-    interface IFlatParameters extends Pick<TextFieldProps, 'variant'> {
-        paramsAsArray: ParameterType[];
+    interface FlatParametersProps extends Pick<TextFieldProps, 'variant'> {
+        paramsAsArray: Parameter[];
         initValues: Record<string, any>;
         onChange: (paramName: string, value: any, isEdit: boolean) => void;
         showSeparator?: boolean;
-        selectionWithDialog: (parameter: ParameterType) => boolean;
+        selectionWithDialog?: (parameter: Parameter) => boolean;
     }
     interface IFieldErrorAlert {
         message: string;
@@ -113,7 +113,6 @@ declare module '@gridsuite/commons-ui' {
             TextFieldWithAdornmentProps | TextFieldProps,
             'value' | 'onChange' | 'inputRef' | 'inputProps' | 'InputProps'
         >;
-        inputProps?: InputProps;
     }
 
     export const TextInput: FunctionComponent<TextInputProps>;
@@ -148,7 +147,7 @@ declare module '@gridsuite/commons-ui' {
         values?: any; // it's for values from https://formatjs.io/docs/react-intl/components/#formattedmessage
     }>;
 
-    export const FlatParameters: FunctionComponent<IFlatParameters>;
+    export const FlatParameters: FunctionComponent<FlatParametersProps>;
 
     export function useDebounce(
         debouncedFunction: () => void,

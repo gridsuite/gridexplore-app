@@ -3,17 +3,15 @@ import { TextInput } from '@gridsuite/commons-ui';
 import { useFormContext } from 'react-hook-form';
 import { CASE_FILE } from '../../utils/field-constants';
 
-interface IPrefilledTextInput {
+interface StudyNamePrefilledInputProps {
     label: string;
-    fieldName: string;
+    name: string;
     adornment: ReactElement | null;
 }
 
-const StudyNamePrefilledInput: FunctionComponent<IPrefilledTextInput> = ({
-    label,
-    fieldName,
-    adornment,
-}) => {
+const StudyNamePrefilledInput: FunctionComponent<
+    StudyNamePrefilledInputProps
+> = ({ label, name, adornment }) => {
     const {
         setValue,
         clearErrors,
@@ -30,8 +28,8 @@ const StudyNamePrefilledInput: FunctionComponent<IPrefilledTextInput> = ({
             const { name } = caseFile;
 
             if (name) {
-                clearErrors(fieldName);
-                setValue(fieldName, name.substring(0, name.indexOf('.')), {
+                clearErrors(name);
+                setValue(name, name.substring(0, name.indexOf('.')), {
                     shouldDirty: true,
                     shouldValidate: true,
                 });
@@ -43,13 +41,13 @@ const StudyNamePrefilledInput: FunctionComponent<IPrefilledTextInput> = ({
         caseFileErrorMessage,
         setValue,
         clearErrors,
-        fieldName,
+        name,
     ]);
 
     return (
         <TextInput
             label={label}
-            name={fieldName}
+            name={name}
             customAdornment={adornment}
             formProps={{
                 size: 'medium',

@@ -140,7 +140,6 @@ const CreateCaseDialog: React.FunctionComponent<ICreateCaseDialogProps> = ({
                         caseFileName.substring(0, caseFileName.indexOf('.')),
                         {
                             shouldDirty: true,
-                            shouldValidate: true,
                         }
                     );
                 }

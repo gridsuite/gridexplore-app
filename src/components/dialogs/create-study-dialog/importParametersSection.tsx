@@ -13,11 +13,13 @@ import {
     CURRENT_PARAMETERS,
     FORMATTED_CASE_PARAMETERS,
 } from '../../utils/field-constants';
-import { useController } from 'react-hook-form';
+import { useController, useFormContext } from 'react-hook-form';
 import Box from '@mui/material/Box';
 
 const ImportParametersSection: FunctionComponent = () => {
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
+
+    const { watch } = useFormContext();
 
     const {
         field: { onChange, value: currentParameters },
@@ -25,11 +27,7 @@ const ImportParametersSection: FunctionComponent = () => {
         name: CURRENT_PARAMETERS,
     });
 
-    const {
-        field: { value: formatWithParameters },
-    } = useController({
-        name: FORMATTED_CASE_PARAMETERS,
-    });
+    const formatWithParameters = watch(FORMATTED_CASE_PARAMETERS);
 
     const handleParamsChange = (
         paramName: string,
