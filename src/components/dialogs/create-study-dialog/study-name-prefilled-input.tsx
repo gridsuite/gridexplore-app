@@ -31,7 +31,6 @@ const StudyNamePrefilledInput: FunctionComponent<
                 clearErrors(name);
                 setValue(name, caseName.substring(0, caseName.indexOf('.')), {
                     shouldDirty: true,
-                    shouldValidate: true,
                 });
             }
         }
