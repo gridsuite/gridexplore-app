@@ -126,7 +126,9 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         return parameter;
                     });
 
-                    setValue(FORMATTED_CASE_PARAMETERS, result.parameters);
+                    setValue(FORMATTED_CASE_PARAMETERS, result.parameters, {
+                        shouldDirty: true,
+                    });
                 })
                 .catch(() => {
                     setValue(FORMATTED_CASE_PARAMETERS, []);
@@ -225,9 +227,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         if (providedExistingCase) {
             const { elementUuid, elementName } = providedExistingCase;
             getCurrentCaseImportParams(elementUuid);
-            setValue(STUDY_NAME, elementName, {
-                shouldDirty: true,
-            });
+            setValue(STUDY_NAME, elementName);
             setValue(CASE_FILE, providedExistingCase);
             setValue(CASE_UUID, elementUuid);
         }
