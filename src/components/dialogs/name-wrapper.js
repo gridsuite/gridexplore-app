@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { elementExists } from '../../utils/rest-api';
@@ -21,6 +21,7 @@ const NameWrapper = ({
     contentType,
     children,
     handleNameValidation,
+    ...textFieldProps
 }) => {
     const [value, setValue] = useState(initialValue);
     const [loadingCheckName, setLoadingCheckName] = useState(false);
@@ -104,6 +105,14 @@ const NameWrapper = ({
         );
     };
 
+    //check if name already exist if initialValue is not empty
+    useEffect(() => {
+        if (initialValue !== '') {
+            updateFormState(initialValue);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     return (
         <>
             <TextField
@@ -116,6 +125,7 @@ const NameWrapper = ({
                 label={<FormattedMessage id={titleMessage} />}
                 helperText={errorMessage ?? ''}
                 InputProps={{ endAdornment: renderNameStatus() }}
+                {...textFieldProps}
             />
             {children}
         </>
@@ -128,6 +138,7 @@ NameWrapper.propTypes = {
     contentType: PropTypes.string,
     children: PropTypes.node,
     handleNameValidation: PropTypes.func,
+    textFieldProps: PropTypes.object,
 };
 
 export default NameWrapper;
