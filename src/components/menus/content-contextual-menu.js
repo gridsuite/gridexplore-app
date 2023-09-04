@@ -566,7 +566,9 @@ const ContentContextualMenu = (props) => {
                             )
                         }
                         currentName={
-                            activeElement ? activeElement.elementName : ''
+                            activeElement
+                                ? '1_' + activeElement.elementName
+                                : ''
                         }
                         title={intl.formatMessage({
                             id: 'copyToScriptList',
