@@ -229,7 +229,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     useEffect(() => {
         if (providedExistingCase) {
             const { elementUuid } = providedExistingCase;
-            setValue(CASE_UUID, elementUuid);
             getCurrentCaseImportParams(elementUuid);
         }
     }, [getCurrentCaseImportParams, providedExistingCase, setValue]);

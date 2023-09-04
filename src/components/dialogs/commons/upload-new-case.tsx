@@ -81,9 +81,7 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                                     handleApiCallError
                                 );
                             }
-                            setValue(CASE_UUID, newCaseUuid, {
-                                shouldValidate: true,
-                            });
+                            setValue(CASE_UUID, newCaseUuid);
 
                             if (getCurrentCaseImportParams) {
                                 getCurrentCaseImportParams(newCaseUuid);
