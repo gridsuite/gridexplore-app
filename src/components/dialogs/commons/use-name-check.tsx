@@ -46,7 +46,7 @@ export const useNameCheck = <T extends Record<string, any>>({
         if (!valueFormatted) {
             setAdornment(null);
         } else {
-            elementExists(activeDirectory, value, elementType)
+            elementExists(activeDirectory, valueFormatted, elementType)
                 .then((isElementExists) => {
                     if (isElementExists) {
                         setError(field, {

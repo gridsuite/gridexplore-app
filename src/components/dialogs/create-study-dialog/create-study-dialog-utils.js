@@ -9,17 +9,12 @@ import {
 } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 
-export const getCreateStudyDialogFormDefaultValues = ({
-    directory = '',
-    studyName = '',
-    caseFile = null,
-    caseUuid = '',
-}) => {
+export const getCreateStudyDialogFormDefaultValues = ({ directory = '' }) => {
     return {
-        [STUDY_NAME]: studyName,
+        [STUDY_NAME]: '',
         [DESCRIPTION]: '',
-        [CASE_FILE]: caseFile,
-        [CASE_UUID]: caseUuid,
+        [CASE_FILE]: null,
+        [CASE_UUID]: '',
         [FORMATTED_CASE_PARAMETERS]: [],
         [CURRENT_PARAMETERS]: {},
         [DIRECTORY]: directory,

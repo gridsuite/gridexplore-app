@@ -59,22 +59,17 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const userId = useSelector((state) => state.user.profile.sub);
 
-    const { elementUuid, elementName } = providedExistingCase || {};
-
     const createStudyFormMethods = useForm({
         mode: 'onChange',
         defaultValues: getCreateStudyDialogFormDefaultValues({
             directory: activeDirectory,
-            studyName: elementName,
-            caseFile: providedExistingCase,
-            caseUuid: elementUuid,
         }),
         resolver: yupResolver(createStudyDialogFormValidationSchema),
     });
 
     const {
         setValue,
-        formState: { errors, isValid },
+        formState: { errors, isValid, isValidating, dirtyFields, isDirty },
         setError,
         getValues,
         watch,
@@ -228,8 +223,11 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     // handle create study from existing case
     useEffect(() => {
         if (providedExistingCase) {
-            const { elementUuid } = providedExistingCase;
+            const { elementUuid, elementName } = providedExistingCase;
             getCurrentCaseImportParams(elementUuid);
+            setValue(STUDY_NAME, elementName, { shouldDirty: true });
+            setValue(CASE_FILE, providedExistingCase);
+            setValue(CASE_UUID, elementUuid);
         }
     }, [getCurrentCaseImportParams, providedExistingCase, setValue]);
 

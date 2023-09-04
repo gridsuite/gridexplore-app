@@ -41,9 +41,15 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
     const [caseFileLoading, setCaseFileLoading] = useState(false);
 
     const {
-        field: { ref, value },
+        field: { ref, value, onChange: onValueChange },
     } = useController({
         name: CASE_FILE,
+    });
+
+    const {
+        field: { onChange: onCaseUuidChange },
+    } = useController({
+        name: CASE_UUID,
     });
 
     const { clearErrors, setError, getValues, setValue } = useFormContext();
@@ -63,9 +69,7 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
             const currentFile = files[0];
 
             if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
-                setValue(CASE_FILE, currentFile, {
-                    shouldValidate: true,
-                });
+                onValueChange(currentFile);
 
                 const { name: caseFileName } = currentFile;
 
@@ -81,7 +85,8 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                                     handleApiCallError
                                 );
                             }
-                            setValue(CASE_UUID, newCaseUuid);
+
+                            onCaseUuidChange(newCaseUuid);
 
                             if (getCurrentCaseImportParams) {
                                 getCurrentCaseImportParams(newCaseUuid);
