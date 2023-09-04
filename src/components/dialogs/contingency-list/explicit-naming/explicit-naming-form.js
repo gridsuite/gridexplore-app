@@ -6,6 +6,8 @@
  */
 
 import {
+    CONTINGENCY_LIST_TYPE,
+    AG_GRID_ROW_UUID,
     CONTINGENCY_NAME,
     EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
@@ -17,17 +19,68 @@ import CustomAgGridTable, {
 } from '../../../utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
 import { gridItem } from '../../../utils/dialog-utils';
 import yup from '../../../utils/yup-config';
-import { DEFAULT_ROW_VALUE } from '../contingency-list-utils';
+import { makeDefaultRowData } from '../contingency-list-utils';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
+import { ContingencyListType } from 'utils/elementType';
 
-export const getExplicitNamingSchema = (id) => ({
-    [id]: yup.array().of(
-        yup.object().shape({
-            [CONTINGENCY_NAME]: yup.string().nullable(),
-            [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
-        })
-    ),
-});
+export const getExplicitNamingSchema = (id) => {
+    return {
+        [id]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [CONTINGENCY_NAME]: yup.string().nullable(),
+                    [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
+                })
+            )
+            // we remove empty lines
+            .compact(
+                (row) => !row[CONTINGENCY_NAME] && !row[EQUIPMENT_IDS]?.length
+            )
+            .when([CONTINGENCY_LIST_TYPE], {
+                is: ContingencyListType.EXPLICIT_NAMING.id,
+                then: (schema) => getExplicitNamingConditionSchema(schema),
+            }),
+    };
+};
+
+export const getExplicitNamingEditSchema = (id) => {
+    const schema = yup
+        .array()
+        .of(
+            yup.object().shape({
+                [CONTINGENCY_NAME]: yup.string().nullable(),
+                [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
+            })
+        ) // we remove empty lines
+        .compact(
+            (row) => !row[CONTINGENCY_NAME] && !row[EQUIPMENT_IDS]?.length
+        );
+
+    return {
+        [id]: getExplicitNamingConditionSchema(schema),
+    };
+};
+
+const getExplicitNamingConditionSchema = (schema) => {
+    return schema
+        .min(1, 'contingencyTableContainAtLeastOneRowError')
+        .test(
+            'rowWithoutName',
+            'contingencyTablePartiallyDefinedError',
+            (array) => {
+                return !array.some((row) => !row[CONTINGENCY_NAME]?.trim());
+            }
+        )
+        .test(
+            'rowWithoutEquipments',
+            'contingencyTablePartiallyDefinedError',
+            (array) => {
+                return !array.some((row) => !row[EQUIPMENT_IDS]?.length);
+            }
+        );
+};
+
 const suppressKeyboardEvent = (params) => {
     const key = params.event.key;
     return key === 'Enter' || key === 'ArrowLeft' || key === 'ArrowRight';
@@ -57,6 +110,7 @@ const ExplicitNamingForm = () => {
                 cellRendererParams: {
                     name: EQUIPMENT_TABLE,
                 },
+                cellStyle: { padding: 0 },
             },
         ];
     }, [intl]);
@@ -65,6 +119,7 @@ const ExplicitNamingForm = () => {
         if (csvData) {
             return csvData.map((value) => {
                 return {
+                    [AG_GRID_ROW_UUID]: crypto.randomUUID(),
                     [CONTINGENCY_NAME]: value[0]?.trim() || '',
                     [EQUIPMENT_IDS]:
                         value[1]
@@ -107,7 +162,7 @@ const ExplicitNamingForm = () => {
         <CustomAgGridTable
             name={EQUIPMENT_TABLE}
             columnDefs={columnDefs}
-            defaultRowData={DEFAULT_ROW_VALUE}
+            makeDefaultRowData={makeDefaultRowData}
             pagination={true}
             paginationPageSize={100}
             suppressRowClickSelection

@@ -1,7 +1,7 @@
 import { FormProvider } from 'react-hook-form';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Grid } from '@mui/material';
+import { Grid, LinearProgress } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
@@ -25,6 +25,7 @@ const CustomMuiDialog = ({
     formMethods,
     onClose,
     onSave,
+    isDataFetching = false,
     onValidationError,
     titleId,
     disabledSave,
@@ -61,6 +62,7 @@ const CustomMuiDialog = ({
                 onClose={handleClose}
                 fullWidth
             >
+                {isDataFetching && <LinearProgress />}
                 <DialogTitle>
                     <Grid item xs={11}>
                         <FormattedMessage id={titleId} />

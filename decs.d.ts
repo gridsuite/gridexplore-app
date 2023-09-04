@@ -53,8 +53,14 @@ declare module '@gridsuite/commons-ui' {
 
     export const AutocompleteInput: FunctionComponent<AutocompleteInputProps>;
 
+    interface FieldErrorAlertProps {
+        name: string;
+    }
+    export const FieldErrorAlert: FunctionComponent<FieldErrorAlertProps>;
+
     interface ErrorInputProps {
         name: string;
+        InputField?: FunctionComponent<FieldErrorAlertProps>;
         InputField?: FunctionComponent;
     }
 
