@@ -69,7 +69,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const {
         setValue,
-        formState: { errors, isValid, isValidating, dirtyFields, isDirty },
+        formState: { errors, isValid },
         setError,
         getValues,
         watch,
@@ -225,7 +225,9 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         if (providedExistingCase) {
             const { elementUuid, elementName } = providedExistingCase;
             getCurrentCaseImportParams(elementUuid);
-            setValue(STUDY_NAME, elementName, { shouldDirty: true });
+            setValue(STUDY_NAME, elementName, {
+                shouldDirty: true,
+            });
             setValue(CASE_FILE, providedExistingCase);
             setValue(CASE_UUID, elementUuid);
         }
