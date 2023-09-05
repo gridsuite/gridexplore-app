@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -13,7 +13,8 @@ import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import NameWrapper from './name-wrapper';
-import { ElementType } from 'utils/elementType';
+import { getNameCandidate } from 'utils/rest-api';
+import { CircularProgress } from '@mui/material';
 
 /**
  * Dialog to copy a filters contingency list to a script contingency list or a filter to a script
@@ -26,19 +27,25 @@ import { ElementType } from 'utils/elementType';
  */
 const CopyToScriptDialog = ({
     id,
+    directoryUuid,
+    elementType,
+    onGenerateNameError,
     open,
     onClose,
     onClick,
     currentName,
     title,
 }) => {
+    const [generatedName, setGeneratedName] = useState('');
     const [newNameValue, setNewNameValue] = useState(currentName);
     const [isValidName, setIsValidName] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const updateNameValue = (isValid, newName) => {
+    const updateNameValue = useCallback((isValid, newName) => {
         setIsValidName(isValid);
         setNewNameValue(newName);
-    };
+    }, []);
+
     const handleClick = () => {
         onClick(id, newNameValue);
     };
@@ -48,8 +55,18 @@ const CopyToScriptDialog = ({
     };
 
     useEffect(() => {
-        setNewNameValue(currentName || '');
-    }, [currentName]);
+        setLoading(true);
+        getNameCandidate(directoryUuid, currentName, elementType)
+            .then((newName) => {
+                setGeneratedName(newName || '');
+            })
+            .catch((error) => {
+                onGenerateNameError(error);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, [currentName, directoryUuid, elementType, onGenerateNameError]);
 
     return (
         <Dialog
@@ -59,13 +76,17 @@ const CopyToScriptDialog = ({
         >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <NameWrapper
-                    initialValue={currentName}
-                    titleMessage={'newNameList'}
-                    contentType={ElementType.CONTINGENCY_LIST}
-                    handleNameValidation={updateNameValue}
-                    autoFocus
-                />
+                {loading ? (
+                    <CircularProgress />
+                ) : (
+                    <NameWrapper
+                        initialValue={generatedName}
+                        titleMessage={'newNameList'}
+                        contentType={elementType}
+                        handleNameValidation={updateNameValue}
+                        autoFocus
+                    />
+                )}
                 <br />
                 <br />
             </DialogContent>

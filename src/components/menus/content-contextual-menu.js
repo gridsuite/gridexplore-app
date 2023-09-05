@@ -556,6 +556,9 @@ const ContentContextualMenu = (props) => {
                 return (
                     <CopyToScriptDialog
                         id={activeElement ? activeElement.elementUuid : ''}
+                        directoryUuid={selectedDirectory?.elementUuid}
+                        elementType={activeElement?.type}
+                        onGenerateNameError={handleLastError}
                         open={true}
                         onClose={handleCloseDialog}
                         onClick={(id, newName) =>
@@ -566,9 +569,7 @@ const ContentContextualMenu = (props) => {
                             )
                         }
                         currentName={
-                            activeElement
-                                ? '1_' + activeElement.elementName
-                                : ''
+                            activeElement ? activeElement.elementName : ''
                         }
                         title={intl.formatMessage({
                             id: 'copyToScriptList',

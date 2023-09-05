@@ -43,14 +43,7 @@ const NameWrapper = ({
      */
     const updateFormState = useCallback(
         (name) => {
-            if (name === '') {
-                setFormState(
-                    intl.formatMessage({ id: 'nameEmpty' }),
-                    false,
-                    name
-                );
-                setLoadingCheckName(false);
-            } else if (name.match(/^\s*$/)) {
+            if (name.match(/^\s*$/)) {
                 setFormState(
                     intl.formatMessage({ id: 'nameEmpty' }),
                     false,
@@ -109,9 +102,9 @@ const NameWrapper = ({
     useEffect(() => {
         if (initialValue !== '') {
             updateFormState(initialValue);
+            setValue(initialValue);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [initialValue, updateFormState]);
 
     return (
         <>
