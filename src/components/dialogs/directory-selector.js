@@ -145,6 +145,11 @@ const DirectorySelector = (props) => {
 
 DirectorySelector.propTypes = {
     open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    types: PropTypes.arrayOf(PropTypes.string),
+    title: PropTypes.string,
+    validationButtonText: PropTypes.string,
+    contentText: PropTypes.string,
 };
 
 export default DirectorySelector;

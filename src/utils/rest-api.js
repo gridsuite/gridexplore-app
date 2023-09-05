@@ -455,13 +455,6 @@ export function duplicateCase(
     });
 }
 
-export function fetchCases() {
-    console.info('Fetching cases...');
-    const fetchCasesUrl = PREFIX_CASE_QUERIES + '/v1/cases';
-    console.debug(fetchCasesUrl);
-    return backendFetchJson(fetchCasesUrl);
-}
-
 export function elementExists(directoryUuid, elementName, type) {
     const existsElementUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +

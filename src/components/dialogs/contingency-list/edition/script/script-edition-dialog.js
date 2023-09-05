@@ -16,11 +16,11 @@ import {
 } from '../../contingency-list-utils';
 import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
 import { EQUIPMENT_TYPE, NAME, SCRIPT } from 'components/utils/field-constants';
-import CustomMuiDialog from 'components/dialogs/custom-mui-dialog';
 import NameWrapper from 'components/dialogs/name-wrapper';
 import { ElementType } from 'utils/elementType';
 import yup from 'components/utils/yup-config';
 import ScriptEditionForm from './script-edition-form';
+import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().required(),
