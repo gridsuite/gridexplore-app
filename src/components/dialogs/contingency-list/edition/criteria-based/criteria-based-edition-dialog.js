@@ -19,12 +19,12 @@ import {
     saveCriteriaBasedContingencyList,
 } from 'utils/rest-api';
 import { EQUIPMENT_TYPE, NAME } from 'components/utils/field-constants';
-import CustomMuiDialog from 'components/dialogs/custom-mui-dialog';
 import NameWrapper from 'components/dialogs/name-wrapper';
 import { ElementType } from 'utils/elementType';
 import { getCriteriaBasedSchema } from 'components/dialogs/commons/criteria-based/criteria-based-utils';
 import yup from 'components/utils/yup-config';
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
+import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().required(),

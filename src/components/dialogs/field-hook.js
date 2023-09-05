@@ -10,9 +10,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import { useDispatch, useSelector } from 'react-redux';
-import { UploadCase } from './upload-case';
-import { removeSelectedFile } from '../../redux/actions';
 import { ElementType } from '../../utils/elementType';
 import { useDebounce } from '@gridsuite/commons-ui';
 
@@ -63,61 +60,6 @@ export const useTextValue = ({
     return [value, field, setValue, hasChanged];
 };
 
-export const useFileValue = ({ fileExceedsLimitMessage, isLoading }) => {
-    const selectedFile = useSelector((state) => state.selectedFile);
-    const intl = useIntl();
-    const dispatch = useDispatch();
-    const [fileOk, setFileOk] = useState(false);
-    const [fileError, setFileError] = useState();
-
-    const field = <UploadCase isLoading={isLoading} />;
-
-    const resetSelectedFile = useCallback(
-        () => dispatch(removeSelectedFile()),
-        [dispatch]
-    );
-
-    useEffect(() => {
-        const MAX_FILE_SIZE_IN_MO = 100;
-        const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
-        if (!selectedFile) {
-            setFileError();
-            setFileOk(false);
-        } else if (selectedFile.size <= MAX_FILE_SIZE_IN_BYTES) {
-            setFileError();
-            setFileOk(true);
-        } else {
-            setFileError(
-                fileExceedsLimitMessage
-                    ? fileExceedsLimitMessage
-                    : intl.formatMessage(
-                          {
-                              id: 'uploadFileExceedingLimitSizeErrorMsg',
-                          },
-                          {
-                              maxSize: MAX_FILE_SIZE_IN_MO,
-                              br: <br />,
-                          }
-                      )
-            );
-            setFileOk(false);
-        }
-    }, [selectedFile, fileExceedsLimitMessage, intl]);
-    return [
-        selectedFile,
-        field,
-        fileError,
-        fileOk,
-        resetSelectedFile,
-        setFileOk,
-    ];
-};
-
-const makeAdornmentEndIcon = (content) => {
-    return {
-        endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
-    };
-};
 export const useNameField = ({
     parentDirectoryId,
     elementType,
@@ -206,11 +148,15 @@ export const useNameField = ({
         }
         if (checking) {
             setAdornment(
-                makeAdornmentEndIcon(<CircularProgress size="1rem" />)
+                <InputAdornment position="end">
+                    <CircularProgress size="1rem" />
+                </InputAdornment>
             );
         } else {
             setAdornment(
-                makeAdornmentEndIcon(<CheckIcon style={{ color: 'green' }} />)
+                <InputAdornment position="end">
+                    <CheckIcon style={{ color: 'green' }} />
+                </InputAdornment>
             );
         }
     }, [checking, error]);
@@ -247,45 +193,4 @@ export const useNameField = ({
         setName,
         touched,
     ];
-};
-
-export const usePrefillNameField = ({
-    nameRef,
-    selectedFile,
-    setValue,
-    selectedFileOk,
-    creationError,
-    fileCheckedCase,
-    touched,
-}) => {
-    useEffect(() => {
-        if (setValue) {
-            //here selectedFile is a file the user choosed through a picker
-            if (
-                selectedFile?.name &&
-                !creationError &&
-                selectedFileOk &&
-                fileCheckedCase &&
-                !touched
-            ) {
-                setValue(
-                    selectedFile.name.substr(0, selectedFile.name.indexOf('.'))
-                );
-            }
-            //here selectedFile is an already stored case
-            else if (selectedFile?.elementName && !creationError) {
-                setValue(selectedFile.elementName);
-            } else if (selectedFile == null && !touched) {
-                setValue('');
-            }
-        }
-    }, [
-        nameRef,
-        selectedFile,
-        setValue,
-        touched,
-        selectedFileOk,
-        fileCheckedCase,
-        creationError,
-    ]);
 };

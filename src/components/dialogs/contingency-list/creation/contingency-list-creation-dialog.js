@@ -17,7 +17,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { createContingencyList } from '../../../../utils/rest-api';
 import React, { useState } from 'react';
-import CustomMuiDialog from '../../custom-mui-dialog';
+import CustomMuiDialog from '../../commons/custom-mui-dialog/custom-mui-dialog';
 import ContingencyListCreationForm from './contingency-list-creation-form';
 import {
     getContingencyListEmptyFormData,

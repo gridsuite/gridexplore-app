@@ -20,3 +20,6 @@ export const areArrayElementsUnique = (array) => {
 };
 
 export const mergeSx = (...allSx) => allSx.flat();
+
+export const isObjectEmpty = (object) =>
+    object && Object.keys(object).length === 0;
