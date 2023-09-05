@@ -13,7 +13,7 @@ import {
     frontToBackTweak,
 } from './criteria-based-filter-dialog-utils';
 import NameWrapper from '../name-wrapper';
-import CustomMuiDialog from '../custom-mui-dialog';
+import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';

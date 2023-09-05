@@ -1,4 +1,5 @@
-import { FormProvider } from 'react-hook-form';
+import React, { FunctionComponent } from 'react';
+import { FieldErrors, FormProvider } from 'react-hook-form';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Grid, LinearProgress } from '@mui/material';
@@ -7,6 +8,21 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { SubmitButton } from '@gridsuite/commons-ui';
+
+interface ICustomMuiDialog {
+    open: boolean;
+    formSchema: any;
+    formMethods: any;
+    onClose: (event: React.MouseEvent) => void;
+    onSave: (data: any) => void;
+    onValidationError?: (errors: FieldErrors) => void;
+    titleId: string;
+    disabledSave: boolean;
+    removeOptional?: boolean;
+    onCancel?: () => void;
+    children: React.ReactNode;
+    isDataFetching?: boolean;
+}
 
 const styles = {
     dialogPaper: {
@@ -18,8 +34,7 @@ const styles = {
     },
 };
 
-const CustomMuiDialog = ({
-    name,
+const CustomMuiDialog: FunctionComponent<ICustomMuiDialog> = ({
     open,
     formSchema,
     formMethods,
@@ -29,27 +44,33 @@ const CustomMuiDialog = ({
     onValidationError,
     titleId,
     disabledSave,
-    removeOptional,
-    ...dialogProps
+    removeOptional = false,
+    onCancel,
+    children,
 }) => {
     const { handleSubmit } = formMethods;
 
-    const handleClose = (event) => {
+    const handleCancel = (event: React.MouseEvent) => {
+        onCancel && onCancel();
         onClose(event);
     };
 
-    const handleCancel = (event) => {
+    const handleClose = (event: React.MouseEvent, reason?: string) => {
+        if (reason === 'backdropClick' && onCancel) {
+            onCancel();
+        }
         onClose(event);
     };
 
-    const handleValidate = (data) => {
+    const handleValidate = (data: any) => {
         onSave(data);
         onClose(data);
     };
 
-    const handleValidationError = (errors) => {
+    const handleValidationError = (errors: FieldErrors) => {
         onValidationError && onValidationError(errors);
     };
+
     return (
         <FormProvider
             validationSchema={formSchema}
@@ -68,7 +89,7 @@ const CustomMuiDialog = ({
                         <FormattedMessage id={titleId} />
                     </Grid>
                 </DialogTitle>
-                <DialogContent>{dialogProps.children}</DialogContent>
+                <DialogContent>{children}</DialogContent>
                 <DialogActions>
                     <Button onClick={handleCancel}>
                         <FormattedMessage id="cancel" />
@@ -79,9 +100,7 @@ const CustomMuiDialog = ({
                             handleValidate,
                             handleValidationError
                         )}
-                    >
-                        <FormattedMessage id="validate" />
-                    </SubmitButton>
+                    />
                 </DialogActions>
             </Dialog>
         </FormProvider>
