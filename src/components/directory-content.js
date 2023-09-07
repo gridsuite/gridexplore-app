@@ -15,7 +15,7 @@ import * as constants from '../utils/UIconstants';
 import Chip from '@mui/material/Chip';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import SettingsIcon from '@mui/icons-material/Settings';
 import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
 
 import VirtualizedTable from './virtualized-table';
@@ -346,7 +346,10 @@ const DirectoryContent = () => {
     function typeCellRender(cellData) {
         const { rowData = {} } = cellData || {};
         const elementUuid = rowData['elementUuid'];
-        const objectType = rowData[cellData.dataKey];
+        let objectType = rowData[cellData.dataKey];
+        if (objectType === ElementType.PARAMETERS) {
+            objectType = cellData.rowData.description;
+        }
         const { subtype, format } = childrenMetadata[elementUuid] || {};
         return (
             <Box sx={styles.cell}>
@@ -409,6 +412,8 @@ const DirectoryContent = () => {
             return <ArticleIcon sx={styles.icon} />;
         } else if (objectType === ElementType.CASE) {
             return <PhotoIcon sx={styles.icon} />;
+        } else if (objectType === ElementType.PARAMETERS) {
+            return <SettingsIcon sx={styles.icon} />;
         }
     }
 

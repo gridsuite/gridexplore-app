@@ -11,6 +11,7 @@ export enum ElementType {
     FILTER = 'FILTER',
     CONTINGENCY_LIST = 'CONTINGENCY_LIST',
     CASE = 'CASE',
+    PARAMETERS = 'PARAMETERS',
 }
 
 export const FilterType = {
