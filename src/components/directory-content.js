@@ -346,10 +346,7 @@ const DirectoryContent = () => {
     function typeCellRender(cellData) {
         const { rowData = {} } = cellData || {};
         const elementUuid = rowData['elementUuid'];
-        let objectType = rowData[cellData.dataKey];
-        if (objectType === ElementType.PARAMETERS) {
-            objectType = cellData.rowData.description;
-        }
+        const objectType = rowData[cellData.dataKey];
         const { subtype, format } = childrenMetadata[elementUuid] || {};
         return (
             <Box sx={styles.cell}>
@@ -412,7 +409,7 @@ const DirectoryContent = () => {
             return <ArticleIcon sx={styles.icon} />;
         } else if (objectType === ElementType.CASE) {
             return <PhotoIcon sx={styles.icon} />;
-        } else if (objectType === ElementType.PARAMETERS) {
+        } else if (objectType === ElementType.VOLTAGE_INIT_PARAMETERS) {
             return <SettingsIcon sx={styles.icon} />;
         }
     }
