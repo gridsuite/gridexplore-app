@@ -4,7 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import { fetchAppsAndUrls } from '../../../utils/rest-api';
+import { fetchAppsAndUrls } from '../../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import FilterProperty, {
     PROPERTY_NAME,
@@ -16,13 +16,13 @@ import {
     CRITERIA_BASED,
     EQUIPMENT_TYPE,
     FILTER_TYPE,
-} from '../../utils/field-constants';
-import yup from '../../utils/yup-config';
-import { areArrayElementsUnique } from '../../../utils/functions';
+} from '../../../utils/field-constants';
+import yup from '../../../utils/yup-config';
+import { areArrayElementsUnique } from '../../../../utils/functions';
 import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import { ListItem } from '@mui/material';
-import { Hvdc, Line, Substation } from '../../../utils/equipment-types';
-import { FilterType } from '../../../utils/elementType';
+import { Hvdc, Line, Substation } from '../../../../utils/equipment-types';
+import { FilterType } from '../../../../utils/elementType';
 
 export const FILTER_PROPERTIES = 'freeProperties';
 

@@ -151,7 +151,7 @@ declare module '@gridsuite/commons-ui' {
     export const FlatParameters: FunctionComponent<FlatParametersProps>;
 
     export function useDebounce(
-        debouncedFunction: () => void,
+        debouncedFunction: (...args: any[]) => void,
         debounceDelay: number
-    ): () => void;
+    ): (...args: any[]) => void;
 }

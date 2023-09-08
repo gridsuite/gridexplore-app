@@ -6,29 +6,31 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { getFilterById, saveFilter } from '../../../utils/rest-api';
-import { ElementType, FilterType } from '../../../utils/elementType';
+import { getFilterById, saveFilter } from '../../../../utils/rest-api';
+import { FilterType } from '../../../../utils/elementType';
 import {
     backToFrontTweak,
     frontToBackTweak,
-} from './criteria-based-filter-dialog-utils';
-import NameWrapper from '../name-wrapper';
-import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
+} from './criteria-based-filter-utils';
+import CustomMuiDialog from '../../commons/custom-mui-dialog/custom-mui-dialog';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import CriteriaBasedFilterForm, {
-    criteriaBasedFilterSchema,
-} from './criteria-based-filter-form';
-import yup from '../../utils/yup-config';
-import { EQUIPMENT_TYPE, FILTER_TYPE, NAME } from '../../utils/field-constants';
+import { criteriaBasedFilterSchema } from './criteria-based-filter-form';
+import yup from '../../../utils/yup-config';
+import {
+    EQUIPMENT_TYPE,
+    FILTER_TYPE,
+    NAME,
+} from '../../../utils/field-constants';
 import PropTypes from 'prop-types';
-import { FetchStatus } from '../../../utils/custom-hooks';
+import { FetchStatus } from '../../../../utils/custom-hooks';
+import { FilterForm } from '../filter-form';
 
 const formSchema = yup
     .object()
     .shape({
-        [NAME]: yup.string().required(),
+        [NAME]: yup.string().trim().required('nameEmpty'),
         [FILTER_TYPE]: yup.string().required(),
         [EQUIPMENT_TYPE]: yup.string().required(),
         ...criteriaBasedFilterSchema,
@@ -43,7 +45,6 @@ export const CriteriaBasedFilterEditionDialog = ({
     onClose,
 }) => {
     const { snackError } = useSnackMessage();
-    const [isNameValid, setIsNameValid] = useState(true);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     // default values are set via reset when we fetch data
@@ -51,7 +52,13 @@ export const CriteriaBasedFilterEditionDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue } = formMethods;
+    const {
+        reset,
+        formState: { errors },
+    } = formMethods;
+
+    const nameError = errors[NAME];
+    const isValidating = errors.root?.isValidating;
 
     // Fetch the filter data from back-end if necessary and fill the form with it
     useEffect(() => {
@@ -90,11 +97,6 @@ export const CriteriaBasedFilterEditionDialog = ({
         [id, snackError]
     );
 
-    const handleNameChange = (isValid, newName) => {
-        setIsNameValid(isValid);
-        setValue(NAME, newName);
-    };
-
     const isDataReady = dataFetchStatus === FetchStatus.FETCH_SUCCESS;
 
     return (
@@ -106,17 +108,10 @@ export const CriteriaBasedFilterEditionDialog = ({
             formMethods={formMethods}
             titleId={titleId}
             removeOptional={true}
-            disabledSave={!isNameValid}
+            disabledSave={!!nameError || isValidating}
             isDataFetching={dataFetchStatus === FetchStatus.FETCHING}
         >
-            <NameWrapper
-                titleMessage="nameProperty"
-                initialValue={name}
-                contentType={ElementType.FILTER}
-                handleNameValidation={handleNameChange}
-            >
-                {isDataReady && <CriteriaBasedFilterForm />}
-            </NameWrapper>
+            {isDataReady && <FilterForm />}
         </CustomMuiDialog>
     );
 };

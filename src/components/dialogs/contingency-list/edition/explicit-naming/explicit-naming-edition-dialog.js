@@ -23,8 +23,6 @@ import {
     EQUIPMENT_TYPE,
     NAME,
 } from 'components/utils/field-constants';
-import NameWrapper from 'components/dialogs/name-wrapper';
-import { ElementType } from 'utils/elementType';
 import yup from 'components/utils/yup-config';
 import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-form';
 import ExplicitNamingEditionForm from './explicit-naming-edition-form';
@@ -32,13 +30,13 @@ import { prepareContingencyListForBackend } from 'components/dialogs/contingency
 import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';
 
 const schema = yup.object().shape({
-    [NAME]: yup.string().required(),
+    [NAME]: yup.string().trim().required('nameEmpty'),
     [EQUIPMENT_TYPE]: yup.string().nullable(),
     [EQUIPMENT_TABLE]: yup.string().nullable(),
     ...getExplicitNamingEditSchema(EQUIPMENT_TABLE),
 });
 
-const emptyFormData = getContingencyListEmptyFormData();
+const emptyFormData = (name) => getContingencyListEmptyFormData(name);
 
 const ExplicitNamingEditionDialog = ({
     contingencyListId,
@@ -48,16 +46,21 @@ const ExplicitNamingEditionDialog = ({
     titleId,
     name,
 }) => {
-    const [isValidName, setIsValidName] = useState(true);
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
 
     const methods = useForm({
-        defaultValues: emptyFormData,
+        defaultValues: emptyFormData(name),
         resolver: yupResolver(schema),
     });
 
-    const { reset, setValue } = methods;
+    const {
+        reset,
+        formState: { errors },
+    } = methods;
+
+    const nameError = errors[NAME];
+    const isValidating = errors.root?.isValidating;
 
     useEffect(() => {
         if (contingencyListId) {
@@ -83,13 +86,8 @@ const ExplicitNamingEditionDialog = ({
     }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
     const closeAndClear = (event) => {
-        reset(emptyFormData);
+        reset(emptyFormData());
         onClose(event);
-    };
-
-    const handleNameChange = (isValid, newName) => {
-        setIsValidName(isValid);
-        setValue(NAME, newName, { shouldDirty: isValid });
     };
 
     const editContingencyList = (contingencyListId, contingencyList) => {
@@ -126,15 +124,9 @@ const ExplicitNamingEditionDialog = ({
             formMethods={methods}
             titleId={titleId}
             removeOptional={true}
-            disabledSave={!isValidName}
+            disabledSave={!!nameError || isValidating}
             isDataFetching={isFetching}
         >
-            <NameWrapper
-                titleMessage={'nameProperty'}
-                contentType={ElementType.CONTINGENCY_LIST}
-                initialValue={name}
-                handleNameValidation={handleNameChange}
-            />
             {!isFetching && <ExplicitNamingEditionForm />}
         </CustomMuiDialog>
     );

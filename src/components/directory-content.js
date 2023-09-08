@@ -32,7 +32,7 @@ import {
 import { Box, Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
-import CriteriaBasedFilterEditionDialog from './dialogs/filter/criteria-based-filter-edition-dialog';
+import CriteriaBasedFilterEditionDialog from './dialogs/filter/criteria-based/criteria-based-filter-edition-dialog';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
@@ -41,9 +41,9 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
-import ExplicitNamingFilterEditionDialog from './dialogs/filter/explicit-naming-filter-edition-dialog';
+import ExplicitNamingFilterEditionDialog from './dialogs/filter/explicit-naming/explicit-naming-filter-edition-dialog';
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
-import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explict-naming/explicit-naming-edition-dialog';
+import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
 
 const circularProgressSize = '70px';

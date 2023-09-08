@@ -5,35 +5,33 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import { ElementType, FilterType } from '../../../utils/elementType';
+import { FilterType } from '../../../utils/elementType';
 import {
     saveCriteriaBasedFilter,
     saveExplicitNamingFilter,
-} from './filters-save';
+} from './filters-utils';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import NameWrapper from '../name-wrapper';
 import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
-import CriteriaBasedFilterForm, {
+import {
     criteriaBasedFilterEmptyFormData,
     criteriaBasedFilterSchema,
-} from './criteria-based-filter-form';
-import ExplicitNamingFilterForm, {
-    getExplicitNamingFilterEmptyFormData,
+} from './criteria-based/criteria-based-filter-form';
+import {
     explicitNamingFilterSchema,
     FILTER_EQUIPMENTS_ATTRIBUTES,
-} from './explicit-naming-filter-form';
+    getExplicitNamingFilterEmptyFormData,
+} from './explicit-naming/explicit-naming-filter-form';
 import { EQUIPMENT_TYPE, FILTER_TYPE, NAME } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
-import { RadioInput } from '@gridsuite/commons-ui';
-import Grid from '@mui/material/Grid';
+import { FilterForm } from './filter-form';
 
 const emptyFormData = {
-    [NAME]: null,
+    [NAME]: '',
     [FILTER_TYPE]: FilterType.CRITERIA_BASED.id,
     [EQUIPMENT_TYPE]: null,
     ...criteriaBasedFilterEmptyFormData,
@@ -44,7 +42,7 @@ const emptyFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [NAME]: yup.string().required(),
+        [NAME]: yup.string().trim().required('nameEmpty'),
         [FILTER_TYPE]: yup.string().required(),
         [EQUIPMENT_TYPE]: yup.string().required(),
         ...criteriaBasedFilterSchema,
@@ -52,22 +50,21 @@ const formSchema = yup
     })
     .required();
 
-const CreateFilterDialog = ({ open, onClose }) => {
+const FilterCreationDialog = ({ open, onClose }) => {
     const { snackError } = useSnackMessage();
     const activeDirectory = useSelector((state) => state.activeDirectory);
-    const [filterNameValid, setFilterNameValid] = useState(false);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { setValue, watch } = formMethods;
-    const filterType = watch(FILTER_TYPE);
 
-    const handleNameChange = (isValid, newName) => {
-        setFilterNameValid(isValid);
-        setValue(NAME, newName);
-    };
+    const {
+        formState: { errors },
+    } = formMethods;
+
+    const nameError = errors[NAME];
+    const isValidating = errors.root?.isValidating;
 
     const onSubmit = useCallback(
         (filterForm) => {
@@ -113,34 +110,16 @@ const CreateFilterDialog = ({ open, onClose }) => {
             formMethods={formMethods}
             titleId={'createNewFilter'}
             removeOptional={true}
-            disabledSave={!filterNameValid}
+            disabledSave={!!nameError || isValidating}
         >
-            <NameWrapper
-                titleMessage="nameProperty"
-                contentType={ElementType.FILTER}
-                handleNameValidation={handleNameChange}
-            >
-                <Grid container spacing={2} marginTop={'auto'}>
-                    <Grid item>
-                        <RadioInput
-                            name={FILTER_TYPE}
-                            options={Object.values(FilterType)}
-                        />
-                    </Grid>
-                    {filterType === FilterType.CRITERIA_BASED.id ? (
-                        <CriteriaBasedFilterForm />
-                    ) : (
-                        <ExplicitNamingFilterForm />
-                    )}
-                </Grid>
-            </NameWrapper>
+            <FilterForm creation />
         </CustomMuiDialog>
     );
 };
 
-CreateFilterDialog.propTypes = {
+FilterCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
 };
 
-export default CreateFilterDialog;
+export default FilterCreationDialog;

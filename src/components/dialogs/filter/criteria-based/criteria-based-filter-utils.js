@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FilterType } from '../../../utils/elementType';
+import { FilterType } from '../../../../utils/elementType';
 import {
     CRITERIA_BASED,
     ENERGY_SOURCE,
@@ -16,7 +16,7 @@ import {
     NOMINAL_VOLTAGE_3,
     VALUE_1,
     VALUE_2,
-} from '../../utils/field-constants';
+} from '../../../utils/field-constants';
 import { FILTER_PROPERTIES } from './filter-properties';
 import {
     PROPERTY_NAME,
@@ -24,7 +24,7 @@ import {
     PROPERTY_VALUES_1,
     PROPERTY_VALUES_2,
 } from './filter-property';
-import { getCriteriaBasedFormData } from '../commons/criteria-based/criteria-based-utils';
+import { getCriteriaBasedFormData } from '../../commons/criteria-based/criteria-based-utils';
 
 /**
  * Transform

@@ -9,9 +9,13 @@ import { RadioInput } from '@gridsuite/commons-ui';
 import {
     CONTINGENCY_LIST_TYPE,
     CRITERIA_BASED,
+    NAME,
     SCRIPT,
 } from '../../../utils/field-constants';
-import { ContingencyListType } from '../../../../utils/elementType';
+import {
+    ContingencyListType,
+    ElementType,
+} from '../../../../utils/elementType';
 import { Grid } from '@mui/material';
 import { gridItem } from '../../../utils/dialog-utils';
 import React from 'react';
@@ -23,6 +27,7 @@ import {
 } from '../../commons/criteria-based/criteria-based-utils';
 import CriteriaBasedForm from '../../commons/criteria-based/criteria-based-form';
 import ScriptInputForm from '../script/script-input-form';
+import { UniqueNameInput } from '../../commons/unique-name-input';
 
 const ContingencyListCreationForm = () => {
     const watchContingencyListType = useWatch({
@@ -38,7 +43,15 @@ const ContingencyListCreationForm = () => {
 
     const emptyValues = getCriteriaBasedFormData();
     return (
-        <Grid container spacing={2} marginTop={'auto'}>
+        <Grid container spacing={2}>
+            <Grid item xs={12}>
+                <UniqueNameInput
+                    name={NAME}
+                    label={'nameProperty'}
+                    elementType={ElementType.CONTINGENCY_LIST}
+                    autoFocus
+                />
+            </Grid>
             <Grid container item>
                 {gridItem(contingencyListTypeField, 12)}
             </Grid>
