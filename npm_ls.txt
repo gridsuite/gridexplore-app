@@ -59,7 +59,7 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ ├── clsx@1.2.1
 │ ├── jwt-decode@3.1.2
 │ ├── memoize-one@6.0.0
-│ ├── notistack@3.0.1 deduped invalid: "^2.0.3" from node_modules/@gridsuite/commons-ui
+│ ├── notistack@2.0.8 deduped
 │ ├─┬ oidc-client@1.11.5
 │ │ ├── acorn@7.4.1
 │ │ ├── base64-js@1.5.1
@@ -356,10 +356,12 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │   │     └── is-number@7.0.0
 │   └── picomatch@2.3.1
 ├── localized-countries@2.0.0
-├─┬ notistack@3.0.1 invalid: "^2.0.3" from node_modules/@gridsuite/commons-ui
+├─┬ notistack@2.0.8
+│ ├── @emotion/react@11.10.6 deduped
+│ ├── @emotion/styled@11.10.6 deduped
+│ ├── @mui/material@5.12.1 deduped
 │ ├── clsx@1.2.1 deduped
-│ ├─┬ goober@2.1.13
-│ │ └── csstype@3.1.2 deduped
+│ ├── hoist-non-react-statics@3.3.2 deduped
 │ ├── react-dom@18.2.0 deduped
 │ └── react@18.2.0 deduped
 ├── prettier@2.8.7
@@ -3338,6 +3340,5 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
   └── type-fest@2.19.0
 
 npm ERR! code ELSPROBLEMS
-npm ERR! invalid: notistack@3.0.1 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app/node_modules/notistack
 npm ERR! invalid: typescript@5.1.3 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app/node_modules/typescript
 
