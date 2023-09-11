@@ -132,7 +132,7 @@ declare module '@gridsuite/commons-ui' {
         label?: string;
         id?: string;
         options: Options;
-        formProps?: Omit<RadioGroupProps, 'value' | 'onChange'>;
+        formProps?: Omit<RadioGroupProps, 'value'>;
     }
 
     export const RadioInput: FunctionComponent<RadioInputProps>;
