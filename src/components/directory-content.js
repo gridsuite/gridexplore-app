@@ -15,7 +15,7 @@ import * as constants from '../utils/UIconstants';
 import Chip from '@mui/material/Chip';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import SettingsIcon from '@mui/icons-material/Settings';
 import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
 
 import VirtualizedTable from './virtualized-table';
@@ -409,6 +409,8 @@ const DirectoryContent = () => {
             return <ArticleIcon sx={styles.icon} />;
         } else if (objectType === ElementType.CASE) {
             return <PhotoIcon sx={styles.icon} />;
+        } else if (objectType === ElementType.VOLTAGE_INIT_PARAMETERS) {
+            return <SettingsIcon sx={styles.icon} />;
         }
     }
 

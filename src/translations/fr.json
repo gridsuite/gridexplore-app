@@ -88,6 +88,7 @@
   "editFilterScript": "Editer le script de filtre",
   "editFilter": "Editer le filtre",
   "STUDY": "Étude",
+  "VOLTAGE_INIT_PARAMETERS": "Paramètres (Initialisation du plan de tension)",
   "SCRIPT_FILTER": "Filtre (script)",
   "FORM_FILTER": "Filtre (formulaire)",
   "CRITERIA_FILTER": "Filtre (Par critères)",

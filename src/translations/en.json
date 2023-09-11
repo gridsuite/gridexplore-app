@@ -88,6 +88,7 @@
   "editFilterScript": "Edit filter script",
   "editFilter": "Edit filter",
   "STUDY": "Study",
+  "VOLTAGE_INIT_PARAMETERS": "Parameters (Voltage profile initialization)",
   "SCRIPT_FILTER": "Filter (script)",
   "FORM_FILTER": "Filter (form)",
   "CRITERIA_FILTER": "Filter (Criteria based)",

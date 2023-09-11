@@ -11,6 +11,7 @@ export enum ElementType {
     FILTER = 'FILTER',
     CONTINGENCY_LIST = 'CONTINGENCY_LIST',
     CASE = 'CASE',
+    VOLTAGE_INIT_PARAMETERS = 'VOLTAGE_INIT_PARAMETERS',
 }
 
 export const FilterType = {
