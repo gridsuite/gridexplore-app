@@ -439,7 +439,7 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ ├── @formatjs/intl-listformat@7.2.1 deduped
 │ │ ├── intl-messageformat@10.3.4 deduped
 │ │ ├── tslib@2.5.0 deduped
-│ │ └── typescript@5.1.3 deduped invalid: "^3.2.1 || ^4" from node_modules/react-scripts
+│ │ └── typescript@5.1.3 deduped
 │ ├─┬ @types/hoist-non-react-statics@3.3.1
 │ │ ├── @types/react@18.2.9 deduped
 │ │ └── hoist-non-react-statics@3.3.2 deduped
@@ -478,7 +478,7 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ ├── @remix-run/router@1.5.0 deduped
 │ │ └── react@18.2.0 deduped
 │ └── react@18.2.0 deduped
-├─┬ react-scripts@5.0.1
+├─┬ react-scripts@5.0.1 overridden
 │ ├─┬ @babel/core@7.21.4
 │ │ ├─┬ @ampproject/remapping@2.2.1
 │ │ │ ├─┬ @jridgewell/gen-mapping@0.3.3
@@ -1431,7 +1431,7 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ │ ├── semver@7.5.0 deduped
 │ │ │ └─┬ tsutils@3.21.0
 │ │ │   ├── tslib@1.14.1
-│ │ │   └── typescript@5.1.3 deduped invalid: "^3.2.1 || ^4" from node_modules/react-scripts
+│ │ │   └── typescript@5.1.3 deduped
 │ │ ├─┬ @typescript-eslint/parser@5.59.0
 │ │ │ ├── @typescript-eslint/scope-manager@5.59.0 deduped
 │ │ │ ├── @typescript-eslint/types@5.59.0
@@ -2701,7 +2701,7 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ │ │   └── uri-js@4.4.1 deduped
 │ │ │ ├── semver@7.5.0 deduped
 │ │ │ ├── tapable@1.1.3
-│ │ │ ├── typescript@5.1.3 deduped invalid: "^3.2.1 || ^4" from node_modules/react-scripts
+│ │ │ ├── typescript@5.1.3 deduped
 │ │ │ ├── UNMET OPTIONAL DEPENDENCY vue-template-compiler@*
 │ │ │ └── webpack@5.79.0 deduped
 │ │ ├─┬ global-modules@2.0.0
@@ -2873,7 +2873,7 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ │   ├── buffer-from@1.1.2
 │ │ │   └── source-map@0.6.1
 │ │ └── webpack@5.79.0 deduped
-│ ├── typescript@5.1.3 deduped invalid: "^3.2.1 || ^4" from node_modules/react-scripts
+│ ├── typescript@5.1.3 deduped
 │ ├─┬ webpack-dev-server@4.13.3
 │ │ ├─┬ @types/bonjour@3.5.10
 │ │ │ └── @types/node@20.2.5 deduped
@@ -3332,13 +3332,10 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 ├─┬ redux@4.2.1
 │ └── @babel/runtime@7.21.0 deduped
 ├── typeface-roboto@1.1.13
-├── typescript@5.1.3 invalid: "^3.2.1 || ^4" from node_modules/react-scripts
+├── typescript@5.1.3
 └─┬ yup@1.1.1
   ├── property-expr@2.0.5
   ├── tiny-case@1.0.3
   ├── toposort@2.0.2
   └── type-fest@2.19.0
-
-npm ERR! code ELSPROBLEMS
-npm ERR! invalid: typescript@5.1.3 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app/node_modules/typescript
 
