@@ -208,7 +208,11 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │   │ └── eslint@8.38.0 deduped
 │   ├── @eslint-community/regexpp@4.5.0
 │   ├─┬ @eslint/eslintrc@2.0.2
-│   │ ├── ajv@6.12.6 deduped
+│   │ ├─┬ ajv@6.12.6
+│   │ │ ├── fast-deep-equal@3.1.3 deduped
+│   │ │ ├── fast-json-stable-stringify@2.1.0 deduped
+│   │ │ ├── json-schema-traverse@0.4.1
+│   │ │ └── uri-js@4.4.1 deduped
 │   │ ├── debug@4.3.4 deduped
 │   │ ├── espree@9.5.1 deduped
 │   │ ├─┬ globals@13.20.0
@@ -262,8 +266,8 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │   ├── eslint-visitor-keys@3.4.0
 │   ├─┬ espree@9.5.1
 │   │ ├─┬ acorn-jsx@5.3.2
-│   │ │ └── acorn@7.4.1 deduped invalid: "^8" from node_modules/acorn-import-assertions
-│   │ ├── acorn@8.8.2
+│   │ │ └── acorn@8.10.0 deduped
+│   │ ├── acorn@8.10.0 deduped
 │   │ └── eslint-visitor-keys@3.4.0 deduped
 │   ├─┬ esquery@1.5.0
 │   │ └── estraverse@5.3.0 deduped
@@ -565,7 +569,11 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ │ ├── @types/json-schema@7.0.11
 │ │ │ ├─┬ ajv-keywords@3.5.2
 │ │ │ │ └── ajv@6.12.6 deduped
-│ │ │ └── ajv@6.12.6 deduped
+│ │ │ └─┬ ajv@6.12.6
+│ │ │   ├── fast-deep-equal@3.1.3 deduped
+│ │ │   ├── fast-json-stable-stringify@2.1.0 deduped
+│ │ │   ├── json-schema-traverse@0.4.1
+│ │ │   └── uri-js@4.4.1 deduped
 │ │ ├── UNMET OPTIONAL DEPENDENCY sockjs-client@^1.4.0
 │ │ ├── source-map@0.7.4
 │ │ ├── type-fest@0.20.2
@@ -1086,8 +1094,13 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ │ └── semver@6.3.0
 │ │ ├─┬ schema-utils@2.7.1
 │ │ │ ├── @types/json-schema@7.0.11 deduped
-│ │ │ ├── ajv-keywords@3.5.2 deduped
-│ │ │ └── ajv@6.12.6 deduped
+│ │ │ ├─┬ ajv-keywords@3.5.2
+│ │ │ │ └── ajv@6.12.6 deduped
+│ │ │ └─┬ ajv@6.12.6
+│ │ │   ├── fast-deep-equal@3.1.3 deduped
+│ │ │   ├── fast-json-stable-stringify@2.1.0 deduped
+│ │ │   ├── json-schema-traverse@0.4.1
+│ │ │   └── uri-js@4.4.1 deduped
 │ │ └── webpack@5.79.0 deduped
 │ ├─┬ babel-plugin-named-asset-import@0.3.8
 │ │ └── @babel/core@7.21.4 deduped
@@ -1355,11 +1368,7 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ ├─┬ schema-utils@4.0.1
 │ │ │ ├── @types/json-schema@7.0.11 deduped
 │ │ │ ├─┬ ajv-formats@2.1.1
-│ │ │ │ └─┬ ajv@8.12.0
-│ │ │ │   ├── fast-deep-equal@3.1.3 deduped
-│ │ │ │   ├── json-schema-traverse@1.0.0
-│ │ │ │   ├── require-from-string@2.0.2 deduped
-│ │ │ │   └── uri-js@4.4.1 deduped
+│ │ │ │ └── ajv@8.12.0 deduped
 │ │ │ ├─┬ ajv-keywords@5.1.0
 │ │ │ │ ├── ajv@8.12.0 deduped
 │ │ │ │ └── fast-deep-equal@3.1.3 deduped
@@ -1744,11 +1753,7 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ │ ├─┬ ajv-keywords@5.1.0
 │ │ │ │ ├── ajv@8.12.0 deduped
 │ │ │ │ └── fast-deep-equal@3.1.3 deduped
-│ │ │ └─┬ ajv@8.12.0
-│ │ │   ├── fast-deep-equal@3.1.3 deduped
-│ │ │   ├── json-schema-traverse@1.0.0
-│ │ │   ├── require-from-string@2.0.2 deduped
-│ │ │   └── uri-js@4.4.1 deduped
+│ │ │ └── ajv@8.12.0 deduped
 │ │ └── webpack@5.79.0 deduped
 │ ├── eslint@8.38.0 deduped
 │ ├─┬ file-loader@6.2.0
@@ -2103,8 +2108,8 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ │ │ │   ├── abab@2.0.6 deduped
 │ │ │ │ │   ├─┬ acorn-globals@6.0.0
 │ │ │ │ │   │ ├── acorn-walk@7.2.0
-│ │ │ │ │   │ └── acorn@7.4.1 deduped invalid: "^8" from node_modules/acorn-import-assertions
-│ │ │ │ │   ├── acorn@8.8.2
+│ │ │ │ │   │ └── acorn@7.4.1
+│ │ │ │ │   ├── acorn@8.10.0 deduped
 │ │ │ │ │   ├── UNMET OPTIONAL DEPENDENCY canvas@^2.5.0
 │ │ │ │ │   ├── cssom@0.4.4
 │ │ │ │ │   ├─┬ cssstyle@2.3.0
@@ -2438,11 +2443,7 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ │ ├─┬ ajv-keywords@5.1.0
 │ │ │ │ ├── ajv@8.12.0 deduped
 │ │ │ │ └── fast-deep-equal@3.1.3 deduped
-│ │ │ └─┬ ajv@8.12.0
-│ │ │   ├── fast-deep-equal@3.1.3 deduped
-│ │ │   ├── json-schema-traverse@1.0.0
-│ │ │   ├── require-from-string@2.0.2 deduped
-│ │ │   └── uri-js@4.4.1 deduped
+│ │ │ └── ajv@8.12.0 deduped
 │ │ └── webpack@5.79.0 deduped
 │ ├─┬ postcss-flexbugs-fixes@5.0.2
 │ │ └── postcss@8.4.22 deduped
@@ -2689,8 +2690,13 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ │ ├── minimatch@3.1.2 deduped
 │ │ │ ├─┬ schema-utils@2.7.0
 │ │ │ │ ├── @types/json-schema@7.0.11 deduped
-│ │ │ │ ├── ajv-keywords@3.5.2 deduped
-│ │ │ │ └── ajv@6.12.6 deduped
+│ │ │ │ ├─┬ ajv-keywords@3.5.2
+│ │ │ │ │ └── ajv@6.12.6 deduped
+│ │ │ │ └─┬ ajv@6.12.6
+│ │ │ │   ├── fast-deep-equal@3.1.3 deduped
+│ │ │ │   ├── fast-json-stable-stringify@2.1.0 deduped
+│ │ │ │   ├── json-schema-traverse@0.4.1
+│ │ │ │   └── uri-js@4.4.1 deduped
 │ │ │ ├── semver@7.5.0 deduped
 │ │ │ ├── tapable@1.1.3
 │ │ │ ├── typescript@5.1.3 deduped invalid: "^3.2.1 || ^4" from node_modules/react-scripts
@@ -2859,7 +2865,7 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ │ ├─┬ @jridgewell/source-map@0.3.3
 │ │ │ │ ├── @jridgewell/gen-mapping@0.3.3 deduped
 │ │ │ │ └── @jridgewell/trace-mapping@0.3.18 deduped
-│ │ │ ├── acorn@8.8.2
+│ │ │ ├── acorn@8.10.0 deduped
 │ │ │ ├── commander@2.20.3
 │ │ │ └─┬ source-map-support@0.5.21
 │ │ │   ├── buffer-from@1.1.2
@@ -3025,11 +3031,7 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ │ ├─┬ ajv-keywords@5.1.0
 │ │ │ │ ├── ajv@8.12.0 deduped
 │ │ │ │ └── fast-deep-equal@3.1.3 deduped
-│ │ │ └─┬ ajv@8.12.0
-│ │ │   ├── fast-deep-equal@3.1.3 deduped
-│ │ │   ├── json-schema-traverse@1.0.0
-│ │ │   ├── require-from-string@2.0.2 deduped
-│ │ │   └── uri-js@4.4.1 deduped
+│ │ │ └── ajv@8.12.0 deduped
 │ │ ├─┬ selfsigned@2.1.1
 │ │ │ └── node-forge@1.3.1
 │ │ ├─┬ serve-index@1.9.1
@@ -3092,11 +3094,7 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ │ │ ├─┬ ajv-keywords@5.1.0
 │ │ │ │ │ ├── ajv@8.12.0 deduped
 │ │ │ │ │ └── fast-deep-equal@3.1.3 deduped
-│ │ │ │ └─┬ ajv@8.12.0
-│ │ │ │   ├── fast-deep-equal@3.1.3 deduped
-│ │ │ │   ├── json-schema-traverse@1.0.0
-│ │ │ │   ├── require-from-string@2.0.2 deduped
-│ │ │ │   └── uri-js@4.4.1 deduped
+│ │ │ │ └── ajv@8.12.0 deduped
 │ │ │ └── webpack@5.79.0 deduped
 │ │ ├── webpack@5.79.0 deduped
 │ │ └─┬ ws@8.13.0
@@ -3153,8 +3151,8 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │ │ │ │ └── @xtuc/long@4.2.2 deduped
 │ │ │ └── @webassemblyjs/utf8@1.11.1
 │ │ ├─┬ acorn-import-assertions@1.8.0
-│ │ │ └── acorn@7.4.1 deduped invalid: "^8" from node_modules/acorn-import-assertions
-│ │ ├── acorn@8.8.2
+│ │ │ └── acorn@8.10.0 deduped
+│ │ ├── acorn@8.10.0
 │ │ ├── browserslist@4.21.5 deduped
 │ │ ├── chrome-trace-event@1.0.3
 │ │ ├─┬ enhanced-resolve@5.12.0
@@ -3189,7 +3187,7 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │   ├── webpack@5.79.0 deduped
 │   └─┬ workbox-build@6.5.4
 │     ├─┬ @apideck/better-ajv-errors@0.3.6
-│     │ ├── ajv@6.12.6 deduped invalid: ">=8" from node_modules/@apideck/better-ajv-errors
+│     │ ├── ajv@8.12.0 deduped
 │     │ ├── json-schema@0.4.0
 │     │ ├── jsonpointer@5.0.1
 │     │ └── leven@3.1.0 deduped
@@ -3238,11 +3236,7 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 │     │ ├── json5@2.2.3 deduped
 │     │ ├── magic-string@0.25.9 deduped
 │     │ └── string.prototype.matchall@4.0.8 deduped
-│     ├─┬ ajv@8.12.0
-│     │ ├── fast-deep-equal@3.1.3 deduped
-│     │ ├── json-schema-traverse@1.0.0
-│     │ ├── require-from-string@2.0.2 deduped
-│     │ └── uri-js@4.4.1 deduped
+│     ├── ajv@8.12.0 deduped
 │     ├── common-tags@1.8.2
 │     ├── fast-json-stable-stringify@2.1.0 deduped
 │     ├─┬ fs-extra@9.1.0
@@ -3346,6 +3340,4 @@ gridexplore-app@0.1.0 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app
 npm ERR! code ELSPROBLEMS
 npm ERR! invalid: notistack@3.0.1 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app/node_modules/notistack
 npm ERR! invalid: typescript@5.1.3 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app/node_modules/typescript
-npm ERR! invalid: acorn@7.4.1 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app/node_modules/acorn
-npm ERR! invalid: ajv@6.12.6 /home/chuinetri/git/_gridsuite/_frontend/gridexplore-app/node_modules/ajv
 
