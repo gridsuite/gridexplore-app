@@ -174,7 +174,7 @@ function ExplicitNamingFilterForm() {
     };
 
     return (
-        <Grid container item spacing={2}>
+        <Grid container item spacing={2} marginTop={'-4px'}>
             <Grid item xs={12}>
                 <InputWithPopupConfirmation
                     Input={SelectInput}

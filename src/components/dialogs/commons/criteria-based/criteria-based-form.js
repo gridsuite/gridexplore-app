@@ -45,7 +45,7 @@ const CriteriaBasedForm = ({ equipments, defaultValues }) => {
     );
 
     return (
-        <Grid container item spacing={2}>
+        <Grid container item spacing={2} marginTop={'-4px'}>
             {gridItem(equipmentTypeSelectionField, 12)}
             {watchEquipmentType &&
                 equipments[watchEquipmentType].fields.map(
