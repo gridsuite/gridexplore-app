@@ -57,6 +57,7 @@ function FilterProperty(props: FilterPropertyProps) {
                     label={'PropertyName'}
                     options={predefinedNames}
                     freeSolo
+                    autoSelect
                     forcePopupIcon
                     onChangeCallback={onNameChange}
                 />
