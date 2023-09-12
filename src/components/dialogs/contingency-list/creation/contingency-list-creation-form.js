@@ -19,7 +19,7 @@ import {
 import { Grid } from '@mui/material';
 import { gridItem } from '../../../utils/dialog-utils';
 import React from 'react';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import {
     CONTINGENCY_LIST_EQUIPMENTS,
@@ -30,14 +30,22 @@ import ScriptInputForm from '../script/script-input-form';
 import { UniqueNameInput } from '../../commons/unique-name-input';
 
 const ContingencyListCreationForm = () => {
+    const { setValue } = useFormContext();
+
     const watchContingencyListType = useWatch({
         name: CONTINGENCY_LIST_TYPE,
     });
+
+    // We do this because setValue don't set the field dirty
+    const handleChange = (_event, value) => {
+        setValue(CONTINGENCY_LIST_TYPE, value);
+    };
 
     const contingencyListTypeField = (
         <RadioInput
             name={CONTINGENCY_LIST_TYPE}
             options={Object.values(ContingencyListType)}
+            formProps={{ onChange: handleChange }} // need to override this in order to do not activate the validate button when changing the filter type
         />
     );
 
