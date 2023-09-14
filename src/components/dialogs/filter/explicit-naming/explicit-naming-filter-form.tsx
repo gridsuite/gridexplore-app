@@ -4,22 +4,22 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_TYPE,
     FILTER_TYPE,
-} from '../../utils/field-constants';
-import yup from '../../utils/yup-config';
+} from '../../../utils/field-constants';
+import yup from '../../../utils/yup-config';
 import CustomAgGridTable, {
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
-} from '../../utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
+} from '../../../utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { FILTER_EQUIPMENTS } from '../commons/criteria-based/criteria-based-utils';
+import { FILTER_EQUIPMENTS } from '../../commons/criteria-based/criteria-based-utils';
 import Grid from '@mui/material/Grid';
 import { SelectInput } from '@gridsuite/commons-ui';
 import { ValueParserParams } from 'ag-grid-community';
-import { Generator, Load } from '../../../utils/equipment-types';
-import { FilterType } from '../../../utils/elementType';
-import { NumericEditor } from '../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/numericEditor';
-import { toFloatOrNullValue } from '../../utils/dialog-utils';
-import InputWithPopupConfirmation from '../../utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
+import { Generator, Load } from '../../../../utils/equipment-types';
+import { FilterType } from '../../../../utils/elementType';
+import { NumericEditor } from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/numericEditor';
+import { toFloatOrNullValue } from '../../../utils/dialog-utils';
+import InputWithPopupConfirmation from '../../../utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
 
 export const FILTER_EQUIPMENTS_ATTRIBUTES = 'filterEquipmentsAttributes';
 export const DISTRIBUTION_KEY = 'distributionKey';

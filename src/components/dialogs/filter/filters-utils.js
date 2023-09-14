@@ -6,10 +6,10 @@
  */
 import { createFilter, saveFilter } from '../../../utils/rest-api';
 import { FilterType } from '../../../utils/elementType';
-import { frontToBackTweak } from './criteria-based-filter-dialog-utils';
+import { frontToBackTweak } from './criteria-based/criteria-based-filter-utils';
 import { EQUIPMENT_ID, NAME } from '../../utils/field-constants';
 import { Generator, Load } from '../../../utils/equipment-types';
-import { DISTRIBUTION_KEY } from './explicit-naming-filter-form';
+import { DISTRIBUTION_KEY } from './explicit-naming/explicit-naming-filter-form';
 
 export const saveExplicitNamingFilter = (
     tableValues,

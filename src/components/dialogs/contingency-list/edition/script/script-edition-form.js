@@ -6,13 +6,22 @@
  */
 
 import { Grid } from '@mui/material';
-import { SCRIPT } from 'components/utils/field-constants';
+import { NAME, SCRIPT } from 'components/utils/field-constants';
 import React from 'react';
 import ScriptInputForm from '../../script/script-input-form';
+import { UniqueNameInput } from '../../../commons/unique-name-input';
+import { ElementType } from '../../../../../utils/elementType';
 
 const ScriptEditionForm = () => {
     return (
         <Grid container spacing={2} marginTop={'auto'}>
+            <Grid item xs={12}>
+                <UniqueNameInput
+                    name={NAME}
+                    label={'nameProperty'}
+                    elementType={ElementType.CONTINGENCY_LIST}
+                />
+            </Grid>
             <ScriptInputForm name={SCRIPT} />
         </Grid>
     );

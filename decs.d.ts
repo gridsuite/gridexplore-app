@@ -132,7 +132,7 @@ declare module '@gridsuite/commons-ui' {
         label?: string;
         id?: string;
         options: Options;
-        formProps?: Omit<RadioGroupProps, 'value' | 'onChange'>;
+        formProps?: Omit<RadioGroupProps, 'value'>;
     }
 
     export const RadioInput: FunctionComponent<RadioInputProps>;
@@ -151,7 +151,7 @@ declare module '@gridsuite/commons-ui' {
     export const FlatParameters: FunctionComponent<FlatParametersProps>;
 
     export function useDebounce(
-        debouncedFunction: () => void,
+        debouncedFunction: (...args: any[]) => void,
         debounceDelay: number
-    ): () => void;
+    ): (...args: any[]) => void;
 }

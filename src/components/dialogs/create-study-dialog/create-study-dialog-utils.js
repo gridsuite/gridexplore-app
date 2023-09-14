@@ -11,7 +11,7 @@ import yup from '../../utils/yup-config';
 
 export const getCreateStudyDialogFormDefaultValues = ({
     directory = '',
-    studyName = ' ',
+    studyName = '',
     caseFile = null,
     caseUuid = '',
 }) => {
@@ -27,7 +27,7 @@ export const getCreateStudyDialogFormDefaultValues = ({
 };
 
 export const createStudyDialogFormValidationSchema = yup.object().shape({
-    [STUDY_NAME]: yup.string().required(),
+    [STUDY_NAME]: yup.string().trim().required('nameEmpty'),
     [FORMATTED_CASE_PARAMETERS]: yup.mixed().required(),
     [DESCRIPTION]: yup.string(),
     [CURRENT_PARAMETERS]: yup.mixed().required(),

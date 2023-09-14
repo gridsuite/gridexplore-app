@@ -8,7 +8,7 @@ export const getCreateCaseDialogFormValidationDefaultValues = () => ({
 });
 
 export const createCaseDialogFormValidationSchema = yup.object().shape({
-    [CASE_NAME]: yup.string().required(),
+    [CASE_NAME]: yup.string().trim().required('nameEmpty'),
     [DESCRIPTION]: yup.string(),
     [CASE_FILE]: yup.mixed().nullable().required(),
 });

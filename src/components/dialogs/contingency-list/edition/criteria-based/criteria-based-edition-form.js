@@ -12,12 +12,21 @@ import {
     getCriteriaBasedFormData,
 } from 'components/dialogs/commons/criteria-based/criteria-based-utils';
 import CriteriaBasedForm from 'components/dialogs/commons/criteria-based/criteria-based-form';
-import { CRITERIA_BASED } from 'components/utils/field-constants';
+import { CRITERIA_BASED, NAME } from 'components/utils/field-constants';
+import { UniqueNameInput } from '../../../commons/unique-name-input';
+import { ElementType } from '../../../../../utils/elementType';
 
 const CriteriaBasedEditionForm = () => {
     const emptyValues = getCriteriaBasedFormData();
     return (
         <Grid container spacing={2} marginTop={'auto'}>
+            <Grid item xs={12}>
+                <UniqueNameInput
+                    name={NAME}
+                    label={'nameProperty'}
+                    elementType={ElementType.CONTINGENCY_LIST}
+                />
+            </Grid>
             <CriteriaBasedForm
                 equipments={CONTINGENCY_LIST_EQUIPMENTS}
                 defaultValues={emptyValues[CRITERIA_BASED]}
