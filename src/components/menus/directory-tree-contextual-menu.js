@@ -22,7 +22,7 @@ import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
 import AccessRightsDialog from '../dialogs/access-rights-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
-import CreateFilterDialog from '../dialogs/filter/create-filter-dialog';
+import FilterCreationDialog from '../dialogs/filter/filter-creation-dialog';
 
 import { DialogsId } from '../../utils/UIconstants';
 
@@ -308,7 +308,7 @@ const DirectoryTreeContextualMenu = (props) => {
                 );
             case DialogsId.ADD_NEW_FILTER:
                 return (
-                    <CreateFilterDialog
+                    <FilterCreationDialog
                         open={true}
                         onClose={handleCloseDialog}
                     />

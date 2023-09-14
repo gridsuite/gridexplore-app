@@ -39,8 +39,8 @@ export const makeDefaultTableRows = () => [
     makeDefaultRowData(),
 ];
 
-export const getContingencyListEmptyFormData = () => ({
-    [NAME]: '',
+export const getContingencyListEmptyFormData = (name = '') => ({
+    [NAME]: name,
     [EQUIPMENT_TABLE]: makeDefaultTableRows(),
     [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [SCRIPT]: '',

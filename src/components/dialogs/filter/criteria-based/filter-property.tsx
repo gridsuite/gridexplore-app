@@ -4,9 +4,9 @@ import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FILTER_PROPERTIES } from './filter-properties';
-import { CRITERIA_BASED } from '../../utils/field-constants';
+import { CRITERIA_BASED } from '../../../utils/field-constants';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
-import MultipleAutocompleteInput from '../../utils/rhf-inputs/autocomplete-inputs/multiple-autocomplete-input';
+import MultipleAutocompleteInput from '../../../utils/rhf-inputs/autocomplete-inputs/multiple-autocomplete-input';
 
 export const PROPERTY_NAME = 'name_property';
 export const PROPERTY_VALUES = 'prop_values';

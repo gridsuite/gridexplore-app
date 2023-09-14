@@ -7,16 +7,15 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { saveExplicitNamingFilter } from './filters-save';
-import { ElementType, FilterType } from '../../../utils/elementType';
-import NameWrapper from '../name-wrapper';
+import { saveExplicitNamingFilter } from '../filters-utils';
+import { FilterType } from '../../../../utils/elementType';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getFilterById } from '../../../utils/rest-api';
+import { getFilterById } from '../../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
-import yup from '../../utils/yup-config';
-import ExplicitNamingFilterForm, {
+import CustomMuiDialog from '../../commons/custom-mui-dialog/custom-mui-dialog';
+import yup from '../../../utils/yup-config';
+import {
     explicitNamingFilterSchema,
     FILTER_EQUIPMENTS_ATTRIBUTES,
 } from './explicit-naming-filter-form';
@@ -25,13 +24,14 @@ import {
     EQUIPMENT_TYPE,
     FILTER_TYPE,
     NAME,
-} from '../../utils/field-constants';
-import { FetchStatus } from '../../../utils/custom-hooks';
+} from '../../../utils/field-constants';
+import { FetchStatus } from '../../../../utils/custom-hooks';
+import { FilterForm } from '../filter-form';
 
 const formSchema = yup
     .object()
     .shape({
-        [NAME]: yup.string().required(),
+        [NAME]: yup.string().trim().required('nameEmpty'),
         [FILTER_TYPE]: yup.string().required(),
         [EQUIPMENT_TYPE]: yup.string().required(),
         ...explicitNamingFilterSchema,
@@ -46,7 +46,6 @@ const ExplicitNamingFilterEditionDialog = ({
     onClose,
 }) => {
     const { snackError } = useSnackMessage();
-    const [isNameValid, setIsNameValid] = useState(true);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     // default values are set via reset when we fetch data
@@ -54,7 +53,13 @@ const ExplicitNamingFilterEditionDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue } = formMethods;
+    const {
+        reset,
+        formState: { errors },
+    } = formMethods;
+
+    const nameError = errors[NAME];
+    const isValidating = errors.root?.isValidating;
 
     // Fetch the filter data from back-end if necessary and fill the form with it
     useEffect(() => {
@@ -105,11 +110,6 @@ const ExplicitNamingFilterEditionDialog = ({
         [id, onClose, snackError]
     );
 
-    const handleNameChange = (isValid, newName) => {
-        setIsNameValid(isValid);
-        setValue(NAME, newName);
-    };
-
     const isDataReady = dataFetchStatus === FetchStatus.FETCH_SUCCESS;
 
     return (
@@ -121,17 +121,10 @@ const ExplicitNamingFilterEditionDialog = ({
             formMethods={formMethods}
             titleId={titleId}
             removeOptional={true}
-            disabledSave={!isNameValid}
+            disabledSave={!!nameError || isValidating}
             isDataFetching={dataFetchStatus === FetchStatus.FETCHING}
         >
-            <NameWrapper
-                titleMessage="nameProperty"
-                initialValue={name}
-                contentType={ElementType.FILTER}
-                handleNameValidation={handleNameChange}
-            >
-                {isDataReady && <ExplicitNamingFilterForm />}
-            </NameWrapper>
+            {isDataReady && <FilterForm />}
         </CustomMuiDialog>
     );
 };

@@ -19,20 +19,18 @@ import {
     saveCriteriaBasedContingencyList,
 } from 'utils/rest-api';
 import { EQUIPMENT_TYPE, NAME } from 'components/utils/field-constants';
-import NameWrapper from 'components/dialogs/name-wrapper';
-import { ElementType } from 'utils/elementType';
 import { getCriteriaBasedSchema } from 'components/dialogs/commons/criteria-based/criteria-based-utils';
 import yup from 'components/utils/yup-config';
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';
 
 const schema = yup.object().shape({
-    [NAME]: yup.string().required(),
+    [NAME]: yup.string().trim().required('nameEmpty'),
     [EQUIPMENT_TYPE]: yup.string().required(),
     ...getCriteriaBasedSchema(),
 });
 
-const emptyFormData = getContingencyListEmptyFormData();
+const emptyFormData = (name) => getContingencyListEmptyFormData(name);
 
 const CriteriaBasedEditionDialog = ({
     contingencyListId,
@@ -42,16 +40,21 @@ const CriteriaBasedEditionDialog = ({
     titleId,
     name,
 }) => {
-    const [isValidName, setIsValidName] = useState(true);
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
 
     const methods = useForm({
-        defaultValues: emptyFormData,
+        defaultValues: emptyFormData(name),
         resolver: yupResolver(schema),
     });
 
-    const { reset, setValue } = methods;
+    const {
+        reset,
+        formState: { errors },
+    } = methods;
+
+    const nameError = errors[NAME];
+    const isValidating = errors.root?.isValidating;
 
     useEffect(() => {
         if (contingencyListId) {
@@ -78,13 +81,8 @@ const CriteriaBasedEditionDialog = ({
     }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
     const closeAndClear = (event) => {
-        reset(emptyFormData);
+        reset(emptyFormData());
         onClose(event);
-    };
-
-    const handleNameChange = (isValid, newName) => {
-        setIsValidName(isValid);
-        setValue(NAME, newName, { shouldDirty: isValid });
     };
 
     const editContingencyList = (contingencyListId, contingencyList) => {
@@ -117,15 +115,9 @@ const CriteriaBasedEditionDialog = ({
             formMethods={methods}
             titleId={titleId}
             removeOptional={true}
-            disabledSave={!isValidName}
+            disabledSave={!!nameError || isValidating}
             isDataFetching={isFetching}
         >
-            <NameWrapper
-                titleMessage={'nameProperty'}
-                contentType={ElementType.CONTINGENCY_LIST}
-                initialValue={name}
-                handleNameValidation={handleNameChange}
-            />
             {!isFetching && <CriteriaBasedEditionForm />}
         </CustomMuiDialog>
     );

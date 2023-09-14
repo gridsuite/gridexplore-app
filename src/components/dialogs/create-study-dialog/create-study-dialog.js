@@ -23,7 +23,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
 import { ElementType } from '../../../utils/elementType';
 import DirectorySelect from './directory-select';
-import { useNameCheck } from '../commons/use-name-check';
 import { isObjectEmpty, keyGenerator } from '../../../utils/functions';
 import {
     addUploadingElement,
@@ -46,7 +45,7 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
 import { ErrorInput, FieldErrorAlert, TextInput } from '@gridsuite/commons-ui';
-import StudyNamePrefilledInput from './study-name-prefilled-input';
+import PrefilledNameInput from '../commons/prefilled-name-input';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -62,7 +61,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const { elementUuid, elementName } = providedExistingCase || {};
 
     const createStudyFormMethods = useForm({
-        mode: 'onChange',
         defaultValues: getCreateStudyDialogFormDefaultValues({
             directory: activeDirectory,
             studyName: elementName,
@@ -77,10 +75,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         formState: { errors, isValid },
         setError,
         getValues,
-        watch,
     } = createStudyFormMethods;
-
-    const studyName = watch(STUDY_NAME);
 
     const isFormValid = isObjectEmpty(errors) && isValid;
 
@@ -102,7 +97,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             } else {
                 setError(`root.${API_CALL}`, {
                     type: 'apiCall',
-                    message: intl.formatMessage({ id: 'error.message' }),
+                    message: error.message,
                 });
             }
         },
@@ -218,14 +213,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         dispatch(addUploadingElement(uploadingStudy));
     };
 
-    // handle check studyName
-    const [studyNameAdornment, studyNameChecking] = useNameCheck({
-        field: STUDY_NAME,
-        value: studyName,
-        elementType: ElementType.STUDY,
-        setError,
-    });
-
     /* Effects */
     // handle create study from existing case
     useEffect(() => {
@@ -245,14 +232,14 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             onClose={onClose}
             onSave={handleCreateNewStudy}
             onCancel={handleDeleteCase}
-            disabledSave={!isFormValid || studyNameChecking}
+            disabledSave={!isFormValid}
         >
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>
-                    <StudyNamePrefilledInput
+                    <PrefilledNameInput
                         name={STUDY_NAME}
                         label={'nameProperty'}
-                        adornment={studyNameAdornment}
+                        elementType={ElementType.STUDY}
                     />
                 </Grid>
                 <Grid item>

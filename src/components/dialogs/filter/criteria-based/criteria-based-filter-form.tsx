@@ -3,14 +3,14 @@ import FilterProperties, {
     FILTER_PROPERTIES,
     filterPropertiesYupSchema,
 } from './filter-properties';
-import { CRITERIA_BASED, ENERGY_SOURCE } from '../../utils/field-constants';
-import yup from '../../utils/yup-config';
-import CriteriaBasedForm from '../commons/criteria-based/criteria-based-form';
+import { CRITERIA_BASED, ENERGY_SOURCE } from '../../../utils/field-constants';
+import yup from '../../../utils/yup-config';
+import CriteriaBasedForm from '../../commons/criteria-based/criteria-based-form';
 import {
     FILTER_EQUIPMENTS,
     getCriteriaBasedFormData,
     getCriteriaBasedSchema,
-} from '../commons/criteria-based/criteria-based-utils';
+} from '../../commons/criteria-based/criteria-based-utils';
 import Grid from '@mui/material/Grid';
 
 export const criteriaBasedFilterSchema = getCriteriaBasedSchema({

@@ -16,20 +16,19 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { createContingencyList } from '../../../../utils/rest-api';
-import React, { useState } from 'react';
+import React from 'react';
 import CustomMuiDialog from '../../commons/custom-mui-dialog/custom-mui-dialog';
 import ContingencyListCreationForm from './contingency-list-creation-form';
 import {
     getContingencyListEmptyFormData,
     getFormContent,
 } from '../contingency-list-utils';
-import { ElementType } from '../../../../utils/elementType';
-import NameWrapper from '../../name-wrapper';
 import yup from '../../../utils/yup-config';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form';
 import { getCriteriaBasedSchema } from '../../commons/criteria-based/criteria-based-utils';
 
 const schema = yup.object().shape({
+    [NAME]: yup.string().trim().required('nameEmpty'),
     [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
     [SCRIPT]: yup.string().nullable(),
     ...getExplicitNamingSchema(EQUIPMENT_TABLE),
@@ -39,7 +38,6 @@ const schema = yup.object().shape({
 const emptyFormData = getContingencyListEmptyFormData();
 
 const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
-    const [isValidName, setIsValidName] = useState(false);
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const { snackError } = useSnackMessage();
 
@@ -48,12 +46,13 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
         resolver: yupResolver(schema),
     });
 
-    const { reset, setValue } = methods;
+    const {
+        reset,
+        formState: { errors },
+    } = methods;
 
-    const handleNameChange = (isValid, newName) => {
-        setIsValidName(isValid);
-        setValue(NAME, newName, { shouldDirty: isValid });
-    };
+    const nameError = errors[NAME];
+    const isValidating = errors.root?.isValidating;
 
     const closeAndClear = (event) => {
         reset(emptyFormData);
@@ -78,25 +77,18 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
             });
     };
     return (
-        <>
-            <CustomMuiDialog
-                open={open}
-                onClose={closeAndClear}
-                onSave={onSubmit}
-                formSchema={schema}
-                formMethods={methods}
-                titleId={titleId}
-                removeOptional={true}
-                disabledSave={!isValidName}
-            >
-                <NameWrapper
-                    titleMessage={'nameProperty'}
-                    contentType={ElementType.CONTINGENCY_LIST}
-                    handleNameValidation={handleNameChange}
-                />
-                <ContingencyListCreationForm />
-            </CustomMuiDialog>
-        </>
+        <CustomMuiDialog
+            open={open}
+            onClose={closeAndClear}
+            onSave={onSubmit}
+            formSchema={schema}
+            formMethods={methods}
+            titleId={titleId}
+            removeOptional={true}
+            disabledSave={!!nameError || isValidating}
+        >
+            <ContingencyListCreationForm />
+        </CustomMuiDialog>
     );
 };
 
