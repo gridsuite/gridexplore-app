@@ -16,18 +16,29 @@ import { elementExists } from '../../../utils/rest-api';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
-import { InputAdornment } from '@mui/material';
+import { InputAdornment, TextFieldProps } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { useController, useFormContext } from 'react-hook-form';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
+import { ElementType } from '../../../utils/elementType';
 
 interface UniqueNameInputProps {
     name: string;
     label?: string;
-    elementType: string;
+    elementType: ElementType;
     autoFocus?: boolean;
     onManualChangeCallback?: () => void;
+    formProps?: Omit<
+        TextFieldProps,
+        | 'value'
+        | 'onChange'
+        | 'name'
+        | 'label'
+        | 'inputRef'
+        | 'inputProps'
+        | 'InputProps'
+    >;
 }
 
 /**
@@ -151,6 +162,7 @@ export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
             error={!!error}
             helperText={translatedError}
             InputProps={{ endAdornment: endAdornment }}
+            {...props.formProps}
         />
     );
 };
