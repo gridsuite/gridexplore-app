@@ -160,7 +160,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const paramsWithAllOptionsSelected = useMemo(() => {
         const explorerMetaData = appsAndUrls.find(
-            (metadata) => metadata.name === 'Explorer'
+            (metadata) => metadata.name === 'Explore'
         );
 
         const defaultImportStudyParametersValues =
