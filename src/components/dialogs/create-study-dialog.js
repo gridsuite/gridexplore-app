@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 
 import CheckIcon from '@mui/icons-material/Check';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -152,6 +158,17 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const selectedCase = useSelector((state) => state.selectedCase);
+    const appsAndUrls = useSelector((state) => state.appsAndUrls);
+
+    const paramsWithAllOptionsSelected = useMemo(() => {
+        const explorerMetaData = appsAndUrls.find(
+            (metadata) => metadata.name === 'Explorer'
+        );
+
+        const defaultImportStudyParametersValues = explorerMetaData['defaultImportStudyParametersValues'];
+
+        return defaultImportStudyParametersValues ? defaultImportStudyParametersValues['paramsWithAllOptionSelected'] : null;
+    }, [appsAndUrls]);
 
     const [tempCaseUuid, setTempCaseUuid] = useState(null);
 
@@ -239,12 +256,12 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                             parameter.possibleValues?.sort((a, b) =>
                                 a.localeCompare(b)
                             );
-                        // we check if the param is for extension, if it is, we select all possible values by default.
-                        // the only way for the moment to check if the param is for extension, is by checking his name.
-                        //TODO to be removed when extensions param default value corrected in backend to include all possible values
+
                         if (
-                            parameter.type === STRING_LIST &&
-                            parameter.name?.endsWith('extensions')
+                            paramsWithAllOptionsSelected &&
+                            paramsWithAllOptionsSelected.includes(
+                                parameter.name
+                            )
                         ) {
                             parameter.defaultValue = parameter.possibleValues;
                         }
