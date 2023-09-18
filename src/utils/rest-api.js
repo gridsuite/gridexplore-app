@@ -456,10 +456,13 @@ export function duplicateCase(
 }
 
 export function elementExists(directoryUuid, elementName, type) {
+    const elementNameEncoded = new URLSearchParams({
+        elementName: elementName,
+    }).toString();
+
     const existsElementUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
-
+        `/v1/directories/${directoryUuid}/elements/${elementNameEncoded}/types/${type}`;
     console.debug(existsElementUrl);
     return backendFetch(existsElementUrl, { method: 'head' }).then(
         (response) => {
