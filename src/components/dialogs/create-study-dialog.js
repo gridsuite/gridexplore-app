@@ -136,8 +136,6 @@ const SelectCase = () => {
     );
 };
 
-const STRING_LIST = 'STRING_LIST';
-
 /**
  * Dialog to create a study
  * @param {Boolean} open Is the dialog open ?
@@ -165,9 +163,12 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             (metadata) => metadata.name === 'Explorer'
         );
 
-        const defaultImportStudyParametersValues = explorerMetaData['defaultImportStudyParametersValues'];
+        const defaultImportStudyParametersValues =
+            explorerMetaData['defaultImportStudyParametersValues'];
 
-        return defaultImportStudyParametersValues ? defaultImportStudyParametersValues['paramsWithAllOptionSelected'] : null;
+        return defaultImportStudyParametersValues
+            ? defaultImportStudyParametersValues['paramsWithAllOptionSelected']
+            : null;
     }, [appsAndUrls]);
 
     const [tempCaseUuid, setTempCaseUuid] = useState(null);
@@ -278,7 +279,7 @@ export const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     );
                 });
         },
-        [intl]
+        [intl, paramsWithAllOptionsSelected]
     );
 
     const handleFileUploadError = useCallback(
