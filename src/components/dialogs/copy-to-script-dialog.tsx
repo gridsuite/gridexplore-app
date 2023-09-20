@@ -28,7 +28,7 @@ interface CopyToScriptDialogProps {
     id: string;
     open: boolean;
     onClose: (...args: any[]) => void;
-    onClick: (...args: any[]) => void;
+    onValidate: (...args: any[]) => void;
     currentName: string;
     title: string;
     directoryUuid: string;
@@ -36,23 +36,27 @@ interface CopyToScriptDialogProps {
     handleError: (...args: any[]) => void;
 }
 
+interface IFormData {
+    [NAME]: string;
+}
+
 /**
  * Dialog to copy a filters contingency list to a script contingency list or a filter to a script
  * @param id id of list or filter to edit
  * @param open Is the dialog open ?
  * @param onClose Event to close the dialog
- * @param onClick Function to call to perform copy
+ * @param onValidate Function to call to perform copy
  * @param currentName Name before renaming
  * @param title Title of the dialog
  * @param directoryUuid Directory uuid of the list or filter to copy
  * @param elementType Type of the element to copy
  * @param handleError Function to call to handle error
  */
-const CopyToScriptDialog: React.FC<CopyToScriptDialogProps> = ({
+const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
     id,
     open,
     onClose,
-    onClick,
+    onValidate,
     currentName,
     title,
     directoryUuid,
@@ -61,13 +65,12 @@ const CopyToScriptDialog: React.FC<CopyToScriptDialogProps> = ({
 }) => {
     const [loading, setLoading] = useState(false);
     const intl = useIntl();
-    const methods = useForm({
+    const methods = useForm<IFormData>({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
     });
 
     const {
-        reset,
         formState: { errors },
         setValue,
     } = methods;
@@ -75,38 +78,34 @@ const CopyToScriptDialog: React.FC<CopyToScriptDialogProps> = ({
     const nameError = errors[NAME];
     const isValidating = errors.root?.isValidating;
 
-    const onSubmit = (data: { [NAME]: string; [key: string]: any }) => {
-        onClick(id, data[NAME]);
+    const onSubmit = (data: IFormData) => {
+        onValidate(id, data[NAME]);
     };
 
     const handleClose = () => {
-        reset(emptyFormData);
         onClose();
     };
 
-    const handleGenerateNameError = useCallback(
-        (error: string) => {
-            return handleError(
-                intl.formatMessage(
-                    { id: 'generateCopyScriptNameError' },
-                    {
-                        itemName: currentName,
-                        errorMessage: error,
-                    }
-                )
-            );
-        },
-        [currentName, handleError, intl]
-    );
+    const handleGenerateNameError = useCallback(() => {
+        return handleError(
+            intl.formatMessage(
+                { id: 'generateCopyScriptNameError' },
+                {
+                    itemName: currentName,
+                }
+            )
+        );
+    }, [currentName, handleError, intl]);
 
     useEffect(() => {
         setLoading(true);
         getNameCandidate(directoryUuid, currentName, elementType)
             .then((newName) => {
-                setValue(NAME, newName, { shouldDirty: true });
+                let generatedName: string = newName || '';
+                setValue(NAME, generatedName, { shouldDirty: true });
             })
             .catch((error) => {
-                handleGenerateNameError(error.message);
+                handleGenerateNameError();
             })
             .finally(() => {
                 setLoading(false);

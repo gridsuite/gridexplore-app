@@ -558,7 +558,7 @@ const ContentContextualMenu = (props) => {
                         id={activeElement ? activeElement.elementUuid : ''}
                         open={true}
                         onClose={handleCloseDialog}
-                        onClick={(id, newName) =>
+                        onValidate={(id, newName) =>
                             newScriptFromFiltersContingencyListCB(
                                 id,
                                 newName,
@@ -595,7 +595,7 @@ const ContentContextualMenu = (props) => {
                         id={activeElement ? activeElement.elementUuid : ''}
                         open={true}
                         onClose={handleCloseDialog}
-                        onClick={(id, newName) =>
+                        onValidate={(id, newName) =>
                             newScriptFromFilterCB(
                                 id,
                                 newName,
