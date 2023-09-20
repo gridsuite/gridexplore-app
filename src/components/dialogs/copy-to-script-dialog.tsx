@@ -104,7 +104,7 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
                 let generatedName: string = newName || '';
                 setValue(NAME, generatedName, { shouldDirty: true });
             })
-            .catch((error) => {
+            .catch(() => {
                 handleGenerateNameError();
             })
             .finally(() => {
