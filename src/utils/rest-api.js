@@ -456,10 +456,7 @@ export function duplicateCase(
 }
 
 export function elementExists(directoryUuid, elementName, type) {
-    const elementNameEncoded = new URLSearchParams({
-        elementName: elementName,
-    }).toString();
-
+    const elementNameEncoded = encodeURIComponent(elementName);
     const existsElementUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${directoryUuid}/elements/${elementNameEncoded}/types/${type}`;
