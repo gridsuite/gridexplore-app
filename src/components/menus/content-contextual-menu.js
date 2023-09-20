@@ -605,7 +605,10 @@ const ContentContextualMenu = (props) => {
                         currentName={
                             activeElement ? activeElement.elementName : ''
                         }
-                        title={intl.formatMessage({ id: 'copyToScriptList' })}
+                        title={'copyToScriptList'}
+                        directoryUuid={selectedDirectory?.elementUuid}
+                        elementType={activeElement?.type}
+                        handleError={handleLastError}
                     />
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:
