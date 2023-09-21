@@ -36,7 +36,7 @@ interface CopyToScriptDialogProps {
     handleError: (...args: any[]) => void;
 }
 
-interface IFormData {
+interface FormData {
     [NAME]: string;
 }
 
@@ -65,7 +65,7 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
 }) => {
     const [loading, setLoading] = useState(false);
     const intl = useIntl();
-    const methods = useForm<IFormData>({
+    const methods = useForm<FormData>({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
     });
@@ -78,7 +78,7 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
     const nameError = errors[NAME];
     const isValidating = errors.root?.isValidating;
 
-    const onSubmit = (data: IFormData) => {
+    const onSubmit = (data: FormData) => {
         onValidate(id, data[NAME]);
     };
 
