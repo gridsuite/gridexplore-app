@@ -38,6 +38,7 @@ import {
     CASE_FILE,
     CASE_NAME,
     CASE_UUID,
+    CURRENT_PARAMETERS,
     DESCRIPTION,
     FORMATTED_CASE_PARAMETERS,
     STUDY_NAME,
@@ -125,6 +126,21 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         }
                         return parameter;
                     });
+
+                    const currentParameters = result.parameters.map(
+                        (param) => ({
+                            [param.name]: Array.isArray(param.defaultValue)
+                                ? param.defaultValue.toString()
+                                : param.defaultValue,
+                        })
+                    );
+
+                    const currentParametersObj = Object.assign(
+                        {},
+                        ...currentParameters
+                    );
+
+                    setValue(CURRENT_PARAMETERS, currentParametersObj);
 
                     setValue(FORMATTED_CASE_PARAMETERS, result.parameters, {
                         shouldDirty: true,
