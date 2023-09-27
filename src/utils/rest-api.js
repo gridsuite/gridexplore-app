@@ -284,7 +284,7 @@ export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
 export function insertRootDirectory(directoryName, isPrivate, owner) {
     console.info("Inserting a new root folder '%s'", directoryName);
     const insertRootDirectoryUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories/`;
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
     return backendFetchJson(insertRootDirectoryUrl, {
         method: 'POST',
         headers: {
