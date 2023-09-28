@@ -558,7 +558,7 @@ const ContentContextualMenu = (props) => {
                         id={activeElement ? activeElement.elementUuid : ''}
                         open={true}
                         onClose={handleCloseDialog}
-                        onClick={(id, newName) =>
+                        onValidate={(id, newName) =>
                             newScriptFromFiltersContingencyListCB(
                                 id,
                                 newName,
@@ -568,9 +568,10 @@ const ContentContextualMenu = (props) => {
                         currentName={
                             activeElement ? activeElement.elementName : ''
                         }
-                        title={intl.formatMessage({
-                            id: 'copyToScriptList',
-                        })}
+                        title={'copyToScriptList'}
+                        directoryUuid={selectedDirectory?.elementUuid}
+                        elementType={activeElement?.type}
+                        handleError={handleLastError}
                     />
                 );
             case DialogsId.REPLACE_FILTER_BY_SCRIPT:
@@ -594,7 +595,7 @@ const ContentContextualMenu = (props) => {
                         id={activeElement ? activeElement.elementUuid : ''}
                         open={true}
                         onClose={handleCloseDialog}
-                        onClick={(id, newName) =>
+                        onValidate={(id, newName) =>
                             newScriptFromFilterCB(
                                 id,
                                 newName,
@@ -604,7 +605,10 @@ const ContentContextualMenu = (props) => {
                         currentName={
                             activeElement ? activeElement.elementName : ''
                         }
-                        title={intl.formatMessage({ id: 'copyToScriptList' })}
+                        title={'copyToScriptList'}
+                        directoryUuid={selectedDirectory?.elementUuid}
+                        elementType={activeElement?.type}
+                        handleError={handleLastError}
                     />
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:
