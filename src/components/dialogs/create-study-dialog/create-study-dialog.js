@@ -52,8 +52,8 @@ const STRING_LIST = 'STRING_LIST';
 
 function customizeCurrentParameters(params) {
     return params.reduce((obj, parameter) => {
-        // we check if the parameter is for extension, if it is, we select all possible values by default.
-        // the only way for the moment to check if the parameter is for extension, is by checking his name.by def
+        // we check if the parameter is for extensions. If so, we select all possible values by default.
+        // the only way for the moment to check if the parameter is for extension, is by checking his name.
         if (
             parameter.type === STRING_LIST &&
             parameter.name?.endsWith('extensions')
