@@ -50,6 +50,34 @@ import PrefilledNameInput from '../commons/prefilled-name-input';
 
 const STRING_LIST = 'STRING_LIST';
 
+function customizeCurrentParameters(params) {
+    return params.reduce((obj, parameter) => {
+        // we check if the parameter is for extension, if it is, we select all possible values by default.
+        // the only way for the moment to check if the parameter is for extension, is by checking his name.
+        if (
+            parameter.type === STRING_LIST &&
+            parameter.name?.endsWith('extensions')
+        ) {
+            obj[parameter.name] = parameter.possibleValues.toString();
+        } else {
+            obj[parameter.name] = Array.isArray(parameter.defaultValue)
+                ? parameter.defaultValue.toString()
+                : parameter.defaultValue;
+        }
+        return obj;
+    }, {});
+}
+
+function formatCaseImportParameters(params) {
+    // sort possible values alphabetically to display select options sorted
+    return params?.map((parameter) => {
+        parameter.possibleValues = parameter.possibleValues?.sort((a, b) =>
+            a.localeCompare(b)
+        );
+        return parameter;
+    });
+}
+
 const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -109,42 +137,18 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         (uuid) => {
             getCaseImportParameters(uuid)
                 .then((result) => {
-                    // sort possible values alphabetically to display select options sorted
-                    result.parameters = result.parameters?.map((parameter) => {
-                        parameter.possibleValues =
-                            parameter.possibleValues?.sort((a, b) =>
-                                a.localeCompare(b)
-                            );
-                        // we check if the param is for extension, if it is, we select all possible values by default.
-                        // the only way for the moment to check if the param is for extension, is by checking his name.
-                        //TODO to be removed when extensions param default value corrected in backend to include all possible values
-                        if (
-                            parameter.type === STRING_LIST &&
-                            parameter.name?.endsWith('extensions')
-                        ) {
-                            parameter.defaultValue = parameter.possibleValues;
+                    setValue(
+                        CURRENT_PARAMETERS,
+                        customizeCurrentParameters(result.parameters)
+                    );
+
+                    setValue(
+                        FORMATTED_CASE_PARAMETERS,
+                        formatCaseImportParameters(result.parameters),
+                        {
+                            shouldDirty: true,
                         }
-                        return parameter;
-                    });
-
-                    const currentParameters = result.parameters.map(
-                        (param) => ({
-                            [param.name]: Array.isArray(param.defaultValue)
-                                ? param.defaultValue.toString()
-                                : param.defaultValue,
-                        })
                     );
-
-                    const currentParametersObj = Object.assign(
-                        {},
-                        ...currentParameters
-                    );
-
-                    setValue(CURRENT_PARAMETERS, currentParametersObj);
-
-                    setValue(FORMATTED_CASE_PARAMETERS, result.parameters, {
-                        shouldDirty: true,
-                    });
                 })
                 .catch(() => {
                     setValue(FORMATTED_CASE_PARAMETERS, []);
