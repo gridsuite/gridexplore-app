@@ -22,6 +22,7 @@ import { useController, useFormContext } from 'react-hook-form';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import { ElementType } from '../../../utils/elementType';
+import { DIRECTORY } from 'components/utils/field-constants';
 
 interface UniqueNameInputProps {
     name: string;
@@ -55,6 +56,12 @@ export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
     });
 
     const {
+        field: { value: selectedDirectory },
+    } = useController({
+        name: DIRECTORY,
+    });
+
+    const {
         setError,
         clearErrors,
         formState: { errors },
@@ -67,10 +74,12 @@ export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
         (state: ReduxState) => state.activeDirectory
     );
 
+    const directory = selectedDirectory || activeDirectory;
+
     const handleCheckName = useCallback(
         (value: string) => {
             if (value) {
-                elementExists(activeDirectory, value, props.elementType)
+                elementExists(directory, value, props.elementType)
                     .then((alreadyExist) => {
                         if (alreadyExist) {
                             setError(props.name, {
@@ -91,19 +100,24 @@ export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
                     });
             }
         },
-        [setError, clearErrors, activeDirectory, props.name, props.elementType]
+        [setError, clearErrors, props.name, props.elementType, directory]
     );
 
     const debouncedHandleCheckName = useDebounce(handleCheckName, 700);
 
     // We have to use an useEffect because the name can change from outside of this component (when we upload a case file for instance)
     useEffect(() => {
+        const trimmedValue = value.trim();
+
+        if (selectedDirectory) {
+            debouncedHandleCheckName(trimmedValue);
+        }
+
         // if the name is unchanged, we don't do custom validation
         if (!isDirty) {
             clearErrors(props.name);
             return;
         }
-        const trimmedValue = value.trim();
         if (trimmedValue) {
             clearErrors(props.name);
             setError('root.isValidating', {
@@ -125,6 +139,7 @@ export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
         props.name,
         value,
         isDirty,
+        selectedDirectory,
     ]);
 
     // Handle on user's change
