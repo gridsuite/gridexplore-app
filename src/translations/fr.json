@@ -235,5 +235,6 @@
   "UCTE": "UCTE",
   "MATPOWER": "MATPOWER",
   "POWERFACTORY": "POWERFACTORY",
-  "IEEE CDF": "IEEE CDF"
+  "IEEE CDF": "IEEE CDF",
+  "downloadCase": "Télécharger la situation"
 }
