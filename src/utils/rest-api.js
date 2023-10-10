@@ -778,6 +778,29 @@ export function duplicateFilter(
     });
 }
 
+export function duplicateParameter(
+    name,
+    parameterType,
+    sourceFilterUuid,
+    parentDirectoryUuid
+) {
+    console.info('Duplicating a parameter of type ' + parameterType + '...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('duplicateFrom', sourceFilterUuid);
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('type', parameterType);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/parameters?' +
+        urlSearchParams.toString();
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
+    });
+}
+
 /**
  * Get all filters (name & type)
  * @returns {Promise<Response>}

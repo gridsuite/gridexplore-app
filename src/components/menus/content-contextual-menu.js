@@ -40,6 +40,7 @@ import {
     fetchElementsInfos,
     duplicateStudy,
     getNameCandidate,
+    duplicateParameter,
 } from '../../utils/rest-api';
 
 import { ContingencyListType, ElementType } from '../../utils/elementType';
@@ -160,6 +161,20 @@ const ContentContextualMenu = (props) => {
                                 duplicateFilter(
                                     newItemName,
                                     activeElement.description,
+                                    activeElement.elementUuid,
+                                    selectedDirectory.elementUuid
+                                )
+                                    .then(() => {
+                                        handleCloseDialog();
+                                    })
+                                    .catch((error) => {
+                                        handleDuplicateError(error.message);
+                                    });
+                                break;
+                            case ElementType.VOLTAGE_INIT_PARAMETERS:
+                                duplicateParameter(
+                                    newItemName,
+                                    ElementType.VOLTAGE_INIT_PARAMETERS,
                                     activeElement.elementUuid,
                                     selectedDirectory.elementUuid
                                 )
@@ -348,7 +363,9 @@ const ContentContextualMenu = (props) => {
             (selectedElements[0].type === ElementType.CASE ||
                 selectedElements[0].type === ElementType.STUDY ||
                 selectedElements[0].type === ElementType.CONTINGENCY_LIST ||
-                selectedElements[0].type === ElementType.FILTER) &&
+                selectedElements[0].type === ElementType.FILTER ||
+                selectedElements[0].type ===
+                    ElementType.VOLTAGE_INIT_PARAMETERS) &&
             !selectedElements[0].uploading
         );
     }, [selectedElements]);
