@@ -784,7 +784,7 @@ export function duplicateParameter(
     sourceFilterUuid,
     parentDirectoryUuid
 ) {
-    console.info('Duplicating a parameter of type ' + parameterType + '...');
+    console.info('Duplicating parameters of type ' + parameterType + '...');
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('duplicateFrom', sourceFilterUuid);
     urlSearchParams.append('name', name);
