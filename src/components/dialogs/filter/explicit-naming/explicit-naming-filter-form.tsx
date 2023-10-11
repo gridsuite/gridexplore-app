@@ -146,6 +146,7 @@ function ExplicitNamingFilterForm() {
         if (forGeneratorOrLoad) {
             csvFileHeaders.push(intl.formatMessage({ id: DISTRIBUTION_KEY }));
         }
+
         return csvFileHeaders;
     }, [intl, forGeneratorOrLoad]);
 

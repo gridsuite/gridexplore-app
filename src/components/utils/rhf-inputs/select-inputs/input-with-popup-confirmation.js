@@ -42,6 +42,7 @@ const InputWithPopupConfirmation = ({
                 }}
             />
             <PopupConfirmationDialog
+                message={'changeTypeMessage'}
                 openConfirmationPopup={openPopup}
                 setOpenConfirmationPopup={setOpenPopup}
                 handlePopupConfirmation={handlePopupConfirmation}

@@ -45,6 +45,7 @@ import ExplicitNamingFilterEditionDialog from './dialogs/filter/explicit-naming/
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
+import ExpertFilterEditionDialog from "./dialogs/filter/expert/expert-filter-edition-dialog";
 
 const circularProgressSize = '70px';
 
@@ -171,6 +172,10 @@ const DirectoryContent = () => {
                     setCurrentCriteriaBasedFilterId(event.rowData.elementUuid);
                     setOpenDialog(subtype);
                 }
+                else if (subtype === FilterType.EXPERT.id) {
+                    setCurrentExpertFilterId(event.rowData.elementUuid);
+                    setOpenDialog(subtype);
+                }
             }
         }
     };
@@ -226,6 +231,18 @@ const DirectoryContent = () => {
     };
     const [currentExplicitNamingFilterId, setCurrentExplicitNamingFilterId] =
         useState(null);
+
+    /**
+     * Filters dialog: window status value to edit Expert filters
+     */
+    const [currentExpertFilterId, setCurrentExpertFilterId] =
+        useState(null);
+    const handleCloseExpertFilterDialog = () => {
+        setOpenDialog(constants.DialogsId.NONE);
+        setCurrentExpertFilterId(null);
+        setActiveElement(null);
+        setElementName('');
+    };
 
     /**
      * Script contingency list dialog: window status value for editing a script contingency list
@@ -821,6 +838,17 @@ const DirectoryContent = () => {
                         name={name}
                     />
                 );
+            case FilterType.EXPERT.id:
+                return (
+                    <ExpertFilterEditionDialog
+                        id={currentExpertFilterId}
+                        open={true}
+                        onClose={handleCloseCriteriaBasedFilterDialog}
+                        titleId={'editFilter'}
+                        name={name}
+                    />
+                );
+            // add edit dialog here
             default:
                 return null;
         }

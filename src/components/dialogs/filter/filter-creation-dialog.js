@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import { FilterType } from '../../../utils/elementType';
 import {
     saveCriteriaBasedFilter,
+    saveExpertFilter,
     saveExplicitNamingFilter,
 } from './filters-utils';
 import { useForm } from 'react-hook-form';
@@ -29,6 +30,11 @@ import {
 import { EQUIPMENT_TYPE, FILTER_TYPE, NAME } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 import { FilterForm } from './filter-form';
+import {
+    EXPERT_FILTER_QUERY,
+    expertFilterSchema,
+    getExpertFilterEmptyFormData,
+} from './expert/expert-filter-form';
 
 const emptyFormData = {
     [NAME]: '',
@@ -36,6 +42,7 @@ const emptyFormData = {
     [EQUIPMENT_TYPE]: null,
     ...criteriaBasedFilterEmptyFormData,
     ...getExplicitNamingFilterEmptyFormData(),
+    ...getExpertFilterEmptyFormData(),
 };
 
 // we use both schemas then we can change the type of filter without losing the filled form fields
@@ -47,6 +54,7 @@ const formSchema = yup
         [EQUIPMENT_TYPE]: yup.string().required(),
         ...criteriaBasedFilterSchema,
         ...explicitNamingFilterSchema,
+        ...expertFilterSchema,
     })
     .required();
 
@@ -96,6 +104,21 @@ const FilterCreationDialog = ({ open, onClose }) => {
                         });
                     }
                 );
+            } else if (filterForm[FILTER_TYPE] === FilterType.EXPERT.id) {
+                saveExpertFilter(
+                    null,
+                    filterForm[EXPERT_FILTER_QUERY],
+                    filterForm[EQUIPMENT_TYPE],
+                    filterForm[NAME],
+                    true,
+                    activeDirectory,
+                    onClose,
+                    (error) => {
+                        snackError({
+                            messageTxt: error,
+                        });
+                    }
+                );
             }
         },
         [activeDirectory, snackError, onClose]
@@ -110,7 +133,13 @@ const FilterCreationDialog = ({ open, onClose }) => {
             formMethods={formMethods}
             titleId={'createNewFilter'}
             removeOptional={true}
-            disabledSave={!!nameError || isValidating}
+            disabledSave={
+                !!nameError || isValidating
+                // isValidating ||
+                // Object.values(queryValidator(query))
+                //     .map((rv) => typeof rv !== 'boolean')
+                //     .includes(true)
+            }
         >
             <FilterForm creation />
         </CustomMuiDialog>
