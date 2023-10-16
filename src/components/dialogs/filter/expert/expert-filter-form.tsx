@@ -29,7 +29,6 @@ import { useIntl } from 'react-intl';
 
 export const EXPERT_FILTER_QUERY = 'rules';
 
-// Assuming the object you provided is in a variable called `data`
 export const expertFilterSchema = {
     [EXPERT_FILTER_QUERY]: yup.object().when([FILTER_TYPE], {
         is: FilterType.EXPERT.id,
@@ -39,28 +38,24 @@ export const expertFilterSchema = {
                     isSupportedEquipmentType(equipmentType),
                 then: (schema) =>
                     schema
-                        .test(EMPTY_GROUP, EMPTY_GROUP, (query, context) => {
+                        .test(EMPTY_GROUP, EMPTY_GROUP, (query) => {
                             return testQuery(
                                 EMPTY_GROUP,
                                 query as RuleGroupTypeAny
                             );
                         })
-                        .test(EMPTY_RULE, EMPTY_RULE, (query, context) => {
+                        .test(EMPTY_RULE, EMPTY_RULE, (query) => {
                             return testQuery(
                                 EMPTY_RULE,
                                 query as RuleGroupTypeAny
                             );
                         })
-                        .test(
-                            INCORRECT_RULE,
-                            INCORRECT_RULE,
-                            (query, context) => {
-                                return testQuery(
-                                    INCORRECT_RULE,
-                                    query as RuleGroupTypeAny
-                                );
-                            }
-                        ),
+                        .test(INCORRECT_RULE, INCORRECT_RULE, (query) => {
+                            return testQuery(
+                                INCORRECT_RULE,
+                                query as RuleGroupTypeAny
+                            );
+                        }),
             }),
     }),
 };

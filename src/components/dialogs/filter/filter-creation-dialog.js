@@ -133,13 +133,7 @@ const FilterCreationDialog = ({ open, onClose }) => {
             formMethods={formMethods}
             titleId={'createNewFilter'}
             removeOptional={true}
-            disabledSave={
-                !!nameError || isValidating
-                // isValidating ||
-                // Object.values(queryValidator(query))
-                //     .map((rv) => typeof rv !== 'boolean')
-                //     .includes(true)
-            }
+            disabledSave={!!nameError || isValidating}
         >
             <FilterForm creation />
         </CustomMuiDialog>
