@@ -284,7 +284,7 @@ export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
 export function insertRootDirectory(directoryName, isPrivate, owner) {
     console.info("Inserting a new root folder '%s'", directoryName);
     const insertRootDirectoryUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories/`;
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
     return backendFetchJson(insertRootDirectoryUrl, {
         method: 'POST',
         headers: {
@@ -770,6 +770,29 @@ export function duplicateFilter(
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/filters?' +
+        urlSearchParams.toString();
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
+    });
+}
+
+export function duplicateParameter(
+    name,
+    parameterType,
+    sourceFilterUuid,
+    parentDirectoryUuid
+) {
+    console.info('Duplicating parameters of type ' + parameterType + '...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('duplicateFrom', sourceFilterUuid);
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('type', parameterType);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/parameters?' +
         urlSearchParams.toString();
     console.debug(url);
 
