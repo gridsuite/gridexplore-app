@@ -483,6 +483,23 @@ export function getNameCandidate(directoryUuid, elementName, type) {
     });
 }
 
+/**
+ * Retrieves the original name of a case using its UUID.
+ * @param {string} caseUuid - The UUID of the element.
+ * @returns {Promise<string|boolean>} - A promise that resolves to the original name of the case if found, or false if not found.
+ */
+export function getCaseOriginalName(caseUuid) {
+    const caseNameUrl = PREFIX_CASE_QUERIES + `/v1/cases/${caseUuid}/name`;
+    console.debug(caseNameUrl);
+    return backendFetchText(caseNameUrl).catch((error) => {
+        if (error.status === 404) {
+            return false;
+        } else {
+            throw error;
+        }
+    });
+}
+
 export function rootDirectoryExists(directoryName) {
     const existsRootDirectoryUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
@@ -927,5 +944,13 @@ export function deleteCase(caseUuid) {
     const deleteCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases/' + caseUuid;
     return backendFetch(deleteCaseUrl, {
         method: 'delete',
+    });
+}
+
+export function downloadCase(caseUuid) {
+    const downloadCaseUrl =
+        PREFIX_CASE_QUERIES + '/v1/cases/' + caseUuid + '?xiidm=false';
+    return backendFetch(downloadCaseUrl, {
+        method: 'get',
     });
 }
