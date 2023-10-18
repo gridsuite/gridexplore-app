@@ -40,19 +40,9 @@ const ValueEditor = (props: ValueEditorProps) => {
     if (props.field === FieldType.COUNTRY) {
         return (
             <MaterialValueEditor
-                className={props.className}
-                type={props.type}
+                {...props}
                 values={getValues()}
-                value={props.value}
-                field={props.field}
-                fieldData={props.fieldData}
-                operator={props.operator}
-                valueSource={props.valueSource}
                 handleOnChange={props.handleOnChange}
-                path={props.path}
-                level={props.level}
-                schema={props.schema}
-                rule={props.rule}
             />
         );
     }

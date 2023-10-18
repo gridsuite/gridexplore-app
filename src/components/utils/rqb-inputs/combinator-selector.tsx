@@ -27,22 +27,11 @@ const CombinatorSelector = (props: CombinatorSelectorProps) => {
                 handlePopupConfirmation={handlePopupConfirmation}
             />
             <MaterialValueSelector
+                {...props}
                 handleOnChange={(newC) => {
                     setTempC(newC);
                     setOpenPopup(true);
                 }}
-                className={props.className}
-                level={props.level}
-                options={props.options}
-                path={props.path}
-                schema={props.schema}
-                value={props.value}
-                title={props.title}
-                disabled={props.disabled}
-                validation={props.validation}
-                rules={props.rules}
-                testID={props.testID}
-                context={props.context}
             />
         </>
     );
