@@ -8,7 +8,7 @@ const CombinatorSelector = (props: CombinatorSelectorProps) => {
     const [openPopup, setOpenPopup] = useState(false);
 
     const handlePopupConfirmation = () => {
-        props.handleOnChange(tempC); // Update the actual 'c' value
+        props.handleOnChange(tempC);
         setOpenPopup(false);
     };
     return (

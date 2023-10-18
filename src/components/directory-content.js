@@ -846,7 +846,6 @@ const DirectoryContent = () => {
                         name={name}
                     />
                 );
-            // add edit dialog here
             default:
                 return null;
         }
