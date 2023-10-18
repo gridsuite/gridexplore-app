@@ -34,7 +34,21 @@ const formSchema = yup
     })
     .required();
 
-const ExpertFilterEditionDialog = ({ id, name, titleId, open, onClose }) => {
+interface ExpertFilterEditionDialogProps {
+    id: string;
+    name: string;
+    titleId: string;
+    open: boolean;
+    onClose: () => void;
+}
+
+const ExpertFilterEditionDialog = ({
+    id,
+    name,
+    titleId,
+    open,
+    onClose,
+}: ExpertFilterEditionDialogProps) => {
     const { snackError } = useSnackMessage();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
@@ -56,7 +70,7 @@ const ExpertFilterEditionDialog = ({ id, name, titleId, open, onClose }) => {
         if (id && open) {
             setDataFetchStatus(FetchStatus.FETCHING);
             getFilterById(id)
-                .then((response) => {
+                .then((response: { [prop: string]: any }) => {
                     setDataFetchStatus(FetchStatus.FETCH_SUCCESS);
                     reset({
                         [NAME]: name,
@@ -76,7 +90,7 @@ const ExpertFilterEditionDialog = ({ id, name, titleId, open, onClose }) => {
     }, [id, name, open, reset, snackError]);
 
     const onSubmit = useCallback(
-        (filterForm) => {
+        (filterForm: { [prop: string]: any }) => {
             saveExpertFilter(
                 id,
                 filterForm[EXPERT_FILTER_QUERY],
@@ -85,7 +99,7 @@ const ExpertFilterEditionDialog = ({ id, name, titleId, open, onClose }) => {
                 false,
                 null,
                 onClose,
-                (error) => {
+                (error: string) => {
                     snackError({
                         messageTxt: error,
                     });
@@ -106,7 +120,7 @@ const ExpertFilterEditionDialog = ({ id, name, titleId, open, onClose }) => {
             formMethods={formMethods}
             titleId={titleId}
             removeOptional={true}
-            disabledSave={!!nameError || isValidating}
+            disabledSave={!!nameError || !!isValidating}
             isDataFetching={dataFetchStatus === FetchStatus.FETCHING}
         >
             {isDataReady && <FilterForm />}
