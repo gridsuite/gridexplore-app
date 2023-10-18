@@ -11,11 +11,11 @@ import PopupConfirmationDialog from '../popup-confirmation-dialog';
 import { MaterialValueSelector } from '@react-querybuilder/material';
 
 const CombinatorSelector = (props: CombinatorSelectorProps) => {
-    const [tempC, setTempC] = useState(props.value);
+    const [tempCombinator, setTempCombinator] = useState(props.value);
     const [openPopup, setOpenPopup] = useState(false);
 
     const handlePopupConfirmation = () => {
-        props.handleOnChange(tempC);
+        props.handleOnChange(tempCombinator);
         setOpenPopup(false);
     };
     return (
@@ -28,8 +28,8 @@ const CombinatorSelector = (props: CombinatorSelectorProps) => {
             />
             <MaterialValueSelector
                 {...props}
-                handleOnChange={(newC) => {
-                    setTempC(newC);
+                handleOnChange={(newCombinator) => {
+                    setTempCombinator(newCombinator);
                     setOpenPopup(true);
                 }}
             />

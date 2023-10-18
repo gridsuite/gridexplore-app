@@ -38,13 +38,7 @@ const ValueEditor = (props: ValueEditorProps) => {
     }
 
     if (props.field === FieldType.COUNTRY) {
-        return (
-            <MaterialValueEditor
-                {...props}
-                values={getValues()}
-                handleOnChange={props.handleOnChange}
-            />
-        );
+        return <MaterialValueEditor {...props} values={getValues()} />;
     }
     return <MaterialValueEditor {...props} />;
 };
