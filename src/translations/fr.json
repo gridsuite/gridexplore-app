@@ -250,4 +250,5 @@
   "emptyRule": "Le filtre contient un champ vide",
   "incorrectRule": "Le filtre contient un champ incorrect",
   "emptyGroup": "Le filtre contient un groupe vide. Supprimez le ou ajoutez des règles à ce groupe"
+  "downloadCase": "Télécharger la situation"
 }
