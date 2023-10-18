@@ -16,6 +16,7 @@ import PropTypes from 'prop-types';
 import { useNameField } from './field-hook';
 import { useSelector } from 'react-redux';
 import { ElementType } from '../../utils/elementType';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 /**
  * Dialog to rename an element
@@ -91,9 +92,9 @@ const RenameDialog = ({
                 {error && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>
+                <CancelButton onClick={handleClose}>
                     <FormattedMessage id="cancel" />
-                </Button>
+                </CancelButton>
                 <Button
                     onClick={handleClick}
                     disabled={!canRename()}

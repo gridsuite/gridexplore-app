@@ -35,7 +35,7 @@
   "nameProperty": "Name",
   "descriptionProperty": "Description (optional)",
   "uploadMessage": " No file selected",
-  "cancel": "CANCEL",
+  "cancel": "Cancel",
   "creationInProgress": "creation in progress",
   "uploading": "upload in progress",
   "studyCreatingError": "An error occurred while creating the study: {studyName}",

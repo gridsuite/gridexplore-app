@@ -76,6 +76,11 @@ const lightTheme = createTheme({
     agGridBackground: {
         color: 'white',
     },
+    typography: {
+        button: {
+            textTransform: 'none',
+        },
+    },
 });
 
 const darkTheme = createTheme({
@@ -109,6 +114,11 @@ const darkTheme = createTheme({
     aggrid: 'ag-theme-alpine-dark',
     agGridBackground: {
         color: '#383838',
+    },
+    typography: {
+        button: {
+            textTransform: 'none',
+        },
     },
 });
 

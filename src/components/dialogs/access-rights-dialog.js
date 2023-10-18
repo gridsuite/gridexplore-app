@@ -18,6 +18,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 /**
  * Dialog to change the access rights
@@ -110,9 +111,9 @@ const AccessRightsDialog = ({
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>
+                <CancelButton onClick={handleClose}>
                     <FormattedMessage id="cancel" />
-                </Button>
+                </CancelButton>
                 <Button onClick={handleClick} variant="outlined">
                     <FormattedMessage id="edit" />
                 </Button>
