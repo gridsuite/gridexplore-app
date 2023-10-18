@@ -12,7 +12,11 @@ import React from 'react';
 
 const RemoveButton = (props: ActionWithRulesProps) => {
     return (
-        <IconButton onClick={props.handleOnClick} className={props.className}>
+        <IconButton
+            size={'small'}
+            onClick={props.handleOnClick}
+            className={props.className}
+        >
             <DeleteIcon />
         </IconButton>
     );
