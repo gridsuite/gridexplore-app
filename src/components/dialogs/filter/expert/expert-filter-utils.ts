@@ -20,9 +20,9 @@ import { EMPTY_RULE } from '../../../utils/field-constants';
 
 const getDataType = (fieldName: string) => {
     const generatorField = fields().GENERATOR.find(
-        (fld) => fld.name === fieldName
+        (field) => field.name === fieldName
     );
-    const loadField = fields().LOAD.find((fld) => fld.name === fieldName);
+    const loadField = fields().LOAD.find((field) => field.name === fieldName);
 
     const field = generatorField || loadField;
     return field?.dataType;
@@ -30,9 +30,9 @@ const getDataType = (fieldName: string) => {
 
 export const getOperators = (fieldName: string, intl: IntlShape) => {
     const generatorField = fields().GENERATOR.find(
-        (fld) => fld.name === fieldName
+        (field) => field.name === fieldName
     );
-    const loadField = fields().LOAD.find((fld) => fld.name === fieldName);
+    const loadField = fields().LOAD.find((field) => field.name === fieldName);
 
     const field = generatorField || loadField;
     switch (field?.dataType) {
@@ -109,9 +109,9 @@ export function getExpertRules(query: RuleGroupType): RuleGroupTypeExport {
 
 export const testQuery = (check: string, query: RuleGroupTypeAny): boolean => {
     const queryValidatorResult = queryValidator(query);
-    return !Object.values(queryValidatorResult).some((rv) => {
-        if (typeof rv !== 'boolean' && rv.reasons) {
-            return rv.reasons.includes(check);
+    return !Object.values(queryValidatorResult).some((ruleValidation) => {
+        if (typeof ruleValidation !== 'boolean' && ruleValidation.reasons) {
+            return ruleValidation.reasons.includes(check);
         }
         return false;
     });
@@ -121,41 +121,41 @@ export const testQuery = (check: string, query: RuleGroupTypeAny): boolean => {
 export const queryValidator: QueryValidator = (query) => {
     const result: ValidationMap = {};
 
-    const validateRule = (r: RuleType) => {
-        const isNumberInput = getDataType(r.field) === DataType.NUMBER;
-        const isStringInput = getDataType(r.field) === DataType.STRING;
-        if (r.id && isStringInput && r.value.trim() === '') {
-            result[r.id] = {
+    const validateRule = (rule: RuleType) => {
+        const isNumberInput = getDataType(rule.field) === DataType.NUMBER;
+        const isStringInput = getDataType(rule.field) === DataType.STRING;
+        if (rule.id && isStringInput && rule.value.trim() === '') {
+            result[rule.id] = {
                 valid: false,
                 reasons: [EMPTY_RULE],
             };
-        } else if (r.id && isNumberInput && isNaN(parseFloat(r.value))) {
-            result[r.id] = {
+        } else if (rule.id && isNumberInput && isNaN(parseFloat(rule.value))) {
+            result[rule.id] = {
                 valid: false,
                 reasons: [INCORRECT_RULE],
             };
         }
     };
 
-    const validateGroup = (rg: RuleGroupTypeAny) => {
+    const validateGroup = (ruleGroup: RuleGroupTypeAny) => {
         const reasons: any[] = [];
-        if (rg.rules.length === 0) {
+        if (ruleGroup.rules.length === 0) {
             reasons.push(EMPTY_GROUP);
         }
-        if (rg.id) {
+        if (ruleGroup.id) {
             if (reasons.length) {
-                result[rg.id] = { valid: false, reasons };
+                result[ruleGroup.id] = { valid: false, reasons };
             } else {
-                result[rg.id] = true;
+                result[ruleGroup.id] = true;
             }
         }
-        rg.rules.forEach((r) => {
-            if (typeof r === 'string') {
+        ruleGroup.rules.forEach((rule) => {
+            if (typeof rule === 'string') {
                 // Validation for this case was done earlier
-            } else if ('rules' in r) {
-                validateGroup(r);
+            } else if ('rules' in rule) {
+                validateGroup(rule);
             } else {
-                validateRule(r);
+                validateRule(rule);
             }
         });
     };
