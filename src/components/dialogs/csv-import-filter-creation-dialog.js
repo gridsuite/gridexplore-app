@@ -182,9 +182,7 @@ const CsvImportFilterCreationDialog = ({
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <CancelButton onClick={handleCancelDialog}>
-                            <FormattedMessage id="cancel" />
-                        </CancelButton>
+                        <CancelButton onClick={handleCancelDialog} />
                         <Button
                             onClick={() => handleReplacePopupConfirmation()}
                         >
@@ -266,9 +264,7 @@ const CsvImportFilterCreationDialog = ({
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <CancelButton onClick={handleClose}>
-                        <FormattedMessage id="cancel" />
-                    </CancelButton>
+                    <CancelButton onClick={handleClose} />
                     <Button
                         variant="outlined"
                         onClick={() => handleOpenCSVConfirmationDataDialog()}

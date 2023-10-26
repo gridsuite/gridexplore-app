@@ -111,9 +111,7 @@ const AccessRightsDialog = ({
                 )}
             </DialogContent>
             <DialogActions>
-                <CancelButton onClick={handleClose}>
-                    <FormattedMessage id="cancel" />
-                </CancelButton>
+                <CancelButton onClick={handleClose} />
                 <Button onClick={handleClick} variant="outlined">
                     <FormattedMessage id="edit" />
                 </Button>

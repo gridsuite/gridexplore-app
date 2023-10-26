@@ -31,6 +31,9 @@ const styles = {
     tooltip: {
         maxWidth: '1000px',
     },
+    deleteButtonTextColor: (theme) => ({
+        color: theme.palette.text.primary,
+    }),
 };
 const DeleteDialog = ({
     open,
@@ -214,10 +217,13 @@ const DeleteDialog = ({
                     onClick={handleClose}
                     variant="outlined"
                     disabled={loadingState}
+                    withCustomColor={false}
+                />
+                <Button
+                    onClick={handleClick}
+                    disabled={loadingState}
+                    sx={styles.deleteButtonTextColor}
                 >
-                    <FormattedMessage id="cancel" />
-                </CancelButton>
-                <Button onClick={handleClick} disabled={loadingState}>
                     {(loadingState && <CircularProgress size={24} />) || (
                         <FormattedMessage id="delete" />
                     )}

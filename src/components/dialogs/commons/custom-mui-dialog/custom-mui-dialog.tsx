@@ -93,9 +93,7 @@ const CustomMuiDialog: FunctionComponent<ICustomMuiDialog> = ({
                 </DialogTitle>
                 <DialogContent>{children}</DialogContent>
                 <DialogActions>
-                    <CancelButton onClick={handleCancel}>
-                        <FormattedMessage id="cancel" />
-                    </CancelButton>
+                    <CancelButton onClick={handleCancel} />
                     <SubmitButton
                         disabled={disabledSave}
                         onClick={handleSubmit(

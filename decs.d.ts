@@ -146,7 +146,7 @@ declare module '@gridsuite/commons-ui' {
         onClick: (() => void) | ((event: React.MouseEvent) => void);
         disabled?: boolean;
         variant?: string;
-        children?: ReactNode;
+        withCustomColor?: boolean;
     }>;
 
     export const FieldLabel: FunctionComponent<{
