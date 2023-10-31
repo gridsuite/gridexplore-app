@@ -31,7 +31,6 @@ import {
 import yup from '../../../utils/yup-config';
 import { FilterType } from '../../../../utils/elementType';
 import CustomReactQueryBuilder from '../../../utils/rqb-inputs/custom-react-query-builder';
-import { useIntl } from 'react-intl';
 import { FieldType } from './expert-filter.type';
 
 export const EXPERT_FILTER_QUERY = 'rules';
@@ -90,8 +89,6 @@ export function getExpertFilterEmptyFormData() {
 }
 
 function ExpertFilterForm() {
-    const intl = useIntl();
-
     const { getValues, setValue } = useFormContext();
 
     const openConfirmationPopup = () => {
@@ -126,7 +123,7 @@ function ExpertFilterForm() {
                 isSupportedEquipmentType(watchEquipmentType) && (
                     <CustomReactQueryBuilder
                         name={EXPERT_FILTER_QUERY}
-                        fields={fields(intl)[watchEquipmentType]}
+                        fields={fields()[watchEquipmentType]}
                     />
                 )}
         </Grid>

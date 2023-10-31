@@ -5,8 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export interface OperatorType {
-    [key: string]: { name: string; label: string };
+export enum OperatorType {
+    EQUALS = 'EQUALS',
+    NOT_EQUALS = 'NOT_EQUALS',
+    LOWER = 'LOWER',
+    LOWER_OR_EQUALS = 'LOWER_OR_EQUALS',
+    GREATER = 'GREATER',
+    GREATER_OR_EQUALS = 'GREATER_OR_EQUALS',
+    IS = 'IS',
+    CONTAINS = 'CONTAINS',
+    BEGINS_WITH = 'BEGINS_WITH',
+    ENDS_WITH = 'ENDS_WITH',
+}
+
+export enum CombinatorType {
+    AND = 'AND',
+    OR = 'OR',
 }
 
 export enum FieldType {
@@ -32,8 +46,8 @@ export enum DataType {
 }
 
 export interface RuleTypeExport {
-    field: string;
-    operator: string;
+    field: FieldType;
+    operator: OperatorType;
     value: string | number;
     dataType: DataType;
 }

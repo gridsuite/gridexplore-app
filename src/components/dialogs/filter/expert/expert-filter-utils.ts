@@ -19,6 +19,8 @@ import { EMPTY_GROUP, INCORRECT_RULE } from 'components/utils/field-constants';
 import { EMPTY_RULE } from '../../../utils/field-constants';
 import {
     DataType,
+    FieldType,
+    OperatorType,
     RuleGroupTypeExport,
     RuleTypeExport,
 } from './expert-filter.type';
@@ -69,10 +71,10 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
 export function getExpertRules(query: RuleGroupType): RuleGroupTypeExport {
     function transformRule(rule: RuleType): RuleTypeExport {
         return {
-            field: rule.field,
-            operator: rule.operator,
+            field: rule.field as FieldType,
+            operator: rule.operator as OperatorType,
             value: rule.value,
-            dataType: getDataType(rule.field),
+            dataType: getDataType(rule.field) as DataType,
         };
     }
 

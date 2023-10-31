@@ -12,8 +12,11 @@ import React, { useCallback, useMemo } from 'react';
 import { getComputedLanguage } from '../../../utils/language';
 import { MaterialValueEditor } from '@react-querybuilder/material';
 import { FieldType } from '../../dialogs/filter/expert/expert-filter.type';
+import { ENERGY_SOURCE_OPTIONS } from '../../dialogs/filter/expert/expert-filter-constants';
+import { useIntl } from 'react-intl';
 
 const ValueEditor = (props: ValueEditorProps) => {
+    const intl = useIntl();
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const countriesListCB = useCallback(() => {
         try {
@@ -39,6 +42,21 @@ const ValueEditor = (props: ValueEditorProps) => {
 
     if (props.field === FieldType.COUNTRY) {
         return <MaterialValueEditor {...props} values={getValues()} />;
+    } else if (props.field === FieldType.ENERGY_SOURCE) {
+        // translate energy source
+        return (
+            <MaterialValueEditor
+                {...props}
+                values={ENERGY_SOURCE_OPTIONS.map((v) => {
+                    return {
+                        name: v.name,
+                        label: intl
+                            ? intl.formatMessage({ id: v.label })
+                            : v.label,
+                    };
+                })}
+            />
+        );
     }
     return <MaterialValueEditor {...props} />;
 };

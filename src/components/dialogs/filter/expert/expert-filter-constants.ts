@@ -5,9 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { IntlShape } from 'react-intl';
+import {
+    CombinatorType,
+    DataType,
+    FieldType,
+    OperatorType,
+} from './expert-filter.type';
 import { Field } from 'react-querybuilder';
-import { DataType, FieldType, OperatorType } from './expert-filter.type';
 
 export const EXPERT_FILTER_EQUIPMENTS = {
     GENERATOR: {
@@ -20,27 +24,27 @@ export const EXPERT_FILTER_EQUIPMENTS = {
     },
 };
 
-export const OPERATOR_OPTIONS: OperatorType = {
-    EQUALS: { name: 'EQUALS', label: '=' },
-    NOT_EQUALS: { name: 'NOT_EQUALS', label: '!=' },
+export const OPERATOR_OPTIONS = {
+    EQUALS: { name: OperatorType.EQUALS, label: '=' },
+    NOT_EQUALS: { name: OperatorType.NOT_EQUALS, label: '!=' },
     // Number
-    LOWER: { name: 'LOWER', label: '<' },
-    LOWER_OR_EQUALS: { name: 'LOWER_OR_EQUALS', label: '<=' },
-    GREATER: { name: 'GREATER', label: '>' },
-    GREATER_OR_EQUALS: { name: 'GREATER_OR_EQUALS', label: '>=' },
+    LOWER: { name: OperatorType.LOWER, label: '<' },
+    LOWER_OR_EQUALS: { name: OperatorType.LOWER_OR_EQUALS, label: '<=' },
+    GREATER: { name: OperatorType.GREATER, label: '>' },
+    GREATER_OR_EQUALS: { name: OperatorType.GREATER_OR_EQUALS, label: '>=' },
     // String
-    IS: { name: 'IS', label: 'is' },
-    CONTAINS: { name: 'CONTAINS', label: 'contains' },
-    BEGINS_WITH: { name: 'BEGINS_WITH', label: 'beginsWith' },
-    ENDS_WITH: { name: 'ENDS_WITH', label: 'endsWith' },
+    IS: { name: OperatorType.IS, label: 'is' },
+    CONTAINS: { name: OperatorType.CONTAINS, label: 'contains' },
+    BEGINS_WITH: { name: OperatorType.BEGINS_WITH, label: 'beginsWith' },
+    ENDS_WITH: { name: OperatorType.ENDS_WITH, label: 'endsWith' },
 };
 
-export const COMBINATOR_OPTIONS: OperatorType = {
-    AND: { name: 'AND', label: 'AND' },
-    OR: { name: 'OR', label: 'OR' },
+export const COMBINATOR_OPTIONS = {
+    AND: { name: CombinatorType.AND, label: 'AND' },
+    OR: { name: CombinatorType.OR, label: 'OR' },
 };
 
-export const fields = (intl?: IntlShape): Record<string, Field[]> => {
+export const fields = (): Record<string, Field[]> => {
     return {
         GENERATOR: [
             {
@@ -94,14 +98,6 @@ export const fields = (intl?: IntlShape): Record<string, Field[]> => {
                 label: 'energySource',
                 dataType: DataType.ENUM,
                 valueEditorType: 'select',
-                values: ENERGY_SOURCE_OPTIONS.map((v) => {
-                    return {
-                        name: v.name,
-                        label: intl
-                            ? intl.formatMessage({ id: v.label })
-                            : v.label,
-                    };
-                }),
                 defaultValue: 'HYDRO',
             },
             {
