@@ -17,7 +17,11 @@ import { fields, OPERATOR_OPTIONS } from './expert-filter-constants';
 import { IntlShape } from 'react-intl';
 import { EMPTY_GROUP, INCORRECT_RULE } from 'components/utils/field-constants';
 import { EMPTY_RULE } from '../../../utils/field-constants';
-import { DataType } from './expert-filter.type';
+import {
+    DataType,
+    RuleGroupTypeExport,
+    RuleTypeExport,
+} from './expert-filter.type';
 
 const getDataType = (fieldName: string) => {
     const generatorField = fields().GENERATOR.find(
@@ -62,18 +66,6 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
     return defaultOperators;
 };
 
-interface RuleTypeExport {
-    field: string;
-    operator: string;
-    value: string | number;
-    dataType: string;
-}
-
-interface RuleGroupTypeExport {
-    combinator: string;
-    rules: (RuleTypeExport | RuleGroupTypeExport)[];
-}
-
 export function getExpertRules(query: RuleGroupType): RuleGroupTypeExport {
     function transformRule(rule: RuleType): RuleTypeExport {
         return {
@@ -84,11 +76,7 @@ export function getExpertRules(query: RuleGroupType): RuleGroupTypeExport {
         };
     }
 
-    function transformGroup(group: RuleGroupType): {
-        combinator: string;
-        dataType: string;
-        rules: (RuleGroupTypeExport | RuleTypeExport)[];
-    } {
+    function transformGroup(group: RuleGroupType): RuleGroupTypeExport {
         // Recursively transform the rules within the group
         const transformedRules = group.rules.map((ruleOrGroup) => {
             if ('rules' in ruleOrGroup) {

@@ -30,3 +30,16 @@ export enum DataType {
     BOOLEAN = 'BOOLEAN',
     COMBINATOR = 'COMBINATOR',
 }
+
+export interface RuleTypeExport {
+    field: string;
+    operator: string;
+    value: string | number;
+    dataType: DataType;
+}
+
+export interface RuleGroupTypeExport {
+    combinator: string;
+    dataType: DataType;
+    rules: (RuleTypeExport | RuleGroupTypeExport)[];
+}
