@@ -123,7 +123,7 @@ function ExpertFilterForm() {
                 isSupportedEquipmentType(watchEquipmentType) && (
                     <CustomReactQueryBuilder
                         name={EXPERT_FILTER_QUERY}
-                        fields={fields()[watchEquipmentType]}
+                        fields={fields[watchEquipmentType]}
                     />
                 )}
         </Grid>

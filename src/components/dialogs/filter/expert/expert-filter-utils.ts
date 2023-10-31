@@ -26,20 +26,20 @@ import {
 } from './expert-filter.type';
 
 const getDataType = (fieldName: string) => {
-    const generatorField = fields().GENERATOR.find(
+    const generatorField = fields.GENERATOR.find(
         (field) => field.name === fieldName
     );
-    const loadField = fields().LOAD.find((field) => field.name === fieldName);
+    const loadField = fields.LOAD.find((field) => field.name === fieldName);
 
     const field = generatorField || loadField;
     return field?.dataType;
 };
 
 export const getOperators = (fieldName: string, intl: IntlShape) => {
-    const generatorField = fields().GENERATOR.find(
+    const generatorField = fields.GENERATOR.find(
         (field) => field.name === fieldName
     );
-    const loadField = fields().LOAD.find((field) => field.name === fieldName);
+    const loadField = fields.LOAD.find((field) => field.name === fieldName);
 
     const field = generatorField || loadField;
     switch (field?.dataType) {
