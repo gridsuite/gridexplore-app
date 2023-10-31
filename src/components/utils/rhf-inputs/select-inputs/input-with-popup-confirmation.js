@@ -7,6 +7,7 @@ const InputWithPopupConfirmation = ({
     name,
     shouldOpenPopup, // condition to open popup confirmation
     resetOnConfirmation, // function to reset values in your form on confirmation,
+    message,
     ...props
 }) => {
     const [newValue, setNewValue] = useState(null);
@@ -42,7 +43,7 @@ const InputWithPopupConfirmation = ({
                 }}
             />
             <PopupConfirmationDialog
-                message={'changeTypeMessage'}
+                message={message}
                 openConfirmationPopup={openPopup}
                 setOpenConfirmationPopup={setOpenPopup}
                 handlePopupConfirmation={handlePopupConfirmation}

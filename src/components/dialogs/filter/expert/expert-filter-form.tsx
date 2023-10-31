@@ -119,6 +119,7 @@ function ExpertFilterForm() {
                     label={'equipmentType'}
                     shouldOpenPopup={openConfirmationPopup}
                     resetOnConfirmation={handleResetOnConfirmation}
+                    message={'changeTypeMessage'}
                 />
             </Grid>
             {watchEquipmentType &&
