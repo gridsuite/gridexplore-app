@@ -46,7 +46,7 @@ const BottomRightButtons = ({
                         </Tooltip>
                     </InnerColoredButton>
                 )}
-                <InnerColoredButton key={'addButton'} onClick={handleAddRow}>
+                <InnerColoredButton sx={{marginLeft: '550px'}} key={'addButton'} onClick={handleAddRow}>
                     <AddIcon />
                 </InnerColoredButton>
                 <InnerColoredButton
