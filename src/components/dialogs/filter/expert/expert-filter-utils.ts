@@ -18,6 +18,7 @@ import { IntlShape } from 'react-intl';
 import { EMPTY_GROUP, INCORRECT_RULE } from 'components/utils/field-constants';
 import { EMPTY_RULE } from '../../../utils/field-constants';
 import {
+    CombinatorType,
     DataType,
     FieldType,
     OperatorType,
@@ -89,7 +90,7 @@ export function getExpertRules(query: RuleGroupType): RuleGroupTypeExport {
         });
 
         return {
-            combinator: group.combinator,
+            combinator: group.combinator as CombinatorType,
             dataType: DataType.COMBINATOR,
             rules: transformedRules,
         };

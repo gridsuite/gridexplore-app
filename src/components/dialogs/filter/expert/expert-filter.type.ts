@@ -53,7 +53,7 @@ export interface RuleTypeExport {
 }
 
 export interface RuleGroupTypeExport {
-    combinator: string;
+    combinator: CombinatorType;
     dataType: DataType;
     rules: (RuleTypeExport | RuleGroupTypeExport)[];
 }

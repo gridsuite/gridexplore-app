@@ -32,16 +32,16 @@ const ValueEditor = (props: ValueEditorProps) => {
         }
     }, [languageLocal]);
 
-    const countriesList = useMemo(() => countriesListCB(), [countriesListCB]);
-
-    function getValues() {
-        return Object.keys(countriesList.object()).map((country) => {
-            return { name: country, label: countriesList.get(country) };
-        });
-    }
+    const countriesList = useMemo(
+        () =>
+            Object.keys(countriesListCB().object()).map((country) => {
+                return { name: country, label: countriesListCB().get(country) };
+            }),
+        [countriesListCB]
+    );
 
     if (props.field === FieldType.COUNTRY) {
-        return <MaterialValueEditor {...props} values={getValues()} />;
+        return <MaterialValueEditor {...props} values={countriesList} />;
     } else if (props.field === FieldType.ENERGY_SOURCE) {
         // translate energy source
         return (
