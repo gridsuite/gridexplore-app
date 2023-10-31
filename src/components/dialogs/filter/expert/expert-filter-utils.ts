@@ -13,10 +13,11 @@ import {
     ValidationMap,
 } from 'react-querybuilder';
 import { RuleType } from 'react-querybuilder/dist/cjs/react-querybuilder.cjs.development';
-import { DataType, fields, operatorType } from './expert-filter-constants';
+import { fields, OPERATOR_OPTIONS } from './expert-filter-constants';
 import { IntlShape } from 'react-intl';
 import { EMPTY_GROUP, INCORRECT_RULE } from 'components/utils/field-constants';
 import { EMPTY_RULE } from '../../../utils/field-constants';
+import { DataType } from './expert-filter.type';
 
 const getDataType = (fieldName: string) => {
     const generatorField = fields().GENERATOR.find(
@@ -38,25 +39,25 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
     switch (field?.dataType) {
         case DataType.STRING:
             return [
-                operatorType.CONTAINS,
-                operatorType.IS,
-                operatorType.BEGINS_WITH,
-                operatorType.ENDS_WITH,
+                OPERATOR_OPTIONS.CONTAINS,
+                OPERATOR_OPTIONS.IS,
+                OPERATOR_OPTIONS.BEGINS_WITH,
+                OPERATOR_OPTIONS.ENDS_WITH,
             ].map((operator) => ({
                 name: operator.name,
                 label: intl.formatMessage({ id: operator.label }),
             }));
         case DataType.NUMBER:
             return [
-                operatorType.EQUALS,
-                operatorType.GREATER,
-                operatorType.GREATER_OR_EQUALS,
-                operatorType.LOWER,
-                operatorType.LOWER_OR_EQUALS,
+                OPERATOR_OPTIONS.EQUALS,
+                OPERATOR_OPTIONS.GREATER,
+                OPERATOR_OPTIONS.GREATER_OR_EQUALS,
+                OPERATOR_OPTIONS.LOWER,
+                OPERATOR_OPTIONS.LOWER_OR_EQUALS,
             ];
         case DataType.BOOLEAN:
         case DataType.ENUM:
-            return [operatorType.EQUALS, operatorType.NOT_EQUALS];
+            return [OPERATOR_OPTIONS.EQUALS, OPERATOR_OPTIONS.NOT_EQUALS];
     }
     return defaultOperators;
 };

@@ -20,31 +20,32 @@ import {
 } from '../../dialogs/filter/expert/expert-filter-utils';
 import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { combinatorType } from '../../dialogs/filter/expert/expert-filter-constants';
 import { useFormContext } from 'react-hook-form';
 import RemoveButton from 'components/utils/rqb-inputs/remove-button';
 import CombinatorSelector from 'components/utils/rqb-inputs/combinator-selector';
 import AddButton from 'components/utils/rqb-inputs/add-button';
 import ValueEditor from './value-editor';
 import { EXPERT_FILTER_QUERY } from '../../dialogs/filter/expert/expert-filter-form';
+import { COMBINATOR_OPTIONS } from '../../dialogs/filter/expert/expert-filter-constants';
 
-interface ExpertFilterRQBProps {
+interface CustomReactQueryBuilderProps {
     name: string;
     fields: Field[];
 }
 
-const CustomReactQueryBuilder = (props: ExpertFilterRQBProps) => {
+const CustomReactQueryBuilder = (props: CustomReactQueryBuilderProps) => {
     const { getValues, setValue, watch } = useFormContext();
     const intl = useIntl();
 
     const query = watch(props.name);
 
-    const combinators: OptionList = [combinatorType.AND, combinatorType.OR].map(
-        (c) => ({
-            name: c.name,
-            label: intl.formatMessage({ id: c.label }),
-        })
-    );
+    const combinators: OptionList = [
+        COMBINATOR_OPTIONS.AND,
+        COMBINATOR_OPTIONS.OR,
+    ].map((c) => ({
+        name: c.name,
+        label: intl.formatMessage({ id: c.label }),
+    }));
 
     const handleQueryChange = (newQuery: RuleGroupTypeAny) => {
         const hasChanged =

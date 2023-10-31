@@ -10,8 +10,8 @@ import { useParameterState } from '../../dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import React, { useCallback, useMemo } from 'react';
 import { getComputedLanguage } from '../../../utils/language';
-import { FieldType } from '../../dialogs/filter/expert/expert-filter-constants';
 import { MaterialValueEditor } from '@react-querybuilder/material';
+import { FieldType } from '../../dialogs/filter/expert/expert-filter.type';
 
 const ValueEditor = (props: ValueEditorProps) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);

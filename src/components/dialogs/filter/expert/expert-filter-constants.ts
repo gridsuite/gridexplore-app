@@ -7,6 +7,7 @@
 
 import { IntlShape } from 'react-intl';
 import { Field } from 'react-querybuilder';
+import { DataType, FieldType, OperatorType } from './expert-filter.type';
 
 export const EXPERT_FILTER_EQUIPMENTS = {
     GENERATOR: {
@@ -19,11 +20,7 @@ export const EXPERT_FILTER_EQUIPMENTS = {
     },
 };
 
-interface OperatorType {
-    [key: string]: { name: string; label: string };
-}
-
-export const operatorType: OperatorType = {
+export const OPERATOR_OPTIONS: OperatorType = {
     EQUALS: { name: 'EQUALS', label: '=' },
     NOT_EQUALS: { name: 'NOT_EQUALS', label: '!=' },
     // Number
@@ -38,29 +35,7 @@ export const operatorType: OperatorType = {
     ENDS_WITH: { name: 'ENDS_WITH', label: 'endsWith' },
 };
 
-export enum FieldType {
-    ID = 'ID',
-    NAME = 'NAME',
-    NOMINAL_VOLTAGE = 'NOMINAL_VOLTAGE',
-    MIN_P = 'MIN_P',
-    MAX_P = 'MAX_P',
-    TARGET_V = 'TARGET_V',
-    TARGET_P = 'TARGET_P',
-    TARGET_Q = 'TARGET_Q',
-    ENERGY_SOURCE = 'ENERGY_SOURCE',
-    COUNTRY = 'COUNTRY',
-    VOLTAGE_REGULATOR_ON = 'VOLTAGE_REGULATOR_ON',
-}
-
-export enum DataType {
-    STRING = 'STRING',
-    ENUM = 'ENUM',
-    NUMBER = 'NUMBER',
-    BOOLEAN = 'BOOLEAN',
-    COMBINATOR = 'COMBINATOR',
-}
-
-export const combinatorType: OperatorType = {
+export const COMBINATOR_OPTIONS: OperatorType = {
     AND: { name: 'AND', label: 'AND' },
     OR: { name: 'OR', label: 'OR' },
 };

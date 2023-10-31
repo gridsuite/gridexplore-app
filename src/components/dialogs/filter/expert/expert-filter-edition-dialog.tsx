@@ -6,7 +6,6 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { FilterType } from '../../../../utils/elementType';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -126,14 +125,6 @@ const ExpertFilterEditionDialog = ({
             {isDataReady && <FilterForm />}
         </CustomMuiDialog>
     );
-};
-
-ExpertFilterEditionDialog.prototype = {
-    id: PropTypes.string,
-    name: PropTypes.string,
-    titleId: PropTypes.string.isRequired,
-    open: PropTypes.bool,
-    onClose: PropTypes.func.isRequired,
 };
 
 export default ExpertFilterEditionDialog;

@@ -23,16 +23,16 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { testQuery } from './expert-filter-utils';
 import { Generator, Load } from '../../../../utils/equipment-types';
 import {
-    combinatorType,
+    COMBINATOR_OPTIONS,
     EXPERT_FILTER_EQUIPMENTS,
     fields,
-    FieldType,
-    operatorType as OperatorType,
+    OPERATOR_OPTIONS,
 } from './expert-filter-constants';
 import yup from '../../../utils/yup-config';
 import { FilterType } from '../../../../utils/elementType';
 import CustomReactQueryBuilder from '../../../utils/rqb-inputs/custom-react-query-builder';
 import { useIntl } from 'react-intl';
+import { FieldType } from './expert-filter.type';
 
 export const EXPERT_FILTER_QUERY = 'rules';
 
@@ -72,12 +72,12 @@ function isSupportedEquipmentType(equipmentType: string): boolean {
 }
 
 const defaultQuery = {
-    combinator: combinatorType.AND.name,
+    combinator: COMBINATOR_OPTIONS.AND.name,
     rules: [
         {
             id: crypto.randomUUID(),
             field: FieldType.ID,
-            operator: OperatorType.CONTAINS.name,
+            operator: OPERATOR_OPTIONS.CONTAINS.name,
             value: '',
         },
     ],
