@@ -20,7 +20,7 @@ import {
 } from '../../dialogs/filter/expert/expert-filter-utils';
 import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import RemoveButton from 'components/utils/rqb-inputs/remove-button';
 import CombinatorSelector from 'components/utils/rqb-inputs/combinator-selector';
 import AddButton from 'components/utils/rqb-inputs/add-button';
@@ -34,10 +34,12 @@ interface CustomReactQueryBuilderProps {
 }
 
 const CustomReactQueryBuilder = (props: CustomReactQueryBuilderProps) => {
-    const { getValues, setValue, watch } = useFormContext();
+    const { getValues, setValue } = useFormContext();
     const intl = useIntl();
 
-    const query = watch(props.name);
+    const query = useWatch({
+        name: props.name,
+    });
 
     const combinators: OptionList = [
         COMBINATOR_OPTIONS.AND,
