@@ -44,82 +44,90 @@ export const COMBINATOR_OPTIONS = {
     OR: { name: CombinatorType.OR, label: 'OR' },
 };
 
+export const FIELDS_OPTIONS = {
+    ID: {
+        name: FieldType.ID,
+        label: 'id',
+        dataType: DataType.STRING,
+    },
+    NAME: {
+        name: FieldType.NAME,
+        label: 'name',
+        dataType: DataType.STRING,
+    },
+    NOMINAL_VOLTAGE: {
+        name: FieldType.NOMINAL_VOLTAGE,
+        label: 'nominalVoltage',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    MIN_P: {
+        name: FieldType.MIN_P,
+        label: 'minP',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    MAX_P: {
+        name: FieldType.MAX_P,
+        label: 'maxP',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    TARGET_P: {
+        name: FieldType.TARGET_P,
+        label: 'targetP',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    TARGET_V: {
+        name: FieldType.TARGET_V,
+        label: 'targetV',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    TARGET_Q: {
+        name: FieldType.TARGET_Q,
+        label: 'targetQ',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    ENERGY_SOURCE: {
+        name: FieldType.ENERGY_SOURCE,
+        label: 'energySource',
+        dataType: DataType.ENUM,
+        valueEditorType: 'select',
+        defaultValue: 'HYDRO',
+    },
+    COUNTRY: {
+        name: FieldType.COUNTRY,
+        label: 'country',
+        dataType: DataType.ENUM,
+        valueEditorType: 'select',
+        defaultValue: 'AF',
+    },
+    VOLTAGE_REGULATOR_ON: {
+        name: FieldType.VOLTAGE_REGULATOR_ON,
+        label: 'voltageRegulatorOn',
+        dataType: DataType.BOOLEAN,
+        valueEditorType: 'checkbox',
+    },
+};
+
 export const fields: Record<string, Field[]> = {
     GENERATOR: [
-        {
-            name: FieldType.ID,
-            label: 'id',
-            dataType: DataType.STRING,
-        },
-        {
-            name: FieldType.NAME,
-            label: 'name',
-            dataType: DataType.STRING,
-        },
-        {
-            name: FieldType.NOMINAL_VOLTAGE,
-            label: 'nominalVoltage',
-            dataType: DataType.NUMBER,
-            inputType: 'number',
-        },
-        {
-            name: FieldType.MIN_P,
-            label: 'minP',
-            dataType: DataType.NUMBER,
-            inputType: 'number',
-        },
-        {
-            name: FieldType.MAX_P,
-            label: 'maxP',
-            dataType: DataType.NUMBER,
-            inputType: 'number',
-        },
-        {
-            name: FieldType.TARGET_P,
-            label: 'targetP',
-            dataType: DataType.NUMBER,
-            inputType: 'number',
-        },
-        {
-            name: FieldType.TARGET_V,
-            label: 'targetV',
-            dataType: DataType.NUMBER,
-            inputType: 'number',
-        },
-        {
-            name: FieldType.TARGET_Q,
-            label: 'targetQ',
-            dataType: DataType.NUMBER,
-            inputType: 'number',
-        },
-        {
-            name: FieldType.ENERGY_SOURCE,
-            label: 'energySource',
-            dataType: DataType.ENUM,
-            valueEditorType: 'select',
-            defaultValue: 'HYDRO',
-        },
-        {
-            name: FieldType.COUNTRY,
-            label: 'country',
-            dataType: DataType.ENUM,
-            valueEditorType: 'select',
-            defaultValue: 'AF',
-        },
-        {
-            name: FieldType.VOLTAGE_REGULATOR_ON,
-            label: 'voltageRegulatorOn',
-            dataType: DataType.BOOLEAN,
-            valueEditorType: 'checkbox',
-        },
+        FIELDS_OPTIONS.ID,
+        FIELDS_OPTIONS.NAME,
+        FIELDS_OPTIONS.NOMINAL_VOLTAGE,
+        FIELDS_OPTIONS.MIN_P,
+        FIELDS_OPTIONS.MAX_P,
+        FIELDS_OPTIONS.TARGET_P,
+        FIELDS_OPTIONS.TARGET_V,
+        FIELDS_OPTIONS.TARGET_Q,
+        FIELDS_OPTIONS.ENERGY_SOURCE,
+        FIELDS_OPTIONS.COUNTRY,
+        FIELDS_OPTIONS.VOLTAGE_REGULATOR_ON,
     ],
-    LOAD: [
-        {
-            name: FieldType.ID,
-            label: 'id',
-            dataType: DataType.STRING,
-        },
-    ],
+    LOAD: [FIELDS_OPTIONS.ID],
 };
 
 export const ENERGY_SOURCE_OPTIONS = [

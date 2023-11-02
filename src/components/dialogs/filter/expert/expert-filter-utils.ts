@@ -13,7 +13,7 @@ import {
     ValidationMap,
 } from 'react-querybuilder';
 import { RuleType } from 'react-querybuilder/dist/cjs/react-querybuilder.cjs.development';
-import { fields, OPERATOR_OPTIONS } from './expert-filter-constants';
+import { FIELDS_OPTIONS, OPERATOR_OPTIONS } from './expert-filter-constants';
 import { IntlShape } from 'react-intl';
 import { EMPTY_GROUP, INCORRECT_RULE } from 'components/utils/field-constants';
 import { EMPTY_RULE } from '../../../utils/field-constants';
@@ -27,22 +27,18 @@ import {
 } from './expert-filter.type';
 
 const getDataType = (fieldName: string) => {
-    const generatorField = fields.GENERATOR.find(
+    const field = Object.values(FIELDS_OPTIONS).find(
         (field) => field.name === fieldName
     );
-    const loadField = fields.LOAD.find((field) => field.name === fieldName);
 
-    const field = generatorField || loadField;
     return field?.dataType;
 };
 
 export const getOperators = (fieldName: string, intl: IntlShape) => {
-    const generatorField = fields.GENERATOR.find(
+    const field = Object.values(FIELDS_OPTIONS).find(
         (field) => field.name === fieldName
     );
-    const loadField = fields.LOAD.find((field) => field.name === fieldName);
 
-    const field = generatorField || loadField;
     switch (field?.dataType) {
         case DataType.STRING:
             return [
