@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
     EMPTY_GROUP,
     EMPTY_RULE,
@@ -91,16 +91,16 @@ export function getExpertFilterEmptyFormData() {
 function ExpertFilterForm() {
     const { getValues, setValue } = useFormContext();
 
-    const openConfirmationPopup = () => {
+    const openConfirmationPopup = useCallback(() => {
         return (
             formatQuery(getValues(EXPERT_FILTER_QUERY), 'json_without_ids') !==
             formatQuery(defaultQuery, 'json_without_ids')
         );
-    };
+    }, [getValues]);
 
-    const handleResetOnConfirmation = () => {
+    const handleResetOnConfirmation = useCallback(() => {
         setValue(EXPERT_FILTER_QUERY, defaultQuery);
-    };
+    }, [setValue]);
 
     const watchEquipmentType = useWatch({
         name: EQUIPMENT_TYPE,

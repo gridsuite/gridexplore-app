@@ -25,7 +25,7 @@ import CombinatorSelector from 'components/utils/rqb-inputs/combinator-selector'
 import AddButton from 'components/utils/rqb-inputs/add-button';
 import ValueEditor from './value-editor';
 import { EXPERT_FILTER_QUERY } from '../../dialogs/filter/expert/expert-filter-form';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { COMBINATOR_OPTIONS } from '../../dialogs/filter/expert/expert-filter-constants';
 
 interface CustomReactQueryBuilderProps {
@@ -39,15 +39,20 @@ const CustomReactQueryBuilder = (props: CustomReactQueryBuilderProps) => {
 
     const query = watch(props.name);
 
-    const handleQueryChange = (newQuery: RuleGroupTypeAny) => {
-        const hasChanged =
-            formatQuery(getValues(EXPERT_FILTER_QUERY), 'json_without_ids') !==
-            formatQuery(newQuery, 'json_without_ids');
-        setValue(props.name, newQuery, {
-            shouldDirty: hasChanged,
-            shouldValidate: hasChanged,
-        });
-    };
+    const handleQueryChange = useCallback(
+        (newQuery: RuleGroupTypeAny) => {
+            const hasChanged =
+                formatQuery(
+                    getValues(EXPERT_FILTER_QUERY),
+                    'json_without_ids'
+                ) !== formatQuery(newQuery, 'json_without_ids');
+            setValue(props.name, newQuery, {
+                shouldDirty: hasChanged,
+                shouldValidate: hasChanged,
+            });
+        },
+        [getValues, setValue, props.name]
+    );
 
     const combinators = useMemo(() => {
         return Object.values(COMBINATOR_OPTIONS).map((c) => ({
