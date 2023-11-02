@@ -10,7 +10,6 @@ import { QueryBuilderMaterial } from '@react-querybuilder/material';
 import {
     Field,
     formatQuery,
-    OptionList,
     QueryBuilder,
     RuleGroupTypeAny,
 } from 'react-querybuilder';
