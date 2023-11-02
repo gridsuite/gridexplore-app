@@ -50,9 +50,7 @@ const ValueEditor = (props: ValueEditorProps) => {
                 values={ENERGY_SOURCE_OPTIONS.map((v) => {
                     return {
                         name: v.name,
-                        label: intl
-                            ? intl.formatMessage({ id: v.label })
-                            : v.label,
+                        label: intl.formatMessage({ id: v.label }),
                     };
                 })}
             />
