@@ -47,6 +47,9 @@ import { PARAM_THEME } from '../utils/config-params';
 const lightTheme = createTheme({
     palette: {
         mode: 'light',
+        secondary: {
+            main: '#000000DE',
+        },
     },
     arrow: {
         fill: '#212121',
@@ -86,6 +89,9 @@ const lightTheme = createTheme({
 const darkTheme = createTheme({
     palette: {
         mode: 'dark',
+        secondary: {
+            main: '#FFFFFF',
+        },
     },
     arrow: {
         fill: 'white',
