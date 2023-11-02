@@ -26,7 +26,6 @@ import CombinatorSelector from 'components/utils/rqb-inputs/combinator-selector'
 import AddButton from 'components/utils/rqb-inputs/add-button';
 import ValueEditor from './value-editor';
 import { EXPERT_FILTER_QUERY } from '../../dialogs/filter/expert/expert-filter-form';
-import { COMBINATOR_OPTIONS } from '../../dialogs/filter/expert/expert-filter-constants';
 
 interface CustomReactQueryBuilderProps {
     name: string;
@@ -40,14 +39,6 @@ const CustomReactQueryBuilder = (props: CustomReactQueryBuilderProps) => {
     const query = useWatch({
         name: props.name,
     });
-
-    const combinators: OptionList = [
-        COMBINATOR_OPTIONS.AND,
-        COMBINATOR_OPTIONS.OR,
-    ].map((c) => ({
-        name: c.name,
-        label: intl.formatMessage({ id: c.label }),
-    }));
 
     const handleQueryChange = (newQuery: RuleGroupTypeAny) => {
         const hasChanged =
@@ -68,7 +59,6 @@ const CustomReactQueryBuilder = (props: CustomReactQueryBuilderProps) => {
                         getOperators={(fieldName) =>
                             getOperators(fieldName, intl)
                         }
-                        combinators={combinators}
                         validator={queryValidator}
                         controlClassnames={{
                             queryBuilder: 'queryBuilder-branches',
