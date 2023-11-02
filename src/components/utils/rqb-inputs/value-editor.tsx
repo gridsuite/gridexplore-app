@@ -6,44 +6,19 @@
  */
 
 import { ValueEditorProps } from 'react-querybuilder';
-import { useParameterState } from '../../dialogs/parameters-dialog';
-import { PARAM_LANGUAGE } from '../../../utils/config-params';
-import React, { useCallback, useMemo } from 'react';
-import { getComputedLanguage } from '../../../utils/language';
+import React from 'react';
 import { MaterialValueEditor } from '@react-querybuilder/material';
 import { FieldType } from '../../dialogs/filter/expert/expert-filter.type';
 import { ENERGY_SOURCE_OPTIONS } from '../../dialogs/filter/expert/expert-filter-constants';
 import { useIntl } from 'react-intl';
+import CountryValueEditor from './country-value-editor';
 
 const ValueEditor = (props: ValueEditorProps) => {
     const intl = useIntl();
-    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
-    const countriesListCB = useCallback(() => {
-        try {
-            return require('localized-countries')(
-                require('localized-countries/data/' +
-                    getComputedLanguage(languageLocal).substr(0, 2))
-            );
-        } catch (error) {
-            // fallback to english if no localised list found
-            return require('localized-countries')(
-                require('localized-countries/data/en')
-            );
-        }
-    }, [languageLocal]);
-
-    const countriesList = useMemo(
-        () =>
-            Object.keys(countriesListCB().object()).map((country) => {
-                return { name: country, label: countriesListCB().get(country) };
-            }),
-        [countriesListCB]
-    );
 
     if (props.field === FieldType.COUNTRY) {
-        return <MaterialValueEditor {...props} values={countriesList} />;
+        return <CountryValueEditor {...props} />;
     } else if (props.field === FieldType.ENERGY_SOURCE) {
-        // translate energy source
         return (
             <MaterialValueEditor
                 {...props}

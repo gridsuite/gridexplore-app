@@ -1,25 +1,10 @@
-import { useParameterState } from '../../../dialogs/parameters-dialog';
-import { PARAM_LANGUAGE } from '../../../../utils/config-params';
-import React, { useCallback, useMemo } from 'react';
-import { getComputedLanguage } from '../../../../utils/language';
+import React, { useMemo } from 'react';
 import { Chip } from '@mui/material';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { useCountriesListCB } from '../../dialog-utils';
 
 export const CountriesInput = ({ name, label }) => {
-    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
-    const countriesListCB = useCallback(() => {
-        try {
-            return require('localized-countries')(
-                require('localized-countries/data/' +
-                    getComputedLanguage(languageLocal).substr(0, 2))
-            );
-        } catch (error) {
-            // fallback to english if no localised list found
-            return require('localized-countries')(
-                require('localized-countries/data/en')
-            );
-        }
-    }, [languageLocal]);
+    const countriesListCB = useCountriesListCB();
 
     const countriesList = useMemo(() => countriesListCB(), [countriesListCB]);
 
