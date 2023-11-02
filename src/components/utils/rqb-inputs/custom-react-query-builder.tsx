@@ -25,6 +25,8 @@ import CombinatorSelector from 'components/utils/rqb-inputs/combinator-selector'
 import AddButton from 'components/utils/rqb-inputs/add-button';
 import ValueEditor from './value-editor';
 import { EXPERT_FILTER_QUERY } from '../../dialogs/filter/expert/expert-filter-form';
+import { useMemo } from 'react';
+import { COMBINATOR_OPTIONS } from '../../dialogs/filter/expert/expert-filter-constants';
 
 interface CustomReactQueryBuilderProps {
     name: string;
@@ -49,6 +51,13 @@ const CustomReactQueryBuilder = (props: CustomReactQueryBuilderProps) => {
         });
     };
 
+    const combinators = useMemo(() => {
+        return Object.values(COMBINATOR_OPTIONS).map((c) => ({
+            name: c.name,
+            label: intl.formatMessage({ id: c.label }),
+        }));
+    }, [intl]);
+
     return (
         <>
             <Grid item xs={12}>
@@ -57,6 +66,7 @@ const CustomReactQueryBuilder = (props: CustomReactQueryBuilderProps) => {
                         fields={props.fields}
                         query={query}
                         addRuleToNewGroups={true}
+                        combinators={combinators}
                         onQueryChange={handleQueryChange}
                         getOperators={(fieldName) =>
                             getOperators(fieldName, intl)
