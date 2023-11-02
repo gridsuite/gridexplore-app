@@ -10,6 +10,7 @@ import { frontToBackTweak } from './criteria-based/criteria-based-filter-utils';
 import { EQUIPMENT_ID, NAME } from '../../utils/field-constants';
 import { Generator, Load } from '../../../utils/equipment-types';
 import { DISTRIBUTION_KEY } from './explicit-naming/explicit-naming-filter-form';
+import { getExpertRules } from './expert/expert-filter-utils';
 
 export const saveExplicitNamingFilter = (
     tableValues,
@@ -84,4 +85,49 @@ export const saveCriteriaBasedFilter = (
         .catch((error) => {
             onError(error.message);
         });
+};
+
+export const saveExpertFilter = (
+    id,
+    query,
+    equipmentType,
+    name,
+    isFilterCreation,
+    activeDirectory,
+    onClose,
+    onError
+) => {
+    if (isFilterCreation) {
+        createFilter(
+            {
+                type: FilterType.EXPERT.id,
+                equipmentType: equipmentType,
+                rules: getExpertRules(query),
+            },
+            name,
+            activeDirectory
+        )
+            .then(() => {
+                onClose();
+            })
+            .catch((error) => {
+                onError(error.message);
+            });
+    } else {
+        saveFilter(
+            {
+                id: id,
+                type: FilterType.EXPERT.id,
+                equipmentType: equipmentType,
+                rules: getExpertRules(query),
+            },
+            name
+        )
+            .then(() => {
+                onClose();
+            })
+            .catch((error) => {
+                onError(error.message);
+            });
+    }
 };
