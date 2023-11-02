@@ -43,7 +43,10 @@ const CustomReactQueryBuilder = (props: CustomReactQueryBuilderProps) => {
         const hasChanged =
             formatQuery(getValues(EXPERT_FILTER_QUERY), 'json_without_ids') !==
             formatQuery(newQuery, 'json_without_ids');
-        setValue(props.name, newQuery, { shouldDirty: hasChanged });
+        setValue(props.name, newQuery, {
+            shouldDirty: hasChanged,
+            shouldValidate: hasChanged,
+        });
     };
 
     return (
