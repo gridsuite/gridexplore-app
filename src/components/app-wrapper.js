@@ -47,7 +47,7 @@ import { PARAM_THEME } from '../utils/config-params';
 const lightTheme = createTheme({
     palette: {
         mode: 'light',
-        secondary: {
+        customButton: {
             main: '#000000DE',
         },
     },
@@ -89,7 +89,7 @@ const lightTheme = createTheme({
 const darkTheme = createTheme({
     palette: {
         mode: 'dark',
-        secondary: {
+        customButton: {
             main: '#FFFFFF',
         },
     },

@@ -219,7 +219,7 @@ const DeleteDialog = ({
                 <Button
                     onClick={handleClick}
                     disabled={loadingState}
-                    color={'secondary'}
+                    color={'customButton'}
                 >
                     {(loadingState && <CircularProgress size={24} />) || (
                         <FormattedMessage id="delete" />

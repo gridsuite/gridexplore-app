@@ -54,7 +54,7 @@ const ReplaceWithScriptDialog = ({ id, open, onClose, onClick, title }) => {
                     variant="outlined"
                     withCustomColor={true}
                 />
-                <Button onClick={handleClick} color={'secondary'}>
+                <Button onClick={handleClick} color={'customButton'}>
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
