@@ -9,6 +9,7 @@ import React from 'react';
 import { CancelButton } from '@gridsuite/commons-ui';
 
 const PopupConfirmationDialog = ({
+    message,
     openConfirmationPopup,
     setOpenConfirmationPopup,
     handlePopupConfirmation,
@@ -23,7 +24,7 @@ const PopupConfirmationDialog = ({
             </DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    <FormattedMessage id={'changeTypeMessage'} />
+                    <FormattedMessage id={message} />
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

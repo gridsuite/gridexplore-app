@@ -183,6 +183,7 @@ function ExplicitNamingFilterForm() {
                     label={'equipmentType'}
                     shouldOpenPopup={openConfirmationPopup}
                     resetOnConfirmation={handleResetOnConfirmation}
+                    message={'changeTypeMessage'}
                 />
             </Grid>
             {watchEquipmentType && (

@@ -39,3 +39,6 @@ export const CURRENT_PARAMETERS = 'currentParameters';
 export const API_CALL = 'apiCall';
 export const CASE_NAME = 'caseName';
 export const DIRECTORY = 'directory';
+export const EMPTY_RULE = 'emptyRule';
+export const EMPTY_GROUP = 'emptyGroup';
+export const INCORRECT_RULE = 'incorrectRule';
