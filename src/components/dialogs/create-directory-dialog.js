@@ -20,6 +20,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import { ElementType } from '../../utils/elementType';
 import { useNameField } from './field-hook';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 /**
  * Dialog to create a directory
@@ -101,9 +102,7 @@ export const CreateDirectoryDialog = ({
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>
-                    <FormattedMessage id="cancel" />
-                </Button>
+                <CancelButton onClick={handleClose} />
                 <Button
                     disabled={!canCreate()}
                     onClick={handleClick}

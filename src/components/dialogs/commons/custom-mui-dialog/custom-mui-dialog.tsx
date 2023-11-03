@@ -1,13 +1,15 @@
 import React, { FunctionComponent } from 'react';
 import { FieldErrors, FormProvider } from 'react-hook-form';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import { Grid, LinearProgress } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import { SubmitButton } from '@gridsuite/commons-ui';
+import {
+    DialogActions,
+    DialogContent,
+    Grid,
+    LinearProgress,
+    Dialog,
+    DialogTitle,
+} from '@mui/material';
+import { CancelButton, SubmitButton } from '@gridsuite/commons-ui';
 
 interface ICustomMuiDialog {
     open: boolean;
@@ -91,9 +93,7 @@ const CustomMuiDialog: FunctionComponent<ICustomMuiDialog> = ({
                 </DialogTitle>
                 <DialogContent>{children}</DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCancel}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
+                    <CancelButton onClick={handleCancel} />
                     <SubmitButton
                         disabled={disabledSave}
                         onClick={handleSubmit(

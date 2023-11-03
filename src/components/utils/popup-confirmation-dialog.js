@@ -6,6 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 const PopupConfirmationDialog = ({
     message,
@@ -27,9 +28,7 @@ const PopupConfirmationDialog = ({
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => setOpenConfirmationPopup(false)}>
-                    <FormattedMessage id="cancel" />
-                </Button>
+                <CancelButton onClick={() => setOpenConfirmationPopup(false)} />
                 <Button onClick={handlePopupConfirmation} variant="outlined">
                     <FormattedMessage id="validate" />
                 </Button>

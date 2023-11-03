@@ -13,6 +13,7 @@ import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 /**
  * Dialog to replace a filters contingency list with a script contingency list or a filter with a script
@@ -48,10 +49,12 @@ const ReplaceWithScriptDialog = ({ id, open, onClose, onClick, title }) => {
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} variant="outlined">
-                    <FormattedMessage id="cancel" />
-                </Button>
-                <Button onClick={handleClick}>
+                <CancelButton
+                    onClick={handleClose}
+                    variant="outlined"
+                    withCustomColor={false}
+                />
+                <Button onClick={handleClick} color={'customButton'}>
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
