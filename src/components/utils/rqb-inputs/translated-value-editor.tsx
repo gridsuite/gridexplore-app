@@ -6,23 +6,22 @@
  */
 
 import { ValueEditorProps } from 'react-querybuilder';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { MaterialValueEditor } from '@react-querybuilder/material';
 import { useIntl } from 'react-intl';
 
 const TranslatedValueEditor = (props: ValueEditorProps) => {
     const intl = useIntl();
 
-    return (
-        <MaterialValueEditor
-            {...props}
-            values={props.values?.map((v) => {
-                return {
-                    name: v.name,
-                    label: intl.formatMessage({ id: v.label }),
-                };
-            })}
-        />
-    );
+    const translatedValues = useMemo(() => {
+        return props.values?.map((v) => {
+            return {
+                name: v.name,
+                label: intl.formatMessage({ id: v.label }),
+            };
+        });
+    }, [intl, props.values]);
+
+    return <MaterialValueEditor {...props} values={translatedValues} />;
 };
 export default TranslatedValueEditor;
