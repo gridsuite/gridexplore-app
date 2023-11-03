@@ -1,9 +1,5 @@
 import { Grid } from '@mui/material';
 import { getIn } from 'yup';
-import { useParameterState } from '../dialogs/parameters-dialog';
-import { useCallback } from 'react';
-import { getComputedLanguage } from '../../utils/language';
-import { PARAM_LANGUAGE } from '../../utils/config-params';
 
 export const isFieldRequired = (fieldName, schema, values) => {
     const { schema: fieldSchema, parent: parentValues } =
@@ -37,21 +33,4 @@ export const toFloatOrNullValue = (value) => {
     }
     const tmp = value?.replace(',', '.') || '';
     return parseFloat(tmp) || null;
-};
-
-export const useCountriesListCB = () => {
-    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
-    return useCallback(() => {
-        try {
-            return require('localized-countries')(
-                require('localized-countries/data/' +
-                    getComputedLanguage(languageLocal).substr(0, 2))
-            );
-        } catch (error) {
-            // fallback to English if no localized list is found
-            return require('localized-countries')(
-                require('localized-countries/data/en')
-            );
-        }
-    }, [languageLocal]);
 };

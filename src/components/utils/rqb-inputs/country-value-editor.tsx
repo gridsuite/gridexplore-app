@@ -6,12 +6,27 @@
  */
 
 import { ValueEditorProps } from 'react-querybuilder';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { MaterialValueEditor } from '@react-querybuilder/material';
-import { useCountriesListCB } from '../dialog-utils';
+import { useParameterState } from '../../dialogs/parameters-dialog';
+import { PARAM_LANGUAGE } from '../../../utils/config-params';
+import { getComputedLanguage } from '../../../utils/language';
 
 const CountryValueEditor = (props: ValueEditorProps) => {
-    const countriesListCB = useCountriesListCB();
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
+    const countriesListCB = useCallback(() => {
+        try {
+            return require('localized-countries')(
+                require('localized-countries/data/' +
+                    getComputedLanguage(languageLocal).substr(0, 2))
+            );
+        } catch (error) {
+            // fallback to English if no localized list is found
+            return require('localized-countries')(
+                require('localized-countries/data/en')
+            );
+        }
+    }, [languageLocal]);
 
     const countriesList = useMemo(
         () =>
