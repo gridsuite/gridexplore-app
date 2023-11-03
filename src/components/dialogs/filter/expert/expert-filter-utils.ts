@@ -95,6 +95,19 @@ export function getExpertRules(query: RuleGroupType): RuleGroupTypeExport {
     return transformGroup(query);
 }
 
+export function countRules(query: RuleGroupTypeAny): number {
+    if ('rules' in query) {
+        const group = query as RuleGroupType;
+        return group.rules.reduce(
+            (sum, ruleOrGroup) =>
+                sum + countRules(ruleOrGroup as RuleGroupTypeAny),
+            0
+        );
+    } else {
+        return 1;
+    }
+}
+
 export const testQuery = (check: string, query: RuleGroupTypeAny): boolean => {
     const queryValidatorResult = queryValidator(query);
     return !Object.values(queryValidatorResult).some((ruleValidation) => {

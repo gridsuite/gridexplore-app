@@ -14,6 +14,7 @@ import {
     RuleGroupTypeAny,
 } from 'react-querybuilder';
 import {
+    countRules,
     getOperators,
     queryValidator,
 } from '../../dialogs/filter/expert/expert-filter-utils';
@@ -41,14 +42,15 @@ const CustomReactQueryBuilder = (props: CustomReactQueryBuilderProps) => {
 
     const handleQueryChange = useCallback(
         (newQuery: RuleGroupTypeAny) => {
-            const hasChanged =
-                formatQuery(
-                    getValues(EXPERT_FILTER_QUERY),
-                    'json_without_ids'
-                ) !== formatQuery(newQuery, 'json_without_ids');
+            const oldQuery = getValues(EXPERT_FILTER_QUERY);
+            const hasQueryChanged =
+                formatQuery(oldQuery, 'json_without_ids') !==
+                formatQuery(newQuery, 'json_without_ids');
+            const hasNumberRulesChanged =
+                countRules(newQuery) !== countRules(oldQuery);
             setValue(props.name, newQuery, {
-                shouldDirty: hasChanged,
-                shouldValidate: hasChanged,
+                shouldDirty: hasQueryChanged,
+                shouldValidate: hasQueryChanged && !hasNumberRulesChanged,
             });
         },
         [getValues, setValue, props.name]

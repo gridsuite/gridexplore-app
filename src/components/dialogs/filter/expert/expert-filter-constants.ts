@@ -24,6 +24,15 @@ export const EXPERT_FILTER_EQUIPMENTS = {
     },
 };
 
+export const ENERGY_SOURCE_OPTIONS = [
+    { name: 'HYDRO', label: 'Hydro' },
+    { name: 'NUCLEAR', label: 'Nuclear' },
+    { name: 'WIND', label: 'Wind' },
+    { name: 'THERMAL', label: 'Thermal' },
+    { name: 'SOLAR', label: 'Solar' },
+    { name: 'OTHER', label: 'Other' },
+];
+
 export const OPERATOR_OPTIONS = {
     EQUALS: { name: OperatorType.EQUALS, label: '=' },
     NOT_EQUALS: { name: OperatorType.NOT_EQUALS, label: '!=' },
@@ -95,6 +104,7 @@ export const FIELDS_OPTIONS = {
         name: FieldType.ENERGY_SOURCE,
         label: 'energySource',
         dataType: DataType.ENUM,
+        values: ENERGY_SOURCE_OPTIONS,
         valueEditorType: 'select',
         defaultValue: 'HYDRO',
     },
@@ -129,12 +139,3 @@ export const fields: Record<string, Field[]> = {
     ],
     LOAD: [FIELDS_OPTIONS.ID],
 };
-
-export const ENERGY_SOURCE_OPTIONS = [
-    { name: 'HYDRO', label: 'Hydro' },
-    { name: 'NUCLEAR', label: 'Nuclear' },
-    { name: 'WIND', label: 'Wind' },
-    { name: 'THERMAL', label: 'Thermal' },
-    { name: 'SOLAR', label: 'Solar' },
-    { name: 'OTHER', label: 'Other' },
-];
