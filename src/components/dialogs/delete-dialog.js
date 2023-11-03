@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress';
-import { OverflowableText } from '@gridsuite/commons-ui';
+import { CancelButton, OverflowableText } from '@gridsuite/commons-ui';
 
 /**
  * Dialog to delete an element
@@ -210,14 +210,17 @@ const DeleteDialog = ({
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <Button
+                <CancelButton
                     onClick={handleClose}
                     variant="outlined"
                     disabled={loadingState}
+                    withCustomColor={false}
+                />
+                <Button
+                    onClick={handleClick}
+                    disabled={loadingState}
+                    color={'customButton'}
                 >
-                    <FormattedMessage id="cancel" />
-                </Button>
-                <Button onClick={handleClick} disabled={loadingState}>
                     {(loadingState && <CircularProgress size={24} />) || (
                         <FormattedMessage id="delete" />
                     )}
