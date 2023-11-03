@@ -20,6 +20,7 @@ import { FilterType } from '../../../../utils/elementType';
 import { NumericEditor } from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/numericEditor';
 import { toFloatOrNullValue } from '../../../utils/dialog-utils';
 import InputWithPopupConfirmation from '../../../utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
+import { v4 as uuid4 } from 'uuid';
 
 export const FILTER_EQUIPMENTS_ATTRIBUTES = 'filterEquipmentsAttributes';
 export const DISTRIBUTION_KEY = 'distributionKey';
@@ -82,7 +83,7 @@ interface FilterTableRow {
 
 function makeDefaultRowData(): FilterTableRow {
     return {
-        [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+        [AG_GRID_ROW_UUID]: uuid4(),
         [EQUIPMENT_ID]: '',
         [DISTRIBUTION_KEY]: null,
     };
@@ -153,7 +154,7 @@ function ExplicitNamingFilterForm() {
         if (csvData) {
             return csvData.map((value: any) => {
                 return {
-                    [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+                    [AG_GRID_ROW_UUID]: uuid4(),
                     [EQUIPMENT_ID]: value[0]?.trim(),
                     [DISTRIBUTION_KEY]: toFloatOrNullValue(value[1]?.trim()),
                 };

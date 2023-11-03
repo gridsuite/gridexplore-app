@@ -32,6 +32,7 @@ import yup from '../../../utils/yup-config';
 import { FilterType } from '../../../../utils/elementType';
 import CustomReactQueryBuilder from '../../../utils/rqb-inputs/custom-react-query-builder';
 import { FieldType } from './expert-filter.type';
+import { v4 as uuid4 } from 'uuid';
 
 export const EXPERT_FILTER_QUERY = 'rules';
 
@@ -74,7 +75,7 @@ const defaultQuery = {
     combinator: COMBINATOR_OPTIONS.AND.name,
     rules: [
         {
-            id: crypto.randomUUID(),
+            id: uuid4(),
             field: FieldType.ID,
             operator: OPERATOR_OPTIONS.CONTAINS.name,
             value: '',
