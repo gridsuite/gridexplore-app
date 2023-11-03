@@ -25,7 +25,6 @@ import RemoveButton from 'components/utils/rqb-inputs/remove-button';
 import CombinatorSelector from 'components/utils/rqb-inputs/combinator-selector';
 import AddButton from 'components/utils/rqb-inputs/add-button';
 import ValueEditor from './value-editor';
-import { EXPERT_FILTER_QUERY } from '../../dialogs/filter/expert/expert-filter-form';
 import { useCallback, useMemo } from 'react';
 import { COMBINATOR_OPTIONS } from '../../dialogs/filter/expert/expert-filter-constants';
 
@@ -42,15 +41,14 @@ const CustomReactQueryBuilder = (props: CustomReactQueryBuilderProps) => {
 
     const handleQueryChange = useCallback(
         (newQuery: RuleGroupTypeAny) => {
-            const oldQuery = getValues(EXPERT_FILTER_QUERY);
+            const oldQuery = getValues(props.name);
             const hasQueryChanged =
                 formatQuery(oldQuery, 'json_without_ids') !==
                 formatQuery(newQuery, 'json_without_ids');
-            const hasNumberRulesChanged =
-                countRules(newQuery) !== countRules(oldQuery);
+            const hasAddedRules = countRules(newQuery) > countRules(oldQuery);
             setValue(props.name, newQuery, {
                 shouldDirty: hasQueryChanged,
-                shouldValidate: hasQueryChanged && !hasNumberRulesChanged,
+                shouldValidate: hasQueryChanged && !hasAddedRules,
             });
         },
         [getValues, setValue, props.name]
