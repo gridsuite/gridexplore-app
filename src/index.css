@@ -92,7 +92,7 @@ code {
 .sld-busbreaker-connection {
     stroke-width: 4;
 }
-.sld-vsc {
+.sld-vsc, .sld-lcc {
     font-size: 7.43px;
 }
 .sld-grid {
