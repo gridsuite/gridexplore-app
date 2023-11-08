@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -23,6 +23,7 @@ import DeleteDialog from '../dialogs/delete-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
+import { downloadCase } from 'utils/rest-api';
 
 import { DialogsId } from '../../utils/UIconstants';
 
@@ -41,6 +42,7 @@ import {
     duplicateStudy,
     getNameCandidate,
     duplicateParameter,
+    getCaseOriginalName,
 } from '../../utils/rest-api';
 
 import { ContingencyListType, ElementType } from '../../utils/elementType';
@@ -52,6 +54,7 @@ import {
 } from '../../utils/custom-hooks';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
+import { FileDownload } from '@mui/icons-material';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -397,6 +400,42 @@ const ContentContextualMenu = (props) => {
         );
     }, [isUserAllowed, selectedElements]);
 
+    const allowsDownloadCase = useCallback(() => {
+        //if selectedElements contains at least one case
+        return selectedElements.some(
+            (element) => element.type === ElementType.CASE
+        );
+    }, [selectedElements]);
+
+    /**
+     * Downloads the selected cases as a file.
+     * @function
+     * @name handleDownloadCase
+     * @returns {void}
+     */
+    const handleDownloadCase = useCallback(() => {
+        //for each selectedElements , filter cases and return their uuid and subtype
+        const casesToDownload = selectedElements
+            .filter((element) => element.type === ElementType.CASE)
+            .map((element) => ({
+                elementUuid: element.elementUuid,
+            }));
+
+        casesToDownload.forEach(async (element) => {
+            const result = await downloadCase(element.elementUuid);
+            const name = await getCaseOriginalName(element.elementUuid);
+            const blob = await result.blob();
+            const href = window.URL.createObjectURL(blob);
+            const a = linkRef.current;
+            a.download = name;
+            a.href = href;
+            a.click();
+            a.href = '';
+        });
+    }, [selectedElements]);
+
+    const linkRef = useRef(null);
+
     const buildMenu = () => {
         if (selectedElements.length === 0) {
             return;
@@ -466,6 +505,17 @@ const ContentContextualMenu = (props) => {
                     );
                 },
                 icon: <FileCopyIcon fontSize="small" />,
+            });
+        }
+        if (allowsDownloadCase()) {
+            // is export allowed
+            menuItems.push({
+                messageDescriptorId: 'downloadCase',
+                callback: () => {
+                    handleDownloadCase();
+                    handleCloseDialog();
+                },
+                icon: <FileDownload fontSize="small" />,
             });
         }
 
@@ -651,6 +701,17 @@ const ContentContextualMenu = (props) => {
                 />
             )}
             {renderDialog()}
+            {/* for download cases*/}
+            <a
+                href="/"
+                title="download case"
+                ref={linkRef}
+                target="_blank"
+                rel="noreferrer"
+                style={{ display: 'none' }}
+            >
+                Download Case
+            </a>
 
             <iframe
                 id={DownloadIframe}

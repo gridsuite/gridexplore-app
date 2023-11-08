@@ -14,6 +14,7 @@ import CriteriaBasedFilterForm from './criteria-based/criteria-based-filter-form
 import ExplicitNamingFilterForm from './explicit-naming/explicit-naming-filter-form';
 import React, { FunctionComponent } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
+import ExpertFilterForm from './expert/expert-filter-form';
 
 interface FilterFormProps {
     creation?: boolean;
@@ -51,11 +52,13 @@ export const FilterForm: FunctionComponent<FilterFormProps> = (props) => {
                     />
                 </Grid>
             )}
-            {filterType === FilterType.CRITERIA_BASED.id ? (
+            {filterType === FilterType.CRITERIA_BASED.id && (
                 <CriteriaBasedFilterForm />
-            ) : (
+            )}
+            {filterType === FilterType.EXPLICIT_NAMING.id && (
                 <ExplicitNamingFilterForm />
             )}
+            {filterType === FilterType.EXPERT.id && <ExpertFilterForm />}
         </Grid>
     );
 };

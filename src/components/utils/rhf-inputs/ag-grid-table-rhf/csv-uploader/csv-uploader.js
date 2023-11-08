@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import { DialogContentText } from '@mui/material';
 import { useWatch } from 'react-hook-form';
 import { AG_GRID_ROW_UUID } from '../../../field-constants';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 const CsvUploader = ({
     name,
@@ -156,9 +157,7 @@ const CsvUploader = ({
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => handleCancelDialog()}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
+                    <CancelButton onClick={handleCancelDialog} />
                     <Button onClick={() => handleReplacePopupConfirmation()}>
                         <FormattedMessage id="replace" />
                     </Button>
@@ -233,9 +232,7 @@ const CsvUploader = ({
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
+                    <CancelButton onClick={handleClose} />
                     <Button
                         variant="outlined"
                         onClick={() => handleOpenCSVConfirmationDataDialog()}

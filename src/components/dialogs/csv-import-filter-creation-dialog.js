@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import { DialogContentText } from '@mui/material';
 import { ElementType } from '../../utils/elementType';
 import { Generator, Load } from '../../utils/equipment-types';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 const CsvImportFilterCreationDialog = ({
     onClose,
@@ -181,9 +182,7 @@ const CsvImportFilterCreationDialog = ({
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => handleCancelDialog()}>
-                            <FormattedMessage id="cancel" />
-                        </Button>
+                        <CancelButton onClick={handleCancelDialog} />
                         <Button
                             onClick={() => handleReplacePopupConfirmation()}
                         >
@@ -265,9 +264,7 @@ const CsvImportFilterCreationDialog = ({
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
+                    <CancelButton onClick={handleClose} />
                     <Button
                         variant="outlined"
                         onClick={() => handleOpenCSVConfirmationDataDialog()}
