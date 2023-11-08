@@ -95,6 +95,7 @@ const CustomMuiDialog: FunctionComponent<ICustomMuiDialog> = ({
                 <DialogActions>
                     <CancelButton onClick={handleCancel} />
                     <SubmitButton
+                        variant="outlined"
                         disabled={disabledSave}
                         onClick={handleSubmit(
                             handleValidate,

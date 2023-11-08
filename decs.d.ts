@@ -140,6 +140,7 @@ declare module '@gridsuite/commons-ui' {
     export const SubmitButton: FunctionComponent<{
         onClick: () => void;
         disabled?: boolean;
+        variant?: string;
     }>;
 
     export const CancelButton: FunctionComponent<{
