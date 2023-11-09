@@ -1,7 +1,12 @@
 declare module '@gridsuite/commons-ui' {
     import { FunctionComponent, ReactElement } from 'react';
     import { AutocompleteProps } from '@mui/material/Autocomplete/Autocomplete';
-    import { RadioGroupProps, TextFieldProps } from '@mui/material';
+    import {
+        ButtonProps,
+        ButtonTypeMap,
+        RadioGroupProps,
+        TextFieldProps,
+    } from '@mui/material';
 
     interface SnackInputs {
         messageTxt?: string;
@@ -137,18 +142,13 @@ declare module '@gridsuite/commons-ui' {
 
     export const RadioInput: FunctionComponent<RadioInputProps>;
 
-    export const SubmitButton: FunctionComponent<{
-        onClick: () => void;
-        disabled?: boolean;
-        variant?: string;
-    }>;
+    export const SubmitButton: FunctionComponent<ButtonProps>;
 
-    export const CancelButton: FunctionComponent<{
-        onClick: (() => void) | ((event: React.MouseEvent) => void);
-        disabled?: boolean;
-        variant?: string;
+    interface CancelButtonProps extends ButtonProps {
         withCustomColor?: boolean;
-    }>;
+    }
+
+    export const CancelButton: FunctionComponent<CancelButtonProps>;
 
     export const FieldLabel: FunctionComponent<{
         label: string;
