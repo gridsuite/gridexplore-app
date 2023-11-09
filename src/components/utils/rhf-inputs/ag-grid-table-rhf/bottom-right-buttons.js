@@ -12,7 +12,6 @@ import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 const InnerColoredButton = styled(IconButton)(({ theme, root }) => {
     return {
         color: theme.palette.primary.main,
-        justifyContent: 'flex-end',
     };
 });
 
@@ -33,43 +32,56 @@ const BottomRightButtons = ({
 
     return (
         <>
-            <Grid container item xs={12}>
-                {csvProps && (
-                    <InnerColoredButton onClick={() => setUploaderOpen(true)}>
-                        <Tooltip
-                            title={intl.formatMessage({
-                                id: 'ImportCSV',
-                            })}
-                            placement="bottom"
+            <Grid container paddingTop={1} paddingLeft={2}>
+                <Grid item xs={1}>
+                    {csvProps && (
+                        <InnerColoredButton
+                            onClick={() => setUploaderOpen(true)}
                         >
-                            <Upload />
-                        </Tooltip>
+                            <Tooltip
+                                title={intl.formatMessage({
+                                    id: 'ImportCSV',
+                                })}
+                                placement="bottom"
+                            >
+                                <Upload />
+                            </Tooltip>
+                        </InnerColoredButton>
+                    )}
+                </Grid>
+                <Grid
+                    item
+                    xs={11}
+                    sx={{ display: 'flex', justifyContent: 'right' }}
+                >
+                    <InnerColoredButton
+                        key={'addButton'}
+                        onClick={handleAddRow}
+                    >
+                        <AddIcon />
                     </InnerColoredButton>
-                )}
-                <InnerColoredButton key={'addButton'} onClick={handleAddRow}>
-                    <AddIcon />
-                </InnerColoredButton>
-                <InnerColoredButton
-                    key={'DeleteButton'}
-                    onClick={handleDeleteRows}
-                    disabled={disableDelete}
-                >
-                    <DeleteIcon />
-                </InnerColoredButton>
-                <InnerColoredButton
-                    key={'upButton'}
-                    disabled={disableUp}
-                    onClick={handleMoveRowUp}
-                >
-                    <ArrowCircleUp />
-                </InnerColoredButton>
-                <InnerColoredButton
-                    key={'downButton'}
-                    disabled={disableDown}
-                    onClick={handleMoveRowDown}
-                >
-                    <ArrowCircleDown />
-                </InnerColoredButton>
+                    <InnerColoredButton
+                        key={'DeleteButton'}
+                        onClick={handleDeleteRows}
+                        disabled={disableDelete}
+                    >
+                        <DeleteIcon />
+                    </InnerColoredButton>
+                    <InnerColoredButton
+                        key={'upButton'}
+                        disabled={disableUp}
+                        onClick={handleMoveRowUp}
+                    >
+                        <ArrowCircleUp />
+                    </InnerColoredButton>
+                    <InnerColoredButton
+                        key={'downButton'}
+                        disabled={disableDown}
+                        onClick={handleMoveRowDown}
+                    >
+                        <ArrowCircleDown />
+                    </InnerColoredButton>
+                </Grid>
             </Grid>
             <Grid item xs={12}>
                 <ErrorInput name={name} InputField={FieldErrorAlert} />
