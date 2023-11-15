@@ -145,7 +145,7 @@ declare module '@gridsuite/commons-ui' {
     export const SubmitButton: FunctionComponent<ButtonProps>;
 
     interface CancelButtonProps extends ButtonProps {
-        withCustomColor?: boolean;
+        color?: string;
     }
 
     export const CancelButton: FunctionComponent<CancelButtonProps>;
