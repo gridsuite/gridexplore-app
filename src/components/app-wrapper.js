@@ -46,15 +46,9 @@ import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
 
-const defaultTheme = createTheme();
-
-const lightTheme = createTheme({
-    ...defaultTheme,
+let lightTheme = createTheme({
     palette: {
         mode: 'light',
-        customButton: {
-            main: defaultTheme.palette.text.primary,
-        },
     },
     arrow: {
         fill: '#212121',
@@ -91,13 +85,17 @@ const lightTheme = createTheme({
     },
 });
 
-const darkTheme = createTheme({
-    ...defaultTheme,
+lightTheme = createTheme(lightTheme, {
+    palette: {
+        customButton: {
+            main: lightTheme.palette.text.primary,
+        },
+    },
+});
+
+let darkTheme = createTheme({
     palette: {
         mode: 'dark',
-        customButton: {
-            main: defaultTheme.palette.text.primary,
-        },
     },
     arrow: {
         fill: 'white',
@@ -130,6 +128,14 @@ const darkTheme = createTheme({
     typography: {
         button: {
             textTransform: 'none',
+        },
+    },
+});
+
+darkTheme = createTheme(darkTheme, {
+    palette: {
+        customButton: {
+            main: darkTheme.palette.text.primary,
         },
     },
 });
