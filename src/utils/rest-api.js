@@ -175,6 +175,22 @@ export function fetchValidateUser(user) {
         });
 }
 
+export function fetchAuthorizationCodeFlowFeatureFlag() {
+    console.info(`Fetching authorization code flow feature flag...`);
+    return fetch('env.json')
+        .then((res) => res.json())
+        .then((res) => {
+            console.log(
+                `Authorization code flow is ${
+                    res.authorizationCodeFlowFeatureFlag
+                        ? 'enabled'
+                        : 'disabled'
+                }`
+            );
+            return res.authorizationCodeFlowFeatureFlag;
+        });
+}
+
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
     return fetch('env.json')
