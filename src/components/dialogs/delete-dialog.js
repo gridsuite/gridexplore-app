@@ -214,7 +214,6 @@ const DeleteDialog = ({
                     onClick={handleClose}
                     variant="outlined"
                     disabled={loadingState}
-                    withCustomColor={false}
                 />
                 <Button
                     onClick={handleClick}
