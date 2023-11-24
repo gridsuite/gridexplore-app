@@ -34,13 +34,21 @@ export const ENERGY_SOURCE_OPTIONS = [
 ];
 
 export const OPERATOR_OPTIONS = {
-    EQUALS: { name: OperatorType.EQUALS, label: '=' },
-    NOT_EQUALS: { name: OperatorType.NOT_EQUALS, label: '!=' },
+    EQUALS: { name: OperatorType.EQUALS, label: 'equality' },
+    NOT_EQUALS: { name: OperatorType.NOT_EQUALS, label: 'notEquality' },
+    // Number and String
+    EXISTS: { name: OperatorType.EXISTS, label: 'exists' },
     // Number
-    LOWER: { name: OperatorType.LOWER, label: '<' },
-    LOWER_OR_EQUALS: { name: OperatorType.LOWER_OR_EQUALS, label: '<=' },
-    GREATER: { name: OperatorType.GREATER, label: '>' },
-    GREATER_OR_EQUALS: { name: OperatorType.GREATER_OR_EQUALS, label: '>=' },
+    LOWER: { name: OperatorType.LOWER, label: 'lessThan' },
+    LOWER_OR_EQUALS: {
+        name: OperatorType.LOWER_OR_EQUALS,
+        label: 'lessOrEqual',
+    },
+    GREATER: { name: OperatorType.GREATER, label: 'greaterThan' },
+    GREATER_OR_EQUALS: {
+        name: OperatorType.GREATER_OR_EQUALS,
+        label: 'greaterOrEqual',
+    },
     // String
     IS: { name: OperatorType.IS, label: 'is' },
     CONTAINS: { name: OperatorType.CONTAINS, label: 'contains' },
@@ -121,6 +129,12 @@ export const FIELDS_OPTIONS = {
         dataType: DataType.BOOLEAN,
         valueEditorType: 'checkbox',
     },
+    PLANNED_ACTIVE_POWER_SET_POINT: {
+        name: FieldType.PLANNED_ACTIVE_POWER_SET_POINT,
+        label: 'PlannedActivePowerSetPointForm',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
 };
 
 export const fields: Record<string, Field[]> = {
@@ -136,6 +150,7 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.ENERGY_SOURCE,
         FIELDS_OPTIONS.COUNTRY,
         FIELDS_OPTIONS.VOLTAGE_REGULATOR_ON,
+        FIELDS_OPTIONS.PLANNED_ACTIVE_POWER_SET_POINT,
     ],
     LOAD: [FIELDS_OPTIONS.ID],
 };
