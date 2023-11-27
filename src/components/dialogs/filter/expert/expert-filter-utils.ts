@@ -80,7 +80,7 @@ export function getExpertRules(query: RuleGroupType): RuleGroupTypeExport {
         return {
             field: rule.field as FieldType,
             operator: rule.operator as OperatorType,
-            value: rule.operator !== OperatorType.EXISTS ? rule.value : '0', // TODO Use undefined instead of 0, and fix related errors in the backend.
+            value: rule.operator !== OperatorType.EXISTS ? rule.value : undefined,
             dataType: getDataType(rule.field) as DataType,
         };
     }
@@ -141,7 +141,7 @@ export const queryValidator: QueryValidator = (query) => {
                 valid: true,
                 reasons: undefined,
             };
-        } else if (rule.id && isStringInput && rule.value.trim() === '') {
+        } else if (rule.id && isStringInput && (rule.value || '').trim() === '') {
             result[rule.id] = {
                 valid: false,
                 reasons: [EMPTY_RULE],
