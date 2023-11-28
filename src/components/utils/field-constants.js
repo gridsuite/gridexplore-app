@@ -10,6 +10,9 @@ export const NAME = 'name';
 
 export const FILTER_TYPE = 'filterType';
 export const EQUIPMENT_TYPE = 'equipmentType';
+export const CRITERIA_BASED_EQUIPMENT_TYPE = "criteriaBasedEquipmentType"
+export const EXPLICIT_NAMING_EQUIPMENT_TYPE = "explicitNamingEquipmentType"
+export const EXPERT_EQUIPMENT_TYPE = "expertEquipmentType"
 export const EQUIPMENT_TABLE = 'equipmentTable';
 
 export const EQUIPMENT_ID = 'equipmentID';

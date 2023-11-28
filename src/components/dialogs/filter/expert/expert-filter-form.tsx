@@ -9,9 +9,9 @@ import React, { useCallback } from 'react';
 import {
     EMPTY_GROUP,
     EMPTY_RULE,
-    EQUIPMENT_TYPE,
+    EXPERT_EQUIPMENT_TYPE,
     FILTER_TYPE,
-    INCORRECT_RULE,
+    INCORRECT_RULE
 } from '../../../utils/field-constants';
 import Grid from '@mui/material/Grid';
 import type { RuleGroupTypeAny } from 'react-querybuilder';
@@ -39,7 +39,7 @@ export const expertFilterSchema = {
     [EXPERT_FILTER_QUERY]: yup.object().when([FILTER_TYPE], {
         is: FilterType.EXPERT.id,
         then: (schema) =>
-            schema.when([EQUIPMENT_TYPE], {
+            schema.when([EXPERT_EQUIPMENT_TYPE], {
                 is: (equipmentType: string) =>
                     isSupportedEquipmentType(equipmentType),
                 then: (schema) =>
@@ -103,7 +103,7 @@ function ExpertFilterForm() {
     }, [setValue]);
 
     const watchEquipmentType = useWatch({
-        name: EQUIPMENT_TYPE,
+        name: EXPERT_EQUIPMENT_TYPE,
     });
 
     return (
@@ -111,7 +111,7 @@ function ExpertFilterForm() {
             <Grid item xs={12}>
                 <InputWithPopupConfirmation
                     Input={SelectInput}
-                    name={EQUIPMENT_TYPE}
+                    name={EXPERT_EQUIPMENT_TYPE}
                     options={Object.values(EXPERT_FILTER_EQUIPMENTS)}
                     label={'equipmentType'}
                     shouldOpenPopup={openConfirmationPopup}

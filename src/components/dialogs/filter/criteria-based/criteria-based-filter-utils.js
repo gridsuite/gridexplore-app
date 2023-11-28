@@ -7,7 +7,7 @@
 
 import { FilterType } from '../../../../utils/elementType';
 import {
-    CRITERIA_BASED,
+    CRITERIA_BASED, CRITERIA_BASED_EQUIPMENT_TYPE,
     ENERGY_SOURCE,
     EQUIPMENT_TYPE,
     NOMINAL_VOLTAGE,
@@ -15,7 +15,7 @@ import {
     NOMINAL_VOLTAGE_2,
     NOMINAL_VOLTAGE_3,
     VALUE_1,
-    VALUE_2,
+    VALUE_2
 } from '../../../utils/field-constants';
 import { FILTER_PROPERTIES } from './filter-properties';
 import {
@@ -68,14 +68,13 @@ export const backToFrontTweak = (response) => {
         }
         filterProperties.push(prop);
     });
-    const ret = {
-        [EQUIPMENT_TYPE]: response[EQUIPMENT_TYPE],
+    return {
+        [CRITERIA_BASED_EQUIPMENT_TYPE]: response[EQUIPMENT_TYPE],
         ...getCriteriaBasedFormData(response.equipmentFilterForm, {
             [ENERGY_SOURCE]: response.equipmentFilterForm[ENERGY_SOURCE],
             [FILTER_PROPERTIES]: filterProperties,
         }),
     };
-    return ret;
 };
 
 /**
@@ -93,7 +92,7 @@ export const frontToBackTweak = (id, filter) => {
     const filterProperties = filter[CRITERIA_BASED][FILTER_PROPERTIES];
     const ret = { id, type: FilterType.CRITERIA_BASED.id };
     const eff = {
-        [EQUIPMENT_TYPE]: filter[EQUIPMENT_TYPE],
+        [EQUIPMENT_TYPE]: filter[CRITERIA_BASED_EQUIPMENT_TYPE],
         ...cleanNominalVoltages(filter[CRITERIA_BASED]),
     };
     // in the back end we store everything in a field called equipmentFilterForm

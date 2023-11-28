@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CRITERIA_BASED, EQUIPMENT_TYPE } from '../../../utils/field-constants';
+import { CRITERIA_BASED, CRITERIA_BASED_EQUIPMENT_TYPE } from '../../../utils/field-constants';
 import React from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { gridItem } from '../../../utils/dialog-utils';
@@ -17,7 +17,7 @@ const CriteriaBasedForm = ({ equipments, defaultValues }) => {
     const { getValues, setValue } = useFormContext();
 
     const watchEquipmentType = useWatch({
-        name: EQUIPMENT_TYPE,
+        name: CRITERIA_BASED_EQUIPMENT_TYPE,
     });
 
     const openConfirmationPopup = () => {
@@ -36,7 +36,7 @@ const CriteriaBasedForm = ({ equipments, defaultValues }) => {
     const equipmentTypeSelectionField = (
         <InputWithPopupConfirmation
             Input={SelectInput}
-            name={EQUIPMENT_TYPE}
+            name={CRITERIA_BASED_EQUIPMENT_TYPE}
             options={Object.values(equipments)}
             label={'equipmentType'}
             shouldOpenPopup={openConfirmationPopup}

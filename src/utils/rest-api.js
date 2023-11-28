@@ -596,13 +596,15 @@ export function getContingencyList(type, id) {
  */
 
 export function saveCriteriaBasedContingencyList(id, form) {
-    const { name, equipmentType, criteriaBased } = form;
+    const { name, criteriaBasedEquipmentType, criteriaBased } = form;
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append(
         'contingencyListType',
         ContingencyListType.CRITERIA_BASED.id
     );
+    //to send the right param name
+    const equipmentType = criteriaBasedEquipmentType;
 
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +

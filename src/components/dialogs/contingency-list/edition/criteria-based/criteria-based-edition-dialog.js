@@ -18,15 +18,16 @@ import {
     getContingencyList,
     saveCriteriaBasedContingencyList,
 } from 'utils/rest-api';
-import { EQUIPMENT_TYPE, NAME } from 'components/utils/field-constants';
+import { NAME } from 'components/utils/field-constants';
 import { getCriteriaBasedSchema } from 'components/dialogs/commons/criteria-based/criteria-based-utils';
 import yup from 'components/utils/yup-config';
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';
+import { CRITERIA_BASED_EQUIPMENT_TYPE } from '../../../../utils/field-constants';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().trim().required('nameEmpty'),
-    [EQUIPMENT_TYPE]: yup.string().required(),
+    [CRITERIA_BASED_EQUIPMENT_TYPE]: yup.string().required(),
     ...getCriteriaBasedSchema(),
 });
 
@@ -93,6 +94,7 @@ const CriteriaBasedEditionDialog = ({
     };
 
     const onSubmit = (contingencyList) => {
+        console.log("submit");
         editContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 closeAndClear();

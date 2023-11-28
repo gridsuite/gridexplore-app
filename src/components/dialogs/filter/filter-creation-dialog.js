@@ -27,7 +27,14 @@ import {
     FILTER_EQUIPMENTS_ATTRIBUTES,
     getExplicitNamingFilterEmptyFormData,
 } from './explicit-naming/explicit-naming-filter-form';
-import { EQUIPMENT_TYPE, FILTER_TYPE, NAME } from '../../utils/field-constants';
+import {
+    EQUIPMENT_TYPE,
+    CRITERIA_BASED_EQUIPMENT_TYPE,
+    EXPLICIT_NAMING_EQUIPMENT_TYPE,
+    FILTER_TYPE,
+    NAME,
+    EXPERT_EQUIPMENT_TYPE
+} from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 import { FilterForm } from './filter-form';
 import {
@@ -39,7 +46,9 @@ import {
 const emptyFormData = {
     [NAME]: '',
     [FILTER_TYPE]: FilterType.CRITERIA_BASED.id,
-    [EQUIPMENT_TYPE]: null,
+    [EXPERT_EQUIPMENT_TYPE]: null,
+    [EXPLICIT_NAMING_EQUIPMENT_TYPE]: null,
+    [CRITERIA_BASED_EQUIPMENT_TYPE]: null,
     ...criteriaBasedFilterEmptyFormData,
     ...getExplicitNamingFilterEmptyFormData(),
     ...getExpertFilterEmptyFormData(),
@@ -51,7 +60,29 @@ const formSchema = yup
     .shape({
         [NAME]: yup.string().trim().required('nameEmpty'),
         [FILTER_TYPE]: yup.string().required(),
-        [EQUIPMENT_TYPE]: yup.string().required(),
+        [EXPERT_EQUIPMENT_TYPE]: yup.string().when([FILTER_TYPE], {
+            is: (
+                filterType
+            ) => filterType === FilterType.EXPERT.id,
+            then: (schema) => schema.required(),
+            otherwise: (schema) => schema.nullable(),
+        }),
+        [CRITERIA_BASED_EQUIPMENT_TYPE]: yup.string()
+            .when([FILTER_TYPE], {
+                is: (
+                    filterType
+                ) => filterType === FilterType.CRITERIA_BASED.id,
+                then: (schema) => schema.required(),
+                otherwise: (schema) => schema.nullable(),
+            }),
+        [EXPLICIT_NAMING_EQUIPMENT_TYPE]: yup.string()
+            .when([FILTER_TYPE], {
+                is: (
+                    filterType
+                ) => filterType === FilterType.EXPLICIT_NAMING.id,
+                then: (schema) => schema.required(),
+                otherwise: (schema) => schema.nullable(),
+            }),
         ...criteriaBasedFilterSchema,
         ...explicitNamingFilterSchema,
         ...expertFilterSchema,
@@ -80,7 +111,7 @@ const FilterCreationDialog = ({ open, onClose }) => {
                 saveExplicitNamingFilter(
                     filterForm[FILTER_EQUIPMENTS_ATTRIBUTES],
                     true,
-                    filterForm[EQUIPMENT_TYPE],
+                    filterForm[EXPLICIT_NAMING_EQUIPMENT_TYPE],
                     filterForm[NAME],
                     null,
                     (error) => {
@@ -108,7 +139,7 @@ const FilterCreationDialog = ({ open, onClose }) => {
                 saveExpertFilter(
                     null,
                     filterForm[EXPERT_FILTER_QUERY],
-                    filterForm[EQUIPMENT_TYPE],
+                    filterForm[EXPERT_EQUIPMENT_TYPE],
                     filterForm[NAME],
                     true,
                     activeDirectory,

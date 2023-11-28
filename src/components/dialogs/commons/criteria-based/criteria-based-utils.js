@@ -7,17 +7,15 @@
 
 import CountriesInput from '../../../utils/rhf-inputs/select-inputs/countries-input';
 import {
-    CONTINGENCY_LIST_TYPE,
     COUNTRIES,
     COUNTRIES_1,
     COUNTRIES_2,
     CRITERIA_BASED,
     ENERGY_SOURCE,
-    EQUIPMENT_TYPE,
     NOMINAL_VOLTAGE,
     NOMINAL_VOLTAGE_1,
     NOMINAL_VOLTAGE_2,
-    NOMINAL_VOLTAGE_3,
+    NOMINAL_VOLTAGE_3
 } from '../../../utils/field-constants';
 import RangeInput, {
     DEFAULT_RANGE_VALUE,
@@ -26,7 +24,6 @@ import RangeInput, {
 } from '../../../utils/rhf-inputs/range-input';
 import yup from '../../../utils/yup-config';
 import { SelectInput } from '@gridsuite/commons-ui';
-import { ContingencyListType } from 'utils/elementType';
 
 const countries = {
     renderer: CountriesInput,
@@ -183,11 +180,6 @@ export const FILTER_EQUIPMENTS = {
 };
 
 export const getCriteriaBasedSchema = (extraFields) => ({
-    [EQUIPMENT_TYPE]: yup.string().when([CONTINGENCY_LIST_TYPE], {
-        is: ContingencyListType.CRITERIA_BASED.id,
-        then: (schema) => schema.required(),
-        otherwise: (schema) => schema.nullable(),
-    }),
     [CRITERIA_BASED]: yup.object().shape({
         [COUNTRIES]: yup.array().of(yup.string()),
         [COUNTRIES_1]: yup.array().of(yup.string()),

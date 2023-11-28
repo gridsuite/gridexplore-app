@@ -14,9 +14,9 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomMuiDialog from '../../commons/custom-mui-dialog/custom-mui-dialog';
 import yup from '../../../utils/yup-config';
 import {
-    EQUIPMENT_TYPE,
+    EQUIPMENT_TYPE, EXPERT_EQUIPMENT_TYPE,
     FILTER_TYPE,
-    NAME,
+    NAME
 } from '../../../utils/field-constants';
 import { FetchStatus } from '../../../../utils/custom-hooks';
 import { FilterForm } from '../filter-form';
@@ -28,7 +28,7 @@ const formSchema = yup
     .shape({
         [NAME]: yup.string().trim().required('nameEmpty'),
         [FILTER_TYPE]: yup.string().required(),
-        [EQUIPMENT_TYPE]: yup.string().required(),
+        [EXPERT_EQUIPMENT_TYPE]: yup.string().required(),
         ...expertFilterSchema,
     })
     .required();
@@ -74,7 +74,7 @@ const ExpertFilterEditionDialog = ({
                     reset({
                         [NAME]: name,
                         [FILTER_TYPE]: FilterType.EXPERT.id,
-                        [EQUIPMENT_TYPE]: response[EQUIPMENT_TYPE],
+                        [EXPERT_EQUIPMENT_TYPE]: response[EQUIPMENT_TYPE],
                         [EXPERT_FILTER_QUERY]: response[EXPERT_FILTER_QUERY],
                     });
                 })
@@ -93,7 +93,7 @@ const ExpertFilterEditionDialog = ({
             saveExpertFilter(
                 id,
                 filterForm[EXPERT_FILTER_QUERY],
-                filterForm[EQUIPMENT_TYPE],
+                filterForm[EXPERT_EQUIPMENT_TYPE],
                 filterForm[NAME],
                 false,
                 null,

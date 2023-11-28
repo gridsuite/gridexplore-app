@@ -21,9 +21,9 @@ import {
 } from './explicit-naming-filter-form';
 import {
     AG_GRID_ROW_UUID,
-    EQUIPMENT_TYPE,
+    EQUIPMENT_TYPE, EXPLICIT_NAMING_EQUIPMENT_TYPE,
     FILTER_TYPE,
-    NAME,
+    NAME
 } from '../../../utils/field-constants';
 import { FetchStatus } from '../../../../utils/custom-hooks';
 import { FilterForm } from '../filter-form';
@@ -33,7 +33,7 @@ const formSchema = yup
     .shape({
         [NAME]: yup.string().trim().required('nameEmpty'),
         [FILTER_TYPE]: yup.string().required(),
-        [EQUIPMENT_TYPE]: yup.string().required(),
+        [EXPLICIT_NAMING_EQUIPMENT_TYPE]: yup.string().required(),
         ...explicitNamingFilterSchema,
     })
     .required();
@@ -71,7 +71,7 @@ const ExplicitNamingFilterEditionDialog = ({
                     reset({
                         [NAME]: name,
                         [FILTER_TYPE]: FilterType.EXPLICIT_NAMING.id,
-                        [EQUIPMENT_TYPE]: response[EQUIPMENT_TYPE],
+                        [EXPLICIT_NAMING_EQUIPMENT_TYPE]: response[EQUIPMENT_TYPE],
                         [FILTER_EQUIPMENTS_ATTRIBUTES]: response[
                             FILTER_EQUIPMENTS_ATTRIBUTES
                         ].map((row) => ({
@@ -95,7 +95,7 @@ const ExplicitNamingFilterEditionDialog = ({
             saveExplicitNamingFilter(
                 filterForm[FILTER_EQUIPMENTS_ATTRIBUTES],
                 false,
-                filterForm[EQUIPMENT_TYPE],
+                filterForm[EXPLICIT_NAMING_EQUIPMENT_TYPE],
                 filterForm[NAME],
                 id,
                 (error) => {

@@ -3,7 +3,8 @@ import {
     AG_GRID_ROW_UUID,
     EQUIPMENT_ID,
     EQUIPMENT_TYPE,
-    FILTER_TYPE,
+    EXPLICIT_NAMING_EQUIPMENT_TYPE,
+    FILTER_TYPE
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import CustomAgGridTable, {
@@ -38,7 +39,7 @@ export const explicitNamingFilterSchema = {
         .when([FILTER_TYPE], {
             is: FilterType.EXPLICIT_NAMING.id,
             then: (schema) =>
-                schema.min(1, 'emptyFilterError').when([EQUIPMENT_TYPE], {
+                schema.min(1, 'emptyFilterError').when([EXPLICIT_NAMING_EQUIPMENT_TYPE], {
                     is: (equipmentType: string) =>
                         isGeneratorOrLoad(equipmentType),
                     then: (schema) =>
@@ -104,7 +105,7 @@ function ExplicitNamingFilterForm() {
     const { getValues, setValue } = useFormContext();
 
     const watchEquipmentType = useWatch({
-        name: EQUIPMENT_TYPE,
+        name: EXPLICIT_NAMING_EQUIPMENT_TYPE,
     });
 
     const forGeneratorOrLoad = isGeneratorOrLoad(watchEquipmentType);
@@ -178,7 +179,7 @@ function ExplicitNamingFilterForm() {
             <Grid item xs={12}>
                 <InputWithPopupConfirmation
                     Input={SelectInput}
-                    name={EQUIPMENT_TYPE}
+                    name={EXPLICIT_NAMING_EQUIPMENT_TYPE}
                     options={Object.values(FILTER_EQUIPMENTS)}
                     label={'equipmentType'}
                     shouldOpenPopup={openConfirmationPopup}

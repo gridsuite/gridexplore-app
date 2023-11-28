@@ -19,9 +19,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { criteriaBasedFilterSchema } from './criteria-based-filter-form';
 import yup from '../../../utils/yup-config';
 import {
-    EQUIPMENT_TYPE,
+    CRITERIA_BASED_EQUIPMENT_TYPE,
     FILTER_TYPE,
-    NAME,
+    NAME
 } from '../../../utils/field-constants';
 import PropTypes from 'prop-types';
 import { FetchStatus } from '../../../../utils/custom-hooks';
@@ -32,7 +32,7 @@ const formSchema = yup
     .shape({
         [NAME]: yup.string().trim().required('nameEmpty'),
         [FILTER_TYPE]: yup.string().required(),
-        [EQUIPMENT_TYPE]: yup.string().required(),
+        [CRITERIA_BASED_EQUIPMENT_TYPE]: yup.string().required(),
         ...criteriaBasedFilterSchema,
     })
     .required();

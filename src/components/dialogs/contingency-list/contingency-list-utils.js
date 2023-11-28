@@ -12,7 +12,7 @@ import {
     COUNTRIES,
     COUNTRIES_1,
     COUNTRIES_2,
-    CRITERIA_BASED,
+    CRITERIA_BASED, CRITERIA_BASED_EQUIPMENT_TYPE,
     EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
     EQUIPMENT_TYPE,
@@ -20,7 +20,7 @@ import {
     NOMINAL_VOLTAGE,
     NOMINAL_VOLTAGE_1,
     NOMINAL_VOLTAGE_2,
-    SCRIPT,
+    SCRIPT
 } from '../../utils/field-constants';
 import { ContingencyListType } from '../../../utils/elementType';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
@@ -44,7 +44,7 @@ export const getContingencyListEmptyFormData = (name = '') => ({
     [EQUIPMENT_TABLE]: makeDefaultTableRows(),
     [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [SCRIPT]: '',
-    [EQUIPMENT_TYPE]: null,
+    [CRITERIA_BASED_EQUIPMENT_TYPE]: null,
     ...getCriteriaBasedFormData(),
 });
 
@@ -52,7 +52,7 @@ export const getCriteriaBasedFormDataFromFetchedElement = (response, name) => {
     return {
         [NAME]: name,
         [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
-        [EQUIPMENT_TYPE]: response.equipmentType,
+        [CRITERIA_BASED_EQUIPMENT_TYPE]: response.equipmentType,
         ...getCriteriaBasedFormData(response),
     };
 };
@@ -99,7 +99,7 @@ export const getFormContent = (contingencyListId, contingencyList) => {
         case ContingencyListType.CRITERIA_BASED.id: {
             const criteriaBaseForm = contingencyList[CRITERIA_BASED];
             return {
-                equipmentType: contingencyList[EQUIPMENT_TYPE],
+                equipmentType: contingencyList[CRITERIA_BASED_EQUIPMENT_TYPE],
                 countries: criteriaBaseForm[COUNTRIES],
                 countries1: criteriaBaseForm[COUNTRIES_1],
                 countries2: criteriaBaseForm[COUNTRIES_2],

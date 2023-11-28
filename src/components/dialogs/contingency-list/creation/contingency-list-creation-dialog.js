@@ -8,10 +8,10 @@
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
-    CONTINGENCY_LIST_TYPE,
+    CONTINGENCY_LIST_TYPE, CRITERIA_BASED_EQUIPMENT_TYPE,
     EQUIPMENT_TABLE,
     NAME,
-    SCRIPT,
+    SCRIPT
 } from '../../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
@@ -26,11 +26,17 @@ import {
 import yup from '../../../utils/yup-config';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form';
 import { getCriteriaBasedSchema } from '../../commons/criteria-based/criteria-based-utils';
+import { ContingencyListType } from '../../../../utils/elementType';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().trim().required('nameEmpty'),
     [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
     [SCRIPT]: yup.string().nullable(),
+    [CRITERIA_BASED_EQUIPMENT_TYPE]: yup.string().when([CONTINGENCY_LIST_TYPE], {
+        is: (contingencyListType) => contingencyListType && contingencyListType === ContingencyListType.CRITERIA_BASED.id,
+        then: (schema) => schema.required(),
+        otherwise: (schema) => schema.nullable(),
+    }),
     ...getExplicitNamingSchema(EQUIPMENT_TABLE),
     ...getCriteriaBasedSchema(),
 });
