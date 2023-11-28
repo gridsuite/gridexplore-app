@@ -16,6 +16,7 @@ export enum OperatorType {
     CONTAINS = 'CONTAINS',
     BEGINS_WITH = 'BEGINS_WITH',
     ENDS_WITH = 'ENDS_WITH',
+    EXISTS = 'EXISTS',
 }
 
 export enum CombinatorType {
@@ -35,6 +36,7 @@ export enum FieldType {
     ENERGY_SOURCE = 'ENERGY_SOURCE',
     COUNTRY = 'COUNTRY',
     VOLTAGE_REGULATOR_ON = 'VOLTAGE_REGULATOR_ON',
+    PLANNED_ACTIVE_POWER_SET_POINT = 'PLANNED_ACTIVE_POWER_SET_POINT',
 }
 
 export enum DataType {
