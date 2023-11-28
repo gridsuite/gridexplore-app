@@ -131,7 +131,7 @@ export const FIELDS_OPTIONS = {
     },
     PLANNED_ACTIVE_POWER_SET_POINT: {
         name: FieldType.PLANNED_ACTIVE_POWER_SET_POINT,
-        label: 'PlannedActivePowerSetPointForm',
+        label: 'PlannedActivePowerSetPoint',
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
