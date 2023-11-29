@@ -34,9 +34,7 @@ const schema = yup.object().shape({
     [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
     [SCRIPT]: yup.string().nullable(),
     [EQUIPMENT_TYPE]: yup.string().when([CONTINGENCY_LIST_TYPE], {
-        is: (contingencyListType) =>
-            contingencyListType &&
-            contingencyListType === ContingencyListType.CRITERIA_BASED.id,
+        is: ContingencyListType.CRITERIA_BASED.id,
         then: (schema) => schema.required(),
         otherwise: (schema) => schema.nullable(),
     }),
