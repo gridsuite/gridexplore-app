@@ -166,13 +166,10 @@ const ContentContextualMenu = (props) => {
                                     activeElement.description,
                                     activeElement.elementUuid,
                                     selectedDirectory.elementUuid
-                                )
-                                    .then(() => {
-                                        handleCloseDialog();
-                                    })
-                                    .catch((error) => {
-                                        handleDuplicateError(error.message);
-                                    });
+                                ).catch((error) => {
+                                    handleDuplicateError(error.message);
+                                });
+                                handleCloseDialog();
                                 break;
                             case ElementType.VOLTAGE_INIT_PARAMETERS:
                                 duplicateParameter(
