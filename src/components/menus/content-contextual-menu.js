@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useCallback, useRef } from 'react';
+import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -28,21 +28,21 @@ import { downloadCase } from 'utils/rest-api';
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
-    duplicateCase,
     deleteElement,
+    duplicateCase,
+    duplicateContingencyList,
+    duplicateFilter,
+    duplicateParameter,
+    duplicateStudy,
+    fetchElementsInfos,
+    getCaseOriginalName,
+    getNameCandidate,
     moveElementToDirectory,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
-    duplicateFilter,
-    duplicateContingencyList,
-    fetchElementsInfos,
-    duplicateStudy,
-    getNameCandidate,
-    duplicateParameter,
-    getCaseOriginalName,
 } from '../../utils/rest-api';
 
 import { ContingencyListType, ElementType } from '../../utils/elementType';
@@ -55,6 +55,8 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { FileDownload } from '@mui/icons-material';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -69,8 +71,6 @@ const ContentContextualMenu = (props) => {
     const userId = useSelector((state) => state.user.profile.sub);
     const intl = useIntl();
     const { snackError } = useSnackMessage();
-
-    const DownloadIframe = 'downloadIframe';
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
@@ -410,7 +410,7 @@ const ContentContextualMenu = (props) => {
      * @name handleDownloadCase
      * @returns {void}
      */
-    const handleDownloadCase = useCallback(() => {
+    const handleDownloadCase = useCallback(async () => {
         //for each selectedElements , filter cases and return their uuid and subtype
         const casesToDownload = selectedElements
             .filter((element) => element.type === ElementType.CASE)
@@ -418,20 +418,18 @@ const ContentContextualMenu = (props) => {
                 elementUuid: element.elementUuid,
             }));
 
-        casesToDownload.forEach(async (element) => {
+        const zip = new JSZip();
+        for (const element of casesToDownload) {
             const result = await downloadCase(element.elementUuid);
             const name = await getCaseOriginalName(element.elementUuid);
             const blob = await result.blob();
-            const href = window.URL.createObjectURL(blob);
-            const a = linkRef.current;
-            a.download = name;
-            a.href = href;
-            a.click();
-            a.href = '';
-        });
-    }, [selectedElements]);
+            zip.file(name, blob);
+        }
 
-    const linkRef = useRef(null);
+        zip.generateAsync({ type: 'blob' }).then((content) =>
+            saveAs(content, 'cases.zip')
+        );
+    }, [selectedElements]);
 
     const buildMenu = () => {
         if (selectedElements.length === 0) {
@@ -698,24 +696,6 @@ const ContentContextualMenu = (props) => {
                 />
             )}
             {renderDialog()}
-            {/* for download cases*/}
-            <a
-                href="/"
-                title="download case"
-                ref={linkRef}
-                target="_blank"
-                rel="noreferrer"
-                style={{ display: 'none' }}
-            >
-                Download Case
-            </a>
-
-            <iframe
-                id={DownloadIframe}
-                name={DownloadIframe}
-                title={DownloadIframe}
-                style={{ display: 'none' }}
-            />
         </>
     );
 };
