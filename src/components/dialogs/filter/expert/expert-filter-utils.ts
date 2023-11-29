@@ -46,6 +46,7 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
                 OPERATOR_OPTIONS.IS,
                 OPERATOR_OPTIONS.BEGINS_WITH,
                 OPERATOR_OPTIONS.ENDS_WITH,
+                OPERATOR_OPTIONS.EXISTS,
             ].map((operator) => ({
                 name: operator.name,
                 label: intl.formatMessage({ id: operator.label }),
@@ -57,10 +58,19 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
                 OPERATOR_OPTIONS.GREATER_OR_EQUALS,
                 OPERATOR_OPTIONS.LOWER,
                 OPERATOR_OPTIONS.LOWER_OR_EQUALS,
-            ];
+                OPERATOR_OPTIONS.EXISTS,
+            ].map((operator) => ({
+                name: operator.name,
+                label: intl.formatMessage({ id: operator.label }),
+            }));
         case DataType.BOOLEAN:
         case DataType.ENUM:
-            return [OPERATOR_OPTIONS.EQUALS, OPERATOR_OPTIONS.NOT_EQUALS];
+            return [OPERATOR_OPTIONS.EQUALS, OPERATOR_OPTIONS.NOT_EQUALS].map(
+                (operator) => ({
+                    name: operator.name,
+                    label: intl.formatMessage({ id: operator.label }),
+                })
+            );
     }
     return defaultOperators;
 };
@@ -70,7 +80,8 @@ export function getExpertRules(query: RuleGroupType): RuleGroupTypeExport {
         return {
             field: rule.field as FieldType,
             operator: rule.operator as OperatorType,
-            value: rule.value,
+            value:
+                rule.operator !== OperatorType.EXISTS ? rule.value : undefined,
             dataType: getDataType(rule.field) as DataType,
         };
     }
@@ -125,7 +136,17 @@ export const queryValidator: QueryValidator = (query) => {
     const validateRule = (rule: RuleType) => {
         const isNumberInput = getDataType(rule.field) === DataType.NUMBER;
         const isStringInput = getDataType(rule.field) === DataType.STRING;
-        if (rule.id && isStringInput && rule.value.trim() === '') {
+        if (rule.id && rule.operator === OperatorType.EXISTS) {
+            // In the case of EXISTS operator, because we do not have a second value to evaluate, we force a valid result.
+            result[rule.id] = {
+                valid: true,
+                reasons: undefined,
+            };
+        } else if (
+            rule.id &&
+            isStringInput &&
+            (rule.value || '').trim() === ''
+        ) {
             result[rule.id] = {
                 valid: false,
                 reasons: [EMPTY_RULE],
