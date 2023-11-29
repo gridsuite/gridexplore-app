@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -35,7 +35,6 @@ const ContentToolbar = (props) => {
     const intl = useIntl();
 
     const [openDialog, setOpenDialog] = useState(null);
-    const [items, setItems] = useState([]);
 
     const handleLastError = useCallback(
         (message) => {
@@ -118,55 +117,44 @@ const ContentToolbar = (props) => {
     );
 
     // Allowance
-    const isUserAllowed = useCallback(() => {
-        return selectedElements.every((el) => {
-            return el.owner === userId;
-        });
-    }, [selectedElements, userId]);
+    const isUserAllowed = useMemo(
+        () => selectedElements.every((el) => el.owner === userId),
+        [selectedElements, userId]
+    );
 
-    const allowsDelete = useCallback(() => {
-        return isUserAllowed();
-    }, [isUserAllowed]);
+    const allowsDelete = useMemo(() => isUserAllowed, [isUserAllowed]);
 
-    const allowsMove = useCallback(() => {
-        return (
+    const allowsMove = useMemo(
+        () =>
             selectedElements.every(
                 (element) => element.type !== ElementType.DIRECTORY
-            ) && isUserAllowed()
-        );
-    }, [isUserAllowed, selectedElements]);
+            ) && isUserAllowed,
+        [isUserAllowed, selectedElements]
+    );
 
-    useEffect(() => {
-        // build items here
-        let itemsCopy = [];
-        if (
-            selectedElements.length === 0 ||
-            (!allowsDelete() && !allowsMove())
-        ) {
-            setItems([]);
-            return;
+    const items = useMemo(() => {
+        if (!selectedElements.length || (!allowsDelete && !allowsMove)) {
+            return [];
         }
-
-        itemsCopy.push({
-            tooltipTextId: 'delete',
-            callback: () => {
-                handleOpenDialog(DialogsId.DELETE);
+        return [
+            {
+                tooltipTextId: 'delete',
+                callback: () => {
+                    handleOpenDialog(DialogsId.DELETE);
+                },
+                icon: <DeleteIcon fontSize="small" />,
+                disabled: !selectedElements.length || !allowsDelete,
             },
-            icon: <DeleteIcon fontSize="small" />,
-            disabled: selectedElements.length === 0 || !allowsDelete(),
-        });
-
-        itemsCopy.push({
-            tooltipTextId: 'move',
-            callback: () => {
-                handleOpenDialog(DialogsId.MOVE);
+            {
+                tooltipTextId: 'move',
+                callback: () => {
+                    handleOpenDialog(DialogsId.MOVE);
+                },
+                icon: <DriveFileMoveIcon fontSize="small" />,
+                disabled: !selectedElements.length || !allowsMove,
             },
-            icon: <DriveFileMoveIcon fontSize="small" />,
-            disabled: selectedElements.length === 0 || !allowsMove(),
-        });
-
-        setItems(itemsCopy);
-    }, [allowsMove, allowsDelete, selectedElements]);
+        ];
+    }, [allowsDelete, allowsMove, selectedElements.length]);
 
     const renderDialog = () => {
         switch (openDialog) {
