@@ -28,6 +28,7 @@ const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
 const PREFIX_FILTERS_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/filter/v1/filters';
+const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 
 function getToken() {
     const state = store.getState();
@@ -175,17 +176,22 @@ export function fetchValidateUser(user) {
         });
 }
 
+function fetchEnv() {
+    return fetch('env.json').then((res) => res.json());
+}
+
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
-    return fetch('env.json')
-        .then((res) => res.json())
-        .then((res) => {
-            return fetch(
-                res.appsMetadataServerUrl + '/apps-metadata.json'
-            ).then((response) => {
-                return response.json();
-            });
-        });
+    return fetchEnv()
+        .then((env) => fetch(env.appsMetadataServerUrl + '/apps-metadata.json'))
+        .then((response) => response.json());
+}
+
+export function fetchVersion() {
+    console.info(`Fetching global metadata...`);
+    return fetchEnv()
+        .then((env) => fetch(env.appsMetadataServerUrl + '/version.json'))
+        .then((response) => response.json());
 }
 
 export function fetchConfigParameters(appName) {
@@ -953,4 +959,9 @@ export function downloadCase(caseUuid) {
     return backendFetch(downloadCaseUrl, {
         method: 'get',
     });
+}
+
+export function getServersInfos() {
+    console.info('get backend servers informations');
+    return backendFetchJson(PREFIX_STUDY_QUERIES + '/v1/servers/infos');
 }
