@@ -23,7 +23,6 @@ import DeleteDialog from '../dialogs/delete-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
-import { downloadCase } from 'utils/rest-api';
 
 import { DialogsId } from '../../utils/UIconstants';
 
@@ -35,7 +34,6 @@ import {
     duplicateParameter,
     duplicateStudy,
     fetchElementsInfos,
-    getCaseOriginalName,
     getNameCandidate,
     moveElementToDirectory,
     newScriptFromFilter,
@@ -55,8 +53,7 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { FileDownload } from '@mui/icons-material';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
+import { downloadCases } from '../utils/caseUtils';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -404,31 +401,11 @@ const ContentContextualMenu = (props) => {
         );
     }, [selectedElements]);
 
-    /**
-     * Downloads the selected cases as a file.
-     * @function
-     * @name handleDownloadCase
-     * @returns {void}
-     */
-    const handleDownloadCase = useCallback(async () => {
-        //for each selectedElements , filter cases and return their uuid and subtype
-        const casesToDownload = selectedElements
+    const handleDownloadCases = useCallback(async () => {
+        const casesUuids = selectedElements
             .filter((element) => element.type === ElementType.CASE)
-            .map((element) => ({
-                elementUuid: element.elementUuid,
-            }));
-
-        const zip = new JSZip();
-        for (const element of casesToDownload) {
-            const result = await downloadCase(element.elementUuid);
-            const name = await getCaseOriginalName(element.elementUuid);
-            const blob = await result.blob();
-            zip.file(name, blob);
-        }
-
-        zip.generateAsync({ type: 'blob' }).then((content) =>
-            saveAs(content, 'cases.zip')
-        );
+            .map((element) => element.elementUuid);
+        await downloadCases(casesUuids);
     }, [selectedElements]);
 
     const buildMenu = () => {
@@ -505,9 +482,9 @@ const ContentContextualMenu = (props) => {
         if (allowsDownloadCase()) {
             // is export allowed
             menuItems.push({
-                messageDescriptorId: 'downloadCase',
+                messageDescriptorId: 'downloadCases',
                 callback: async () => {
-                    await handleDownloadCase();
+                    await handleDownloadCases();
                     handleCloseDialog();
                 },
                 icon: <FileDownload fontSize="small" />,
