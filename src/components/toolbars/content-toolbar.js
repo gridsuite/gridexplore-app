@@ -21,6 +21,8 @@ import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { ElementType } from '../../utils/elementType';
+import { FileDownload } from '@mui/icons-material';
+import { downloadCases } from '../utils/caseUtils';
 
 const DialogsId = {
     DELETE: 'delete',
@@ -116,6 +118,13 @@ const ContentToolbar = (props) => {
         false
     );
 
+    const handleDownloadCases = useCallback(async () => {
+        const casesUuids = selectedElements
+            .filter((element) => element.type === ElementType.CASE)
+            .map((element) => element.elementUuid);
+        await downloadCases(casesUuids);
+    }, [selectedElements]);
+
     // Allowance
     const isUserAllowed = useMemo(
         () => selectedElements.every((el) => el.owner === userId),
@@ -132,29 +141,52 @@ const ContentToolbar = (props) => {
         [isUserAllowed, selectedElements]
     );
 
-    const items = useMemo(() => {
-        if (!selectedElements.length || (!allowsDelete && !allowsMove)) {
-            return [];
-        }
-        return [
-            {
-                tooltipTextId: 'delete',
-                callback: () => {
-                    handleOpenDialog(DialogsId.DELETE);
-                },
-                icon: <DeleteIcon fontSize="small" />,
-                disabled: !selectedElements.length || !allowsDelete,
-            },
-            {
-                tooltipTextId: 'move',
-                callback: () => {
-                    handleOpenDialog(DialogsId.MOVE);
-                },
-                icon: <DriveFileMoveIcon fontSize="small" />,
-                disabled: !selectedElements.length || !allowsMove,
-            },
-        ];
-    }, [allowsDelete, allowsMove, selectedElements.length]);
+    const allowsDownloadCases = useMemo(
+        () =>
+            selectedElements.every(
+                (element) => element.type === ElementType.CASE
+            ),
+        [selectedElements]
+    );
+
+    const items = useMemo(
+        () =>
+            selectedElements.length &&
+            (allowsDelete || allowsMove || allowsDownloadCases)
+                ? [
+                      {
+                          tooltipTextId: 'delete',
+                          callback: () => {
+                              handleOpenDialog(DialogsId.DELETE);
+                          },
+                          icon: <DeleteIcon fontSize="small" />,
+                          disabled: !selectedElements.length || !allowsDelete,
+                      },
+                      {
+                          tooltipTextId: 'move',
+                          callback: () => {
+                              handleOpenDialog(DialogsId.MOVE);
+                          },
+                          icon: <DriveFileMoveIcon fontSize="small" />,
+                          disabled: !selectedElements.length || !allowsMove,
+                      },
+                      {
+                          tooltipTextId: 'downloadCases',
+                          callback: handleDownloadCases,
+                          icon: <FileDownload fontSize="small" />,
+                          disabled:
+                              !selectedElements.length || !allowsDownloadCases,
+                      },
+                  ]
+                : [],
+        [
+            allowsDelete,
+            allowsDownloadCases,
+            allowsMove,
+            handleDownloadCases,
+            selectedElements.length,
+        ]
+    );
 
     const renderDialog = () => {
         switch (openDialog) {
