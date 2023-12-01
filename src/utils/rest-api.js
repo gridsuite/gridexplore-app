@@ -191,6 +191,12 @@ export function fetchAuthorizationCodeFlowFeatureFlag() {
                         }`
                     );
                     return res.authorizationCodeFlowFeatureFlag;
+                })
+                .catch(() => {
+                    console.log(
+                        'No flag found: authorization code flow will be disabled'
+                    );
+                    return false;
                 });
         });
 }
