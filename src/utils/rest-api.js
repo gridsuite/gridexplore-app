@@ -192,9 +192,10 @@ export function fetchAuthorizationCodeFlowFeatureFlag() {
                     );
                     return res.authorizationCodeFlowFeatureFlag;
                 })
-                .catch(() => {
+                .catch((error) => {
+                    console.error(error);
                     console.log(
-                        'No flag found: authorization code flow will be disabled'
+                        `Something wrong happened when retrieving authentication.json: authorization code flow will be disabled`
                     );
                     return false;
                 });
