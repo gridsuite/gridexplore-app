@@ -10,6 +10,8 @@ import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
+import { jwtDecode } from 'jwt-decode';
+import { dispatchUser, logout } from '@gridsuite/commons-ui';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -29,9 +31,36 @@ const PREFIX_NOTIFICATION_WS =
 const PREFIX_FILTERS_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/filter/v1/filters';
 
-function getToken() {
+const maxTtlSeconds = fetch('idpSettings.json')
+    .then((r) => r.json())
+    .then((idpSettings) => idpSettings.maxExpiresIn);
+
+async function getToken() {
     const state = store.getState();
-    return state.user.id_token;
+    const user = await state.userManager.instance.getUser();
+    const idToken = user?.id_token;
+    if (idToken) {
+        const decodedIdToken = jwtDecode(idToken);
+        const now = Date.now() / 1000;
+        const livingTime = now - decodedIdToken.iat;
+        const expiresIn = decodedIdToken.exp - now;
+        if (livingTime > (await maxTtlSeconds) || expiresIn < 0) {
+            console.log('renewing tokens');
+            try {
+                const user = await state.userManager.instance.signinSilent();
+                dispatchUser(
+                    store.dispatch,
+                    state.userManager.instance,
+                    fetchValidateUser
+                );
+                return user.id_token;
+            } catch (error) {
+                console.error(error);
+                logout(store.dispatch, state.userManager.instance);
+            }
+        }
+        return idToken;
+    }
 }
 
 export function connectNotificationsWsUpdateConfig() {
@@ -45,7 +74,7 @@ export function connectNotificationsWsUpdateConfig() {
         APP_NAME;
 
     const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => webSocketUrl + '&access_token=' + getToken()
+        async () => webSocketUrl + '&access_token=' + (await getToken())
     );
     reconnectingWebSocket.onopen = function () {
         console.info(
@@ -93,7 +122,7 @@ function handleError(response) {
     });
 }
 
-function prepareRequest(init, token) {
+async function prepareRequest(init, token) {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError(
             'Argument 2 of backendFetch is not an object' + typeof init
@@ -101,7 +130,7 @@ function prepareRequest(init, token) {
     }
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
-    const tokenCopy = token ? token : getToken();
+    const tokenCopy = token ? token : await getToken();
     initCopy.headers.append('Authorization', 'Bearer ' + tokenCopy);
     return initCopy;
 }
@@ -112,18 +141,18 @@ function safeFetch(url, initCopy) {
     );
 }
 
-export function backendFetch(url, init, token) {
-    const initCopy = prepareRequest(init, token);
+export async function backendFetch(url, init, token) {
+    const initCopy = await prepareRequest(init, token);
     return safeFetch(url, initCopy);
 }
 
-export function backendFetchText(url, init, token) {
-    const initCopy = prepareRequest(init, token);
+export async function backendFetchText(url, init, token) {
+    const initCopy = await prepareRequest(init, token);
     return safeFetch(url, initCopy).then((safeResponse) => safeResponse.text());
 }
 
-export function backendFetchJson(url, init, token) {
-    const initCopy = prepareRequest(init, token);
+export async function backendFetchJson(url, init, token) {
+    const initCopy = await prepareRequest(init, token);
     return safeFetch(url, initCopy).then((safeResponse) => safeResponse.json());
 }
 
@@ -768,7 +797,7 @@ export function connectNotificationsWsUpdateDirectories() {
         '/notify?updateType=directories';
 
     const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => webSocketUrl + '&access_token=' + getToken()
+        async () => webSocketUrl + '&access_token=' + (await getToken())
     );
     reconnectingWebSocket.onopen = function () {
         console.info(

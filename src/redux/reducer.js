@@ -28,6 +28,7 @@ import {
     REMOVE_UPLOADING_ELEMENT,
     DIRECTORY_UPDATED,
     TREE_DATA,
+    USER_MANAGER,
 } from './actions';
 
 import {
@@ -53,6 +54,10 @@ const initialState = {
     activeDirectory: null,
     currentPath: [],
     user: null,
+    userManager: {
+        instance: null,
+        error: null,
+    },
     signInCallbackError: null,
     authenticationRouterError: null,
     showAuthenticationRouterLogin: false,
@@ -151,5 +156,9 @@ export const reducer = createReducer(initialState, {
     },
     [TREE_DATA]: (state, action) => {
         state.treeData = action.treeData;
+    },
+
+    [USER_MANAGER]: (state, action) => {
+        state.userManager = action.userManager;
     },
 });

@@ -102,3 +102,25 @@ export function setTreeData(treeData) {
         treeData: treeData,
     };
 }
+
+export const USER_MANAGER = 'USER_MANAGER';
+
+export function setUserManager(userManager) {
+    return {
+        type: USER_MANAGER,
+        userManager: {
+            instance: userManager,
+            error: null,
+        },
+    };
+}
+
+export function setUserManagerError(userManagerError) {
+    return {
+        type: USER_MANAGER,
+        userManager: {
+            instance: null,
+            error: userManagerError,
+        },
+    };
+}
