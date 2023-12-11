@@ -1,4 +1,5 @@
 {
+  "close": "Close",
   "parameters": "Parameters",
   "paramsChangingError": "An error occured when changing the parameters",
   "paramsRetrievingError": "An error occurred while retrieving the parameters",
