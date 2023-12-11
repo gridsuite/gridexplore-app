@@ -1,12 +1,19 @@
 declare module '@gridsuite/commons-ui' {
     import { FunctionComponent, ReactElement } from 'react';
+    import { InferProps } from 'prop-types';
     import { AutocompleteProps } from '@mui/material/Autocomplete/Autocomplete';
     import {
         ButtonProps,
-        ButtonTypeMap,
         RadioGroupProps,
         TextFieldProps,
     } from '@mui/material';
+    import {TopBar as RawTopBar} from '@gridsuite/commons-ui';
+
+    export const DARK_THEME: String, LIGHT_THEME: String;
+
+    export const TopBar: FunctionComponent<InferProps<typeof RawTopBar.propTypes>>;
+
+    function logout(dispatch: unknown, userManagerInstance: unknown): Promise<unknown | undefined>;
 
     interface SnackInputs {
         messageTxt?: string;

@@ -68,7 +68,12 @@ const AppTopBar = ({ user, userManager }) => {
                 getGlobalVersion={(setGlobalVersion) =>
                     fetchVersion()
                         .then((res) => setGlobalVersion(res.deployVersion))
-                        .catch((reason) => setGlobalVersion(null))
+                        .catch((reason) => {
+                            console.error(
+                                'Error while fetching the version : ' + reason
+                            );
+                            setGlobalVersion(null);
+                        })
                 }
                 getAdditionalComponents={(setServers) =>
                     getServersInfos()
@@ -89,7 +94,13 @@ const AppTopBar = ({ user, userManager }) => {
                                 }))
                             )
                         )
-                        .catch((reason) => setServers(null))
+                        .catch((reason) => {
+                            console.error(
+                                'Error while fetching the servers infos : ' +
+                                    reason
+                            );
+                            setServers(null);
+                        })
                 }
             />
             <ParametersDialog
