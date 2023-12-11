@@ -13,8 +13,7 @@ declare module '@gridsuite/commons-ui' {
 
     export const TopBar: FunctionComponent<InferProps<typeof RawTopBar.propTypes>>;
 
-    function logout(dispatch: unknown, userManagerInstance: unknown): Promise<unknown | undefined>;
-
+    function logout(dispatch: any, userManagerInstance: any): Promise<any | undefined>;
     interface SnackInputs {
         messageTxt?: string;
         messageId?: string;
