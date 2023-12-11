@@ -11,7 +11,11 @@ import ParametersDialog, {
 } from './dialogs/parameters-dialog';
 import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAppsAndUrls } from '../utils/rest-api';
+import {
+    fetchAppsAndUrls,
+    fetchVersion,
+    getServersInfos,
+} from '../utils/rest-api';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { ReactComponent as GridExploreLogoLight } from '../images/GridExplore_logo_light.svg';
