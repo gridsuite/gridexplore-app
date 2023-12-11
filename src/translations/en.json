@@ -238,5 +238,5 @@
   "emptyRule": "Filter contains an empty field",
   "incorrectRule": "Filter contains an incorrect field",
   "emptyGroup": "Filter contains an empty group. Consider removing it or adding rules to this group",
-  "downloadCase": "Download Case"
+  "downloadCases": "Download Case(s)"
 }

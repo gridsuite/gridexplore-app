@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useCallback, useRef } from 'react';
+import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -23,26 +23,24 @@ import DeleteDialog from '../dialogs/delete-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
-import { downloadCase } from 'utils/rest-api';
 
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
-    duplicateCase,
     deleteElement,
+    duplicateCase,
+    duplicateContingencyList,
+    duplicateFilter,
+    duplicateParameter,
+    duplicateStudy,
+    fetchElementsInfos,
+    getNameCandidate,
     moveElementToDirectory,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
-    duplicateFilter,
-    duplicateContingencyList,
-    fetchElementsInfos,
-    duplicateStudy,
-    getNameCandidate,
-    duplicateParameter,
-    getCaseOriginalName,
 } from '../../utils/rest-api';
 
 import { ContingencyListType, ElementType } from '../../utils/elementType';
@@ -55,6 +53,7 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { FileDownload } from '@mui/icons-material';
+import { downloadCases } from '../utils/caseUtils';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -69,8 +68,6 @@ const ContentContextualMenu = (props) => {
     const userId = useSelector((state) => state.user.profile.sub);
     const intl = useIntl();
     const { snackError } = useSnackMessage();
-
-    const DownloadIframe = 'downloadIframe';
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
@@ -404,34 +401,12 @@ const ContentContextualMenu = (props) => {
         );
     }, [selectedElements]);
 
-    /**
-     * Downloads the selected cases as a file.
-     * @function
-     * @name handleDownloadCase
-     * @returns {void}
-     */
-    const handleDownloadCase = useCallback(() => {
-        //for each selectedElements , filter cases and return their uuid and subtype
-        const casesToDownload = selectedElements
+    const handleDownloadCases = useCallback(async () => {
+        const casesUuids = selectedElements
             .filter((element) => element.type === ElementType.CASE)
-            .map((element) => ({
-                elementUuid: element.elementUuid,
-            }));
-
-        casesToDownload.forEach(async (element) => {
-            const result = await downloadCase(element.elementUuid);
-            const name = await getCaseOriginalName(element.elementUuid);
-            const blob = await result.blob();
-            const href = window.URL.createObjectURL(blob);
-            const a = linkRef.current;
-            a.download = name;
-            a.href = href;
-            a.click();
-            a.href = '';
-        });
+            .map((element) => element.elementUuid);
+        await downloadCases(casesUuids);
     }, [selectedElements]);
-
-    const linkRef = useRef(null);
 
     const buildMenu = () => {
         if (selectedElements.length === 0) {
@@ -507,9 +482,9 @@ const ContentContextualMenu = (props) => {
         if (allowsDownloadCase()) {
             // is export allowed
             menuItems.push({
-                messageDescriptorId: 'downloadCase',
-                callback: () => {
-                    handleDownloadCase();
+                messageDescriptorId: 'downloadCases',
+                callback: async () => {
+                    await handleDownloadCases();
                     handleCloseDialog();
                 },
                 icon: <FileDownload fontSize="small" />,
@@ -698,24 +673,6 @@ const ContentContextualMenu = (props) => {
                 />
             )}
             {renderDialog()}
-            {/* for download cases*/}
-            <a
-                href="/"
-                title="download case"
-                ref={linkRef}
-                target="_blank"
-                rel="noreferrer"
-                style={{ display: 'none' }}
-            >
-                Download Case
-            </a>
-
-            <iframe
-                id={DownloadIframe}
-                name={DownloadIframe}
-                title={DownloadIframe}
-                style={{ display: 'none' }}
-            />
         </>
     );
 };
