@@ -29,6 +29,10 @@ const PREFIX_NOTIFICATION_WS =
 const PREFIX_FILTERS_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/filter/v1/filters';
 
+export const maxTtlSeconds = fetch('idpSettings.json')
+    .then((r) => r.json())
+    .then((idpSettings) => idpSettings.maxExpiresIn);
+
 function getToken() {
     const state = store.getState();
     return state.user.id_token;

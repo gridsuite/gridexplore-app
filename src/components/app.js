@@ -26,8 +26,10 @@ import {
 import {
     AuthenticationRouter,
     CardErrorBoundary,
+    dispatchUser,
     getPreLoginPath,
     initializeAuthenticationProd,
+    logout,
 } from '@gridsuite/commons-ui';
 
 import { useMatch } from 'react-router-dom';
@@ -39,6 +41,7 @@ import {
     fetchConfigParameter,
     fetchConfigParameters,
     fetchValidateUser,
+    maxTtlSeconds,
 } from '../utils/rest-api';
 import {
     APP_NAME,
@@ -53,6 +56,9 @@ import Grid from '@mui/material/Grid';
 import TreeViewsContainer from './tree-views-container';
 import DirectoryContent from './directory-content';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
+import { jwtDecode } from 'jwt-decode';
+
+const TOKEN_RENEWAL_INTERVAL = 5000;
 
 const noUserManager = { instance: null, error: null };
 
@@ -112,6 +118,37 @@ const App = () => {
             { capture: true }
         );
     });
+
+    const checkAndRenewTokens = useCallback(async () => {
+        const idToken = user?.id_token;
+        if (userManager.instance && idToken) {
+            const decodedIdToken = jwtDecode(idToken);
+            const now = Date.now() / 1000;
+            const livingTime = now - decodedIdToken.iat;
+            const expiresIn = decodedIdToken.exp - now;
+            if (livingTime > (await maxTtlSeconds) || expiresIn < 0) {
+                console.log('renewing tokens');
+                try {
+                    await userManager.instance.signinSilent();
+                    dispatchUser(
+                        dispatch,
+                        userManager.instance,
+                        fetchValidateUser
+                    );
+                } catch (error) {
+                    console.error(error);
+                    logout(dispatch, userManager.instance);
+                }
+            }
+        }
+    }, [dispatch, user?.id_token, userManager.instance]);
+
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            await checkAndRenewTokens();
+        }, TOKEN_RENEWAL_INTERVAL);
+        return () => clearInterval(interval);
+    }, [checkAndRenewTokens]);
 
     const connectNotificationsUpdateConfig = useCallback(() => {
         const ws = connectNotificationsWsUpdateConfig();
