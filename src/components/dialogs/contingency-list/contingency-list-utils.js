@@ -24,11 +24,11 @@ import {
 } from '../../utils/field-constants';
 import { ContingencyListType } from '../../../utils/elementType';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
-
+import { v4 as uuid4 } from 'uuid';
 import { getCriteriaBasedFormData } from '../commons/criteria-based/criteria-based-utils';
 
 export const makeDefaultRowData = () => ({
-    [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+    [AG_GRID_ROW_UUID]: uuid4(),
     [CONTINGENCY_NAME]: '',
     [EQUIPMENT_IDS]: [],
 });
@@ -63,7 +63,7 @@ export const getExplicitNamingFormDataFromFetchedElement = (response) => {
         result = response.identifierContingencyList?.identifiers?.map(
             (identifiers) => {
                 return {
-                    [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+                    [AG_GRID_ROW_UUID]: uuid4(),
                     [CONTINGENCY_LIST_TYPE]:
                         ContingencyListType.EXPLICIT_NAMING.id,
                     [CONTINGENCY_NAME]: identifiers.contingencyId,

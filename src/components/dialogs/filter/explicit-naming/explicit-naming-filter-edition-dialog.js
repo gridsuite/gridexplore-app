@@ -27,6 +27,7 @@ import {
 } from '../../../utils/field-constants';
 import { FetchStatus } from '../../../../utils/custom-hooks';
 import { FilterForm } from '../filter-form';
+import { v4 as uuid4 } from 'uuid';
 
 const formSchema = yup
     .object()
@@ -75,7 +76,7 @@ const ExplicitNamingFilterEditionDialog = ({
                         [FILTER_EQUIPMENTS_ATTRIBUTES]: response[
                             FILTER_EQUIPMENTS_ATTRIBUTES
                         ].map((row) => ({
-                            [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+                            [AG_GRID_ROW_UUID]: uuid4(),
                             ...row,
                         })),
                     });

@@ -22,6 +22,7 @@ import yup from '../../../utils/yup-config';
 import { makeDefaultRowData } from '../contingency-list-utils';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { ContingencyListType } from 'utils/elementType';
+import { v4 as uuid4 } from 'uuid';
 
 export const getExplicitNamingSchema = (id) => {
     return {
@@ -119,7 +120,7 @@ const ExplicitNamingForm = () => {
         if (csvData) {
             return csvData.map((value) => {
                 return {
-                    [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+                    [AG_GRID_ROW_UUID]: uuid4(),
                     [CONTINGENCY_NAME]: value[0]?.trim() || '',
                     [EQUIPMENT_IDS]:
                         value[1]
