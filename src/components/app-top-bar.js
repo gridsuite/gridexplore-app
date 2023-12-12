@@ -11,12 +11,18 @@ import ParametersDialog, {
 } from './dialogs/parameters-dialog';
 import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAppsAndUrls } from '../utils/rest-api';
+import {
+    fetchAppsAndUrls,
+    fetchVersion,
+    getServersInfos,
+} from '../utils/rest-api';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { ReactComponent as GridExploreLogoLight } from '../images/GridExplore_logo_light.svg';
 import { ReactComponent as GridExploreLogoDark } from '../images/GridExplore_logo_dark.svg';
 import { setAppsAndUrls } from '../redux/actions';
+import AppPackage from '../../package.json';
+
 const AppTopBar = ({ user, userManager }) => {
     const navigate = useNavigate();
 
@@ -41,14 +47,6 @@ const AppTopBar = ({ user, userManager }) => {
         }
     }, [user, dispatch]);
 
-    function hideParameters() {
-        setShowParameters(false);
-    }
-
-    function onLogoClicked() {
-        navigate('/', { replace: true });
-    }
-
     return (
         <>
             <TopBar
@@ -61,19 +59,57 @@ const AppTopBar = ({ user, userManager }) => {
                         <GridExploreLogoDark />
                     )
                 }
+                appVersion={AppPackage.version}
+                appLicense={AppPackage.license}
                 onLogoutClick={() => logout(dispatch, userManager.instance)}
-                onLogoClick={() => onLogoClicked()}
+                onLogoClick={() => navigate('/', { replace: true })}
                 user={user}
                 appsAndUrls={appsAndUrls}
-                onAboutClick={() => console.debug('about')}
                 onThemeClick={handleChangeTheme}
                 theme={themeLocal}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
+                getGlobalVersion={(setGlobalVersion) =>
+                    fetchVersion()
+                        .then((res) => setGlobalVersion(res.deployVersion))
+                        .catch((reason) => {
+                            console.error(
+                                'Error while fetching the version : ' + reason
+                            );
+                            setGlobalVersion(null);
+                        })
+                }
+                getAdditionalModules={(setServers) =>
+                    getServersInfos()
+                        .then((res) =>
+                            setServers(
+                                Object.entries(res).map(([name, infos]) => ({
+                                    name:
+                                        infos?.build?.name ||
+                                        infos?.build?.artifact ||
+                                        name,
+                                    type: 'server',
+                                    version: infos?.build?.version,
+                                    gitTag:
+                                        infos?.git?.tags ||
+                                        infos?.git?.commit?.id[
+                                            'describe-short'
+                                        ],
+                                }))
+                            )
+                        )
+                        .catch((reason) => {
+                            console.error(
+                                'Error while fetching the servers infos : ' +
+                                    reason
+                            );
+                            setServers(null);
+                        })
+                }
             />
             <ParametersDialog
                 showParameters={showParameters}
-                hideParameters={hideParameters}
+                hideParameters={() => setShowParameters(false)}
             />
         </>
     );

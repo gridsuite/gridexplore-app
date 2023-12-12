@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -21,6 +21,8 @@ import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { ElementType } from '../../utils/elementType';
+import { FileDownload } from '@mui/icons-material';
+import { downloadCases } from '../utils/caseUtils';
 
 const DialogsId = {
     DELETE: 'delete',
@@ -35,7 +37,6 @@ const ContentToolbar = (props) => {
     const intl = useIntl();
 
     const [openDialog, setOpenDialog] = useState(null);
-    const [items, setItems] = useState([]);
 
     const handleLastError = useCallback(
         (message) => {
@@ -117,56 +118,75 @@ const ContentToolbar = (props) => {
         false
     );
 
+    const handleDownloadCases = useCallback(async () => {
+        const casesUuids = selectedElements
+            .filter((element) => element.type === ElementType.CASE)
+            .map((element) => element.elementUuid);
+        await downloadCases(casesUuids);
+    }, [selectedElements]);
+
     // Allowance
-    const isUserAllowed = useCallback(() => {
-        return selectedElements.every((el) => {
-            return el.owner === userId;
-        });
-    }, [selectedElements, userId]);
+    const isUserAllowed = useMemo(
+        () => selectedElements.every((el) => el.owner === userId),
+        [selectedElements, userId]
+    );
 
-    const allowsDelete = useCallback(() => {
-        return isUserAllowed();
-    }, [isUserAllowed]);
+    const allowsDelete = useMemo(() => isUserAllowed, [isUserAllowed]);
 
-    const allowsMove = useCallback(() => {
-        return (
+    const allowsMove = useMemo(
+        () =>
             selectedElements.every(
                 (element) => element.type !== ElementType.DIRECTORY
-            ) && isUserAllowed()
-        );
-    }, [isUserAllowed, selectedElements]);
+            ) && isUserAllowed,
+        [isUserAllowed, selectedElements]
+    );
 
-    useEffect(() => {
-        // build items here
-        let itemsCopy = [];
-        if (
-            selectedElements.length === 0 ||
-            (!allowsDelete() && !allowsMove())
-        ) {
-            setItems([]);
-            return;
-        }
+    const allowsDownloadCases = useMemo(
+        () =>
+            selectedElements.every(
+                (element) => element.type === ElementType.CASE
+            ),
+        [selectedElements]
+    );
 
-        itemsCopy.push({
-            tooltipTextId: 'delete',
-            callback: () => {
-                handleOpenDialog(DialogsId.DELETE);
-            },
-            icon: <DeleteIcon fontSize="small" />,
-            disabled: selectedElements.length === 0 || !allowsDelete(),
-        });
-
-        itemsCopy.push({
-            tooltipTextId: 'move',
-            callback: () => {
-                handleOpenDialog(DialogsId.MOVE);
-            },
-            icon: <DriveFileMoveIcon fontSize="small" />,
-            disabled: selectedElements.length === 0 || !allowsMove(),
-        });
-
-        setItems(itemsCopy);
-    }, [allowsMove, allowsDelete, selectedElements]);
+    const items = useMemo(
+        () =>
+            selectedElements.length &&
+            (allowsDelete || allowsMove || allowsDownloadCases)
+                ? [
+                      {
+                          tooltipTextId: 'delete',
+                          callback: () => {
+                              handleOpenDialog(DialogsId.DELETE);
+                          },
+                          icon: <DeleteIcon fontSize="small" />,
+                          disabled: !selectedElements.length || !allowsDelete,
+                      },
+                      {
+                          tooltipTextId: 'move',
+                          callback: () => {
+                              handleOpenDialog(DialogsId.MOVE);
+                          },
+                          icon: <DriveFileMoveIcon fontSize="small" />,
+                          disabled: !selectedElements.length || !allowsMove,
+                      },
+                      {
+                          tooltipTextId: 'downloadCases',
+                          callback: handleDownloadCases,
+                          icon: <FileDownload fontSize="small" />,
+                          disabled:
+                              !selectedElements.length || !allowsDownloadCases,
+                      },
+                  ]
+                : [],
+        [
+            allowsDelete,
+            allowsDownloadCases,
+            allowsMove,
+            handleDownloadCases,
+            selectedElements.length,
+        ]
+    );
 
     const renderDialog = () => {
         switch (openDialog) {
