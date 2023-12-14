@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveDirectory } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -115,7 +115,7 @@ const DirectoryContent = () => {
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
-    const [activeElement, setActiveElement] = React.useState(null);
+    const [activeElement, setActiveElement] = useState(null);
     const [isMissingDataAfterDirChange, setIsMissingDataAfterDirChange] =
         useState(true);
 
@@ -123,58 +123,86 @@ const DirectoryContent = () => {
     const todayStart = new Date().setHours(0, 0, 0, 0);
 
     /* Menu states */
-    const [mousePosition, setMousePosition] =
-        React.useState(initialMousePosition);
+    const [mousePosition, setMousePosition] = useState(initialMousePosition);
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
     const [elementName, setElementName] = useState('');
+
+    const getTypeFromRowValue = useCallback((value) => value.split('/')[0], []);
+
     const handleRowClick = (event) => {
         if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
             setElementName(childrenMetadata[event.rowData.elementUuid]?.name);
             const subtype = childrenMetadata[event.rowData.elementUuid].subtype;
             /** set active directory on the store because it will be used while editing the contingency name */
             dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-            if (event.rowData.type === ElementType.STUDY) {
-                let url = getLink(
-                    event.rowData.elementUuid,
-                    event.rowData.type
-                );
-                url
-                    ? window.open(url, '_blank')
-                    : handleError(
-                          intl.formatMessage(
-                              { id: 'getAppLinkError' },
-                              { type: event.rowData.type }
-                          )
-                      );
-            } else if (event.rowData.type === ElementType.CONTINGENCY_LIST) {
-                if (subtype === ContingencyListType.CRITERIA_BASED.id) {
-                    setCurrentFiltersContingencyListId(
-                        event.rowData.elementUuid
+            switch (getTypeFromRowValue(event.rowData.type)) {
+                case ElementType.STUDY:
+                    let url = getLink(
+                        event.rowData.elementUuid,
+                        getTypeFromRowValue(event.rowData.type)
                     );
-                    setOpenDialog(subtype);
-                } else if (subtype === ContingencyListType.SCRIPT.id) {
-                    setCurrentScriptContingencyListId(
-                        event.rowData.elementUuid
-                    );
-                    setOpenDialog(subtype);
-                } else if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
-                    setCurrentExplicitNamingContingencyListId(
-                        event.rowData.elementUuid
-                    );
-                    setOpenDialog(subtype);
-                }
-            } else if (event.rowData.type === ElementType.FILTER) {
-                if (subtype === FilterType.EXPLICIT_NAMING.id) {
-                    setCurrentExplicitNamingFilterId(event.rowData.elementUuid);
-                    setOpenDialog(subtype);
-                } else if (subtype === FilterType.CRITERIA_BASED.id) {
-                    setCurrentCriteriaBasedFilterId(event.rowData.elementUuid);
-                    setOpenDialog(subtype);
-                } else if (subtype === FilterType.EXPERT.id) {
-                    setCurrentExpertFilterId(event.rowData.elementUuid);
-                    setOpenDialog(subtype);
-                }
+                    url
+                        ? window.open(url, '_blank')
+                        : handleError(
+                              intl.formatMessage(
+                                  { id: 'getAppLinkError' },
+                                  {
+                                      type: getTypeFromRowValue(
+                                          event.rowData.type
+                                      ),
+                                  }
+                              )
+                          );
+                    break;
+                case ElementType.CONTINGENCY_LIST:
+                    switch (subtype) {
+                        case ContingencyListType.CRITERIA_BASED.id:
+                            setCurrentFiltersContingencyListId(
+                                event.rowData.elementUuid
+                            );
+                            setOpenDialog(subtype);
+                            break;
+                        case ContingencyListType.SCRIPT.id:
+                            setCurrentScriptContingencyListId(
+                                event.rowData.elementUuid
+                            );
+                            setOpenDialog(subtype);
+                            break;
+                        case ContingencyListType.EXPLICIT_NAMING.id:
+                            setCurrentExplicitNamingContingencyListId(
+                                event.rowData.elementUuid
+                            );
+                            setOpenDialog(subtype);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case ElementType.FILTER:
+                    switch (subtype) {
+                        case FilterType.EXPLICIT_NAMING.id:
+                            setCurrentExplicitNamingFilterId(
+                                event.rowData.elementUuid
+                            );
+                            setOpenDialog(subtype);
+                            break;
+                        case FilterType.CRITERIA_BASED.id:
+                            setCurrentCriteriaBasedFilterId(
+                                event.rowData.elementUuid
+                            );
+                            setOpenDialog(subtype);
+                            break;
+                        case FilterType.EXPERT.id:
+                            setCurrentExpertFilterId(event.rowData.elementUuid);
+                            setOpenDialog(subtype);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
     };
@@ -185,7 +213,7 @@ const DirectoryContent = () => {
     const [
         currentFiltersContingencyListId,
         setCurrentFiltersContingencyListId,
-    ] = React.useState(null);
+    ] = useState(null);
     const handleCloseFiltersContingency = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
@@ -199,7 +227,7 @@ const DirectoryContent = () => {
     const [
         currentExplicitNamingContingencyListId,
         setCurrentExplicitNamingContingencyListId,
-    ] = React.useState(null);
+    ] = useState(null);
     const handleCloseExplicitNamingContingency = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
@@ -286,7 +314,7 @@ const DirectoryContent = () => {
         }
 
         if (event.rowData && event.rowData.uploading !== null) {
-            if (event.rowData.type !== 'DIRECTORY') {
+            if (getTypeFromRowValue(event.rowData.type) !== 'DIRECTORY') {
                 setActiveElement(event.rowData);
             }
             setMousePosition({
@@ -358,18 +386,17 @@ const DirectoryContent = () => {
         );
     }
 
-    function typeCellRender(cellData) {
-        const { rowData = {} } = cellData || {};
-        const elementUuid = rowData['elementUuid'];
-        const objectType = rowData[cellData.dataKey];
-        const { subtype, format } = childrenMetadata[elementUuid] || {};
+    const typeCellRender = (cellData) => {
+        const objectType = getTypeFromRowValue(cellData.rowData.type);
+        const { subtype, format } =
+            childrenMetadata[cellData.rowData.elementUuid] || {};
         return (
             <Box sx={styles.cell}>
-                {childrenMetadata[elementUuid] &&
+                {childrenMetadata[cellData.rowData.elementUuid] &&
                     getElementTypeTranslation(objectType, subtype, format)}
             </Box>
         );
-    }
+    };
 
     function userCellRender(cellData) {
         const user = cellData.rowData[cellData.dataKey];
@@ -639,14 +666,18 @@ const DirectoryContent = () => {
         return [...new Set(acc)];
     };
 
-    const getCurrentChildrenWithNotClickableRows = () => {
-        return currentChildren.map((child) => {
-            return {
+    const currentChildrenWithNotClickableRows = useMemo(
+        () =>
+            currentChildren?.map((child) => ({
                 ...child,
+                // We format element type and subtype this way in order for subtype to be taken into account for sorting
+                type: `${child.type}/${
+                    childrenMetadata[child.elementUuid]?.subtype
+                }`,
                 notClickable: child.type === ElementType.CASE,
-            };
-        });
-    };
+            })),
+        [childrenMetadata, currentChildren]
+    );
 
     const renderLoadingContent = () => {
         return (
@@ -688,7 +719,7 @@ const DirectoryContent = () => {
                     style={{ flexGrow: 1 }}
                     onRowRightClick={(e) => onContextMenu(e)}
                     onRowClick={handleRowClick}
-                    rows={getCurrentChildrenWithNotClickableRows()}
+                    rows={currentChildrenWithNotClickableRows}
                     columns={[
                         {
                             cellRenderer: selectionRenderer,
