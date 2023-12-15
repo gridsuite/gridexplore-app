@@ -100,6 +100,8 @@ const initialMousePosition = {
     mouseY: null,
 };
 
+const getTypeFromRowValue = (value) => value.split('/')[0];
+
 const DirectoryContent = () => {
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
@@ -127,8 +129,6 @@ const DirectoryContent = () => {
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
     const [elementName, setElementName] = useState('');
-
-    const getTypeFromRowValue = useCallback((value) => value.split('/')[0], []);
 
     const handleRowClick = (event) => {
         if (childrenMetadata[event.rowData.elementUuid] !== undefined) {
