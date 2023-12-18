@@ -25,9 +25,13 @@ import {
 
 import {
     AuthenticationRouter,
+    dispatchUser,
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
+    setShowAuthenticationRouterLogin,
+    getExpiresIn,
+    logout,
 } from '@gridsuite/commons-ui';
 
 import { useMatch } from 'react-router-dom';
@@ -78,6 +82,28 @@ const App = () => {
     const dispatch = useDispatch();
 
     const location = useLocation();
+
+    const [authorizationCodeFlowEnabled, setAuthorizationCodeFlowEnabled] =
+        useState(null);
+
+    const [idpSettings, setIdpSettings] = useState(null);
+
+    useEffect(() => {
+        fetch('idpSettings.json')
+            .then((r) => r.json())
+            .then((settings) => setIdpSettings(settings))
+            .catch((error) => {
+                console.debug('error when importing the idp settings', error);
+                dispatch(setShowAuthenticationRouterLogin(true));
+                throw error;
+            });
+    }, []);
+
+    useEffect(() => {
+        fetchAuthorizationCodeFlowFeatureFlag().then((enabled) =>
+            setAuthorizationCodeFlowEnabled(enabled)
+        );
+    }, []);
 
     const updateParams = useCallback(
         (params) => {
@@ -143,24 +169,62 @@ const App = () => {
     );
 
     useEffect(() => {
-        fetchAuthorizationCodeFlowFeatureFlag()
-            .then((authorizationCodeFlowEnabled) => {
-                return initializeAuthenticationProd(
+        if (authorizationCodeFlowEnabled !== null && idpSettings !== null) {
+            try {
+                const um = initializeAuthenticationProd(
                     dispatch,
                     initialMatchSilentRenewCallbackUrl != null,
-                    fetch('idpSettings.json'),
+                    idpSettings,
                     fetchValidateUser,
                     authorizationCodeFlowEnabled
                 );
-            })
-            .then((userManager) => {
-                setUserManager({ instance: userManager, error: null });
-            })
-            .catch(function (error) {
+                setUserManager({ instance: um, error: null });
+            } catch(error) {
                 setUserManager({ instance: null, error: error.message });
-            });
+            }
+        }
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
-    }, [initialMatchSilentRenewCallbackUrl, dispatch]);
+    }, [
+        authorizationCodeFlowEnabled,
+        idpSettings,
+        initialMatchSilentRenewCallbackUrl,
+        dispatch,
+    ]);
+
+    useEffect(() => {
+        if (
+            user?.id_token &&
+            userManager.instance &&
+            idpSettings &&
+            authorizationCodeFlowEnabled
+        ) {
+            const timeout = setTimeout(async () => {
+                console.log('renewing tokens !!');
+                userManager.instance
+                    .signinSilent()
+                    .then((user) => {
+                        dispatchUser(
+                            dispatch,
+                            userManager.instance,
+                            fetchValidateUser
+                        );
+                        return user.id_token;
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        logout(dispatch, userManager.instance);
+                    });
+            }, getExpiresIn(user.id_token, parseInt(idpSettings.maxExpiresIn)) * 1000);
+
+            return () => clearTimeout(timeout);
+        }
+    }, [
+        authorizationCodeFlowEnabled,
+        dispatch,
+        idpSettings,
+        user,
+        userManager.instance,
+    ]);
 
     useEffect(() => {
         if (user !== null) {

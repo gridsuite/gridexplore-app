@@ -72,9 +72,9 @@
         ]
     },
     "devDependencies": {
-        "http-proxy-middleware": "^2.0.0",
-        "prettier": "^2.0.0",
         "eslint-config-prettier": "^8.0.0",
-        "eslint-plugin-prettier": "^4.0.0"
+        "eslint-plugin-prettier": "^4.0.0",
+        "http-proxy-middleware": "^2.0.0",
+        "prettier": "^2.0.0"
     }
 }
