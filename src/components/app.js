@@ -21,8 +21,6 @@ import {
     selectComputedLanguage,
     selectLanguage,
     selectTheme,
-    setUserManager,
-    setUserManagerError,
 } from '../redux/actions';
 
 import {
@@ -56,6 +54,8 @@ import TreeViewsContainer from './tree-views-container';
 import DirectoryContent from './directory-content';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
 
+const noUserManager = { instance: null, error: null };
+
 const App = () => {
     const { snackError } = useSnackMessage();
 
@@ -71,7 +71,7 @@ const App = () => {
         (state) => state.showAuthenticationRouterLogin
     );
 
-    const userManager = useSelector((state) => state.userManager);
+    const [userManager, setUserManager] = useState(noUserManager);
 
     const navigate = useNavigate();
 
@@ -154,10 +154,10 @@ const App = () => {
                 );
             })
             .then((userManager) => {
-                dispatch(setUserManager(userManager));
+                setUserManager({ instance: userManager, error: null });
             })
             .catch(function (error) {
-                dispatch(setUserManagerError(error.message));
+                setUserManager({ instance: null, error: error.message });
             });
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
     }, [initialMatchSilentRenewCallbackUrl, dispatch]);

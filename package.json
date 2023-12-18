@@ -21,7 +21,6 @@
         "ag-grid-community": "^29.0.0",
         "ag-grid-react": "^29.0.0",
         "core-js": "^3.6.4",
-        "jwt-decode": "^4.0.0",
         "localized-countries": "^2.0.0",
         "notistack": "^3.0.0",
         "prop-types": "^15.7.2",
@@ -73,9 +72,9 @@
         ]
     },
     "devDependencies": {
-        "eslint-config-prettier": "^8.0.0",
-        "eslint-plugin-prettier": "^4.0.0",
         "http-proxy-middleware": "^2.0.0",
-        "prettier": "^2.0.0"
+        "prettier": "^2.0.0",
+        "eslint-config-prettier": "^8.0.0",
+        "eslint-plugin-prettier": "^4.0.0"
     }
 }
