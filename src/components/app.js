@@ -167,7 +167,11 @@ const App = () => {
                 setUserManager({ instance: null, error: error.message });
             });
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
-    }, [initialMatchSilentRenewCallbackUrl, dispatch]);
+    }, [
+        initialMatchSilentRenewCallbackUrl,
+        dispatch,
+        initialMatchSigninCallbackUrl,
+    ]);
 
     useEffect(() => {
         if (user !== null) {
