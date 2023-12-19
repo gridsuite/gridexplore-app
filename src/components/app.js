@@ -142,6 +142,12 @@ const App = () => {
         })
     );
 
+    const [initialMatchSigninCallbackUrl] = useState(
+        useMatch({
+            path: '/sign-in-callback',
+        })
+    );
+
     useEffect(() => {
         fetchAuthorizationCodeFlowFeatureFlag()
             .then((authorizationCodeFlowEnabled) => {
@@ -150,7 +156,8 @@ const App = () => {
                     initialMatchSilentRenewCallbackUrl != null,
                     fetch('idpSettings.json'),
                     fetchValidateUser,
-                    authorizationCodeFlowEnabled
+                    authorizationCodeFlowEnabled,
+                    initialMatchSigninCallbackUrl != null
                 );
             })
             .then((userManager) => {
