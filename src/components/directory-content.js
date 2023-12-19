@@ -137,7 +137,7 @@ const DirectoryContent = () => {
             /** set active directory on the store because it will be used while editing the contingency name */
             dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
             switch (getTypeFromRowValue(event.rowData.type)) {
-                case ElementType.STUDY:
+                case ElementType.STUDY: {
                     let url = getLink(
                         event.rowData.elementUuid,
                         getTypeFromRowValue(event.rowData.type)
@@ -155,6 +155,7 @@ const DirectoryContent = () => {
                               )
                           );
                     break;
+                }
                 case ElementType.CONTINGENCY_LIST:
                     switch (subtype) {
                         case ContingencyListType.CRITERIA_BASED.id:
@@ -477,8 +478,8 @@ const DirectoryContent = () => {
     };
 
     const nameCellRender = (cellData) => {
-        const elementUuid = cellData.rowData['elementUuid'];
-        const objectType = cellData.rowData['type'];
+        const elementUuid = cellData.rowData.elementUuid;
+        const objectType = getTypeFromRowValue(cellData.rowData.type);
         return (
             <Box sx={styles.cell}>
                 {/*  Icon */}
@@ -486,11 +487,7 @@ const DirectoryContent = () => {
                     isElementCaseOrStudy(objectType) && (
                         <CircularProgress size={18} sx={styles.circularRoot} />
                     )}
-                {childrenMetadata[elementUuid] &&
-                    getElementIcon(
-                        objectType,
-                        childrenMetadata[elementUuid].subtype
-                    )}
+                {childrenMetadata[elementUuid] && getElementIcon(objectType)}
                 {/* Name */}
                 <OverflowableText
                     text={getDisplayedElementName(cellData)}
