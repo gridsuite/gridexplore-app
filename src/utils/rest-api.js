@@ -292,6 +292,21 @@ export function updateAccessRights(elementUuid, isPrivate) {
     });
 }
 
+export function updateElement(elementUuid, element) {
+    console.log('element : ', element);
+    console.info('Updating element info for ' + elementUuid);
+    const updateAccessRightUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${elementUuid}`;
+    return backendFetch(updateAccessRightUrl, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(element),
+    });
+}
+
 export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
     console.info("Inserting a new folder '%s'", directoryName);
     const insertDirectoryUrl =
