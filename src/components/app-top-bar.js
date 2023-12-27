@@ -69,43 +69,10 @@ const AppTopBar = ({ user, userManager }) => {
                 theme={themeLocal}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
-                getGlobalVersion={(setGlobalVersion) =>
-                    fetchVersion()
-                        .then((res) => setGlobalVersion(res.deployVersion))
-                        .catch((reason) => {
-                            console.error(
-                                'Error while fetching the version : ' + reason
-                            );
-                            setGlobalVersion(null);
-                        })
+                globalVersionPromise={() =>
+                    fetchVersion().then((res) => res?.deployVersion)
                 }
-                getAdditionalModules={(setServers) =>
-                    getServersInfos()
-                        .then((res) =>
-                            setServers(
-                                Object.entries(res).map(([name, infos]) => ({
-                                    name:
-                                        infos?.build?.name ||
-                                        infos?.build?.artifact ||
-                                        name,
-                                    type: 'server',
-                                    version: infos?.build?.version,
-                                    gitTag:
-                                        infos?.git?.tags ||
-                                        infos?.git?.commit?.id[
-                                            'describe-short'
-                                        ],
-                                }))
-                            )
-                        )
-                        .catch((reason) => {
-                            console.error(
-                                'Error while fetching the servers infos : ' +
-                                    reason
-                            );
-                            setServers(null);
-                        })
-                }
+                additionalModulesPromise={getServersInfos}
             />
             <ParametersDialog
                 showParameters={showParameters}
