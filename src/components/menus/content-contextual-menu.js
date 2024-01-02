@@ -322,8 +322,8 @@ const ContentContextualMenu = (props) => {
         false
     );
 
-    const isNotUploadingElement = useCallback(() => {
-        return selectedElements.every((el) => !el.uploading);
+    const noCreationInProgress = useCallback(() => {
+        return selectedElements.every((el) => el.hasMetadata);
     }, [selectedElements]);
 
     // Allowance
@@ -334,14 +334,14 @@ const ContentContextualMenu = (props) => {
     }, [selectedElements, userId]);
 
     const allowsDelete = useCallback(() => {
-        return isUserAllowed() && isNotUploadingElement();
-    }, [isUserAllowed, isNotUploadingElement]);
+        return isUserAllowed() && noCreationInProgress();
+    }, [isUserAllowed, noCreationInProgress]);
 
     const allowsRename = useCallback(() => {
         return (
             selectedElements.length === 1 &&
             isUserAllowed() &&
-            !selectedElements[0].uploading
+            selectedElements[0].hasMetadata
         );
     }, [isUserAllowed, selectedElements]);
 
@@ -349,21 +349,22 @@ const ContentContextualMenu = (props) => {
         return (
             selectedElements.every(
                 (element) =>
-                    element.type !== ElementType.DIRECTORY && !element.uploading
+                    element.type !== ElementType.DIRECTORY &&
+                    element.hasMetadata
             ) && isUserAllowed()
         );
     }, [isUserAllowed, selectedElements]);
 
     const allowsDuplicate = useCallback(() => {
         return (
+            selectedElements[0].hasMetadata &&
             selectedElements.length === 1 &&
             (selectedElements[0].type === ElementType.CASE ||
                 selectedElements[0].type === ElementType.STUDY ||
                 selectedElements[0].type === ElementType.CONTINGENCY_LIST ||
                 selectedElements[0].type === ElementType.FILTER ||
                 selectedElements[0].type ===
-                    ElementType.VOLTAGE_INIT_PARAMETERS) &&
-            !selectedElements[0].uploading
+                    ElementType.VOLTAGE_INIT_PARAMETERS)
         );
     }, [selectedElements]);
 
@@ -371,7 +372,7 @@ const ContentContextualMenu = (props) => {
         return (
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CASE &&
-            !selectedElements[0].uploading
+            selectedElements[0].hasMetadata
         );
     }, [selectedElements]);
 
@@ -399,9 +400,9 @@ const ContentContextualMenu = (props) => {
         return (
             selectedElements.some(
                 (element) => element.type === ElementType.CASE
-            ) && isNotUploadingElement()
+            ) && noCreationInProgress()
         );
-    }, [selectedElements, isNotUploadingElement]);
+    }, [selectedElements, noCreationInProgress]);
 
     const handleDownloadCases = useCallback(async () => {
         const casesUuids = selectedElements
@@ -507,9 +508,9 @@ const ContentContextualMenu = (props) => {
 
         if (menuItems.length === 0) {
             menuItems.push({
-                messageDescriptorId: isNotUploadingElement()
+                messageDescriptorId: noCreationInProgress()
                     ? 'notElementCreator'
-                    : 'uploadingElement',
+                    : 'elementCreationInProgress',
                 icon: <DoNotDisturbAltIcon fontSize="small" />,
                 disabled: true,
             });

@@ -207,7 +207,7 @@
   "moveElementNotFoundError": "L'élément ou le dossier cible n'a pas été trouvé",
   "moveElementNotAllowedError": "Vous ne pouvez pas déplacer cet élément dans le dossier cible. Action non autorisée",
   "notElementCreator": "Vous n'êtes pas le créateur de l'élément",
-  "uploadingElement": "Téléversement en cours : pas d'opération autorisée",
+  "elementCreationInProgress": "Création en cours : pas d'opération autorisée",
   "serverConnectionFailed": "Échec de connexion avec le serveur. Veuillez réessayer ultérieurement",
   "invalidFormatOrName": "Format ou nom du fichier importé non valide",
   "parameterLoadingProblem": "Problème de chargement des paramètres",

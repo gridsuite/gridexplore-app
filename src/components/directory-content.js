@@ -287,7 +287,12 @@ const DirectoryContent = () => {
 
         if (event.rowData && event.rowData.uploading !== null) {
             if (event.rowData.type !== 'DIRECTORY') {
-                setActiveElement(event.rowData);
+                setActiveElement({
+                    hasMetadata:
+                        childrenMetadata[event.rowData.elementUuid] !==
+                        undefined,
+                    ...event.rowData,
+                });
             }
             setMousePosition({
                 mouseX: event.event.clientX + constants.HORIZONTAL_SHIFT,
@@ -600,6 +605,9 @@ const DirectoryContent = () => {
                         subtype:
                             childrenMetadata[activeElement.elementUuid]
                                 ?.subtype,
+                        hasMetadata:
+                            childrenMetadata[activeElement.elementUuid] !==
+                            undefined,
                     },
                     activeElement
                 )
@@ -624,6 +632,9 @@ const DirectoryContent = () => {
                                 {
                                     subtype:
                                         childrenMetadata[child2.elementUuid],
+                                    hasMetadata:
+                                        childrenMetadata[child2.elementUuid] !==
+                                        undefined,
                                 },
                                 child2
                             );
