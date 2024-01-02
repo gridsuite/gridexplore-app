@@ -396,10 +396,12 @@ const ContentContextualMenu = (props) => {
 
     const allowsDownloadCase = useCallback(() => {
         //if selectedElements contains at least one case
-        return selectedElements.some(
-            (element) => element.type === ElementType.CASE
+        return (
+            selectedElements.some(
+                (element) => element.type === ElementType.CASE
+            ) && isNotUploadingElement()
         );
-    }, [selectedElements]);
+    }, [selectedElements, isNotUploadingElement]);
 
     const handleDownloadCases = useCallback(async () => {
         const casesUuids = selectedElements
