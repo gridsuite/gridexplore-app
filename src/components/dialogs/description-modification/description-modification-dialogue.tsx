@@ -58,7 +58,7 @@ const DescriptionModificationDialogue: FunctionComponent<
                 });
             });
         },
-        [elementUuid]
+        [elementUuid, snackError]
     );
 
     return (
