@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 import yup from '../../utils/yup-config';
 import { DESCRIPTION } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
@@ -49,14 +49,14 @@ const DescriptionModificationDialogue: FunctionComponent<
         onClose();
     };
 
-    const onSubmit = (data: { description: string }) => {
+    const onSubmit = useCallback((data: { description: string }) => {
         updateElement(elementUuid, { ...data }).catch((error) => {
             snackError({
                 messageTxt: error.message,
                 headerId: 'descriptionModificationError',
             });
         });
-    };
+    }, [elementUuid]);
 
     return (
         <CustomMuiDialog
