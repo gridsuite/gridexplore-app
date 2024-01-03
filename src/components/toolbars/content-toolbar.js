@@ -153,7 +153,7 @@ const ContentToolbar = (props) => {
 
     const allowsDownloadCases = useMemo(
         () =>
-            selectedElements.every(
+            selectedElements.some(
                 (element) => element.type === ElementType.CASE
             ) && noCreationInProgress,
         [selectedElements, noCreationInProgress]
