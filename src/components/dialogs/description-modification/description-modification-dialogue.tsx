@@ -49,14 +49,17 @@ const DescriptionModificationDialogue: FunctionComponent<
         onClose();
     };
 
-    const onSubmit = useCallback((data: { description: string }) => {
-        updateElement(elementUuid, { ...data }).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'descriptionModificationError',
+    const onSubmit = useCallback(
+        (data: { description: string }) => {
+            updateElement(elementUuid, { ...data }).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'descriptionModificationError',
+                });
             });
-        });
-    }, [elementUuid]);
+        },
+        [elementUuid]
+    );
 
     return (
         <CustomMuiDialog
