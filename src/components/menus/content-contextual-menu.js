@@ -16,6 +16,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import PhotoLibrary from '@mui/icons-material/PhotoLibrary';
 import ContentCopy from '@mui/icons-material/ContentCopy';
+import CopyAllIcon from '@mui/icons-material/CopyAll';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
 
 import RenameDialog from '../dialogs/rename-dialog';
@@ -54,6 +55,8 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { FileDownload } from '@mui/icons-material';
 import { downloadCases } from '../utils/caseUtils';
+import { useDispatch } from 'react-redux';
+import { setSelectionForCopy } from 'redux/actions';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -67,6 +70,8 @@ const ContentContextualMenu = (props) => {
     } = props;
     const userId = useSelector((state) => state.user.profile.sub);
     const intl = useIntl();
+    const dispatch = useDispatch();
+
     const { snackError } = useSnackMessage();
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -80,11 +85,83 @@ const ContentContextualMenu = (props) => {
         },
         [snackError]
     );
-
+    const noSelectionForCopy = {
+        sourceItemUuid: null,
+        typeItem: null,
+        nameItem: null,
+        descriptionItem: null,
+        parentDirectoryUuid: null,
+    };
     const handleOpenDialog = (dialogId) => {
         setHideMenu(true);
         setOpenDialog(dialogId);
     };
+    const dispatchSelectionForCopy = useCallback(
+        (
+            typeItem,
+            nameItem,
+            descriptionItem,
+            sourceItemUuid,
+            parentDirectoryUuid
+        ) => {
+            dispatch(
+                setSelectionForCopy({
+                    sourceItemUuid: sourceItemUuid,
+                    typeItem: typeItem,
+                    nameItem: nameItem,
+                    descriptionItem: descriptionItem,
+                    parentDirectoryUuid: parentDirectoryUuid,
+                })
+            );
+        },
+        [dispatch]
+    );
+    const [broadcastChannel] = useState(() => {
+        const broadcast = new BroadcastChannel('itemCopyChannel');
+        broadcast.onmessage = (event) => {
+            console.info('message received from broadcast channel');
+            if (
+                JSON.stringify(noSelectionForCopy) ===
+                JSON.stringify(event.data)
+            ) {
+                dispatch(setSelectionForCopy(noSelectionForCopy));
+            } else {
+                dispatchSelectionForCopy(
+                    event.data.typeItem,
+                    event.data.nameItem,
+                    event.data.descriptionItem,
+                    event.data.sourceItemUuid,
+                    event.data.parentDirectoryUuid
+                );
+            }
+        };
+        return broadcast;
+    });
+
+    function copyElement(
+        typeItem,
+        nameItem,
+        descriptionItem,
+        sourceItemUuid,
+        parentDirectoryUuid
+    ) {
+        dispatchSelectionForCopy(
+            typeItem,
+            nameItem,
+            descriptionItem,
+            sourceItemUuid,
+            parentDirectoryUuid
+        );
+        broadcastChannel.postMessage({
+            typeItem: typeItem,
+            nameItem: nameItem,
+            descriptionItem: descriptionItem,
+            sourceItemUuid: sourceItemUuid,
+            parentDirectoryUuid: parentDirectoryUuid,
+        });
+
+        handleCloseDialog();
+    }
 
     const handleDuplicateError = (error) => {
         return handleLastError(
@@ -98,6 +175,38 @@ const ContentContextualMenu = (props) => {
         );
     };
 
+    const copyItem = () => {
+        if (activeElement) {
+            switch (activeElement.type) {
+                case ElementType.CASE:
+                case ElementType.STUDY:
+                case ElementType.FILTER:
+                case ElementType.VOLTAGE_INIT_PARAMETERS:
+                case ElementType.CONTINGENCY_LIST:
+                    console.info(
+                        activeElement.type +
+                            ' with uuid ' +
+                            activeElement.elementUuid +
+                            ' from directory ' +
+                            selectedDirectory.elementUuid +
+                            ' selected for copy'
+                    );
+                    copyElement(
+                        activeElement.type,
+                        activeElement.elementName,
+                        activeElement.description,
+                        activeElement.elementUuid,
+                        selectedDirectory.elementUuid
+                    );
+                    break;
+
+                default:
+                    handleLastError(
+                        intl.formatMessage({ id: 'unsuportedItem' })
+                    );
+            }
+        }
+    };
     const duplicateItem = () => {
         if (activeElement) {
             getNameCandidate(
@@ -453,6 +562,13 @@ const ContentContextualMenu = (props) => {
                     duplicateItem();
                 },
                 icon: <ContentCopy fontSize="small" />,
+            });
+            menuItems.push({
+                messageDescriptorId: 'copy',
+                callback: () => {
+                    copyItem();
+                },
+                icon: <CopyAllIcon fontSize="small" />,
             });
         }
 
