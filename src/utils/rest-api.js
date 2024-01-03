@@ -217,7 +217,11 @@ export function fetchVersion() {
     console.info(`Fetching global metadata...`);
     return fetchEnv()
         .then((env) => fetch(env.appsMetadataServerUrl + '/version.json'))
-        .then((response) => response.json());
+        .then((response) => response.json())
+        .catch((reason) => {
+            console.error('Error while fetching the version : ' + reason);
+            return reason;
+        });
 }
 
 export function fetchConfigParameters(appName) {
@@ -1004,5 +1008,10 @@ export function downloadCase(caseUuid) {
 
 export function getServersInfos() {
     console.info('get backend servers informations');
-    return backendFetchJson(PREFIX_STUDY_QUERIES + '/v1/servers/infos');
+    return backendFetchJson(
+        PREFIX_STUDY_QUERIES + '/v1/servers/about?view=explore'
+    ).catch((reason) => {
+        console.error('Error while fetching the servers infos : ' + reason);
+        return reason;
+    });
 }
