@@ -66,7 +66,6 @@ export const CriteriaBasedFilterEditionDialog = ({
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
     const dispatch = useDispatch();
 
-
     // Fetch the filter data from back-end if necessary and fill the form with it
     useEffect(() => {
         if (id && open) {
