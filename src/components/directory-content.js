@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveDirectory } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -115,7 +115,7 @@ const DirectoryContent = () => {
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
-    const [activeElement, setActiveElement] = React.useState(null);
+    const [activeElement, setActiveElement] = useState(null);
     const [isMissingDataAfterDirChange, setIsMissingDataAfterDirChange] =
         useState(true);
 
@@ -123,8 +123,7 @@ const DirectoryContent = () => {
     const todayStart = new Date().setHours(0, 0, 0, 0);
 
     /* Menu states */
-    const [mousePosition, setMousePosition] =
-        React.useState(initialMousePosition);
+    const [mousePosition, setMousePosition] = useState(initialMousePosition);
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
     const [elementName, setElementName] = useState('');
@@ -185,7 +184,7 @@ const DirectoryContent = () => {
     const [
         currentFiltersContingencyListId,
         setCurrentFiltersContingencyListId,
-    ] = React.useState(null);
+    ] = useState(null);
     const handleCloseFiltersContingency = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
@@ -199,7 +198,7 @@ const DirectoryContent = () => {
     const [
         currentExplicitNamingContingencyListId,
         setCurrentExplicitNamingContingencyListId,
-    ] = React.useState(null);
+    ] = useState(null);
     const handleCloseExplicitNamingContingency = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
@@ -341,35 +340,44 @@ const DirectoryContent = () => {
         return href;
     }
 
-    function getElementTypeTranslation(type, subtype, formatCase) {
-        const format = formatCase
-            ? ' (' + intl.formatMessage({ id: formatCase }) + ')'
-            : '';
-        const elemType =
-            type === ElementType.FILTER || type === ElementType.CONTINGENCY_LIST
-                ? intl.formatMessage({ id: subtype + '_' + type })
-                : intl.formatMessage({ id: type });
-        const elementTypeLabel = `${elemType}${format}`;
-        return (
-            <OverflowableText
-                text={elementTypeLabel}
-                tooltipSx={styles.tooltip}
-            />
-        );
-    }
+    const getElementTypeTranslation = useCallback(
+        (type, subtype, formatCase) => {
+            const format = formatCase
+                ? ' (' + intl.formatMessage({ id: formatCase }) + ')'
+                : '';
+            const elemType =
+                type === ElementType.FILTER ||
+                type === ElementType.CONTINGENCY_LIST
+                    ? intl.formatMessage({ id: subtype + '_' + type })
+                    : intl.formatMessage({ id: type });
+            return `${elemType}${format}`;
+        },
+        [intl]
+    );
 
-    function typeCellRender(cellData) {
-        const { rowData = {} } = cellData || {};
-        const elementUuid = rowData['elementUuid'];
-        const objectType = rowData[cellData.dataKey];
-        const { subtype, format } = childrenMetadata[elementUuid] || {};
-        return (
-            <Box sx={styles.cell}>
-                {childrenMetadata[elementUuid] &&
-                    getElementTypeTranslation(objectType, subtype, format)}
-            </Box>
-        );
-    }
+    const typeCellRender = useCallback(
+        (cellData) => {
+            const { rowData = {} } = cellData || {};
+            const elementUuid = rowData.elementUuid;
+            const objectType = rowData[cellData.dataKey];
+            const { subtype, format } = childrenMetadata[elementUuid] || {};
+            return (
+                <Box sx={styles.cell}>
+                    {childrenMetadata[elementUuid] && (
+                        <OverflowableText
+                            text={getElementTypeTranslation(
+                                objectType,
+                                subtype,
+                                format
+                            )}
+                            tooltipSx={styles.tooltip}
+                        />
+                    )}
+                </Box>
+            );
+        },
+        [childrenMetadata, getElementTypeTranslation]
+    );
 
     function userCellRender(cellData) {
         const user = cellData.rowData[cellData.dataKey];
@@ -639,14 +647,14 @@ const DirectoryContent = () => {
         return [...new Set(acc)];
     };
 
-    const getCurrentChildrenWithNotClickableRows = () => {
-        return currentChildren.map((child) => {
-            return {
+    const rows = useMemo(
+        () =>
+            currentChildren?.map((child) => ({
                 ...child,
                 notClickable: child.type === ElementType.CASE,
-            };
-        });
-    };
+            })),
+        [currentChildren]
+    );
 
     const renderLoadingContent = () => {
         return (
@@ -673,6 +681,45 @@ const DirectoryContent = () => {
         );
     };
 
+    const sort = useCallback(
+        (datakey, isAsc, isNumeric) => {
+            const rowsCopy = [...rows].map((row, index) => [row, index]);
+            if (datakey === 'type') {
+                rowsCopy.sort((rowIndex1, rowIndex2) => {
+                    const metadata1 =
+                        childrenMetadata[rowIndex1[0].elementUuid];
+                    const metadata2 =
+                        childrenMetadata[rowIndex2[0].elementUuid];
+                    return metadata1 && metadata2
+                        ? getElementTypeTranslation(
+                              rowIndex1[0].type,
+                              metadata1.subtype,
+                              metadata1.format
+                          ).localeCompare(
+                              getElementTypeTranslation(
+                                  rowIndex2[0].type,
+                                  metadata2.subtype,
+                                  metadata2.format
+                              )
+                          )
+                        : rowIndex1[0].type.localeCompare(rowIndex2[0].type);
+                });
+            } else if (isNumeric) {
+                rowsCopy.sort(
+                    (rowIndex1, rowIndex2) =>
+                        rowIndex1[0][datakey] - rowIndex2[0][datakey]
+                );
+            } else {
+                rowsCopy.sort((rowIndex1, rowIndex2) =>
+                    rowIndex1[0][datakey].localeCompare(rowIndex2[0][datakey])
+                );
+            }
+            const indexes = rowsCopy.map(([, i]) => i);
+            return isAsc ? indexes : indexes.reverse();
+        },
+        [childrenMetadata, getElementTypeTranslation, rows]
+    );
+
     const renderTableContent = () => {
         return (
             <>
@@ -688,7 +735,7 @@ const DirectoryContent = () => {
                     style={{ flexGrow: 1 }}
                     onRowRightClick={(e) => onContextMenu(e)}
                     onRowClick={handleRowClick}
-                    rows={getCurrentChildrenWithNotClickableRows()}
+                    rows={rows}
                     columns={[
                         {
                             cellRenderer: selectionRenderer,
@@ -746,7 +793,8 @@ const DirectoryContent = () => {
                             cellRenderer: dateCellRender,
                         },
                     ]}
-                    sortable={true}
+                    sortable
+                    sort={sort}
                 />
             </>
         );
