@@ -51,7 +51,9 @@ const DescriptionModificationDialogue: FunctionComponent<
 
     const onSubmit = useCallback(
         (data: { description: string }) => {
-            updateElement(elementUuid, { ...data }).catch((error) => {
+            updateElement(elementUuid, {
+                [DESCRIPTION]: data[DESCRIPTION].trim(),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'descriptionModificationError',
