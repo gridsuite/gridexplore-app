@@ -28,6 +28,9 @@ import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-nami
 import ExplicitNamingEditionForm from './explicit-naming-edition-form';
 import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
 import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';
+import { setSelectionForCopy } from 'redux/actions';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().trim().required('nameEmpty'),
@@ -35,7 +38,12 @@ const schema = yup.object().shape({
     [EQUIPMENT_TABLE]: yup.string().nullable(),
     ...getExplicitNamingEditSchema(EQUIPMENT_TABLE),
 });
-
+const noSelectionForCopy = {
+    sourceCaseUuid: null,
+    name: null,
+    description: null,
+    parentDirectoryUuid: null,
+};
 const emptyFormData = (name) => getContingencyListEmptyFormData(name);
 
 const ExplicitNamingEditionDialog = ({
@@ -45,10 +53,12 @@ const ExplicitNamingEditionDialog = ({
     onClose,
     titleId,
     name,
+    broadcastChannel,
 }) => {
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
-
+    const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const dispatch = useDispatch();
     const methods = useForm({
         defaultValues: emptyFormData(name),
         resolver: yupResolver(schema),
@@ -104,6 +114,12 @@ const ExplicitNamingEditionDialog = ({
     const onSubmit = (contingencyList) => {
         editContingencyList(contingencyListId, contingencyList)
             .then(() => {
+                if (selectionForCopy.sourceItemUuid === contingencyListId) {
+                    dispatch(setSelectionForCopy(noSelectionForCopy));
+                    broadcastChannel.postMessage({
+                        noSelectionForCopy,
+                    });
+                }
                 closeAndClear();
             })
             .catch((errorMessage) => {

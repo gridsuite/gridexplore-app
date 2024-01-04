@@ -22,6 +22,9 @@ import { FetchStatus } from '../../../../utils/custom-hooks';
 import { FilterForm } from '../filter-form';
 import { EXPERT_FILTER_QUERY, expertFilterSchema } from './expert-filter-form';
 import { saveExpertFilter } from '../filters-utils';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { setSelectionForCopy } from 'redux/actions';
 
 const formSchema = yup
     .object()
@@ -39,6 +42,7 @@ interface ExpertFilterEditionDialogProps {
     titleId: string;
     open: boolean;
     onClose: () => void;
+    broadcastChannel: BroadcastChannel;
 }
 
 const ExpertFilterEditionDialog = ({
@@ -47,10 +51,14 @@ const ExpertFilterEditionDialog = ({
     titleId,
     open,
     onClose,
+    broadcastChannel,
 }: ExpertFilterEditionDialogProps) => {
     const { snackError } = useSnackMessage();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-
+    const selectionForCopy = useSelector(
+        (state: any) => state.selectionForCopy
+    );
+    const dispatch = useDispatch();
     // default values are set via reset when we fetch data
     const formMethods = useForm({
         resolver: yupResolver(formSchema),
@@ -104,8 +112,28 @@ const ExpertFilterEditionDialog = ({
                     });
                 }
             );
+            const noSelectionForCopy = {
+                sourceCaseUuid: null,
+                name: null,
+                description: null,
+                parentDirectoryUuid: null,
+            };
+            if (selectionForCopy.sourceItemUuid === id) {
+                dispatch(setSelectionForCopy(noSelectionForCopy));
+                broadcastChannel.postMessage({
+                    noSelectionForCopy,
+                });
+            }
+            dispatch(setSelectionForCopy(noSelectionForCopy));
         },
-        [id, onClose, snackError]
+        [
+            broadcastChannel,
+            dispatch,
+            id,
+            onClose,
+            selectionForCopy.sourceItemUuid,
+            snackError,
+        ]
     );
 
     const isDataReady = dataFetchStatus === FetchStatus.FETCH_SUCCESS;

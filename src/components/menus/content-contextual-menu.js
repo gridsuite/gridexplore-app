@@ -66,11 +66,13 @@ const ContentContextualMenu = (props) => {
         onClose,
         openDialog,
         setOpenDialog,
+        broadcastChannel,
         ...others
     } = props;
     const userId = useSelector((state) => state.user.profile.sub);
     const intl = useIntl();
     const dispatch = useDispatch();
+    const selectionForCopy = useSelector((state) => state.selectionForCopy);
 
     const { snackError } = useSnackMessage();
 
@@ -85,13 +87,7 @@ const ContentContextualMenu = (props) => {
         },
         [snackError]
     );
-    const noSelectionForCopy = {
-        sourceItemUuid: null,
-        typeItem: null,
-        nameItem: null,
-        descriptionItem: null,
-        parentDirectoryUuid: null,
-    };
+
     const handleOpenDialog = (dialogId) => {
         setHideMenu(true);
         setOpenDialog(dialogId);
@@ -116,27 +112,6 @@ const ContentContextualMenu = (props) => {
         },
         [dispatch]
     );
-    const [broadcastChannel] = useState(() => {
-        const broadcast = new BroadcastChannel('itemCopyChannel');
-        broadcast.onmessage = (event) => {
-            console.info('message received from broadcast channel');
-            if (
-                JSON.stringify(noSelectionForCopy) ===
-                JSON.stringify(event.data)
-            ) {
-                dispatch(setSelectionForCopy(noSelectionForCopy));
-            } else {
-                dispatchSelectionForCopy(
-                    event.data.typeItem,
-                    event.data.nameItem,
-                    event.data.descriptionItem,
-                    event.data.sourceItemUuid,
-                    event.data.parentDirectoryUuid
-                );
-            }
-        };
-        return broadcast;
-    });
 
     function copyElement(
         typeItem,
@@ -384,7 +359,23 @@ const ContentContextualMenu = (props) => {
 
     const [renameCB, renameState] = useDeferredFetch(
         renameElement,
-        handleCloseDialog,
+        (elementUuid, elementName) => {
+            // if copied element is renamed
+            if (selectionForCopy.sourceItemUuid === elementName[0]) {
+                dispatch(
+                    setSelectionForCopy({
+                        ...selectionForCopy,
+                        nameItem: elementName[1],
+                    })
+                );
+                broadcastChannel.postMessage({
+                    ...selectionForCopy,
+                    nameItem: elementName[1],
+                });
+            }
+
+            handleCloseDialog();
+        },
         (HTTPStatusCode) => {
             if (HTTPStatusCode === 403) {
                 return intl.formatMessage({

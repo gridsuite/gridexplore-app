@@ -28,6 +28,9 @@ import {
 import { FetchStatus } from '../../../../utils/custom-hooks';
 import { FilterForm } from '../filter-form';
 import { v4 as uuid4 } from 'uuid';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { setSelectionForCopy } from 'redux/actions';
 
 const formSchema = yup
     .object()
@@ -45,6 +48,7 @@ const ExplicitNamingFilterEditionDialog = ({
     titleId,
     open,
     onClose,
+    broadcastChannel,
 }) => {
     const { snackError } = useSnackMessage();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
@@ -61,7 +65,8 @@ const ExplicitNamingFilterEditionDialog = ({
 
     const nameError = errors[NAME];
     const isValidating = errors.root?.isValidating;
-
+    const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const dispatch = useDispatch();
     // Fetch the filter data from back-end if necessary and fill the form with it
     useEffect(() => {
         if (id && open) {
@@ -93,6 +98,13 @@ const ExplicitNamingFilterEditionDialog = ({
 
     const onSubmit = useCallback(
         (filterForm) => {
+            const noSelectionForCopy = {
+                sourceCaseUuid: null,
+                name: null,
+                description: null,
+                parentDirectoryUuid: null,
+            };
+            console.log('hhhhhhhh explicit');
             saveExplicitNamingFilter(
                 filterForm[FILTER_EQUIPMENTS_ATTRIBUTES],
                 false,
@@ -107,8 +119,14 @@ const ExplicitNamingFilterEditionDialog = ({
                 null,
                 onClose
             );
+            if (selectionForCopy.sourceItemUuid === id) {
+                dispatch(setSelectionForCopy(noSelectionForCopy));
+                broadcastChannel.postMessage({
+                    noSelectionForCopy,
+                });
+            }
         },
-        [id, onClose, snackError]
+        [broadcastChannel, dispatch, id, selectionForCopy, onClose, snackError]
     );
 
     const isDataReady = dataFetchStatus === FetchStatus.FETCH_SUCCESS;

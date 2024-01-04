@@ -23,13 +23,20 @@ import { getCriteriaBasedSchema } from 'components/dialogs/commons/criteria-base
 import yup from 'components/utils/yup-config';
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSelectionForCopy } from 'redux/actions';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().trim().required('nameEmpty'),
     [EQUIPMENT_TYPE]: yup.string().required(),
     ...getCriteriaBasedSchema(),
 });
-
+const noSelectionForCopy = {
+    sourceCaseUuid: null,
+    name: null,
+    description: null,
+    parentDirectoryUuid: null,
+};
 const emptyFormData = (name) => getContingencyListEmptyFormData(name);
 
 const CriteriaBasedEditionDialog = ({
@@ -39,10 +46,12 @@ const CriteriaBasedEditionDialog = ({
     onClose,
     titleId,
     name,
+    broadcastChannel,
 }) => {
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
-
+    const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const dispatch = useDispatch();
     const methods = useForm({
         defaultValues: emptyFormData(name),
         resolver: yupResolver(schema),
@@ -95,6 +104,14 @@ const CriteriaBasedEditionDialog = ({
     const onSubmit = (contingencyList) => {
         editContingencyList(contingencyListId, contingencyList)
             .then(() => {
+                console.log('$$$$$$$$$$ criteria');
+                if (selectionForCopy.sourceItemUuid === contingencyListId) {
+                    dispatch(setSelectionForCopy(noSelectionForCopy));
+                    broadcastChannel.postMessage({
+                        noSelectionForCopy,
+                    });
+                }
+                dispatch(setSelectionForCopy(noSelectionForCopy));
                 closeAndClear();
             })
             .catch((errorMessage) => {
