@@ -438,7 +438,18 @@ const DirectoryContent = () => {
             <>
                 {isElementCaseOrStudy(cellData.rowData['type']) && (
                     <Box sx={styles.cell}>
-                        <Tooltip title={description} placement="right">
+                        <Tooltip
+                            title={
+                                <OverflowableText
+                                    text={description}
+                                    sx={{
+                                        maxWidth: '250px',
+                                        maxHeight: '50px',
+                                    }}
+                                />
+                            }
+                            placement="right"
+                        >
                             {icon}
                         </Tooltip>
                     </Box>

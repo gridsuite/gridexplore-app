@@ -72,7 +72,12 @@ const DescriptionModificationDialogue: FunctionComponent<
             formMethods={methods}
             titleId={'descriptionModificationDialog'}
         >
-            <TextInput name={DESCRIPTION} />
+            <TextInput
+                name={DESCRIPTION}
+                formProps={{
+                    multiline: true,
+                }}
+            />
         </CustomMuiDialog>
     );
 };
