@@ -104,7 +104,6 @@ const CriteriaBasedEditionDialog = ({
     const onSubmit = (contingencyList) => {
         editContingencyList(contingencyListId, contingencyList)
             .then(() => {
-                console.log('$$$$$$$$$$ criteria');
                 if (selectionForCopy.sourceItemUuid === contingencyListId) {
                     dispatch(setSelectionForCopy(noSelectionForCopy));
                     broadcastChannel.postMessage({

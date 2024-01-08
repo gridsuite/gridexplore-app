@@ -30,7 +30,6 @@
   "duplicateElementFailure": "An error occured while duplicating the element {itemName} : {errorMessage}",
   "elementPasteFailed404": "An error occured while trying to paste element : the copied element was not found",
   "elementPasteFailed": "An error occured while trying to paste the copied element",
-  "elementNotFoundToPaste": "No selected item to paste",
   "generateCopyScriptNameError" : "An error occured while generating the copy script name of the element {itemName}",
   "caseName": "case name",
   "uploadCase": "Upload case",

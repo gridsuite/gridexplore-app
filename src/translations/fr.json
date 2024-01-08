@@ -30,7 +30,6 @@
   "duplicateElementFailure": "Une erreur est survenue lors de la duplication de l'élément {itemName} : {errorMessage}",
   "elementPasteFailed404": "Erreur est survenue lors de la tentative de coller l'élément : l'élément n'a pas été trouvé",
   "elementPasteFailed": "Erreur est survenue lors de la tentative de coller l'élément copié",
-  "elementNotFoundToPaste": "Aucun élément sélectionné à coller",
   "generateCopyScriptNameError" : "Une erreur s'est produite lors de la génération du nom du script de copie de l'élément {itemName}",
   "caseName": "nom de la situation",
   "uploadCase": "Télécharger la situation",

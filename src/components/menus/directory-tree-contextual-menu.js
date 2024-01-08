@@ -254,7 +254,7 @@ const DirectoryTreeContextualMenu = (props) => {
                 })
                 .finally(() => handleCloseDialog());
         } else {
-            handleError(intl.formatMessage({ id: 'elementNotFoundToPaste' }));
+            handleError(intl.formatMessage({ id: 'elementPasteFailed404' }));
             handleCloseDialog();
         }
     }
