@@ -96,6 +96,14 @@ const styles = {
     tooltip: {
         maxWidth: '1000px',
     },
+    descriptionTooltip: {
+        display: 'inline-block',
+        whiteSpace: 'pre',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        maxWidth: '250px',
+        maxHeight: '50px',
+    },
 };
 
 const initialMousePosition = {
@@ -440,12 +448,9 @@ const DirectoryContent = () => {
                     <Box sx={styles.cell}>
                         <Tooltip
                             title={
-                                <OverflowableText
-                                    text={description}
-                                    sx={{
-                                        maxWidth: '250px',
-                                        maxHeight: '50px',
-                                    }}
+                                <Box
+                                    children={description}
+                                    sx={styles.descriptionTooltip}
                                 />
                             }
                             placement="right"
