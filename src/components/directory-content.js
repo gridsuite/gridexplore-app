@@ -438,26 +438,24 @@ const DirectoryContent = () => {
         };
 
         const icon = description ? (
-            <StickyNote2Icon onClick={handleClick} />
+            <Tooltip
+                title={
+                    <Box
+                        children={description}
+                        sx={styles.descriptionTooltip}
+                    />
+                }
+                placement="right"
+            >
+                <StickyNote2Icon onClick={handleClick} />
+            </Tooltip>
         ) : (
             <StickyNote2IconOutlined onClick={handleClick} />
         );
         return (
             <>
                 {isElementCaseOrStudy(cellData.rowData['type']) && (
-                    <Box sx={styles.cell}>
-                        <Tooltip
-                            title={
-                                <Box
-                                    children={description}
-                                    sx={styles.descriptionTooltip}
-                                />
-                            }
-                            placement="right"
-                        >
-                            {icon}
-                        </Tooltip>
-                    </Box>
+                    <Box sx={styles.cell}>{icon}</Box>
                 )}
             </>
         );
