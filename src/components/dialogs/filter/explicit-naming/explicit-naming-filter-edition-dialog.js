@@ -31,6 +31,7 @@ import { v4 as uuid4 } from 'uuid';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
+import { noSelectionForCopy } from 'utils/constant';
 
 const formSchema = yup
     .object()
@@ -98,13 +99,6 @@ const ExplicitNamingFilterEditionDialog = ({
 
     const onSubmit = useCallback(
         (filterForm) => {
-            const noSelectionForCopy = {
-                sourceCaseUuid: null,
-                name: null,
-                description: null,
-                parentDirectoryUuid: null,
-            };
-            console.log('hhhhhhhh explicit');
             saveExplicitNamingFilter(
                 filterForm[FILTER_EQUIPMENTS_ATTRIBUTES],
                 false,

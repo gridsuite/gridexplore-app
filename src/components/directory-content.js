@@ -46,6 +46,7 @@ import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/crite
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
 import ExpertFilterEditionDialog from './dialogs/filter/expert/expert-filter-edition-dialog';
+import { noSelectionForCopy } from 'utils/constant';
 
 const circularProgressSize = '70px';
 
@@ -99,12 +100,7 @@ const initialMousePosition = {
     mouseX: null,
     mouseY: null,
 };
-const noSelectionForCopy = {
-    sourceStudyUuid: null,
-    nodeId: null,
-    copyType: null,
-    allChilddrenIds: null,
-};
+
 const DirectoryContent = () => {
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();

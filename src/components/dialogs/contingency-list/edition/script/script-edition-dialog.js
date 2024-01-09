@@ -21,6 +21,7 @@ import ScriptEditionForm from './script-edition-form';
 import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
+import { noSelectionForCopy } from 'utils/constant';
 const schema = yup.object().shape({
     [NAME]: yup.string().trim().required('nameEmpty'),
     [EQUIPMENT_TYPE]: yup.string().nullable(),
@@ -88,12 +89,6 @@ const ScriptEditionDialog = ({
             script: contingencyList[SCRIPT],
         };
         return saveScriptContingencyList(newScript, contingencyList[NAME]);
-    };
-    const noSelectionForCopy = {
-        sourceCaseUuid: null,
-        name: null,
-        description: null,
-        parentDirectoryUuid: null,
     };
     const onSubmit = (contingencyList) => {
         editContingencyList(contingencyListId, contingencyList)

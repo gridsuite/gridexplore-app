@@ -31,6 +31,7 @@ import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialo
 import { setSelectionForCopy } from 'redux/actions';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
+import { noSelectionForCopy } from 'utils/constant';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().trim().required('nameEmpty'),
@@ -38,12 +39,7 @@ const schema = yup.object().shape({
     [EQUIPMENT_TABLE]: yup.string().nullable(),
     ...getExplicitNamingEditSchema(EQUIPMENT_TABLE),
 });
-const noSelectionForCopy = {
-    sourceCaseUuid: null,
-    name: null,
-    description: null,
-    parentDirectoryUuid: null,
-};
+
 const emptyFormData = (name) => getContingencyListEmptyFormData(name);
 
 const ExplicitNamingEditionDialog = ({

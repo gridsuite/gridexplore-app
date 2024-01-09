@@ -7,6 +7,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { FilterType } from '../../../../utils/elementType';
+import { noSelectionForCopy } from '../../../../utils/constant';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { getFilterById } from '../../../../utils/rest-api';
@@ -112,12 +113,6 @@ const ExpertFilterEditionDialog = ({
                     });
                 }
             );
-            const noSelectionForCopy = {
-                sourceCaseUuid: null,
-                name: null,
-                description: null,
-                parentDirectoryUuid: null,
-            };
             if (selectionForCopy.sourceItemUuid === id) {
                 dispatch(setSelectionForCopy(noSelectionForCopy));
                 broadcastChannel.postMessage({

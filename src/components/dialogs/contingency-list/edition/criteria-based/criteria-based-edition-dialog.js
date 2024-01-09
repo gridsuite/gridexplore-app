@@ -25,18 +25,14 @@ import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
+import { noSelectionForCopy } from 'utils/constant';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().trim().required('nameEmpty'),
     [EQUIPMENT_TYPE]: yup.string().required(),
     ...getCriteriaBasedSchema(),
 });
-const noSelectionForCopy = {
-    sourceCaseUuid: null,
-    name: null,
-    description: null,
-    parentDirectoryUuid: null,
-};
+
 const emptyFormData = (name) => getContingencyListEmptyFormData(name);
 
 const CriteriaBasedEditionDialog = ({

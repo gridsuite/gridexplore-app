@@ -29,6 +29,7 @@ import { FilterForm } from '../filter-form';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
+import { noSelectionForCopy } from 'utils/constant';
 
 const formSchema = yup
     .object()
@@ -93,12 +94,6 @@ export const CriteriaBasedFilterEditionDialog = ({
         (filterForm) => {
             saveFilter(frontToBackTweak(id, filterForm), filterForm[NAME])
                 .then(() => {
-                    const noSelectionForCopy = {
-                        sourceCaseUuid: null,
-                        name: null,
-                        description: null,
-                        parentDirectoryUuid: null,
-                    };
                     if (selectionForCopy.sourceItemUuid === id) {
                         dispatch(setSelectionForCopy(noSelectionForCopy));
                         broadcastChannel.postMessage({

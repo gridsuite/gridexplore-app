@@ -329,20 +329,19 @@ const DirectoryTreeContextualMenu = (props) => {
                         },
                         icon: <DeleteIcon fontSize="small" />,
                     },
-                    {
-                        messageDescriptorId: 'paste',
-                        callback: () => {
-                            pasteElement(
-                                directory?.elementUuid,
-                                selectionForCopy
-                            );
-                        },
-                        icon: <ContentPasteIcon fontSize="small" />,
-                    },
                     { isDivider: true }
                 );
             }
-
+            menuItems.push(
+                {
+                    messageDescriptorId: 'paste',
+                    callback: () => {
+                        pasteElement(directory?.elementUuid, selectionForCopy);
+                    },
+                    icon: <ContentPasteIcon fontSize="small" />,
+                },
+                { isDivider: true }
+            );
             menuItems.push({
                 messageDescriptorId: 'createFolder',
                 callback: () => {
