@@ -135,7 +135,7 @@ const DirectoryTreeContextualMenu = (props) => {
         } else {
             msg =
                 intl.formatMessage({ id: 'elementPasteFailed' }) +
-                error.message;
+                error?.message;
         }
         return handleError(msg);
     };
@@ -227,7 +227,7 @@ const DirectoryTreeContextualMenu = (props) => {
                                         });
                                     })
                                     .catch((error) => {
-                                        handleError(error.message);
+                                        handlePasteError(error);
                                     })
                                     .finally(() => {
                                         handleCloseDialog();
@@ -339,6 +339,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         pasteElement(directory?.elementUuid, selectionForCopy);
                     },
                     icon: <ContentPasteIcon fontSize="small" />,
+                    disabled: !selectionForCopy.sourceItemUuid,
                 },
                 { isDivider: true }
             );

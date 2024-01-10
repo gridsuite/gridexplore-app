@@ -119,7 +119,6 @@ const ExpertFilterEditionDialog = ({
                     noSelectionForCopy,
                 });
             }
-            dispatch(setSelectionForCopy(noSelectionForCopy));
         },
         [
             broadcastChannel,

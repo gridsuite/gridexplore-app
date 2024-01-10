@@ -106,7 +106,6 @@ const CriteriaBasedEditionDialog = ({
                         noSelectionForCopy,
                     });
                 }
-                dispatch(setSelectionForCopy(noSelectionForCopy));
                 closeAndClear();
             })
             .catch((errorMessage) => {
