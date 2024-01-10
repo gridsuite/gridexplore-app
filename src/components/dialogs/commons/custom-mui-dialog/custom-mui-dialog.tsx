@@ -19,7 +19,7 @@ interface ICustomMuiDialog {
     onSave: (data: any) => void;
     onValidationError?: (errors: FieldErrors) => void;
     titleId: string;
-    disabledSave: boolean;
+    disabledSave?: boolean;
     removeOptional?: boolean;
     onCancel?: () => void;
     children: React.ReactNode;
