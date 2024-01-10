@@ -31,7 +31,7 @@ import { v4 as uuid4 } from 'uuid';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
-import { noSelectionForCopy } from 'utils/constant';
+import { noSelectionForCopy } from 'utils/constants';
 
 const formSchema = yup
     .object()

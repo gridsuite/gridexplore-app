@@ -5,6 +5,7 @@
   "paramsRetrievingError": "Une erreur est survenue lors de la récupération des paramètres",
   "elementUuid": "Uuid de l'élément",
   "elementName": "Nom",
+  "description": "Description",
   "creator": "Créé par",
   "type": "Type",
   "created": "Créé",
@@ -257,5 +258,8 @@
   "emptyRule": "Le filtre contient un champ vide",
   "incorrectRule": "Le filtre contient un champ incorrect",
   "emptyGroup": "Le filtre contient un groupe vide. Supprimez le ou ajoutez des règles à ce groupe",
-  "downloadCases": "Télécharger la(les) situation(s)"
+  "downloadCases": "Télécharger la(les) situation(s)",
+
+  "descriptionModificationError": "Erreur lors de la modification de la description",
+  "descriptionModificationDialog": "Modification de la description"
 }

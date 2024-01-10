@@ -25,7 +25,7 @@ import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
-import { noSelectionForCopy } from 'utils/constant';
+import { noSelectionForCopy } from 'utils/constants';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().trim().required('nameEmpty'),

@@ -29,7 +29,7 @@ import { FilterForm } from '../filter-form';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
-import { noSelectionForCopy } from 'utils/constant';
+import { noSelectionForCopy } from 'utils/constants';
 
 const formSchema = yup
     .object()
@@ -100,7 +100,6 @@ export const CriteriaBasedFilterEditionDialog = ({
                             noSelectionForCopy,
                         });
                     }
-                    dispatch(setSelectionForCopy(noSelectionForCopy));
                 })
                 .catch((error) => {
                     snackError({

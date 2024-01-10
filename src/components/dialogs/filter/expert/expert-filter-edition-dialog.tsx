@@ -7,7 +7,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { FilterType } from '../../../../utils/elementType';
-import { noSelectionForCopy } from '../../../../utils/constant';
+import { noSelectionForCopy } from '../../../../utils/constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { getFilterById } from '../../../../utils/rest-api';

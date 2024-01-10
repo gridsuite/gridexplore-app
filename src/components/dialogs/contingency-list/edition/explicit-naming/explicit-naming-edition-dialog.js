@@ -31,7 +31,7 @@ import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialo
 import { setSelectionForCopy } from 'redux/actions';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { noSelectionForCopy } from 'utils/constant';
+import { noSelectionForCopy } from 'utils/constants';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().trim().required('nameEmpty'),
