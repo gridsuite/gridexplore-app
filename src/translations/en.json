@@ -5,6 +5,7 @@
   "paramsRetrievingError": "An error occurred while retrieving the parameters",
   "elementUuid": "Element Uuid",
   "elementName": "Name",
+  "description": "Description",
   "creator": "Created by",
   "type": "Type",
   "created": "Created",
@@ -238,5 +239,8 @@
   "emptyRule": "Filter contains an empty field",
   "incorrectRule": "Filter contains an incorrect field",
   "emptyGroup": "Filter contains an empty group. Consider removing it or adding rules to this group",
-  "downloadCases": "Download Case(s)"
+  "downloadCases": "Download Case(s)",
+
+  "descriptionModificationError": "An error when modifying the description",
+  "descriptionModificationDialog": "Description modification"
 }
