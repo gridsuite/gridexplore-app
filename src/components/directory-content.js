@@ -138,6 +138,60 @@ const DirectoryContent = () => {
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
     const [elementName, setElementName] = useState('');
+    const handleRowClick = (event) => {
+        const element = currentChildren.find(
+            (e) => e.elementUuid === event.rowData.elementUuid
+        );
+        if (childrenMetadata[element.elementUuid] !== undefined) {
+            setElementName(childrenMetadata[element.elementUuid]?.name);
+            const subtype = childrenMetadata[element.elementUuid].subtype;
+            /** set active directory on the store because it will be used while editing the contingency name */
+            dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
+            switch (element.type) {
+                case ElementType.STUDY:
+                    let url = getLink(element.elementUuid, element.type);
+                    url
+                        ? window.open(url, '_blank')
+                        : handleError(
+                              intl.formatMessage(
+                                  { id: 'getAppLinkError' },
+                                  { type: element.type }
+                              )
+                          );
+                    break;
+                case ElementType.CONTINGENCY_LIST:
+                    if (subtype === ContingencyListType.CRITERIA_BASED.id) {
+                        setCurrentFiltersContingencyListId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    } else if (subtype === ContingencyListType.SCRIPT.id) {
+                        setCurrentScriptContingencyListId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    } else if (
+                        subtype === ContingencyListType.EXPLICIT_NAMING.id
+                    ) {
+                        setCurrentExplicitNamingContingencyListId(
+                            element.elementUuid
+                        );
+                        setOpenDialog(subtype);
+                    }
+                    break;
+                case ElementType.FILTER:
+                    if (subtype === FilterType.EXPLICIT_NAMING.id) {
+                        setCurrentExplicitNamingFilterId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    } else if (subtype === FilterType.CRITERIA_BASED.id) {
+                        setCurrentCriteriaBasedFilterId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    } else if (subtype === FilterType.EXPERT.id) {
+                        setCurrentExpertFilterId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     /**
      * Filters contingency list dialog: window status value for editing a filters contingency list
@@ -281,102 +335,25 @@ const DirectoryContent = () => {
         [snackError]
     );
 
-    const getLink = useCallback(
-        (elementUuid, objectType) => {
-            let href;
-            if (appsAndUrls !== null) {
-                appsAndUrls.find((app) => {
-                    if (!app.resources) {
-                        return false;
-                    }
-                    return app.resources.find((res) => {
-                        if (res.types.includes(objectType)) {
-                            href =
-                                app.url +
-                                res.path.replace('{elementUuid}', elementUuid);
-                        }
-                        return href;
-                    });
-                });
-            }
-            return href;
-        },
-        [appsAndUrls]
-    );
-
-    const handleRowClick = useCallback(
-        (event) => {
-            const element = currentChildren.find(
-                (e) => e.elementUuid === event.rowData.elementUuid
-            );
-            if (childrenMetadata[element.elementUuid] !== undefined) {
-                setElementName(childrenMetadata[element.elementUuid]?.name);
-                const subtype = childrenMetadata[element.elementUuid].subtype;
-                /** set active directory on the store because it will be used while editing the contingency name */
-                dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-                switch (element.type) {
-                    case ElementType.STUDY:
-                        let url = getLink(element.elementUuid, element.type);
-                        url
-                            ? window.open(url, '_blank')
-                            : handleError(
-                                  intl.formatMessage(
-                                      { id: 'getAppLinkError' },
-                                      { type: element.type }
-                                  )
-                              );
-                        break;
-                    case ElementType.CONTINGENCY_LIST:
-                        if (subtype === ContingencyListType.CRITERIA_BASED.id) {
-                            setCurrentFiltersContingencyListId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (subtype === ContingencyListType.SCRIPT.id) {
-                            setCurrentScriptContingencyListId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (
-                            subtype === ContingencyListType.EXPLICIT_NAMING.id
-                        ) {
-                            setCurrentExplicitNamingContingencyListId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        }
-                        break;
-                    case ElementType.FILTER:
-                        if (subtype === FilterType.EXPLICIT_NAMING.id) {
-                            setCurrentExplicitNamingFilterId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (subtype === FilterType.CRITERIA_BASED.id) {
-                            setCurrentCriteriaBasedFilterId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (subtype === FilterType.EXPERT.id) {
-                            setCurrentExpertFilterId(element.elementUuid);
-                            setOpenDialog(subtype);
-                        }
-                        break;
-                    default:
-                        break;
+    const getLink = (elementUuid, objectType) => {
+        let href;
+        if (appsAndUrls !== null) {
+            appsAndUrls.find((app) => {
+                if (!app.resources) {
+                    return false;
                 }
-            }
-        },
-        [
-            childrenMetadata,
-            currentChildren,
-            dispatch,
-            getLink,
-            handleError,
-            intl,
-            selectedDirectory?.elementUuid,
-        ]
-    );
+                return app.resources.find((res) => {
+                    if (res.types.includes(objectType)) {
+                        href =
+                            app.url +
+                            res.path.replace('{elementUuid}', elementUuid);
+                    }
+                    return href;
+                });
+            });
+        }
+        return href;
+    };
 
     const getElementTypeTranslation = useCallback(
         (type, subtype, formatCase) => {
