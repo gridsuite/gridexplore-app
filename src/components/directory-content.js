@@ -240,28 +240,35 @@ const DirectoryContent = () => {
     };
 
     /* User interactions */
-    const onContextMenu = (event) => {
-        if (selectedDirectory) {
-            dispatch(setActiveDirectory(selectedDirectory.elementUuid));
-        }
+    const onContextMenu = useCallback(
+        (event) => {
+            const element = currentChildren.find(
+                (e) => e.elementUuid === event.rowData?.elementUuid
+            );
 
-        if (event.rowData && event.rowData.uploading !== null) {
-            if (event.rowData.type !== 'DIRECTORY') {
-                setActiveElement(event.rowData);
+            if (selectedDirectory) {
+                dispatch(setActiveDirectory(selectedDirectory.elementUuid));
             }
-            setMousePosition({
-                mouseX: event.event.clientX + constants.HORIZONTAL_SHIFT,
-                mouseY: event.event.clientY + constants.VERTICAL_SHIFT,
-            });
-            handleOpenContentMenu(event.event);
-        } else {
-            setMousePosition({
-                mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
-                mouseY: event.clientY + constants.VERTICAL_SHIFT,
-            });
-            handleOpenDirectoryMenu(event);
-        }
-    };
+
+            if (element && element.uploading !== null) {
+                if (element.type !== 'DIRECTORY') {
+                    setActiveElement(element);
+                }
+                setMousePosition({
+                    mouseX: event.event.clientX + constants.HORIZONTAL_SHIFT,
+                    mouseY: event.event.clientY + constants.VERTICAL_SHIFT,
+                });
+                handleOpenContentMenu(event.event);
+            } else {
+                setMousePosition({
+                    mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
+                    mouseY: event.clientY + constants.VERTICAL_SHIFT,
+                });
+                handleOpenDirectoryMenu(event);
+            }
+        },
+        [currentChildren, dispatch, selectedDirectory]
+    );
 
     const abbreviationFromUserName = (name) => {
         const tab = name.split(' ').map((x) => x.charAt(0));
@@ -452,38 +459,43 @@ const DirectoryContent = () => {
     const [openDescModificationDialog, setOpenDescModificationDialog] =
         useState(false);
 
-    function descriptionCellRender(cellData) {
-        const description = cellData.rowData['description'];
+    const descriptionCellRender = useCallback(
+        (cellData) => {
+            const element = currentChildren.find(
+                (e) => e.elementUuid === cellData.rowData.elementUuid
+            );
 
-        const handleClick = (e) => {
-            setActiveElement(cellData.rowData);
-            setOpenDescModificationDialog(true);
-            e.stopPropagation();
-        };
+            const handleClick = (e) => {
+                setActiveElement(element);
+                setOpenDescModificationDialog(true);
+                e.stopPropagation();
+            };
 
-        const icon = description ? (
-            <Tooltip
-                title={
-                    <Box
-                        children={description}
-                        sx={styles.descriptionTooltip}
-                    />
-                }
-                placement="right"
-            >
-                <StickyNote2Icon onClick={handleClick} />
-            </Tooltip>
-        ) : (
-            <StickyNote2IconOutlined onClick={handleClick} />
-        );
-        return (
-            <>
-                {isElementCaseOrStudy(cellData.rowData['type']) && (
-                    <Box sx={styles.cell}>{icon}</Box>
-                )}
-            </>
-        );
-    }
+            const icon = element.description ? (
+                <Tooltip
+                    title={
+                        <Box
+                            children={element.description}
+                            sx={styles.descriptionTooltip}
+                        />
+                    }
+                    placement="right"
+                >
+                    <StickyNote2Icon onClick={handleClick} />
+                </Tooltip>
+            ) : (
+                <StickyNote2IconOutlined onClick={handleClick} />
+            );
+            return (
+                <>
+                    {isElementCaseOrStudy(element.type) && (
+                        <Box sx={styles.cell}>{icon}</Box>
+                    )}
+                </>
+            );
+        },
+        [currentChildren]
+    );
 
     function getElementIcon(objectType) {
         if (objectType === ElementType.STUDY) {
