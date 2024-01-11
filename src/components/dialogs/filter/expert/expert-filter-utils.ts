@@ -100,7 +100,7 @@ export function exportExpertRules(
                     ? rule.value
                     : undefined,
             values: isValueAnArray ? rule.value : undefined,
-            dataType: rule.dataType ?? getDataType(rule.field), // apparently dataType is missing sometimes
+            dataType: getDataType(rule.field) as DataType,
         };
     }
 
