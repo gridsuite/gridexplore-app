@@ -425,7 +425,6 @@ const DirectoryContent = () => {
 
     const [openDescModificationDialog, setOpenDescModificationDialog] =
         useState(false);
-
     function descriptionCellRender(cellData) {
         const description = cellData.rowData['description'];
 
@@ -803,7 +802,7 @@ const DirectoryContent = () => {
                             cellRenderer: dateCellRender,
                         },
                     ]}
-                    sortable
+                    sortable={true}
                 />
             </>
         );
