@@ -7,7 +7,10 @@
 
 import {
     defaultOperators,
+    findPath,
+    getParentPath,
     QueryValidator,
+    remove,
     RuleGroupType,
     RuleGroupTypeAny,
     ValidationMap,
@@ -25,6 +28,9 @@ import {
     RuleGroupTypeExport,
     RuleTypeExport,
 } from './expert-filter.type';
+
+type CustomRuleType = RuleType & { dataType: DataType };
+type CustomRuleGroupType = RuleGroupType & { dataType: DataType };
 
 const getDataType = (fieldName: string) => {
     const field = Object.values(FIELDS_OPTIONS).find(
@@ -46,6 +52,7 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
                 OPERATOR_OPTIONS.IS,
                 OPERATOR_OPTIONS.BEGINS_WITH,
                 OPERATOR_OPTIONS.ENDS_WITH,
+                OPERATOR_OPTIONS.IN,
                 OPERATOR_OPTIONS.EXISTS,
             ].map((operator) => ({
                 name: operator.name,
@@ -58,6 +65,7 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
                 OPERATOR_OPTIONS.GREATER_OR_EQUALS,
                 OPERATOR_OPTIONS.LOWER,
                 OPERATOR_OPTIONS.LOWER_OR_EQUALS,
+                OPERATOR_OPTIONS.BETWEEN,
                 OPERATOR_OPTIONS.EXISTS,
             ].map((operator) => ({
                 name: operator.name,
@@ -65,39 +73,83 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
             }));
         case DataType.BOOLEAN:
         case DataType.ENUM:
-            return [OPERATOR_OPTIONS.EQUALS, OPERATOR_OPTIONS.NOT_EQUALS].map(
-                (operator) => ({
-                    name: operator.name,
-                    label: intl.formatMessage({ id: operator.label }),
-                })
-            );
+            return [
+                OPERATOR_OPTIONS.EQUALS,
+                OPERATOR_OPTIONS.NOT_EQUALS,
+                OPERATOR_OPTIONS.IN,
+            ].map((operator) => ({
+                name: operator.name,
+                label: intl.formatMessage({ id: operator.label }),
+            }));
     }
     return defaultOperators;
 };
 
-export function getExpertRules(query: RuleGroupType): RuleGroupTypeExport {
-    function transformRule(rule: RuleType): RuleTypeExport {
+export function exportExpertRules(
+    query: CustomRuleGroupType
+): RuleGroupTypeExport {
+    function transformRule(rule: CustomRuleType): RuleTypeExport {
+        const isValueAnArray = Array.isArray(rule.value);
         return {
             field: rule.field as FieldType,
-            operator: rule.operator as OperatorType,
+            operator: Object.values(OPERATOR_OPTIONS).find(
+                (operator) => operator.name === rule.operator
+            )?.customName as OperatorType,
             value:
-                rule.operator !== OperatorType.EXISTS ? rule.value : undefined,
-            dataType: getDataType(rule.field) as DataType,
+                rule.operator !== OperatorType.EXISTS && !isValueAnArray
+                    ? rule.value
+                    : undefined,
+            values: isValueAnArray ? rule.value : undefined,
+            dataType: rule.dataType ?? getDataType(rule.field), // apparently dataType is missing sometimes
         };
     }
 
-    function transformGroup(group: RuleGroupType): RuleGroupTypeExport {
+    function transformGroup(group: CustomRuleGroupType): RuleGroupTypeExport {
         // Recursively transform the rules within the group
         const transformedRules = group.rules.map((ruleOrGroup) => {
             if ('rules' in ruleOrGroup) {
-                return transformGroup(ruleOrGroup as RuleGroupType);
+                return transformGroup(ruleOrGroup as CustomRuleGroupType);
             } else {
-                return transformRule(ruleOrGroup as RuleType);
+                return transformRule(ruleOrGroup as CustomRuleType);
             }
         });
 
         return {
             combinator: group.combinator as CombinatorType,
+            dataType: DataType.COMBINATOR,
+            rules: transformedRules,
+        };
+    }
+
+    return transformGroup(query);
+}
+
+export function importExpertRules(
+    query: RuleGroupTypeExport
+): CustomRuleGroupType {
+    function transformRule(rule: RuleTypeExport): CustomRuleType {
+        return {
+            field: rule.field,
+            operator: Object.values(OPERATOR_OPTIONS).find(
+                (operator) => operator.customName === rule.operator
+            )?.name as string,
+            value: rule.values ? rule.values.sort() : rule.value, // values is a Set on server side...
+            dataType: rule.dataType,
+        };
+    }
+
+    function transformGroup(group: RuleGroupTypeExport): CustomRuleGroupType {
+        // Recursively transform the rules within the group
+        const transformedRules = group.rules.map((ruleOrGroup) => {
+            if ('rules' in ruleOrGroup) {
+                return transformGroup(ruleOrGroup as RuleGroupTypeExport);
+            } else {
+                return transformRule(ruleOrGroup as RuleTypeExport);
+            }
+        });
+
+        return {
+            combinator: group.combinator,
             dataType: DataType.COMBINATOR,
             rules: transformedRules,
         };
@@ -134,13 +186,30 @@ export const queryValidator: QueryValidator = (query) => {
     const result: ValidationMap = {};
 
     const validateRule = (rule: RuleType) => {
-        const isNumberInput = getDataType(rule.field) === DataType.NUMBER;
-        const isStringInput = getDataType(rule.field) === DataType.STRING;
+        const isValueAnArray = Array.isArray(rule.value);
+        const isNumberInput =
+            getDataType(rule.field) === DataType.NUMBER && !isValueAnArray;
+        const isStringInput =
+            getDataType(rule.field) === DataType.STRING && !isValueAnArray;
         if (rule.id && rule.operator === OperatorType.EXISTS) {
             // In the case of EXISTS operator, because we do not have a second value to evaluate, we force a valid result.
             result[rule.id] = {
                 valid: true,
                 reasons: undefined,
+            };
+        } else if (
+            rule.id &&
+            rule.operator === 'between' &&
+            (!rule.value?.[0] || !rule.value?.[1])
+        ) {
+            result[rule.id] = {
+                valid: false,
+                reasons: [EMPTY_RULE],
+            };
+        } else if (rule.id && rule.operator === 'in' && !rule.value?.length) {
+            result[rule.id] = {
+                valid: false,
+                reasons: [EMPTY_RULE],
             };
         } else if (
             rule.id &&
@@ -185,3 +254,25 @@ export const queryValidator: QueryValidator = (query) => {
 
     return result;
 };
+
+// Remove a rule or group and its parents if they become empty
+export function recursiveRemove(query: RuleGroupTypeAny, path: number[]) {
+    // If it's an only child, we also need to remove and check the parent group
+    if (getNumberOfSiblings(path, query) === 1) {
+        return recursiveRemove(query, getParentPath(path));
+    }
+    // Otherwise, we can safely remove it
+    else {
+        return remove(query, path);
+    }
+}
+
+// cf path concept https://react-querybuilder.js.org/docs/tips/path
+export function getNumberOfSiblings(path: number[], query: RuleGroupTypeAny) {
+    // Get the path of this rule's parent group
+    const parentPath = getParentPath(path);
+    // Find the parent group object in the query
+    const parentGroup = findPath(parentPath, query) as RuleGroupType;
+    // Return the number of siblings
+    return parentGroup.rules.length;
+}

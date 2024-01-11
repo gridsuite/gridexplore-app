@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
     EMPTY_GROUP,
     EMPTY_RULE,
@@ -33,6 +33,7 @@ import { FilterType } from '../../../../utils/elementType';
 import CustomReactQueryBuilder from '../../../utils/rqb-inputs/custom-react-query-builder';
 import { FieldType } from './expert-filter.type';
 import { v4 as uuid4 } from 'uuid';
+import { useIntl } from 'react-intl';
 
 export const EXPERT_FILTER_QUERY = 'rules';
 
@@ -90,6 +91,8 @@ export function getExpertFilterEmptyFormData() {
 }
 
 function ExpertFilterForm() {
+    const intl = useIntl();
+
     const { getValues, setValue } = useFormContext();
 
     const openConfirmationPopup = useCallback(() => {
@@ -106,6 +109,15 @@ function ExpertFilterForm() {
     const watchEquipmentType = useWatch({
         name: EQUIPMENT_TYPE,
     });
+
+    const translatedFields = useMemo(() => {
+        return fields[watchEquipmentType]?.map((field) => {
+            return {
+                ...field,
+                label: intl.formatMessage({ id: field.label }),
+            };
+        });
+    }, [intl, watchEquipmentType]);
 
     return (
         <Grid container item spacing={2}>
@@ -124,7 +136,7 @@ function ExpertFilterForm() {
                 isSupportedEquipmentType(watchEquipmentType) && (
                     <CustomReactQueryBuilder
                         name={EXPERT_FILTER_QUERY}
-                        fields={fields[watchEquipmentType]}
+                        fields={translatedFields}
                     />
                 )}
         </Grid>

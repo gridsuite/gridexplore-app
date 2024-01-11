@@ -22,6 +22,7 @@ import { FetchStatus } from '../../../../utils/custom-hooks';
 import { FilterForm } from '../filter-form';
 import { EXPERT_FILTER_QUERY, expertFilterSchema } from './expert-filter-form';
 import { saveExpertFilter } from '../filters-utils';
+import { importExpertRules } from './expert-filter-utils';
 
 const formSchema = yup
     .object()
@@ -75,7 +76,9 @@ const ExpertFilterEditionDialog = ({
                         [NAME]: name,
                         [FILTER_TYPE]: FilterType.EXPERT.id,
                         [EQUIPMENT_TYPE]: response[EQUIPMENT_TYPE],
-                        [EXPERT_FILTER_QUERY]: response[EXPERT_FILTER_QUERY],
+                        [EXPERT_FILTER_QUERY]: importExpertRules(
+                            response[EXPERT_FILTER_QUERY]
+                        ),
                     });
                 })
                 .catch((error) => {

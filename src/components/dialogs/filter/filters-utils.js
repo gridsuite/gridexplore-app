@@ -10,7 +10,7 @@ import { frontToBackTweak } from './criteria-based/criteria-based-filter-utils';
 import { EQUIPMENT_ID, NAME } from '../../utils/field-constants';
 import { Generator, Load } from '../../../utils/equipment-types';
 import { DISTRIBUTION_KEY } from './explicit-naming/explicit-naming-filter-form';
-import { getExpertRules } from './expert/expert-filter-utils';
+import { exportExpertRules } from './expert/expert-filter-utils';
 
 export const saveExplicitNamingFilter = (
     tableValues,
@@ -102,7 +102,7 @@ export const saveExpertFilter = (
             {
                 type: FilterType.EXPERT.id,
                 equipmentType: equipmentType,
-                rules: getExpertRules(query),
+                rules: exportExpertRules(query),
             },
             name,
             activeDirectory
@@ -119,7 +119,7 @@ export const saveExpertFilter = (
                 id: id,
                 type: FilterType.EXPERT.id,
                 equipmentType: equipmentType,
-                rules: getExpertRules(query),
+                rules: exportExpertRules(query),
             },
             name
         )

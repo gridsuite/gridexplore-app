@@ -11,6 +11,9 @@ import { MaterialValueEditor } from '@react-querybuilder/material';
 import { useParameterState } from '../../dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import { getComputedLanguage } from '../../../utils/language';
+import { Autocomplete, TextField } from '@mui/material';
+import useConvertValue from './use-convert-value';
+import useValid from './use-valid';
 
 const CountryValueEditor = (props: ValueEditorProps) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
@@ -35,6 +38,42 @@ const CountryValueEditor = (props: ValueEditorProps) => {
             }),
         [countriesListCB]
     );
-    return <MaterialValueEditor {...props} values={countriesList} />;
+
+    const countriesListAutocomplete = useMemo(
+        () => countriesListCB(),
+        [countriesListCB]
+    );
+
+    // When we switch to 'in' operator, we need to switch the input value to an array and vice versa
+    useConvertValue(props);
+
+    const valid = useValid(props);
+
+    // The displayed component totally depends on the value type and not the operator. This way, we have smoother transition.
+    if (!Array.isArray(props.value)) {
+        return (
+            <MaterialValueEditor
+                {...props}
+                values={countriesList}
+                title={undefined} // disable the tooltip
+            />
+        );
+    } else {
+        return (
+            <Autocomplete
+                value={props.value}
+                options={Object.keys(countriesListAutocomplete.object())}
+                getOptionLabel={(code: string) =>
+                    countriesListAutocomplete.get(code)
+                }
+                onChange={(event, value: any) => props.handleOnChange(value)}
+                multiple
+                fullWidth
+                renderInput={(params) => (
+                    <TextField {...params} error={!valid} />
+                )}
+            />
+        );
+    }
 };
 export default CountryValueEditor;
