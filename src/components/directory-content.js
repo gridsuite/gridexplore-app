@@ -792,7 +792,7 @@ const DirectoryContent = () => {
                             }),
                             dataKey: 'elementName',
                             cellRenderer: nameCellRender,
-                            minWidth: '36%',
+                            minWidth: '31%',
                         },
                         {
                             label: intl.formatMessage({
@@ -803,7 +803,7 @@ const DirectoryContent = () => {
                             cellRenderer: descriptionCellRender,
                         },
                         {
-                            minWidth: '20%',
+                            minWidth: '15%',
                             label: intl.formatMessage({
                                 id: 'type',
                             }),
