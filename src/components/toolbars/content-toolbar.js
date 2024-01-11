@@ -33,7 +33,7 @@ const DialogsId = {
 const ContentToolbar = (props) => {
     const { selectedElements, ...others } = props;
     const userId = useSelector((state) => state.user.profile.sub);
-    const { snackError } = useSnackMessage();
+    const { snackInfo, snackError } = useSnackMessage();
     const intl = useIntl();
 
     const [openDialog, setOpenDialog] = useState(null);
@@ -123,6 +123,17 @@ const ContentToolbar = (props) => {
             .filter((element) => element.type === ElementType.CASE)
             .map((element) => element.elementUuid);
         await downloadCases(casesUuids);
+        if (casesUuids.length !== selectedElements.length) {
+            let msg = intl.formatMessage(
+                { id: 'partialDownloadCasesInfo' },
+                {
+                    number: selectedElements.length - casesUuids.length,
+                }
+            );
+            snackInfo({
+                messageTxt: msg,
+            });
+        }
     }, [selectedElements]);
 
     // Allowance
@@ -143,7 +154,7 @@ const ContentToolbar = (props) => {
 
     const allowsDownloadCases = useMemo(
         () =>
-            selectedElements.every(
+            selectedElements.some(
                 (element) => element.type === ElementType.CASE
             ),
         [selectedElements]

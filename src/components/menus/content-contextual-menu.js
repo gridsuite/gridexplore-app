@@ -67,7 +67,7 @@ const ContentContextualMenu = (props) => {
     } = props;
     const userId = useSelector((state) => state.user.profile.sub);
     const intl = useIntl();
-    const { snackError } = useSnackMessage();
+    const { snackInfo, snackError } = useSnackMessage();
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
@@ -406,6 +406,17 @@ const ContentContextualMenu = (props) => {
             .filter((element) => element.type === ElementType.CASE)
             .map((element) => element.elementUuid);
         await downloadCases(casesUuids);
+        if (casesUuids.length !== selectedElements.length) {
+            let msg = intl.formatMessage(
+                { id: 'partialDownloadCasesInfo' },
+                {
+                    number: selectedElements.length - casesUuids.length,
+                }
+            );
+            snackInfo({
+                messageTxt: msg,
+            });
+        }
     }, [selectedElements]);
 
     const buildMenu = () => {
