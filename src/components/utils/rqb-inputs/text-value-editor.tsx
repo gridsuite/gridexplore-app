@@ -14,7 +14,6 @@ import useValid from './use-valid';
 
 const TextValueEditor = (props: ValueEditorProps) => {
     useConvertValue(props);
-    console.log('FM props', props);
 
     const valid = useValid(props);
 
