@@ -191,7 +191,7 @@ export const queryValidator: QueryValidator = (query) => {
             getDataType(rule.field) === DataType.NUMBER && !isValueAnArray;
         const isStringInput =
             getDataType(rule.field) === DataType.STRING && !isValueAnArray;
-        if (rule.id && rule.operator === OperatorType.EXISTS) {
+        if (rule.id && rule.operator === OPERATOR_OPTIONS.EXISTS.name) {
             // In the case of EXISTS operator, because we do not have a second value to evaluate, we force a valid result.
             result[rule.id] = {
                 valid: true,
@@ -199,14 +199,18 @@ export const queryValidator: QueryValidator = (query) => {
             };
         } else if (
             rule.id &&
-            rule.operator === 'between' &&
+            rule.operator === OPERATOR_OPTIONS.BETWEEN.name &&
             (!rule.value?.[0] || !rule.value?.[1])
         ) {
             result[rule.id] = {
                 valid: false,
                 reasons: [EMPTY_RULE],
             };
-        } else if (rule.id && rule.operator === 'in' && !rule.value?.length) {
+        } else if (
+            rule.id &&
+            rule.operator === OPERATOR_OPTIONS.IN.name &&
+            !rule.value?.length
+        ) {
             result[rule.id] = {
                 valid: false,
                 reasons: [EMPTY_RULE],
