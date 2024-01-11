@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveDirectory } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -126,7 +126,7 @@ const DirectoryContent = () => {
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
-    const [activeElement, setActiveElement] = useState(null);
+    const [activeElement, setActiveElement] = React.useState(null);
     const [isMissingDataAfterDirChange, setIsMissingDataAfterDirChange] =
         useState(true);
 
@@ -134,7 +134,8 @@ const DirectoryContent = () => {
     const todayStart = new Date().setHours(0, 0, 0, 0);
 
     /* Menu states */
-    const [mousePosition, setMousePosition] = useState(initialMousePosition);
+    const [mousePosition, setMousePosition] =
+        React.useState(initialMousePosition);
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
     const [elementName, setElementName] = useState('');
@@ -199,7 +200,7 @@ const DirectoryContent = () => {
     const [
         currentFiltersContingencyListId,
         setCurrentFiltersContingencyListId,
-    ] = useState(null);
+    ] = React.useState(null);
     const handleCloseFiltersContingency = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
@@ -213,7 +214,7 @@ const DirectoryContent = () => {
     const [
         currentExplicitNamingContingencyListId,
         setCurrentExplicitNamingContingencyListId,
-    ] = useState(null);
+    ] = React.useState(null);
     const handleCloseExplicitNamingContingency = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
@@ -335,7 +336,7 @@ const DirectoryContent = () => {
         [snackError]
     );
 
-    const getLink = (elementUuid, objectType) => {
+    function getLink(elementUuid, objectType) {
         let href;
         if (appsAndUrls !== null) {
             appsAndUrls.find((app) => {
@@ -353,24 +354,20 @@ const DirectoryContent = () => {
             });
         }
         return href;
-    };
+    }
 
-    const getElementTypeTranslation = useCallback(
-        (type, subtype, formatCase) => {
-            const format = formatCase
-                ? ' (' + intl.formatMessage({ id: formatCase }) + ')'
-                : '';
-            const elemType =
-                type === ElementType.FILTER ||
-                type === ElementType.CONTINGENCY_LIST
-                    ? intl.formatMessage({ id: subtype + '_' + type })
-                    : intl.formatMessage({ id: type });
-            return `${elemType}${format}`;
-        },
-        [intl]
-    );
+    function getElementTypeTranslation(type, subtype, formatCase) {
+        const format = formatCase
+            ? ' (' + intl.formatMessage({ id: formatCase }) + ')'
+            : '';
+        const elemType =
+            type === ElementType.FILTER || type === ElementType.CONTINGENCY_LIST
+                ? intl.formatMessage({ id: subtype + '_' + type })
+                : intl.formatMessage({ id: type });
+        return `${elemType}${format}`;
+    }
 
-    const typeCellRender = useCallback((cellData) => {
+    function typeCellRender(cellData) {
         const { rowData = {} } = cellData || {};
         return (
             <Box sx={styles.cell}>
@@ -380,7 +377,7 @@ const DirectoryContent = () => {
                 />
             </Box>
         );
-    }, []);
+    }
 
     function userCellRender(cellData) {
         const user = cellData.rowData[cellData.dataKey];
@@ -686,21 +683,19 @@ const DirectoryContent = () => {
         return [...new Set(acc)];
     };
 
-    const rows = useMemo(
-        () =>
-            currentChildren?.map((child) => ({
-                ...child,
-                type:
-                    childrenMetadata[child.elementUuid] &&
-                    getElementTypeTranslation(
-                        child.type,
-                        childrenMetadata[child.elementUuid].subtype,
-                        childrenMetadata[child.elementUuid].format
-                    ),
-                notClickable: child.type === ElementType.CASE,
-            })),
-        [childrenMetadata, currentChildren, getElementTypeTranslation]
-    );
+    const getCurrentChildrenWithNotClickableRows = () => {
+        return currentChildren?.map((child) => ({
+            ...child,
+            type:
+                childrenMetadata[child.elementUuid] &&
+                getElementTypeTranslation(
+                    child.type,
+                    childrenMetadata[child.elementUuid].subtype,
+                    childrenMetadata[child.elementUuid].format
+                ),
+            notClickable: child.type === ElementType.CASE,
+        }));
+    };
 
     const renderLoadingContent = () => {
         return (
@@ -742,7 +737,7 @@ const DirectoryContent = () => {
                     style={{ flexGrow: 1 }}
                     onRowRightClick={(e) => onContextMenu(e)}
                     onRowClick={handleRowClick}
-                    rows={rows}
+                    rows={getCurrentChildrenWithNotClickableRows()}
                     columns={[
                         {
                             cellRenderer: selectionRenderer,
