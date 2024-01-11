@@ -499,19 +499,24 @@ const DirectoryContent = () => {
         }
     }
 
-    const getDisplayedElementName = (cellData) => {
-        const { elementName, uploading, elementUuid } = cellData.rowData;
-        const formatMessage = intl.formatMessage;
-        if (uploading) {
-            return elementName + '\n' + formatMessage({ id: 'uploading' });
-        }
-        if (!childrenMetadata[elementUuid]) {
-            return (
-                elementName + '\n' + formatMessage({ id: 'creationInProgress' })
-            );
-        }
-        return childrenMetadata[elementUuid].name;
-    };
+    const getDisplayedElementName = useCallback(
+        (cellData) => {
+            const { elementName, uploading, elementUuid } = cellData.rowData;
+            const formatMessage = intl.formatMessage;
+            if (uploading) {
+                return elementName + '\n' + formatMessage({ id: 'uploading' });
+            }
+            if (!childrenMetadata[elementUuid]) {
+                return (
+                    elementName +
+                    '\n' +
+                    formatMessage({ id: 'creationInProgress' })
+                );
+            }
+            return childrenMetadata[elementUuid].name;
+        },
+        [childrenMetadata, intl.formatMessage]
+    );
 
     const isElementCaseOrStudy = (objectType) => {
         return (
@@ -519,29 +524,36 @@ const DirectoryContent = () => {
         );
     };
 
-    const nameCellRender = (cellData) => {
-        const elementUuid = cellData.rowData['elementUuid'];
-        const objectType = cellData.rowData['type'];
-        return (
-            <Box sx={styles.cell}>
-                {/*  Icon */}
-                {!childrenMetadata[elementUuid] &&
-                    isElementCaseOrStudy(objectType) && (
-                        <CircularProgress size={18} sx={styles.circularRoot} />
-                    )}
-                {childrenMetadata[elementUuid] &&
-                    getElementIcon(
-                        objectType,
-                        childrenMetadata[elementUuid].subtype
-                    )}
-                {/* Name */}
-                <OverflowableText
-                    text={getDisplayedElementName(cellData)}
-                    tooltipSx={styles.tooltip}
-                />
-            </Box>
-        );
-    };
+    const nameCellRender = useCallback(
+        (cellData) => {
+            const element = currentChildren.find(
+                (e) => e.elementUuid === cellData.rowData.elementUuid
+            );
+            return (
+                <Box sx={styles.cell}>
+                    {/*  Icon */}
+                    {!childrenMetadata[element.elementUuid] &&
+                        isElementCaseOrStudy(element.type) && (
+                            <CircularProgress
+                                size={18}
+                                sx={styles.circularRoot}
+                            />
+                        )}
+                    {childrenMetadata[element.elementUuid] &&
+                        getElementIcon(
+                            element.type,
+                            childrenMetadata[element.elementUuid].subtype
+                        )}
+                    {/* Name */}
+                    <OverflowableText
+                        text={getDisplayedElementName(cellData)}
+                        tooltipSx={styles.tooltip}
+                    />
+                </Box>
+            );
+        },
+        [childrenMetadata, currentChildren, getDisplayedElementName]
+    );
 
     function toggleSelection(elementUuid) {
         let element = currentChildren?.find(
