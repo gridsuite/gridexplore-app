@@ -131,13 +131,28 @@ export function exportExpertRules(
 export function importExpertRules(
     query: RuleGroupTypeExport
 ): CustomRuleGroupType {
+    function parseValue(rule: RuleTypeExport) {
+        if (rule.values) {
+            // values is a Set on server side, so need to sort
+            if (rule.dataType === DataType.NUMBER) {
+                return rule.values
+                    .map((value) => parseFloat(value as string))
+                    .sort((a, b) => a - b);
+            } else {
+                return rule.values.sort();
+            }
+        } else {
+            return rule.value;
+        }
+    }
+
     function transformRule(rule: RuleTypeExport): CustomRuleType {
         return {
             field: rule.field,
             operator: Object.values(OPERATOR_OPTIONS).find(
                 (operator) => operator.customName === rule.operator
             )?.name as string,
-            value: rule.values ? rule.values.sort() : rule.value, // values is a Set on server side...
+            value: parseValue(rule),
             dataType: rule.dataType,
         };
     }
