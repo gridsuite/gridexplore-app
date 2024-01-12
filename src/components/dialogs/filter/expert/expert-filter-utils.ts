@@ -19,8 +19,7 @@ import { RuleType } from 'react-querybuilder/dist/cjs/react-querybuilder.cjs.dev
 import { FIELDS_OPTIONS, OPERATOR_OPTIONS } from './expert-filter-constants';
 import { IntlShape } from 'react-intl';
 import {
-    BETWEEN_RULE_ORDER,
-    BETWEEN_RULE_DIF,
+    BETWEEN_RULE,
     EMPTY_GROUP,
     INCORRECT_RULE,
 } from 'components/utils/field-constants';
@@ -216,17 +215,10 @@ export const queryValidator: QueryValidator = (query) => {
                     valid: false,
                     reasons: [INCORRECT_RULE],
                 };
-            } else if (parseFloat(rule.value[0]) > parseFloat(rule.value[1])) {
+            } else if (parseFloat(rule.value[0]) >= parseFloat(rule.value[1])) {
                 result[rule.id] = {
                     valid: false,
-                    reasons: [BETWEEN_RULE_ORDER],
-                };
-            } else if (
-                parseFloat(rule.value[0]) === parseFloat(rule.value[1])
-            ) {
-                result[rule.id] = {
-                    valid: false,
-                    reasons: [BETWEEN_RULE_DIF],
+                    reasons: [BETWEEN_RULE],
                 };
             }
         } else if (

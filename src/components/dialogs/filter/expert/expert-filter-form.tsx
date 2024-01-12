@@ -7,8 +7,7 @@
 
 import React, { useCallback, useMemo } from 'react';
 import {
-    BETWEEN_RULE_DIF,
-    BETWEEN_RULE_ORDER,
+    BETWEEN_RULE,
     EMPTY_GROUP,
     EMPTY_RULE,
     EQUIPMENT_TYPE,
@@ -66,19 +65,9 @@ export const expertFilterSchema = {
                                 query as RuleGroupTypeAny
                             );
                         })
-                        .test(
-                            BETWEEN_RULE_ORDER,
-                            BETWEEN_RULE_ORDER,
-                            (query) => {
-                                return testQuery(
-                                    BETWEEN_RULE_ORDER,
-                                    query as RuleGroupTypeAny
-                                );
-                            }
-                        )
-                        .test(BETWEEN_RULE_DIF, BETWEEN_RULE_DIF, (query) => {
+                        .test(BETWEEN_RULE, BETWEEN_RULE, (query) => {
                             return testQuery(
-                                BETWEEN_RULE_DIF,
+                                BETWEEN_RULE,
                                 query as RuleGroupTypeAny
                             );
                         }),
