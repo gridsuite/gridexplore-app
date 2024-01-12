@@ -17,7 +17,7 @@ import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
 import SettingsIcon from '@mui/icons-material/Settings';
 import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
-import StickyNote2Icon from '@mui/icons-material/StickyNote2';
+import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
 
 import VirtualizedTable from './virtualized-table';
 import {
@@ -42,7 +42,7 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import CreateIcon from '@mui/icons-material/Create';
 import ExplicitNamingFilterEditionDialog from './dialogs/filter/explicit-naming/explicit-naming-filter-edition-dialog';
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
@@ -451,10 +451,10 @@ const DirectoryContent = () => {
                 }
                 placement="right"
             >
-                <StickyNote2Icon onClick={handleDescriptionIconClick} />
+                <StickyNote2OutlinedIcon onClick={handleDescriptionIconClick} />
             </Tooltip>
         ) : (
-            <EditOutlinedIcon onClick={handleDescriptionIconClick} />
+            <CreateIcon onClick={handleDescriptionIconClick} />
         );
         return (
             <>
