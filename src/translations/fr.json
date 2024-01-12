@@ -257,7 +257,6 @@
   "incorrectRule": "Le filtre contient un champ incorrect",
   "betweenRule": "La valeur de gauche d'une règle 'entre' doit être inférieure à la valeur de droite",
   "emptyGroup": "Le filtre contient un groupe vide. Supprimez le ou ajoutez des règles à ce groupe",
-  "downloadCases": "Télécharger la(les) situation(s)",
   "id": "ID",
   "name": "Nom",
   "minP": "Puissance active min",

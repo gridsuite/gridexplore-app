@@ -242,7 +242,6 @@
   "incorrectRule": "Filter contains an incorrect field",
   "betweenRule": "Left value of 'between' rule have to be lower than the right value",
   "emptyGroup": "Filter contains an empty group. Consider removing it or adding rules to this group",
-  "downloadCases": "Download Case(s)",
   "id": "ID",
   "name": "Name",
   "minP": "Minimum active power",
