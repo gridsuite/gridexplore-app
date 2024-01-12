@@ -12,7 +12,7 @@ import React from 'react';
 import { useController } from 'react-hook-form';
 import { EXPERT_FILTER_QUERY } from '../../dialogs/filter/expert/expert-filter-form';
 import {
-    countRules,
+    getNumberOfSiblings,
     recursiveRemove,
 } from '../../dialogs/filter/expert/expert-filter-utils';
 
@@ -27,13 +27,17 @@ const RemoveButton = (props: ActionWithRulesProps) => {
         onChange(recursiveRemove(query, props.path));
     }
 
+    const isLastRuleOrGroup =
+        props.path.toString() === [0].toString() &&
+        getNumberOfSiblings(props.path, query) === 1;
+
     return (
         <IconButton
             size={'small'}
             onClick={handleDelete}
             className={props.className}
         >
-            {countRules(query) > 1 && <DeleteIcon />}
+            {!isLastRuleOrGroup && <DeleteIcon />}
         </IconButton>
     );
 };

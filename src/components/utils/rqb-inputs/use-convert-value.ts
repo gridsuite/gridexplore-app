@@ -15,9 +15,15 @@ const useConvertValue = ({
 }: ValueEditorProps) => {
     useEffect(
         () => {
-            if (operator === OPERATOR_OPTIONS.IN.name) {
+            if (
+                operator === OPERATOR_OPTIONS.IN.name &&
+                !Array.isArray(value)
+            ) {
                 handleOnChange(value ? [value] : []);
-            } else if (Array.isArray(value)) {
+            } else if (
+                operator !== OPERATOR_OPTIONS.IN.name &&
+                Array.isArray(value)
+            ) {
                 handleOnChange(value.length ? value[0] : defaultValue);
             }
         },
