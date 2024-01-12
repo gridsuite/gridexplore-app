@@ -242,5 +242,5 @@
   "downloadCases": "Download Case(s)",
 
   "descriptionModificationError": "An error when modifying the description",
-  "descriptionModificationDialog": "Description modification"
+  "descriptionLimitError": "Description exceeds character limit"
 }

@@ -24,7 +24,7 @@ interface IDescriptionModificationDialogue {
 }
 
 const schema = yup.object().shape({
-    [DESCRIPTION]: yup.string().nullable(),
+    [DESCRIPTION]: yup.string().max(500, 'descriptionLimitError'),
 });
 
 const DescriptionModificationDialogue: FunctionComponent<

@@ -256,5 +256,6 @@
   "emptyGroup": "Le filtre contient un groupe vide. Supprimez le ou ajoutez des règles à ce groupe",
   "downloadCases": "Télécharger la(les) situation(s)",
 
-  "descriptionModificationError": "Erreur lors de la modification de la description"
+  "descriptionModificationError": "Erreur lors de la modification de la description",
+  "descriptionLimitError": "La description dépasse la limite de caractères"
 }
