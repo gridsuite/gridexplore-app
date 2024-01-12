@@ -18,7 +18,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import SettingsIcon from '@mui/icons-material/Settings';
 import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
-import StickyNote2IconOutlined from '@mui/icons-material/StickyNote2Outlined';
 
 import VirtualizedTable from './virtualized-table';
 import {
@@ -43,6 +42,7 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import ExplicitNamingFilterEditionDialog from './dialogs/filter/explicit-naming/explicit-naming-filter-edition-dialog';
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
@@ -428,10 +428,17 @@ const DirectoryContent = () => {
 
     const [openDescModificationDialog, setOpenDescModificationDialog] =
         useState(false);
+
     function descriptionCellRender(cellData) {
         const description = cellData.rowData['description'];
 
-        const handleClick = (e) => {
+        const descriptionLines = description.split('\n');
+        if (descriptionLines?.length > 3) {
+            descriptionLines[2] = '...';
+        }
+        const tooltip = descriptionLines.join('\n');
+
+        const handleDescriptionIconClick = (e) => {
             setActiveElement(cellData.rowData);
             setOpenDescModificationDialog(true);
             e.stopPropagation();
@@ -440,17 +447,14 @@ const DirectoryContent = () => {
         const icon = description ? (
             <Tooltip
                 title={
-                    <Box
-                        children={description}
-                        sx={styles.descriptionTooltip}
-                    />
+                    <Box children={tooltip} sx={styles.descriptionTooltip} />
                 }
                 placement="right"
             >
-                <StickyNote2Icon onClick={handleClick} />
+                <StickyNote2Icon onClick={handleDescriptionIconClick} />
             </Tooltip>
         ) : (
-            <StickyNote2IconOutlined onClick={handleClick} />
+            <EditOutlinedIcon onClick={handleDescriptionIconClick} />
         );
         return (
             <>
@@ -749,7 +753,7 @@ const DirectoryContent = () => {
                             }),
                             dataKey: 'elementName',
                             cellRenderer: nameCellRender,
-                            minWidth: '36%',
+                            minWidth: '31%',
                         },
                         {
                             label: intl.formatMessage({
@@ -760,7 +764,7 @@ const DirectoryContent = () => {
                             cellRenderer: descriptionCellRender,
                         },
                         {
-                            minWidth: '20%',
+                            minWidth: '15%',
                             label: intl.formatMessage({
                                 id: 'type',
                             }),

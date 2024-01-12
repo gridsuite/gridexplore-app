@@ -11,9 +11,10 @@ import { DESCRIPTION } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { updateElement } from '../../../utils/rest-api';
-import { TextInput, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
 import React from 'react';
+import DescriptionInput from './description-input';
 
 interface IDescriptionModificationDialogue {
     elementUuid: string;
@@ -70,14 +71,10 @@ const DescriptionModificationDialogue: FunctionComponent<
             onSave={onSubmit}
             formSchema={schema}
             formMethods={methods}
-            titleId={'descriptionModificationDialog'}
+            titleId={'description'}
+            removeOptional={true}
         >
-            <TextInput
-                name={DESCRIPTION}
-                formProps={{
-                    multiline: true,
-                }}
-            />
+            <DescriptionInput minRows={3} sx={{ marginTop: '10px' }} />
         </CustomMuiDialog>
     );
 };
