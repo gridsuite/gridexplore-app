@@ -239,6 +239,7 @@
   "in": "in",
   "emptyRule": "Filter contains an empty field",
   "incorrectRule": "Filter contains an incorrect field",
+  "betweenRule": "Left value of 'between' rule have to be lower or equals to the right value",
   "emptyGroup": "Filter contains an empty group. Consider removing it or adding rules to this group",
   "downloadCases": "Download Case(s)",
   "id": "ID",

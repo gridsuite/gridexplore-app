@@ -18,7 +18,11 @@ import {
 import { RuleType } from 'react-querybuilder/dist/cjs/react-querybuilder.cjs.development';
 import { FIELDS_OPTIONS, OPERATOR_OPTIONS } from './expert-filter-constants';
 import { IntlShape } from 'react-intl';
-import { EMPTY_GROUP, INCORRECT_RULE } from 'components/utils/field-constants';
+import {
+    BETWEEN_RULE,
+    EMPTY_GROUP,
+    INCORRECT_RULE,
+} from 'components/utils/field-constants';
 import { EMPTY_RULE } from '../../../utils/field-constants';
 import {
     CombinatorType,
@@ -197,15 +201,26 @@ export const queryValidator: QueryValidator = (query) => {
                 valid: true,
                 reasons: undefined,
             };
-        } else if (
-            rule.id &&
-            rule.operator === OPERATOR_OPTIONS.BETWEEN.name &&
-            (!rule.value?.[0] || !rule.value?.[1])
-        ) {
-            result[rule.id] = {
-                valid: false,
-                reasons: [EMPTY_RULE],
-            };
+        } else if (rule.id && rule.operator === OPERATOR_OPTIONS.BETWEEN.name) {
+            if (!rule.value?.[0] || !rule.value?.[1]) {
+                result[rule.id] = {
+                    valid: false,
+                    reasons: [EMPTY_RULE],
+                };
+            } else if (
+                isNaN(parseFloat(rule.value[0])) ||
+                isNaN(parseFloat(rule.value[1]))
+            ) {
+                result[rule.id] = {
+                    valid: false,
+                    reasons: [INCORRECT_RULE],
+                };
+            } else if (parseFloat(rule.value[0]) > parseFloat(rule.value[1])) {
+                result[rule.id] = {
+                    valid: false,
+                    reasons: [BETWEEN_RULE],
+                };
+            }
         } else if (
             rule.id &&
             rule.operator === OPERATOR_OPTIONS.IN.name &&

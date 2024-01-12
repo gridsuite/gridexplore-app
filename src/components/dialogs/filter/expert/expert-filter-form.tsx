@@ -7,6 +7,7 @@
 
 import React, { useCallback, useMemo } from 'react';
 import {
+    BETWEEN_RULE,
     EMPTY_GROUP,
     EMPTY_RULE,
     EQUIPMENT_TYPE,
@@ -61,6 +62,12 @@ export const expertFilterSchema = {
                         .test(INCORRECT_RULE, INCORRECT_RULE, (query) => {
                             return testQuery(
                                 INCORRECT_RULE,
+                                query as RuleGroupTypeAny
+                            );
+                        })
+                        .test(BETWEEN_RULE, BETWEEN_RULE, (query) => {
+                            return testQuery(
+                                BETWEEN_RULE,
                                 query as RuleGroupTypeAny
                             );
                         }),
