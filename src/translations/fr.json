@@ -268,7 +268,7 @@
   "energySource": "Source d'énergie",
   "country": "Pays",
   "voltageRegulatorOn": "Réglage de tension",
-  "PlannedActivePowerSetPoint": "Puissance imposée"
+  "PlannedActivePowerSetPoint": "Puissance imposée",
   "downloadCases": "Télécharger la(les) situation(s)",
 
   "descriptionModificationError": "Erreur lors de la modification de la description",

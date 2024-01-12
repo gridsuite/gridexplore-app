@@ -253,7 +253,7 @@
   "energySource": "Energy source",
   "country": "Country",
   "voltageRegulatorOn": "Voltage regulation",
-  "PlannedActivePowerSetPoint": "Planning active power set point"
+  "PlannedActivePowerSetPoint": "Planning active power set point",
   "downloadCases": "Download Case(s)",
 
   "descriptionModificationError": "An error when modifying the description",
