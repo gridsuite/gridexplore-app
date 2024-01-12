@@ -100,7 +100,7 @@ export function exportExpertRules(
                 (operator) => operator.name === rule.operator
             )?.customName as OperatorType,
             value:
-                rule.operator !== OperatorType.EXISTS && !isValueAnArray
+                !isValueAnArray && rule.operator !== OperatorType.EXISTS
                     ? rule.value
                     : undefined,
             values: isValueAnArray ? rule.value : undefined,
