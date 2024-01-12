@@ -17,6 +17,8 @@ import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
 import SettingsIcon from '@mui/icons-material/Settings';
 import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
+import StickyNote2Icon from '@mui/icons-material/StickyNote2';
+import StickyNote2IconOutlined from '@mui/icons-material/StickyNote2Outlined';
 
 import VirtualizedTable from './virtualized-table';
 import {
@@ -46,6 +48,7 @@ import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/crite
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
 import ExpertFilterEditionDialog from './dialogs/filter/expert/expert-filter-edition-dialog';
+import DescriptionModificationDialogue from './dialogs/description-modification/description-modification-dialogue';
 
 const circularProgressSize = '70px';
 
@@ -92,6 +95,14 @@ const styles = {
     },
     tooltip: {
         maxWidth: '1000px',
+    },
+    descriptionTooltip: {
+        display: 'inline-block',
+        whiteSpace: 'pre',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        maxWidth: '250px',
+        maxHeight: '50px',
     },
 };
 
@@ -415,6 +426,41 @@ const DirectoryContent = () => {
         }
     }
 
+    const [openDescModificationDialog, setOpenDescModificationDialog] =
+        useState(false);
+    function descriptionCellRender(cellData) {
+        const description = cellData.rowData['description'];
+
+        const handleClick = (e) => {
+            setActiveElement(cellData.rowData);
+            setOpenDescModificationDialog(true);
+            e.stopPropagation();
+        };
+
+        const icon = description ? (
+            <Tooltip
+                title={
+                    <Box
+                        children={description}
+                        sx={styles.descriptionTooltip}
+                    />
+                }
+                placement="right"
+            >
+                <StickyNote2Icon onClick={handleClick} />
+            </Tooltip>
+        ) : (
+            <StickyNote2IconOutlined onClick={handleClick} />
+        );
+        return (
+            <>
+                {isElementCaseOrStudy(cellData.rowData['type']) && (
+                    <Box sx={styles.cell}>{icon}</Box>
+                )}
+            </>
+        );
+    }
+
     function getElementIcon(objectType) {
         if (objectType === ElementType.STUDY) {
             return <PhotoLibraryIcon sx={styles.icon} />;
@@ -703,10 +749,18 @@ const DirectoryContent = () => {
                             }),
                             dataKey: 'elementName',
                             cellRenderer: nameCellRender,
-                            minWidth: '36%',
+                            minWidth: '31%',
                         },
                         {
-                            minWidth: '20%',
+                            label: intl.formatMessage({
+                                id: 'description',
+                            }),
+                            dataKey: 'description',
+                            minWidth: '10%',
+                            cellRenderer: descriptionCellRender,
+                        },
+                        {
+                            minWidth: '15%',
                             label: intl.formatMessage({
                                 id: 'type',
                             }),
@@ -774,6 +828,19 @@ const DirectoryContent = () => {
     };
 
     const renderDialog = (name) => {
+        if (openDescModificationDialog && activeElement) {
+            return (
+                <DescriptionModificationDialogue
+                    open={true}
+                    description={activeElement.description}
+                    elementUuid={activeElement.elementUuid}
+                    onClose={() => {
+                        setActiveElement(null);
+                        setOpenDescModificationDialog(false);
+                    }}
+                />
+            );
+        }
         // TODO openDialog should also be aware of the dialog's type, not only its subtype, because
         // if/when two different dialogs have the same subtype, this function will display the wrong dialog.
         switch (openDialog) {

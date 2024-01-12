@@ -5,6 +5,7 @@
   "paramsRetrievingError": "An error occurred while retrieving the parameters",
   "elementUuid": "Element Uuid",
   "elementName": "Name",
+  "description": "Description",
   "creator": "Created by",
   "type": "Type",
   "created": "Created",
@@ -91,12 +92,12 @@
   "editFilter": "Edit filter",
   "STUDY": "Study",
   "VOLTAGE_INIT_PARAMETERS": "Parameters (Voltage profile initialization)",
-  "SCRIPT_FILTER": "Filter (script)",
-  "FORM_FILTER": "Filter (form)",
+  "SCRIPT_FILTER": "Filter (Script)",
+  "FORM_FILTER": "Filter (Form)",
   "CRITERIA_FILTER": "Filter (Criteria based)",
   "EXPERT_FILTER": "Filter (Expert)",
   "IDENTIFIER_LIST_FILTER": "Filter (Explicit naming)",
-  "SCRIPT_CONTINGENCY_LIST": "Contingency list (script)",
+  "SCRIPT_CONTINGENCY_LIST": "Contingency list (Script)",
   "FORM_CONTINGENCY_LIST": "Contingency list (Criteria based)",
   "IDENTIFIERS_CONTINGENCY_LIST": "Contingency list (Explicit naming)",
   "CriteriaBased": "Criteria based",
@@ -254,4 +255,8 @@
   "country": "Country",
   "voltageRegulatorOn": "Voltage regulation",
   "PlannedActivePowerSetPoint": "Planning active power set point"
+  "downloadCases": "Download Case(s)",
+
+  "descriptionModificationError": "An error when modifying the description",
+  "descriptionModificationDialog": "Description modification"
 }
