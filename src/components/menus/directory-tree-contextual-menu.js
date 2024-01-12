@@ -16,7 +16,7 @@ import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import BuildIcon from '@mui/icons-material/Build';
 import AddIcon from '@mui/icons-material/Add';
 import CreateIcon from '@mui/icons-material/Create';
-
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
 import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
@@ -28,6 +28,13 @@ import { DialogsId } from '../../utils/UIconstants';
 
 import {
     deleteElement,
+    duplicateCase,
+    duplicateContingencyList,
+    duplicateFilter,
+    duplicateParameter,
+    duplicateStudy,
+    fetchElementsInfos,
+    getNameCandidate,
     insertDirectory,
     insertRootDirectory,
     renameElement,
@@ -39,6 +46,7 @@ import { useDeferredFetch } from '../../utils/custom-hooks';
 import { ElementType } from '../../utils/elementType';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
@@ -48,6 +56,7 @@ const DirectoryTreeContextualMenu = (props) => {
     const intl = useIntl();
 
     const [hideMenu, setHideMenu] = useState(false);
+    const { snackError } = useSnackMessage();
 
     const handleOpenDialog = (dialogId) => {
         setHideMenu(true);
@@ -107,6 +116,148 @@ const DirectoryTreeContextualMenu = (props) => {
         undefined,
         false
     );
+    const selectionForCopy = useSelector((state) => state.selectionForCopy);
+
+    const handleError = useCallback(
+        (message) => {
+            snackError({
+                messageTxt: message,
+            });
+        },
+        [snackError]
+    );
+    const handlePasteError = (error) => {
+        let msg;
+        if (error.status === 404) {
+            msg = intl.formatMessage({
+                id: 'elementPasteFailed404',
+            });
+        } else {
+            msg =
+                intl.formatMessage({ id: 'elementPasteFailed' }) +
+                error?.message;
+        }
+        return handleError(msg);
+    };
+
+    function pasteElement(elementUuid, selectionForCopy) {
+        if (selectionForCopy.sourceItemUuid) {
+            console.info(
+                'Pasting element %s into directory %s',
+                selectionForCopy.nameItem,
+                elementUuid
+            );
+            getNameCandidate(
+                elementUuid,
+                selectionForCopy.nameItem,
+                selectionForCopy.typeItem
+            )
+                .then((newItemName) => {
+                    if (newItemName) {
+                        switch (selectionForCopy.typeItem) {
+                            case ElementType.CASE:
+                                duplicateCase(
+                                    newItemName,
+                                    selectionForCopy.descriptionItem,
+                                    selectionForCopy.sourceItemUuid,
+                                    elementUuid
+                                )
+                                    .then(() => {
+                                        handleCloseDialog();
+                                    })
+                                    .catch((error) => {
+                                        handlePasteError(error);
+                                    });
+                                break;
+                            case ElementType.STUDY:
+                                duplicateStudy(
+                                    newItemName,
+                                    selectionForCopy.descriptionItem,
+                                    selectionForCopy.sourceItemUuid,
+                                    elementUuid
+                                )
+                                    .then(() => {
+                                        handleCloseDialog();
+                                    })
+                                    .catch((error) => {
+                                        handlePasteError(error);
+                                    });
+                                break;
+                            case ElementType.FILTER:
+                                duplicateFilter(
+                                    newItemName,
+                                    selectionForCopy.descriptionItem,
+                                    selectionForCopy.sourceItemUuid,
+                                    elementUuid
+                                )
+                                    .then(() => {
+                                        handleCloseDialog();
+                                    })
+                                    .catch((error) => {
+                                        handlePasteError(error);
+                                    });
+                                break;
+                            case ElementType.VOLTAGE_INIT_PARAMETERS:
+                                duplicateParameter(
+                                    newItemName,
+                                    ElementType.VOLTAGE_INIT_PARAMETERS,
+                                    selectionForCopy.sourceItemUuid,
+                                    elementUuid
+                                )
+                                    .then(() => {
+                                        handleCloseDialog();
+                                    })
+                                    .catch((error) => {
+                                        handlePasteError(error);
+                                    });
+                                break;
+                            case ElementType.CONTINGENCY_LIST:
+                                fetchElementsInfos([
+                                    selectionForCopy.sourceItemUuid,
+                                ])
+                                    .then((res) => {
+                                        duplicateContingencyList(
+                                            res[0].specificMetadata.type,
+                                            newItemName,
+                                            selectionForCopy.descriptionItem,
+                                            selectionForCopy.sourceItemUuid,
+                                            elementUuid
+                                        ).catch((error) => {
+                                            handlePasteError(error);
+                                        });
+                                    })
+                                    .catch((error) => {
+                                        handlePasteError(error);
+                                    })
+                                    .finally(() => {
+                                        handleCloseDialog();
+                                    });
+
+                                break;
+                            default:
+                                handleError(
+                                    intl.formatMessage({ id: 'unsuportedItem' })
+                                );
+                        }
+                    } else {
+                        handleError(
+                            newItemName +
+                                ' : ' +
+                                intl.formatMessage({
+                                    id: 'nameAlreadyUsed',
+                                })
+                        );
+                    }
+                })
+                .catch((error) => {
+                    handleError(error.message);
+                })
+                .finally(() => handleCloseDialog());
+        } else {
+            handleError(intl.formatMessage({ id: 'elementPasteFailed404' }));
+            handleCloseDialog();
+        }
+    }
 
     // Allowance
     const showMenuFromEmptyZone = useCallback(() => {
@@ -181,7 +332,17 @@ const DirectoryTreeContextualMenu = (props) => {
                     { isDivider: true }
                 );
             }
-
+            menuItems.push(
+                {
+                    messageDescriptorId: 'paste',
+                    callback: () => {
+                        pasteElement(directory?.elementUuid, selectionForCopy);
+                    },
+                    icon: <ContentPasteIcon fontSize="small" />,
+                    disabled: !selectionForCopy.sourceItemUuid,
+                },
+                { isDivider: true }
+            );
             menuItems.push({
                 messageDescriptorId: 'createFolder',
                 callback: () => {
