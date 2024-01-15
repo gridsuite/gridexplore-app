@@ -33,27 +33,60 @@ export const ENERGY_SOURCE_OPTIONS = [
     { name: 'OTHER', label: 'Other' },
 ];
 
+// customName is used to export to the server
 export const OPERATOR_OPTIONS = {
-    EQUALS: { name: OperatorType.EQUALS, label: 'equality' },
-    NOT_EQUALS: { name: OperatorType.NOT_EQUALS, label: 'notEquality' },
+    EQUALS: { name: '=', customName: OperatorType.EQUALS, label: 'equality' },
+    NOT_EQUALS: {
+        name: '!=',
+        customName: OperatorType.NOT_EQUALS,
+        label: 'notEquality',
+    },
     // Number and String
-    EXISTS: { name: OperatorType.EXISTS, label: 'exists' },
+    EXISTS: {
+        name: OperatorType.EXISTS,
+        customName: OperatorType.EXISTS,
+        label: 'exists',
+    },
     // Number
-    LOWER: { name: OperatorType.LOWER, label: 'lessThan' },
+    LOWER: { name: '<', customName: OperatorType.LOWER, label: 'lessThan' },
     LOWER_OR_EQUALS: {
-        name: OperatorType.LOWER_OR_EQUALS,
+        name: '<=',
+        customName: OperatorType.LOWER_OR_EQUALS,
         label: 'lessOrEqual',
     },
-    GREATER: { name: OperatorType.GREATER, label: 'greaterThan' },
+    GREATER: {
+        name: '>',
+        customName: OperatorType.GREATER,
+        label: 'greaterThan',
+    },
     GREATER_OR_EQUALS: {
-        name: OperatorType.GREATER_OR_EQUALS,
+        name: '>=',
+        customName: OperatorType.GREATER_OR_EQUALS,
         label: 'greaterOrEqual',
     },
+    BETWEEN: {
+        name: 'between',
+        customName: OperatorType.BETWEEN,
+        label: 'between',
+    },
+    IN: { name: 'in', customName: OperatorType.IN, label: 'in' },
     // String
-    IS: { name: OperatorType.IS, label: 'is' },
-    CONTAINS: { name: OperatorType.CONTAINS, label: 'contains' },
-    BEGINS_WITH: { name: OperatorType.BEGINS_WITH, label: 'beginsWith' },
-    ENDS_WITH: { name: OperatorType.ENDS_WITH, label: 'endsWith' },
+    IS: { name: OperatorType.IS, customName: OperatorType.IS, label: 'is' },
+    CONTAINS: {
+        name: 'contains',
+        customName: OperatorType.CONTAINS,
+        label: 'contains',
+    },
+    BEGINS_WITH: {
+        name: 'beginsWith',
+        customName: OperatorType.BEGINS_WITH,
+        label: 'beginsWith',
+    },
+    ENDS_WITH: {
+        name: 'endsWith',
+        customName: OperatorType.ENDS_WITH,
+        label: 'endsWith',
+    },
 };
 
 export const COMBINATOR_OPTIONS = {
@@ -127,7 +160,7 @@ export const FIELDS_OPTIONS = {
         name: FieldType.VOLTAGE_REGULATOR_ON,
         label: 'voltageRegulatorOn',
         dataType: DataType.BOOLEAN,
-        valueEditorType: 'checkbox',
+        valueEditorType: 'switch',
     },
     PLANNED_ACTIVE_POWER_SET_POINT: {
         name: FieldType.PLANNED_ACTIVE_POWER_SET_POINT,
