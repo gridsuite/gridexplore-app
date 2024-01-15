@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setActiveDirectory } from '../redux/actions';
+import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import * as constants from '../utils/UIconstants';
@@ -48,6 +48,7 @@ import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/crite
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
 import ExpertFilterEditionDialog from './dialogs/filter/expert/expert-filter-edition-dialog';
+import { noSelectionForCopy } from 'utils/constants';
 import DescriptionModificationDialogue from './dialogs/description-modification/description-modification-dialogue';
 
 const circularProgressSize = '70px';
@@ -115,6 +116,47 @@ const DirectoryContent = () => {
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
+    const dispatchSelectionForCopy = useCallback(
+        (
+            typeItem,
+            nameItem,
+            descriptionItem,
+            sourceItemUuid,
+            parentDirectoryUuid
+        ) => {
+            dispatch(
+                setSelectionForCopy({
+                    sourceItemUuid: sourceItemUuid,
+                    typeItem: typeItem,
+                    nameItem: nameItem,
+                    descriptionItem: descriptionItem,
+                    parentDirectoryUuid: parentDirectoryUuid,
+                })
+            );
+        },
+        [dispatch]
+    );
+    const [broadcastChannel] = useState(() => {
+        const broadcast = new BroadcastChannel('itemCopyChannel');
+        broadcast.onmessage = (event) => {
+            console.info('message received from broadcast channel');
+            if (
+                JSON.stringify(noSelectionForCopy) ===
+                JSON.stringify(event.data)
+            ) {
+                dispatch(setSelectionForCopy(noSelectionForCopy));
+            } else {
+                dispatchSelectionForCopy(
+                    event.data.typeItem,
+                    event.data.nameItem,
+                    event.data.descriptionItem,
+                    event.data.sourceItemUuid,
+                    event.data.parentDirectoryUuid
+                );
+            }
+        };
+        return broadcast;
+    });
     const [childrenMetadata, setChildrenMetadata] = useState({});
 
     const [selectedUuids, setSelectedUuids] = useState(new Set());
@@ -910,6 +952,7 @@ const DirectoryContent = () => {
                         }
                         onClose={handleCloseFiltersContingency}
                         name={name}
+                        broadcastChannel={broadcastChannel}
                     />
                 );
             case ContingencyListType.SCRIPT.id:
@@ -921,6 +964,7 @@ const DirectoryContent = () => {
                         contingencyListType={ContingencyListType.SCRIPT.id}
                         onClose={handleCloseScriptContingency}
                         name={name}
+                        broadcastChannel={broadcastChannel}
                     />
                 );
             case ContingencyListType.EXPLICIT_NAMING.id:
@@ -936,6 +980,7 @@ const DirectoryContent = () => {
                         }
                         onClose={handleCloseExplicitNamingContingency}
                         name={name}
+                        broadcastChannel={broadcastChannel}
                     />
                 );
             case FilterType.EXPLICIT_NAMING.id:
@@ -946,6 +991,7 @@ const DirectoryContent = () => {
                         onClose={handleCloseExplicitNamingFilterDialog}
                         titleId={'editFilter'}
                         name={name}
+                        broadcastChannel={broadcastChannel}
                     />
                 );
             case FilterType.CRITERIA_BASED.id:
@@ -956,6 +1002,7 @@ const DirectoryContent = () => {
                         onClose={handleCloseCriteriaBasedFilterDialog}
                         titleId={'editFilter'}
                         name={name}
+                        broadcastChannel={broadcastChannel}
                     />
                 );
             case FilterType.EXPERT.id:
@@ -966,6 +1013,7 @@ const DirectoryContent = () => {
                         onClose={handleCloseExpertFilterDialog}
                         titleId={'editFilter'}
                         name={name}
+                        broadcastChannel={broadcastChannel}
                     />
                 );
             default:
@@ -1014,6 +1062,7 @@ const DirectoryContent = () => {
                               }
                             : undefined
                     }
+                    broadcastChannel={broadcastChannel}
                 />
 
                 <DirectoryTreeContextualMenu
@@ -1032,6 +1081,7 @@ const DirectoryContent = () => {
                               }
                             : undefined
                     }
+                    broadcastChannel={broadcastChannel}
                 />
             </div>
             {renderDialog(elementName)}

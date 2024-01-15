@@ -56,6 +56,14 @@ export function setActiveDirectory(activeDirectory) {
 }
 
 export const CURRENT_PATH = 'CURRENT_PATH';
+export const SELECTION_FOR_COPY = 'SELECTION_FOR_COPY';
+
+export function setSelectionForCopy(selectionForCopy) {
+    return {
+        type: SELECTION_FOR_COPY,
+        selectionForCopy: selectionForCopy,
+    };
+}
 
 export function setCurrentPath(path) {
     return {
