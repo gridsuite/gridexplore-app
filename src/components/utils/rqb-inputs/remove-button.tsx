@@ -9,15 +9,35 @@ import { ActionWithRulesProps } from 'react-querybuilder';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React from 'react';
+import { useController } from 'react-hook-form';
+import { EXPERT_FILTER_QUERY } from '../../dialogs/filter/expert/expert-filter-form';
+import {
+    getNumberOfSiblings,
+    recursiveRemove,
+} from '../../dialogs/filter/expert/expert-filter-utils';
 
 const RemoveButton = (props: ActionWithRulesProps) => {
+    const {
+        field: { value: query, onChange },
+    } = useController({ name: EXPERT_FILTER_QUERY });
+
+    function handleDelete(e: React.MouseEvent<Element, MouseEvent>) {
+        // We don't want groups with no rules
+        // So if we have only empty subgroups above the removed rule, we want to remove all of them
+        onChange(recursiveRemove(query, props.path));
+    }
+
+    const isLastRuleOrGroup =
+        props.path.toString() === [0].toString() &&
+        getNumberOfSiblings(props.path, query) === 1;
+
     return (
         <IconButton
             size={'small'}
-            onClick={props.handleOnClick}
+            onClick={handleDelete}
             className={props.className}
         >
-            <DeleteIcon />
+            {!isLastRuleOrGroup && <DeleteIcon />}
         </IconButton>
     );
 };
