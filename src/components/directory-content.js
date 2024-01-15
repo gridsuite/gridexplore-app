@@ -314,7 +314,7 @@ const DirectoryContent = () => {
                 handleOpenDirectoryMenu(event);
             }
         },
-        [currentChildren, dispatch, selectedDirectory]
+        [currentChildren, dispatch, selectedDirectory, childrenMetadata]
     );
 
     const abbreviationFromUserName = (name) => {
