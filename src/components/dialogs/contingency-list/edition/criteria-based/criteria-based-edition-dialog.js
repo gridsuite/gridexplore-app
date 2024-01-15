@@ -23,6 +23,9 @@ import { getCriteriaBasedSchema } from 'components/dialogs/commons/criteria-base
 import yup from 'components/utils/yup-config';
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSelectionForCopy } from 'redux/actions';
+import { noSelectionForCopy } from 'utils/constants';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().trim().required('nameEmpty'),
@@ -39,10 +42,12 @@ const CriteriaBasedEditionDialog = ({
     onClose,
     titleId,
     name,
+    broadcastChannel,
 }) => {
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
-
+    const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const dispatch = useDispatch();
     const methods = useForm({
         defaultValues: emptyFormData(name),
         resolver: yupResolver(schema),
@@ -95,6 +100,12 @@ const CriteriaBasedEditionDialog = ({
     const onSubmit = (contingencyList) => {
         editContingencyList(contingencyListId, contingencyList)
             .then(() => {
+                if (selectionForCopy.sourceItemUuid === contingencyListId) {
+                    dispatch(setSelectionForCopy(noSelectionForCopy));
+                    broadcastChannel.postMessage({
+                        noSelectionForCopy,
+                    });
+                }
                 closeAndClear();
             })
             .catch((errorMessage) => {

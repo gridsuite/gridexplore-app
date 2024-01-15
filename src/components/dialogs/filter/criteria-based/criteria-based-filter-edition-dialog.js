@@ -26,6 +26,10 @@ import {
 import PropTypes from 'prop-types';
 import { FetchStatus } from '../../../../utils/custom-hooks';
 import { FilterForm } from '../filter-form';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { setSelectionForCopy } from 'redux/actions';
+import { noSelectionForCopy } from 'utils/constants';
 
 const formSchema = yup
     .object()
@@ -43,6 +47,7 @@ export const CriteriaBasedFilterEditionDialog = ({
     titleId,
     open,
     onClose,
+    broadcastChannel,
 }) => {
     const { snackError } = useSnackMessage();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
@@ -59,6 +64,8 @@ export const CriteriaBasedFilterEditionDialog = ({
 
     const nameError = errors[NAME];
     const isValidating = errors.root?.isValidating;
+    const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const dispatch = useDispatch();
 
     // Fetch the filter data from back-end if necessary and fill the form with it
     useEffect(() => {
@@ -85,16 +92,28 @@ export const CriteriaBasedFilterEditionDialog = ({
 
     const onSubmit = useCallback(
         (filterForm) => {
-            saveFilter(
-                frontToBackTweak(id, filterForm),
-                filterForm[NAME]
-            ).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
+            saveFilter(frontToBackTweak(id, filterForm), filterForm[NAME])
+                .then(() => {
+                    if (selectionForCopy.sourceItemUuid === id) {
+                        dispatch(setSelectionForCopy(noSelectionForCopy));
+                        broadcastChannel.postMessage({
+                            noSelectionForCopy,
+                        });
+                    }
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                    });
                 });
-            });
         },
-        [id, snackError]
+        [
+            broadcastChannel,
+            dispatch,
+            id,
+            selectionForCopy.sourceItemUuid,
+            snackError,
+        ]
     );
 
     const isDataReady = dataFetchStatus === FetchStatus.FETCH_SUCCESS;
