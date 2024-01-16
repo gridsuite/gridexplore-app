@@ -583,7 +583,7 @@ const ContentContextualMenu = (props) => {
         if (allowsDownloadCase()) {
             // is export allowed
             menuItems.push({
-                messageDescriptorId: 'downloadCases',
+                messageDescriptorId: 'download.button',
                 callback: async () => {
                     await handleDownloadCases(selectedElements);
                     handleCloseDialog();

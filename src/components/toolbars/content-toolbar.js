@@ -165,7 +165,7 @@ const ContentToolbar = (props) => {
                           disabled: !selectedElements.length || !allowsMove,
                       },
                       {
-                          tooltipTextId: 'downloadCases',
+                          tooltipTextId: 'download.button',
                           callback: () => handleDownloadCases(selectedElements),
                           icon: <FileDownload fontSize="small" />,
                           disabled:
