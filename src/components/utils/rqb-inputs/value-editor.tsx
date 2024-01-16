@@ -14,6 +14,7 @@ import {
 } from '../../dialogs/filter/expert/expert-filter.type';
 import CountryValueEditor from './country-value-editor';
 import TranslatedValueEditor from './translated-value-editor';
+import TextValueEditor from './text-value-editor';
 
 const ValueEditor = (props: ValueEditorProps) => {
     if (props.operator === OperatorType.EXISTS) {
@@ -26,6 +27,14 @@ const ValueEditor = (props: ValueEditorProps) => {
     if (props.field === FieldType.ENERGY_SOURCE) {
         return <TranslatedValueEditor {...props} />;
     }
-    return <MaterialValueEditor {...props} />;
+    if (props.field === FieldType.ID || props.field === FieldType.NAME) {
+        return <TextValueEditor {...props} />;
+    }
+    return (
+        <MaterialValueEditor
+            {...props}
+            title={undefined} // disable the tooltip
+        />
+    );
 };
 export default ValueEditor;

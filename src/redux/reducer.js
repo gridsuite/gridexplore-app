@@ -28,6 +28,7 @@ import {
     REMOVE_UPLOADING_ELEMENT,
     DIRECTORY_UPDATED,
     TREE_DATA,
+    SELECTION_FOR_COPY,
 } from './actions';
 
 import {
@@ -61,6 +62,13 @@ const initialState = {
     uploadingElements: {},
     directoryUpdated: { force: 0, eventData: {} },
     treeData: { mapData: {}, rootDirectories: [] },
+    selectionForCopy: {
+        sourceItemUuid: null,
+        typeItem: null,
+        nameItem: null,
+        descriptionItem: null,
+        parentDirectoryUuid: null,
+    },
     ...paramsInitialState,
 };
 
@@ -151,5 +159,9 @@ export const reducer = createReducer(initialState, {
     },
     [TREE_DATA]: (state, action) => {
         state.treeData = action.treeData;
+    },
+    [SELECTION_FOR_COPY]: (state, action) => {
+        const selectionForCopy = action.selectionForCopy;
+        state.selectionForCopy = selectionForCopy;
     },
 });
