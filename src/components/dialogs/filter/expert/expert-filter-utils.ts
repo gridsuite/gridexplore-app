@@ -290,7 +290,10 @@ export const queryValidator: QueryValidator = (query) => {
 };
 
 // Remove a rule or group and its parents if they become empty
-export function recursiveRemove(query: RuleGroupTypeAny, path: number[]): any {
+export function recursiveRemove(
+    query: RuleGroupTypeAny,
+    path: number[]
+): RuleGroupTypeAny {
     // If it's an only child, we also need to remove and check the parent group (but not the root)
     if (
         getNumberOfSiblings(path, query) === 1 &&
