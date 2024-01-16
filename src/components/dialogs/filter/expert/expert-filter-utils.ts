@@ -296,11 +296,10 @@ export function recursiveRemove(query: RuleGroupTypeAny, path: number[]) {
         getNumberOfSiblings(path, query) === 1 &&
         path.toString() !== [0].toString()
     ) {
-        return recursiveRemove(query, getParentPath(path));
-    }
-    // Otherwise, we can safely remove it
-    else {
-        return remove(query, path);
+        recursiveRemove(query, getParentPath(path));
+    } else {
+        // Otherwise, we can safely remove it
+        remove(query, path);
     }
 }
 
