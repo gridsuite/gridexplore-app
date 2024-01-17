@@ -7,20 +7,25 @@ declare module '@gridsuite/commons-ui' {
         RadioGroupProps,
         TextFieldProps,
     } from '@mui/material';
-    import {TopBar as RawTopBar} from '@gridsuite/commons-ui';
+    import { TopBar as RawTopBar } from '@gridsuite/commons-ui';
 
     export const DARK_THEME: String, LIGHT_THEME: String;
 
-    export const TopBar: FunctionComponent<InferProps<typeof RawTopBar.propTypes>>;
+    export const TopBar: FunctionComponent<
+        InferProps<typeof RawTopBar.propTypes>
+    >;
 
-    function logout(dispatch: any, userManagerInstance: any): Promise<any | undefined>;
+    function logout(
+        dispatch: any,
+        userManagerInstance: any
+    ): Promise<any | undefined>;
     interface SnackInputs {
         messageTxt?: string;
         messageId?: string;
         messageValues?: string[];
         headerTxt?: string;
         headerId?: string;
-        headerValues?: string[];
+        headerValues?: Record<string, string>;
     }
 
     interface UseSnackMessageReturn {
