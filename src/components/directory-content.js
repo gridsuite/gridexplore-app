@@ -432,11 +432,11 @@ const DirectoryContent = () => {
     function descriptionCellRender(cellData) {
         const description = cellData.rowData['description'];
 
-        const descriptionLines = description.split('\n');
+        const descriptionLines = description?.split('\n');
         if (descriptionLines?.length > 3) {
             descriptionLines[2] = '...';
         }
-        const tooltip = descriptionLines.join('\n');
+        const tooltip = descriptionLines?.join('\n');
 
         const handleDescriptionIconClick = (e) => {
             setActiveElement(cellData.rowData);

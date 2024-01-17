@@ -50,7 +50,7 @@ const DescriptionInput: FunctionComponent<IDescriptionInput> = ({
                     position="end"
                     sx={{
                         position: 'absolute',
-                        bottom: 8,
+                        bottom: 10,
                         right: 8,
                     }}
                 >
