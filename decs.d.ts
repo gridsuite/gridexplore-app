@@ -20,7 +20,7 @@ declare module '@gridsuite/commons-ui' {
         messageValues?: string[];
         headerTxt?: string;
         headerId?: string;
-        headerValues?: string[];
+        headerValues?: Record<string, string>;
     }
 
     interface UseSnackMessageReturn {
