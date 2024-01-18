@@ -758,28 +758,27 @@ const DirectoryContent = () => {
         if (currentChildren?.length > 0) {
             // Adds the previously selected elements
             if (selectedUuids?.size) {
-                selectedChildren = selectedChildren.concat(
-                    currentChildren
-                        .filter(
-                            (child) =>
-                                selectedUuids.has(child.elementUuid) &&
-                                child.elementUuid !== activeElement?.elementUuid
-                        )
-                        .map((child) => {
-                            return {
-                                subtype: childrenMetadata[child.elementUuid],
-                                ...child,
-                            };
-                        })
-                );
+                selectedChildren = currentChildren
+                    .filter(
+                        (child) =>
+                            selectedUuids.has(child.elementUuid) &&
+                            child.elementUuid !== activeElement?.elementUuid
+                    )
+                    .map((child) => {
+                        return {
+                            subtype:
+                                childrenMetadata[child.elementUuid]?.subtype,
+                            ...child,
+                        };
+                    });
             }
 
             // Adds the active element
             if (activeElement) {
                 selectedChildren.push({
+                    ...activeElement,
                     subtype:
                         childrenMetadata[activeElement.elementUuid]?.subtype,
-                    ...activeElement,
                 });
             }
         }
