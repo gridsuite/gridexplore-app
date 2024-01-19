@@ -85,14 +85,6 @@ let lightTheme = createTheme({
     },
 });
 
-lightTheme = createTheme(lightTheme, {
-    palette: {
-        customButton: {
-            main: lightTheme.palette.text.primary,
-        },
-    },
-});
-
 let darkTheme = createTheme({
     palette: {
         mode: 'dark',
@@ -128,14 +120,6 @@ let darkTheme = createTheme({
     typography: {
         button: {
             textTransform: 'none',
-        },
-    },
-});
-
-darkTheme = createTheme(darkTheme, {
-    palette: {
-        customButton: {
-            main: darkTheme.palette.text.primary,
         },
     },
 });
