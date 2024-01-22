@@ -39,14 +39,14 @@ import {
     CASE_NAME,
     CASE_UUID,
     CURRENT_PARAMETERS,
-    DESCRIPTION,
     FORMATTED_CASE_PARAMETERS,
     STUDY_NAME,
 } from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
-import { ErrorInput, FieldErrorAlert, TextInput } from '@gridsuite/commons-ui';
+import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import PrefilledNameInput from '../commons/prefilled-name-input';
+import DescriptionInput from '../description-modification/description-input';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -259,13 +259,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     />
                 </Grid>
                 <Grid item>
-                    <TextInput
-                        name={DESCRIPTION}
-                        label={'descriptionProperty'}
-                        formProps={{
-                            size: 'medium',
-                        }}
-                    />
+                    <DescriptionInput rows={5} />
                 </Grid>
             </Grid>
             {providedExistingCase ? (
