@@ -316,7 +316,11 @@ const DirectoryContent = () => {
                         }
                     } else {
                         // If some elements were already selected, we add the active element to the selected list if not already in it.
-                        if (selectedUuids?.size && element?.elementUuid) {
+                        if (
+                            selectedUuids?.size &&
+                            element?.elementUuid &&
+                            !selectedUuids.has(element.elementUuid)
+                        ) {
                             let updatedSelectedUuids = new Set(selectedUuids);
                             updatedSelectedUuids.add(element.elementUuid);
                             setSelectedUuids(updatedSelectedUuids);
