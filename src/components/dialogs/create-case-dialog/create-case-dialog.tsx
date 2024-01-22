@@ -92,13 +92,13 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
                     snackError({
                         messageId: 'invalidFormatOrName',
                         headerId: 'caseCreationError',
-                        headerValues: [caseName],
+                        headerValues: { name: caseName },
                     });
                 } else {
                     snackError({
                         messageTxt: err?.message,
                         headerId: 'caseCreationError',
-                        headerValues: [caseName],
+                        headerValues: { name: caseName },
                     });
                 }
             })

@@ -6,37 +6,13 @@
  */
 
 import { ValueEditorProps } from 'react-querybuilder';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { MaterialValueEditor } from '@react-querybuilder/material';
-import { useIntl } from 'react-intl';
 import useConvertValue from './use-convert-value';
 import { Autocomplete, TextField } from '@mui/material';
 import useValid from './use-valid';
 
-const TranslatedValueEditor = (props: ValueEditorProps) => {
-    const intl = useIntl();
-
-    const translatedValues = useMemo(() => {
-        return props.values?.map((v) => {
-            return {
-                name: v.name,
-                label: intl.formatMessage({ id: v.label }),
-            };
-        });
-    }, [intl, props.values]);
-
-    const translatedValuesAutocomplete = useMemo(() => {
-        if (!props.values) {
-            return {};
-        }
-        return Object.fromEntries(
-            props.values.map((v) => [
-                v.name,
-                intl.formatMessage({ id: v.label }),
-            ])
-        );
-    }, [intl, props.values]);
-
+const TextValueEditor = (props: ValueEditorProps) => {
     useConvertValue(props);
 
     const valid = useValid(props);
@@ -46,7 +22,6 @@ const TranslatedValueEditor = (props: ValueEditorProps) => {
         return (
             <MaterialValueEditor
                 {...props}
-                values={translatedValues}
                 title={undefined} // disable the tooltip
             />
         );
@@ -54,10 +29,8 @@ const TranslatedValueEditor = (props: ValueEditorProps) => {
         return (
             <Autocomplete
                 value={props.value}
-                options={Object.keys(translatedValuesAutocomplete)}
-                getOptionLabel={(code: string) =>
-                    translatedValuesAutocomplete[code]
-                }
+                freeSolo
+                options={[]}
                 onChange={(event, value: any) => props.handleOnChange(value)}
                 multiple
                 fullWidth
@@ -68,4 +41,4 @@ const TranslatedValueEditor = (props: ValueEditorProps) => {
         );
     }
 };
-export default TranslatedValueEditor;
+export default TextValueEditor;

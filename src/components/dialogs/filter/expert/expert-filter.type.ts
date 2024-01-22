@@ -12,6 +12,8 @@ export enum OperatorType {
     LOWER_OR_EQUALS = 'LOWER_OR_EQUALS',
     GREATER = 'GREATER',
     GREATER_OR_EQUALS = 'GREATER_OR_EQUALS',
+    BETWEEN = 'BETWEEN',
+    IN = 'IN',
     IS = 'IS',
     CONTAINS = 'CONTAINS',
     BEGINS_WITH = 'BEGINS_WITH',
@@ -50,7 +52,8 @@ export enum DataType {
 export interface RuleTypeExport {
     field: FieldType;
     operator: OperatorType;
-    value: string | number;
+    value: string | number | undefined;
+    values: string[] | number[] | undefined;
     dataType: DataType;
 }
 
