@@ -22,6 +22,14 @@ export const EXPERT_FILTER_EQUIPMENTS = {
         id: 'LOAD',
         label: 'Loads',
     },
+    VOLTAGE_LEVEL: {
+        id: 'VOLTAGE_LEVEL',
+        label: 'VoltageLevels',
+    },
+    SUBSTATION: {
+        id: 'SUBSTATION',
+        label: 'Substations',
+    },
 };
 
 export const ENERGY_SOURCE_OPTIONS = [
@@ -203,6 +211,18 @@ export const FIELDS_OPTIONS = {
         label: 'vlId',
         dataType: DataType.STRING,
     },
+    LOW_VOLTAGE_LIMIT: {
+        name: FieldType.LOW_VOLTAGE_LIMIT,
+        label: 'lowVoltageLimit',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    HIGH_VOLTAGE_LIMIT: {
+        name: FieldType.HIGH_VOLTAGE_LIMIT,
+        label: 'highVoltageLimit',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
 };
 
 export const fields: Record<string, Field[]> = {
@@ -227,4 +247,17 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.VOLTAGE_LEVEL_ID,
     ],
     LOAD: [FIELDS_OPTIONS.ID],
+    VOLTAGE_LEVEL: [
+        FIELDS_OPTIONS.ID,
+        FIELDS_OPTIONS.NAME,
+        FIELDS_OPTIONS.NOMINAL_VOLTAGE,
+        FIELDS_OPTIONS.LOW_VOLTAGE_LIMIT,
+        FIELDS_OPTIONS.HIGH_VOLTAGE_LIMIT,
+        FIELDS_OPTIONS.COUNTRY,
+    ],
+    SUBSTATIONS: [
+        FIELDS_OPTIONS.ID,
+        FIELDS_OPTIONS.NAME,
+        FIELDS_OPTIONS.COUNTRY,
+    ],
 };

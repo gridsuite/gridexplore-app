@@ -278,6 +278,8 @@
   "plannedOutageRate": "Indisponibilité programmée",
   "forcedOutageRate": "Indisponibilité fortuite",
   "vlId": "ID poste",
+  "lowVoltageLimit": "Limite tension basse",
+  "highVoltageLimit": "Limite tension haute",
   "downloadCases": "Télécharger la(les) situation(s)",
 
   "descriptionModificationError": "Erreur lors de la modification de la description",

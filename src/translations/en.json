@@ -263,6 +263,8 @@
   "plannedOutageRate": "Planning outage rate",
   "forcedOutageRate": "Forced outage rate",
   "vlId": "Voltage level ID",
+  "lowVoltageLimit": "Low voltage limit",
+  "highVoltageLimit": "High voltage limit",
   "downloadCases": "Download Case(s)",
 
   "descriptionModificationError": "An error when modifying the description",
