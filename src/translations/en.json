@@ -250,9 +250,9 @@
   "name": "Name",
   "minP": "Minimum active power",
   "maxP": "Maximum active power",
-  "targetP": "Active power",
-  "targetV": "Voltage",
-  "targetQ": "Reactive power",
+  "targetP": "Active power target",
+  "targetV": "Voltage target",
+  "targetQ": "Reactive power target",
   "energySource": "Energy source",
   "country": "Country",
   "voltageRegulatorOn": "Voltage regulation",
@@ -268,6 +268,12 @@
   "download.message.lists": "lists",
   "download.message.studies": "studies",
   "download.message.others": "others",
+  "connected": "Connected",
+  "ratedS": "Rated nominal power",
+  "marginalCost": "Cost",
+  "plannedOutageRate": "Planning outage rate",
+  "forcedOutageRate": "Forced outage rate",
+  "vlId": "Voltage level ID",
   "descriptionModificationError": "An error when modifying the description",
-  "descriptionModificationDialog": "Description modification"
+  "descriptionLimitError": "Description exceeds character limit"
 }

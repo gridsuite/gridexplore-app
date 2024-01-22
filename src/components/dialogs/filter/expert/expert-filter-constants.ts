@@ -168,6 +168,41 @@ export const FIELDS_OPTIONS = {
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
+    CONNECTED: {
+        name: FieldType.CONNECTED,
+        label: 'connected',
+        dataType: DataType.BOOLEAN,
+        valueEditorType: 'switch',
+    },
+    RATED_S: {
+        name: FieldType.RATED_S,
+        label: 'ratedS',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    MARGINAL_COST: {
+        name: FieldType.MARGINAL_COST,
+        label: 'marginalCost',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    PLANNED_OUTAGE_RATE: {
+        name: FieldType.PLANNED_OUTAGE_RATE,
+        label: 'plannedOutageRate',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    FORCED_OUTAGE_RATE: {
+        name: FieldType.FORCED_OUTAGE_RATE,
+        label: 'forcedOutageRate',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    VOLTAGE_LEVEL_ID: {
+        name: FieldType.VOLTAGE_LEVEL_ID,
+        label: 'vlId',
+        dataType: DataType.STRING,
+    },
 };
 
 export const fields: Record<string, Field[]> = {
@@ -184,6 +219,12 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.COUNTRY,
         FIELDS_OPTIONS.VOLTAGE_REGULATOR_ON,
         FIELDS_OPTIONS.PLANNED_ACTIVE_POWER_SET_POINT,
+        FIELDS_OPTIONS.CONNECTED,
+        FIELDS_OPTIONS.RATED_S,
+        FIELDS_OPTIONS.MARGINAL_COST,
+        FIELDS_OPTIONS.PLANNED_OUTAGE_RATE,
+        FIELDS_OPTIONS.FORCED_OUTAGE_RATE,
+        FIELDS_OPTIONS.VOLTAGE_LEVEL_ID,
     ],
     LOAD: [FIELDS_OPTIONS.ID],
 };

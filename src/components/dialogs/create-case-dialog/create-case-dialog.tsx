@@ -20,7 +20,7 @@ import { ElementType } from '../../../utils/elementType';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../../utils/field-constants';
-import { ErrorInput, TextInput, FieldErrorAlert } from '@gridsuite/commons-ui';
+import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
 import {
@@ -29,6 +29,7 @@ import {
 } from './create-case-dialog-utils';
 import { ReduxState } from '../../../redux/reducer.type';
 import PrefilledNameInput from '../commons/prefilled-name-input';
+import DescriptionInput from '../description-modification/description-input';
 
 interface IFormData {
     [CASE_NAME]: string;
@@ -126,13 +127,7 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
                     />
                 </Grid>
                 <Grid item>
-                    <TextInput
-                        name={DESCRIPTION}
-                        label={'descriptionProperty'}
-                        formProps={{
-                            size: 'medium',
-                        }}
-                    />
+                    <DescriptionInput rows={5} />
                 </Grid>
             </Grid>
             <ErrorInput name={CASE_FILE} InputField={FieldErrorAlert} />

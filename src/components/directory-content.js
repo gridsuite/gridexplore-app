@@ -17,8 +17,7 @@ import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
 import SettingsIcon from '@mui/icons-material/Settings';
 import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
-import StickyNote2Icon from '@mui/icons-material/StickyNote2';
-import StickyNote2IconOutlined from '@mui/icons-material/StickyNote2Outlined';
+import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
 
 import VirtualizedTable from './virtualized-table';
 import {
@@ -43,6 +42,7 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
+import CreateIcon from '@mui/icons-material/Create';
 import ExplicitNamingFilterEditionDialog from './dialogs/filter/explicit-naming/explicit-naming-filter-edition-dialog';
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
@@ -282,6 +282,15 @@ const DirectoryContent = () => {
     };
 
     /* User interactions */
+    const contextualMixPolicies = useMemo(
+        () => ({
+            BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
+            ALL: 'All', // union of activeElement.Uuid and selectedUuids (currently implemented)
+        }),
+        []
+    );
+    const contextualMixPolicy = contextualMixPolicies.ALL;
+
     const onContextMenu = useCallback(
         (event) => {
             const element = currentChildren.find(
@@ -295,6 +304,28 @@ const DirectoryContent = () => {
             if (element && element.uploading !== null) {
                 if (element.type !== 'DIRECTORY') {
                     setActiveElement(element);
+
+                    if (contextualMixPolicy === contextualMixPolicies.BIG) {
+                        // If some elements were already selected and the active element is not in them, we deselect the already selected elements.
+                        if (
+                            selectedUuids?.size &&
+                            element?.elementUuid &&
+                            !selectedUuids.has(element.elementUuid)
+                        ) {
+                            setSelectedUuids(new Set());
+                        }
+                    } else {
+                        // If some elements were already selected, we add the active element to the selected list if not already in it.
+                        if (
+                            selectedUuids?.size &&
+                            element?.elementUuid &&
+                            !selectedUuids.has(element.elementUuid)
+                        ) {
+                            let updatedSelectedUuids = new Set(selectedUuids);
+                            updatedSelectedUuids.add(element.elementUuid);
+                            setSelectedUuids(updatedSelectedUuids);
+                        }
+                    }
                 }
                 setMousePosition({
                     mouseX: event.event.clientX + constants.HORIZONTAL_SHIFT,
@@ -309,7 +340,14 @@ const DirectoryContent = () => {
                 handleOpenDirectoryMenu(event);
             }
         },
-        [currentChildren, dispatch, selectedDirectory]
+        [
+            currentChildren,
+            dispatch,
+            selectedDirectory,
+            selectedUuids,
+            contextualMixPolicies,
+            contextualMixPolicy,
+        ]
     );
 
     const abbreviationFromUserName = (name) => {
@@ -507,26 +545,35 @@ const DirectoryContent = () => {
                 (e) => e.elementUuid === cellData.rowData.elementUuid
             );
 
-            const handleClick = (e) => {
+            const description = element.description;
+            const descriptionLines = description?.split('\n');
+            if (descriptionLines?.length > 3) {
+                descriptionLines[2] = '...';
+            }
+            const tooltip = descriptionLines?.join('\n');
+
+            const handleDescriptionIconClick = (e) => {
                 setActiveElement(element);
                 setOpenDescModificationDialog(true);
                 e.stopPropagation();
             };
 
-            const icon = element.description ? (
+            const icon = description ? (
                 <Tooltip
                     title={
                         <Box
-                            children={element.description}
+                            children={tooltip}
                             sx={styles.descriptionTooltip}
                         />
                     }
                     placement="right"
                 >
-                    <StickyNote2Icon onClick={handleClick} />
+                    <StickyNote2OutlinedIcon
+                        onClick={handleDescriptionIconClick}
+                    />
                 </Tooltip>
             ) : (
-                <StickyNote2IconOutlined onClick={handleClick} />
+                <CreateIcon onClick={handleDescriptionIconClick} />
             );
             return (
                 <>
@@ -719,60 +766,36 @@ const DirectoryContent = () => {
         setSelectedUuids(new Set());
     }, [handleError, currentChildren, currentChildrenRef]);
 
-    const contextualMixPolicies = {
-        BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
-        ZIMBRA: 'Zimbra', // if !selectedUuids.has(selected.Uuid) just use activeElement
-        ALL: 'All', // union of activeElement.Uuid and selectedUuids (actually implemented)
-    };
-    let contextualMixPolicy = contextualMixPolicies.ALL;
+    const getSelectedChildren = () => {
+        let selectedChildren = [];
+        if (currentChildren?.length > 0) {
+            // Adds the previously selected elements
+            if (selectedUuids?.size) {
+                selectedChildren = currentChildren
+                    .filter(
+                        (child) =>
+                            selectedUuids.has(child.elementUuid) &&
+                            child.elementUuid !== activeElement?.elementUuid
+                    )
+                    .map((child) => {
+                        return {
+                            subtype:
+                                childrenMetadata[child.elementUuid]?.subtype,
+                            ...child,
+                        };
+                    });
+            }
 
-    const getSelectedChildren = (mayChange = false) => {
-        let acc = [];
-        let ctxtUuid = activeElement ? activeElement.elementUuid : null;
-        if (activeElement) {
-            acc.push(
-                Object.assign(
-                    {
-                        subtype:
-                            childrenMetadata[activeElement.elementUuid]
-                                ?.subtype,
-                    },
-                    activeElement
-                )
-            );
-        }
-
-        if (selectedUuids && currentChildren) {
-            if (
-                contextualMixPolicy === contextualMixPolicies.ALL ||
-                ctxtUuid === null ||
-                selectedUuids.has(ctxtUuid)
-            ) {
-                acc = acc.concat(
-                    currentChildren
-                        .filter(
-                            (child) =>
-                                selectedUuids.has(child.elementUuid) &&
-                                child.elementUuid !== activeElement?.elementUuid
-                        )
-                        .map((child2) => {
-                            return Object.assign(
-                                {
-                                    subtype:
-                                        childrenMetadata[child2.elementUuid],
-                                },
-                                child2
-                            );
-                        })
-                );
-            } else if (
-                mayChange &&
-                contextualMixPolicy === contextualMixPolicies.BIG
-            ) {
-                setSelectedUuids(null);
+            // Adds the active element
+            if (activeElement) {
+                selectedChildren.push({
+                    ...activeElement,
+                    subtype:
+                        childrenMetadata[activeElement.elementUuid]?.subtype,
+                });
             }
         }
-        return [...new Set(acc)];
+        return [...new Set(selectedChildren)];
     };
 
     const rows = useMemo(
