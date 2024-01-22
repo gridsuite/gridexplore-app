@@ -273,7 +273,7 @@
   "voltageRegulatorOn": "Réglage de tension",
   "PlannedActivePowerSetPoint": "Puissance imposée",
   "download.button": "Télécharger",
-  "download.message.downloadedCase": "1 situation a été téléchargée.",
+  "download.message.downloadedCase": "Une situation a été téléchargée.",
   "download.message.downloadedCases": "{number} situations ont été téléchargées.",
   "download.message.oneTypeNotDownloadable": "Les {type1} ne sont pas téléchargeables.",
   "download.message.twoTypesNotDownloadable": "Les {type1} et {type2} ne sont pas téléchargeables.",

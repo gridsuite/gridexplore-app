@@ -10,7 +10,7 @@ import { ElementType } from '../../utils/elementType';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
-export const downloadCases = async (uuids: string[]) => {
+const downloadCases = async (uuids: string[]) => {
     for (const uuid of uuids) {
         const result = await downloadCase(uuid);
         let name = await getCaseOriginalName(uuid);

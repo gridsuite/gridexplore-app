@@ -258,7 +258,7 @@
   "voltageRegulatorOn": "Voltage regulation",
   "PlannedActivePowerSetPoint": "Planning active power set point",
   "download.button": "Download",
-  "download.message.downloadedCase": "1 case has been downloaded",
+  "download.message.downloadedCase": "A case has been downloaded",
   "download.message.downloadedCases": "{number} cases have been downloaded",
   "download.message.oneTypeNotDownloadable": "{type1} are not downloadable.",
   "download.message.twoTypesNotDownloadable": "{type1} and {type2} are not downloadable.",
