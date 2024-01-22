@@ -501,41 +501,52 @@ const DirectoryContent = () => {
     const [openDescModificationDialog, setOpenDescModificationDialog] =
         useState(false);
 
-    function descriptionCellRender(cellData) {
-        const description = cellData.rowData['description'];
+    const descriptionCellRender = useCallback(
+        (cellData) => {
+            const element = currentChildren.find(
+                (e) => e.elementUuid === cellData.rowData.elementUuid
+            );
 
-        const descriptionLines = description?.split('\n');
-        if (descriptionLines?.length > 3) {
-            descriptionLines[2] = '...';
-        }
-        const tooltip = descriptionLines?.join('\n');
+            const description = element.description;
+            const descriptionLines = description?.split('\n');
+            if (descriptionLines?.length > 3) {
+                descriptionLines[2] = '...';
+            }
+            const tooltip = descriptionLines?.join('\n');
 
-        const handleDescriptionIconClick = (e) => {
-            setActiveElement(cellData.rowData);
-            setOpenDescModificationDialog(true);
-            e.stopPropagation();
-        };
+            const handleDescriptionIconClick = (e) => {
+                setActiveElement(element);
+                setOpenDescModificationDialog(true);
+                e.stopPropagation();
+            };
 
-        const icon = description ? (
-            <Tooltip
-                title={
-                    <Box children={tooltip} sx={styles.descriptionTooltip} />
-                }
-                placement="right"
-            >
-                <StickyNote2OutlinedIcon onClick={handleDescriptionIconClick} />
-            </Tooltip>
-        ) : (
-            <CreateIcon onClick={handleDescriptionIconClick} />
-        );
-        return (
-            <>
-                {isElementCaseOrStudy(cellData.rowData['type']) && (
-                    <Box sx={styles.cell}>{icon}</Box>
-                )}
-            </>
-        );
-    }
+            const icon = description ? (
+                <Tooltip
+                    title={
+                        <Box
+                            children={tooltip}
+                            sx={styles.descriptionTooltip}
+                        />
+                    }
+                    placement="right"
+                >
+                    <StickyNote2OutlinedIcon
+                        onClick={handleDescriptionIconClick}
+                    />
+                </Tooltip>
+            ) : (
+                <CreateIcon onClick={handleDescriptionIconClick} />
+            );
+            return (
+                <>
+                    {isElementCaseOrStudy(element.type) && (
+                        <Box sx={styles.cell}>{icon}</Box>
+                    )}
+                </>
+            );
+        },
+        [currentChildren]
+    );
 
     function getElementIcon(objectType) {
         if (objectType === ElementType.STUDY) {
