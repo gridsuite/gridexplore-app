@@ -464,7 +464,7 @@ export function duplicateStudy(
 export function createCase({ name, description, file, parentDirectoryUuid }) {
     console.info('Creating a new case...');
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('description', encodeURIComponent(description));
+    urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     const url =
