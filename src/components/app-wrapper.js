@@ -85,6 +85,21 @@ let lightTheme = createTheme({
     },
 });
 
+lightTheme = createTheme(lightTheme, {
+    palette: {
+        cancelButtonColor: {
+            main: lightTheme.palette.text.secondary,
+        },
+    },
+    components: {
+        CancelButton: {
+            defaultProps: {
+                color: 'cancelButtonColor',
+            },
+        },
+    },
+});
+
 let darkTheme = createTheme({
     palette: {
         mode: 'dark',
@@ -120,6 +135,21 @@ let darkTheme = createTheme({
     typography: {
         button: {
             textTransform: 'none',
+        },
+    },
+});
+
+darkTheme = createTheme(darkTheme, {
+    palette: {
+        cancelButtonColor: {
+            main: darkTheme.palette.text.secondary,
+        },
+    },
+    components: {
+        CancelButton: {
+            defaultProps: {
+                color: 'cancelButtonColor',
+            },
         },
     },
 });
