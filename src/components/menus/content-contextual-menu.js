@@ -589,6 +589,7 @@ const ContentContextualMenu = (props) => {
                 icon: <FileCopyIcon fontSize="small" />,
             });
         }
+
         if (allowsDownloadCase()) {
             // is export allowed
             menuItems.push({
