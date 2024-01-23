@@ -352,7 +352,7 @@ const DirectoryContent = () => {
             selectedUuids,
             contextualMixPolicies,
             contextualMixPolicy,
-            childrenMetadata
+            childrenMetadata,
         ]
     );
 
