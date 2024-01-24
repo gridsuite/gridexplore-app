@@ -125,22 +125,32 @@ const ContentToolbar = (props) => {
         [selectedElements, userId]
     );
 
-    const allowsDelete = useMemo(() => isUserAllowed, [isUserAllowed]);
+    const noCreationInProgress = useMemo(
+        () => selectedElements.every((el) => el.hasMetadata),
+        [selectedElements]
+    );
+
+    const allowsDelete = useMemo(
+        () => isUserAllowed && noCreationInProgress,
+        [isUserAllowed, noCreationInProgress]
+    );
 
     const allowsMove = useMemo(
         () =>
             selectedElements.every(
                 (element) => element.type !== ElementType.DIRECTORY
-            ) && isUserAllowed,
-        [isUserAllowed, selectedElements]
+            ) &&
+            isUserAllowed &&
+            noCreationInProgress,
+        [isUserAllowed, selectedElements, noCreationInProgress]
     );
 
     const allowsDownloadCases = useMemo(
         () =>
             selectedElements.some(
                 (element) => element.type === ElementType.CASE
-            ),
-        [selectedElements]
+            ) && noCreationInProgress,
+        [selectedElements, noCreationInProgress]
     );
 
     const items = useMemo(

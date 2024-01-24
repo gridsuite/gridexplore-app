@@ -303,7 +303,12 @@ const DirectoryContent = () => {
 
             if (element && element.uploading !== null) {
                 if (element.type !== 'DIRECTORY') {
-                    setActiveElement(element);
+                    setActiveElement({
+                        hasMetadata:
+                            childrenMetadata[event.rowData.elementUuid] !==
+                            undefined,
+                        ...element,
+                    });
 
                     if (contextualMixPolicy === contextualMixPolicies.BIG) {
                         // If some elements were already selected and the active element is not in them, we deselect the already selected elements.
@@ -347,6 +352,7 @@ const DirectoryContent = () => {
             selectedUuids,
             contextualMixPolicies,
             contextualMixPolicy,
+            childrenMetadata,
         ]
     );
 
@@ -781,6 +787,9 @@ const DirectoryContent = () => {
                         return {
                             subtype:
                                 childrenMetadata[child.elementUuid]?.subtype,
+                            hasMetadata:
+                                childrenMetadata[child.elementUuid] !==
+                                undefined,
                             ...child,
                         };
                     });
@@ -792,6 +801,9 @@ const DirectoryContent = () => {
                     ...activeElement,
                     subtype:
                         childrenMetadata[activeElement.elementUuid]?.subtype,
+                    hasMetadata:
+                        childrenMetadata[activeElement.elementUuid] !==
+                        undefined,
                 });
             }
         }
