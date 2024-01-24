@@ -282,6 +282,15 @@ const DirectoryContent = () => {
     };
 
     /* User interactions */
+    const contextualMixPolicies = useMemo(
+        () => ({
+            BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
+            ALL: 'All', // union of activeElement.Uuid and selectedUuids (currently implemented)
+        }),
+        []
+    );
+    const contextualMixPolicy = contextualMixPolicies.ALL;
+
     const onContextMenu = useCallback(
         (event) => {
             const element = currentChildren.find(
@@ -294,7 +303,34 @@ const DirectoryContent = () => {
 
             if (element && element.uploading !== null) {
                 if (element.type !== 'DIRECTORY') {
-                    setActiveElement(element);
+                    setActiveElement({
+                        hasMetadata:
+                            childrenMetadata[event.rowData.elementUuid] !==
+                            undefined,
+                        ...element,
+                    });
+
+                    if (contextualMixPolicy === contextualMixPolicies.BIG) {
+                        // If some elements were already selected and the active element is not in them, we deselect the already selected elements.
+                        if (
+                            selectedUuids?.size &&
+                            element?.elementUuid &&
+                            !selectedUuids.has(element.elementUuid)
+                        ) {
+                            setSelectedUuids(new Set());
+                        }
+                    } else {
+                        // If some elements were already selected, we add the active element to the selected list if not already in it.
+                        if (
+                            selectedUuids?.size &&
+                            element?.elementUuid &&
+                            !selectedUuids.has(element.elementUuid)
+                        ) {
+                            let updatedSelectedUuids = new Set(selectedUuids);
+                            updatedSelectedUuids.add(element.elementUuid);
+                            setSelectedUuids(updatedSelectedUuids);
+                        }
+                    }
                 }
                 setMousePosition({
                     mouseX: event.event.clientX + constants.HORIZONTAL_SHIFT,
@@ -309,7 +345,15 @@ const DirectoryContent = () => {
                 handleOpenDirectoryMenu(event);
             }
         },
-        [currentChildren, dispatch, selectedDirectory]
+        [
+            currentChildren,
+            dispatch,
+            selectedDirectory,
+            selectedUuids,
+            contextualMixPolicies,
+            contextualMixPolicy,
+            childrenMetadata,
+        ]
     );
 
     const abbreviationFromUserName = (name) => {
@@ -728,60 +772,42 @@ const DirectoryContent = () => {
         setSelectedUuids(new Set());
     }, [handleError, currentChildren, currentChildrenRef]);
 
-    const contextualMixPolicies = {
-        BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
-        ZIMBRA: 'Zimbra', // if !selectedUuids.has(selected.Uuid) just use activeElement
-        ALL: 'All', // union of activeElement.Uuid and selectedUuids (actually implemented)
-    };
-    let contextualMixPolicy = contextualMixPolicies.ALL;
+    const getSelectedChildren = () => {
+        let selectedChildren = [];
+        if (currentChildren?.length > 0) {
+            // Adds the previously selected elements
+            if (selectedUuids?.size) {
+                selectedChildren = currentChildren
+                    .filter(
+                        (child) =>
+                            selectedUuids.has(child.elementUuid) &&
+                            child.elementUuid !== activeElement?.elementUuid
+                    )
+                    .map((child) => {
+                        return {
+                            subtype:
+                                childrenMetadata[child.elementUuid]?.subtype,
+                            hasMetadata:
+                                childrenMetadata[child.elementUuid] !==
+                                undefined,
+                            ...child,
+                        };
+                    });
+            }
 
-    const getSelectedChildren = (mayChange = false) => {
-        let acc = [];
-        let ctxtUuid = activeElement ? activeElement.elementUuid : null;
-        if (activeElement) {
-            acc.push(
-                Object.assign(
-                    {
-                        subtype:
-                            childrenMetadata[activeElement.elementUuid]
-                                ?.subtype,
-                    },
-                    activeElement
-                )
-            );
-        }
-
-        if (selectedUuids && currentChildren) {
-            if (
-                contextualMixPolicy === contextualMixPolicies.ALL ||
-                ctxtUuid === null ||
-                selectedUuids.has(ctxtUuid)
-            ) {
-                acc = acc.concat(
-                    currentChildren
-                        .filter(
-                            (child) =>
-                                selectedUuids.has(child.elementUuid) &&
-                                child.elementUuid !== activeElement?.elementUuid
-                        )
-                        .map((child2) => {
-                            return Object.assign(
-                                {
-                                    subtype:
-                                        childrenMetadata[child2.elementUuid],
-                                },
-                                child2
-                            );
-                        })
-                );
-            } else if (
-                mayChange &&
-                contextualMixPolicy === contextualMixPolicies.BIG
-            ) {
-                setSelectedUuids(null);
+            // Adds the active element
+            if (activeElement) {
+                selectedChildren.push({
+                    ...activeElement,
+                    subtype:
+                        childrenMetadata[activeElement.elementUuid]?.subtype,
+                    hasMetadata:
+                        childrenMetadata[activeElement.elementUuid] !==
+                        undefined,
+                });
             }
         }
-        return [...new Set(acc)];
+        return [...new Set(selectedChildren)];
     };
 
     const rows = useMemo(
