@@ -807,7 +807,12 @@ export function connectNotificationsWsUpdateDirectories() {
  * Create Filter
  * @returns {Promise<Response>}
  */
-export function createFilter(newFilter, name, description, parentDirectoryUuid) {
+export function createFilter(
+    newFilter,
+    name,
+    description,
+    parentDirectoryUuid
+) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append('description', description);
