@@ -22,7 +22,7 @@ import InputWithPopupConfirmation from '../../../utils/rhf-inputs/select-inputs/
 import { SelectInput } from '@gridsuite/commons-ui';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { testQuery } from './expert-filter-utils';
-import { Battery, Generator, Load } from "../../../../utils/equipment-types";
+import { Battery, Generator, Load } from '../../../../utils/equipment-types';
 import {
     COMBINATOR_OPTIONS,
     EXPERT_FILTER_EQUIPMENTS,
@@ -76,7 +76,11 @@ export const expertFilterSchema = {
 };
 
 function isSupportedEquipmentType(equipmentType: string): boolean {
-    return equipmentType === Generator.type || equipmentType === Load.type || equipmentType === Battery.type;
+    return (
+        equipmentType === Generator.type ||
+        equipmentType === Load.type ||
+        equipmentType === Battery.type
+    );
 }
 
 const defaultQuery = {
