@@ -24,7 +24,6 @@
   "renameElementNotFoundError": "L'élément n'a pas été trouvé",
   "followingItems": "les {itemsCount} éléments suivants",
   "additionalItems": "... et {itemsCount} éléments supplémentaires non affichés",
-  "genericConfirmQuestion": "Êtes-vous sûr(e) ?",
   "deleteStudyError": "Vous n'êtes pas le propriétaire de l'étude",
   "deleteElementsFailure": "Problème à la destruction {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {détruit} other {détruits}} : {problematic}",
   "moveElementsFailure": "Problème au déplacement {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {déplacé} other {déplacés}} : {problematic}",
