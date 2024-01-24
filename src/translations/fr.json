@@ -283,5 +283,7 @@
   "descriptionModificationError": "Erreur lors de la modification de la description",
   "descriptionLimitError": "La description dépasse la limite de caractères",
   "p0": "P constant",
-  "q0": "Q constant"
+  "q0": "Q constant",
+  "batteryTargetP": "Puissance active constante",
+  "batteryTargetQ": "Puissance réactive constante"
 }

@@ -22,6 +22,10 @@ export const EXPERT_FILTER_EQUIPMENTS = {
         id: 'LOAD',
         label: 'Loads',
     },
+    BATTERY: {
+        id: 'BATTERY',
+        label: 'Batteries',
+    },
 };
 
 export const ENERGY_SOURCE_OPTIONS = [
@@ -246,5 +250,17 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.COUNTRY,
         FIELDS_OPTIONS.P0,
         FIELDS_OPTIONS.Q0,
+    ],
+    BATTERY: [
+        FIELDS_OPTIONS.ID,
+        FIELDS_OPTIONS.NAME,
+        FIELDS_OPTIONS.VOLTAGE_LEVEL_ID,
+        FIELDS_OPTIONS.NOMINAL_VOLTAGE,
+        FIELDS_OPTIONS.CONNECTED,
+        FIELDS_OPTIONS.COUNTRY,
+        FIELDS_OPTIONS.MIN_P,
+        FIELDS_OPTIONS.MAX_P,
+        { ...FIELDS_OPTIONS.TARGET_P, label: 'batteryTargetP' },
+        { ...FIELDS_OPTIONS.TARGET_Q, label: 'batteryTargetQ' },
     ],
 };
