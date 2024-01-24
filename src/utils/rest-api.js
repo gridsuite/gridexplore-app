@@ -571,12 +571,13 @@ export function rootDirectoryExists(directoryName) {
 export function createContingencyList(
     contingencyListType,
     contingencyListName,
+    description,
     formContent,
     parentDirectoryUuid
 ) {
     console.info('Creating a new contingency list...');
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('description', ''); // TODO Remove this when the backend does not need it anymore
+    urlSearchParams.append('description', description); // TODO Remove this when the backend does not need it anymore
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     let typeUriParam = getContingencyUriParamType(contingencyListType);
@@ -806,10 +807,10 @@ export function connectNotificationsWsUpdateDirectories() {
  * Create Filter
  * @returns {Promise<Response>}
  */
-export function createFilter(newFilter, name, parentDirectoryUuid) {
+export function createFilter(newFilter, name, description, parentDirectoryUuid) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
-    urlSearchParams.append('description', '');
+    urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     return backendFetch(
         PREFIX_EXPLORE_SERVER_QUERIES +

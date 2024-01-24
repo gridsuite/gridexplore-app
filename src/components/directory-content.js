@@ -583,9 +583,7 @@ const DirectoryContent = () => {
             );
             return (
                 <>
-                    {isElementCaseOrStudy(element.type) && (
-                        <Box sx={styles.cell}>{icon}</Box>
-                    )}
+                    <Box sx={styles.cell}>{icon}</Box>
                 </>
             );
         },
