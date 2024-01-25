@@ -182,10 +182,7 @@ const CsvImportFilterCreationDialog = ({
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <CancelButton
-                            color={'customButton'}
-                            onClick={handleCancelDialog}
-                        />
+                        <CancelButton onClick={handleCancelDialog} />
                         <Button
                             onClick={() => handleReplacePopupConfirmation()}
                         >
