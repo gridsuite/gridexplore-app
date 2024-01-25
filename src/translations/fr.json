@@ -278,6 +278,8 @@
   "plannedOutageRate": "Indisponibilité programmée",
   "forcedOutageRate": "Indisponibilité fortuite",
   "vlId": "ID poste",
+  "p0": "P constant",
+  "q0": "Q constant",
   "downloadCases": "Télécharger la(les) situation(s)",
 
   "descriptionModificationError": "Erreur lors de la modification de la description",
