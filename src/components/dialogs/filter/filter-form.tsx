@@ -44,17 +44,19 @@ export const FilterForm: FunctionComponent<FilterFormProps> = (props) => {
                     autoFocus={props.creation}
                 />
             </Grid>
-            <Grid item xs={12}>
-                <DescriptionInput rows={5} />
-            </Grid>
             {props.creation && (
-                <Grid item>
-                    <RadioInput
-                        name={FILTER_TYPE}
-                        options={Object.values(FilterType)}
-                        formProps={{ onChange: handleChange }} // need to override this in order to do not activate the validate button when changing the filter type
-                    />
-                </Grid>
+                <>
+                    <Grid item xs={12}>
+                        <DescriptionInput rows={5} />
+                    </Grid>
+                    <Grid item>
+                        <RadioInput
+                            name={FILTER_TYPE}
+                            options={Object.values(FilterType)}
+                            formProps={{ onChange: handleChange }} // need to override this in order to do not activate the validate button when changing the filter type
+                        />
+                    </Grid>
+                </>
             )}
             {filterType === FilterType.CRITERIA_BASED.id && (
                 <CriteriaBasedFilterForm />
