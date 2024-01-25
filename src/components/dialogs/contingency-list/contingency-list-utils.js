@@ -13,6 +13,7 @@ import {
     COUNTRIES_1,
     COUNTRIES_2,
     CRITERIA_BASED,
+    DESCRIPTION,
     EQUIPMENT_IDS,
     EQUIPMENT_TABLE,
     EQUIPMENT_TYPE,
@@ -41,6 +42,7 @@ export const makeDefaultTableRows = () => [
 
 export const getContingencyListEmptyFormData = (name = '') => ({
     [NAME]: name,
+    [DESCRIPTION]: '',
     [EQUIPMENT_TABLE]: makeDefaultTableRows(),
     [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [SCRIPT]: '',

@@ -27,7 +27,12 @@ import {
     FILTER_EQUIPMENTS_ATTRIBUTES,
     getExplicitNamingFilterEmptyFormData,
 } from './explicit-naming/explicit-naming-filter-form';
-import { EQUIPMENT_TYPE, FILTER_TYPE, NAME } from '../../utils/field-constants';
+import {
+    DESCRIPTION,
+    EQUIPMENT_TYPE,
+    FILTER_TYPE,
+    NAME,
+} from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 import { FilterForm } from './filter-form';
 import {
@@ -38,6 +43,7 @@ import {
 
 const emptyFormData = {
     [NAME]: '',
+    [DESCRIPTION]: '',
     [FILTER_TYPE]: FilterType.CRITERIA_BASED.id,
     [EQUIPMENT_TYPE]: null,
     ...criteriaBasedFilterEmptyFormData,
@@ -50,6 +56,7 @@ const formSchema = yup
     .object()
     .shape({
         [NAME]: yup.string().trim().required('nameEmpty'),
+        [DESCRIPTION]: yup.string().max(500, 'descriptionLimitError'),
         [FILTER_TYPE]: yup.string().required(),
         [EQUIPMENT_TYPE]: yup.string().required(),
         ...criteriaBasedFilterSchema,
@@ -82,6 +89,7 @@ const FilterCreationDialog = ({ open, onClose }) => {
                     true,
                     filterForm[EQUIPMENT_TYPE],
                     filterForm[NAME],
+                    filterForm[DESCRIPTION],
                     null,
                     (error) => {
                         snackError({
@@ -110,6 +118,7 @@ const FilterCreationDialog = ({ open, onClose }) => {
                     filterForm[EXPERT_FILTER_QUERY],
                     filterForm[EQUIPMENT_TYPE],
                     filterForm[NAME],
+                    filterForm[DESCRIPTION],
                     true,
                     activeDirectory,
                     onClose,
