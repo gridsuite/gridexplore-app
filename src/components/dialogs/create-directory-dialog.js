@@ -102,7 +102,7 @@ export const CreateDirectoryDialog = ({
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <CancelButton color={'customButton'} onClick={handleClose} />
+                <CancelButton onClick={handleClose} />
                 <Button
                     disabled={!canCreate()}
                     onClick={handleClick}

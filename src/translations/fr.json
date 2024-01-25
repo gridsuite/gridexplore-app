@@ -289,6 +289,8 @@
   "plannedOutageRate": "Indisponibilité programmée",
   "forcedOutageRate": "Indisponibilité fortuite",
   "vlId": "ID poste",
+  "p0": "P constant",
+  "q0": "Q constant",
   "descriptionModificationError": "Erreur lors de la modification de la description",
   "descriptionLimitError": "La description dépasse la limite de caractères"
 }
