@@ -3,7 +3,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { FILTER_PROPERTIES } from './filter-properties';
 import { CRITERIA_BASED } from '../../../utils/field-constants';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import MultipleAutocompleteInput from '../../../utils/rhf-inputs/autocomplete-inputs/multiple-autocomplete-input';
@@ -18,13 +17,14 @@ interface FilterPropertyProps {
     valuesFields: Array<{ name: string; label: string }>;
     handleDelete: (index: number) => void;
     predefined: any;
+    propertyType: string;
 }
 
 function FilterProperty(props: FilterPropertyProps) {
     const { setValue } = useFormContext();
 
     const watchName = useWatch({
-        name: `${CRITERIA_BASED}.${FILTER_PROPERTIES}[${props.index}].${PROPERTY_NAME}`,
+        name: `${CRITERIA_BASED}.${props.propertyType}[${props.index}].${PROPERTY_NAME}`,
     });
 
     const predefinedNames = useMemo(() => {
@@ -43,7 +43,7 @@ function FilterProperty(props: FilterPropertyProps) {
     const onNameChange = useCallback(() => {
         props.valuesFields.forEach((valuesField) =>
             setValue(
-                `${CRITERIA_BASED}.${FILTER_PROPERTIES}[${props.index}].${valuesField.name}`,
+                `${CRITERIA_BASED}.${props.propertyType}[${props.index}].${valuesField.name}`,
                 []
             )
         );
@@ -53,7 +53,7 @@ function FilterProperty(props: FilterPropertyProps) {
         <Grid container item spacing={1} columns={21}>
             <Grid item xs={6}>
                 <AutocompleteInput
-                    name={`${CRITERIA_BASED}.${FILTER_PROPERTIES}[${props.index}].${PROPERTY_NAME}`}
+                    name={`${CRITERIA_BASED}.${props.propertyType}[${props.index}].${PROPERTY_NAME}`}
                     label={'PropertyName'}
                     options={predefinedNames}
                     freeSolo
@@ -65,7 +65,7 @@ function FilterProperty(props: FilterPropertyProps) {
             {props.valuesFields.map((valuesField) => (
                 <Grid item xs key={valuesField.name}>
                     <MultipleAutocompleteInput
-                        name={`${CRITERIA_BASED}.${FILTER_PROPERTIES}[${props.index}].${valuesField.name}`}
+                        name={`${CRITERIA_BASED}.${props.propertyType}[${props.index}].${valuesField.name}`}
                         label={valuesField.label}
                         options={predefinedValues}
                     />
