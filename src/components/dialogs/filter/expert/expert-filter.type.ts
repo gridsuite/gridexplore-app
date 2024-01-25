@@ -45,6 +45,8 @@ export enum FieldType {
     PLANNED_OUTAGE_RATE = 'PLANNED_OUTAGE_RATE',
     FORCED_OUTAGE_RATE = 'FORCED_OUTAGE_RATE',
     VOLTAGE_LEVEL_ID = 'VOLTAGE_LEVEL_ID',
+    P0 = 'P0',
+    Q0 = 'Q0',
 }
 
 export enum DataType {
