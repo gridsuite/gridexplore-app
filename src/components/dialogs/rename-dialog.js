@@ -92,7 +92,7 @@ const RenameDialog = ({
                 {error && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <CancelButton color={'customButton'} onClick={handleClose} />
+                <CancelButton onClick={handleClose} />
                 <Button
                     onClick={handleClick}
                     disabled={!canRename()}

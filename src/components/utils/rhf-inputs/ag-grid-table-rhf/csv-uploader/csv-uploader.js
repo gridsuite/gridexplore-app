@@ -157,10 +157,7 @@ const CsvUploader = ({
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <CancelButton
-                        color={'customButton'}
-                        onClick={handleCancelDialog}
-                    />
+                    <CancelButton onClick={handleCancelDialog} />
                     <Button onClick={() => handleReplacePopupConfirmation()}>
                         <FormattedMessage id="replace" />
                     </Button>
@@ -235,10 +232,7 @@ const CsvUploader = ({
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <CancelButton
-                        color={'customButton'}
-                        onClick={handleClose}
-                    />
+                    <CancelButton onClick={handleClose} />
                     <Button
                         variant="outlined"
                         onClick={() => handleOpenCSVConfirmationDataDialog()}

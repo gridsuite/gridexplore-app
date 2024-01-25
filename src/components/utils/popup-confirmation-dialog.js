@@ -28,10 +28,7 @@ const PopupConfirmationDialog = ({
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <CancelButton
-                    color={'customButton'}
-                    onClick={() => setOpenConfirmationPopup(false)}
-                />
+                <CancelButton onClick={() => setOpenConfirmationPopup(false)} />
                 <Button onClick={handlePopupConfirmation} variant="outlined">
                     <FormattedMessage id="validate" />
                 </Button>
