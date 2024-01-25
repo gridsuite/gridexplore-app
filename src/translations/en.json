@@ -263,8 +263,9 @@
   "plannedOutageRate": "Planning outage rate",
   "forcedOutageRate": "Forced outage rate",
   "vlId": "Voltage level ID",
+  "p0": "Constant P",
+  "q0": "Constant Q",
   "downloadCases": "Download Case(s)",
-
   "descriptionModificationError": "An error when modifying the description",
   "descriptionLimitError": "Description exceeds character limit"
 }
