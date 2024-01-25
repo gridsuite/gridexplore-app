@@ -265,8 +265,7 @@
   "vlId": "Voltage level ID",
   "p0": "Constant P",
   "q0": "Constant Q",
-  "batteryTargetP": "Constant active power",
-  "batteryTargetQ": "Constant reactive power",
+  "vlNominalVoltage": "Voltage level nominal voltage",
   "downloadCases": "Download Case(s)",
   "descriptionModificationError": "An error when modifying the description",
   "descriptionLimitError": "Description exceeds character limit"
