@@ -583,7 +583,9 @@ const DirectoryContent = () => {
             );
             return (
                 <>
-                    <Box sx={styles.cell}>{icon}</Box>
+                    {element.type !== ElementType.VOLTAGE_INIT_PARAMETERS && (
+                        <Box sx={styles.cell}>{icon}</Box>
+                    )}
                 </>
             );
         },

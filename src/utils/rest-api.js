@@ -577,7 +577,7 @@ export function createContingencyList(
 ) {
     console.info('Creating a new contingency list...');
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('description', description); // TODO Remove this when the backend does not need it anymore
+    urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
     let typeUriParam = getContingencyUriParamType(contingencyListType);
