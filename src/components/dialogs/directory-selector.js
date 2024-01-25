@@ -138,7 +138,6 @@ const DirectorySelector = (props) => {
             data={data}
             onlyLeaves={false}
             sortMethod={sortAlphabetically}
-            cancelButtonProps={{ color: 'customButton' }}
             {...props}
         />
     );
