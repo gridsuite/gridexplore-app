@@ -22,6 +22,10 @@ export const EXPERT_FILTER_EQUIPMENTS = {
         id: 'LOAD',
         label: 'Loads',
     },
+    BATTERY: {
+        id: 'BATTERY',
+        label: 'Batteries',
+    },
 };
 
 export const ENERGY_SOURCE_OPTIONS = [
@@ -107,7 +111,7 @@ export const FIELDS_OPTIONS = {
     },
     NOMINAL_VOLTAGE: {
         name: FieldType.NOMINAL_VOLTAGE,
-        label: 'nominalVoltage',
+        label: 'vlNominalVoltage',
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
@@ -203,6 +207,18 @@ export const FIELDS_OPTIONS = {
         label: 'vlId',
         dataType: DataType.STRING,
     },
+    P0: {
+        name: FieldType.P0,
+        label: 'p0',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    Q0: {
+        name: FieldType.Q0,
+        label: 'q0',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
 };
 
 export const fields: Record<string, Field[]> = {
@@ -226,5 +242,25 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.FORCED_OUTAGE_RATE,
         FIELDS_OPTIONS.VOLTAGE_LEVEL_ID,
     ],
-    LOAD: [FIELDS_OPTIONS.ID],
+    LOAD: [
+        FIELDS_OPTIONS.ID,
+        FIELDS_OPTIONS.NAME,
+        FIELDS_OPTIONS.VOLTAGE_LEVEL_ID,
+        FIELDS_OPTIONS.NOMINAL_VOLTAGE,
+        FIELDS_OPTIONS.COUNTRY,
+        FIELDS_OPTIONS.P0,
+        FIELDS_OPTIONS.Q0,
+    ],
+    BATTERY: [
+        FIELDS_OPTIONS.ID,
+        FIELDS_OPTIONS.NAME,
+        FIELDS_OPTIONS.VOLTAGE_LEVEL_ID,
+        FIELDS_OPTIONS.NOMINAL_VOLTAGE,
+        FIELDS_OPTIONS.CONNECTED,
+        FIELDS_OPTIONS.COUNTRY,
+        FIELDS_OPTIONS.MIN_P,
+        FIELDS_OPTIONS.MAX_P,
+        FIELDS_OPTIONS.TARGET_P,
+        FIELDS_OPTIONS.TARGET_Q,
+    ],
 };

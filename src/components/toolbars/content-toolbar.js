@@ -22,7 +22,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { ElementType } from '../../utils/elementType';
 import { FileDownload } from '@mui/icons-material';
-import { downloadCases } from '../utils/caseUtils';
+import { useDownloadUtils } from '../utils/caseUtils';
 
 const DialogsId = {
     DELETE: 'delete',
@@ -35,6 +35,7 @@ const ContentToolbar = (props) => {
     const userId = useSelector((state) => state.user.profile.sub);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
+    const { handleDownloadCases } = useDownloadUtils();
 
     const [openDialog, setOpenDialog] = useState(null);
 
@@ -118,35 +119,38 @@ const ContentToolbar = (props) => {
         false
     );
 
-    const handleDownloadCases = useCallback(async () => {
-        const casesUuids = selectedElements
-            .filter((element) => element.type === ElementType.CASE)
-            .map((element) => element.elementUuid);
-        await downloadCases(casesUuids);
-    }, [selectedElements]);
-
     // Allowance
     const isUserAllowed = useMemo(
         () => selectedElements.every((el) => el.owner === userId),
         [selectedElements, userId]
     );
 
-    const allowsDelete = useMemo(() => isUserAllowed, [isUserAllowed]);
+    const noCreationInProgress = useMemo(
+        () => selectedElements.every((el) => el.hasMetadata),
+        [selectedElements]
+    );
+
+    const allowsDelete = useMemo(
+        () => isUserAllowed && noCreationInProgress,
+        [isUserAllowed, noCreationInProgress]
+    );
 
     const allowsMove = useMemo(
         () =>
             selectedElements.every(
                 (element) => element.type !== ElementType.DIRECTORY
-            ) && isUserAllowed,
-        [isUserAllowed, selectedElements]
+            ) &&
+            isUserAllowed &&
+            noCreationInProgress,
+        [isUserAllowed, selectedElements, noCreationInProgress]
     );
 
     const allowsDownloadCases = useMemo(
         () =>
-            selectedElements.every(
+            selectedElements.some(
                 (element) => element.type === ElementType.CASE
-            ),
-        [selectedElements]
+            ) && noCreationInProgress,
+        [selectedElements, noCreationInProgress]
     );
 
     const items = useMemo(
@@ -171,8 +175,8 @@ const ContentToolbar = (props) => {
                           disabled: !selectedElements.length || !allowsMove,
                       },
                       {
-                          tooltipTextId: 'downloadCases',
-                          callback: handleDownloadCases,
+                          tooltipTextId: 'download.button',
+                          callback: () => handleDownloadCases(selectedElements),
                           icon: <FileDownload fontSize="small" />,
                           disabled:
                               !selectedElements.length || !allowsDownloadCases,
@@ -184,7 +188,7 @@ const ContentToolbar = (props) => {
             allowsDownloadCases,
             allowsMove,
             handleDownloadCases,
-            selectedElements.length,
+            selectedElements,
         ]
     );
 
