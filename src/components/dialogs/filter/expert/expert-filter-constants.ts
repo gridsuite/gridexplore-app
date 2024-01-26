@@ -255,7 +255,7 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.HIGH_VOLTAGE_LIMIT,
         FIELDS_OPTIONS.COUNTRY,
     ],
-    SUBSTATIONS: [
+    SUBSTATION: [
         FIELDS_OPTIONS.ID,
         FIELDS_OPTIONS.NAME,
         FIELDS_OPTIONS.COUNTRY,

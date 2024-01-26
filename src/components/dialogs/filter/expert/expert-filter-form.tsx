@@ -81,12 +81,9 @@ export const expertFilterSchema = {
 };
 
 function isSupportedEquipmentType(equipmentType: string): boolean {
-    return (
-        equipmentType === Generator.type ||
-        equipmentType === Load.type ||
-        equipmentType === VoltageLevel.type ||
-        equipmentType === Substation.type
-    );
+    return Object.values(EXPERT_FILTER_EQUIPMENTS)
+        .map((equipments) => equipments.id)
+        .includes(equipmentType);
 }
 
 const defaultQuery = {
