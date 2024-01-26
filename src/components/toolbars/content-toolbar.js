@@ -22,7 +22,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { ElementType } from '../../utils/elementType';
 import { FileDownload } from '@mui/icons-material';
-import { downloadCases } from '../utils/caseUtils';
+import { useDownloadUtils } from '../utils/caseUtils';
 
 const DialogsId = {
     DELETE: 'delete',
@@ -35,6 +35,7 @@ const ContentToolbar = (props) => {
     const userId = useSelector((state) => state.user.profile.sub);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
+    const { handleDownloadCases } = useDownloadUtils();
 
     const [openDialog, setOpenDialog] = useState(null);
 
@@ -118,13 +119,6 @@ const ContentToolbar = (props) => {
         false
     );
 
-    const handleDownloadCases = useCallback(async () => {
-        const casesUuids = selectedElements
-            .filter((element) => element.type === ElementType.CASE)
-            .map((element) => element.elementUuid);
-        await downloadCases(casesUuids);
-    }, [selectedElements]);
-
     // Allowance
     const isUserAllowed = useMemo(
         () => selectedElements.every((el) => el.owner === userId),
@@ -181,8 +175,8 @@ const ContentToolbar = (props) => {
                           disabled: !selectedElements.length || !allowsMove,
                       },
                       {
-                          tooltipTextId: 'downloadCases',
-                          callback: handleDownloadCases,
+                          tooltipTextId: 'download.button',
+                          callback: () => handleDownloadCases(selectedElements),
                           icon: <FileDownload fontSize="small" />,
                           disabled:
                               !selectedElements.length || !allowsDownloadCases,
@@ -194,7 +188,7 @@ const ContentToolbar = (props) => {
             allowsDownloadCases,
             allowsMove,
             handleDownloadCases,
-            selectedElements.length,
+            selectedElements,
         ]
     );
 

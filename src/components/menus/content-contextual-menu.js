@@ -54,7 +54,7 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { FileDownload } from '@mui/icons-material';
-import { downloadCases } from '../utils/caseUtils';
+import { useDownloadUtils } from '../utils/caseUtils';
 import { useDispatch } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
 
@@ -78,6 +78,7 @@ const ContentContextualMenu = (props) => {
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
+    const { handleDownloadCases } = useDownloadUtils();
 
     const handleLastError = useCallback(
         (message) => {
@@ -504,13 +505,6 @@ const ContentContextualMenu = (props) => {
         );
     }, [selectedElements, noCreationInProgress]);
 
-    const handleDownloadCases = useCallback(async () => {
-        const casesUuids = selectedElements
-            .filter((element) => element.type === ElementType.CASE)
-            .map((element) => element.elementUuid);
-        await downloadCases(casesUuids);
-    }, [selectedElements]);
-
     const buildMenu = () => {
         if (selectedElements.length === 0) {
             return;
@@ -593,9 +587,9 @@ const ContentContextualMenu = (props) => {
         if (allowsDownloadCase()) {
             // is export allowed
             menuItems.push({
-                messageDescriptorId: 'downloadCases',
+                messageDescriptorId: 'download.button',
                 callback: async () => {
-                    await handleDownloadCases();
+                    await handleDownloadCases(selectedElements);
                     handleCloseDialog();
                 },
                 icon: <FileDownload fontSize="small" />,
