@@ -28,6 +28,7 @@ import {
 import CriteriaBasedForm from '../../commons/criteria-based/criteria-based-form';
 import ScriptInputForm from '../script/script-input-form';
 import { UniqueNameInput } from '../../commons/unique-name-input';
+import DescriptionInput from '../../description-modification/description-input';
 
 const ContingencyListCreationForm = () => {
     const { setValue } = useFormContext();
@@ -59,6 +60,9 @@ const ContingencyListCreationForm = () => {
                     elementType={ElementType.CONTINGENCY_LIST}
                     autoFocus
                 />
+            </Grid>
+            <Grid item xs={12}>
+                <DescriptionInput rows={5} />
             </Grid>
             <Grid container item>
                 {gridItem(contingencyListTypeField, 12)}

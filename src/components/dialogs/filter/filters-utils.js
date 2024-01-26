@@ -7,7 +7,7 @@
 import { createFilter, saveFilter } from '../../../utils/rest-api';
 import { FilterType } from '../../../utils/elementType';
 import { frontToBackTweak } from './criteria-based/criteria-based-filter-utils';
-import { EQUIPMENT_ID, NAME } from '../../utils/field-constants';
+import { DESCRIPTION, EQUIPMENT_ID, NAME } from '../../utils/field-constants';
 import { Generator, Load } from '../../../utils/equipment-types';
 import { DISTRIBUTION_KEY } from './explicit-naming/explicit-naming-filter-form';
 import { exportExpertRules } from './expert/expert-filter-utils';
@@ -17,6 +17,7 @@ export const saveExplicitNamingFilter = (
     isFilterCreation,
     equipmentType,
     name,
+    description,
     id,
     setCreateFilterErr,
     activeDirectory,
@@ -44,6 +45,7 @@ export const saveExplicitNamingFilter = (
                 filterEquipmentsAttributes: cleanedTableValues,
             },
             name,
+            description,
             activeDirectory
         )
             .then(() => {
@@ -78,7 +80,12 @@ export const saveCriteriaBasedFilter = (
     onError
 ) => {
     const filterForBack = frontToBackTweak(undefined, filter); // no need ID for creation
-    createFilter(filterForBack, filter[NAME], activeDirectory)
+    createFilter(
+        filterForBack,
+        filter[NAME],
+        filter[DESCRIPTION],
+        activeDirectory
+    )
         .then(() => {
             onClose();
         })
@@ -92,6 +99,7 @@ export const saveExpertFilter = (
     query,
     equipmentType,
     name,
+    description,
     isFilterCreation,
     activeDirectory,
     onClose,
@@ -105,6 +113,7 @@ export const saveExpertFilter = (
                 rules: exportExpertRules(query),
             },
             name,
+            description,
             activeDirectory
         )
             .then(() => {

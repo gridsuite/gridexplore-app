@@ -15,6 +15,7 @@ import ExplicitNamingFilterForm from './explicit-naming/explicit-naming-filter-f
 import React, { FunctionComponent } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import ExpertFilterForm from './expert/expert-filter-form';
+import DescriptionInput from '../description-modification/description-input';
 
 interface FilterFormProps {
     creation?: boolean;
@@ -44,13 +45,18 @@ export const FilterForm: FunctionComponent<FilterFormProps> = (props) => {
                 />
             </Grid>
             {props.creation && (
-                <Grid item>
-                    <RadioInput
-                        name={FILTER_TYPE}
-                        options={Object.values(FilterType)}
-                        formProps={{ onChange: handleChange }} // need to override this in order to do not activate the validate button when changing the filter type
-                    />
-                </Grid>
+                <>
+                    <Grid item xs={12}>
+                        <DescriptionInput rows={5} />
+                    </Grid>
+                    <Grid item>
+                        <RadioInput
+                            name={FILTER_TYPE}
+                            options={Object.values(FilterType)}
+                            formProps={{ onChange: handleChange }} // need to override this in order to do not activate the validate button when changing the filter type
+                        />
+                    </Grid>
+                </>
             )}
             {filterType === FilterType.CRITERIA_BASED.id && (
                 <CriteriaBasedFilterForm />

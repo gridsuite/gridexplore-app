@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     CONTINGENCY_LIST_TYPE,
+    DESCRIPTION,
     EQUIPMENT_TABLE,
     EQUIPMENT_TYPE,
     NAME,
@@ -31,6 +32,7 @@ import { ContingencyListType } from '../../../../utils/elementType';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().trim().required('nameEmpty'),
+    [DESCRIPTION]: yup.string().max(500, 'descriptionLimitError'),
     [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
     [SCRIPT]: yup.string().nullable(),
     [EQUIPMENT_TYPE]: yup.string().when([CONTINGENCY_LIST_TYPE], {
@@ -71,6 +73,7 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
         createContingencyList(
             data[CONTINGENCY_LIST_TYPE],
             data[NAME],
+            data[DESCRIPTION],
             formContent,
             activeDirectory
         )
