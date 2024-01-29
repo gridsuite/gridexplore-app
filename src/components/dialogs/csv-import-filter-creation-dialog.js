@@ -185,6 +185,7 @@ const CsvImportFilterCreationDialog = ({
                         <CancelButton onClick={handleCancelDialog} />
                         <Button
                             onClick={() => handleReplacePopupConfirmation()}
+                            variant="outlined"
                         >
                             <FormattedMessage id="replace" />
                         </Button>
