@@ -26,6 +26,14 @@ export const EXPERT_FILTER_EQUIPMENTS = {
         id: 'BATTERY',
         label: 'Batteries',
     },
+    VOLTAGE_LEVEL: {
+        id: 'VOLTAGE_LEVEL',
+        label: 'VoltageLevels',
+    },
+    SUBSTATION: {
+        id: 'SUBSTATION',
+        label: 'Substations',
+    },
 };
 
 export const ENERGY_SOURCE_OPTIONS = [
@@ -219,6 +227,18 @@ export const FIELDS_OPTIONS = {
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
+    LOW_VOLTAGE_LIMIT: {
+        name: FieldType.LOW_VOLTAGE_LIMIT,
+        label: 'lowVoltageLimit',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    HIGH_VOLTAGE_LIMIT: {
+        name: FieldType.HIGH_VOLTAGE_LIMIT,
+        label: 'highVoltageLimit',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
 };
 
 export const fields: Record<string, Field[]> = {
@@ -262,5 +282,18 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.MAX_P,
         FIELDS_OPTIONS.TARGET_P,
         FIELDS_OPTIONS.TARGET_Q,
+    ],
+    VOLTAGE_LEVEL: [
+        FIELDS_OPTIONS.ID,
+        FIELDS_OPTIONS.NAME,
+        FIELDS_OPTIONS.NOMINAL_VOLTAGE,
+        FIELDS_OPTIONS.LOW_VOLTAGE_LIMIT,
+        FIELDS_OPTIONS.HIGH_VOLTAGE_LIMIT,
+        FIELDS_OPTIONS.COUNTRY,
+    ],
+    SUBSTATION: [
+        FIELDS_OPTIONS.ID,
+        FIELDS_OPTIONS.NAME,
+        FIELDS_OPTIONS.COUNTRY,
     ],
 };

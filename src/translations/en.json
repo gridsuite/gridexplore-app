@@ -276,6 +276,9 @@
   "p0": "Constant P",
   "q0": "Constant Q",
   "vlNominalVoltage": "Voltage level nominal voltage",
+  "lowVoltageLimit": "Low voltage limit",
+  "highVoltageLimit": "High voltage limit",
+  "downloadCases": "Download Case(s)",
   "descriptionModificationError": "An error when modifying the description",
   "descriptionLimitError": "Description exceeds character limit"
 }
