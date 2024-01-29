@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -28,10 +35,7 @@ const PopupConfirmationDialog = ({
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <CancelButton
-                    color={'customButton'}
-                    onClick={() => setOpenConfirmationPopup(false)}
-                />
+                <CancelButton onClick={() => setOpenConfirmationPopup(false)} />
                 <Button onClick={handlePopupConfirmation} variant="outlined">
                     <FormattedMessage id="validate" />
                 </Button>
