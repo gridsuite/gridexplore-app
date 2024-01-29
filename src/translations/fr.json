@@ -24,7 +24,6 @@
   "renameElementNotFoundError": "L'élément n'a pas été trouvé",
   "followingItems": "les {itemsCount} éléments suivants",
   "additionalItems": "... et {itemsCount} éléments supplémentaires non affichés",
-  "genericConfirmQuestion": "Êtes-vous sûr(e) ?",
   "deleteStudyError": "Vous n'êtes pas le propriétaire de l'étude",
   "deleteElementsFailure": "Problème à la destruction {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {détruit} other {détruits}} : {problematic}",
   "moveElementsFailure": "Problème au déplacement {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {déplacé} other {déplacés}} : {problematic}",
@@ -292,6 +291,9 @@
   "p0": "P constant",
   "q0": "Q constant",
   "vlNominalVoltage": "Tension nominale poste",
+  "lowVoltageLimit": "Limite tension basse",
+  "highVoltageLimit": "Limite tension haute",
+  "downloadCases": "Télécharger la(les) situation(s)",
   "descriptionModificationError": "Erreur lors de la modification de la description",
   "descriptionLimitError": "La description dépasse la limite de caractères"
 }

@@ -47,6 +47,8 @@ export enum FieldType {
     VOLTAGE_LEVEL_ID = 'VOLTAGE_LEVEL_ID',
     P0 = 'P0',
     Q0 = 'Q0',
+    LOW_VOLTAGE_LIMIT = 'LOW_VOLTAGE_LIMIT',
+    HIGH_VOLTAGE_LIMIT = 'HIGH_VOLTAGE_LIMIT',
 }
 
 export enum DataType {
