@@ -76,6 +76,10 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
                 label: intl.formatMessage({ id: operator.label }),
             }));
         case DataType.BOOLEAN:
+            return [OPERATOR_OPTIONS.EQUALS].map((operator) => ({
+                name: operator.name,
+                label: intl.formatMessage({ id: operator.label }),
+            }));
         case DataType.ENUM:
             return [
                 OPERATOR_OPTIONS.EQUALS,
