@@ -581,9 +581,12 @@ const DirectoryContent = () => {
             ) : (
                 <CreateIcon onClick={handleDescriptionIconClick} />
             );
+            const showEditDescriptionIcon =
+                element.type !== ElementType.VOLTAGE_INIT_PARAMETERS &&
+                element.type !== ElementType.SECURITY_ANALYSIS_PARAMETERS;
             return (
                 <>
-                    {element.type !== ElementType.VOLTAGE_INIT_PARAMETERS && (
+                    {showEditDescriptionIcon && (
                         <Box sx={styles.cell}>{icon}</Box>
                     )}
                 </>
@@ -602,6 +605,8 @@ const DirectoryContent = () => {
         } else if (objectType === ElementType.CASE) {
             return <PhotoIcon sx={styles.icon} />;
         } else if (objectType === ElementType.VOLTAGE_INIT_PARAMETERS) {
+            return <SettingsIcon sx={styles.icon} />;
+        } else if (objectType === ElementType.SECURITY_ANALYSIS_PARAMETERS) {
             return <SettingsIcon sx={styles.icon} />;
         }
     }

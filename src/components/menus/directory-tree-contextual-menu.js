@@ -234,6 +234,20 @@ const DirectoryTreeContextualMenu = (props) => {
                                     });
 
                                 break;
+                            case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+                                duplicateParameter(
+                                    newItemName,
+                                    ElementType.SECURITY_ANALYSIS_PARAMETERS,
+                                    selectionForCopy.sourceItemUuid,
+                                    elementUuid
+                                )
+                                    .then(() => {
+                                        handleCloseDialog();
+                                    })
+                                    .catch((error) => {
+                                        handlePasteError(error);
+                                    });
+                                break;
                             default:
                                 handleError(
                                     intl.formatMessage({ id: 'unsuportedItem' })
