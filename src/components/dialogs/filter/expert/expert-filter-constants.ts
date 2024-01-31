@@ -34,6 +34,10 @@ export const EXPERT_FILTER_EQUIPMENTS = {
         id: 'SUBSTATION',
         label: 'Substations',
     },
+    TWO_WINDINGS_TRANSFORMER: {
+        id: 'TWO_WINDINGS_TRANSFORMER',
+        label: 'TwoWindingsTransformers',
+    },
 };
 
 export const ENERGY_SOURCE_OPTIONS = [
@@ -239,6 +243,82 @@ export const FIELDS_OPTIONS = {
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
+    NOMINAL_VOLTAGE_1: {
+        name: FieldType.NOMINAL_V_1,
+        label: 'nominalVoltage1',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    NOMINAL_VOLTAGE_2: {
+        name: FieldType.NOMINAL_V_2,
+        label: 'nominalVoltage2',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    R: {
+        name: FieldType.R,
+        label: 'seriesResistance',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    X: {
+        name: FieldType.X,
+        label: 'seriesReactance',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    G: {
+        name: FieldType.G,
+        label: 'magnetizingConductance',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    B: {
+        name: FieldType.B,
+        label: 'magnetizingSusceptance',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    CONNECTED_1: {
+        name: FieldType.CONNECTED_1,
+        label: 'connected1',
+        dataType: DataType.BOOLEAN,
+        valueEditorType: 'switch',
+    },
+    CONNECTED_2: {
+        name: FieldType.CONNECTED_2,
+        label: 'connected2',
+        dataType: DataType.BOOLEAN,
+        valueEditorType: 'switch',
+    },
+    VOLTAGE_LEVEL_ID_1: {
+        name: FieldType.VOLTAGE_LEVEL_ID_1,
+        label: 'vlId1',
+        dataType: DataType.STRING,
+    },
+    VOLTAGE_LEVEL_ID_2: {
+        name: FieldType.VOLTAGE_LEVEL_ID_2,
+        label: 'vlId2',
+        dataType: DataType.STRING,
+    },
+    LOAD_TAP_CHANGING_CAPABILITIES: {
+        name: FieldType.LOAD_TAP_CHANGING_CAPABILITIES,
+        label: 'loadTapChangingCapabilities',
+        dataType: DataType.BOOLEAN,
+        valueEditorType: 'switch',
+    },
+    RATIO_REGULATING: {
+        name: FieldType.RATIO_REGULATING,
+        label: 'regulatingRatio',
+        dataType: DataType.BOOLEAN,
+        valueEditorType: 'switch',
+    },
+    RATIO_TARGET_V: {
+        name: FieldType.RATIO_TARGET_V,
+        label: 'ratioTargetV',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
 };
 
 export const fields: Record<string, Field[]> = {
@@ -295,5 +375,24 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.ID,
         FIELDS_OPTIONS.NAME,
         FIELDS_OPTIONS.COUNTRY,
+    ],
+    TWO_WINDINGS_TRANSFORMER: [
+        FIELDS_OPTIONS.ID,
+        FIELDS_OPTIONS.NAME,
+        FIELDS_OPTIONS.NOMINAL_VOLTAGE_1,
+        FIELDS_OPTIONS.NOMINAL_VOLTAGE_2,
+        FIELDS_OPTIONS.RATED_S,
+        FIELDS_OPTIONS.R,
+        FIELDS_OPTIONS.X,
+        FIELDS_OPTIONS.G,
+        FIELDS_OPTIONS.B,
+        FIELDS_OPTIONS.CONNECTED_1,
+        FIELDS_OPTIONS.CONNECTED_2,
+        FIELDS_OPTIONS.VOLTAGE_LEVEL_ID_1,
+        FIELDS_OPTIONS.VOLTAGE_LEVEL_ID_2,
+        FIELDS_OPTIONS.COUNTRY,
+        FIELDS_OPTIONS.LOAD_TAP_CHANGING_CAPABILITIES,
+        FIELDS_OPTIONS.RATIO_REGULATING,
+        FIELDS_OPTIONS.RATIO_TARGET_V,
     ],
 };
