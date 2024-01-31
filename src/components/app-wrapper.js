@@ -40,6 +40,9 @@ import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import messages_plugins_en from '../plugins/translations/en.json';
 import messages_plugins_fr from '../plugins/translations/fr.json';
+import aggrid_locale_fr from '../translations/aggrid-locale-fr';
+import backend_locale_fr from '../translations/backend-locale-fr';
+import backend_locale_en from '../translations/backend-locale-en';
 import import_parameters_en from '../translations/import-parameters-en';
 import import_parameters_fr from '../translations/import-parameters-fr';
 import { store } from '../redux/store';
@@ -174,6 +177,7 @@ const messages = {
         ...flat_parameters_en,
         ...multiple_selection_dialog_en,
         ...common_button_en,
+        ...backend_locale_en,
         ...messages_plugins_en, // keep it at the end to allow translation overwritting
     },
     fr: {
@@ -187,6 +191,8 @@ const messages = {
         ...flat_parameters_fr,
         ...multiple_selection_dialog_fr,
         ...common_button_fr,
+        ...backend_locale_fr,
+        ...aggrid_locale_fr, // Only the french locale is needed
         ...messages_plugins_fr, // keep it at the end to allow translation overwritting
     },
 };
