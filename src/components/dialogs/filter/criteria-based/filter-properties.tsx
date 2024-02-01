@@ -111,24 +111,6 @@ export const filterPropertiesYupSchema = {
                         (values, context) =>
                             propertyValuesTest(values, context, false)
                     ),
-                [PROPERTY_VALUES_1]: yup
-                    .array()
-                    .of(yup.string())
-                    .test(
-                        'can not be empty if line',
-                        'YupRequired',
-                        (values, context) =>
-                            propertyValuesTest(values, context, true)
-                    ),
-                [PROPERTY_VALUES_2]: yup
-                    .array()
-                    .of(yup.string())
-                    .test(
-                        'can not be empty if line',
-                        'YupRequired',
-                        (values, context) =>
-                            propertyValuesTest(values, context, true)
-                    ),
             })
         )
         .test(
