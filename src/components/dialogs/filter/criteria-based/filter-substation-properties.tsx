@@ -1,14 +1,26 @@
-import { ErrorInput, FieldErrorAlert, useSnackMessage } from "@gridsuite/commons-ui";
-import { Button, Grid, ListItem } from "@mui/material";
-import { CRITERIA_BASED, EQUIPMENT_TYPE } from "components/utils/field-constants";
-import { useFieldArray, useWatch } from "react-hook-form";
-import { FormattedMessage } from "react-intl";
-import { Hvdc, Line, Substation } from "utils/equipment-types";
-import { SUBSTATION_FILTER_PROPERTIES } from "./filter-properties";
-import FilterProperty, { PROPERTY_NAME, PROPERTY_VALUES, PROPERTY_VALUES_1, PROPERTY_VALUES_2 } from "./filter-property";
+import {
+    ErrorInput,
+    FieldErrorAlert,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { Button, Grid, ListItem } from '@mui/material';
+import {
+    CRITERIA_BASED,
+    EQUIPMENT_TYPE,
+} from 'components/utils/field-constants';
+import { useFieldArray, useWatch } from 'react-hook-form';
+import { FormattedMessage } from 'react-intl';
+import { Hvdc, Line } from 'utils/equipment-types';
+import { SUBSTATION_FILTER_PROPERTIES } from './filter-properties';
+import FilterProperty, {
+    PROPERTY_NAME,
+    PROPERTY_VALUES,
+    PROPERTY_VALUES_1,
+    PROPERTY_VALUES_2,
+} from './filter-property';
 import AddIcon from '@mui/icons-material/Add';
-import { useEffect, useState } from "react";
-import { fetchAppsAndUrls } from "utils/rest-api";
+import { useEffect, useState } from 'react';
+import { fetchAppsAndUrls } from 'utils/rest-api';
 
 function fetchPredefinedProperties() {
     return fetchAppsAndUrls().then((res) => {
@@ -70,11 +82,10 @@ function FilterSubstationProperties() {
 
     const valuesFields = isForLineOrHvdcLine
         ? [
-            { name: PROPERTY_VALUES_1, label: 'PropertyValues1' },
-            { name: PROPERTY_VALUES_2, label: 'PropertyValues2' },
-        ]
+              { name: PROPERTY_VALUES_1, label: 'PropertyValues1' },
+              { name: PROPERTY_VALUES_2, label: 'PropertyValues2' },
+          ]
         : [{ name: PROPERTY_VALUES, label: 'PropertyValues' }];
-
 
     return (
         <>
@@ -95,18 +106,13 @@ function FilterSubstationProperties() {
                 </ListItem>
             ))}
             <Grid item>
-                <Button
-                    fullWidth
-                    startIcon={<AddIcon />}
-                    onClick={addNewProp}
-                >
+                <Button fullWidth startIcon={<AddIcon />} onClick={addNewProp}>
                     <FormattedMessage id={'AddFreePropCrit'} />
                 </Button>
             </Grid>
             <Grid item>
                 <ErrorInput name={fieldName} InputField={FieldErrorAlert} />
             </Grid>
-
         </>
     );
 }

@@ -47,7 +47,7 @@ function FilterProperty(props: FilterPropertyProps) {
                 []
             )
         );
-    }, [setValue, props.index, props.valuesFields]);
+    }, [setValue, props.index, props.valuesFields, props.propertyType]);
 
     return (
         <Grid container item spacing={1} columns={21}>

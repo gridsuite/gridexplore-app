@@ -17,7 +17,10 @@ import {
     VALUE_1,
     VALUE_2,
 } from '../../../utils/field-constants';
-import { FREE_FILTER_PROPERTIES, SUBSTATION_FILTER_PROPERTIES } from './filter-properties';
+import {
+    FREE_FILTER_PROPERTIES,
+    SUBSTATION_FILTER_PROPERTIES,
+} from './filter-properties';
 import {
     PROPERTY_NAME,
     PROPERTY_VALUES,
@@ -139,8 +142,7 @@ export const frontToBackTweak = (id, filter) => {
     eff.freeProperties1 = props1;
     eff.freeProperties2 = props2;
 
-    const filterFreeProperties =
-        filter[CRITERIA_BASED][FREE_FILTER_PROPERTIES];
+    const filterFreeProperties = filter[CRITERIA_BASED][FREE_FILTER_PROPERTIES];
     // in the back end we store everything in a field called equipmentFilterForm
     delete eff[FREE_FILTER_PROPERTIES];
     const freeProps = {};
