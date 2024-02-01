@@ -286,8 +286,8 @@ export const FIELDS_OPTIONS = {
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
-    SWITCHED_ON_MAX_SUSCEPTANCE: {
-        name: FieldType.SWITCHED_ON_MAX_SUSCEPTANCE,
+    SWITCHED_ON_SUSCEPTANCE: {
+        name: FieldType.SWITCHED_ON_SUSCEPTANCE,
         label: 'SwitchedOnMaxSusceptance',
         dataType: DataType.NUMBER,
         inputType: 'number',
@@ -336,7 +336,7 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.MAX_Q_AT_NOMINAL_V,
         FIELDS_OPTIONS.SWITCHED_ON_Q_AT_NOMINAL_V,
         FIELDS_OPTIONS.MAX_SUSCEPTANCE,
-        FIELDS_OPTIONS.SWITCHED_ON_MAX_SUSCEPTANCE,
+        FIELDS_OPTIONS.SWITCHED_ON_SUSCEPTANCE,
         FIELDS_OPTIONS.CONNECTED,
     ],
     BATTERY: [
