@@ -41,8 +41,6 @@ import { getCriteriaBasedFormData } from '../../commons/criteria-based/criteria-
  * @author Laurent LAUGARN modified by Florent MILLOT
  */
 export const backToFrontTweak = (response) => {
-    console.log(response);
-
     const subProps = response.equipmentFilterForm.substationFreeProperties;
     const freeProps = response.equipmentFilterForm.freeProperties;
     const props1 = response.equipmentFilterForm.freeProperties1;
