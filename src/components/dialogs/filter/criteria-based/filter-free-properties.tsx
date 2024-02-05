@@ -10,18 +10,27 @@ import {
     FieldErrorAlert,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import AddIcon from '@mui/icons-material/Add';
 import { Button, Grid, ListItem } from '@mui/material';
-import { CRITERIA_BASED } from 'components/utils/field-constants';
-import { useEffect, useState } from 'react';
-import { useFieldArray } from 'react-hook-form';
+import {
+    CRITERIA_BASED,
+    EQUIPMENT_TYPE,
+} from 'components/utils/field-constants';
+import { useFieldArray, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { fetchAppsAndUrls } from 'utils/rest-api';
-import { FREE_FILTER_PROPERTIES } from './filter-properties';
+import { Hvdc, Line } from 'utils/equipment-types';
+import {
+    FREE_FILTER_PROPERTIES,
+    SUBSTATION_FILTER_PROPERTIES,
+} from './filter-properties';
 import FilterProperty, {
     PROPERTY_NAME,
     PROPERTY_VALUES,
+    PROPERTY_VALUES_1,
+    PROPERTY_VALUES_2,
 } from './filter-property';
+import AddIcon from '@mui/icons-material/Add';
+import { useEffect, useMemo, useState } from 'react';
+import { fetchAppsAndUrls } from 'utils/rest-api';
 
 function fetchPredefinedProperties() {
     return fetchAppsAndUrls().then((res) => {
@@ -38,9 +47,24 @@ function fetchPredefinedProperties() {
     });
 }
 
-function FilterFreeProperties() {
+interface FilterFreePropertiesProps {
+    freePropertiesType: string;
+}
+
+function FilterSubstationProperties({
+    freePropertiesType,
+}: FilterFreePropertiesProps) {
     const { snackError } = useSnackMessage();
-    const fieldName = `${CRITERIA_BASED}.${FREE_FILTER_PROPERTIES}`;
+
+    const watchEquipmentType = useWatch({
+        name: EQUIPMENT_TYPE,
+    });
+    const isForLineOrHvdcLineSubstation =
+        (watchEquipmentType === Line.type ||
+            watchEquipmentType === Hvdc.type) &&
+        freePropertiesType === SUBSTATION_FILTER_PROPERTIES;
+
+    const fieldName = `${CRITERIA_BASED}.${freePropertiesType}`;
 
     const [fieldProps, setFieldProps] = useState({});
 
@@ -63,13 +87,37 @@ function FilterFreeProperties() {
     });
 
     function addNewProp() {
-        append({ [PROPERTY_NAME]: null, [PROPERTY_VALUES]: [] });
+        if (isForLineOrHvdcLineSubstation) {
+            append({
+                [PROPERTY_NAME]: null,
+                [PROPERTY_VALUES_1]: [],
+                [PROPERTY_VALUES_2]: [],
+            });
+        } else {
+            append({ [PROPERTY_NAME]: null, [PROPERTY_VALUES]: [] });
+        }
     }
 
-    const valuesFields = [{ name: PROPERTY_VALUES, label: 'PropertyValues' }];
+    const valuesFields = isForLineOrHvdcLineSubstation
+        ? [
+              { name: PROPERTY_VALUES_1, label: 'PropertyValues1' },
+              { name: PROPERTY_VALUES_2, label: 'PropertyValues2' },
+          ]
+        : [{ name: PROPERTY_VALUES, label: 'PropertyValues' }];
+
+    const title = useMemo<string>(() => {
+        return freePropertiesType === FREE_FILTER_PROPERTIES
+            ? 'FreeProps'
+            : 'SubstationFreeProps';
+    }, [freePropertiesType]);
 
     return (
         <>
+            <Grid item xs={12} spacing={0}>
+                <FormattedMessage id={title}>
+                    {(title) => <h4>{title}</h4>}
+                </FormattedMessage>
+            </Grid>
             {filterProperties.map((prop, index) => (
                 <ListItem key={prop.id}>
                     <FilterProperty
@@ -77,7 +125,7 @@ function FilterFreeProperties() {
                         valuesFields={valuesFields}
                         predefined={fieldProps}
                         handleDelete={remove}
-                        propertyType={FREE_FILTER_PROPERTIES}
+                        propertyType={freePropertiesType}
                     />
                 </ListItem>
             ))}
@@ -93,4 +141,4 @@ function FilterFreeProperties() {
     );
 }
 
-export default FilterFreeProperties;
+export default FilterSubstationProperties;

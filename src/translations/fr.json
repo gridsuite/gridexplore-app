@@ -178,6 +178,7 @@
   "cannotRetrieveContingencyList": "Erreur d'accès à la liste d'aléas : ",
   "cannotRetrievefilter": "Erreur d'accès au filtre : ",
   "FreePropsCrit": "Filtrage par propriétés",
+  "FreeProps": "Propriétés de l'ouvrage",
   "SubstationFreeProps": "Propriétés du site de l'ouvrage",
   "SubstationsFreeProps": "Propriétés des sites de l'ouvrage",
   "AddFreePropCrit": "Ajouter un filtrage par propriété",

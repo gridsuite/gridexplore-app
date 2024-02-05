@@ -11,14 +11,13 @@ import {
 import { areArrayElementsUnique } from '../../../../utils/functions';
 import { EQUIPMENT_TYPE, FILTER_TYPE } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
-import FilterFreeProperties from './filter-free-properties';
 import {
     PROPERTY_NAME,
     PROPERTY_VALUES,
     PROPERTY_VALUES_1,
     PROPERTY_VALUES_2,
 } from './filter-property';
-import FilterSubstationProperties from './filter-substation-properties';
+import FilterSubstationProperties from './filter-free-properties';
 
 export const SUBSTATION_FILTER_PROPERTIES = 'substationFreeProperties';
 export const FREE_FILTER_PROPERTIES = 'freeProperties';
@@ -146,9 +145,17 @@ function FilterProperties() {
                     <FormattedMessage id={'FreePropsCrit'}>
                         {(txt) => <h3>{txt}</h3>}
                     </FormattedMessage>
+                    {(isForSubstation || isForLoad) && (
+                        <FilterSubstationProperties
+                            freePropertiesType={FREE_FILTER_PROPERTIES}
+                        />
+                    )}
+                    {!isForSubstation && (
+                        <FilterSubstationProperties
+                            freePropertiesType={SUBSTATION_FILTER_PROPERTIES}
+                        />
+                    )}
                 </Grid>
-                {(isForSubstation || isForLoad) && <FilterFreeProperties />}
-                {!isForSubstation && <FilterSubstationProperties />}
             </Grid>
         )
     );
