@@ -34,6 +34,10 @@ export const EXPERT_FILTER_EQUIPMENTS = {
         id: 'SUBSTATION',
         label: 'Substations',
     },
+    SHUNT_COMPENSATOR: {
+        id: 'SHUNT_COMPENSATOR',
+        label: 'ShuntCompensators',
+    },
 };
 
 export const ENERGY_SOURCE_OPTIONS = [
@@ -43,6 +47,11 @@ export const ENERGY_SOURCE_OPTIONS = [
     { name: 'THERMAL', label: 'Thermal' },
     { name: 'SOLAR', label: 'Solar' },
     { name: 'OTHER', label: 'Other' },
+];
+
+export const SHUNT_COMPENSATOR_TYPE_OPTIONS = [
+    { name: 'CAPACITOR', label: 'Capacitor' },
+    { name: 'REACTOR', label: 'Reactor' },
 ];
 
 // customName is used to export to the server
@@ -239,6 +248,50 @@ export const FIELDS_OPTIONS = {
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
+    MAXIMUM_SECTION_COUNT: {
+        name: FieldType.MAXIMUM_SECTION_COUNT,
+        label: 'maximumSectionCount',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    SECTION_COUNT: {
+        name: FieldType.SECTION_COUNT,
+        label: 'sectionCount',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    SHUNT_COMPENSATOR_TYPE: {
+        name: FieldType.SHUNT_COMPENSATOR_TYPE,
+        label: 'shuntCompensatorType',
+        dataType: DataType.ENUM,
+        values: SHUNT_COMPENSATOR_TYPE_OPTIONS,
+        valueEditorType: 'select',
+        defaultValue: 'CAPACITOR',
+    },
+    MAX_Q_AT_NOMINAL_V: {
+        name: FieldType.MAX_Q_AT_NOMINAL_V,
+        label: 'maxQAtNominalV',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    SWITCHED_ON_Q_AT_NOMINAL_V: {
+        name: FieldType.SWITCHED_ON_Q_AT_NOMINAL_V,
+        label: 'SwitchedOnMaxQAtNominalV',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    MAX_SUSCEPTANCE: {
+        name: FieldType.MAX_SUSCEPTANCE,
+        label: 'maxSusceptance',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    SWITCHED_ON_SUSCEPTANCE: {
+        name: FieldType.SWITCHED_ON_SUSCEPTANCE,
+        label: 'SwitchedOnMaxSusceptance',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
 };
 
 export const fields: Record<string, Field[]> = {
@@ -270,6 +323,21 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.COUNTRY,
         FIELDS_OPTIONS.P0,
         FIELDS_OPTIONS.Q0,
+    ],
+    SHUNT_COMPENSATOR: [
+        FIELDS_OPTIONS.ID,
+        FIELDS_OPTIONS.NAME,
+        FIELDS_OPTIONS.VOLTAGE_LEVEL_ID,
+        FIELDS_OPTIONS.NOMINAL_VOLTAGE,
+        FIELDS_OPTIONS.COUNTRY,
+        FIELDS_OPTIONS.MAXIMUM_SECTION_COUNT,
+        FIELDS_OPTIONS.SECTION_COUNT,
+        FIELDS_OPTIONS.SHUNT_COMPENSATOR_TYPE,
+        FIELDS_OPTIONS.MAX_Q_AT_NOMINAL_V,
+        FIELDS_OPTIONS.SWITCHED_ON_Q_AT_NOMINAL_V,
+        FIELDS_OPTIONS.MAX_SUSCEPTANCE,
+        FIELDS_OPTIONS.SWITCHED_ON_SUSCEPTANCE,
+        FIELDS_OPTIONS.CONNECTED,
     ],
     BATTERY: [
         FIELDS_OPTIONS.ID,

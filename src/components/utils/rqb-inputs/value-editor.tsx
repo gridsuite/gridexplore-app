@@ -24,7 +24,10 @@ const ValueEditor = (props: ValueEditorProps) => {
     if (props.field === FieldType.COUNTRY) {
         return <CountryValueEditor {...props} />;
     }
-    if (props.field === FieldType.ENERGY_SOURCE) {
+    if (
+        props.field === FieldType.ENERGY_SOURCE ||
+        props.field === FieldType.SHUNT_COMPENSATOR_TYPE
+    ) {
         return <TranslatedValueEditor {...props} />;
     }
     if (props.field === FieldType.ID || props.field === FieldType.NAME) {
