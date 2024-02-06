@@ -32,6 +32,7 @@ import {
     duplicateCase,
     duplicateContingencyList,
     duplicateFilter,
+    duplicateModification,
     duplicateParameter,
     duplicateStudy,
     fetchElementsInfos,
@@ -253,6 +254,17 @@ const ContentContextualMenu = (props) => {
                                 });
                                 handleCloseDialog();
                                 break;
+                            case ElementType.MODIFICATION:
+                                duplicateModification(
+                                    newItemName,
+                                    activeElement.description,
+                                    activeElement.elementUuid,
+                                    selectedDirectory.elementUuid
+                                ).catch((error) => {
+                                    handleDuplicateError(error.message);
+                                });
+                                handleCloseDialog();
+                                break;
                             case ElementType.VOLTAGE_INIT_PARAMETERS:
                                 duplicateParameter(
                                     newItemName,
@@ -464,6 +476,7 @@ const ContentContextualMenu = (props) => {
                 selectedElements[0].type === ElementType.STUDY ||
                 selectedElements[0].type === ElementType.CONTINGENCY_LIST ||
                 selectedElements[0].type === ElementType.FILTER ||
+                selectedElements[0].type === ElementType.MODIFICATION ||
                 selectedElements[0].type ===
                     ElementType.VOLTAGE_INIT_PARAMETERS)
         );
