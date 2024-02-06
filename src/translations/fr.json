@@ -50,7 +50,7 @@
   "CASE": "Situation",
   "validate": "Valider",
   "nameAlreadyUsed": "Ce nom est déjà utilisé",
-  "unsuportedItem": "Cet élément n'est pas supporté",
+  "unsupportedItem": "Cet élément n'est pas supporté",
   "move": "Déplacer",
   "delete": "Supprimer",
   "rename": "Renommer",

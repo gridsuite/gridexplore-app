@@ -158,6 +158,7 @@ const ContentContextualMenu = (props) => {
                 case ElementType.CASE:
                 case ElementType.STUDY:
                 case ElementType.FILTER:
+                case ElementType.MODIFICATION:
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.CONTINGENCY_LIST:
                     console.info(
@@ -179,7 +180,7 @@ const ContentContextualMenu = (props) => {
 
                 default:
                     handleLastError(
-                        intl.formatMessage({ id: 'unsuportedItem' })
+                        intl.formatMessage({ id: 'unsupportedItem' })
                     );
             }
         }
@@ -281,7 +282,9 @@ const ContentContextualMenu = (props) => {
                                 break;
                             default:
                                 handleLastError(
-                                    intl.formatMessage({ id: 'unsuportedItem' })
+                                    intl.formatMessage({
+                                        id: 'unsupportedItem',
+                                    })
                                 );
                         }
                     } else {
