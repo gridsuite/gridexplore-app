@@ -414,7 +414,7 @@ export function createStudy(
     duplicateCase,
     parentDirectoryUuid,
     importParameters,
-    caseFormat,
+    caseFormat
 ) {
     console.info('Creating a new study...');
     let urlSearchParams = new URLSearchParams();

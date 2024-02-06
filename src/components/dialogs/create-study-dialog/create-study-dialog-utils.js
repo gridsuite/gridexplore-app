@@ -5,7 +5,7 @@ import {
     DESCRIPTION,
     FORMATTED_CASE_PARAMETERS,
     STUDY_NAME,
-    DIRECTORY, CASE_FORMAT
+    DIRECTORY,
 } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 

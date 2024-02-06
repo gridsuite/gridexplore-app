@@ -133,12 +133,10 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const getCurrentCaseImportParams = useCallback(
         (uuid) => {
-            getCaseImportParameters(uuid)// (jamal)
+            getCaseImportParameters(uuid)
                 .then((result) => {
-                    console.log('debug', result);
                     const formattedParams = formatCaseImportParameters(
-                        result.parameters // {
-                        //result.format
+                        result.parameters
                     );
                     setValue(
                         CURRENT_PARAMETERS,
@@ -149,7 +147,6 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         shouldDirty: true,
                     });
                     setCaseFormat(result.formatName);
-
                 })
                 .catch(() => {
                     setValue(FORMATTED_CASE_PARAMETERS, []);
