@@ -7,7 +7,7 @@
 import { useForm } from 'react-hook-form';
 import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
 import {
     createStudy,
@@ -79,6 +79,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
+    const [caseFormat, setCaseFormat] = useState(null);
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -132,10 +133,12 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const getCurrentCaseImportParams = useCallback(
         (uuid) => {
-            getCaseImportParameters(uuid)
+            getCaseImportParameters(uuid)// (jamal)
                 .then((result) => {
+                    console.log('debug', result);
                     const formattedParams = formatCaseImportParameters(
-                        result.parameters
+                        result.parameters // {
+                        //result.format
                     );
                     setValue(
                         CURRENT_PARAMETERS,
@@ -145,9 +148,12 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     setValue(FORMATTED_CASE_PARAMETERS, formattedParams, {
                         shouldDirty: true,
                     });
+                    setCaseFormat(result.formatName);
+
                 })
                 .catch(() => {
                     setValue(FORMATTED_CASE_PARAMETERS, []);
+                    setCaseFormat(null);
                     setError(`root.${API_CALL}`, {
                         type: 'parameterLoadingProblem',
                         message: intl.formatMessage({
@@ -198,6 +204,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             owner: userId,
             lastModifiedBy: userId,
             uploading: true,
+            caseFormat,
         };
 
         createStudy(
@@ -206,7 +213,8 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             caseUuid,
             !!providedExistingCase,
             directory,
-            currentParameters ? JSON.stringify(currentParameters) : ''
+            currentParameters ? JSON.stringify(currentParameters) : '',
+            caseFormat
         )
             .then(() => {
                 dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
