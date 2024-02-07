@@ -1,5 +1,7 @@
 {
   "button.replace": "Remplacer",
+  "button.changeType": "Modifier",
+  "button.changeOperator": "Modifier",
   "close": "Fermer",
   "parameters": "Paramètres",
   "paramsChangingError": "Une erreur est survenue lors de la modification des paramètres",
@@ -187,8 +189,8 @@
   "serverConnectionFailed": "Échec de connexion avec le serveur. Veuillez réessayer ultérieurement",
   "invalidFormatOrName": "Format ou nom du fichier importé non valide",
   "parameterLoadingProblem": "Problème de chargement des paramètres",
-  "changeOperatorMessage": "Voulez-vous changer l'opérateur ? Le nouvel opérateur s'appliquera sur toutes les règles déjà créées dans le groupe.",
-  "changeTypeMessage": "Voulez-vous changer le type ? La précédente configuration sera perdue",
+  "changeOperatorMessage": "L'opérateur sera modifié et s'appliquera sur toutes les règles déjà créées dans le groupe.",
+  "changeTypeMessage": "Le type sera modifié et la précédente configuration sera perdue.",
   "keepCSVDataMessage": "Voulez-vous remplacer la liste existante ou y ajouter les nouvelles données ?",
   "add": "Ajouter",
   "replace": "Remplacer",

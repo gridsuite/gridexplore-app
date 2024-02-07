@@ -23,6 +23,7 @@ const CombinatorSelector = (props: CombinatorSelectorProps) => {
         <>
             <PopupConfirmationDialog
                 message={'changeOperatorMessage'}
+                validateButtonLabel={'button.changeOperator'}
                 openConfirmationPopup={openPopup}
                 setOpenConfirmationPopup={setOpenPopup}
                 handlePopupConfirmation={handlePopupConfirmation}

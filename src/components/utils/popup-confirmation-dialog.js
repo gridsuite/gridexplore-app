@@ -17,6 +17,7 @@ import { CancelButton } from '@gridsuite/commons-ui';
 
 const PopupConfirmationDialog = ({
     message,
+    validateButtonLabel,
     openConfirmationPopup,
     setOpenConfirmationPopup,
     handlePopupConfirmation,
@@ -37,11 +38,21 @@ const PopupConfirmationDialog = ({
             <DialogActions>
                 <CancelButton onClick={() => setOpenConfirmationPopup(false)} />
                 <Button onClick={handlePopupConfirmation} variant="outlined">
-                    <FormattedMessage id="validate" />
+                    <FormattedMessage
+                        id={
+                            validateButtonLabel
+                                ? validateButtonLabel
+                                : 'validate'
+                        }
+                    />
                 </Button>
             </DialogActions>
         </Dialog>
     );
+};
+
+PopupConfirmationDialog.defaultProps = {
+    validateButtonLabel: undefined,
 };
 
 export default PopupConfirmationDialog;
