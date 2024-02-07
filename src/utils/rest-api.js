@@ -35,6 +35,14 @@ function getToken() {
     return state.user.id_token;
 }
 
+function getUrlWithToken(baseUrl) {
+    if (baseUrl.includes('?')) {
+        return baseUrl + '&access_token=' + getToken();
+    } else {
+        return baseUrl + '?access_token=' + getToken();
+    }
+}
+
 export function connectNotificationsWsUpdateConfig() {
     const webSocketBaseUrl = document.baseURI
         .replace(/^http:\/\//, 'ws://')
@@ -45,12 +53,31 @@ export function connectNotificationsWsUpdateConfig() {
         '/notify?appName=' +
         APP_NAME;
 
-    const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => webSocketUrl + '&access_token=' + getToken()
+    const reconnectingWebSocket = new ReconnectingWebSocket(() =>
+        getUrlWithToken(webSocketUrl)
     );
     reconnectingWebSocket.onopen = function () {
         console.info(
             'Connected Websocket update config ui ' + webSocketUrl + ' ...'
+        );
+    };
+    return reconnectingWebSocket;
+}
+
+export function connectGlobalNotificationsWs() {
+    const webSocketBaseUrl = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const webSocketUrl =
+        webSocketBaseUrl + PREFIX_CONFIG_NOTIFICATION_WS + '/global';
+
+    const reconnectingWebSocket = new ReconnectingWebSocket(() =>
+        getUrlWithToken(webSocketUrl)
+    );
+
+    reconnectingWebSocket.onopen = function () {
+        console.info(
+            'Connected Websocket for global messages ' + webSocketUrl + ' ...'
         );
     };
     return reconnectingWebSocket;

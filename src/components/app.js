@@ -34,6 +34,7 @@ import { useMatch } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
 import {
+    connectGlobalNotificationsWs,
     connectNotificationsWsUpdateConfig,
     fetchAuthorizationCodeFlowFeatureFlag,
     fetchConfigParameter,
@@ -53,6 +54,7 @@ import Grid from '@mui/material/Grid';
 import TreeViewsContainer from './tree-views-container';
 import DirectoryContent from './directory-content';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
+import { closeSnackbar, enqueueSnackbar } from 'notistack';
 
 const noUserManager = { instance: null, error: null };
 
@@ -72,6 +74,12 @@ const App = () => {
     );
 
     const [userManager, setUserManager] = useState(noUserManager);
+
+    const [maintenanceSnackBarId, setMaintenanceSnackBarId] = useState(null);
+
+    const HEADER_MAINTENANCE = 'maintenance';
+
+    const HEADER_CANCEL_MAINTENANCE = 'cancelMaintenance';
 
     const navigate = useNavigate();
 
@@ -148,6 +156,53 @@ const App = () => {
         })
     );
 
+    const connectGlobalNotifications = useCallback(() => {
+        const ws = connectGlobalNotificationsWs();
+        ws.onmessage = function (event) {
+            let eventData = JSON.parse(event.data);
+            if (eventData.headers.messageType === HEADER_MAINTENANCE) {
+                if (eventData.headers.duration) {
+                    setMaintenanceSnackBarId(
+                        enqueueSnackbar(eventData.payload, {
+                            autoHideDuration: eventData.headers.duration * 1000,
+                            variant: 'info',
+                            style: {
+                                whiteSpace: 'pre-line',
+                            },
+                            anchorOrigin: {
+                                vertical: 'top',
+                                horizontal: 'center',
+                            },
+                        })
+                    );
+                } else {
+                    setMaintenanceSnackBarId(
+                        enqueueSnackbar(eventData.payload, {
+                            variant: 'info',
+                            persist: true,
+                            style: {
+                                whiteSpace: 'pre-line',
+                            },
+                            anchorOrigin: {
+                                vertical: 'top',
+                                horizontal: 'center',
+                            },
+                        })
+                    );
+                }
+            } else if (
+                eventData.headers.messageType === HEADER_CANCEL_MAINTENANCE
+            ) {
+                //nothing happens if the id is null or if the snackbar it references is already closed
+                closeSnackbar(maintenanceSnackBarId);
+            }
+        };
+        ws.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        return ws;
+    }, [maintenanceSnackBarId]);
+
     useEffect(() => {
         fetchAuthorizationCodeFlowFeatureFlag()
             .then((authorizationCodeFlowEnabled) => {
@@ -194,8 +249,10 @@ const App = () => {
                 );
 
             const ws = connectNotificationsUpdateConfig();
+            const ws2 = connectGlobalNotifications();
             return function () {
                 ws.close();
+                ws2.close();
             };
         }
     }, [
@@ -204,6 +261,7 @@ const App = () => {
         updateParams,
         snackError,
         connectNotificationsUpdateConfig,
+        connectGlobalNotifications,
     ]);
 
     return (
