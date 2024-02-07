@@ -320,13 +320,13 @@ export const FIELDS_OPTIONS = {
     },
     NOMINAL_VOLTAGE_1: {
         name: FieldType.NOMINAL_VOLTAGE_1,
-        label: 'nominalVoltage1',
+        label: 'nominalVoltage1Or',
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
     NOMINAL_VOLTAGE_2: {
         name: FieldType.NOMINAL_VOLTAGE_2,
-        label: 'nominalVoltage2',
+        label: 'nominalVoltage2Ex',
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
