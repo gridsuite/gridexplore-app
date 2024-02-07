@@ -102,13 +102,14 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
 };
 
 function changeValueUnit(value: any, field: FieldType) {
-    if (microUnits.includes(field as FieldType)) {
+    if (microUnits.includes(field)) {
         if (!Array.isArray(value)) {
             return microUnitToUnit(value);
         } else {
             return value.map((a: number) => microUnitToUnit(a));
         }
     }
+    return value;
 }
 
 export function exportExpertRules(
@@ -116,13 +117,6 @@ export function exportExpertRules(
 ): RuleGroupTypeExport {
     function transformRule(rule: CustomRuleType): RuleTypeExport {
         const isValueAnArray = Array.isArray(rule.value);
-
-        let updatedValue = rule.value;
-
-        if (rule.operator !== OperatorType.EXISTS) {
-            updatedValue = changeValueUnit(rule.value, rule.field as FieldType);
-        }
-
         return {
             field: rule.field as FieldType,
             operator: Object.values(OPERATOR_OPTIONS).find(
@@ -130,9 +124,11 @@ export function exportExpertRules(
             )?.customName as OperatorType,
             value:
                 !isValueAnArray && rule.operator !== OperatorType.EXISTS
-                    ? updatedValue
+                    ? changeValueUnit(rule.value, rule.field as FieldType)
                     : undefined,
-            values: isValueAnArray ? rule.value : undefined,
+            values: isValueAnArray
+                ? changeValueUnit(rule.value, rule.field as FieldType)
+                : undefined,
             dataType: getDataType(rule.field) as DataType,
         };
     }
@@ -165,10 +161,11 @@ export function importExpertRules(
             // values is a Set on server side, so need to sort
             if (rule.dataType === DataType.NUMBER) {
                 return rule.values
-                    .map((value) => {
+                    .map((value) => parseFloat(value as string))
+                    .map((numberValue) => {
                         return microUnits.includes(rule.field)
-                            ? unitToMicroUnit(parseFloat(value as string))!
-                            : parseFloat(value as string);
+                            ? unitToMicroUnit(numberValue)!
+                            : numberValue;
                     })
                     .sort((a, b) => a - b);
             } else {
