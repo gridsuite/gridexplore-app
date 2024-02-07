@@ -32,9 +32,17 @@ import {
     RuleGroupTypeExport,
     RuleTypeExport,
 } from './expert-filter.type';
+import { microUnitToUnit, unitToMicroUnit } from 'utils/conversion-utils';
 
 type CustomRuleType = RuleType & { dataType: DataType };
 type CustomRuleGroupType = RuleGroupType & { dataType: DataType };
+
+const microUnits = [
+    FieldType.SHUNT_CONDUCTANCE_1,
+    FieldType.SHUNT_CONDUCTANCE_2,
+    FieldType.SHUNT_SUSCEPTANCE_1,
+    FieldType.SHUNT_SUSCEPTANCE_2,
+];
 
 const getDataType = (fieldName: string) => {
     const field = Object.values(FIELDS_OPTIONS).find(
@@ -93,11 +101,28 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
     return defaultOperators;
 };
 
+function changeValueUnit(value: any, field: FieldType) {
+    if (microUnits.includes(field as FieldType)) {
+        if (!Array.isArray(value)) {
+            return microUnitToUnit(value);
+        } else {
+            return value.map((a: number) => microUnitToUnit(a));
+        }
+    }
+}
+
 export function exportExpertRules(
     query: CustomRuleGroupType
 ): RuleGroupTypeExport {
     function transformRule(rule: CustomRuleType): RuleTypeExport {
         const isValueAnArray = Array.isArray(rule.value);
+
+        let updatedValue = rule.value;
+
+        if (rule.operator !== OperatorType.EXISTS) {
+            updatedValue = changeValueUnit(rule.value, rule.field as FieldType);
+        }
+
         return {
             field: rule.field as FieldType,
             operator: Object.values(OPERATOR_OPTIONS).find(
@@ -105,7 +130,7 @@ export function exportExpertRules(
             )?.customName as OperatorType,
             value:
                 !isValueAnArray && rule.operator !== OperatorType.EXISTS
-                    ? rule.value
+                    ? updatedValue
                     : undefined,
             values: isValueAnArray ? rule.value : undefined,
             dataType: getDataType(rule.field) as DataType,
@@ -140,13 +165,19 @@ export function importExpertRules(
             // values is a Set on server side, so need to sort
             if (rule.dataType === DataType.NUMBER) {
                 return rule.values
-                    .map((value) => parseFloat(value as string))
+                    .map((value) => {
+                        return microUnits.includes(rule.field)
+                            ? unitToMicroUnit(parseFloat(value as string))!
+                            : parseFloat(value as string);
+                    })
                     .sort((a, b) => a - b);
             } else {
                 return rule.values.sort();
             }
         } else {
-            return rule.value;
+            return microUnits.includes(rule.field)
+                ? unitToMicroUnit(parseFloat(rule.value as string))
+                : rule.value;
         }
     }
 
