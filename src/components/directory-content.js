@@ -620,19 +620,6 @@ const DirectoryContent = () => {
         },
         [isParameterTypeElement]
     );
-    /*function getElementIcon(objectType) {
-        if (objectType === ElementType.STUDY) {
-            return <PhotoLibraryIcon sx={styles.icon} />;
-        } else if (objectType === ElementType.CONTINGENCY_LIST) {
-            return <OfflineBoltIcon sx={styles.icon} />;
-        } else if (objectType === ElementType.FILTER) {
-            return <ArticleIcon sx={styles.icon} />;
-        } else if (objectType === ElementType.CASE) {
-            return <PhotoIcon sx={styles.icon} />;
-        } else if (isParameterTypeElement(objectType)) {
-            return <SettingsIcon sx={styles.icon} />;
-        }
-    }*/
 
     const getDisplayedElementName = useCallback(
         (cellData) => {

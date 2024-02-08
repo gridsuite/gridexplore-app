@@ -257,24 +257,10 @@ const ContentContextualMenu = (props) => {
                                 break;
                             case ElementType.VOLTAGE_INIT_PARAMETERS:
                             case ElementType.SECURITY_ANALYSIS_PARAMETERS:
-                                duplicateParameter(
-                                    newItemName,
-                                    activeElement.type,
-                                    activeElement.elementUuid,
-                                    selectedDirectory.elementUuid
-                                )
-                                    .then(() => {
-                                        handleCloseDialog();
-                                    })
-                                    .catch((error) => {
-                                        handleDuplicateError(error.message);
-                                    });
-                                break;
-
                             case ElementType.LOADFLOW_PARAMETERS:
                                 duplicateParameter(
                                     newItemName,
-                                    ElementType.LOADFLOW_PARAMETERS,
+                                    activeElement.type,
                                     activeElement.elementUuid,
                                     selectedDirectory.elementUuid
                                 )
