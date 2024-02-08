@@ -17,10 +17,7 @@ import {
     VALUE_1,
     VALUE_2,
 } from '../../../utils/field-constants';
-import {
-    FREE_FILTER_PROPERTIES,
-    SUBSTATION_FILTER_PROPERTIES,
-} from './filter-properties';
+import { FreePropertiesTypes } from './filter-properties';
 import {
     PROPERTY_NAME,
     PROPERTY_VALUES,
@@ -90,8 +87,9 @@ export const backToFrontTweak = (response) => {
         [EQUIPMENT_TYPE]: response[EQUIPMENT_TYPE],
         ...getCriteriaBasedFormData(response.equipmentFilterForm, {
             [ENERGY_SOURCE]: response.equipmentFilterForm[ENERGY_SOURCE],
-            [SUBSTATION_FILTER_PROPERTIES]: filterSubstationProperties,
-            [FREE_FILTER_PROPERTIES]: filterFreeProperties,
+            [FreePropertiesTypes.SUBSTATION_FILTER_PROPERTIES]:
+                filterSubstationProperties,
+            [FreePropertiesTypes.FREE_FILTER_PROPERTIES]: filterFreeProperties,
         }),
     };
     return ret;
@@ -110,7 +108,9 @@ export const backToFrontTweak = (response) => {
  */
 export const frontToBackTweak = (id, filter) => {
     const filterSubstationProperties =
-        filter[CRITERIA_BASED][SUBSTATION_FILTER_PROPERTIES];
+        filter[CRITERIA_BASED][
+            FreePropertiesTypes.SUBSTATION_FILTER_PROPERTIES
+        ];
     const ret = { id, type: FilterType.CRITERIA_BASED.id };
     const eff = {
         [EQUIPMENT_TYPE]: filter[EQUIPMENT_TYPE],
@@ -118,7 +118,7 @@ export const frontToBackTweak = (id, filter) => {
     };
     // in the back end we store everything in a field called equipmentFilterForm
     ret.equipmentFilterForm = eff;
-    delete eff[SUBSTATION_FILTER_PROPERTIES];
+    delete eff[FreePropertiesTypes.SUBSTATION_FILTER_PROPERTIES];
     const props = {};
     const props1 = {};
     const props2 = {};
@@ -140,9 +140,10 @@ export const frontToBackTweak = (id, filter) => {
     eff.freeProperties1 = props1;
     eff.freeProperties2 = props2;
 
-    const filterFreeProperties = filter[CRITERIA_BASED][FREE_FILTER_PROPERTIES];
+    const filterFreeProperties =
+        filter[CRITERIA_BASED][FreePropertiesTypes.FREE_FILTER_PROPERTIES];
     // in the back end we store everything in a field called equipmentFilterForm
-    delete eff[FREE_FILTER_PROPERTIES];
+    delete eff[FreePropertiesTypes.FREE_FILTER_PROPERTIES];
     const freeProps = {};
     filterFreeProperties.forEach((prop) => {
         const values = prop[PROPERTY_VALUES];

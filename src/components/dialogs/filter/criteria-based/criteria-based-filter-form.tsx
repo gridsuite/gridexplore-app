@@ -1,8 +1,7 @@
 import React from 'react';
 import FilterProperties, {
     filterPropertiesYupSchema,
-    FREE_FILTER_PROPERTIES,
-    SUBSTATION_FILTER_PROPERTIES,
+    FreePropertiesTypes,
 } from './filter-properties';
 import { CRITERIA_BASED, ENERGY_SOURCE } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
@@ -21,8 +20,8 @@ export const criteriaBasedFilterSchema = getCriteriaBasedSchema({
 
 export const criteriaBasedFilterEmptyFormData = getCriteriaBasedFormData(null, {
     [ENERGY_SOURCE]: null,
-    [SUBSTATION_FILTER_PROPERTIES]: [],
-    [FREE_FILTER_PROPERTIES]: [],
+    [FreePropertiesTypes.SUBSTATION_FILTER_PROPERTIES]: [],
+    [FreePropertiesTypes.FREE_FILTER_PROPERTIES]: [],
 });
 
 function CriteriaBasedFilterForm() {

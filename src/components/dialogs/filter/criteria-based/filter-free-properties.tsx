@@ -18,10 +18,7 @@ import {
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { Hvdc, Line } from 'utils/equipment-types';
-import {
-    FREE_FILTER_PROPERTIES,
-    SUBSTATION_FILTER_PROPERTIES,
-} from './filter-properties';
+import { FreePropertiesTypes } from './filter-properties';
 import FilterProperty, {
     PROPERTY_NAME,
     PROPERTY_VALUES,
@@ -48,10 +45,10 @@ function fetchPredefinedProperties() {
 }
 
 interface FilterFreePropertiesProps {
-    freePropertiesType: string;
+    freePropertiesType: FreePropertiesTypes;
 }
 
-function FilterSubstationProperties({
+function FilterFreeProperties({
     freePropertiesType,
 }: FilterFreePropertiesProps) {
     const { snackError } = useSnackMessage();
@@ -62,7 +59,7 @@ function FilterSubstationProperties({
     const isForLineOrHvdcLineSubstation =
         (watchEquipmentType === Line.type ||
             watchEquipmentType === Hvdc.type) &&
-        freePropertiesType === SUBSTATION_FILTER_PROPERTIES;
+        freePropertiesType === FreePropertiesTypes.SUBSTATION_FILTER_PROPERTIES;
 
     const fieldName = `${CRITERIA_BASED}.${freePropertiesType}`;
 
@@ -106,7 +103,7 @@ function FilterSubstationProperties({
         : [{ name: PROPERTY_VALUES, label: 'PropertyValues' }];
 
     const title = useMemo<string>(() => {
-        return freePropertiesType === FREE_FILTER_PROPERTIES
+        return freePropertiesType === FreePropertiesTypes.FREE_FILTER_PROPERTIES
             ? 'FreeProps'
             : 'SubstationFreeProps';
     }, [freePropertiesType]);
@@ -129,7 +126,7 @@ function FilterSubstationProperties({
                     />
                 </ListItem>
             ))}
-            <Grid item>
+            <Grid item xs={5}>
                 <Button fullWidth startIcon={<AddIcon />} onClick={addNewProp}>
                     <FormattedMessage id={'AddFreePropCrit'} />
                 </Button>
@@ -141,4 +138,4 @@ function FilterSubstationProperties({
     );
 }
 
-export default FilterSubstationProperties;
+export default FilterFreeProperties;
