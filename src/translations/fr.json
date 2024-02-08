@@ -167,8 +167,6 @@
   "shuntSusceptance1": "Susceptance parallèle Or (μS)",
   "shuntConductance2": "Conductance parallèle Ex (μS)",
   "shuntSusceptance2": "Susceptance parallèle Ex (μS)",
-
-  "cannotPasteTextAsNominalVoltage": "Le texte copié ne peut pas être utilisé pour un nombre positif : ",
   "cannotRetrieveContingencyList": "Erreur d'accès à la liste d'aléas : ",
   "cannotRetrieveFilter": "Erreur d'accès au filtre : ",
   "FreePropsCrit": "Filtrage par propriétés",
