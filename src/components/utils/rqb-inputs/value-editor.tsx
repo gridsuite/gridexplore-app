@@ -21,7 +21,11 @@ const ValueEditor = (props: ValueEditorProps) => {
         // No value needed for this operator
         return null;
     }
-    if (props.field === FieldType.COUNTRY) {
+    if (
+        [FieldType.COUNTRY, FieldType.COUNTRY_1, FieldType.COUNTRY_2].includes(
+            props.field as FieldType
+        )
+    ) {
         return <CountryValueEditor {...props} />;
     }
     if (
