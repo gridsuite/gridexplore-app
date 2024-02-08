@@ -8,6 +8,7 @@ const InputWithPopupConfirmation = ({
     shouldOpenPopup, // condition to open popup confirmation
     resetOnConfirmation, // function to reset values in your form on confirmation,
     message,
+    validateButtonLabel,
     ...props
 }) => {
     const [newValue, setNewValue] = useState(null);
@@ -47,9 +48,14 @@ const InputWithPopupConfirmation = ({
                 openConfirmationPopup={openPopup}
                 setOpenConfirmationPopup={setOpenPopup}
                 handlePopupConfirmation={handlePopupConfirmation}
+                validateButtonLabel={validateButtonLabel}
             />
         </>
     );
+};
+
+InputWithPopupConfirmation.defaultProps = {
+    validateButtonLabel: undefined,
 };
 
 export default InputWithPopupConfirmation;

@@ -42,6 +42,7 @@ const CriteriaBasedForm = ({ equipments, defaultValues }) => {
             shouldOpenPopup={openConfirmationPopup}
             resetOnConfirmation={handleResetOnConfirmation}
             message={'changeTypeMessage'}
+            validateButtonLabel={'button.changeType'}
         />
     );
 

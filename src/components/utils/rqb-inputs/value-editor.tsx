@@ -21,10 +21,17 @@ const ValueEditor = (props: ValueEditorProps) => {
         // No value needed for this operator
         return null;
     }
-    if (props.field === FieldType.COUNTRY) {
+    if (
+        [FieldType.COUNTRY, FieldType.COUNTRY_1, FieldType.COUNTRY_2].includes(
+            props.field as FieldType
+        )
+    ) {
         return <CountryValueEditor {...props} />;
     }
-    if (props.field === FieldType.ENERGY_SOURCE) {
+    if (
+        props.field === FieldType.ENERGY_SOURCE ||
+        props.field === FieldType.SHUNT_COMPENSATOR_TYPE
+    ) {
         return <TranslatedValueEditor {...props} />;
     }
     if (props.field === FieldType.ID || props.field === FieldType.NAME) {
