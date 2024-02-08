@@ -42,6 +42,7 @@ import {
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
+    stashElements,
 } from '../../utils/rest-api';
 
 import { ContingencyListType, ElementType } from '../../utils/elementType';
@@ -319,6 +320,17 @@ const ContentContextualMenu = (props) => {
         undefined,
         deleteElementOnError,
         false
+    );
+
+    const handleStashElements = useCallback(
+        (elementsUuids) => {
+            stashElements(elementsUuids, true)
+                .catch((error) => {
+                    handleLastError(error.message);
+                })
+                .finally(() => handleCloseDialog());
+        },
+        [handleLastError, handleCloseDialog]
     );
 
     const moveElementErrorToString = useCallback(
@@ -646,10 +658,8 @@ const ContentContextualMenu = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         onClick={() =>
-                            deleteCB(
-                                selectedElements.map((e) => {
-                                    return [e.elementUuid];
-                                })
+                            handleStashElements(
+                                selectedElements.map((e) => e.elementUuid)
                             )
                         }
                         items={selectedElements}

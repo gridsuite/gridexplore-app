@@ -277,5 +277,6 @@
   "q0": "Constant Q",
   "vlNominalVoltage": "Voltage level nominal voltage",
   "descriptionModificationError": "An error when modifying the description",
-  "descriptionLimitError": "Description exceeds character limit"
+  "descriptionLimitError": "Description exceeds character limit",
+  "StashedElements": "Restore elements"
 }

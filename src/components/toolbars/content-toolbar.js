@@ -10,7 +10,11 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
-import { deleteElement, moveElementToDirectory } from '../../utils/rest-api';
+import {
+    deleteElement,
+    moveElementToDirectory,
+    stashElements,
+} from '../../utils/rest-api';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 
@@ -80,6 +84,17 @@ const ContentToolbar = (props) => {
         undefined,
         deleteElementOnError,
         false
+    );
+
+    const handleStashElements = useCallback(
+        (elementsUuids) => {
+            stashElements(elementsUuids, true)
+                .catch((error) => {
+                    handleLastError(error.message);
+                })
+                .finally(() => handleCloseDialog());
+        },
+        [handleLastError, handleCloseDialog]
     );
 
     const moveElementErrorToString = useCallback(
@@ -200,10 +215,8 @@ const ContentToolbar = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         onClick={() =>
-                            deleteCB(
-                                selectedElements.map((e) => {
-                                    return [e.elementUuid];
-                                })
+                            handleStashElements(
+                                selectedElements.map((e) => e.elementUuid)
                             )
                         }
                         items={selectedElements}

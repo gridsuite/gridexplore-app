@@ -261,6 +261,15 @@ export function deleteElement(elementUuid) {
     });
 }
 
+export function deleteElements(elementUuids) {
+    console.info("Deleting element %s'", elementUuids);
+    const fetchParams =
+        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements?ids=` + elementUuids;
+    return backendFetch(fetchParams, {
+        method: 'delete',
+    });
+}
+
 export function moveElementToDirectory(elementUuid, directoryUuid) {
     console.info(
         'Moving element %s to directory %s',
@@ -297,7 +306,6 @@ export function updateAccessRights(elementUuid, isPrivate) {
 }
 
 export function updateElement(elementUuid, element) {
-    console.log('element : ', element);
     console.info('Updating element info for ' + elementUuid);
     const updateAccessRightUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${elementUuid}`;
@@ -1020,4 +1028,36 @@ export function getServersInfos() {
         console.error('Error while fetching the servers infos : ' + reason);
         return reason;
     });
+}
+
+export function stashElements(elementUuids, stash) {
+    console.info('Stashing elements: ' + elementUuids);
+
+    // Convert the boolean stash value to a string
+    const stashValue = stash.toString();
+
+    // Adjust the query parameter name to match the backend API
+    const updateAccessRightUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/elements/stash?stashElement=` +
+        stashValue +
+        '&ids=' +
+        elementUuids;
+
+    return backendFetch(updateAccessRightUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function restoreElements(ids) {}
+
+export function getStashedElements() {
+    console.info('get stashed elements');
+    const updateAccessRightUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/stash`;
+    return backendFetchJson(updateAccessRightUrl);
 }
