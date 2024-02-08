@@ -1,6 +1,9 @@
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
+import { useEffect, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
+import { fetchAppsAndUrls } from 'utils/rest-api';
 import { FilterType } from '../../../../utils/elementType';
 import {
     Hvdc,
@@ -22,6 +25,21 @@ import {
 export enum FreePropertiesTypes {
     SUBSTATION_FILTER_PROPERTIES = 'substationFreeProperties',
     FREE_FILTER_PROPERTIES = 'freeProperties',
+}
+
+function fetchPredefinedProperties() {
+    return fetchAppsAndUrls().then((res) => {
+        const studyMetadata = res.find(
+            (metadata: any) => metadata.name === 'Study'
+        );
+        if (!studyMetadata) {
+            return Promise.reject(
+                'Study entry could not be found in metadatas'
+            );
+        }
+
+        return studyMetadata?.predefinedEquipmentProperties?.substation;
+    });
 }
 
 function propertyValuesTest(
@@ -139,6 +157,19 @@ function FilterProperties() {
     });
     const isForSubstation = watchEquipmentType === Substation.type;
     const isForLoad = watchEquipmentType === Load.type;
+    const [fieldProps, setFieldProps] = useState({});
+
+    const { snackError } = useSnackMessage();
+
+    useEffect(() => {
+        fetchPredefinedProperties()
+            .then((p) => setFieldProps(p))
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message ?? error,
+                });
+            });
+    }, [snackError]);
 
     return (
         watchEquipmentType && (
@@ -153,6 +184,7 @@ function FilterProperties() {
                         freePropertiesType={
                             FreePropertiesTypes.FREE_FILTER_PROPERTIES
                         }
+                        predefined={fieldProps}
                     />
                 )}
                 {!isForSubstation && (
@@ -160,6 +192,7 @@ function FilterProperties() {
                         freePropertiesType={
                             FreePropertiesTypes.SUBSTATION_FILTER_PROPERTIES
                         }
+                        predefined={fieldProps}
                     />
                 )}
             </Grid>

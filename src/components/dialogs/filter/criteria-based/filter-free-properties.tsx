@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    ErrorInput,
-    FieldErrorAlert,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import { Button, Grid, ListItem } from '@mui/material';
 import {
     CRITERIA_BASED,
@@ -26,33 +22,17 @@ import FilterProperty, {
     PROPERTY_VALUES_2,
 } from './filter-property';
 import AddIcon from '@mui/icons-material/Add';
-import { useEffect, useMemo, useState } from 'react';
-import { fetchAppsAndUrls } from 'utils/rest-api';
-
-function fetchPredefinedProperties() {
-    return fetchAppsAndUrls().then((res) => {
-        const studyMetadata = res.find(
-            (metadata: any) => metadata.name === 'Study'
-        );
-        if (!studyMetadata) {
-            return Promise.reject(
-                'Study entry could not be found in metadatas'
-            );
-        }
-
-        return studyMetadata?.predefinedEquipmentProperties?.substation;
-    });
-}
+import { useMemo } from 'react';
 
 interface FilterFreePropertiesProps {
     freePropertiesType: FreePropertiesTypes;
+    predefined: Object;
 }
 
 function FilterFreeProperties({
     freePropertiesType,
+    predefined,
 }: FilterFreePropertiesProps) {
-    const { snackError } = useSnackMessage();
-
     const watchEquipmentType = useWatch({
         name: EQUIPMENT_TYPE,
     });
@@ -62,18 +42,6 @@ function FilterFreeProperties({
         freePropertiesType === FreePropertiesTypes.SUBSTATION_FILTER_PROPERTIES;
 
     const fieldName = `${CRITERIA_BASED}.${freePropertiesType}`;
-
-    const [fieldProps, setFieldProps] = useState({});
-
-    useEffect(() => {
-        fetchPredefinedProperties()
-            .then((p) => setFieldProps(p))
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message ?? error,
-                });
-            });
-    }, [snackError]);
 
     const {
         fields: filterProperties, // don't use it to access form data ! check doc,
@@ -110,7 +78,7 @@ function FilterFreeProperties({
 
     return (
         <>
-            <Grid item xs={12} spacing={0}>
+            <Grid item xs={12}>
                 <FormattedMessage id={title}>
                     {(title) => <h4>{title}</h4>}
                 </FormattedMessage>
@@ -120,7 +88,7 @@ function FilterFreeProperties({
                     <FilterProperty
                         index={index}
                         valuesFields={valuesFields}
-                        predefined={fieldProps}
+                        predefined={predefined}
                         handleDelete={remove}
                         propertyType={freePropertiesType}
                     />
