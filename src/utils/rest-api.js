@@ -444,7 +444,6 @@ export function duplicateStudy(
     studyDescription,
     sourceStudyUuid,
     parentDirectoryUuid
-    //(jamal) add case format here also ?
 ) {
     console.info('Duplicating a study...');
     let urlSearchParams = new URLSearchParams();
