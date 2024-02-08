@@ -256,23 +256,10 @@ const ContentContextualMenu = (props) => {
                                 handleCloseDialog();
                                 break;
                             case ElementType.VOLTAGE_INIT_PARAMETERS:
-                                duplicateParameter(
-                                    newItemName,
-                                    ElementType.VOLTAGE_INIT_PARAMETERS,
-                                    activeElement.elementUuid,
-                                    selectedDirectory.elementUuid
-                                )
-                                    .then(() => {
-                                        handleCloseDialog();
-                                    })
-                                    .catch((error) => {
-                                        handleDuplicateError(error.message);
-                                    });
-                                break;
                             case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                                 duplicateParameter(
                                     newItemName,
-                                    ElementType.SECURITY_ANALYSIS_PARAMETERS,
+                                    activeElement.type,
                                     activeElement.elementUuid,
                                     selectedDirectory.elementUuid
                                 )

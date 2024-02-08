@@ -32,9 +32,17 @@ import {
     RuleGroupTypeExport,
     RuleTypeExport,
 } from './expert-filter.type';
+import { microUnitToUnit, unitToMicroUnit } from 'utils/conversion-utils';
 
 type CustomRuleType = RuleType & { dataType: DataType };
 type CustomRuleGroupType = RuleGroupType & { dataType: DataType };
+
+const microUnits = [
+    FieldType.SHUNT_CONDUCTANCE_1,
+    FieldType.SHUNT_CONDUCTANCE_2,
+    FieldType.SHUNT_SUSCEPTANCE_1,
+    FieldType.SHUNT_SUSCEPTANCE_2,
+];
 
 const getDataType = (fieldName: string) => {
     const field = Object.values(FIELDS_OPTIONS).find(
@@ -93,6 +101,17 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
     return defaultOperators;
 };
 
+function changeValueUnit(value: any, field: FieldType) {
+    if (microUnits.includes(field)) {
+        if (!Array.isArray(value)) {
+            return microUnitToUnit(value);
+        } else {
+            return value.map((a: number) => microUnitToUnit(a));
+        }
+    }
+    return value;
+}
+
 export function exportExpertRules(
     query: CustomRuleGroupType
 ): RuleGroupTypeExport {
@@ -105,9 +124,11 @@ export function exportExpertRules(
             )?.customName as OperatorType,
             value:
                 !isValueAnArray && rule.operator !== OperatorType.EXISTS
-                    ? rule.value
+                    ? changeValueUnit(rule.value, rule.field as FieldType)
                     : undefined,
-            values: isValueAnArray ? rule.value : undefined,
+            values: isValueAnArray
+                ? changeValueUnit(rule.value, rule.field as FieldType)
+                : undefined,
             dataType: getDataType(rule.field) as DataType,
         };
     }
@@ -141,12 +162,19 @@ export function importExpertRules(
             if (rule.dataType === DataType.NUMBER) {
                 return rule.values
                     .map((value) => parseFloat(value as string))
+                    .map((numberValue) => {
+                        return microUnits.includes(rule.field)
+                            ? unitToMicroUnit(numberValue)!
+                            : numberValue;
+                    })
                     .sort((a, b) => a - b);
             } else {
                 return rule.values.sort();
             }
         } else {
-            return rule.value;
+            return microUnits.includes(rule.field)
+                ? unitToMicroUnit(parseFloat(rule.value as string))
+                : rule.value;
         }
     }
 
