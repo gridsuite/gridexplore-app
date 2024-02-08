@@ -38,6 +38,10 @@ export const EXPERT_FILTER_EQUIPMENTS = {
         id: 'SHUNT_COMPENSATOR',
         label: 'ShuntCompensators',
     },
+    LINE: {
+        id: 'LINE',
+        label: 'Lines',
+    },
 };
 
 export const ENERGY_SOURCE_OPTIONS = [
@@ -292,6 +296,90 @@ export const FIELDS_OPTIONS = {
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
+    CONNECTED_1: {
+        name: FieldType.CONNECTED_1,
+        label: 'terminal1Connected',
+        dataType: DataType.BOOLEAN,
+        valueEditorType: 'switch',
+    },
+    CONNECTED_2: {
+        name: FieldType.CONNECTED_2,
+        label: 'terminal2Connected',
+        dataType: DataType.BOOLEAN,
+        valueEditorType: 'switch',
+    },
+    VOLTAGE_LEVEL_ID_1: {
+        name: FieldType.VOLTAGE_LEVEL_ID_1,
+        label: 'voltageLevelId1',
+        dataType: DataType.STRING,
+    },
+    VOLTAGE_LEVEL_ID_2: {
+        name: FieldType.VOLTAGE_LEVEL_ID_2,
+        label: 'voltageLevelId2',
+        dataType: DataType.STRING,
+    },
+    NOMINAL_VOLTAGE_1: {
+        name: FieldType.NOMINAL_VOLTAGE_1,
+        label: 'nominalVoltage1Or',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    NOMINAL_VOLTAGE_2: {
+        name: FieldType.NOMINAL_VOLTAGE_2,
+        label: 'nominalVoltage2Ex',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    COUNTRY_1: {
+        name: FieldType.COUNTRY_1,
+        label: 'country1',
+        dataType: DataType.ENUM,
+        valueEditorType: 'select',
+        defaultValue: 'AF',
+    },
+    COUNTRY_2: {
+        name: FieldType.COUNTRY_2,
+        label: 'country2',
+        dataType: DataType.ENUM,
+        valueEditorType: 'select',
+        defaultValue: 'AF',
+    },
+    SERIE_RESISTANCE: {
+        name: FieldType.SERIE_RESISTANCE,
+        label: 'seriesResistance',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    SERIE_REACTANCE: {
+        name: FieldType.SERIE_REACTANCE,
+        label: 'seriesReactance',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    SHUNT_CONDUCTANCE_1: {
+        name: FieldType.SHUNT_CONDUCTANCE_1,
+        label: 'shuntConductance1',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    SHUNT_CONDUCTANCE_2: {
+        name: FieldType.SHUNT_CONDUCTANCE_2,
+        label: 'shuntConductance2',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    SHUNT_SUSCEPTANCE_1: {
+        name: FieldType.SHUNT_SUSCEPTANCE_1,
+        label: 'shuntSusceptance1',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    SHUNT_SUSCEPTANCE_2: {
+        name: FieldType.SHUNT_SUSCEPTANCE_2,
+        label: 'shuntSusceptance2',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
 };
 
 export const fields: Record<string, Field[]> = {
@@ -323,6 +411,7 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.COUNTRY,
         FIELDS_OPTIONS.P0,
         FIELDS_OPTIONS.Q0,
+        FIELDS_OPTIONS.CONNECTED,
     ],
     SHUNT_COMPENSATOR: [
         FIELDS_OPTIONS.ID,
@@ -363,5 +452,23 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.ID,
         FIELDS_OPTIONS.NAME,
         FIELDS_OPTIONS.COUNTRY,
+    ],
+    LINE: [
+        FIELDS_OPTIONS.ID,
+        FIELDS_OPTIONS.NAME,
+        FIELDS_OPTIONS.CONNECTED_1,
+        FIELDS_OPTIONS.CONNECTED_2,
+        FIELDS_OPTIONS.VOLTAGE_LEVEL_ID_1,
+        FIELDS_OPTIONS.VOLTAGE_LEVEL_ID_2,
+        FIELDS_OPTIONS.NOMINAL_VOLTAGE_1,
+        FIELDS_OPTIONS.NOMINAL_VOLTAGE_2,
+        FIELDS_OPTIONS.COUNTRY_1,
+        FIELDS_OPTIONS.COUNTRY_2,
+        FIELDS_OPTIONS.SERIE_RESISTANCE,
+        FIELDS_OPTIONS.SERIE_REACTANCE,
+        FIELDS_OPTIONS.SHUNT_CONDUCTANCE_1,
+        FIELDS_OPTIONS.SHUNT_CONDUCTANCE_2,
+        FIELDS_OPTIONS.SHUNT_SUSCEPTANCE_1,
+        FIELDS_OPTIONS.SHUNT_SUSCEPTANCE_2,
     ],
 };
