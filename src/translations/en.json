@@ -96,6 +96,7 @@
   "STUDY": "Study",
   "VOLTAGE_INIT_PARAMETERS": "Parameters (Voltage profile initialization)",
   "SECURITY_ANALYSIS_PARAMETERS": "Settings (Security analysis)",
+  "LOADFLOW_PARAMETERS": "Settings (LoadFlow)",
   "SCRIPT_FILTER": "Filter (Script)",
   "FORM_FILTER": "Filter (Form)",
   "CRITERIA_FILTER": "Filter (Criteria based)",
