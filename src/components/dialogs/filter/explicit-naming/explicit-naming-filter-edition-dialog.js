@@ -104,6 +104,7 @@ const ExplicitNamingFilterEditionDialog = ({
                 false,
                 filterForm[EQUIPMENT_TYPE],
                 filterForm[NAME],
+                '', // The description can not be edited from this dialog
                 id,
                 (error) => {
                     snackError({

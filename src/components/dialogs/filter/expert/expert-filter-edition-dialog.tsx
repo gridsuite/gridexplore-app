@@ -107,6 +107,7 @@ const ExpertFilterEditionDialog = ({
                 filterForm[EXPERT_FILTER_QUERY],
                 filterForm[EQUIPMENT_TYPE],
                 filterForm[NAME],
+                '', // The description can not be edited from this dialog
                 false,
                 null,
                 onClose,

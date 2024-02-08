@@ -84,7 +84,6 @@ const DeleteDialog = ({
                       itemName: (
                           <OverflowableText
                               text={items[0].elementName}
-                              style={{ marginLeft: '1%' }}
                               tooltipSx={styles.tooltip}
                           />
                       ),
