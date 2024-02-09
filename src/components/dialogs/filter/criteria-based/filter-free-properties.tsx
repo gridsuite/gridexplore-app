@@ -94,8 +94,8 @@ function FilterFreeProperties({
                     />
                 </ListItem>
             ))}
-            <Grid item xs={5}>
-                <Button fullWidth startIcon={<AddIcon />} onClick={addNewProp}>
+            <Grid item>
+                <Button startIcon={<AddIcon />} onClick={addNewProp}>
                     <FormattedMessage id={'AddFreePropCrit'} />
                 </Button>
             </Grid>
