@@ -9,26 +9,19 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-
 import { deleteElement, moveElementToDirectory } from '../../utils/rest-api';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
-
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar from './common-toolbar';
-
 import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { ElementType } from '../../utils/elementType';
 import { FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
-
-const DialogsId = {
-    DELETE: 'delete',
-    MOVE: 'move',
-    NONE: 'none',
-};
+import ExportCaseDialog from '../dialogs/export-case-dialog';
+import { DialogsId } from '../../utils/UIconstants';
 
 const ContentToolbar = (props) => {
     const { selectedElements, ...others } = props;
@@ -176,20 +169,14 @@ const ContentToolbar = (props) => {
                       },
                       {
                           tooltipTextId: 'download.button',
-                          callback: () => handleDownloadCases(selectedElements),
+                          callback: () => handleOpenDialog(DialogsId.EXPORT),
                           icon: <FileDownload fontSize="small" />,
                           disabled:
                               !selectedElements.length || !allowsDownloadCases,
                       },
                   ]
                 : [],
-        [
-            allowsDelete,
-            allowsDownloadCases,
-            allowsMove,
-            handleDownloadCases,
-            selectedElements,
-        ]
+        [allowsDelete, allowsDownloadCases, allowsMove, selectedElements]
     );
 
     const renderDialog = () => {
@@ -232,6 +219,15 @@ const ContentToolbar = (props) => {
                             handleCloseDialog();
                         }}
                         items={selectedElements}
+                    />
+                );
+            case DialogsId.EXPORT:
+                return (
+                    <ExportCaseDialog
+                        onClose={handleCloseDialog}
+                        onExport={(format, parameters) =>
+                            handleDownloadCases(selectedElements, format)
+                        }
                     />
                 );
             default:

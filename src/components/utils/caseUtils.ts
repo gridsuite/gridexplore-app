@@ -5,23 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { downloadCase, getCaseOriginalName } from '../../utils/rest-api';
+import { exportCase } from '../../utils/rest-api';
 import { ElementType } from '../../utils/elementType';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
-const downloadCases = async (uuids: string[]) => {
+const exportCases = async (uuids: string[], format: string) => {
+    const files: { name: string; blob: Blob }[] = [];
     for (const uuid of uuids) {
-        const result = await downloadCase(uuid);
-        let name = await getCaseOriginalName(uuid);
+        const result = await exportCase(uuid, format);
+        let filename = result.headers
+            .get('Content-Disposition')
+            .split('filename=')[1];
+        filename = filename.substring(1, filename.length - 1); // We remove quotes
         const blob = await result.blob();
-        const href = window.URL.createObjectURL(blob);
+        files.push({ name: filename, blob });
+    }
+    for (const file of files) {
+        const href = window.URL.createObjectURL(file.blob);
         const link = document.createElement('a');
         link.href = href;
-        link.setAttribute(
-            'download',
-            typeof name === 'string' ? name : `${uuid}.xiidm`
-        );
+        link.setAttribute('download', file.name);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -143,11 +147,14 @@ export function useDownloadUtils() {
         );
     };
 
-    const handleDownloadCases = async (selectedElements: any[]) => {
+    const handleDownloadCases = async (
+        selectedElements: any[],
+        format: string
+    ) => {
         const casesUuids = selectedElements
             .filter((element) => element.type === ElementType.CASE)
             .map((element) => element.elementUuid);
-        await downloadCases(casesUuids);
+        await exportCases(casesUuids, format);
         if (casesUuids.length !== selectedElements.length) {
             snackInfo({
                 messageTxt: buildPartialDownloadMessage(

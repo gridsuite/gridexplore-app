@@ -265,5 +265,8 @@
   "lowVoltageLimit": "Limite tension basse",
   "highVoltageLimit": "Limite tension haute",
   "descriptionModificationError": "Erreur lors de la modification de la description",
-  "descriptionLimitError": "La description dépasse la limite de caractères"
+  "descriptionLimitError": "La description dépasse la limite de caractères",
+  "exportCaseErrorMsg": "Le format de l'export n'est pas spécifié",
+  "exportFormat": "Format de l'export",
+  "export": "Exporter"
 }

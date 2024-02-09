@@ -13,6 +13,7 @@ export const DialogsId = {
     RENAME: 'rename',
     DELETE: 'delete',
     MOVE: 'move',
+    EXPORT: 'export',
     ADD_NEW_STUDY_FROM_CASE: 'create_study_from_case',
     ADD_NEW_STUDY: 'create_study',
     SCRIPT: 'script',
@@ -22,7 +23,6 @@ export const DialogsId = {
     REPLACE_FILTER_BY_SCRIPT: 'replace_filter_by_script',
     COPY_FILTER_TO_SCRIPT: 'copy_filter_to_script',
     GENERIC_FILTER: 'generic_filter',
-
     ADD_ROOT_DIRECTORY: 'add_root_directory',
     ADD_DIRECTORY: 'add_directory',
     ADD_NEW_CONTINGENCY_LIST: 'add_new_contingency_list',
