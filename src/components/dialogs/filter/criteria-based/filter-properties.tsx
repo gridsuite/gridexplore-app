@@ -178,23 +178,23 @@ function FilterProperties() {
                     <FormattedMessage id={'FreePropsCrit'}>
                         {(txt) => <h3>{txt}</h3>}
                     </FormattedMessage>
+                    {(isForSubstation || isForLoad) && (
+                        <FilterFreeProperties
+                            freePropertiesType={
+                                FreePropertiesTypes.FREE_FILTER_PROPERTIES
+                            }
+                            predefined={fieldProps}
+                        />
+                    )}
+                    {!isForSubstation && (
+                        <FilterFreeProperties
+                            freePropertiesType={
+                                FreePropertiesTypes.SUBSTATION_FILTER_PROPERTIES
+                            }
+                            predefined={fieldProps}
+                        />
+                    )}
                 </Grid>
-                {(isForSubstation || isForLoad) && (
-                    <FilterFreeProperties
-                        freePropertiesType={
-                            FreePropertiesTypes.FREE_FILTER_PROPERTIES
-                        }
-                        predefined={fieldProps}
-                    />
-                )}
-                {!isForSubstation && (
-                    <FilterFreeProperties
-                        freePropertiesType={
-                            FreePropertiesTypes.SUBSTATION_FILTER_PROPERTIES
-                        }
-                        predefined={fieldProps}
-                    />
-                )}
             </Grid>
         )
     );
