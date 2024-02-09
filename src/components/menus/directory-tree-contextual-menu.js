@@ -48,7 +48,7 @@ import { ElementType } from '../../utils/elementType';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import RestoreElementsDialog from '../dialogs/stashed-elements/restore-elements-dialog';
+import StashedElementsDialog from "../dialogs/stashed-elements/stashed-elements-dialog";
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
@@ -505,7 +505,7 @@ const DirectoryTreeContextualMenu = (props) => {
                     <CreateCaseDialog open={true} onClose={handleCloseDialog} />
                 );
             case DialogsId.STASHED_ELEMENTS:
-                return <RestoreElementsDialog open={true} />;
+                return <StashedElementsDialog open={true} onClose={handleCloseDialog}/>;
             default:
                 return null;
         }

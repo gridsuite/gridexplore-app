@@ -56,16 +56,6 @@ const RestoreElementsDialog: FunctionComponent<IRestoreElementsDialog> = ({
     return (
         <StashedElementsDialog
             open={openTrash}
-            titleId={'StashedElements'}
-            elements={elements}
-            getOptionLabel={(element) =>
-                element.second
-                    ? element.first.elementName + ' (' + element.second + ')'
-                    : element.first.elementName
-            }
-            getElementId={(element) => element.first.elementUuid}
-            onDelete={handleDelete}
-            onRestore={handleRestore}
             onClose={handleClose}
         />
     );

@@ -267,5 +267,8 @@
   "highVoltageLimit": "High voltage limit",
   "descriptionModificationError": "An error when modifying the description",
   "descriptionLimitError": "Description exceeds character limit",
-  "StashedElements": "Restore elements"
+  "StashedElements": "Restore elements",
+  "All": "All",
+  "restore": "Restore",
+  "DeleteRows": "Delete"
 }

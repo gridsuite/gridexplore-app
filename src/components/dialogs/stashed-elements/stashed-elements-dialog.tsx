@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FunctionComponent, useCallback, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -15,38 +15,60 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    deleteElements,
+    getStashedElements,
+    stashElements,
+} from '../../../utils/rest-api';
+import { values } from 'ag-grid-community/dist/lib/utils/generic';
 
 interface IStashedElementsDialog {
     open: boolean;
-    titleId: string;
-    elements: any[];
-    getOptionLabel: (element: any) => string;
-    getElementId: (element: any) => string;
-    onDelete: (elements: string[]) => void;
-    onRestore: (elements: string[]) => void;
     onClose: () => void;
+}
+
+function getOptionLabel(element: any) {
+    return element.second
+        ? element.first.elementName + ' (' + element.second + ')'
+        : element.first.elementName;
+}
+
+function getElementId(element: any) {
+    return element.first.elementUuid;
 }
 
 const StashedElementsDialog: FunctionComponent<IStashedElementsDialog> = ({
     open,
-    titleId,
-    elements,
-    getOptionLabel,
-    getElementId,
-    onDelete,
-    onRestore,
     onClose,
 }) => {
     const intl = useIntl();
     const [selectedElements, setSelectedElements] = useState<string[]>([]);
+    const [elements, setElements] = useState<any[]>([]);
+    const { snackError } = useSnackMessage();
 
-    const handleSelectAll = useCallback(() => {
-        if (selectedElements.length === elements.length) {
-            setSelectedElements([]);
-        } else {
-            setSelectedElements(elements.map((e) => getElementId(e)));
+    useEffect(() => {
+        if (open) {
+            getStashedElements()
+                .then((response: any[]) => {
+                    console.log('response : ', response);
+                    setElements(response);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                    });
+                });
         }
     }, []);
+
+    const handleSelectAll = useCallback(() => {
+        setSelectedElements((values) =>
+            values.length === elements.length
+                ? []
+                : elements.map((e) => getElementId(e))
+        );
+    }, [elements]);
 
     const handleCheckBoxChange = useCallback((elementId: string) => {
         setSelectedElements((values) =>
@@ -57,30 +79,24 @@ const StashedElementsDialog: FunctionComponent<IStashedElementsDialog> = ({
     }, []);
 
     const handleDelete = useCallback(() => {
-        console.log('selectedElements : ', selectedElements)
-        onDelete(selectedElements);
-    }, []);
+        console.log('selectedElements : ', selectedElements);
+        deleteElements(selectedElements).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+            });
+        });
+    }, [selectedElements]);
 
     const handleRestore = useCallback(() => {
-        console.log('selectedElements : ', selectedElements)
-        onRestore(selectedElements);
-    }, []);
+        console.log('selectedElements : ', selectedElements);
+        stashElements(selectedElements, false).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+            });
+        });
+    }, [selectedElements]);
 
     const noSelectedElements = selectedElements.length === 0;
-
-    const selectAllCheckBoxField = (
-        <Box>
-            <Checkbox
-                color={'primary'}
-                edge="start"
-                checked={selectedElements.length === elements.length}
-                onClick={handleSelectAll}
-                disableRipple
-                value={'Select all'}
-                name={'Select all'}
-            />
-        </Box>
-    );
 
     const elementsField = elements.map((element) => {
         const elementId = getElementId(element);
@@ -102,7 +118,7 @@ const StashedElementsDialog: FunctionComponent<IStashedElementsDialog> = ({
         <Dialog open={open}>
             <DialogTitle>
                 {intl.formatMessage({
-                    id: titleId,
+                    id: 'StashedElements',
                 })}
             </DialogTitle>
             <DialogContent>
@@ -112,11 +128,14 @@ const StashedElementsDialog: FunctionComponent<IStashedElementsDialog> = ({
                             <FormControlLabel
                                 control={
                                     <Checkbox
-                                        checked={selectedElements.length === elements.length}
+                                        checked={
+                                            selectedElements.length ===
+                                            elements.length
+                                        }
                                         onChange={handleSelectAll}
                                     />
                                 }
-                                label={'Select all'}
+                                label={intl.formatMessage({ id: 'All' })}
                             />
                         </Box>
                         {elementsField}

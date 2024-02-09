@@ -264,7 +264,7 @@ export function deleteElement(elementUuid) {
 export function deleteElements(elementUuids) {
     console.info("Deleting element %s'", elementUuids);
     const fetchParams =
-        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements?ids=` + elementUuids;
+        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements` + getElementsIdsListsQueryParams(elementUuids);
     return backendFetch(fetchParams, {
         method: 'delete',
     });
