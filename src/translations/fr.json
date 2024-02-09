@@ -37,7 +37,6 @@
   "uploadErrorMsg": "Veuillez télécharger la situation",
   "uploadFileExceedingLimitSizeErrorMsg": "Le fichier sélectionné dépasse la taille limite ({maxSize} Mo). Veuillez compresser ce fichier au format zip, gzip ou bzip2 puis réessayez de l'importer à nouveau.",
   "nameProperty": "Nom",
-  "descriptionProperty": "Description (optionnel)",
   "uploadMessage": " Aucun fichier sélectionné",
   "creationInProgress": "création en cours",
   "uploading": "téléversement en cours",

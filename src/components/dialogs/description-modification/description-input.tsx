@@ -69,13 +69,7 @@ const DescriptionInput: FunctionComponent<IDescriptionInput> = ({
         ...(maxRows && { maxRows: maxRows }),
         ...(sx && { sx: sx }),
     };
-    return (
-        <TextInput
-            name={DESCRIPTION}
-            label={'descriptionProperty'}
-            formProps={formProps}
-        />
-    );
+    return <TextInput name={DESCRIPTION} formProps={formProps} />;
 };
 
 export default DescriptionInput;
