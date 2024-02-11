@@ -22,6 +22,8 @@ import {
     stashElements,
 } from '../../../utils/rest-api';
 import { values } from 'ag-grid-community/dist/lib/utils/generic';
+import {useSelector} from "react-redux";
+import {ReduxState} from "../../../redux/reducer.type";
 
 interface IStashedElementsDialog {
     open: boolean;
@@ -46,6 +48,9 @@ const StashedElementsDialog: FunctionComponent<IStashedElementsDialog> = ({
     const [selectedElements, setSelectedElements] = useState<string[]>([]);
     const [elements, setElements] = useState<any[]>([]);
     const { snackError } = useSnackMessage();
+    const activeDirectory = useSelector(
+        (state: ReduxState) => state.activeDirectory
+    );
 
     useEffect(() => {
         if (open) {
@@ -89,7 +94,7 @@ const StashedElementsDialog: FunctionComponent<IStashedElementsDialog> = ({
 
     const handleRestore = useCallback(() => {
         console.log('selectedElements : ', selectedElements);
-        stashElements(selectedElements, false).catch((error) => {
+        stashElements(selectedElements, activeDirectory, false).catch((error) => {
             snackError({
                 messageTxt: error.message,
             });

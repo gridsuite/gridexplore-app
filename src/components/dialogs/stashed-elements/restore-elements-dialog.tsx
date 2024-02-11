@@ -41,7 +41,7 @@ const RestoreElementsDialog: FunctionComponent<IRestoreElementsDialog> = ({
     }, []);
 
     const handleRestore = useCallback((elementsIds: string[]) => {
-        stashElements(elementsIds, true)
+        stashElements(elementsIds, null, true)
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
