@@ -10,10 +10,16 @@ import { ElementType } from '../../utils/elementType';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
-const exportCases = async (uuids: string[], format: string) => {
+const exportCases = async (
+    uuids: string[],
+    format: string,
+    formatParameters: {
+        [parameterName: string]: any;
+    }
+) => {
     const files: { name: string; blob: Blob }[] = [];
     for (const uuid of uuids) {
-        const result = await exportCase(uuid, format);
+        const result = await exportCase(uuid, format, formatParameters);
         let filename = result.headers
             .get('Content-Disposition')
             .split('filename=')[1];
@@ -149,12 +155,15 @@ export function useDownloadUtils() {
 
     const handleDownloadCases = async (
         selectedElements: any[],
-        format: string
+        format: string,
+        formatParameters: {
+            [parameterName: string]: any;
+        }
     ) => {
         const casesUuids = selectedElements
             .filter((element) => element.type === ElementType.CASE)
             .map((element) => element.elementUuid);
-        await exportCases(casesUuids, format);
+        await exportCases(casesUuids, format, formatParameters);
         if (casesUuids.length !== selectedElements.length) {
             snackInfo({
                 messageTxt: buildPartialDownloadMessage(

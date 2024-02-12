@@ -987,11 +987,13 @@ export function deleteCase(caseUuid) {
     });
 }
 
-export const exportCase = (caseUuid, format) =>
+export const exportCase = (caseUuid, format, formatParameters) =>
     backendFetch(
         `${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}?format=${format}`,
         {
-            method: 'get',
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formatParameters),
         }
     );
 
