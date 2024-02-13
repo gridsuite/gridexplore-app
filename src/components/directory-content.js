@@ -487,7 +487,7 @@ const DirectoryContent = () => {
                         intl.formatMessage({ id: type }) +
                         ' (' +
                         intl.formatMessage({
-                            id: 'network_modifications/' + subtype,
+                            id: 'network_modifications.' + subtype,
                         }) +
                         ')';
                     break;
