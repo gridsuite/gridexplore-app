@@ -85,6 +85,8 @@
   "editFilter": "Edit filter",
   "STUDY": "Study",
   "VOLTAGE_INIT_PARAMETERS": "Parameters (Voltage profile initialization)",
+  "SECURITY_ANALYSIS_PARAMETERS": "Parameters (Security analysis)",
+  "LOADFLOW_PARAMETERS": "Parameters (LoadFlow)",
   "SCRIPT_FILTER": "Filter (Script)",
   "FORM_FILTER": "Filter (Form)",
   "CRITERIA_FILTER": "Filter (Criteria based)",
