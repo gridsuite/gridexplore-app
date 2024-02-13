@@ -36,11 +36,11 @@
 
 /* Align all the fields and operators by setting a min-width */
 .rule-fields {
-    min-width: 175px;
+    min-width: 225px;
 }
 
 .rule-operators {
-    min-width: 125px;
+    min-width: 160px;
 }
 
 .queryBuilder-branches .ruleGroup-body {

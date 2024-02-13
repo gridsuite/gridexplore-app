@@ -44,7 +44,17 @@ const microUnits = [
     FieldType.SHUNT_SUSCEPTANCE_2,
 ];
 
-const getDataType = (fieldName: string) => {
+const getDataType = (fieldName: string, operator: string) => {
+    if (
+        (fieldName === FieldType.ID ||
+            fieldName === FieldType.VOLTAGE_LEVEL_ID ||
+            fieldName === FieldType.VOLTAGE_LEVEL_ID_1 ||
+            fieldName === FieldType.VOLTAGE_LEVEL_ID_2) &&
+        (operator === OperatorType.IS_PART_OF ||
+            operator === OperatorType.IS_NOT_PART_OF)
+    ) {
+        return DataType.FILTER_UUID;
+    }
     const field = Object.values(FIELDS_OPTIONS).find(
         (field) => field.name === fieldName
     );
@@ -59,14 +69,29 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
 
     switch (field?.dataType) {
         case DataType.STRING:
-            return [
+            let operators: {
+                name: string;
+                customName: string;
+                label: string;
+            }[] = [
                 OPERATOR_OPTIONS.CONTAINS,
                 OPERATOR_OPTIONS.IS,
                 OPERATOR_OPTIONS.BEGINS_WITH,
                 OPERATOR_OPTIONS.ENDS_WITH,
                 OPERATOR_OPTIONS.IN,
                 OPERATOR_OPTIONS.EXISTS,
-            ].map((operator) => ({
+            ];
+            if (
+                field.name === FieldType.ID ||
+                field.name === FieldType.VOLTAGE_LEVEL_ID ||
+                field.name === FieldType.VOLTAGE_LEVEL_ID_1 ||
+                field.name === FieldType.VOLTAGE_LEVEL_ID_2
+            ) {
+                // two additional operators when fields ID or VOLTAGE_LEVEL_ID are selected
+                operators.push(OPERATOR_OPTIONS.IS_PART_OF);
+                operators.push(OPERATOR_OPTIONS.IS_NOT_PART_OF);
+            }
+            return operators.map((operator) => ({
                 name: operator.name,
                 label: intl.formatMessage({ id: operator.label }),
             }));
@@ -129,7 +154,7 @@ export function exportExpertRules(
             values: isValueAnArray
                 ? changeValueUnit(rule.value, rule.field as FieldType)
                 : undefined,
-            dataType: getDataType(rule.field) as DataType,
+            dataType: getDataType(rule.field, rule.operator) as DataType,
         };
     }
 
@@ -185,7 +210,11 @@ export function importExpertRules(
                 (operator) => operator.customName === rule.operator
             )?.name as string,
             value: parseValue(rule),
-            dataType: rule.dataType,
+            dataType:
+                rule.operator === OperatorType.IS_PART_OF ||
+                rule.operator === OperatorType.IS_NOT_PART_OF
+                    ? DataType.STRING
+                    : rule.dataType,
         };
     }
 
@@ -239,9 +268,11 @@ export const queryValidator: QueryValidator = (query) => {
     const validateRule = (rule: RuleType) => {
         const isValueAnArray = Array.isArray(rule.value);
         const isNumberInput =
-            getDataType(rule.field) === DataType.NUMBER && !isValueAnArray;
+            getDataType(rule.field, rule.operator) === DataType.NUMBER &&
+            !isValueAnArray;
         const isStringInput =
-            getDataType(rule.field) === DataType.STRING && !isValueAnArray;
+            getDataType(rule.field, rule.operator) === DataType.STRING &&
+            !isValueAnArray;
         if (rule.id && rule.operator === OPERATOR_OPTIONS.EXISTS.name) {
             // In the case of EXISTS operator, because we do not have a second value to evaluate, we force a valid result.
             result[rule.id] = {
@@ -290,6 +321,16 @@ export const queryValidator: QueryValidator = (query) => {
             result[rule.id] = {
                 valid: false,
                 reasons: [INCORRECT_RULE],
+            };
+        } else if (
+            rule.id &&
+            (rule.operator === OPERATOR_OPTIONS.IS_PART_OF.name ||
+                rule.operator === OPERATOR_OPTIONS.IS_NOT_PART_OF.name) &&
+            !rule.value?.length
+        ) {
+            result[rule.id] = {
+                valid: false,
+                reasons: [EMPTY_RULE],
             };
         }
     };

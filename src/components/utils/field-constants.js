@@ -44,3 +44,5 @@ export const EMPTY_RULE = 'emptyRule';
 export const EMPTY_GROUP = 'emptyGroup';
 export const INCORRECT_RULE = 'incorrectRule';
 export const BETWEEN_RULE = 'betweenRule';
+
+export const FILTER_UUID = 'FILTER_UUID';

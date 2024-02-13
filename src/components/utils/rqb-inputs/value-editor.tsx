@@ -6,7 +6,7 @@
  */
 
 import { ValueEditorProps } from 'react-querybuilder';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { MaterialValueEditor } from '@react-querybuilder/material';
 import {
     FieldType,
@@ -16,6 +16,9 @@ import CountryValueEditor from './country-value-editor';
 import TranslatedValueEditor from './translated-value-editor';
 import TextValueEditor from './text-value-editor';
 import Box from '@mui/material/Box';
+import ElementValueEditor from './element-value-editor';
+import { ElementType } from '../../../utils/elementType';
+import { FILTER_UUID } from '../field-constants';
 
 const styles = {
     noArrows: {
@@ -30,6 +33,13 @@ const styles = {
 };
 
 const ValueEditor = (props: ValueEditorProps) => {
+    const itemFilter = useCallback((value: any) => {
+        if (value?.type === ElementType.FILTER) {
+            return value?.specificMetadata?.type !== 'EXPERT';
+        }
+        return true;
+    }, []);
+
     if (props.operator === OperatorType.EXISTS) {
         // No value needed for this operator
         return null;
@@ -47,7 +57,29 @@ const ValueEditor = (props: ValueEditorProps) => {
     ) {
         return <TranslatedValueEditor {...props} />;
     }
-    if (props.field === FieldType.ID || props.field === FieldType.NAME) {
+    if (
+        props.operator === OperatorType.IS_PART_OF ||
+        props.operator === OperatorType.IS_NOT_PART_OF
+    ) {
+        return (
+            <ElementValueEditor
+                name={FILTER_UUID + props.rule.id}
+                elementType={ElementType.FILTER}
+                titleId="selectFilterDialogTitle"
+                hideErrorMessage={true}
+                onChange={(e: any) => {
+                    props.handleOnChange(e.map((v: any) => v.id));
+                }}
+                itemFilter={itemFilter}
+                defaultValue={props.value}
+            />
+        );
+    }
+    if (
+        (props.field === FieldType.ID || props.field === FieldType.NAME) &&
+        props.operator !== OperatorType.IS_PART_OF &&
+        props.operator !== OperatorType.IS_NOT_PART_OF
+    ) {
         return <TextValueEditor {...props} />;
     }
     return (
