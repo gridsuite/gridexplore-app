@@ -86,6 +86,7 @@
   "STUDY": "Étude",
   "VOLTAGE_INIT_PARAMETERS": "Paramètres (Initialisation du plan de tension)",
   "SECURITY_ANALYSIS_PARAMETERS": "Paramètres (Analyse de sécurité)",
+  "LOADFLOW_PARAMETERS": "Paramètres (Calcul de répartition)",
   "SCRIPT_FILTER": "Filtre (Script)",
   "FORM_FILTER": "Filtre (Formulaire)",
   "CRITERIA_FILTER": "Filtre (Par critères)",

@@ -545,6 +545,14 @@ const DirectoryContent = () => {
     const [openDescModificationDialog, setOpenDescModificationDialog] =
         useState(false);
 
+    const isParameterTypeElement = useCallback(
+        (type) =>
+            type === ElementType.VOLTAGE_INIT_PARAMETERS ||
+            type === ElementType.SECURITY_ANALYSIS_PARAMETERS ||
+            type === ElementType.LOADFLOW_PARAMETERS,
+        []
+    );
+
     const descriptionCellRender = useCallback(
         (cellData) => {
             const element = currentChildren.find(
@@ -581,9 +589,10 @@ const DirectoryContent = () => {
             ) : (
                 <CreateIcon onClick={handleDescriptionIconClick} />
             );
-            const showEditDescriptionIcon =
-                element.type !== ElementType.VOLTAGE_INIT_PARAMETERS &&
-                element.type !== ElementType.SECURITY_ANALYSIS_PARAMETERS;
+            const showEditDescriptionIcon = !isParameterTypeElement(
+                element.type
+            );
+
             return (
                 <>
                     {showEditDescriptionIcon && (
@@ -592,24 +601,25 @@ const DirectoryContent = () => {
                 </>
             );
         },
-        [currentChildren]
+        [currentChildren, isParameterTypeElement]
     );
 
-    function getElementIcon(objectType) {
-        if (objectType === ElementType.STUDY) {
-            return <PhotoLibraryIcon sx={styles.icon} />;
-        } else if (objectType === ElementType.CONTINGENCY_LIST) {
-            return <OfflineBoltIcon sx={styles.icon} />;
-        } else if (objectType === ElementType.FILTER) {
-            return <ArticleIcon sx={styles.icon} />;
-        } else if (objectType === ElementType.CASE) {
-            return <PhotoIcon sx={styles.icon} />;
-        } else if (objectType === ElementType.VOLTAGE_INIT_PARAMETERS) {
-            return <SettingsIcon sx={styles.icon} />;
-        } else if (objectType === ElementType.SECURITY_ANALYSIS_PARAMETERS) {
-            return <SettingsIcon sx={styles.icon} />;
-        }
-    }
+    const getElementIcon = useCallback(
+        (objectType) => {
+            if (objectType === ElementType.STUDY) {
+                return <PhotoLibraryIcon sx={styles.icon} />;
+            } else if (objectType === ElementType.CONTINGENCY_LIST) {
+                return <OfflineBoltIcon sx={styles.icon} />;
+            } else if (objectType === ElementType.FILTER) {
+                return <ArticleIcon sx={styles.icon} />;
+            } else if (objectType === ElementType.CASE) {
+                return <PhotoIcon sx={styles.icon} />;
+            } else if (isParameterTypeElement(objectType)) {
+                return <SettingsIcon sx={styles.icon} />;
+            }
+        },
+        [isParameterTypeElement]
+    );
 
     const getDisplayedElementName = useCallback(
         (cellData) => {
@@ -664,7 +674,12 @@ const DirectoryContent = () => {
                 </Box>
             );
         },
-        [childrenMetadata, currentChildren, getDisplayedElementName]
+        [
+            childrenMetadata,
+            currentChildren,
+            getDisplayedElementName,
+            getElementIcon,
+        ]
     );
 
     function toggleSelection(elementUuid) {
