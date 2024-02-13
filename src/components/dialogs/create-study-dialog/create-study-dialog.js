@@ -263,7 +263,12 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 </Grid>
             </Grid>
             {providedExistingCase ? (
-                <DirectorySelect types={[ElementType.DIRECTORY]} />
+                <DirectorySelect
+                    types={[ElementType.DIRECTORY]}
+                    dialogOpeningButtonLabel={'showSelectDirectoryDialog'}
+                    dialogTitleLabel={'selectDirectoryDialogTitle'}
+                    dialogMessageLabel={'moveItemContentText'}
+                />
             ) : (
                 <UploadNewCase
                     isNewStudyCreation={true}

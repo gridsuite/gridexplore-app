@@ -1,4 +1,9 @@
-import React, { useCallback, useMemo } from 'react';
+import React, {
+    FunctionComponent,
+    useCallback,
+    useEffect,
+    useMemo,
+} from 'react';
 import {
     AG_GRID_ROW_UUID,
     EQUIPMENT_ID,
@@ -13,14 +18,17 @@ import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FILTER_EQUIPMENTS } from '../../commons/criteria-based/criteria-based-utils';
 import Grid from '@mui/material/Grid';
-import { SelectInput } from '@gridsuite/commons-ui';
+import { SelectInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { ValueParserParams } from 'ag-grid-community';
 import { Generator, Load } from '../../../../utils/equipment-types';
-import { FilterType } from '../../../../utils/elementType';
+import { ElementType, FilterType } from '../../../../utils/elementType';
 import { NumericEditor } from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/numericEditor';
 import { toFloatOrNullValue } from '../../../utils/dialog-utils';
 import InputWithPopupConfirmation from '../../../utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
 import { v4 as uuid4 } from 'uuid';
+import { UUID } from 'crypto';
+import DirectorySelect from '../../create-study-dialog/directory-select';
+import { exportFilter } from '../../../../utils/rest-api';
 
 export const FILTER_EQUIPMENTS_ATTRIBUTES = 'filterEquipmentsAttributes';
 export const DISTRIBUTION_KEY = 'distributionKey';
@@ -99,8 +107,19 @@ export function getExplicitNamingFilterEmptyFormData() {
     };
 }
 
-function ExplicitNamingFilterForm() {
+export interface FilterForExplicitConversionProps {
+    id: UUID;
+    equipmentType: String;
+}
+interface ExplicitNamingFilterFormProps {
+    sourceFilterForExplicitConversion?: FilterForExplicitConversionProps;
+}
+
+export const ExplicitNamingFilterForm: FunctionComponent<
+    ExplicitNamingFilterFormProps
+> = (props) => {
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
 
     const { getValues, setValue } = useFormContext();
 
@@ -109,6 +128,15 @@ function ExplicitNamingFilterForm() {
     });
 
     const forGeneratorOrLoad = isGeneratorOrLoad(watchEquipmentType);
+
+    useEffect(() => {
+        if (props.sourceFilterForExplicitConversion) {
+            setValue(
+                EQUIPMENT_TYPE,
+                props.sourceFilterForExplicitConversion.equipmentType
+            );
+        }
+    }, [props.sourceFilterForExplicitConversion, setValue]);
 
     const columnDefs = useMemo(() => {
         const columnDefs: any[] = [
@@ -174,6 +202,28 @@ function ExplicitNamingFilterForm() {
         setValue(FILTER_EQUIPMENTS_ATTRIBUTES, makeDefaultTableRows());
     };
 
+    const onStudySelected = (studyUuid: UUID) => {
+        console.log('DBR onStudySelected', studyUuid);
+        exportFilter(studyUuid, props.sourceFilterForExplicitConversion?.id)
+            .then((matchingEquipments) => {
+                console.log('DBR exportFilter', matchingEquipments);
+                setValue(
+                    FILTER_EQUIPMENTS_ATTRIBUTES,
+                    matchingEquipments.map((equipment: any) => ({
+                        [AG_GRID_ROW_UUID]: uuid4(),
+                        [EQUIPMENT_ID]: equipment.id,
+                        [DISTRIBUTION_KEY]: equipment.distributionKey,
+                    }))
+                );
+            })
+            .catch((error) =>
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'convertIntoExplicitFilterError',
+                })
+            );
+    };
+
     return (
         <Grid container item spacing={2}>
             <Grid item xs={12}>
@@ -181,12 +231,23 @@ function ExplicitNamingFilterForm() {
                     Input={SelectInput}
                     name={EQUIPMENT_TYPE}
                     options={Object.values(FILTER_EQUIPMENTS)}
+                    disabled={props.sourceFilterForExplicitConversion}
                     label={'equipmentType'}
                     shouldOpenPopup={openConfirmationPopup}
                     resetOnConfirmation={handleResetOnConfirmation}
                     message={'changeTypeMessage'}
                     validateButtonLabel={'button.changeType'}
                 />
+                {props.sourceFilterForExplicitConversion && (
+                    <DirectorySelect
+                        types={[ElementType.STUDY]}
+                        onElementValidated={onStudySelected}
+                        dialogOpeningButtonLabel={'selectStudyDialogButton'}
+                        dialogTitleLabel={'selectStudyDialogTitle'}
+                        dialogMessageLabel={'selectStudyText'}
+                        noElementMessageLabel={'noSelectedStudyText'}
+                    />
+                )}
             </Grid>
             {watchEquipmentType && (
                 <Grid item xs={12}>
@@ -217,6 +278,6 @@ function ExplicitNamingFilterForm() {
             )}
         </Grid>
     );
-}
+};
 
 export default ExplicitNamingFilterForm;

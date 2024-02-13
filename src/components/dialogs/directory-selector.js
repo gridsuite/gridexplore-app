@@ -30,8 +30,8 @@ function sortAlphabetically(a, b) {
 const DirectorySelector = (props) => {
     const [data, setData] = useState([]);
     const contentFilter = useCallback(
-        () => new Set([elementType.DIRECTORY]),
-        []
+        () => new Set([elementType.DIRECTORY, ...props.types]),
+        [props.types]
     );
 
     const { snackError } = useSnackMessage();

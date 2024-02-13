@@ -883,12 +883,12 @@ export function duplicateModification(
 export function duplicateParameter(
     name,
     parameterType,
-    sourceFilterUuid,
+    sourceParameterUuid,
     parentDirectoryUuid
 ) {
     console.info('Duplicating parameters of type ' + parameterType + '...');
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('duplicateFrom', sourceFilterUuid);
+    urlSearchParams.append('duplicateFrom', sourceParameterUuid);
     urlSearchParams.append('name', name);
     urlSearchParams.append('type', parameterType);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
@@ -1048,4 +1048,15 @@ export function getServersInfos() {
         console.error('Error while fetching the servers infos : ' + reason);
         return reason;
     });
+}
+
+export function exportFilter(studyUuid, filterUuid) {
+    console.info('get filter export on study root node');
+    return backendFetchJson(
+        PREFIX_STUDY_QUERIES +
+            '/v1/studies/' +
+            studyUuid +
+            '/filter/export?filterId=' +
+            filterUuid
+    );
 }

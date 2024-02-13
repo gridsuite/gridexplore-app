@@ -308,6 +308,9 @@ const DirectoryContent = () => {
                         hasMetadata:
                             childrenMetadata[event.rowData.elementUuid] !==
                             undefined,
+                        specificMetadata:
+                            childrenMetadata[event.rowData.elementUuid]
+                                ?.specificMetadata,
                         ...element,
                     });
 
@@ -794,6 +797,7 @@ const DirectoryContent = () => {
                                 ? e.specificMetadata.type
                                 : null,
                             format: e.specificMetadata?.format ?? null,
+                            specificMetadata: e.specificMetadata,
                         };
                     });
                 })
