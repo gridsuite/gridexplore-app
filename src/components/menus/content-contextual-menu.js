@@ -161,6 +161,7 @@ const ContentContextualMenu = (props) => {
                 case ElementType.MODIFICATION:
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+                case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.CONTINGENCY_LIST:
                     console.info(
                         activeElement.type +
@@ -269,6 +270,7 @@ const ContentContextualMenu = (props) => {
                                 break;
                             case ElementType.VOLTAGE_INIT_PARAMETERS:
                             case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+                            case ElementType.LOADFLOW_PARAMETERS:
                                 duplicateParameter(
                                     newItemName,
                                     activeElement.type,
@@ -485,7 +487,8 @@ const ContentContextualMenu = (props) => {
                 selectedElements[0].type ===
                     ElementType.VOLTAGE_INIT_PARAMETERS ||
                 selectedElements[0].type ===
-                    ElementType.SECURITY_ANALYSIS_PARAMETERS)
+                    ElementType.SECURITY_ANALYSIS_PARAMETERS ||
+                selectedElements[0].type === ElementType.LOADFLOW_PARAMETERS)
         );
     }, [selectedElements]);
 

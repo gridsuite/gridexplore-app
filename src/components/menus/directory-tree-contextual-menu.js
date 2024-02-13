@@ -214,6 +214,7 @@ const DirectoryTreeContextualMenu = (props) => {
                                 break;
                             case ElementType.VOLTAGE_INIT_PARAMETERS:
                             case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+                            case ElementType.LOADFLOW_PARAMETERS:
                                 duplicateParameter(
                                     newItemName,
                                     selectionForCopy.typeItem,
@@ -250,6 +251,7 @@ const DirectoryTreeContextualMenu = (props) => {
                                     });
 
                                 break;
+
                             default:
                                 handleError(
                                     intl.formatMessage({
