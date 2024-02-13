@@ -31,6 +31,7 @@ import {
     duplicateCase,
     duplicateContingencyList,
     duplicateFilter,
+    duplicateModification,
     duplicateParameter,
     duplicateStudy,
     fetchElementsInfos,
@@ -197,6 +198,20 @@ const DirectoryTreeContextualMenu = (props) => {
                                         handlePasteError(error);
                                     });
                                 break;
+                            case ElementType.MODIFICATION:
+                                duplicateModification(
+                                    newItemName,
+                                    selectionForCopy.descriptionItem,
+                                    selectionForCopy.sourceItemUuid,
+                                    elementUuid
+                                )
+                                    .then(() => {
+                                        handleCloseDialog();
+                                    })
+                                    .catch((error) => {
+                                        handlePasteError(error);
+                                    });
+                                break;
                             case ElementType.VOLTAGE_INIT_PARAMETERS:
                             case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                             case ElementType.LOADFLOW_PARAMETERS:
@@ -239,7 +254,9 @@ const DirectoryTreeContextualMenu = (props) => {
 
                             default:
                                 handleError(
-                                    intl.formatMessage({ id: 'unsuportedItem' })
+                                    intl.formatMessage({
+                                        id: 'unsupportedItem',
+                                    })
                                 );
                         }
                     } else {

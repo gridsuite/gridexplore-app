@@ -39,6 +39,7 @@ import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 import PhotoIcon from '@mui/icons-material/Photo';
+import NoteAltIcon from '@mui/icons-material/NoteAlt';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
@@ -473,15 +474,33 @@ const DirectoryContent = () => {
 
     const getElementTypeTranslation = useCallback(
         (type, subtype, formatCase) => {
-            const format = formatCase
+            let translatedType;
+            switch (type) {
+                case ElementType.FILTER:
+                case ElementType.CONTINGENCY_LIST:
+                    translatedType = intl.formatMessage({
+                        id: subtype + '_' + type,
+                    });
+                    break;
+                case ElementType.MODIFICATION:
+                    translatedType =
+                        intl.formatMessage({ id: type }) +
+                        ' (' +
+                        intl.formatMessage({
+                            id: 'network_modifications/' + subtype,
+                        }) +
+                        ')';
+                    break;
+                default:
+                    translatedType = intl.formatMessage({ id: type });
+                    break;
+            }
+
+            const translatedFormat = formatCase
                 ? ' (' + intl.formatMessage({ id: formatCase }) + ')'
                 : '';
-            const elemType =
-                type === ElementType.FILTER ||
-                type === ElementType.CONTINGENCY_LIST
-                    ? intl.formatMessage({ id: subtype + '_' + type })
-                    : intl.formatMessage({ id: type });
-            return `${elemType}${format}`;
+
+            return `${translatedType}${translatedFormat}`;
         },
         [intl]
     );
@@ -610,6 +629,8 @@ const DirectoryContent = () => {
                 return <PhotoLibraryIcon sx={styles.icon} />;
             } else if (objectType === ElementType.CONTINGENCY_LIST) {
                 return <OfflineBoltIcon sx={styles.icon} />;
+            } else if (objectType === ElementType.MODIFICATION) {
+                return <NoteAltIcon sx={styles.icon} />;
             } else if (objectType === ElementType.FILTER) {
                 return <ArticleIcon sx={styles.icon} />;
             } else if (objectType === ElementType.CASE) {

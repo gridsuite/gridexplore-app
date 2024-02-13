@@ -32,6 +32,7 @@ import {
     duplicateCase,
     duplicateContingencyList,
     duplicateFilter,
+    duplicateModification,
     duplicateParameter,
     duplicateStudy,
     fetchElementsInfos,
@@ -157,6 +158,7 @@ const ContentContextualMenu = (props) => {
                 case ElementType.CASE:
                 case ElementType.STUDY:
                 case ElementType.FILTER:
+                case ElementType.MODIFICATION:
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
@@ -180,7 +182,7 @@ const ContentContextualMenu = (props) => {
 
                 default:
                     handleLastError(
-                        intl.formatMessage({ id: 'unsuportedItem' })
+                        intl.formatMessage({ id: 'unsupportedItem' })
                     );
             }
         }
@@ -255,6 +257,17 @@ const ContentContextualMenu = (props) => {
                                 });
                                 handleCloseDialog();
                                 break;
+                            case ElementType.MODIFICATION:
+                                duplicateModification(
+                                    newItemName,
+                                    activeElement.description,
+                                    activeElement.elementUuid,
+                                    selectedDirectory.elementUuid
+                                ).catch((error) => {
+                                    handleDuplicateError(error.message);
+                                });
+                                handleCloseDialog();
+                                break;
                             case ElementType.VOLTAGE_INIT_PARAMETERS:
                             case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                             case ElementType.LOADFLOW_PARAMETERS:
@@ -273,7 +286,9 @@ const ContentContextualMenu = (props) => {
                                 break;
                             default:
                                 handleLastError(
-                                    intl.formatMessage({ id: 'unsuportedItem' })
+                                    intl.formatMessage({
+                                        id: 'unsupportedItem',
+                                    })
                                 );
                         }
                     } else {
@@ -468,6 +483,7 @@ const ContentContextualMenu = (props) => {
                 selectedElements[0].type === ElementType.STUDY ||
                 selectedElements[0].type === ElementType.CONTINGENCY_LIST ||
                 selectedElements[0].type === ElementType.FILTER ||
+                selectedElements[0].type === ElementType.MODIFICATION ||
                 selectedElements[0].type ===
                     ElementType.VOLTAGE_INIT_PARAMETERS ||
                 selectedElements[0].type ===
