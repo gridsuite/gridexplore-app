@@ -74,7 +74,7 @@ const DescriptionModificationDialogue: FunctionComponent<
             titleId={'description'}
             removeOptional={true}
         >
-            <DescriptionInput minRows={3} sx={{ marginTop: '10px' }} />
+            <DescriptionInput minRows={3} sx={{ marginTop: '10px' }} noLabel />
         </CustomMuiDialog>
     );
 };

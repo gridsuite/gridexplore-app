@@ -15,6 +15,19 @@ import {
 import CountryValueEditor from './country-value-editor';
 import TranslatedValueEditor from './translated-value-editor';
 import TextValueEditor from './text-value-editor';
+import Box from '@mui/material/Box';
+
+const styles = {
+    noArrows: {
+        '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button':
+            {
+                display: 'none',
+            },
+        '& input[type=number]': {
+            MozAppearance: 'textfield',
+        },
+    },
+};
 
 const ValueEditor = (props: ValueEditorProps) => {
     if (props.operator === OperatorType.EXISTS) {
@@ -38,10 +51,12 @@ const ValueEditor = (props: ValueEditorProps) => {
         return <TextValueEditor {...props} />;
     }
     return (
-        <MaterialValueEditor
-            {...props}
-            title={undefined} // disable the tooltip
-        />
+        <Box sx={props.inputType === 'number' ? styles.noArrows : undefined}>
+            <MaterialValueEditor
+                {...props}
+                title={undefined} // disable the tooltip
+            />
+        </Box>
     );
 };
 export default ValueEditor;

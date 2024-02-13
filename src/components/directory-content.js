@@ -39,6 +39,7 @@ import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 import PhotoIcon from '@mui/icons-material/Photo';
+import NoteAltIcon from '@mui/icons-material/NoteAlt';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
@@ -473,15 +474,33 @@ const DirectoryContent = () => {
 
     const getElementTypeTranslation = useCallback(
         (type, subtype, formatCase) => {
-            const format = formatCase
+            let translatedType;
+            switch (type) {
+                case ElementType.FILTER:
+                case ElementType.CONTINGENCY_LIST:
+                    translatedType = intl.formatMessage({
+                        id: subtype + '_' + type,
+                    });
+                    break;
+                case ElementType.MODIFICATION:
+                    translatedType =
+                        intl.formatMessage({ id: type }) +
+                        ' (' +
+                        intl.formatMessage({
+                            id: 'network_modifications/' + subtype,
+                        }) +
+                        ')';
+                    break;
+                default:
+                    translatedType = intl.formatMessage({ id: type });
+                    break;
+            }
+
+            const translatedFormat = formatCase
                 ? ' (' + intl.formatMessage({ id: formatCase }) + ')'
                 : '';
-            const elemType =
-                type === ElementType.FILTER ||
-                type === ElementType.CONTINGENCY_LIST
-                    ? intl.formatMessage({ id: subtype + '_' + type })
-                    : intl.formatMessage({ id: type });
-            return `${elemType}${format}`;
+
+            return `${translatedType}${translatedFormat}`;
         },
         [intl]
     );
@@ -545,6 +564,14 @@ const DirectoryContent = () => {
     const [openDescModificationDialog, setOpenDescModificationDialog] =
         useState(false);
 
+    const isParameterTypeElement = useCallback(
+        (type) =>
+            type === ElementType.VOLTAGE_INIT_PARAMETERS ||
+            type === ElementType.SECURITY_ANALYSIS_PARAMETERS ||
+            type === ElementType.LOADFLOW_PARAMETERS,
+        []
+    );
+
     const descriptionCellRender = useCallback(
         (cellData) => {
             const element = currentChildren.find(
@@ -581,30 +608,39 @@ const DirectoryContent = () => {
             ) : (
                 <CreateIcon onClick={handleDescriptionIconClick} />
             );
+            const showEditDescriptionIcon = !isParameterTypeElement(
+                element.type
+            );
+
             return (
                 <>
-                    {element.type !== ElementType.VOLTAGE_INIT_PARAMETERS && (
+                    {showEditDescriptionIcon && (
                         <Box sx={styles.cell}>{icon}</Box>
                     )}
                 </>
             );
         },
-        [currentChildren]
+        [currentChildren, isParameterTypeElement]
     );
 
-    function getElementIcon(objectType) {
-        if (objectType === ElementType.STUDY) {
-            return <PhotoLibraryIcon sx={styles.icon} />;
-        } else if (objectType === ElementType.CONTINGENCY_LIST) {
-            return <OfflineBoltIcon sx={styles.icon} />;
-        } else if (objectType === ElementType.FILTER) {
-            return <ArticleIcon sx={styles.icon} />;
-        } else if (objectType === ElementType.CASE) {
-            return <PhotoIcon sx={styles.icon} />;
-        } else if (objectType === ElementType.VOLTAGE_INIT_PARAMETERS) {
-            return <SettingsIcon sx={styles.icon} />;
-        }
-    }
+    const getElementIcon = useCallback(
+        (objectType) => {
+            if (objectType === ElementType.STUDY) {
+                return <PhotoLibraryIcon sx={styles.icon} />;
+            } else if (objectType === ElementType.CONTINGENCY_LIST) {
+                return <OfflineBoltIcon sx={styles.icon} />;
+            } else if (objectType === ElementType.MODIFICATION) {
+                return <NoteAltIcon sx={styles.icon} />;
+            } else if (objectType === ElementType.FILTER) {
+                return <ArticleIcon sx={styles.icon} />;
+            } else if (objectType === ElementType.CASE) {
+                return <PhotoIcon sx={styles.icon} />;
+            } else if (isParameterTypeElement(objectType)) {
+                return <SettingsIcon sx={styles.icon} />;
+            }
+        },
+        [isParameterTypeElement]
+    );
 
     const getDisplayedElementName = useCallback(
         (cellData) => {
@@ -659,7 +695,12 @@ const DirectoryContent = () => {
                 </Box>
             );
         },
-        [childrenMetadata, currentChildren, getDisplayedElementName]
+        [
+            childrenMetadata,
+            currentChildren,
+            getDisplayedElementName,
+            getElementIcon,
+        ]
     );
 
     function toggleSelection(elementUuid) {
