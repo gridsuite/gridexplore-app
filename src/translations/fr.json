@@ -85,6 +85,7 @@
   "editFilter": "Editer le filtre",
   "STUDY": "Étude",
   "VOLTAGE_INIT_PARAMETERS": "Paramètres (Initialisation du plan de tension)",
+  "SECURITY_ANALYSIS_PARAMETERS": "Paramètres (Analyse de sécurité)",
   "SCRIPT_FILTER": "Filtre (Script)",
   "FORM_FILTER": "Filtre (Formulaire)",
   "CRITERIA_FILTER": "Filtre (Par critères)",
