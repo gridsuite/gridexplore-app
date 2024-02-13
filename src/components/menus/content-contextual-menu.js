@@ -158,6 +158,7 @@ const ContentContextualMenu = (props) => {
                 case ElementType.STUDY:
                 case ElementType.FILTER:
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
+                case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                 case ElementType.CONTINGENCY_LIST:
                     console.info(
                         activeElement.type +
@@ -254,9 +255,10 @@ const ContentContextualMenu = (props) => {
                                 handleCloseDialog();
                                 break;
                             case ElementType.VOLTAGE_INIT_PARAMETERS:
+                            case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                                 duplicateParameter(
                                     newItemName,
-                                    ElementType.VOLTAGE_INIT_PARAMETERS,
+                                    activeElement.type,
                                     activeElement.elementUuid,
                                     selectedDirectory.elementUuid
                                 )
@@ -465,7 +467,9 @@ const ContentContextualMenu = (props) => {
                 selectedElements[0].type === ElementType.CONTINGENCY_LIST ||
                 selectedElements[0].type === ElementType.FILTER ||
                 selectedElements[0].type ===
-                    ElementType.VOLTAGE_INIT_PARAMETERS)
+                    ElementType.VOLTAGE_INIT_PARAMETERS ||
+                selectedElements[0].type ===
+                    ElementType.SECURITY_ANALYSIS_PARAMETERS)
         );
     }, [selectedElements]);
 
