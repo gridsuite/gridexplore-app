@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-// Only the french locale is needed
+// At the moment, only the french locale is needed
 const aggrid_locale_fr = {
     'agGrid.of': 'sur',
     'agGrid.to': 'à',
