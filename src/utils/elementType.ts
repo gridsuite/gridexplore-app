@@ -18,13 +18,16 @@ export enum ElementType {
 }
 
 export const FilterType = {
-    CRITERIA_BASED: { id: 'CRITERIA', label: 'CriteriaBased' },
-    EXPLICIT_NAMING: { id: 'IDENTIFIER_LIST', label: 'ExplicitNaming' },
-    EXPERT: { id: 'EXPERT', label: 'Expert' },
+    CRITERIA_BASED: { id: 'CRITERIA', label: 'filter.criteriaBased' },
+    EXPLICIT_NAMING: { id: 'IDENTIFIER_LIST', label: 'filter.explicitNaming' },
+    EXPERT: { id: 'EXPERT', label: 'filter.expert' },
 };
 
 export const ContingencyListType = {
-    CRITERIA_BASED: { id: 'FORM', label: 'CriteriaBased' },
-    EXPLICIT_NAMING: { id: 'IDENTIFIERS', label: 'ExplicitNaming' },
-    SCRIPT: { id: 'SCRIPT', label: 'SCRIPT' },
+    CRITERIA_BASED: { id: 'FORM', label: 'contingencyList.criteriaBased' },
+    EXPLICIT_NAMING: {
+        id: 'IDENTIFIERS',
+        label: 'contingencyList.explicitNaming',
+    },
+    SCRIPT: { id: 'SCRIPT', label: 'contingencyList.script' },
 };
