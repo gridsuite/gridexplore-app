@@ -261,17 +261,14 @@ export function deleteElement(elementUuid) {
     });
 }
 
-export function deleteElements(elementUuids) {
-    console.info("Deleting element %s'", elementUuids);
-    const fetchParams =
-        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/delete-stash`;
-    return backendFetch(fetchParams, {
-        method: 'post',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(elementUuids),
-    });
+export function deleteElements(elementUuids, activeDirectory) {
+    console.info("Deleting elements : %s'", elementUuids);
+    return backendFetch(
+        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/` + activeDirectory + getElementsIdsListsQueryParams(elementUuids),
+        {
+            method: 'delete',
+        }
+    );
 }
 
 export function moveElementToDirectory(elementUuid, directoryUuid) {
@@ -1034,13 +1031,18 @@ export function getServersInfos() {
     });
 }
 
-export function stashElements(elementUuids, activeDirectory, stash) {
+export function stashElements(elementUuids, stash) {
     console.info('Stashing elements: ' + elementUuids);
 
     const stashValue = stash.toString();
 
-    const url = PREFIX_DIRECTORY_SERVER_QUERIES + '/v1/elements/' + stash ? '' : activeDirectory + '/'
-    const updateAccessRightUrl = url + `stash?stashElement=` + stashValue + '&ids=' + elementUuids;
+    const updateAccessRightUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/elements/' +
+        `stash?stashElement=` +
+        stashValue +
+        '&ids=' +
+        elementUuids;
 
     return backendFetch(updateAccessRightUrl, {
         method: 'post',
@@ -1051,7 +1053,24 @@ export function stashElements(elementUuids, activeDirectory, stash) {
     });
 }
 
-export function restoreElements(ids) {}
+export function restoreElements(elementUuids, activeDirectory, stash) {
+    console.info('Restoring elements: ' + elementUuids);
+
+    const updateAccessRightUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/elements/' +
+        activeDirectory +
+        '/restore';
+
+    return backendFetch(updateAccessRightUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(elementUuids),
+    });
+}
 
 export function getStashedElements() {
     console.info('get stashed elements');

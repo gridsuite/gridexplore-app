@@ -324,7 +324,7 @@ const ContentContextualMenu = (props) => {
 
     const handleStashElements = useCallback(
         (elementsUuids) => {
-            stashElements(elementsUuids, null, true)
+            stashElements(elementsUuids, true)
                 .catch((error) => {
                     handleLastError(error.message);
                 })

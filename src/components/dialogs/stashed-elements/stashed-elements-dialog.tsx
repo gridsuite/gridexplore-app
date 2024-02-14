@@ -19,11 +19,10 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     deleteElements,
     getStashedElements,
-    stashElements,
+    restoreElements,
 } from '../../../utils/rest-api';
-import { values } from 'ag-grid-community/dist/lib/utils/generic';
-import {useSelector} from "react-redux";
-import {ReduxState} from "../../../redux/reducer.type";
+import { useSelector } from 'react-redux';
+import { ReduxState } from '../../../redux/reducer.type';
 
 interface IStashedElementsDialog {
     open: boolean;
@@ -52,20 +51,23 @@ const StashedElementsDialog: FunctionComponent<IStashedElementsDialog> = ({
         (state: ReduxState) => state.activeDirectory
     );
 
+    const handleGetStashedElement = useCallback(() => {
+        getStashedElements()
+            .then((response: any[]) => {
+                setElements(response);
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                });
+            });
+    }, [snackError]);
+
     useEffect(() => {
         if (open) {
-            getStashedElements()
-                .then((response: any[]) => {
-                    console.log('response : ', response);
-                    setElements(response);
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                    });
-                });
+            handleGetStashedElement();
         }
-    }, []);
+    }, [open]);
 
     const handleSelectAll = useCallback(() => {
         setSelectedElements((values) =>
@@ -84,22 +86,24 @@ const StashedElementsDialog: FunctionComponent<IStashedElementsDialog> = ({
     }, []);
 
     const handleDelete = useCallback(() => {
-        console.log('selectedElements : ', selectedElements);
-        deleteElements(selectedElements).catch((error) => {
-            snackError({
-                messageTxt: error.message,
+        deleteElements(selectedElements, activeDirectory)
+            .then(() => handleGetStashedElement())
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                });
             });
-        });
-    }, [selectedElements]);
+    }, [selectedElements, snackError, activeDirectory]);
 
     const handleRestore = useCallback(() => {
-        console.log('selectedElements : ', selectedElements);
-        stashElements(selectedElements, activeDirectory, false).catch((error) => {
-            snackError({
-                messageTxt: error.message,
+        restoreElements(selectedElements, activeDirectory, false)
+            .then(() => handleGetStashedElement())
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                });
             });
-        });
-    }, [selectedElements]);
+    }, [selectedElements, snackError, activeDirectory]);
 
     const noSelectedElements = selectedElements.length === 0;
 
