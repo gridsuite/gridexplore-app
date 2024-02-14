@@ -15,26 +15,48 @@ import {
 import CountryValueEditor from './country-value-editor';
 import TranslatedValueEditor from './translated-value-editor';
 import TextValueEditor from './text-value-editor';
+import Box from '@mui/material/Box';
+
+const styles = {
+    noArrows: {
+        '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button':
+            {
+                display: 'none',
+            },
+        '& input[type=number]': {
+            MozAppearance: 'textfield',
+        },
+    },
+};
 
 const ValueEditor = (props: ValueEditorProps) => {
     if (props.operator === OperatorType.EXISTS) {
         // No value needed for this operator
         return null;
     }
-    if (props.field === FieldType.COUNTRY) {
+    if (
+        [FieldType.COUNTRY, FieldType.COUNTRY_1, FieldType.COUNTRY_2].includes(
+            props.field as FieldType
+        )
+    ) {
         return <CountryValueEditor {...props} />;
     }
-    if (props.field === FieldType.ENERGY_SOURCE) {
+    if (
+        props.field === FieldType.ENERGY_SOURCE ||
+        props.field === FieldType.SHUNT_COMPENSATOR_TYPE
+    ) {
         return <TranslatedValueEditor {...props} />;
     }
     if (props.field === FieldType.ID || props.field === FieldType.NAME) {
         return <TextValueEditor {...props} />;
     }
     return (
-        <MaterialValueEditor
-            {...props}
-            title={undefined} // disable the tooltip
-        />
+        <Box sx={props.inputType === 'number' ? styles.noArrows : undefined}>
+            <MaterialValueEditor
+                {...props}
+                title={undefined} // disable the tooltip
+            />
+        </Box>
     );
 };
 export default ValueEditor;

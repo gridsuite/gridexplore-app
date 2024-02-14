@@ -18,6 +18,7 @@ interface IDescriptionInput {
     minRows?: number;
     maxRows?: number;
     sx?: SxProps;
+    noLabel?: boolean;
 }
 
 const DescriptionInput: FunctionComponent<IDescriptionInput> = ({
@@ -26,6 +27,7 @@ const DescriptionInput: FunctionComponent<IDescriptionInput> = ({
     minRows,
     maxRows,
     sx,
+    noLabel,
 }) => {
     const { control } = useFormContext();
     const descriptionWatch = useWatch({
@@ -72,7 +74,7 @@ const DescriptionInput: FunctionComponent<IDescriptionInput> = ({
     return (
         <TextInput
             name={DESCRIPTION}
-            label={'descriptionProperty'}
+            label={noLabel ? undefined : 'descriptionProperty'}
             formProps={formProps}
         />
     );
