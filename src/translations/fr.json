@@ -83,6 +83,7 @@
   "STUDY": "Étude",
   "VOLTAGE_INIT_PARAMETERS": "Paramètres (Initialisation du plan de tension)",
   "SECURITY_ANALYSIS_PARAMETERS": "Paramètres (Analyse de sécurité)",
+  "SENSITIVITY_PARAMETERS": "Paramètres (Analyse de sensibilité)",
   "LOADFLOW_PARAMETERS": "Paramètres (Calcul de répartition)",
   "contingencyList.criteriaBased": "Par critères",
   "contingencyList.script": "Script",

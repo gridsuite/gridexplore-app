@@ -83,6 +83,7 @@
   "STUDY": "Study",
   "VOLTAGE_INIT_PARAMETERS": "Parameters (Voltage profile initialization)",
   "SECURITY_ANALYSIS_PARAMETERS": "Parameters (Security analysis)",
+  "SENSITIVITY_PARAMETERS": "Parameters (Sensitivity analysis)",
   "LOADFLOW_PARAMETERS": "Parameters (LoadFlow)",
   "contingencyList.criteriaBased": "Criteria based",
   "contingencyList.script": "Script",
