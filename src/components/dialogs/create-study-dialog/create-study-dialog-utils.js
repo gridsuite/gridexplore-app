@@ -6,6 +6,7 @@ import {
     FORMATTED_CASE_PARAMETERS,
     STUDY_NAME,
     DIRECTORY,
+    CASE_FORMAT,
 } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 
@@ -23,6 +24,7 @@ export const getCreateStudyDialogFormDefaultValues = ({
         [FORMATTED_CASE_PARAMETERS]: [],
         [CURRENT_PARAMETERS]: {},
         [DIRECTORY]: directory,
+        [CASE_FORMAT]: ''
     };
 };
 
@@ -34,4 +36,5 @@ export const createStudyDialogFormValidationSchema = yup.object().shape({
     [CASE_UUID]: yup.string().required(),
     [CASE_FILE]: yup.mixed().nullable().required(),
     [DIRECTORY]: yup.string().required(),
+    [CASE_FORMAT]: yup.string().optional(),
 });
