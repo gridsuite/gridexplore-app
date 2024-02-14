@@ -24,7 +24,7 @@ export const getCreateStudyDialogFormDefaultValues = ({
         [FORMATTED_CASE_PARAMETERS]: [],
         [CURRENT_PARAMETERS]: {},
         [DIRECTORY]: directory,
-        [CASE_FORMAT]: ''
+        [CASE_FORMAT]: '',
     };
 };
 
