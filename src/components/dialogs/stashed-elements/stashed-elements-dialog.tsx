@@ -67,7 +67,7 @@ const StashedElementsDialog: FunctionComponent<IStashedElementsDialog> = ({
         if (open) {
             handleGetStashedElement();
         }
-    }, [open]);
+    }, [open, handleGetStashedElement]);
 
     const handleSelectAll = useCallback(() => {
         setSelectedElements((values) =>
@@ -93,17 +93,27 @@ const StashedElementsDialog: FunctionComponent<IStashedElementsDialog> = ({
                     messageTxt: error.message,
                 });
             });
-    }, [selectedElements, snackError, activeDirectory]);
+    }, [
+        selectedElements,
+        snackError,
+        activeDirectory,
+        handleGetStashedElement,
+    ]);
 
     const handleRestore = useCallback(() => {
-        restoreElements(selectedElements, activeDirectory, false)
+        restoreElements(selectedElements, activeDirectory)
             .then(() => handleGetStashedElement())
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
                 });
             });
-    }, [selectedElements, snackError, activeDirectory]);
+    }, [
+        selectedElements,
+        snackError,
+        activeDirectory,
+        handleGetStashedElement,
+    ]);
 
     const noSelectedElements = selectedElements.length === 0;
 

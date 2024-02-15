@@ -28,7 +28,6 @@ import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialo
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
-    deleteElement,
     duplicateCase,
     duplicateContingencyList,
     duplicateFilter,
@@ -295,42 +294,16 @@ const ContentContextualMenu = (props) => {
         setHideMenu(false);
     }, [onClose, setOpenDialog]);
 
-    const [multipleDeleteError, setMultipleDeleteError] = useState('');
-
-    const deleteElementOnError = useCallback(
-        (errorMessages, params, paramsOnErrors) => {
-            let msg = intl.formatMessage(
-                { id: 'deleteElementsFailure' },
-                {
-                    pbn: errorMessages.length,
-                    stn: params.length,
-                    problematic: paramsOnErrors
-                        .map((p) => p.elementUuid)
-                        .join(' '),
-                }
-            );
-            console.debug(msg);
-            setMultipleDeleteError(msg);
-        },
-        [intl]
-    );
-    const [deleteCB] = useMultipleDeferredFetch(
-        deleteElement,
-        handleCloseDialog,
-        undefined,
-        deleteElementOnError,
-        false
-    );
-
+    const [deleteError, setDeleteError] = useState('');
     const handleStashElements = useCallback(
         (elementsUuids) => {
-            stashElements(elementsUuids, true)
+            stashElements(elementsUuids)
                 .catch((error) => {
-                    handleLastError(error.message);
+                    setDeleteError(error.message);
                 })
                 .finally(() => handleCloseDialog());
         },
-        [handleLastError, handleCloseDialog]
+        [handleCloseDialog]
     );
 
     const moveElementErrorToString = useCallback(
@@ -667,7 +640,7 @@ const ContentContextualMenu = (props) => {
                             'deleteMultipleItemsDialogMessage'
                         }
                         simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
-                        error={multipleDeleteError}
+                        error={deleteError}
                     />
                 );
             case DialogsId.MOVE:

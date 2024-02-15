@@ -50,8 +50,6 @@ const DeleteDialog = ({
     const openRef = useRef(null);
 
     useEffect(() => {
-        console.log('open : ', open);
-        console.log('openRef : ', openRef)
         if (open && !openRef.current) {
             setItemState(items);
             setLoadingState(false);

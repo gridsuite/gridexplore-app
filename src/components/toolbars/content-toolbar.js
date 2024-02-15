@@ -10,11 +10,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
-import {
-    deleteElement,
-    moveElementToDirectory,
-    stashElements,
-} from '../../utils/rest-api';
+import { moveElementToDirectory, stashElements } from '../../utils/rest-api';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 
@@ -60,41 +56,16 @@ const ContentToolbar = (props) => {
         setOpenDialog(DialogsId.NONE);
     }, []);
 
-    const [multipleDeleteError, setMultipleDeleteError] = useState('');
-    const deleteElementOnError = useCallback(
-        (errorMessages, params, paramsOnErrors) => {
-            let msg = intl.formatMessage(
-                { id: 'deleteElementsFailure' },
-                {
-                    pbn: errorMessages.length,
-                    stn: params.length,
-                    problematic: paramsOnErrors
-                        .map((p) => p.elementUuid)
-                        .join(' '),
-                }
-            );
-            console.debug(msg);
-            setMultipleDeleteError(msg);
-        },
-        [intl]
-    );
-    const [deleteCB] = useMultipleDeferredFetch(
-        deleteElement,
-        handleCloseDialog,
-        undefined,
-        deleteElementOnError,
-        false
-    );
-
+    const [deleteError, setDeleteError] = useState('');
     const handleStashElements = useCallback(
         (elementsUuids) => {
             stashElements(elementsUuids, true)
                 .catch((error) => {
-                    handleLastError(error.message);
+                    setDeleteError(error.message);
                 })
                 .finally(() => handleCloseDialog());
         },
-        [handleLastError, handleCloseDialog]
+        [handleCloseDialog]
     );
 
     const moveElementErrorToString = useCallback(
@@ -224,7 +195,7 @@ const ContentToolbar = (props) => {
                             'deleteMultipleItemsDialogMessage'
                         }
                         simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
-                        error={multipleDeleteError}
+                        error={deleteError}
                     />
                 );
             case DialogsId.MOVE:

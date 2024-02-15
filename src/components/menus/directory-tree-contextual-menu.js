@@ -27,7 +27,6 @@ import FilterCreationDialog from '../dialogs/filter/filter-creation-dialog';
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
-    deleteElement,
     duplicateCase,
     duplicateContingencyList,
     duplicateFilter,
@@ -49,6 +48,7 @@ import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import StashedElementsDialog from '../dialogs/stashed-elements/stashed-elements-dialog';
+import { RestoreFromTrash } from '@mui/icons-material';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
@@ -72,18 +72,6 @@ const DirectoryTreeContextualMenu = (props) => {
             setHideMenu(false);
         },
         [onClose, setOpenDialog]
-    );
-
-    const [deleteCB, deleteState] = useDeferredFetch(
-        deleteElement,
-        () => handleCloseDialog(null, directory?.parentUuid),
-        (HTTPStatusCode) => {
-            if (HTTPStatusCode === 403) {
-                return intl.formatMessage({ id: 'deleteDirectoryError' });
-            }
-        },
-        undefined,
-        false
     );
 
     const [renameCB, renameState] = useDeferredFetch(
@@ -132,15 +120,16 @@ const DirectoryTreeContextualMenu = (props) => {
         [snackError]
     );
 
+    const [deleteError, setDeleteError] = useState('');
     const handleStashElements = useCallback(
         (elementsUuid) => {
-            stashElements(elementsUuid, true)
+            stashElements(elementsUuid)
                 .catch((error) => {
-                    handleError(error.message);
+                    setDeleteError(error.message);
                 })
                 .finally(() => handleCloseDialog(null, directory?.parentUuid));
         },
-        [handleError, handleCloseDialog, directory?.parentUuid]
+        [handleCloseDialog, directory?.parentUuid]
     );
 
     const handlePasteError = (error) => {
@@ -367,13 +356,6 @@ const DirectoryTreeContextualMenu = (props) => {
                 },
                 icon: <CreateNewFolderIcon fontSize="small" />,
             });
-            menuItems.push({
-                messageDescriptorId: 'StashedElements',
-                callback: () => {
-                    handleOpenDialog(DialogsId.STASHED_ELEMENTS);
-                },
-                icon: <CreateNewFolderIcon fontSize="small" />,
-            });
         }
 
         menuItems.push({
@@ -382,6 +364,14 @@ const DirectoryTreeContextualMenu = (props) => {
                 handleOpenDialog(DialogsId.ADD_ROOT_DIRECTORY);
             },
             icon: <FolderSpecialIcon fontSize="small" />,
+        });
+
+        menuItems.push({
+            messageDescriptorId: 'StashedElements',
+            callback: () => {
+                handleOpenDialog(DialogsId.STASHED_ELEMENTS);
+            },
+            icon: <RestoreFromTrash fontSize="small" />,
         });
 
         return menuItems;
@@ -472,7 +462,7 @@ const DirectoryTreeContextualMenu = (props) => {
                             handleStashElements(directory?.elementUuid)
                         }
                         onClose={handleCloseDialog}
-                        error={deleteState.errorMessage}
+                        error={deleteError}
                     />
                 );
             case DialogsId.ACCESS_RIGHTS:

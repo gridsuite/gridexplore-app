@@ -262,9 +262,13 @@ export function deleteElement(elementUuid) {
 }
 
 export function deleteElements(elementUuids, activeDirectory) {
-    console.info("Deleting elements : %s'", elementUuids);
+    console.info('Deleting elements : %s', elementUuids);
     return backendFetch(
-        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/` + activeDirectory + getElementsIdsListsQueryParams(elementUuids),
+        PREFIX_EXPLORE_SERVER_QUERIES +
+            `/v1/explore/elements/` +
+            activeDirectory +
+            '/delete-stashed' +
+            getElementsIdsListsQueryParams(elementUuids),
         {
             method: 'delete',
         }
@@ -1031,17 +1035,13 @@ export function getServersInfos() {
     });
 }
 
-export function stashElements(elementUuids, stash) {
+export function stashElements(elementUuids) {
     console.info('Stashing elements: ' + elementUuids);
-
-    const stashValue = stash.toString();
 
     const updateAccessRightUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         '/v1/elements/' +
-        `stash?stashElement=` +
-        stashValue +
-        '&ids=' +
+        `stash?ids=` +
         elementUuids;
 
     return backendFetch(updateAccessRightUrl, {
@@ -1053,7 +1053,7 @@ export function stashElements(elementUuids, stash) {
     });
 }
 
-export function restoreElements(elementUuids, activeDirectory, stash) {
+export function restoreElements(elementUuids, activeDirectory) {
     console.info('Restoring elements: ' + elementUuids);
 
     const updateAccessRightUrl =
