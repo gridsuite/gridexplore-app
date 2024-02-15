@@ -14,6 +14,14 @@ const backend_locale_fr = {
     MATPOWER: 'MATPOWER',
     POWERFACTORY: 'POWERFACTORY',
     'IEEE CDF': 'IEEE CDF',
+    EXPERT_FILTER: 'Filtre (Expert)',
+    FORM_FILTER: 'Filtre (Formulaire)',
+    IDENTIFIERS_CONTINGENCY_LIST: "Liste d'aléas (Par nommage)",
+    FORM_CONTINGENCY_LIST: "Liste d'aléas (Par critères)",
+    SCRIPT_FILTER: 'Filtre (Script)',
+    SCRIPT_CONTINGENCY_LIST: "Liste d'aléas (Script)",
+    IDENTIFIER_LIST_FILTER: 'Filtre (Par nommage)',
+    CRITERIA_FILTER: 'Filtre (Par critères)',
 };
 
 export default backend_locale_fr;

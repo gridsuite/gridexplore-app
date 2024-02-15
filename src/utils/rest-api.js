@@ -852,6 +852,34 @@ export function duplicateFilter(
     });
 }
 
+export function duplicateModification(
+    name,
+    description,
+    sourceModificationUuid,
+    parentDirectoryUuid
+) {
+    console.info('Duplicating a modification...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/modifications?' +
+        urlSearchParams.toString();
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify([
+            {
+                elementUuid: sourceModificationUuid,
+                description: description,
+                elementName: name,
+            },
+        ]),
+    });
+}
+
 export function duplicateParameter(
     name,
     parameterType,
