@@ -169,6 +169,7 @@
   "cannotRetrieveContingencyList": "Could not retrieve contingency list: ",
   "cannotRetrieveFilter": "Could not retrieve filter: ",
   "FreePropsCrit": "By properties filtering",
+  "FreeProps": "Equipment properties",
   "SubstationFreeProps": "Equipment substation properties",
   "AddFreePropCrit": "Add a filtering by property",
   "PropertyName": "Property name",
