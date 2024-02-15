@@ -23,6 +23,7 @@ import {
 } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
+import PopupConfirmationDialog from '../../utils/popup-confirmation-dialog';
 
 interface IStashedElementsDialog {
     open: boolean;
@@ -46,9 +47,12 @@ const StashedElementsDialog: FunctionComponent<IStashedElementsDialog> = ({
     const intl = useIntl();
     const [selectedElements, setSelectedElements] = useState<string[]>([]);
     const [elements, setElements] = useState<any[]>([]);
+    const [openConfirmationPopup, setOpenConfirmationPopup] =
+        useState<boolean>(false);
     const { snackError } = useSnackMessage();
-    const activeDirectory = useSelector(
-        (state: ReduxState) => state.activeDirectory
+
+    const selectedDirectory = useSelector(
+        (state: ReduxState) => state.selectedDirectory
     );
 
     const handleGetStashedElement = useCallback(() => {
@@ -86,33 +90,37 @@ const StashedElementsDialog: FunctionComponent<IStashedElementsDialog> = ({
     }, []);
 
     const handleDelete = useCallback(() => {
-        deleteElements(selectedElements, activeDirectory)
+        deleteElements(selectedElements, selectedDirectory.elementUuid)
             .then(() => handleGetStashedElement())
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
                 });
-            });
+            })
+            .finally(() => onClose());
     }, [
         selectedElements,
         snackError,
-        activeDirectory,
+        selectedDirectory,
         handleGetStashedElement,
+        onClose,
     ]);
 
     const handleRestore = useCallback(() => {
-        restoreElements(selectedElements, activeDirectory)
+        restoreElements(selectedElements, selectedDirectory.elementUuid)
             .then(() => handleGetStashedElement())
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
                 });
-            });
+            })
+            .finally(() => onClose());
     }, [
         selectedElements,
         snackError,
-        activeDirectory,
+        selectedDirectory,
         handleGetStashedElement,
+        onClose,
     ]);
 
     const noSelectedElements = selectedElements.length === 0;
@@ -134,49 +142,61 @@ const StashedElementsDialog: FunctionComponent<IStashedElementsDialog> = ({
     });
 
     return (
-        <Dialog open={open}>
-            <DialogTitle>
-                {intl.formatMessage({
-                    id: 'StashedElements',
-                })}
-            </DialogTitle>
-            <DialogContent>
-                <FormControl>
-                    <FormGroup>
-                        <Box>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={
-                                            selectedElements.length ===
-                                            elements.length
-                                        }
-                                        onChange={handleSelectAll}
-                                    />
-                                }
-                                label={intl.formatMessage({ id: 'All' })}
-                            />
-                        </Box>
-                        {elementsField}
-                    </FormGroup>
-                </FormControl>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose}>
-                    <FormattedMessage id="close" />
-                </Button>
-                <Button onClick={handleDelete} disabled={noSelectedElements}>
-                    <FormattedMessage id="DeleteRows" />
-                </Button>
-                <Button
-                    onClick={handleRestore}
-                    disabled={noSelectedElements}
-                    variant="outlined"
-                >
-                    <FormattedMessage id="restore" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <>
+            <Dialog open={open}>
+                <DialogTitle>
+                    {intl.formatMessage({
+                        id: 'StashedElements',
+                    })}
+                </DialogTitle>
+                <DialogContent>
+                    <FormControl>
+                        <FormGroup>
+                            <Box>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={
+                                                selectedElements.length ===
+                                                elements.length
+                                            }
+                                            onChange={handleSelectAll}
+                                        />
+                                    }
+                                    label={intl.formatMessage({ id: 'All' })}
+                                />
+                            </Box>
+                            {elementsField}
+                        </FormGroup>
+                    </FormControl>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={onClose}>
+                        <FormattedMessage id="close" />
+                    </Button>
+                    <Button
+                        onClick={() => setOpenConfirmationPopup(true)}
+                        disabled={noSelectedElements}
+                    >
+                        <FormattedMessage id="DeleteRows" />
+                    </Button>
+                    <Button
+                        onClick={handleRestore}
+                        disabled={noSelectedElements}
+                        variant="outlined"
+                    >
+                        <FormattedMessage id="restore" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <PopupConfirmationDialog
+                openConfirmationPopup={openConfirmationPopup}
+                message={'ElementsWillBeDeletedMsg'}
+                handlePopupConfirmation={handleDelete}
+                setOpenConfirmationPopup={setOpenConfirmationPopup}
+                validateButtonLabel={'DeleteRows'}
+            />
+        </>
     );
 };
 

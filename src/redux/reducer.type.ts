@@ -22,7 +22,25 @@ interface IUser {
     expires_at: number;
 }
 
+interface IDirectory {
+    elementUuid: UUID;
+    elementName: string;
+    type: "DIRECTORY";
+    accessRights: {
+        isPrivate: boolean;
+    };
+    owner: string;
+    subdirectoriesCount: number;
+    creationDate: string;
+    lastModificationDate: string;
+    lastModifiedBy: string;
+    children: any[];
+    parentUuid: null | UUID;
+}
+
+
 export interface ReduxState {
     activeDirectory: UUID;
+    selectedDirectory: IDirectory;
     user: IUser;
 }

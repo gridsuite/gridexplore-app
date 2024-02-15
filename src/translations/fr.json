@@ -270,5 +270,6 @@
   "StashedElements": "Restaurer des elements",
   "All": "Tous",
   "DeleteRows": "Supprimer",
-  "restore": "Restaurer"
+  "restore": "Restaurer",
+  "ElementsWillBeDeletedMsg": "Tous les éléments sélectionnés seront définitivement supprimés"
 }

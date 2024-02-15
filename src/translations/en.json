@@ -270,5 +270,6 @@
   "StashedElements": "Restore elements",
   "All": "All",
   "restore": "Restore",
-  "DeleteRows": "Delete"
+  "DeleteRows": "Delete",
+  "ElementsWillBeDeletedMsg": "All selected elements will be permanently deleted"
 }
