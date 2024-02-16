@@ -211,7 +211,7 @@ const DirectoryContent = () => {
     };
 
     /**
-     * Filters dialog: window status value to edit CriteriaBaseds filters
+     * Filters dialog: window status value to edit CriteriaBased filters
      */
     const [currentCriteriaBasedFilterId, setCurrentCriteriaBasedFilterId] =
         useState(null);
@@ -686,10 +686,7 @@ const DirectoryContent = () => {
                             />
                         )}
                     {childrenMetadata[element.elementUuid] &&
-                        getElementIcon(
-                            element.type,
-                            childrenMetadata[element.elementUuid].subtype
-                        )}
+                        getElementIcon(element.type)}
                     {/* Name */}
                     <OverflowableText
                         text={getDisplayedElementName(cellData)}
