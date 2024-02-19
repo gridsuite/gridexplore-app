@@ -36,6 +36,7 @@ import {
 import {
     API_CALL,
     CASE_FILE,
+    CASE_FORMAT,
     CASE_NAME,
     CASE_UUID,
     CURRENT_PARAMETERS,
@@ -145,9 +146,11 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     setValue(FORMATTED_CASE_PARAMETERS, formattedParams, {
                         shouldDirty: true,
                     });
+                    setValue(CASE_FORMAT, result.formatName);
                 })
                 .catch(() => {
                     setValue(FORMATTED_CASE_PARAMETERS, []);
+                    setValue(CASE_FORMAT, '');
                     setError(`root.${API_CALL}`, {
                         type: 'parameterLoadingProblem',
                         message: intl.formatMessage({
@@ -189,6 +192,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             });
             return;
         }
+        const caseFormat = getValues(CASE_FORMAT);
 
         const uploadingStudy = {
             id: keyGenerator(),
@@ -198,6 +202,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             owner: userId,
             lastModifiedBy: userId,
             uploading: true,
+            caseFormat,
         };
 
         createStudy(
@@ -206,7 +211,8 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             caseUuid,
             !!providedExistingCase,
             directory,
-            currentParameters ? JSON.stringify(currentParameters) : ''
+            currentParameters ? JSON.stringify(currentParameters) : '',
+            caseFormat
         )
             .then(() => {
                 dispatch(setActiveDirectory(selectedDirectory?.elementUuid));

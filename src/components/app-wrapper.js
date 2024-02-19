@@ -38,13 +38,15 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
+import network_modification_locale_en from '../translations/dynamic/network-modifications-locale-en';
+import network_modification_locale_fr from '../translations/dynamic/network-modifications-locale-fr';
 import messages_plugins_en from '../plugins/translations/en.json';
 import messages_plugins_fr from '../plugins/translations/fr.json';
-import aggrid_locale_fr from '../translations/aggrid-locale-fr';
-import backend_locale_fr from '../translations/backend-locale-fr';
-import backend_locale_en from '../translations/backend-locale-en';
-import import_parameters_en from '../translations/import-parameters-en';
-import import_parameters_fr from '../translations/import-parameters-fr';
+import aggrid_locale_fr from '../translations/external/aggrid-locale-fr';
+import backend_locale_fr from '../translations/external/backend-locale-fr';
+import backend_locale_en from '../translations/external/backend-locale-en';
+import import_parameters_en from '../translations/external/import-parameters-en';
+import import_parameters_fr from '../translations/external/import-parameters-fr';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
@@ -168,6 +170,7 @@ const getMuiTheme = (theme) => {
 const messages = {
     en: {
         ...messages_en,
+        ...network_modification_locale_en,
         ...login_en,
         ...top_bar_en,
         ...table_en,
@@ -182,6 +185,7 @@ const messages = {
     },
     fr: {
         ...messages_fr,
+        ...network_modification_locale_fr,
         ...login_fr,
         ...top_bar_fr,
         ...table_fr,

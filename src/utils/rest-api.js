@@ -413,13 +413,15 @@ export function createStudy(
     caseUuid,
     duplicateCase,
     parentDirectoryUuid,
-    importParameters
+    importParameters,
+    caseFormat
 ) {
     console.info('Creating a new study...');
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('duplicateCase', duplicateCase);
     urlSearchParams.append('description', studyDescription);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    urlSearchParams.append('caseFormat', caseFormat);
 
     const createStudyUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +

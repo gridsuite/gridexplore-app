@@ -36,6 +36,7 @@ export const CASE_FILE = 'caseFile';
 export const CASE_UUID = 'caseUuid';
 export const FORMATTED_CASE_PARAMETERS = 'formattedCaseParameters';
 export const CURRENT_PARAMETERS = 'currentParameters';
+export const CASE_FORMAT = 'caseFormat';
 export const API_CALL = 'apiCall';
 export const CASE_NAME = 'caseName';
 export const DIRECTORY = 'directory';

@@ -17,7 +17,7 @@ import {
     VALUE_1,
     VALUE_2,
 } from '../../../utils/field-constants';
-import { FILTER_PROPERTIES } from './filter-properties';
+import { FreePropertiesTypes } from './filter-properties';
 import {
     PROPERTY_NAME,
     PROPERTY_VALUES,
@@ -38,12 +38,13 @@ import { getCriteriaBasedFormData } from '../../commons/criteria-based/criteria-
  * @author Laurent LAUGARN modified by Florent MILLOT
  */
 export const backToFrontTweak = (response) => {
-    const props = response.equipmentFilterForm.freeProperties;
+    const subProps = response.equipmentFilterForm.substationFreeProperties;
+    const freeProps = response.equipmentFilterForm.freeProperties;
     const props1 = response.equipmentFilterForm.freeProperties1;
     const props2 = response.equipmentFilterForm.freeProperties2;
     const allKeys = new Set();
-    if (props) {
-        Object.keys(props).forEach((k) => allKeys.add(k));
+    if (subProps) {
+        Object.keys(subProps).forEach((k) => allKeys.add(k));
     }
     if (props1) {
         Object.keys(props1).forEach((k) => allKeys.add(k));
@@ -51,10 +52,11 @@ export const backToFrontTweak = (response) => {
     if (props2) {
         Object.keys(props2).forEach((k) => allKeys.add(k));
     }
-    const filterProperties = [];
+    const filterSubstationProperties = [];
+    const filterFreeProperties = [];
     allKeys.forEach((k) => {
         const prop = { [PROPERTY_NAME]: k };
-        const values = props?.[k];
+        const values = subProps?.[k];
         if (values) {
             prop[PROPERTY_VALUES] = values;
         }
@@ -66,13 +68,28 @@ export const backToFrontTweak = (response) => {
         if (values2) {
             prop[PROPERTY_VALUES_2] = values2;
         }
-        filterProperties.push(prop);
+        filterSubstationProperties.push(prop);
     });
+    allKeys.clear();
+    if (freeProps) {
+        Object.keys(freeProps).forEach((k) => allKeys.add(k));
+    }
+    allKeys.forEach((k) => {
+        const prop = { [PROPERTY_NAME]: k };
+        const values = freeProps?.[k];
+        if (values) {
+            prop[PROPERTY_VALUES] = values;
+        }
+        filterFreeProperties.push(prop);
+    });
+
     const ret = {
         [EQUIPMENT_TYPE]: response[EQUIPMENT_TYPE],
         ...getCriteriaBasedFormData(response.equipmentFilterForm, {
             [ENERGY_SOURCE]: response.equipmentFilterForm[ENERGY_SOURCE],
-            [FILTER_PROPERTIES]: filterProperties,
+            [FreePropertiesTypes.SUBSTATION_FILTER_PROPERTIES]:
+                filterSubstationProperties,
+            [FreePropertiesTypes.FREE_FILTER_PROPERTIES]: filterFreeProperties,
         }),
     };
     return ret;
@@ -90,7 +107,10 @@ export const backToFrontTweak = (response) => {
  * @author Laurent LAUGARN modified by Florent MILLOT
  */
 export const frontToBackTweak = (id, filter) => {
-    const filterProperties = filter[CRITERIA_BASED][FILTER_PROPERTIES];
+    const filterSubstationProperties =
+        filter[CRITERIA_BASED][
+            FreePropertiesTypes.SUBSTATION_FILTER_PROPERTIES
+        ];
     const ret = { id, type: FilterType.CRITERIA_BASED.id };
     const eff = {
         [EQUIPMENT_TYPE]: filter[EQUIPMENT_TYPE],
@@ -98,11 +118,11 @@ export const frontToBackTweak = (id, filter) => {
     };
     // in the back end we store everything in a field called equipmentFilterForm
     ret.equipmentFilterForm = eff;
-    delete eff[FILTER_PROPERTIES];
+    delete eff[FreePropertiesTypes.SUBSTATION_FILTER_PROPERTIES];
     const props = {};
     const props1 = {};
     const props2 = {};
-    filterProperties.forEach((prop) => {
+    filterSubstationProperties.forEach((prop) => {
         const values = prop[PROPERTY_VALUES];
         const values1 = prop[PROPERTY_VALUES_1];
         const values2 = prop[PROPERTY_VALUES_2];
@@ -116,9 +136,22 @@ export const frontToBackTweak = (id, filter) => {
             props2[prop[PROPERTY_NAME]] = values2;
         }
     });
-    eff.freeProperties = props;
+    eff.substationFreeProperties = props;
     eff.freeProperties1 = props1;
     eff.freeProperties2 = props2;
+
+    const filterFreeProperties =
+        filter[CRITERIA_BASED][FreePropertiesTypes.FREE_FILTER_PROPERTIES];
+    // in the back end we store everything in a field called equipmentFilterForm
+    delete eff[FreePropertiesTypes.FREE_FILTER_PROPERTIES];
+    const freeProps = {};
+    filterFreeProperties.forEach((prop) => {
+        const values = prop[PROPERTY_VALUES];
+        if (values) {
+            freeProps[prop[PROPERTY_NAME]] = values;
+        }
+    });
+    eff.freeProperties = freeProps;
     return ret;
 };
 
