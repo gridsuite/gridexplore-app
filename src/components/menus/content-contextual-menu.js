@@ -803,7 +803,6 @@ const ContentContextualMenu = (props) => {
                     />
                 );
             case DialogsId.CONVERT_TO_EXPLICIT_FILTER:
-                console.log('DBR renderDialog', activeElement);
                 return (
                     <FilterCreationDialog
                         open={true}

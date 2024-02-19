@@ -24,9 +24,6 @@ export interface DirectorySelectProps {
     onElementValidated?: (elementId: UUID) => void;
 }
 
-// TODO rename into ElementSelect ?
-// TODO when select an elementType, dont allow directory selection
-// TODO bug on ne vois pas les study d'un dossier - pas d'indication
 const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = (
     props
 ) => {

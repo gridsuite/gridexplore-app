@@ -35,6 +35,12 @@ function getToken() {
     return state.user.id_token;
 }
 
+export const getRequestParamFromList = (params, paramName) => {
+    return new URLSearchParams(
+        params?.length ? params.map((param) => [paramName, param]) : []
+    );
+};
+
 export function connectNotificationsWsUpdateConfig() {
     const webSocketBaseUrl = document.baseURI
         .replace(/^http:\/\//, 'ws://')
@@ -244,11 +250,18 @@ export function fetchConfigParameter(name) {
     return backendFetchJson(fetchParams);
 }
 
-export function fetchDirectoryContent(directoryUuid) {
+export function fetchDirectoryContent(directoryUuid, elementTypes) {
     console.info("Fetching Folder content '%s'", directoryUuid);
-    const fetchDirectoryContentUrl =
+    const typeParams = getRequestParamFromList(
+        elementTypes,
+        'elementTypes'
+    ).toString();
+    let fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${directoryUuid}/elements`;
+    if (typeParams.length > 0) {
+        fetchDirectoryContentUrl += '?' + typeParams;
+    }
     return backendFetchJson(fetchDirectoryContentUrl);
 }
 
@@ -389,21 +402,13 @@ export function updateConfigParameter(name, value) {
     return backendFetch(updateParams, { method: 'put' });
 }
 
-function getElementsIdsListsQueryParams(ids) {
-    if (ids !== undefined && ids.length > 0) {
-        const urlSearchParams = new URLSearchParams();
-        ids.forEach((id) => urlSearchParams.append('ids', id));
-        return '?' + urlSearchParams.toString();
-    }
-    return '';
-}
-
 export function fetchElementsInfos(ids) {
     console.info('Fetching elements metadata ... ');
+    const idsParams = getRequestParamFromList(ids, 'ids').toString();
     const fetchElementsInfosUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/elements/metadata' +
-        getElementsIdsListsQueryParams(ids);
+        '/v1/explore/elements/metadata?' +
+        idsParams;
     return backendFetchJson(fetchElementsInfosUrl);
 }
 

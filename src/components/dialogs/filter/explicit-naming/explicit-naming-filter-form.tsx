@@ -203,10 +203,8 @@ export const ExplicitNamingFilterForm: FunctionComponent<
     };
 
     const onStudySelected = (studyUuid: UUID) => {
-        console.log('DBR onStudySelected', studyUuid);
         exportFilter(studyUuid, props.sourceFilterForExplicitConversion?.id)
             .then((matchingEquipments) => {
-                console.log('DBR exportFilter', matchingEquipments);
                 setValue(
                     FILTER_EQUIPMENTS_ATTRIBUTES,
                     matchingEquipments.map((equipment: any) => ({
