@@ -426,13 +426,15 @@ export function createStudy(
     caseUuid,
     duplicateCase,
     parentDirectoryUuid,
-    importParameters
+    importParameters,
+    caseFormat
 ) {
     console.info('Creating a new study...');
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('duplicateCase', duplicateCase);
     urlSearchParams.append('description', studyDescription);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    urlSearchParams.append('caseFormat', caseFormat);
 
     const createStudyUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +
@@ -862,6 +864,34 @@ export function duplicateFilter(
 
     return backendFetch(url, {
         method: 'post',
+    });
+}
+
+export function duplicateModification(
+    name,
+    description,
+    sourceModificationUuid,
+    parentDirectoryUuid
+) {
+    console.info('Duplicating a modification...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/modifications?' +
+        urlSearchParams.toString();
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify([
+            {
+                elementUuid: sourceModificationUuid,
+                description: description,
+                elementName: name,
+            },
+        ]),
     });
 }
 
