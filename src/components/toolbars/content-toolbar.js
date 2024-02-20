@@ -70,10 +70,11 @@ const ContentToolbar = (props) => {
             stashElements(elementsUuids, true)
                 .catch((error) => {
                     setDeleteError(error.message);
+                    handleLastError(error.message);
                 })
-                .finally(() => handleCloseDialog());
+                .finally(handleCloseDialog);
         },
-        [handleCloseDialog]
+        [handleCloseDialog, handleLastError]
     );
 
     const moveElementErrorToString = useCallback(

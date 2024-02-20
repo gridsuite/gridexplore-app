@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FunctionComponent, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -38,12 +38,12 @@ function getElementId(element: any) {
     return element.first.elementUuid;
 }
 
-const StashedElementsDialog: FunctionComponent<IStashedElementsDialog> = ({
+const StashedElementsDialog = ({
     open,
     onClose,
     onStashedElementChange,
     stashedElements,
-}) => {
+}: IStashedElementsDialog) => {
     const intl = useIntl();
     const [selectedElements, setSelectedElements] = useState<string[]>([]);
     const [openConfirmationPopup, setOpenConfirmationPopup] =

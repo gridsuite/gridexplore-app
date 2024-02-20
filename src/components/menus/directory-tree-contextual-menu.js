@@ -128,10 +128,11 @@ const DirectoryTreeContextualMenu = (props) => {
             stashElements(elementsUuid)
                 .catch((error) => {
                     setDeleteError(error.message);
+                    handleError(error.message);
                 })
                 .finally(() => handleCloseDialog(null, directory?.parentUuid));
         },
-        [handleCloseDialog, directory?.parentUuid]
+        [handleCloseDialog, directory?.parentUuid, handleError]
     );
 
     const handlePasteError = (error) => {

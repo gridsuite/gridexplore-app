@@ -319,10 +319,11 @@ const ContentContextualMenu = (props) => {
             stashElements(elementsUuids)
                 .catch((error) => {
                     setDeleteError(error.message);
+                    handleLastError(error.message);
                 })
                 .finally(() => handleCloseDialog());
         },
-        [handleCloseDialog]
+        [handleCloseDialog, handleLastError]
     );
 
     const moveElementErrorToString = useCallback(
