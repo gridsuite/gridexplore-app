@@ -64,19 +64,6 @@ const ContentToolbar = (props) => {
         setOpenDialog(DialogsId.NONE);
     }, []);
 
-    const [deleteError, setDeleteError] = useState('');
-    const handleStashElements = useCallback(
-        (elementsUuids) => {
-            stashElements(elementsUuids, true)
-                .catch((error) => {
-                    setDeleteError(error.message);
-                    handleLastError(error.message);
-                })
-                .finally(handleCloseDialog);
-        },
-        [handleCloseDialog, handleLastError]
-    );
-
     const moveElementErrorToString = useCallback(
         (HTTPStatusCode) => {
             if (HTTPStatusCode === 403) {
@@ -158,6 +145,20 @@ const ContentToolbar = (props) => {
                 });
             });
     }, [snackError]);
+
+    const [deleteError, setDeleteError] = useState('');
+    const handleStashElements = useCallback(
+        (elementsUuids) => {
+            stashElements(elementsUuids, true)
+                .then(handleGetStashedElement)
+                .catch((error) => {
+                    setDeleteError(error.message);
+                    handleLastError(error.message);
+                })
+                .finally(handleCloseDialog);
+        },
+        [handleCloseDialog, handleLastError, handleGetStashedElement]
+    );
 
     useEffect(() => {
         handleGetStashedElement();
