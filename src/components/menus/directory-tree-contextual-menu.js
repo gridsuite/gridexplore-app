@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -34,6 +34,7 @@ import {
     duplicateStudy,
     fetchElementsInfos,
     getNameCandidate,
+    getStashedElements,
     insertDirectory,
     insertRootDirectory,
     renameElement,
@@ -265,6 +266,23 @@ const DirectoryTreeContextualMenu = (props) => {
         }
     }
 
+    const [stashedElements, setStashedElements] = useState([]);
+    const handleGetStashedElement = useCallback(() => {
+        getStashedElements()
+            .then(setStashedElements)
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                });
+            });
+    }, [snackError]);
+
+    useEffect(() => {
+        if (open) {
+            handleGetStashedElement();
+        }
+    }, [handleGetStashedElement, open]);
+
     // Allowance
     const showMenuFromEmptyZone = useCallback(() => {
         return !directory;
@@ -366,13 +384,16 @@ const DirectoryTreeContextualMenu = (props) => {
             icon: <FolderSpecialIcon fontSize="small" />,
         });
 
-        menuItems.push({
-            messageDescriptorId: 'StashedElements',
-            callback: () => {
-                handleOpenDialog(DialogsId.STASHED_ELEMENTS);
-            },
-            icon: <RestoreFromTrash fontSize="small" />,
-        });
+        if (!showMenuFromEmptyZone()) {
+            menuItems.push({
+                messageDescriptorId: 'StashedElements',
+                callback: () => {
+                    handleOpenDialog(DialogsId.STASHED_ELEMENTS);
+                },
+                icon: <RestoreFromTrash fontSize="small" />,
+                disabled: stashedElements.length === 0,
+            });
+        }
 
         return menuItems;
     };
@@ -497,8 +518,10 @@ const DirectoryTreeContextualMenu = (props) => {
             case DialogsId.STASHED_ELEMENTS:
                 return (
                     <StashedElementsDialog
-                        open={true}
+                        open
                         onClose={handleCloseDialog}
+                        stashedElements={stashedElements}
+                        onStashedElementChange={handleGetStashedElement}
                     />
                 );
             default:

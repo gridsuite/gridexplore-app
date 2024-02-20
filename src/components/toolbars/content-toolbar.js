@@ -10,7 +10,11 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
-import { moveElementToDirectory, stashElements } from '../../utils/rest-api';
+import {
+    getStashedElements,
+    moveElementToDirectory,
+    stashElements,
+} from '../../utils/rest-api';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 
@@ -25,6 +29,7 @@ import { FileDownload, RestoreFromTrash } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import React from 'react';
 import StashedElementsDialog from '../dialogs/stashed-elements/stashed-elements-dialog';
+import { useEffect } from 'react';
 
 const DialogsId = {
     DELETE: 'delete',
@@ -142,52 +147,69 @@ const ContentToolbar = (props) => {
         [selectedElements, noCreationInProgress]
     );
 
+    const [stashedElements, setStashedElements] = useState([]);
+    const handleGetStashedElement = useCallback(() => {
+        getStashedElements()
+            .then(setStashedElements)
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                });
+            });
+    }, [snackError]);
+
+    useEffect(() => {
+        handleGetStashedElement();
+    }, [handleGetStashedElement]);
+
     const items = useMemo(() => {
-        const items = [];
+        const toolbarItems = [];
 
         if (
             selectedElements.length &&
             (allowsDelete || allowsMove || allowsDownloadCases)
         ) {
-            items.push({
-                tooltipTextId: 'delete',
-                callback: () => {
-                    handleOpenDialog(DialogsId.DELETE);
+            toolbarItems.push(
+                {
+                    tooltipTextId: 'delete',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.DELETE);
+                    },
+                    icon: <DeleteIcon fontSize="small" />,
+                    disabled: !selectedElements.length || !allowsDelete,
                 },
-                icon: <DeleteIcon fontSize="small" />,
-                disabled: !selectedElements.length || !allowsDelete,
-            });
-
-            items.push({
-                tooltipTextId: 'move',
-                callback: () => {
-                    handleOpenDialog(DialogsId.MOVE);
+                {
+                    tooltipTextId: 'move',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.MOVE);
+                    },
+                    icon: <DriveFileMoveIcon fontSize="small" />,
+                    disabled: !selectedElements.length || !allowsMove,
                 },
-                icon: <DriveFileMoveIcon fontSize="small" />,
-                disabled: !selectedElements.length || !allowsMove,
-            });
-
-            items.push({
-                tooltipTextId: 'download.button',
-                callback: () => handleDownloadCases(selectedElements),
-                icon: <FileDownload fontSize="small" />,
-                disabled: !selectedElements.length || !allowsDownloadCases,
-            });
+                {
+                    tooltipTextId: 'download.button',
+                    callback: () => handleDownloadCases(selectedElements),
+                    icon: <FileDownload fontSize="small" />,
+                    disabled: !selectedElements.length || !allowsDownloadCases,
+                }
+            );
         }
 
-        items.push({
+        toolbarItems.push({
             tooltipTextId: 'StashedElements',
             callback: () => handleOpenDialog(DialogsId.STASHED_ELEMENTS),
             icon: <RestoreFromTrash fontSize="small" />,
+            disabled: stashedElements.length === 0,
         });
 
-        return items;
+        return toolbarItems;
     }, [
         allowsDelete,
         allowsDownloadCases,
         allowsMove,
         handleDownloadCases,
         selectedElements,
+        stashedElements,
     ]);
 
     const renderDialog = () => {
@@ -233,8 +255,10 @@ const ContentToolbar = (props) => {
             case DialogsId.STASHED_ELEMENTS:
                 return (
                     <StashedElementsDialog
-                        open={true}
+                        open
                         onClose={handleCloseDialog}
+                        stashedElements={stashedElements}
+                        onStashedElementChange={handleGetStashedElement}
                     />
                 );
             default:
