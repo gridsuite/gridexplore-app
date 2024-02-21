@@ -30,6 +30,7 @@ import { useDownloadUtils } from '../utils/caseUtils';
 import React from 'react';
 import StashedElementsDialog from '../dialogs/stashed-elements/stashed-elements-dialog';
 import { useEffect } from 'react';
+import { notificationType } from '../../utils/notificationType';
 
 const DialogsId = {
     DELETE: 'delete',
@@ -46,6 +47,9 @@ const ContentToolbar = (props) => {
     const { handleDownloadCases } = useDownloadUtils();
 
     const [openDialog, setOpenDialog] = useState(null);
+    const directoryUpdatedEvent = useSelector(
+        (state) => state.directoryUpdated
+    );
 
     const handleLastError = useCallback(
         (message) => {
@@ -149,7 +153,7 @@ const ContentToolbar = (props) => {
     const [deleteError, setDeleteError] = useState('');
     const handleStashElements = useCallback(
         (elementsUuids) => {
-            stashElements(elementsUuids, true)
+            stashElements(elementsUuids)
                 .then(handleGetStashedElement)
                 .catch((error) => {
                     setDeleteError(error.message);
@@ -163,6 +167,18 @@ const ContentToolbar = (props) => {
     useEffect(() => {
         handleGetStashedElement();
     }, [handleGetStashedElement]);
+
+    useEffect(() => {
+        if (
+            directoryUpdatedEvent.eventData?.headers &&
+            (directoryUpdatedEvent.eventData.headers['notificationType'] ===
+                notificationType.UPDATE_DIRECTORY ||
+                directoryUpdatedEvent.eventData.headers['notificationType'] ===
+                    notificationType.DELETE_DIRECTORY)
+        ) {
+            handleGetStashedElement();
+        }
+    }, [directoryUpdatedEvent, handleGetStashedElement]);
 
     const items = useMemo(() => {
         const toolbarItems = [];

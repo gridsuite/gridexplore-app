@@ -20,6 +20,7 @@ import { deleteElements, restoreElements } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
 import PopupConfirmationDialog from '../../utils/popup-confirmation-dialog';
+import Alert from '@mui/material/Alert';
 
 interface IStashedElementsDialog {
     open: boolean;
@@ -53,6 +54,8 @@ const StashedElementsDialog = ({
     const selectedDirectory = useSelector(
         (state: ReduxState) => state.selectedDirectory
     );
+
+    const [error, setError] = useState('');
 
     const handleSelectAll = useCallback(() => {
         setSelectedElements((values) =>
@@ -88,20 +91,37 @@ const StashedElementsDialog = ({
     ]);
 
     const handleRestore = useCallback(() => {
-        restoreElements(selectedElements, selectedDirectory.elementUuid)
-            .then(onStashedElementChange)
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
-            })
-            .finally(onClose);
+        if (selectedDirectory?.elementUuid) {
+            restoreElements(selectedElements, selectedDirectory.elementUuid)
+                .then(onStashedElementChange)
+                .catch((error) => {
+                    if (error.status === 403) {
+                        const errorMessage = selectedDirectory.accessRights
+                            .isPrivate
+                            ? 'RestoreElementsInPrivateDirectoryError'
+                            : 'RestoreElementsInPublicDirectoryError';
+                        snackError({
+                            messageTxt: intl.formatMessage({
+                                id: errorMessage,
+                            }),
+                        });
+                    } else {
+                        snackError({
+                            messageTxt: error.message,
+                        });
+                    }
+                })
+                .finally(onClose);
+        } else {
+            setError('NoDirectorySelectedError');
+        }
     }, [
         selectedElements,
         snackError,
         selectedDirectory,
         onStashedElementChange,
         onClose,
+        intl,
     ]);
 
     const noSelectedElements = selectedElements.length === 0;
@@ -150,6 +170,11 @@ const StashedElementsDialog = ({
                             {elementsField}
                         </FormGroup>
                     </FormControl>
+                    {error && (
+                        <Alert severity={'error'}>
+                            <FormattedMessage id={error} />
+                        </Alert>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={onClose}>

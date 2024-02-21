@@ -25,7 +25,7 @@ interface IUser {
 interface IDirectory {
     elementUuid: UUID;
     elementName: string;
-    type: "DIRECTORY";
+    type: 'DIRECTORY';
     accessRights: {
         isPrivate: boolean;
     };
@@ -37,7 +37,6 @@ interface IDirectory {
     children: any[];
     parentUuid: null | UUID;
 }
-
 
 export interface ReduxState {
     activeDirectory: UUID;

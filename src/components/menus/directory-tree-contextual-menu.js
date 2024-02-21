@@ -51,6 +51,7 @@ import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import StashedElementsDialog from '../dialogs/stashed-elements/stashed-elements-dialog';
 import { RestoreFromTrash } from '@mui/icons-material';
+import { notificationType } from '../../utils/notificationType';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
@@ -61,6 +62,9 @@ const DirectoryTreeContextualMenu = (props) => {
 
     const [hideMenu, setHideMenu] = useState(false);
     const { snackError } = useSnackMessage();
+    const directoryUpdatedEvent = useSelector(
+        (state) => state.directoryUpdated
+    );
 
     const handleOpenDialog = (dialogId) => {
         setHideMenu(true);
@@ -120,19 +124,6 @@ const DirectoryTreeContextualMenu = (props) => {
             });
         },
         [snackError]
-    );
-
-    const [deleteError, setDeleteError] = useState('');
-    const handleStashElements = useCallback(
-        (elementsUuid) => {
-            stashElements(elementsUuid)
-                .catch((error) => {
-                    setDeleteError(error.message);
-                    handleError(error.message);
-                })
-                .finally(() => handleCloseDialog(null, directory?.parentUuid));
-        },
-        [handleCloseDialog, directory?.parentUuid, handleError]
     );
 
     const handlePasteError = (error) => {
@@ -298,11 +289,42 @@ const DirectoryTreeContextualMenu = (props) => {
             });
     }, [snackError]);
 
+    const [deleteError, setDeleteError] = useState('');
+    const handleStashElements = useCallback(
+        (elementsUuid) => {
+            stashElements(elementsUuid)
+                .then(handleGetStashedElement)
+                .catch((error) => {
+                    setDeleteError(error.message);
+                    handleError(error.message);
+                })
+                .finally(() => handleCloseDialog(null, directory?.parentUuid));
+        },
+        [
+            handleCloseDialog,
+            directory?.parentUuid,
+            handleError,
+            handleGetStashedElement,
+        ]
+    );
+
     useEffect(() => {
         if (open) {
             handleGetStashedElement();
         }
     }, [handleGetStashedElement, open]);
+
+    useEffect(() => {
+        if (
+            directoryUpdatedEvent.eventData?.headers &&
+            (directoryUpdatedEvent.eventData.headers['notificationType'] ===
+                notificationType.UPDATE_DIRECTORY ||
+                directoryUpdatedEvent.eventData.headers['notificationType'] ===
+                    notificationType.DELETE_DIRECTORY)
+        ) {
+            handleGetStashedElement();
+        }
+    }, [directoryUpdatedEvent, handleGetStashedElement]);
 
     // Allowance
     const showMenuFromEmptyZone = useCallback(() => {

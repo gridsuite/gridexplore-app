@@ -274,5 +274,8 @@
   "All": "Tous",
   "DeleteRows": "Supprimer",
   "restore": "Restaurer",
-  "ElementsWillBeDeletedMsg": "Tous les éléments sélectionnés seront définitivement supprimés"
+  "ElementsWillBeDeletedMsg": "Tous les éléments sélectionnés seront définitivement supprimés",
+  "NoDirectorySelectedError": "Un dossier doit être sélectionné pour restaurer les éléments",
+  "RestoreElementsInPrivateDirectoryError": "Certains ou tous les éléments ne peuvent pas être restaurés : Pour effectuer une restauration dans un dossier privé il est nécessaire d'être propriétaire de tous les éléments restaurés",
+  "RestoreElementsInPublicDirectoryError": "Certains ou tous les éléments ne peuvent pas être restaurés : Pour effectuer une restauration dans un dossier public il est nécessaire soit d'être propriétaire de tous les éléments restaurés, soit les éléments restaurés doivent être publics"
 }
