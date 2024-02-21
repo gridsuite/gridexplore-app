@@ -17,8 +17,10 @@ import TranslatedValueEditor from './translated-value-editor';
 import TextValueEditor from './text-value-editor';
 import Box from '@mui/material/Box';
 import ElementValueEditor from './element-value-editor';
-import { ElementType } from '../../../utils/elementType';
-import { FILTER_UUID } from '../field-constants';
+import { ElementType, FilterType } from '../../../utils/elementType';
+import { EQUIPMENT_TYPE, FILTER_UUID } from '../field-constants';
+import { useFormContext } from 'react-hook-form';
+import { VoltageLevel } from '../../../utils/equipment-types';
 
 const styles = {
     noArrows: {
@@ -33,12 +35,26 @@ const styles = {
 };
 
 const ValueEditor = (props: ValueEditorProps) => {
-    const itemFilter = useCallback((value: any) => {
-        if (value?.type === ElementType.FILTER) {
-            return value?.specificMetadata?.type !== 'EXPERT';
-        }
-        return true;
-    }, []);
+    const formContext = useFormContext();
+    const { getValues } = formContext;
+
+    const itemFilter = useCallback(
+        (value: any) => {
+            if (value?.type === ElementType.FILTER) {
+                return (
+                    value?.specificMetadata?.type !== FilterType.EXPERT.id &&
+                    ((props.field === FieldType.ID &&
+                        value?.specificMetadata?.equipmentType ===
+                            getValues(EQUIPMENT_TYPE)) ||
+                        (props.field === FieldType.VOLTAGE_LEVEL_ID &&
+                            value?.specificMetadata?.equipmentType ===
+                                VoltageLevel.type))
+                );
+            }
+            return true;
+        },
+        [props.field, getValues]
+    );
 
     if (props.operator === OperatorType.EXISTS) {
         // No value needed for this operator
