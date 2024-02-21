@@ -33,6 +33,7 @@ import {
     RuleTypeExport,
 } from './expert-filter.type';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/conversion-utils';
+import { validate as uuidValidate } from 'uuid';
 
 type CustomRuleType = RuleType & { dataType: DataType };
 type CustomRuleGroupType = RuleGroupType & { dataType: DataType };
@@ -326,7 +327,7 @@ export const queryValidator: QueryValidator = (query) => {
             rule.id &&
             (rule.operator === OPERATOR_OPTIONS.IS_PART_OF.name ||
                 rule.operator === OPERATOR_OPTIONS.IS_NOT_PART_OF.name) &&
-            !rule.value?.length
+            (!rule.value?.length || !uuidValidate(rule.value[0]))
         ) {
             result[rule.id] = {
                 valid: false,
