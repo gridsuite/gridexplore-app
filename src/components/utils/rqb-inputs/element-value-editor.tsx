@@ -9,6 +9,7 @@ import React, { useEffect } from 'react';
 import DirectoryItemsInput from './directory-items-input';
 import { fetchElementsInfos } from '../../../utils/rest-api';
 import { useFormContext } from 'react-hook-form';
+import { validate as uuidValidate } from 'uuid';
 
 const ElementValueEditor = (props: {
     name: string;
@@ -26,7 +27,8 @@ const ElementValueEditor = (props: {
             props.defaultValue &&
             Array.isArray(props.defaultValue) &&
             props.defaultValue.length > 0 &&
-            props.defaultValue[0].length > 0
+            props.defaultValue[0].length > 0 &&
+            uuidValidate(props.defaultValue[0])
         ) {
             fetchElementsInfos(props.defaultValue).then(
                 (childrenWithMetada) => {
