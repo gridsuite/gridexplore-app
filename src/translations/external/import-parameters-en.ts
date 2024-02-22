@@ -88,7 +88,8 @@ const import_parameters_en = {
     'iidm.import.xml.extensions.branchObservability': 'Branch observability',
     'iidm.import.xml.extensions.busbarSectionPosition':
         'Busbar section position',
-    'iidm.import.xml.extensions.branchStatus': 'Branch status',
+    'iidm.import.xml.extensions.branchStatus':
+        'Branch status (IIDM version < 1.12)',
     'iidm.import.xml.extensions.cgmesControlAreas': 'Cgmes control areas',
     'iidm.import.xml.extensions.cgmesDanglingLineBoundaryNode':
         'Cgmes dangling line boundary node',
@@ -110,6 +111,8 @@ const import_parameters_en = {
     'iidm.import.xml.extensions.generatorFortescue': 'Generator asymmetrical',
     'iidm.import.xml.extensions.generatorAsymmetrical':
         'Generator asymmetrical',
+    'iidm.import.xml.extensions.generatorRemoteReactivePowerControl':
+        'Generator remote reactive power control',
     'iidm.import.xml.extensions.generatorShortCircuit':
         'Generator short-circuit',
     'iidm.import.xml.extensions.generatorShortCircuits':
@@ -131,7 +134,12 @@ const import_parameters_en = {
     'iidm.import.xml.extensions.loadAsymmetrical': 'Load asymmetrical',
     'iidm.import.xml.extensions.measurements': 'Measurements',
     'iidm.import.xml.extensions.mergedXnode': 'Merged Xnode',
+    'iidm.import.xml.extensions.operatingStatus': 'Operating status',
     'iidm.import.xml.extensions.position': 'Connectable position',
+    'iidm.import.xml.extensions.referencePriorities':
+        'Reference priorities (LoadFlow)',
+    'iidm.import.xml.extensions.referenceTerminals':
+        'Reference terminals (LoadFlow)',
     'iidm.import.xml.extensions.secondaryVoltageControl':
         'Secondary voltage control',
     'iidm.import.xml.extensions.slackTerminal': 'Slack terminal',
