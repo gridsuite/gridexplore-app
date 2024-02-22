@@ -99,7 +99,7 @@ const import_parameters_fr = {
         'Observabilité des quadripôles',
     'iidm.import.xml.extensions.busbarSectionPosition': 'Position des SJBs',
     'iidm.import.xml.extensions.branchStatus':
-        'Statut de consignation et déclenchement',
+        'Statut de consignation et déclenchement (Version IIDM < 1.12)',
     'iidm.import.xml.extensions.cgmesControlAreas': 'Cgmes - zone géographique',
     'iidm.import.xml.extensions.cgmesDanglingLineBoundaryNode':
         'Code EIC des lignes frontières (ligne non mergée)',
@@ -125,6 +125,8 @@ const import_parameters_fr = {
         'Données pour les calculs dissymétriques des groupes',
     'iidm.import.xml.extensions.generatorAsymmetrical':
         'Données pour les calculs dissymétriques des groupes',
+    'iidm.import.xml.extensions.generatorRemoteReactivePowerControl':
+        'Régulation à distance de la puissance réactive des groupes',
     'iidm.import.xml.extensions.generatorShortCircuit':
         'Données de court-circuit des groupes',
     'iidm.import.xml.extensions.generatorShortCircuits':
@@ -151,7 +153,13 @@ const import_parameters_fr = {
         'Données pour les calculs dissymétriques des consommations',
     'iidm.import.xml.extensions.measurements': 'Télémesures',
     'iidm.import.xml.extensions.mergedXnode': 'Xnode mergé',
+    'iidm.import.xml.extensions.operatingStatus':
+        'Statut de consignation et déclenchement',
     'iidm.import.xml.extensions.position': 'Position des départs',
+    'iidm.import.xml.extensions.referencePriorities':
+        'Indice de priorité des noeuds de référence (Calcul de répartition)',
+    'iidm.import.xml.extensions.referenceTerminals':
+        'Terminaux référence de phase (Calcul de répartition)',
     'iidm.import.xml.extensions.secondaryVoltageControl':
         'Réglage secondaire de tension',
     'iidm.import.xml.extensions.slackTerminal': 'Noeud bilan',
