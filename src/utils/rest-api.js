@@ -1063,7 +1063,8 @@ export function exportFilter(studyUuid, filterUuid) {
         PREFIX_STUDY_QUERIES +
             '/v1/studies/' +
             studyUuid +
-            '/filter/export?filterId=' +
-            filterUuid
+            '/filters/' +
+            filterUuid +
+            '/elements'
     );
 }
