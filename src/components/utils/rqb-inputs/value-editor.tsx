@@ -46,7 +46,9 @@ const ValueEditor = (props: ValueEditorProps) => {
                     ((props.field === FieldType.ID &&
                         value?.specificMetadata?.equipmentType ===
                             getValues(EQUIPMENT_TYPE)) ||
-                        (props.field === FieldType.VOLTAGE_LEVEL_ID &&
+                        ((props.field === FieldType.VOLTAGE_LEVEL_ID ||
+                            props.field === FieldType.VOLTAGE_LEVEL_ID_1 ||
+                            props.field === FieldType.VOLTAGE_LEVEL_ID_2) &&
                             value?.specificMetadata?.equipmentType ===
                                 VoltageLevel.type))
                 );
