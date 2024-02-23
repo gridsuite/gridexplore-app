@@ -400,15 +400,6 @@ export const getRequestParamFromList = (params, paramName) => {
     );
 };
 
-function getElementsIdsListsQueryParams(ids) {
-    if (ids !== undefined && ids.length > 0) {
-        const urlSearchParams = new URLSearchParams();
-        ids.forEach((id) => urlSearchParams.append('ids', id));
-        return '?' + urlSearchParams.toString();
-    }
-    return '';
-}
-
 export function fetchElementsInfos(ids, elementTypes) {
     console.info('Fetching elements metadata ... ');
 
