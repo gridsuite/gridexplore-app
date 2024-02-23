@@ -31,10 +31,10 @@ const ElementValueEditor = (props: {
             uuidValidate(props.defaultValue[0])
         ) {
             fetchElementsInfos(props.defaultValue).then(
-                (childrenWithMetada) => {
+                (childrenWithMetadata) => {
                     setValue(
                         props.name,
-                        childrenWithMetada.map((v: any) => {
+                        childrenWithMetadata.map((v: any) => {
                             return {
                                 id: v.elementUuid,
                                 name: v.elementName,

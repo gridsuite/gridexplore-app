@@ -92,12 +92,7 @@ const ValueEditor = (props: ValueEditorProps) => {
                 defaultValue={props.value}
             />
         );
-    }
-    if (
-        (props.field === FieldType.ID || props.field === FieldType.NAME) &&
-        props.operator !== OperatorType.IS_PART_OF &&
-        props.operator !== OperatorType.IS_NOT_PART_OF
-    ) {
+    } else if (props.field === FieldType.ID || props.field === FieldType.NAME) {
         return <TextValueEditor {...props} />;
     }
     return (
