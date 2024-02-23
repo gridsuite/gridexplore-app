@@ -1068,13 +1068,13 @@ export function getServersInfos() {
 export function stashElements(elementUuids) {
     console.info('Stashing elements: ' + elementUuids);
 
-    const updateAccessRightUrl =
+    const url =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         '/v1/elements/' +
         `stash?ids=` +
         elementUuids;
 
-    return backendFetch(updateAccessRightUrl, {
+    return backendFetch(url, {
         method: 'post',
         headers: {
             Accept: 'application/json',
@@ -1086,13 +1086,13 @@ export function stashElements(elementUuids) {
 export function restoreElements(elementUuids, activeDirectory) {
     console.info('Restoring elements: ' + elementUuids);
 
-    const updateAccessRightUrl =
+    const url =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         '/v1/elements/' +
         activeDirectory +
         '/restore';
 
-    return backendFetch(updateAccessRightUrl, {
+    return backendFetch(url, {
         method: 'post',
         headers: {
             Accept: 'application/json',
@@ -1104,7 +1104,6 @@ export function restoreElements(elementUuids, activeDirectory) {
 
 export function getStashedElements() {
     console.info('get stashed elements');
-    const updateAccessRightUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/stash`;
-    return backendFetchJson(updateAccessRightUrl);
+    const url = PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/stash`;
+    return backendFetchJson(url);
 }
