@@ -244,11 +244,16 @@ export function fetchConfigParameter(name) {
     return backendFetchJson(fetchParams);
 }
 
-export function fetchDirectoryContent(directoryUuid) {
+export function fetchDirectoryContent(directoryUuid, types) {
     console.info("Fetching Folder content '%s'", directoryUuid);
+
+    // Add params to Url
+    const typesParams = getRequestParamFromList(types, 'elementTypes');
+    const urlSearchParams = new URLSearchParams(typesParams);
+
     const fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/elements`;
+        `/v1/directories/${directoryUuid}/elements?${urlSearchParams}`;
     return backendFetchJson(fetchDirectoryContentUrl);
 }
 
@@ -389,6 +394,12 @@ export function updateConfigParameter(name, value) {
     return backendFetch(updateParams, { method: 'put' });
 }
 
+export const getRequestParamFromList = (params, paramName) => {
+    return new URLSearchParams(
+        params?.length ? params.map((param) => [paramName, param]) : []
+    );
+};
+
 function getElementsIdsListsQueryParams(ids) {
     if (ids !== undefined && ids.length > 0) {
         const urlSearchParams = new URLSearchParams();
@@ -398,12 +409,26 @@ function getElementsIdsListsQueryParams(ids) {
     return '';
 }
 
-export function fetchElementsInfos(ids) {
+export function fetchElementsInfos(ids, elementTypes) {
     console.info('Fetching elements metadata ... ');
+
+    // Add params to Url
+    const idsParams = getRequestParamFromList(
+        ids?.filter((id) => id), // filter falsy elements
+        'ids'
+    );
+    const elementTypesParams = getRequestParamFromList(
+        elementTypes,
+        'elementTypes'
+    );
+    const params = [...idsParams, ...elementTypesParams];
+
+    const urlSearchParams = new URLSearchParams(params);
+
     const fetchElementsInfosUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/elements/metadata' +
-        getElementsIdsListsQueryParams(ids);
+        '/v1/explore/elements/metadata?' +
+        urlSearchParams;
     return backendFetchJson(fetchElementsInfosUrl);
 }
 

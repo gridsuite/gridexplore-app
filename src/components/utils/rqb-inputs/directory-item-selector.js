@@ -139,7 +139,8 @@ const DirectoryItemSelector = (props) => {
                     );
 
                     fetchElementsInfos(
-                        childrenMatchedTypes.map((e) => e.elementUuid)
+                        childrenMatchedTypes.map((e) => e.elementUuid),
+                        types
                     ).then((childrenWithMetada) => {
                         const children = itemFilter
                             ? childrenWithMetada.filter((val) => {
