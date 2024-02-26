@@ -266,6 +266,15 @@ export function deleteElement(elementUuid) {
     });
 }
 
+function getElementsIdsListsQueryParams(ids) {
+    if (ids !== undefined && ids.length > 0) {
+        const urlSearchParams = new URLSearchParams();
+        ids.forEach((id) => urlSearchParams.append('ids', id));
+        return '?' + urlSearchParams.toString();
+    }
+    return '';
+}
+
 export function deleteElements(elementUuids, activeDirectory) {
     console.info('Deleting elements : %s', elementUuids);
     return backendFetch(
