@@ -272,8 +272,15 @@
   "MODIFICATION": "Modification",
   "descriptionModificationError": "Erreur lors de la modification de la description",
   "descriptionLimitError": "La description dépasse la limite de caractères",
-
   "selectFilterDialogTitle": "Choisir un filtre",
   "filter": "Filtre",
-  "ElementAlreadyUsed": "Cet élément est déjà utilisé"
+  "ElementAlreadyUsed": "Cet élément est déjà utilisé",
+  "StashedElements": "Restaurer des elements",
+  "All": "Tous",
+  "DeleteRows": "Supprimer",
+  "restore": "Restaurer",
+  "ElementsWillBeDeletedMsg": "Tous les éléments sélectionnés seront définitivement supprimés",
+  "NoDirectorySelectedError": "Un dossier doit être sélectionné pour restaurer les éléments",
+  "RestoreElementsInPrivateDirectoryError": "Certains ou tous les éléments ne peuvent pas être restaurés : Pour effectuer une restauration dans un dossier privé il est nécessaire d'être propriétaire de tous les éléments restaurés",
+  "RestoreElementsInPublicDirectoryError": "Certains ou tous les éléments ne peuvent pas être restaurés : Pour effectuer une restauration dans un dossier public il est nécessaire soit d'être propriétaire de tous les éléments restaurés, soit les éléments restaurés doivent être publics"
 }

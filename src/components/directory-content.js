@@ -881,14 +881,23 @@ const DirectoryContent = () => {
 
     const renderEmptyDirContent = () => {
         return (
-            <div style={{ textAlign: 'center', marginTop: '100px' }}>
-                <FolderOpenRoundedIcon
-                    style={{ width: '100px', height: '100px' }}
+            <>
+                <ContentToolbar
+                    selectedElements={
+                        // Check selectedUuids.size here to show toolbar options only
+                        // when multi selection checkboxes are used.
+                        selectedUuids.size > 0 ? getSelectedChildren() : []
+                    }
                 />
-                <h1>
-                    <FormattedMessage id={'emptyDir'} />
-                </h1>
-            </div>
+                <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                    <FolderOpenRoundedIcon
+                        style={{ width: '100px', height: '100px' }}
+                    />
+                    <h1>
+                        <FormattedMessage id={'emptyDir'} />
+                    </h1>
+                </div>
+            </>
         );
     };
 
@@ -902,7 +911,6 @@ const DirectoryContent = () => {
                         selectedUuids.size > 0 ? getSelectedChildren() : []
                     }
                 />
-
                 <VirtualizedTable
                     style={{ flexGrow: 1 }}
                     onRowRightClick={(e) => onContextMenu(e)}
