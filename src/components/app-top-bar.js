@@ -22,6 +22,7 @@ import { ReactComponent as GridExploreLogoLight } from '../images/GridExplore_lo
 import { ReactComponent as GridExploreLogoDark } from '../images/GridExplore_logo_dark.svg';
 import { setAppsAndUrls } from '../redux/actions';
 import AppPackage from '../../package.json';
+import SearchBar from '../utils/search-bar';
 
 const AppTopBar = ({ user, userManager }) => {
     const navigate = useNavigate();
@@ -73,7 +74,9 @@ const AppTopBar = ({ user, userManager }) => {
                     fetchVersion().then((res) => res?.deployVersion)
                 }
                 additionalModulesPromise={getServersInfos}
-            />
+            >
+                {user && <SearchBar />}
+            </TopBar>
             <ParametersDialog
                 showParameters={showParameters}
                 hideParameters={() => setShowParameters(false)}
