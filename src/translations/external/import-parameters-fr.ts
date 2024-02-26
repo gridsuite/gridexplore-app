@@ -99,7 +99,7 @@ const import_parameters_fr = {
         'Observabilité des quadripôles',
     'iidm.import.xml.extensions.busbarSectionPosition': 'Position des SJBs',
     'iidm.import.xml.extensions.branchStatus':
-        'Statut de consignation et déclenchement (Version IIDM < 1.12)',
+        'Statut de consignation et de déclenchement (Version IIDM < 1.12)',
     'iidm.import.xml.extensions.cgmesControlAreas': 'Cgmes - zone géographique',
     'iidm.import.xml.extensions.cgmesDanglingLineBoundaryNode':
         'Code EIC des lignes frontières (ligne non mergée)',
@@ -154,7 +154,7 @@ const import_parameters_fr = {
     'iidm.import.xml.extensions.measurements': 'Télémesures',
     'iidm.import.xml.extensions.mergedXnode': 'Xnode mergé',
     'iidm.import.xml.extensions.operatingStatus':
-        'Statut de consignation et déclenchement',
+        'Statut de consignation et de déclenchement',
     'iidm.import.xml.extensions.position': 'Position des départs',
     'iidm.import.xml.extensions.referencePriorities':
         'Indice de priorité des noeuds de référence (Calcul de répartition)',
