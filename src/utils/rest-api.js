@@ -276,12 +276,13 @@ export function deleteElement(elementUuid) {
 
 export function deleteElements(elementUuids, activeDirectory) {
     console.info('Deleting elements : %s', elementUuids);
+    const idsParams = getRequestParamFromList(elementUuids, 'ids').toString();
     return backendFetch(
         PREFIX_EXPLORE_SERVER_QUERIES +
             `/v1/explore/elements/` +
             activeDirectory +
-            '/delete-stashed' +
-            getElementsIdsListsQueryParams(elementUuids),
+            '/delete-stashed?' +
+            idsParams,
         {
             method: 'delete',
         }
@@ -1074,11 +1075,11 @@ export function exportFilter(studyUuid, filterUuid) {
     console.info('get filter export on study root node');
     return backendFetchJson(
         PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        studyUuid +
-        '/filters/' +
-        filterUuid +
-        '/elements'
+            '/v1/studies/' +
+            studyUuid +
+            '/filters/' +
+            filterUuid +
+            '/elements'
     );
 }
 
