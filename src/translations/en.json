@@ -269,5 +269,13 @@
   "highVoltageLimit": "High voltage limit",
   "MODIFICATION": "Modification",
   "descriptionModificationError": "An error when modifying the description",
-  "descriptionLimitError": "Description exceeds character limit"
+  "descriptionLimitError": "Description exceeds character limit",
+  "StashedElements": "Restore elements",
+  "All": "All",
+  "restore": "Restore",
+  "DeleteRows": "Delete",
+  "ElementsWillBeDeletedMsg": "All selected elements will be permanently deleted",
+  "NoDirectorySelectedError": "A directory must be selected to restore elements",
+  "RestoreElementsInPrivateDirectoryError": "Some or all the elements can not be restored: To perform a restoration in a private folder it is necessary to be the owner of all the restored elements",
+  "RestoreElementsInPublicDirectoryError": "Some or all the elements can not be restored: To perform a restoration in a public folder it is necessary to either be the owner of all the restored elements or the restored elements must be public"
 }

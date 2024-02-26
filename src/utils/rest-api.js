@@ -261,6 +261,20 @@ export function deleteElement(elementUuid) {
     });
 }
 
+export function deleteElements(elementUuids, activeDirectory) {
+    console.info('Deleting elements : %s', elementUuids);
+    return backendFetch(
+        PREFIX_EXPLORE_SERVER_QUERIES +
+            `/v1/explore/elements/` +
+            activeDirectory +
+            '/delete-stashed' +
+            getElementsIdsListsQueryParams(elementUuids),
+        {
+            method: 'delete',
+        }
+    );
+}
+
 export function moveElementToDirectory(elementUuid, directoryUuid) {
     console.info(
         'Moving element %s to directory %s',
@@ -297,7 +311,6 @@ export function updateAccessRights(elementUuid, isPrivate) {
 }
 
 export function updateElement(elementUuid, element) {
-    console.log('element : ', element);
     console.info('Updating element info for ' + elementUuid);
     const updateAccessRightUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${elementUuid}`;
@@ -1050,4 +1063,47 @@ export function getServersInfos() {
         console.error('Error while fetching the servers infos : ' + reason);
         return reason;
     });
+}
+
+export function stashElements(elementUuids) {
+    console.info('Stashing elements: ' + elementUuids);
+
+    const url =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/elements/' +
+        `stash?ids=` +
+        elementUuids;
+
+    return backendFetch(url, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function restoreElements(elementUuids, activeDirectory) {
+    console.info('Restoring elements: ' + elementUuids);
+
+    const url =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/elements/' +
+        activeDirectory +
+        '/restore';
+
+    return backendFetch(url, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(elementUuids),
+    });
+}
+
+export function getStashedElements() {
+    console.info('get stashed elements');
+    const url = PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/stash`;
+    return backendFetchJson(url);
 }
