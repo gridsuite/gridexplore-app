@@ -32,6 +32,7 @@ export const DialogsId = {
     ACCESS_RIGHTS: 'access_rights',
     RENAME_DIRECTORY: 'rename_directory',
     DELETE_DIRECTORY: 'delete_directory',
+    STASHED_ELEMENTS: 'stashed_elements',
     NONE: 'none',
 };
 export const HTTP_UNPROCESSABLE_ENTITY_STATUS = 422;

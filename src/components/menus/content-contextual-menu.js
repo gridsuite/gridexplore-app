@@ -28,7 +28,6 @@ import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialo
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
-    deleteElement,
     duplicateCase,
     duplicateContingencyList,
     duplicateFilter,
@@ -43,6 +42,7 @@ import {
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
+    stashElements,
 } from '../../utils/rest-api';
 
 import {
@@ -318,31 +318,17 @@ const ContentContextualMenu = (props) => {
         setHideMenu(false);
     }, [onClose, setOpenDialog]);
 
-    const [multipleDeleteError, setMultipleDeleteError] = useState('');
-
-    const deleteElementOnError = useCallback(
-        (errorMessages, params, paramsOnErrors) => {
-            let msg = intl.formatMessage(
-                { id: 'deleteElementsFailure' },
-                {
-                    pbn: errorMessages.length,
-                    stn: params.length,
-                    problematic: paramsOnErrors
-                        .map((p) => p.elementUuid)
-                        .join(' '),
-                }
-            );
-            console.debug(msg);
-            setMultipleDeleteError(msg);
+    const [deleteError, setDeleteError] = useState('');
+    const handleStashElements = useCallback(
+        (elementsUuids) => {
+            stashElements(elementsUuids)
+                .catch((error) => {
+                    setDeleteError(error.message);
+                    handleLastError(error.message);
+                })
+                .finally(() => handleCloseDialog());
         },
-        [intl]
-    );
-    const [deleteCB] = useMultipleDeferredFetch(
-        deleteElement,
-        handleCloseDialog,
-        undefined,
-        deleteElementOnError,
-        false
+        [handleCloseDialog, handleLastError]
     );
 
     const moveElementErrorToString = useCallback(
@@ -693,10 +679,8 @@ const ContentContextualMenu = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         onClick={() =>
-                            deleteCB(
-                                selectedElements.map((e) => {
-                                    return [e.elementUuid];
-                                })
+                            handleStashElements(
+                                selectedElements.map((e) => e.elementUuid)
                             )
                         }
                         items={selectedElements}
@@ -704,7 +688,7 @@ const ContentContextualMenu = (props) => {
                             'deleteMultipleItemsDialogMessage'
                         }
                         simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
-                        error={multipleDeleteError}
+                        error={deleteError}
                     />
                 );
             case DialogsId.MOVE:
