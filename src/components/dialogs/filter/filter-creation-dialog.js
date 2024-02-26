@@ -68,7 +68,7 @@ const formSchema = yup
 const FilterCreationDialog = ({
     open,
     onClose,
-    sourceFilterForExplicitConversion = undefined,
+    sourceFilterForExplicitNamingConversion = undefined,
 }) => {
     const { snackError } = useSnackMessage();
     const activeDirectory = useSelector((state) => state.activeDirectory);
@@ -145,8 +145,8 @@ const FilterCreationDialog = ({
             formSchema={formSchema}
             formMethods={formMethods}
             titleId={
-                sourceFilterForExplicitConversion
-                    ? 'convertIntoExplicitFilter'
+                sourceFilterForExplicitNamingConversion
+                    ? 'convertIntoExplicitNamingFilter'
                     : 'createNewFilter'
             }
             removeOptional={true}
@@ -154,8 +154,8 @@ const FilterCreationDialog = ({
         >
             <FilterForm
                 creation
-                sourceFilterForExplicitConversion={
-                    sourceFilterForExplicitConversion
+                sourceFilterForExplicitNamingConversion={
+                    sourceFilterForExplicitNamingConversion
                 }
             />
         </CustomMuiDialog>

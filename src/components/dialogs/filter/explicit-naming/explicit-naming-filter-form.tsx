@@ -112,7 +112,7 @@ export interface FilterForExplicitConversionProps {
     equipmentType: String;
 }
 interface ExplicitNamingFilterFormProps {
-    sourceFilterForExplicitConversion?: FilterForExplicitConversionProps;
+    sourceFilterForExplicitNamingConversion?: FilterForExplicitConversionProps;
 }
 
 export const ExplicitNamingFilterForm: FunctionComponent<
@@ -130,13 +130,13 @@ export const ExplicitNamingFilterForm: FunctionComponent<
     const forGeneratorOrLoad = isGeneratorOrLoad(watchEquipmentType);
 
     useEffect(() => {
-        if (props.sourceFilterForExplicitConversion) {
+        if (props.sourceFilterForExplicitNamingConversion) {
             setValue(
                 EQUIPMENT_TYPE,
-                props.sourceFilterForExplicitConversion.equipmentType
+                props.sourceFilterForExplicitNamingConversion.equipmentType
             );
         }
-    }, [props.sourceFilterForExplicitConversion, setValue]);
+    }, [props.sourceFilterForExplicitNamingConversion, setValue]);
 
     const columnDefs = useMemo(() => {
         const columnDefs: any[] = [
@@ -203,7 +203,10 @@ export const ExplicitNamingFilterForm: FunctionComponent<
     };
 
     const onStudySelected = (studyUuid: UUID) => {
-        exportFilter(studyUuid, props.sourceFilterForExplicitConversion?.id)
+        exportFilter(
+            studyUuid,
+            props.sourceFilterForExplicitNamingConversion?.id
+        )
             .then((matchingEquipments) => {
                 setValue(
                     FILTER_EQUIPMENTS_ATTRIBUTES,
@@ -217,7 +220,7 @@ export const ExplicitNamingFilterForm: FunctionComponent<
             .catch((error) =>
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'convertIntoExplicitFilterError',
+                    headerId: 'convertIntoExplicitNamingFilterError',
                 })
             );
     };
@@ -229,14 +232,14 @@ export const ExplicitNamingFilterForm: FunctionComponent<
                     Input={SelectInput}
                     name={EQUIPMENT_TYPE}
                     options={Object.values(FILTER_EQUIPMENTS)}
-                    disabled={props.sourceFilterForExplicitConversion}
+                    disabled={props.sourceFilterForExplicitNamingConversion}
                     label={'equipmentType'}
                     shouldOpenPopup={openConfirmationPopup}
                     resetOnConfirmation={handleResetOnConfirmation}
                     message={'changeTypeMessage'}
                     validateButtonLabel={'button.changeType'}
                 />
-                {props.sourceFilterForExplicitConversion && (
+                {props.sourceFilterForExplicitNamingConversion && (
                     <DirectorySelect
                         types={[ElementType.STUDY]}
                         onElementValidated={onStudySelected}

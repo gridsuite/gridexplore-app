@@ -21,7 +21,7 @@ import DescriptionInput from '../description-modification/description-input';
 
 interface FilterFormProps {
     creation?: boolean;
-    sourceFilterForExplicitConversion?: FilterForExplicitConversionProps;
+    sourceFilterForExplicitNamingConversion?: FilterForExplicitConversionProps;
 }
 
 export const FilterForm: FunctionComponent<FilterFormProps> = (props) => {
@@ -38,10 +38,10 @@ export const FilterForm: FunctionComponent<FilterFormProps> = (props) => {
     };
 
     useEffect(() => {
-        if (props.sourceFilterForExplicitConversion) {
+        if (props.sourceFilterForExplicitNamingConversion) {
             setValue(FILTER_TYPE, FilterType.EXPLICIT_NAMING.id);
         }
-    }, [props.sourceFilterForExplicitConversion, setValue]);
+    }, [props.sourceFilterForExplicitNamingConversion, setValue]);
 
     return (
         <Grid container spacing={2}>
@@ -58,7 +58,7 @@ export const FilterForm: FunctionComponent<FilterFormProps> = (props) => {
                     <Grid item xs={12}>
                         <DescriptionInput rows={5} />
                     </Grid>
-                    {!props.sourceFilterForExplicitConversion && (
+                    {!props.sourceFilterForExplicitNamingConversion && (
                         <Grid item>
                             <RadioInput
                                 name={FILTER_TYPE}
@@ -74,8 +74,8 @@ export const FilterForm: FunctionComponent<FilterFormProps> = (props) => {
             )}
             {filterType === FilterType.EXPLICIT_NAMING.id && (
                 <ExplicitNamingFilterForm
-                    sourceFilterForExplicitConversion={
-                        props.sourceFilterForExplicitConversion
+                    sourceFilterForExplicitNamingConversion={
+                        props.sourceFilterForExplicitNamingConversion
                     }
                 />
             )}

@@ -635,7 +635,9 @@ const ContentContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'convertFilterIntoExplicitNaming',
                 callback: () => {
-                    handleOpenDialog(DialogsId.CONVERT_TO_EXPLICIT_FILTER);
+                    handleOpenDialog(
+                        DialogsId.CONVERT_TO_EXPLICIT_NAMING_FILTER
+                    );
                 },
                 icon: <InsertDriveFileIcon fontSize="small" />,
             });
@@ -786,12 +788,12 @@ const ContentContextualMenu = (props) => {
                         handleError={handleLastError}
                     />
                 );
-            case DialogsId.CONVERT_TO_EXPLICIT_FILTER:
+            case DialogsId.CONVERT_TO_EXPLICIT_NAMING_FILTER:
                 return (
                     <FilterCreationDialog
                         open={true}
                         onClose={handleCloseDialog}
-                        sourceFilterForExplicitConversion={{
+                        sourceFilterForExplicitNamingConversion={{
                             id: activeElement.elementUuid,
                             equipmentType:
                                 activeElement.specificMetadata.equipmentType,
