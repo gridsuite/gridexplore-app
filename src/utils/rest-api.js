@@ -35,6 +35,12 @@ function getToken() {
     return state.user.id_token;
 }
 
+export const getRequestParamFromList = (params, paramName) => {
+    return new URLSearchParams(
+        params?.length ? params.map((param) => [paramName, param]) : []
+    );
+};
+
 export function connectNotificationsWsUpdateConfig() {
     const webSocketBaseUrl = document.baseURI
         .replace(/^http:\/\//, 'ws://')
@@ -244,16 +250,18 @@ export function fetchConfigParameter(name) {
     return backendFetchJson(fetchParams);
 }
 
-export function fetchDirectoryContent(directoryUuid, types) {
+export function fetchDirectoryContent(directoryUuid, elementTypes) {
     console.info("Fetching Folder content '%s'", directoryUuid);
-
-    // Add params to Url
-    const typesParams = getRequestParamFromList(types, 'elementTypes');
-    const urlSearchParams = new URLSearchParams(typesParams);
-
-    const fetchDirectoryContentUrl =
+    const typeParams = getRequestParamFromList(
+        elementTypes,
+        'elementTypes'
+    ).toString();
+    let fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/elements?${urlSearchParams}`;
+        `/v1/directories/${directoryUuid}/elements`;
+    if (typeParams.length > 0) {
+        fetchDirectoryContentUrl += '?' + typeParams;
+    }
     return backendFetchJson(fetchDirectoryContentUrl);
 }
 
@@ -277,12 +285,13 @@ function getElementsIdsListsQueryParams(ids) {
 
 export function deleteElements(elementUuids, activeDirectory) {
     console.info('Deleting elements : %s', elementUuids);
+    const idsParams = getRequestParamFromList(elementUuids, 'ids').toString();
     return backendFetch(
         PREFIX_EXPLORE_SERVER_QUERIES +
             `/v1/explore/elements/` +
             activeDirectory +
-            '/delete-stashed' +
-            getElementsIdsListsQueryParams(elementUuids),
+            '/delete-stashed?' +
+            idsParams,
         {
             method: 'delete',
         }
@@ -416,27 +425,17 @@ export function updateConfigParameter(name, value) {
     return backendFetch(updateParams, { method: 'put' });
 }
 
-export const getRequestParamFromList = (params, paramName) => {
-    return new URLSearchParams(
-        params?.length ? params.map((param) => [paramName, param]) : []
-    );
-};
-
 export function fetchElementsInfos(ids, elementTypes) {
     console.info('Fetching elements metadata ... ');
 
     // Add params to Url
-    const idsParams = getRequestParamFromList(
-        ids?.filter((id) => id), // filter falsy elements
-        'ids'
-    );
-    const elementTypesParams = getRequestParamFromList(
-        elementTypes,
-        'elementTypes'
-    );
+    const tmp = ids?.filter((id) => id);
+    const idsParams = tmp?.length ? tmp.map((id) => ['ids', id]) : [];
+    const elementTypesParams = elementTypes?.length
+        ? elementTypes.map((type) => ['elementTypes', type])
+        : [];
     const params = [...idsParams, ...elementTypesParams];
-
-    const urlSearchParams = new URLSearchParams(params);
+    const urlSearchParams = new URLSearchParams(params).toString();
 
     const fetchElementsInfosUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +
@@ -923,12 +922,12 @@ export function duplicateModification(
 export function duplicateParameter(
     name,
     parameterType,
-    sourceFilterUuid,
+    sourceParameterUuid,
     parentDirectoryUuid
 ) {
     console.info('Duplicating parameters of type ' + parameterType + '...');
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('duplicateFrom', sourceFilterUuid);
+    urlSearchParams.append('duplicateFrom', sourceParameterUuid);
     urlSearchParams.append('name', name);
     urlSearchParams.append('type', parameterType);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
@@ -1088,6 +1087,18 @@ export function getServersInfos() {
         console.error('Error while fetching the servers infos : ' + reason);
         return reason;
     });
+}
+
+export function exportFilter(studyUuid, filterUuid) {
+    console.info('get filter export on study root node');
+    return backendFetchJson(
+        PREFIX_STUDY_QUERIES +
+            '/v1/studies/' +
+            studyUuid +
+            '/filters/' +
+            filterUuid +
+            '/elements'
+    );
 }
 
 export function stashElements(elementUuids) {

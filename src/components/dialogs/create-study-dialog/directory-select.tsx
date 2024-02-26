@@ -13,14 +13,20 @@ import { fetchPath } from '../../../utils/rest-api';
 import { useController } from 'react-hook-form';
 import { DIRECTORY } from '../../utils/field-constants';
 import { ElementType } from '../../../utils/elementType';
+import { UUID } from 'crypto';
 
-interface DirectorySelectProps {
+export interface DirectorySelectProps {
     types: ElementType[];
+    dialogOpeningButtonLabel: string;
+    dialogTitleLabel: string;
+    dialogMessageLabel: string;
+    noElementMessageLabel?: string;
+    onElementValidated?: (elementId: UUID) => void;
 }
 
-const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
-    types,
-}) => {
+const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = (
+    props
+) => {
     const intl = useIntl();
 
     const [open, setOpen] = useState<boolean>(false);
@@ -52,6 +58,9 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
     const handleClose = (directory: any) => {
         if (directory.length) {
             onChange(directory[0]?.id);
+            if (props.onElementValidated) {
+                props.onElementValidated(directory[0]?.id);
+            }
         }
         setOpen(false);
     };
@@ -73,7 +82,7 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
                 color="primary"
                 component="label"
             >
-                <FormattedMessage id="showSelectDirectoryDialog" />
+                <FormattedMessage id={props.dialogOpeningButtonLabel} />
             </Button>
             <Typography
                 sx={{
@@ -81,20 +90,26 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
                     fontWeight: 'bold',
                 }}
             >
-                {activeDirectoryName}
+                {activeDirectoryName
+                    ? activeDirectoryName
+                    : props?.noElementMessageLabel
+                    ? intl.formatMessage({
+                          id: props.noElementMessageLabel,
+                      })
+                    : ''}
             </Typography>
             <DirectorySelector
                 open={open}
                 onClose={handleClose}
-                types={types}
+                types={props.types}
                 title={intl.formatMessage({
-                    id: 'selectDirectoryDialogTitle',
+                    id: props.dialogTitleLabel,
                 })}
                 validationButtonText={intl.formatMessage({
                     id: 'confirmDirectoryDialog',
                 })}
                 contentText={intl.formatMessage({
-                    id: 'moveItemContentText',
+                    id: props.dialogMessageLabel,
                 })}
             />
         </Grid>
