@@ -138,23 +138,25 @@ const DirectoryItemSelector = (props) => {
                         contentFilter().has(item.type)
                     );
 
-                    fetchElementsInfos(
-                        childrenMatchedTypes.map((e) => e.elementUuid),
-                        types
-                    ).then((childrenWithMetada) => {
-                        const children = itemFilter
-                            ? childrenWithMetada.filter((val) => {
-                                  // Accept every directories
-                                  if (val.type === elementType.DIRECTORY) {
-                                      return true;
-                                  }
-                                  // otherwise filter with the custom itemFilter func
-                                  return itemFilter(val);
-                              })
-                            : childrenWithMetada;
-                        // update directory content
-                        addToDirectory(nodeId, children);
-                    });
+                    if (childrenMatchedTypes.length > 0) {
+                        fetchElementsInfos(
+                            childrenMatchedTypes.map((e) => e.elementUuid),
+                            types
+                        ).then((childrenWithMetada) => {
+                            const children = itemFilter
+                                ? childrenWithMetada.filter((val) => {
+                                      // Accept every directories
+                                      if (val.type === elementType.DIRECTORY) {
+                                          return true;
+                                      }
+                                      // otherwise filter with the custom itemFilter func
+                                      return itemFilter(val);
+                                  })
+                                : childrenWithMetada;
+                            // update directory content
+                            addToDirectory(nodeId, children);
+                        });
+                    }
                 })
                 .catch((error) => {
                     console.warn(
