@@ -42,6 +42,10 @@ export const EXPERT_FILTER_EQUIPMENTS = {
         id: 'LINE',
         label: 'Lines',
     },
+    TWO_WINDINGS_TRANSFORMER: {
+        id: 'TWO_WINDINGS_TRANSFORMER',
+        label: 'TwoWindingsTransformers',
+    },
 };
 
 export const ENERGY_SOURCE_OPTIONS = [
@@ -380,6 +384,36 @@ export const FIELDS_OPTIONS = {
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
+    MAGNETIZING_CONDUCTANCE: {
+        name: FieldType.MAGNETIZING_CONDUCTANCE,
+        label: 'magnetizingConductance',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    MAGNETIZING_SUSCEPTANCE: {
+        name: FieldType.MAGNETIZING_SUSCEPTANCE,
+        label: 'magnetizingSusceptance',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    LOAD_TAP_CHANGING_CAPABILITIES: {
+        name: FieldType.LOAD_TAP_CHANGING_CAPABILITIES,
+        label: 'loadTapChangingCapabilities',
+        dataType: DataType.BOOLEAN,
+        valueEditorType: 'switch',
+    },
+    RATIO_REGULATING: {
+        name: FieldType.RATIO_REGULATING,
+        label: 'regulatingRatio',
+        dataType: DataType.BOOLEAN,
+        valueEditorType: 'switch',
+    },
+    RATIO_TARGET_V: {
+        name: FieldType.RATIO_TARGET_V,
+        label: 'ratioTargetV',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
 };
 
 export const fields: Record<string, Field[]> = {
@@ -470,5 +504,24 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.SHUNT_CONDUCTANCE_2,
         FIELDS_OPTIONS.SHUNT_SUSCEPTANCE_1,
         FIELDS_OPTIONS.SHUNT_SUSCEPTANCE_2,
+    ],
+    TWO_WINDINGS_TRANSFORMER: [
+        FIELDS_OPTIONS.ID,
+        FIELDS_OPTIONS.NAME,
+        FIELDS_OPTIONS.NOMINAL_VOLTAGE_1,
+        FIELDS_OPTIONS.NOMINAL_VOLTAGE_2,
+        FIELDS_OPTIONS.RATED_S,
+        FIELDS_OPTIONS.SERIE_RESISTANCE,
+        FIELDS_OPTIONS.SERIE_REACTANCE,
+        FIELDS_OPTIONS.MAGNETIZING_CONDUCTANCE,
+        FIELDS_OPTIONS.MAGNETIZING_SUSCEPTANCE,
+        FIELDS_OPTIONS.CONNECTED_1,
+        FIELDS_OPTIONS.CONNECTED_2,
+        FIELDS_OPTIONS.VOLTAGE_LEVEL_ID_1,
+        FIELDS_OPTIONS.VOLTAGE_LEVEL_ID_2,
+        FIELDS_OPTIONS.COUNTRY,
+        FIELDS_OPTIONS.LOAD_TAP_CHANGING_CAPABILITIES,
+        FIELDS_OPTIONS.RATIO_REGULATING,
+        FIELDS_OPTIONS.RATIO_TARGET_V,
     ],
 };

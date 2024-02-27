@@ -9,6 +9,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DirectorySelector from './directory-selector';
 import { useIntl } from 'react-intl';
+import { ElementType } from '../../utils/elementType';
 
 const MoveDialog = ({ open, onClose, items }) => {
     const intl = useIntl();
@@ -17,6 +18,7 @@ const MoveDialog = ({ open, onClose, items }) => {
         <DirectorySelector
             open={open}
             onClose={onClose}
+            types={[ElementType.DIRECTORY]}
             title={intl.formatMessage({ id: 'moveItemTitle' })}
             validationButtonText={intl.formatMessage(
                 {

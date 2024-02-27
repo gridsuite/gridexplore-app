@@ -65,7 +65,11 @@ const formSchema = yup
     })
     .required();
 
-const FilterCreationDialog = ({ open, onClose }) => {
+const FilterCreationDialog = ({
+    open,
+    onClose,
+    sourceFilterForExplicitNamingConversion = undefined,
+}) => {
     const { snackError } = useSnackMessage();
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
@@ -140,11 +144,20 @@ const FilterCreationDialog = ({ open, onClose }) => {
             onSave={onSubmit}
             formSchema={formSchema}
             formMethods={formMethods}
-            titleId={'createNewFilter'}
+            titleId={
+                sourceFilterForExplicitNamingConversion
+                    ? 'convertIntoExplicitNamingFilter'
+                    : 'createNewFilter'
+            }
             removeOptional={true}
             disabledSave={!!nameError || isValidating}
         >
-            <FilterForm creation />
+            <FilterForm
+                creation
+                sourceFilterForExplicitNamingConversion={
+                    sourceFilterForExplicitNamingConversion
+                }
+            />
         </CustomMuiDialog>
     );
 };

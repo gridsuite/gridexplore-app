@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -28,7 +28,6 @@ import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialo
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
-    deleteElement,
     duplicateCase,
     duplicateContingencyList,
     duplicateFilter,
@@ -43,9 +42,14 @@ import {
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
+    stashElements,
 } from '../../utils/rest-api';
 
-import { ContingencyListType, ElementType } from '../../utils/elementType';
+import {
+    ContingencyListType,
+    ElementType,
+    FilterType,
+} from '../../utils/elementType';
 
 import CommonContextualMenu from './common-contextual-menu';
 import {
@@ -58,6 +62,7 @@ import { FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import { useDispatch } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
+import FilterCreationDialog from '../dialogs/filter/filter-creation-dialog';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 
 const ContentContextualMenu = (props) => {
@@ -314,31 +319,17 @@ const ContentContextualMenu = (props) => {
         setHideMenu(false);
     }, [onClose, setOpenDialog]);
 
-    const [multipleDeleteError, setMultipleDeleteError] = useState('');
-
-    const deleteElementOnError = useCallback(
-        (errorMessages, params, paramsOnErrors) => {
-            let msg = intl.formatMessage(
-                { id: 'deleteElementsFailure' },
-                {
-                    pbn: errorMessages.length,
-                    stn: params.length,
-                    problematic: paramsOnErrors
-                        .map((p) => p.elementUuid)
-                        .join(' '),
-                }
-            );
-            console.debug(msg);
-            setMultipleDeleteError(msg);
+    const [deleteError, setDeleteError] = useState('');
+    const handleStashElements = useCallback(
+        (elementsUuids) => {
+            stashElements(elementsUuids)
+                .catch((error) => {
+                    setDeleteError(error.message);
+                    handleLastError(error.message);
+                })
+                .finally(() => handleCloseDialog());
         },
-        [intl]
-    );
-    const [deleteCB] = useMultipleDeferredFetch(
-        deleteElement,
-        handleCloseDialog,
-        undefined,
-        deleteElementOnError,
-        false
+        [handleCloseDialog, handleLastError]
     );
 
     const moveElementErrorToString = useCallback(
@@ -520,6 +511,15 @@ const ContentContextualMenu = (props) => {
         );
     }, [isUserAllowed, selectedElements]);
 
+    const allowsConvertFilterIntoExplicitNaming = useCallback(() => {
+        return (
+            selectedElements.length === 1 &&
+            selectedElements[0].type === ElementType.FILTER &&
+            selectedElements[0].subtype !== FilterType.EXPLICIT_NAMING.id &&
+            isUserAllowed()
+        );
+    }, [isUserAllowed, selectedElements]);
+
     const allowsDownloadCase = useCallback(() => {
         //if selectedElements contains at least one case
         return (
@@ -628,6 +628,18 @@ const ContentContextualMenu = (props) => {
             });
         }
 
+        if (allowsConvertFilterIntoExplicitNaming()) {
+            menuItems.push({
+                messageDescriptorId: 'convertFilterIntoExplicitNaming',
+                callback: () => {
+                    handleOpenDialog(
+                        DialogsId.CONVERT_TO_EXPLICIT_NAMING_FILTER
+                    );
+                },
+                icon: <InsertDriveFileIcon fontSize="small" />,
+            });
+        }
+
         if (menuItems.length === 0) {
             menuItems.push({
                 messageDescriptorId: noCreationInProgress()
@@ -666,10 +678,8 @@ const ContentContextualMenu = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         onClick={() =>
-                            deleteCB(
-                                selectedElements.map((e) => {
-                                    return [e.elementUuid];
-                                })
+                            handleStashElements(
+                                selectedElements.map((e) => e.elementUuid)
                             )
                         }
                         items={selectedElements}
@@ -677,7 +687,7 @@ const ContentContextualMenu = (props) => {
                             'deleteMultipleItemsDialogMessage'
                         }
                         simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
-                        error={multipleDeleteError}
+                        error={deleteError}
                     />
                 );
             case DialogsId.MOVE:
@@ -786,6 +796,18 @@ const ContentContextualMenu = (props) => {
                         directoryUuid={selectedDirectory?.elementUuid}
                         elementType={activeElement?.type}
                         handleError={handleLastError}
+                    />
+                );
+            case DialogsId.CONVERT_TO_EXPLICIT_NAMING_FILTER:
+                return (
+                    <FilterCreationDialog
+                        open={true}
+                        onClose={handleCloseDialog}
+                        sourceFilterForExplicitNamingConversion={{
+                            id: activeElement.elementUuid,
+                            equipmentType:
+                                activeElement.specificMetadata.equipmentType,
+                        }}
                     />
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:

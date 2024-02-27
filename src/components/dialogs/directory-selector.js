@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TreeViewFinder } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { fetchDirectoryContent } from '../../utils/rest-api';
@@ -29,9 +29,10 @@ function sortAlphabetically(a, b) {
 
 const DirectorySelector = (props) => {
     const [data, setData] = useState([]);
-    const contentFilter = useCallback(
-        () => new Set([elementType.DIRECTORY]),
-        []
+
+    const contentFilter = useMemo(
+        () => new Set([elementType.DIRECTORY, ...props.types]),
+        [props.types]
     );
 
     const { snackError } = useSnackMessage();
@@ -115,13 +116,16 @@ const DirectorySelector = (props) => {
 
     const fetchDirectory = useCallback(
         (directoryUuid) => {
-            fetchDirectoryContent(directoryUuid)
+            const typeList = props.types.includes(elementType.DIRECTORY)
+                ? undefined
+                : props.types;
+            fetchDirectoryContent(directoryUuid, typeList)
                 .then((childrenToBeInserted) => {
                     // update directory Content
                     addToDirectory(
                         directoryUuid,
                         childrenToBeInserted.filter((item) =>
-                            contentFilter().has(item.type)
+                            contentFilter.has(item.type)
                         )
                     );
                 })
@@ -129,14 +133,14 @@ const DirectorySelector = (props) => {
                     fetchDirectoryWarn(directoryUuid, error.message);
                 });
         },
-        [addToDirectory, contentFilter, fetchDirectoryWarn]
+        [addToDirectory, contentFilter, fetchDirectoryWarn, props.types]
     );
 
     return (
         <TreeViewFinder
             onTreeBrowse={fetchDirectory}
             data={data}
-            onlyLeaves={false}
+            onlyLeaves={!props.types.includes(elementType.DIRECTORY)}
             sortMethod={sortAlphabetically}
             {...props}
         />
@@ -146,7 +150,7 @@ const DirectorySelector = (props) => {
 DirectorySelector.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    types: PropTypes.arrayOf(PropTypes.string),
+    types: PropTypes.arrayOf(PropTypes.string).isRequired,
     title: PropTypes.string,
     validationButtonText: PropTypes.string,
     contentText: PropTypes.string,
