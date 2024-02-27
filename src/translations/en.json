@@ -30,7 +30,7 @@
   "moveElementsFailure": "Problem encountered while moving {stn, plural, one {an element} other {elements}}. Not moved : {problematic}",
   "duplicateElementFailure": "An error occured while duplicating the element {itemName} : {errorMessage}",
   "elementPasteFailed404": "An error occured while trying to paste element : the copied element was not found",
-  "elementPasteFailed": "An error occured while trying to paste the copied element",
+  "elementPasteFailed": "An error occured while trying to paste the copied element : ",
   "generateCopyScriptNameError": "An error occured while generating the copy script name of the element {itemName}",
   "caseName": "case name",
   "uploadCase": "Upload case",
