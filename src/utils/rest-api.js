@@ -394,10 +394,16 @@ export function renameElement(elementUuid, newElementName) {
     });
 }
 
-export function fetchRootFolders() {
+export function fetchRootFolders(types) {
     console.info('Fetching Root Directories');
+
+    // Add params to Url
+    const typesParams = getRequestParamFromList(types, 'elementTypes');
+    const urlSearchParams = new URLSearchParams(typesParams);
+
     const fetchRootFoldersUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/root-directories?${urlSearchParams}`;
     return backendFetchJson(fetchRootFoldersUrl);
 }
 
