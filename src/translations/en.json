@@ -286,6 +286,6 @@
   "RestoreElementsInPrivateDirectoryError": "Some or all the elements can not be restored: To perform a restoration in a private folder it is necessary to be the owner of all the restored elements",
   "RestoreElementsInPublicDirectoryError": "Some or all the elements can not be restored: To perform a restoration in a public folder it is necessary to either be the owner of all the restored elements or the restored elements must be public",
   "exportCaseErrorMsg": "No export format specified",
-  "exportFormat": "Format of the export",
+  "exportFormat": "Export format",
   "export": "Export"
 }
