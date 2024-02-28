@@ -115,6 +115,13 @@
   "copyToScript": "Copy to script",
   "replaceWithScript": "Replace with script",
   "createNewFilter": "Create a filter",
+  "convertFilterIntoExplicitNaming": "Convert",
+  "convertIntoExplicitNamingFilter": "Convert to explicit naming",
+  "convertIntoExplicitNamingFilterError": "An error occurred while applying the filter on the selected study",
+  "selectStudyDialogButton": "Choose study",
+  "selectStudyDialogTitle": "Pick a study",
+  "selectStudyText": "Please choose a study",
+  "noSelectedStudyText": "No study selected.",
   "Generators": "Generators",
   "Lines": "Lines",
   "TwoWindingsTransformers": "Two windings transformers",
@@ -269,5 +276,13 @@
   "highVoltageLimit": "High voltage limit",
   "MODIFICATION": "Modification",
   "descriptionModificationError": "An error when modifying the description",
-  "descriptionLimitError": "Description exceeds character limit"
+  "descriptionLimitError": "Description exceeds character limit",
+  "StashedElements": "Restore elements",
+  "All": "All",
+  "restore": "Restore",
+  "DeleteRows": "Delete",
+  "ElementsWillBeDeletedMsg": "All selected elements will be permanently deleted",
+  "NoDirectorySelectedError": "A directory must be selected to restore elements",
+  "RestoreElementsInPrivateDirectoryError": "Some or all the elements can not be restored: To perform a restoration in a private folder it is necessary to be the owner of all the restored elements",
+  "RestoreElementsInPublicDirectoryError": "Some or all the elements can not be restored: To perform a restoration in a public folder it is necessary to either be the owner of all the restored elements or the restored elements must be public"
 }

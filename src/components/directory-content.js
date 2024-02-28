@@ -211,7 +211,7 @@ const DirectoryContent = () => {
     };
 
     /**
-     * Filters dialog: window status value to edit CriteriaBaseds filters
+     * Filters dialog: window status value to edit CriteriaBased filters
      */
     const [currentCriteriaBasedFilterId, setCurrentCriteriaBasedFilterId] =
         useState(null);
@@ -308,6 +308,9 @@ const DirectoryContent = () => {
                         hasMetadata:
                             childrenMetadata[event.rowData.elementUuid] !==
                             undefined,
+                        specificMetadata:
+                            childrenMetadata[event.rowData.elementUuid]
+                                ?.specificMetadata,
                         ...element,
                     });
 
@@ -683,10 +686,7 @@ const DirectoryContent = () => {
                             />
                         )}
                     {childrenMetadata[element.elementUuid] &&
-                        getElementIcon(
-                            element.type,
-                            childrenMetadata[element.elementUuid].subtype
-                        )}
+                        getElementIcon(element.type)}
                     {/* Name */}
                     <OverflowableText
                         text={getDisplayedElementName(cellData)}
@@ -794,6 +794,7 @@ const DirectoryContent = () => {
                                 ? e.specificMetadata.type
                                 : null,
                             format: e.specificMetadata?.format ?? null,
+                            specificMetadata: e.specificMetadata,
                         };
                     });
                 })
@@ -881,14 +882,23 @@ const DirectoryContent = () => {
 
     const renderEmptyDirContent = () => {
         return (
-            <div style={{ textAlign: 'center', marginTop: '100px' }}>
-                <FolderOpenRoundedIcon
-                    style={{ width: '100px', height: '100px' }}
+            <>
+                <ContentToolbar
+                    selectedElements={
+                        // Check selectedUuids.size here to show toolbar options only
+                        // when multi selection checkboxes are used.
+                        selectedUuids.size > 0 ? getSelectedChildren() : []
+                    }
                 />
-                <h1>
-                    <FormattedMessage id={'emptyDir'} />
-                </h1>
-            </div>
+                <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                    <FolderOpenRoundedIcon
+                        style={{ width: '100px', height: '100px' }}
+                    />
+                    <h1>
+                        <FormattedMessage id={'emptyDir'} />
+                    </h1>
+                </div>
+            </>
         );
     };
 
@@ -902,7 +912,6 @@ const DirectoryContent = () => {
                         selectedUuids.size > 0 ? getSelectedChildren() : []
                     }
                 />
-
                 <VirtualizedTable
                     style={{ flexGrow: 1 }}
                     onRowRightClick={(e) => onContextMenu(e)}
