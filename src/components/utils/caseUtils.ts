@@ -10,22 +10,34 @@ import { ElementType } from '../../utils/elementType';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
+type ExportCaseError = {
+    caseUuid: string;
+    message: string;
+};
+
 const exportCases = async (
     uuids: string[],
     format: string,
     formatParameters: {
         [parameterName: string]: any;
-    }
-) => {
+    },
+    onError?: (caseUuid: string, errorMsg: string) => void
+): Promise<ExportCaseError[]> => {
     const files: { name: string; blob: Blob }[] = [];
+    const errors: ExportCaseError[] = [];
     for (const uuid of uuids) {
-        const result = await exportCase(uuid, format, formatParameters);
-        let filename = result.headers
-            .get('Content-Disposition')
-            .split('filename=')[1];
-        filename = filename.substring(1, filename.length - 1); // We remove quotes
-        const blob = await result.blob();
-        files.push({ name: filename, blob });
+        try {
+            const result = await exportCase(uuid, format, formatParameters);
+            let filename = result.headers
+                .get('Content-Disposition')
+                .split('filename=')[1];
+            filename = filename.substring(1, filename.length - 1); // We remove quotes
+            const blob = await result.blob();
+            files.push({ name: filename, blob });
+        } catch (e: any) {
+            console.log({ ...e });
+            onError?.(uuid, e);
+        }
     }
     for (const file of files) {
         const href = window.URL.createObjectURL(file.blob);
@@ -36,11 +48,12 @@ const exportCases = async (
         link.click();
         document.body.removeChild(link);
     }
+    return errors;
 };
 
 export function useDownloadUtils() {
     const intl = useIntl();
-    const { snackInfo } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
     const capitalizeFirstLetter = (string: string) =>
         `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
 
@@ -153,6 +166,13 @@ export function useDownloadUtils() {
         );
     };
 
+    const handleCaseExportError = (caseUuid: string, errorMsg: string) =>
+        snackError({
+            headerId: 'download.error',
+            headerValues: { caseUuid },
+            messageTxt: errorMsg,
+        });
+
     const handleDownloadCases = async (
         selectedElements: any[],
         format: string,
@@ -163,7 +183,12 @@ export function useDownloadUtils() {
         const casesUuids = selectedElements
             .filter((element) => element.type === ElementType.CASE)
             .map((element) => element.elementUuid);
-        await exportCases(casesUuids, format, formatParameters);
+        await exportCases(
+            casesUuids,
+            format,
+            formatParameters,
+            handleCaseExportError
+        );
         if (casesUuids.length !== selectedElements.length) {
             snackInfo({
                 messageTxt: buildPartialDownloadMessage(

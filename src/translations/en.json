@@ -249,6 +249,7 @@
   "download.message.lists": "lists",
   "download.message.studies": "studies",
   "download.message.others": "others",
+  "download.error": "An error occurred while exporting case {caseUuid}",
   "connected": "Connected",
   "maximumSectionCount": "Maximum number of sections",
   "sectionCount": "Current number of sections",
