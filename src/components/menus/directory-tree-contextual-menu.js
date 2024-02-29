@@ -140,141 +140,107 @@ const DirectoryTreeContextualMenu = (props) => {
         return handleError(msg);
     };
 
-    function pasteElement(elementUuid, selectionForCopy) {
-        if (selectionForCopy.sourceItemUuid) {
+    function pasteElement(directoryUuid, selectionForCopy) {
+        if (!selectionForCopy.sourceItemUuid) {
+            handleError(intl.formatMessage({ id: 'elementPasteFailed404' }));
+            handleCloseDialog(null);
+        } else {
             console.info(
                 'Pasting element %s into directory %s',
                 selectionForCopy.nameItem,
-                elementUuid
+                directoryUuid
             );
-            getNameCandidate(
-                elementUuid,
-                selectionForCopy.nameItem,
-                selectionForCopy.typeItem
-            )
-                .then((newItemName) => {
-                    if (newItemName) {
-                        switch (selectionForCopy.typeItem) {
-                            case ElementType.CASE:
-                                duplicateCase(
-                                    newItemName,
-                                    selectionForCopy.descriptionItem,
-                                    selectionForCopy.sourceItemUuid,
-                                    elementUuid
-                                )
-                                    .then(() => {
-                                        handleCloseDialog();
-                                    })
-                                    .catch((error) => {
+            // existence check and infos for source element
+            fetchElementsInfos([selectionForCopy.sourceItemUuid])
+                .then((elementInfos) => {
+                    // available new name
+                    getNameCandidate(
+                        directoryUuid,
+                        selectionForCopy.nameItem,
+                        selectionForCopy.typeItem
+                    )
+                        .then((newItemName) => {
+                            // duplicate source element with new name
+                            switch (selectionForCopy.typeItem) {
+                                case ElementType.CASE:
+                                    duplicateCase(
+                                        newItemName,
+                                        selectionForCopy.descriptionItem,
+                                        selectionForCopy.sourceItemUuid,
+                                        directoryUuid
+                                    ).catch((error) => {
                                         handlePasteError(error);
                                     });
-                                break;
-                            case ElementType.STUDY:
-                                duplicateStudy(
-                                    newItemName,
-                                    selectionForCopy.descriptionItem,
-                                    selectionForCopy.sourceItemUuid,
-                                    elementUuid
-                                )
-                                    .then(() => {
-                                        handleCloseDialog();
-                                    })
-                                    .catch((error) => {
+                                    break;
+                                case ElementType.STUDY:
+                                    duplicateStudy(
+                                        newItemName,
+                                        selectionForCopy.descriptionItem,
+                                        selectionForCopy.sourceItemUuid,
+                                        directoryUuid
+                                    ).catch((error) => {
                                         handlePasteError(error);
                                     });
-                                break;
-                            case ElementType.FILTER:
-                                duplicateFilter(
-                                    newItemName,
-                                    selectionForCopy.descriptionItem,
-                                    selectionForCopy.sourceItemUuid,
-                                    elementUuid
-                                )
-                                    .then(() => {
-                                        handleCloseDialog();
-                                    })
-                                    .catch((error) => {
+                                    break;
+                                case ElementType.FILTER:
+                                    duplicateFilter(
+                                        newItemName,
+                                        selectionForCopy.descriptionItem,
+                                        selectionForCopy.sourceItemUuid,
+                                        directoryUuid
+                                    ).catch((error) => {
                                         handlePasteError(error);
                                     });
-                                break;
-                            case ElementType.MODIFICATION:
-                                duplicateModification(
-                                    newItemName,
-                                    selectionForCopy.descriptionItem,
-                                    selectionForCopy.sourceItemUuid,
-                                    elementUuid
-                                )
-                                    .then(() => {
-                                        handleCloseDialog();
-                                    })
-                                    .catch((error) => {
+                                    break;
+                                case ElementType.MODIFICATION:
+                                    duplicateModification(
+                                        newItemName,
+                                        selectionForCopy.descriptionItem,
+                                        selectionForCopy.sourceItemUuid,
+                                        directoryUuid
+                                    ).catch((error) => {
                                         handlePasteError(error);
                                     });
-                                break;
-                            case ElementType.VOLTAGE_INIT_PARAMETERS:
-                            case ElementType.SECURITY_ANALYSIS_PARAMETERS:
-                            case ElementType.LOADFLOW_PARAMETERS:
-                                duplicateParameter(
-                                    newItemName,
-                                    selectionForCopy.typeItem,
-                                    selectionForCopy.sourceItemUuid,
-                                    elementUuid
-                                )
-                                    .then(() => {
-                                        handleCloseDialog();
-                                    })
-                                    .catch((error) => {
+                                    break;
+                                case ElementType.VOLTAGE_INIT_PARAMETERS:
+                                case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+                                case ElementType.LOADFLOW_PARAMETERS:
+                                    duplicateParameter(
+                                        newItemName,
+                                        selectionForCopy.typeItem,
+                                        selectionForCopy.sourceItemUuid,
+                                        directoryUuid
+                                    ).catch((error) => {
                                         handlePasteError(error);
                                     });
-                                break;
-                            case ElementType.CONTINGENCY_LIST:
-                                fetchElementsInfos([
-                                    selectionForCopy.sourceItemUuid,
-                                ])
-                                    .then((res) => {
-                                        duplicateContingencyList(
-                                            res[0].specificMetadata.type,
-                                            newItemName,
-                                            selectionForCopy.descriptionItem,
-                                            selectionForCopy.sourceItemUuid,
-                                            elementUuid
-                                        ).catch((error) => {
-                                            handlePasteError(error);
-                                        });
-                                    })
-                                    .catch((error) => {
+                                    break;
+                                case ElementType.CONTINGENCY_LIST:
+                                    duplicateContingencyList(
+                                        elementInfos[0].specificMetadata.type,
+                                        newItemName,
+                                        selectionForCopy.descriptionItem,
+                                        selectionForCopy.sourceItemUuid,
+                                        directoryUuid
+                                    ).catch((error) => {
                                         handlePasteError(error);
-                                    })
-                                    .finally(() => {
-                                        handleCloseDialog();
                                     });
-
-                                break;
-
-                            default:
-                                handleError(
-                                    intl.formatMessage({
-                                        id: 'unsupportedItem',
-                                    })
-                                );
-                        }
-                    } else {
-                        handleError(
-                            newItemName +
-                                ' : ' +
-                                intl.formatMessage({
-                                    id: 'nameAlreadyUsed',
-                                })
-                        );
-                    }
+                                    break;
+                                default:
+                                    handleError(
+                                        intl.formatMessage({
+                                            id: 'unsupportedItem',
+                                        })
+                                    );
+                            }
+                        })
+                        .catch((error) => {
+                            handlePasteError(error);
+                        });
                 })
                 .catch((error) => {
-                    handleError(error.message);
+                    handlePasteError(error);
                 })
-                .finally(() => handleCloseDialog());
-        } else {
-            handleError(intl.formatMessage({ id: 'elementPasteFailed404' }));
-            handleCloseDialog();
+                .finally(() => handleCloseDialog(null));
         }
     }
 
