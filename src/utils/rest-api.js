@@ -541,18 +541,11 @@ export function elementExists(directoryUuid, elementName, type) {
 }
 
 export function getNameCandidate(directoryUuid, elementName, type) {
-    const existsElementUrl =
+    const nameCandidateUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${directoryUuid}/${elementName}/newNameCandidate?type=${type}`;
-
-    console.debug(existsElementUrl);
-    return backendFetchText(existsElementUrl).catch((error) => {
-        if (error.status === 404) {
-            return false;
-        } else {
-            throw error;
-        }
-    });
+    console.debug(nameCandidateUrl);
+    return backendFetchText(nameCandidateUrl);
 }
 
 /**
