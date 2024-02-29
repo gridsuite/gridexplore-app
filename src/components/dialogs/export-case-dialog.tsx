@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
+    Box,
     Button,
     CircularProgress,
     Collapse,
@@ -182,15 +183,15 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                     />
                 </Collapse>
                 {loading && (
-                    <div
-                        style={{
+                    <Box
+                        sx={{
                             display: 'flex',
                             justifyContent: 'center',
                             marginTop: '5px',
                         }}
                     >
                         <CircularProgress />
-                    </div>
+                    </Box>
                 )}
             </DialogContent>
             <DialogActions>
