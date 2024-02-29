@@ -201,115 +201,88 @@ const ContentContextualMenu = (props) => {
                 activeElement.type
             )
                 .then((newItemName) => {
-                    if (newItemName) {
-                        switch (activeElement.type) {
-                            case ElementType.CASE:
-                                duplicateCase(
-                                    newItemName,
-                                    activeElement.description,
-                                    activeElement.elementUuid,
-                                    selectedDirectory.elementUuid
-                                )
-                                    .then(() => {
-                                        handleCloseDialog();
-                                    })
-                                    .catch((error) => {
+                    switch (activeElement.type) {
+                        case ElementType.CASE:
+                            duplicateCase(
+                                newItemName,
+                                activeElement.description,
+                                activeElement.elementUuid,
+                                selectedDirectory.elementUuid
+                            ).catch((error) => {
+                                handleDuplicateError(error.message);
+                            });
+                            break;
+                        case ElementType.CONTINGENCY_LIST:
+                            fetchElementsInfos([activeElement.elementUuid])
+                                .then((res) => {
+                                    duplicateContingencyList(
+                                        res[0].specificMetadata.type,
+                                        newItemName,
+                                        activeElement.description,
+                                        activeElement.elementUuid,
+                                        selectedDirectory.elementUuid
+                                    ).catch((error) => {
                                         handleDuplicateError(error.message);
                                     });
-                                break;
-                            case ElementType.CONTINGENCY_LIST:
-                                fetchElementsInfos([activeElement.elementUuid])
-                                    .then((res) => {
-                                        duplicateContingencyList(
-                                            res[0].specificMetadata.type,
-                                            newItemName,
-                                            activeElement.description,
-                                            activeElement.elementUuid,
-                                            selectedDirectory.elementUuid
-                                        ).catch((error) => {
-                                            handleDuplicateError(error.message);
-                                        });
-                                    })
-                                    .catch((error) => {
-                                        handleLastError(error.message);
-                                    })
-                                    .finally(() => {
-                                        handleCloseDialog();
-                                    });
-
-                                break;
-                            case ElementType.STUDY:
-                                duplicateStudy(
-                                    newItemName,
-                                    activeElement.description,
-                                    activeElement.elementUuid,
-                                    selectedDirectory.elementUuid
-                                )
-                                    .then(() => {
-                                        handleCloseDialog();
-                                    })
-                                    .catch((error) => {
-                                        handleDuplicateError(error.message);
-                                    });
-                                break;
-                            case ElementType.FILTER:
-                                duplicateFilter(
-                                    newItemName,
-                                    activeElement.description,
-                                    activeElement.elementUuid,
-                                    selectedDirectory.elementUuid
-                                ).catch((error) => {
-                                    handleDuplicateError(error.message);
-                                });
-                                handleCloseDialog();
-                                break;
-                            case ElementType.MODIFICATION:
-                                duplicateModification(
-                                    newItemName,
-                                    activeElement.description,
-                                    activeElement.elementUuid,
-                                    selectedDirectory.elementUuid
-                                ).catch((error) => {
-                                    handleDuplicateError(error.message);
-                                });
-                                handleCloseDialog();
-                                break;
-                            case ElementType.VOLTAGE_INIT_PARAMETERS:
-                            case ElementType.SECURITY_ANALYSIS_PARAMETERS:
-                            case ElementType.LOADFLOW_PARAMETERS:
-                                duplicateParameter(
-                                    newItemName,
-                                    activeElement.type,
-                                    activeElement.elementUuid,
-                                    selectedDirectory.elementUuid
-                                )
-                                    .then(() => {
-                                        handleCloseDialog();
-                                    })
-                                    .catch((error) => {
-                                        handleDuplicateError(error.message);
-                                    });
-                                break;
-                            default:
-                                handleLastError(
-                                    intl.formatMessage({
-                                        id: 'unsupportedItem',
-                                    })
-                                );
-                        }
-                    } else {
-                        handleLastError(
-                            activeElement.elementName +
-                                ' : ' +
-                                intl.formatMessage({
-                                    id: 'nameAlreadyUsed',
                                 })
-                        );
+                                .catch((error) => {
+                                    handleLastError(error.message);
+                                });
+                            break;
+                        case ElementType.STUDY:
+                            duplicateStudy(
+                                newItemName,
+                                activeElement.description,
+                                activeElement.elementUuid,
+                                selectedDirectory.elementUuid
+                            ).catch((error) => {
+                                handleDuplicateError(error.message);
+                            });
+                            break;
+                        case ElementType.FILTER:
+                            duplicateFilter(
+                                newItemName,
+                                activeElement.description,
+                                activeElement.elementUuid,
+                                selectedDirectory.elementUuid
+                            ).catch((error) => {
+                                handleDuplicateError(error.message);
+                            });
+                            break;
+                        case ElementType.MODIFICATION:
+                            duplicateModification(
+                                newItemName,
+                                activeElement.description,
+                                activeElement.elementUuid,
+                                selectedDirectory.elementUuid
+                            ).catch((error) => {
+                                handleDuplicateError(error.message);
+                            });
+                            break;
+                        case ElementType.VOLTAGE_INIT_PARAMETERS:
+                        case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+                        case ElementType.LOADFLOW_PARAMETERS:
+                            duplicateParameter(
+                                newItemName,
+                                activeElement.type,
+                                activeElement.elementUuid,
+                                selectedDirectory.elementUuid
+                            ).catch((error) => {
+                                handleDuplicateError(error.message);
+                            });
+                            break;
+                        default:
+                            handleLastError(
+                                intl.formatMessage({
+                                    id: 'unsupportedItem',
+                                })
+                            );
                     }
                 })
                 .catch((error) => {
                     handleDuplicateError(error.message);
-                });
+                })
+                .finally(() => handleCloseDialog());
         }
     };
 
