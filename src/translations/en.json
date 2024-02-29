@@ -237,6 +237,7 @@
   "voltageRegulatorOn": "Voltage regulation",
   "PlannedActivePowerSetPoint": "Planning active power set point",
   "download.button": "Download",
+  "download.exportFormat": "Export format",
   "download.message.downloadedCase": "A case has been downloaded",
   "download.message.downloadedCases": "{number} cases have been downloaded",
   "download.message.oneTypeNotDownloadable": "{type1} are not downloadable.",
@@ -283,8 +284,5 @@
   "ElementsWillBeDeletedMsg": "All selected elements will be permanently deleted",
   "NoDirectorySelectedError": "A directory must be selected to restore elements",
   "RestoreElementsInPrivateDirectoryError": "Some or all the elements can not be restored: To perform a restoration in a private folder it is necessary to be the owner of all the restored elements",
-  "RestoreElementsInPublicDirectoryError": "Some or all the elements can not be restored: To perform a restoration in a public folder it is necessary to either be the owner of all the restored elements or the restored elements must be public",
-  "exportCaseErrorMsg": "No export format specified",
-  "exportFormat": "Export format",
-  "export": "Export"
+  "RestoreElementsInPublicDirectoryError": "Some or all the elements can not be restored: To perform a restoration in a public folder it is necessary to either be the owner of all the restored elements or the restored elements must be public"
 }

@@ -237,6 +237,7 @@
   "voltageRegulatorOn": "Réglage de tension",
   "PlannedActivePowerSetPoint": "Puissance imposée",
   "download.button": "Télécharger",
+  "download.exportFormat": "Format de l'export",
   "download.message.downloadedCase": "Une situation a été téléchargée.",
   "download.message.downloadedCases": "{number} situations ont été téléchargées.",
   "download.message.oneTypeNotDownloadable": "Les {type1} ne sont pas téléchargeables.",
@@ -283,8 +284,5 @@
   "ElementsWillBeDeletedMsg": "Tous les éléments sélectionnés seront définitivement supprimés",
   "NoDirectorySelectedError": "Un dossier doit être sélectionné pour restaurer les éléments",
   "RestoreElementsInPrivateDirectoryError": "Certains ou tous les éléments ne peuvent pas être restaurés : Pour effectuer une restauration dans un dossier privé il est nécessaire d'être propriétaire de tous les éléments restaurés",
-  "RestoreElementsInPublicDirectoryError": "Certains ou tous les éléments ne peuvent pas être restaurés : Pour effectuer une restauration dans un dossier public il est nécessaire soit d'être propriétaire de tous les éléments restaurés, soit les éléments restaurés doivent être publics",
-  "exportCaseErrorMsg": "Le format de l'export n'est pas spécifié",
-  "exportFormat": "Format de l'export",
-  "export": "Exporter"
+  "RestoreElementsInPublicDirectoryError": "Certains ou tous les éléments ne peuvent pas être restaurés : Pour effectuer une restauration dans un dossier public il est nécessaire soit d'être propriétaire de tous les éléments restaurés, soit les éléments restaurés doivent être publics"
 }

@@ -115,11 +115,11 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                         variant="filled"
                         margin="dense"
                     >
-                        <FormattedMessage id="exportFormat" />
+                        <FormattedMessage id="download.exportFormat" />
                     </InputLabel>
                     <Select
                         labelId="select-format-label"
-                        label={<FormattedMessage id="exportFormat" />}
+                        label={<FormattedMessage id="download.exportFormat" />}
                         variant="filled"
                         id="controlled-select-format"
                         onChange={(event) =>
@@ -177,8 +177,9 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                         initValues={currentParameters}
                         onChange={handleParameterChange}
                         variant="standard"
-                        selectionWithDialog={(param) =>
-                            param?.possibleValues?.length > 10
+                        selectionWithDialog={(params) =>
+                            !!params?.possibleValues?.length &&
+                            params.possibleValues.length > 10
                         }
                     />
                 </Collapse>
@@ -201,7 +202,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                     variant="outlined"
                     disabled={loading || !selectedFormat}
                 >
-                    <FormattedMessage id="export" />
+                    <FormattedMessage id="download.button" />
                 </Button>
             </DialogActions>
         </Dialog>
