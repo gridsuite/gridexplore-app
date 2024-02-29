@@ -43,7 +43,7 @@ const DescriptionInput: FunctionComponent<IDescriptionInput> = ({
     }, [descriptionWatch, maxCounter]);
 
     const formProps = {
-        size: 'medium',
+        size: 'medium' as const,
         multiline: true,
         InputProps: {
             endAdornment: (
