@@ -6,14 +6,19 @@
  */
 
 import React, { useEffect } from 'react';
-import DirectoryItemsInput from './directory-items-input';
-import { fetchElementsInfos } from '../../../utils/rest-api';
+import {
+    fetchElementsInfos,
+    fetchRootFolders,
+    fetchDirectoryContent,
+} from '../../../utils/rest-api';
 import { useFormContext } from 'react-hook-form';
 import { validate as uuidValidate } from 'uuid';
+import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 
 const ElementValueEditor = (props: {
     name: string;
     elementType: string;
+    equipmentTypes?: string[];
     titleId: string;
     hideErrorMessage: boolean;
     onChange?: (e: any) => void;
@@ -51,11 +56,16 @@ const ElementValueEditor = (props: {
         <DirectoryItemsInput
             name={props.name}
             elementType={props.elementType}
+            equipmentTypes={props.equipmentTypes}
             titleId={props.titleId}
             hideErrorMessage={props.hideErrorMessage}
             label={'filter'}
             itemFilter={props.itemFilter}
             onChange={props.onChange}
+            fetchDirectoryContent={fetchDirectoryContent}
+            fetchRootFolders={fetchRootFolders}
+            fetchElementsInfos={fetchElementsInfos}
+            labelRequiredFromContext={false}
         ></DirectoryItemsInput>
     );
 };
