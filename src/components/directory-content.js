@@ -571,7 +571,8 @@ const DirectoryContent = () => {
         (type) =>
             type === ElementType.VOLTAGE_INIT_PARAMETERS ||
             type === ElementType.SECURITY_ANALYSIS_PARAMETERS ||
-            type === ElementType.LOADFLOW_PARAMETERS,
+            type === ElementType.LOADFLOW_PARAMETERS ||
+            type === ElementType.SENSITIVITY_PARAMETERS,
         []
     );
 

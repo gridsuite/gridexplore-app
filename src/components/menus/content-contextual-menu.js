@@ -166,6 +166,7 @@ const ContentContextualMenu = (props) => {
                 case ElementType.MODIFICATION:
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+                case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.CONTINGENCY_LIST:
                     console.info(
@@ -259,6 +260,7 @@ const ContentContextualMenu = (props) => {
                             });
                             break;
                         case ElementType.VOLTAGE_INIT_PARAMETERS:
+                        case ElementType.SENSITIVITY_PARAMETERS:
                         case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                         case ElementType.LOADFLOW_PARAMETERS:
                             duplicateParameter(
@@ -453,6 +455,8 @@ const ContentContextualMenu = (props) => {
                     ElementType.VOLTAGE_INIT_PARAMETERS ||
                 selectedElements[0].type ===
                     ElementType.SECURITY_ANALYSIS_PARAMETERS ||
+                selectedElements[0].type ===
+                    ElementType.SENSITIVITY_PARAMETERS ||
                 selectedElements[0].type === ElementType.LOADFLOW_PARAMETERS)
         );
     }, [selectedElements]);
