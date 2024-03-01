@@ -611,19 +611,13 @@ const DirectoryContent = () => {
             ) : (
                 <CreateIcon onClick={handleDescriptionIconClick} />
             );
-            const showEditDescriptionIcon = !isParameterTypeElement(
-                element.type
-            );
-
             return (
                 <>
-                    {showEditDescriptionIcon && (
-                        <Box sx={styles.cell}>{icon}</Box>
-                    )}
+                    <Box sx={styles.cell}>{icon}</Box>
                 </>
             );
         },
-        [currentChildren, isParameterTypeElement]
+        [currentChildren]
     );
 
     const getElementIcon = useCallback(
