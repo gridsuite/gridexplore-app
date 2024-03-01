@@ -209,7 +209,8 @@ const DirectoryTreeContextualMenu = (props) => {
                                         newItemName,
                                         selectionForCopy.typeItem,
                                         selectionForCopy.sourceItemUuid,
-                                        directoryUuid
+                                        directoryUuid,
+                                        selectionForCopy.descriptionItem
                                     ).catch((error) => {
                                         handlePasteError(error);
                                     });

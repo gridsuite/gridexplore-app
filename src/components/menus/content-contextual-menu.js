@@ -265,7 +265,8 @@ const ContentContextualMenu = (props) => {
                                 newItemName,
                                 activeElement.type,
                                 activeElement.elementUuid,
-                                selectedDirectory.elementUuid
+                                selectedDirectory.elementUuid,
+                                activeElement.description
                             ).catch((error) => {
                                 handleDuplicateError(error.message);
                             });
