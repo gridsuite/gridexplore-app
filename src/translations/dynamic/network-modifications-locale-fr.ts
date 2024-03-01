@@ -35,7 +35,7 @@ const network_modifications_locale_fr = {
         'Création de transformateur à 2 enroulements',
     'network_modifications.TWO_WINDINGS_TRANSFORMER_MODIFICATION':
         'Modification de transformateur à 2 enroulements',
-    'network_modifications.BRANCH_STATUS_MODIFICATION':
+    'network_modifications.OPERATING_STATUS_MODIFICATION':
         'Modification de status',
     'network_modifications.SHUNT_COMPENSATOR_CREATION':
         "Création d'un moyen de compensation",
