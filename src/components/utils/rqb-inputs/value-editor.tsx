@@ -42,6 +42,8 @@ const ValueEditor = (props: ValueEditorProps) => {
         (value: any) => {
             if (value?.type === ElementType.FILTER) {
                 return (
+                    // we do not authorize to use an expert filter in the rules of
+                    // another expert filter, to prevent potential cycle problems
                     value?.specificMetadata?.type !== FilterType.EXPERT.id &&
                     ((props.field === FieldType.ID &&
                         value?.specificMetadata?.equipmentType ===
@@ -79,10 +81,22 @@ const ValueEditor = (props: ValueEditorProps) => {
         props.operator === OperatorType.IS_PART_OF ||
         props.operator === OperatorType.IS_NOT_PART_OF
     ) {
+        let equipmentTypes;
+        if (
+            props.field === FieldType.VOLTAGE_LEVEL_ID ||
+            props.field === FieldType.VOLTAGE_LEVEL_ID_1 ||
+            props.field === FieldType.VOLTAGE_LEVEL_ID_2
+        ) {
+            equipmentTypes = [VoltageLevel.type];
+        } else if (props.field === FieldType.ID) {
+            equipmentTypes = [getValues(EQUIPMENT_TYPE)];
+        }
+
         return (
             <ElementValueEditor
                 name={FILTER_UUID + props.rule.id}
                 elementType={ElementType.FILTER}
+                equipmentTypes={equipmentTypes}
                 titleId="selectFilterDialogTitle"
                 hideErrorMessage={true}
                 onChange={(e: any) => {
