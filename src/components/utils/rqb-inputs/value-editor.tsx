@@ -42,6 +42,8 @@ const ValueEditor = (props: ValueEditorProps) => {
         (value: any) => {
             if (value?.type === ElementType.FILTER) {
                 return (
+                    // we do not authorize to use an expert filter in the rules of
+                    // another expert filter, to prevent potential cycle problems
                     value?.specificMetadata?.type !== FilterType.EXPERT.id &&
                     ((props.field === FieldType.ID &&
                         value?.specificMetadata?.equipmentType ===
