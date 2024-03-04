@@ -33,7 +33,8 @@ const network_modifications_locale_en = {
         '2 windings transformer creation',
     'network_modifications.TWO_WINDINGS_TRANSFORMER_MODIFICATION':
         '2 windings transformer modification',
-    'network_modifications.BRANCH_STATUS_MODIFICATION': 'Status modification',
+    'network_modifications.OPERATING_STATUS_MODIFICATION':
+        'Status modification',
     'network_modifications.SHUNT_COMPENSATOR_CREATION':
         'Shunt compensator creation',
     'network_modifications.SHUNT_COMPENSATOR_MODIFICATION':
