@@ -6,7 +6,7 @@
  */
 
 import { ValueEditorProps } from 'react-querybuilder';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { MaterialValueEditor } from '@react-querybuilder/material';
 import {
     FieldType,
@@ -16,6 +16,11 @@ import CountryValueEditor from './country-value-editor';
 import TranslatedValueEditor from './translated-value-editor';
 import TextValueEditor from './text-value-editor';
 import Box from '@mui/material/Box';
+import ElementValueEditor from './element-value-editor';
+import { ElementType, FilterType } from '../../../utils/elementType';
+import { EQUIPMENT_TYPE, FILTER_UUID } from '../field-constants';
+import { useFormContext } from 'react-hook-form';
+import { VoltageLevel } from '../../../utils/equipment-types';
 
 const styles = {
     noArrows: {
@@ -30,6 +35,31 @@ const styles = {
 };
 
 const ValueEditor = (props: ValueEditorProps) => {
+    const formContext = useFormContext();
+    const { getValues } = formContext;
+
+    const itemFilter = useCallback(
+        (value: any) => {
+            if (value?.type === ElementType.FILTER) {
+                return (
+                    // we do not authorize to use an expert filter in the rules of
+                    // another expert filter, to prevent potential cycle problems
+                    value?.specificMetadata?.type !== FilterType.EXPERT.id &&
+                    ((props.field === FieldType.ID &&
+                        value?.specificMetadata?.equipmentType ===
+                            getValues(EQUIPMENT_TYPE)) ||
+                        ((props.field === FieldType.VOLTAGE_LEVEL_ID ||
+                            props.field === FieldType.VOLTAGE_LEVEL_ID_1 ||
+                            props.field === FieldType.VOLTAGE_LEVEL_ID_2) &&
+                            value?.specificMetadata?.equipmentType ===
+                                VoltageLevel.type))
+                );
+            }
+            return true;
+        },
+        [props.field, getValues]
+    );
+
     if (props.operator === OperatorType.EXISTS) {
         // No value needed for this operator
         return null;
@@ -47,7 +77,36 @@ const ValueEditor = (props: ValueEditorProps) => {
     ) {
         return <TranslatedValueEditor {...props} />;
     }
-    if (props.field === FieldType.ID || props.field === FieldType.NAME) {
+    if (
+        props.operator === OperatorType.IS_PART_OF ||
+        props.operator === OperatorType.IS_NOT_PART_OF
+    ) {
+        let equipmentTypes;
+        if (
+            props.field === FieldType.VOLTAGE_LEVEL_ID ||
+            props.field === FieldType.VOLTAGE_LEVEL_ID_1 ||
+            props.field === FieldType.VOLTAGE_LEVEL_ID_2
+        ) {
+            equipmentTypes = [VoltageLevel.type];
+        } else if (props.field === FieldType.ID) {
+            equipmentTypes = [getValues(EQUIPMENT_TYPE)];
+        }
+
+        return (
+            <ElementValueEditor
+                name={FILTER_UUID + props.rule.id}
+                elementType={ElementType.FILTER}
+                equipmentTypes={equipmentTypes}
+                titleId="selectFilterDialogTitle"
+                hideErrorMessage={true}
+                onChange={(e: any) => {
+                    props.handleOnChange(e.map((v: any) => v.id));
+                }}
+                itemFilter={itemFilter}
+                defaultValue={props.value}
+            />
+        );
+    } else if (props.field === FieldType.ID || props.field === FieldType.NAME) {
         return <TextValueEditor {...props} />;
     }
     return (

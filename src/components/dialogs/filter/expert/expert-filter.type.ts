@@ -19,6 +19,8 @@ export enum OperatorType {
     BEGINS_WITH = 'BEGINS_WITH',
     ENDS_WITH = 'ENDS_WITH',
     EXISTS = 'EXISTS',
+    IS_PART_OF = 'IS_PART_OF',
+    IS_NOT_PART_OF = 'IS_NOT_PART_OF',
 }
 
 export enum CombinatorType {
@@ -83,6 +85,7 @@ export enum DataType {
     NUMBER = 'NUMBER',
     BOOLEAN = 'BOOLEAN',
     COMBINATOR = 'COMBINATOR',
+    FILTER_UUID = 'FILTER_UUID',
 }
 
 export interface RuleTypeExport {
