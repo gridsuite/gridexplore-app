@@ -532,6 +532,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         onClose={handleCloseDialog}
                         stashedElements={stashedElements}
                         onStashedElementChange={handleGetStashedElement}
+                        activeDirectory={directory}
                     />
                 );
             default:

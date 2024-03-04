@@ -27,6 +27,7 @@ interface IStashedElementsDialog {
     onClose: () => void;
     stashedElements: any[];
     onStashedElementChange: () => any[];
+    activeDirectory?: any;
 }
 
 function getOptionLabel(element: any) {
@@ -44,6 +45,7 @@ const StashedElementsDialog = ({
     onClose,
     onStashedElementChange,
     stashedElements,
+    activeDirectory,
 }: IStashedElementsDialog) => {
     const intl = useIntl();
     const [selectedElements, setSelectedElements] = useState<string[]>([]);
@@ -91,13 +93,13 @@ const StashedElementsDialog = ({
     ]);
 
     const handleRestore = useCallback(() => {
-        if (selectedDirectory?.elementUuid) {
-            restoreElements(selectedElements, selectedDirectory.elementUuid)
+        const directory = activeDirectory ?? selectedDirectory;
+        if (directory?.elementUuid) {
+            restoreElements(selectedElements, directory.elementUuid)
                 .then(onStashedElementChange)
                 .catch((error) => {
                     if (error.status === 403) {
-                        const errorMessage = selectedDirectory.accessRights
-                            .isPrivate
+                        const errorMessage = directory.accessRights.isPrivate
                             ? 'RestoreElementsInPrivateDirectoryError'
                             : 'RestoreElementsInPublicDirectoryError';
                         snackError({
@@ -117,6 +119,7 @@ const StashedElementsDialog = ({
         }
     }, [
         selectedElements,
+        activeDirectory,
         snackError,
         selectedDirectory,
         onStashedElementChange,
