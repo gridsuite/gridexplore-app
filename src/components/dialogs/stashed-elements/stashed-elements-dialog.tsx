@@ -18,7 +18,7 @@ import Button from '@mui/material/Button';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { deleteElements, restoreElements } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../../../redux/reducer.type';
+import { ReduxState, IDirectory } from '../../../redux/reducer.type';
 import PopupConfirmationDialog from '../../utils/popup-confirmation-dialog';
 import Alert from '@mui/material/Alert';
 
@@ -27,7 +27,7 @@ interface IStashedElementsDialog {
     onClose: () => void;
     stashedElements: any[];
     onStashedElementChange: () => any[];
-    activeDirectory?: any;
+    activeDirectory?: IDirectory;
 }
 
 function getOptionLabel(element: any) {

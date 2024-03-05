@@ -22,10 +22,10 @@ interface IUser {
     expires_at: number;
 }
 
-interface IDirectory {
+export interface IDirectory {
     elementUuid: UUID;
     elementName: string;
-    type: 'DIRECTORY';
+    type: string;
     accessRights: {
         isPrivate: boolean;
     };
