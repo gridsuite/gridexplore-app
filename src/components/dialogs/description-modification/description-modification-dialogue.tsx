@@ -11,10 +11,9 @@ import { DESCRIPTION } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { updateElement } from '../../../utils/rest-api';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { ExpandingTextField, useSnackMessage } from '@gridsuite/commons-ui';
 import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
 import React from 'react';
-import DescriptionInput from './description-input';
 
 interface IDescriptionModificationDialogue {
     elementUuid: string;
@@ -74,7 +73,13 @@ const DescriptionModificationDialogue: FunctionComponent<
             titleId={'description'}
             removeOptional={true}
         >
-            <DescriptionInput minRows={3} sx={{ marginTop: '10px' }} noLabel />
+            <ExpandingTextField
+                name={DESCRIPTION}
+                label={'descriptionProperty'}
+                minRows={3}
+                rows={5}
+                sx={{ marginTop: '10px' }}
+            />
         </CustomMuiDialog>
     );
 };

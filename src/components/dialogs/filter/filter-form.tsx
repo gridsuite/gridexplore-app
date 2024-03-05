@@ -7,9 +7,9 @@
 
 import Grid from '@mui/material/Grid';
 import { UniqueNameInput } from '../commons/unique-name-input';
-import { FILTER_TYPE, NAME } from '../../utils/field-constants';
+import { DESCRIPTION, FILTER_TYPE, NAME } from '../../utils/field-constants';
 import { ElementType, FilterType } from '../../../utils/elementType';
-import { RadioInput } from '@gridsuite/commons-ui';
+import { ExpandingTextField, RadioInput } from '@gridsuite/commons-ui';
 import CriteriaBasedFilterForm from './criteria-based/criteria-based-filter-form';
 import ExplicitNamingFilterForm, {
     FilterForExplicitConversionProps,
@@ -17,7 +17,6 @@ import ExplicitNamingFilterForm, {
 import React, { FunctionComponent, useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import ExpertFilterForm from './expert/expert-filter-form';
-import DescriptionInput from '../description-modification/description-input';
 
 interface FilterFormProps {
     creation?: boolean;
@@ -56,7 +55,12 @@ export const FilterForm: FunctionComponent<FilterFormProps> = (props) => {
             {props.creation && (
                 <>
                     <Grid item xs={12}>
-                        <DescriptionInput rows={5} />
+                        <ExpandingTextField
+                            name={DESCRIPTION}
+                            label={'descriptionProperty'}
+                            minRows={3}
+                            rows={5}
+                        />
                     </Grid>
                     {!props.sourceFilterForExplicitNamingConversion && (
                         <Grid item>
