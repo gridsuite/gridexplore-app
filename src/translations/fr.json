@@ -280,7 +280,6 @@
   "descriptionLimitError": "La description dépasse la limite de caractères",
   "selectFilterDialogTitle": "Choisir un filtre",
   "filter": "Filtre",
-  "ElementAlreadyUsed": "Cet élément est déjà utilisé",
   "StashedElements": "Restaurer des elements",
   "All": "Tous",
   "DeleteRows": "Supprimer",
