@@ -25,7 +25,7 @@ interface IUser {
 export interface IDirectory {
     elementUuid: UUID;
     elementName: string;
-    type: string;
+    type: 'DIRECTORY';
     accessRights: {
         isPrivate: boolean;
     };
