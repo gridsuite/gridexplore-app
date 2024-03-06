@@ -394,10 +394,16 @@ export function renameElement(elementUuid, newElementName) {
     });
 }
 
-export function fetchRootFolders() {
+export function fetchRootFolders(types) {
     console.info('Fetching Root Directories');
+
+    // Add params to Url
+    const typesParams = getRequestParamFromList(types, 'elementTypes');
+    const urlSearchParams = new URLSearchParams(typesParams);
+
     const fetchRootFoldersUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/root-directories?${urlSearchParams}`;
     return backendFetchJson(fetchRootFoldersUrl);
 }
 
@@ -416,13 +422,22 @@ export function updateConfigParameter(name, value) {
     return backendFetch(updateParams, { method: 'put' });
 }
 
-export function fetchElementsInfos(ids) {
+export function fetchElementsInfos(ids, elementTypes) {
     console.info('Fetching elements metadata ... ');
-    const idsParams = getRequestParamFromList(ids, 'ids').toString();
+
+    // Add params to Url
+    const tmp = ids?.filter((id) => id);
+    const idsParams = tmp?.length ? tmp.map((id) => ['ids', id]) : [];
+    const elementTypesParams = elementTypes?.length
+        ? elementTypes.map((type) => ['elementTypes', type])
+        : [];
+    const params = [...idsParams, ...elementTypesParams];
+    const urlSearchParams = new URLSearchParams(params).toString();
+
     const fetchElementsInfosUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/elements/metadata?' +
-        idsParams;
+        urlSearchParams;
     return backendFetchJson(fetchElementsInfosUrl);
 }
 

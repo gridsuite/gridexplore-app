@@ -116,6 +116,16 @@ export const OPERATOR_OPTIONS = {
         customName: OperatorType.ENDS_WITH,
         label: 'endsWith',
     },
+    IS_PART_OF: {
+        name: OperatorType.IS_PART_OF,
+        customName: OperatorType.IS_PART_OF,
+        label: 'isPartOf',
+    },
+    IS_NOT_PART_OF: {
+        name: OperatorType.IS_NOT_PART_OF,
+        customName: OperatorType.IS_NOT_PART_OF,
+        label: 'isNotPartOf',
+    },
 };
 
 export const COMBINATOR_OPTIONS = {
