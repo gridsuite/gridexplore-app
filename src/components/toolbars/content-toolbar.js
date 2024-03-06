@@ -51,6 +51,8 @@ const ContentToolbar = (props) => {
         (state) => state.directoryUpdated
     );
 
+    const selectedDirectory = useSelector((state) => state.selectedDirectory);
+
     const handleLastError = useCallback(
         (message) => {
             snackError({
@@ -277,6 +279,7 @@ const ContentToolbar = (props) => {
                         onClose={handleCloseDialog}
                         stashedElements={stashedElements}
                         onStashedElementChange={handleGetStashedElement}
+                        directoryToRestore={selectedDirectory}
                     />
                 );
             default:
