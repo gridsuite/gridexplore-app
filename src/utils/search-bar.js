@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Autocomplete, Box, Stack, TextField } from '@mui/material';
+import { Autocomplete, Stack, TextField } from '@mui/material';
 import { searchElementsInfos } from './rest-api';
 import {
     getFileIcon,
@@ -15,19 +15,18 @@ import {
 import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory } from '../redux/actions';
+import Grid from '@mui/material/Grid';
 
 const styles = {
-    icon: {
-        marginRight: 2,
-        alignItems: 'center',
-        width: '20px',
-        height: '20px',
-    },
-    root: {
-        marginLeft: 2,
-        alignItems: 'center',
-        width: '20px',
-        height: '20px',
+    icon: (theme) => ({
+        marginRight: theme.spacing(1),
+        width: '18px',
+        height: '18px',
+    }),
+    grid: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        display: 'inline-block',
     },
 };
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
@@ -45,16 +44,17 @@ export const SearchBar = () => {
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
             lastSearchTermRef.current = searchTerm;
-            searchElementsInfos(searchTerm)
-                .then((infos) => {
-                    setElementsFound(infos);
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'equipmentsSearchingError',
+            searchTerm &&
+                searchElementsInfos(searchTerm)
+                    .then((infos) => {
+                        setElementsFound(infos);
+                    })
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'equipmentsSearchingError',
+                        });
                     });
-                });
         },
         [snackError]
     );
@@ -65,7 +65,7 @@ export const SearchBar = () => {
     );
 
     const handleChangeInput = (newId) => {
-        setLoading(true);
+        newId && setLoading(true);
         debouncedSearchMatchingElements(newId);
     };
 
@@ -74,26 +74,23 @@ export const SearchBar = () => {
     }, [elementsFound]);
 
     const convertChildren = useCallback((element) => {
-        /*        const path = Array.from(
-            { length: element.subdirectoriesCount },
-            () => '../'
-        );*/
         return (
-            <Box display="flex" alignItems="center">
-                <Box>{getFileIcon(element.type, styles.icon)}</Box>
-                <Box>{element.name}</Box>
-                <Box
-                    sx={{
-                        marginLeft: 20,
-                        alignItems: 'center',
-                        width: '20px',
-                        height: '20px',
-                    }}
-                >
-                    ../{element.parentName}
-                </Box>
-            </Box>
-        );
+            <Grid container>
+                <Grid item xs={1}>
+                    {getFileIcon(element.type, styles.icon)}
+                </Grid>
+                <Grid item xs={8} sx={styles.grid}>
+                    {element.name}
+                </Grid>
+                <Grid item xs={8} sx={styles.grid}>
+                    {element.path
+                        .map((path, index) =>
+                            index > 0 ? '/' + path.elementName : ''
+                        )
+                        .join('')}
+                </Grid>
+            </Grid>
+        ); /**/
     }, []);
 
     const renderOptionItem = (props, option) => {
@@ -104,7 +101,7 @@ export const SearchBar = () => {
     };
 
     return (
-        <Stack spacing={2} sx={{ width: '20%', marginLeft: '17%' }}>
+        <Stack sx={{ width: '50%', marginLeft: '14%' }}>
             <Autocomplete
                 freeSolo
                 size="small"
@@ -113,20 +110,25 @@ export const SearchBar = () => {
                 clearOnBlur
                 onInputChange={(_, data) => handleChangeInput(data)}
                 onChange={(event, data) => {
-                    const matchingElement = elementsFound.find(
-                        (element) => element.name === data
+                    const matchingElement = elementsFound.find((element) =>
+                        element.path.map((p, index) =>
+                            index > 0 ? p.elementName === data : ''
+                        )
                     );
-                    if (matchingElement) {
-                        const selectedParentDir = Object.values(
-                            treeData.mapData
-                        ).find(
-                            (element) =>
-                                element.elementUuid === matchingElement.parentId
-                        );
-                        if (selectedParentDir) {
-                            dispatch(setSelectedDirectory(selectedParentDir));
-                        }
-                    }
+
+                    console.log(matchingElement);
+                    console.log(treeData);
+                    let testDir1 = matchingElement.path[2].elementUuid;
+                    const selectedParentDir1 = Object.values(
+                        treeData.mapData
+                    ).find((element) => element.elementUuid === testDir1);
+                    dispatch(setSelectedDirectory(selectedParentDir1));
+
+                    let testDir = matchingElement.path[1].elementUuid;
+                    const selectedParentDir = Object.values(
+                        treeData.mapData
+                    ).find((element) => element.elementUuid === testDir);
+                    dispatch(setSelectedDirectory(selectedParentDir));
                 }}
                 options={
                     loading ? [] : elementsFound.map((option) => option.name)
@@ -141,7 +143,6 @@ export const SearchBar = () => {
                         {...params}
                         placeholder={'Search (ex.: case name, filter...)'}
                         variant="outlined"
-                        fullWidth
                         InputProps={{
                             ...params.InputProps,
                             type: 'search',
