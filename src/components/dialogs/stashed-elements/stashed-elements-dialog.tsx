@@ -74,9 +74,20 @@ const StashedElementsDialog = ({
         deleteElements(selectedElements, directoryToRestore.elementUuid)
             .then(onStashedElementChange)
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
+                if (error.status === 403) {
+                    const errorMsg = intl.formatMessage(
+                        { id: 'DeleteElementFromStashError' },
+                        { multiselect: selectedElements.length > 1 }
+                    );
+
+                    snackError({
+                        messageTxt: errorMsg,
+                    });
+                } else {
+                    snackError({
+                        messageTxt: error.message,
+                    });
+                }
             })
             .finally(onClose);
     }, [
