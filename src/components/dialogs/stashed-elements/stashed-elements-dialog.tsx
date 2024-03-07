@@ -96,6 +96,7 @@ const StashedElementsDialog = ({
         directoryToRestore,
         onStashedElementChange,
         onClose,
+        intl,
     ]);
 
     const handleRestore = useCallback(() => {
