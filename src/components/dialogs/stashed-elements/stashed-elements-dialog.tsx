@@ -17,8 +17,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { deleteElements, restoreElements } from '../../../utils/rest-api';
-import { useSelector } from 'react-redux';
-import { ReduxState } from '../../../redux/reducer.type';
+import { IDirectory } from '../../../redux/reducer.type';
 import PopupConfirmationDialog from '../../utils/popup-confirmation-dialog';
 import Alert from '@mui/material/Alert';
 
@@ -27,6 +26,7 @@ interface IStashedElementsDialog {
     onClose: () => void;
     stashedElements: any[];
     onStashedElementChange: () => any[];
+    directoryToRestore: IDirectory;
 }
 
 function getOptionLabel(element: any) {
@@ -44,16 +44,13 @@ const StashedElementsDialog = ({
     onClose,
     onStashedElementChange,
     stashedElements,
+    directoryToRestore,
 }: IStashedElementsDialog) => {
     const intl = useIntl();
     const [selectedElements, setSelectedElements] = useState<string[]>([]);
     const [openConfirmationPopup, setOpenConfirmationPopup] =
         useState<boolean>(false);
     const { snackError } = useSnackMessage();
-
-    const selectedDirectory = useSelector(
-        (state: ReduxState) => state.selectedDirectory
-    );
 
     const [error, setError] = useState('');
 
@@ -74,29 +71,41 @@ const StashedElementsDialog = ({
     }, []);
 
     const handleDelete = useCallback(() => {
-        deleteElements(selectedElements, selectedDirectory.elementUuid)
+        deleteElements(selectedElements, directoryToRestore.elementUuid)
             .then(onStashedElementChange)
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
+                if (error.status === 403) {
+                    const errorMsg = intl.formatMessage(
+                        { id: 'DeleteElementFromStashError' },
+                        { multiselect: selectedElements.length > 1 }
+                    );
+
+                    snackError({
+                        messageTxt: errorMsg,
+                    });
+                } else {
+                    snackError({
+                        messageTxt: error.message,
+                    });
+                }
             })
             .finally(onClose);
     }, [
         selectedElements,
         snackError,
-        selectedDirectory,
+        directoryToRestore,
         onStashedElementChange,
         onClose,
+        intl,
     ]);
 
     const handleRestore = useCallback(() => {
-        if (selectedDirectory?.elementUuid) {
-            restoreElements(selectedElements, selectedDirectory.elementUuid)
+        if (directoryToRestore?.elementUuid) {
+            restoreElements(selectedElements, directoryToRestore.elementUuid)
                 .then(onStashedElementChange)
                 .catch((error) => {
                     if (error.status === 403) {
-                        const errorMessage = selectedDirectory.accessRights
+                        const errorMessage = directoryToRestore.accessRights
                             .isPrivate
                             ? 'RestoreElementsInPrivateDirectoryError'
                             : 'RestoreElementsInPublicDirectoryError';
@@ -118,7 +127,7 @@ const StashedElementsDialog = ({
     }, [
         selectedElements,
         snackError,
-        selectedDirectory,
+        directoryToRestore,
         onStashedElementChange,
         onClose,
         intl,

@@ -204,6 +204,7 @@ const DirectoryTreeContextualMenu = (props) => {
                                     break;
                                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+                                case ElementType.SENSITIVITY_PARAMETERS:
                                 case ElementType.LOADFLOW_PARAMETERS:
                                     duplicateParameter(
                                         newItemName,
@@ -531,6 +532,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         onClose={handleCloseDialog}
                         stashedElements={stashedElements}
                         onStashedElementChange={handleGetStashedElement}
+                        directoryToRestore={directory}
                     />
                 );
             default:
