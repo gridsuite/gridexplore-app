@@ -6,7 +6,7 @@
  */
 
 import { downloadCase, getCaseOriginalName } from '../../utils/rest-api';
-import { ElementType } from '../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 

@@ -21,7 +21,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import { useController, useFormContext } from 'react-hook-form';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
-import { ElementType } from '../../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import { DIRECTORY } from 'components/utils/field-constants';
 
 interface UniqueNameInputProps {

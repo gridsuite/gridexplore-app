@@ -12,10 +12,8 @@ import {
     NAME,
     SCRIPT,
 } from '../../../utils/field-constants';
-import {
-    ContingencyListType,
-    ElementType,
-} from '../../../../utils/elementType';
+import { ContingencyListType } from '../../../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { gridItem } from '../../../utils/dialog-utils';
 import React from 'react';

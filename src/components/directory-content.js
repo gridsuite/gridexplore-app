@@ -19,11 +19,8 @@ import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
 import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
 
 import VirtualizedTable from './virtualized-table';
-import {
-    ContingencyListType,
-    ElementType,
-    FilterType,
-} from '../utils/elementType';
+import { ContingencyListType, FilterType } from '../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import {
     DEFAULT_CELL_PADDING,
     getFileIcon,

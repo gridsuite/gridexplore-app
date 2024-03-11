@@ -9,7 +9,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DirectorySelector from './directory-selector';
 import { useIntl } from 'react-intl';
-import { ElementType } from '../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 
 const MoveDialog = ({ open, onClose, items }) => {
     const intl = useIntl();

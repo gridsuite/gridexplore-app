@@ -21,7 +21,7 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
-import { ElementType } from '../../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import DirectorySelect from './directory-select';
 import { isObjectEmpty, keyGenerator } from '../../../utils/functions';
 import {

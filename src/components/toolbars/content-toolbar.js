@@ -24,7 +24,7 @@ import CommonToolbar from './common-toolbar';
 import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
-import { ElementType } from '../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import { FileDownload, RestoreFromTrash } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import React from 'react';

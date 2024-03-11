@@ -8,7 +8,8 @@
 import Grid from '@mui/material/Grid';
 import { UniqueNameInput } from '../commons/unique-name-input';
 import { FILTER_TYPE, NAME } from '../../utils/field-constants';
-import { ElementType, FilterType } from '../../../utils/elementType';
+import { FilterType } from '../../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import { RadioInput } from '@gridsuite/commons-ui';
 import CriteriaBasedFilterForm from './criteria-based/criteria-based-filter-form';
 import ExplicitNamingFilterForm, {
