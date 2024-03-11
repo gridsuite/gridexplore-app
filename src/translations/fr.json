@@ -287,5 +287,6 @@
   "ElementsWillBeDeletedMsg": "Tous les éléments sélectionnés seront définitivement supprimés",
   "NoDirectorySelectedError": "Un dossier doit être sélectionné pour restaurer les éléments",
   "RestoreElementsInPrivateDirectoryError": "Certains ou tous les éléments ne peuvent pas être restaurés : Pour effectuer une restauration dans un dossier privé il est nécessaire d'être propriétaire de tous les éléments restaurés",
-  "RestoreElementsInPublicDirectoryError": "Certains ou tous les éléments ne peuvent pas être restaurés : Pour effectuer une restauration dans un dossier public il est nécessaire soit d'être propriétaire de tous les éléments restaurés, soit les éléments restaurés doivent être publics"
+  "RestoreElementsInPublicDirectoryError": "Certains ou tous les éléments ne peuvent pas être restaurés : Pour effectuer une restauration dans un dossier public il est nécessaire soit d'être propriétaire de tous les éléments restaurés, soit les éléments restaurés doivent être publics",
+  "DeleteElementFromStashError": "{multiselect, select, false {L'élément n'a pas pu être supprimé car il a été créé par un autre utilisateur} true {Certains éléments n'ont pas pu être supprimés car ils ont été créés par d'autres utilisateurs} other {}}"
 }

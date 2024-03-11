@@ -287,5 +287,6 @@
   "ElementsWillBeDeletedMsg": "All selected elements will be permanently deleted",
   "NoDirectorySelectedError": "A directory must be selected to restore elements",
   "RestoreElementsInPrivateDirectoryError": "Some or all the elements can not be restored: To perform a restoration in a private folder it is necessary to be the owner of all the restored elements",
-  "RestoreElementsInPublicDirectoryError": "Some or all the elements can not be restored: To perform a restoration in a public folder it is necessary to either be the owner of all the restored elements or the restored elements must be public"
+  "RestoreElementsInPublicDirectoryError": "Some or all the elements can not be restored: To perform a restoration in a public folder it is necessary to either be the owner of all the restored elements or the restored elements must be public",
+  "DeleteElementFromStashError": "{multiselect, select, false {This element could not be deleted because it was created by another user} true {A subset of elements could not be deleted because they were created by another user} other {}}"
 }
