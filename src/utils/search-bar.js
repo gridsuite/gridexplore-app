@@ -28,6 +28,12 @@ const styles = {
         textOverflow: 'ellipsis',
         display: 'inline-block',
     },
+    grid2: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        display: 'inline-block',
+        color: 'grey',
+    },
 };
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 
@@ -35,10 +41,16 @@ export const SearchBar = () => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const [elementsFound, setElementsFound] = useState([]);
+    const [selectedParentDir, setSelectedParentDir] = useState(true);
+    const [selectedElementDir, setSelectedElementDir] = useState(true);
+    const [processingDispatch, setProcessingDispatch] = useState(false);
     const lastSearchTermRef = useRef('');
     const [loading, setLoading] = useState(false);
     const treeData = useSelector((state) => state.treeData);
     const treeDataRef = useRef();
+    const currentChildren = useSelector((state) => state.currentChildren);
+    const currentChildrenRef = useRef(currentChildren);
+    currentChildrenRef.current = currentChildren;
 
     treeDataRef.current = treeData;
     const searchMatchingEquipments = useCallback(
@@ -75,22 +87,22 @@ export const SearchBar = () => {
 
     const convertChildren = useCallback((element) => {
         return (
-            <Grid container>
-                <Grid item xs={1}>
-                    {getFileIcon(element.type, styles.icon)}
+            <>
+                <span>{getFileIcon(element.type, styles.icon)}</span>
+                <Grid container>
+                    <Grid item xs={11} sx={styles.grid}>
+                        {element.name}
+                    </Grid>
+                    <Grid item sx={styles.grid2}>
+                        {element.path
+                            .map((path, index) =>
+                                index > 0 ? path.elementName + '/' : ''
+                            )
+                            .join('')}
+                    </Grid>
                 </Grid>
-                <Grid item xs={8} sx={styles.grid}>
-                    {element.name}
-                </Grid>
-                <Grid item xs={8} sx={styles.grid}>
-                    {element.path
-                        .map((path, index) =>
-                            index > 0 ? '/' + path.elementName : ''
-                        )
-                        .join('')}
-                </Grid>
-            </Grid>
-        ); /**/
+            </>
+        );
     }, []);
 
     const renderOptionItem = (props, option) => {
@@ -99,6 +111,49 @@ export const SearchBar = () => {
         );
         return <li {...props}>{convertChildren(matchingElement)}</li>;
     };
+
+    const handleDispatchDirectory = useCallback(
+        (elementUuid) => {
+            const selectedDirectory = treeDataRef.current.mapData[elementUuid];
+            dispatch(setSelectedDirectory(selectedDirectory));
+        },
+        [dispatch]
+    );
+
+    const handleMatchingElement = useCallback(
+        (matchingElement) => {
+            if (matchingElement) {
+                const elementUuidPath = matchingElement.path
+                    .slice(1) // Skip the first element*!/
+                    .map((e) => e.elementUuid)
+                    .reverse();
+
+                const [rootUuid, parentUuid, elementUuid] = elementUuidPath;
+
+                handleDispatchDirectory(rootUuid);
+
+                setSelectedParentDir(parentUuid);
+                setProcessingDispatch(true);
+                setSelectedElementDir(elementUuid);
+            }
+        },
+        [setSelectedParentDir, handleDispatchDirectory]
+    );
+
+    useEffect(() => {
+        if (processingDispatch && selectedParentDir) {
+            handleDispatchDirectory(selectedParentDir);
+            setProcessingDispatch(false);
+        } else if (selectedElementDir) {
+            handleDispatchDirectory(selectedElementDir);
+            setProcessingDispatch(false);
+        }
+    }, [
+        processingDispatch,
+        handleDispatchDirectory,
+        selectedParentDir,
+        selectedElementDir,
+    ]);
 
     return (
         <Stack sx={{ width: '50%', marginLeft: '14%' }}>
@@ -110,25 +165,10 @@ export const SearchBar = () => {
                 clearOnBlur
                 onInputChange={(_, data) => handleChangeInput(data)}
                 onChange={(event, data) => {
-                    const matchingElement = elementsFound.find((element) =>
-                        element.path.map((p, index) =>
-                            index > 0 ? p.elementName === data : ''
-                        )
+                    const matchingElement = elementsFound.find(
+                        (element) => element.name === data
                     );
-
-                    console.log(matchingElement);
-                    console.log(treeData);
-                    let testDir1 = matchingElement.path[2].elementUuid;
-                    const selectedParentDir1 = Object.values(
-                        treeData.mapData
-                    ).find((element) => element.elementUuid === testDir1);
-                    dispatch(setSelectedDirectory(selectedParentDir1));
-
-                    let testDir = matchingElement.path[1].elementUuid;
-                    const selectedParentDir = Object.values(
-                        treeData.mapData
-                    ).find((element) => element.elementUuid === testDir);
-                    dispatch(setSelectedDirectory(selectedParentDir));
+                    handleMatchingElement(matchingElement);
                 }}
                 options={
                     loading ? [] : elementsFound.map((option) => option.name)
