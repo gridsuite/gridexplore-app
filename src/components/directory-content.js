@@ -15,7 +15,6 @@ import * as constants from '../utils/UIconstants';
 import Chip from '@mui/material/Chip';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
-import SettingsIcon from '@mui/icons-material/Settings';
 import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
 import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
 
@@ -27,6 +26,7 @@ import {
 } from '../utils/elementType';
 import {
     DEFAULT_CELL_PADDING,
+    getFileIcon,
     OverflowableText,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -38,11 +38,6 @@ import CriteriaBasedFilterEditionDialog from './dialogs/filter/criteria-based/cr
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
-import PhotoIcon from '@mui/icons-material/Photo';
-import NoteAltIcon from '@mui/icons-material/NoteAlt';
-import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
-import ArticleIcon from '@mui/icons-material/Article';
-import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
 import CreateIcon from '@mui/icons-material/Create';
 import ExplicitNamingFilterEditionDialog from './dialogs/filter/explicit-naming/explicit-naming-filter-edition-dialog';
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
@@ -627,25 +622,6 @@ const DirectoryContent = () => {
         [currentChildren, isParameterTypeElement]
     );
 
-    const getElementIcon = useCallback(
-        (objectType) => {
-            if (objectType === ElementType.STUDY) {
-                return <PhotoLibraryIcon sx={styles.icon} />;
-            } else if (objectType === ElementType.CONTINGENCY_LIST) {
-                return <OfflineBoltIcon sx={styles.icon} />;
-            } else if (objectType === ElementType.MODIFICATION) {
-                return <NoteAltIcon sx={styles.icon} />;
-            } else if (objectType === ElementType.FILTER) {
-                return <ArticleIcon sx={styles.icon} />;
-            } else if (objectType === ElementType.CASE) {
-                return <PhotoIcon sx={styles.icon} />;
-            } else if (isParameterTypeElement(objectType)) {
-                return <SettingsIcon sx={styles.icon} />;
-            }
-        },
-        [isParameterTypeElement]
-    );
-
     const getDisplayedElementName = useCallback(
         (cellData) => {
             const { elementName, uploading, elementUuid } = cellData.rowData;
@@ -687,7 +663,7 @@ const DirectoryContent = () => {
                             />
                         )}
                     {childrenMetadata[element.elementUuid] &&
-                        getElementIcon(element.type)}
+                        getFileIcon(element.type, styles.icon)}
                     {/* Name */}
                     <OverflowableText
                         text={getDisplayedElementName(cellData)}
@@ -696,12 +672,7 @@ const DirectoryContent = () => {
                 </Box>
             );
         },
-        [
-            childrenMetadata,
-            currentChildren,
-            getDisplayedElementName,
-            getElementIcon,
-        ]
+        [childrenMetadata, currentChildren, getDisplayedElementName]
     );
 
     function toggleSelection(elementUuid) {
