@@ -921,7 +921,9 @@ export function duplicateParameter(
     urlSearchParams.append('duplicateFrom', sourceParameterUuid);
     urlSearchParams.append('name', name);
     urlSearchParams.append('type', parameterType);
-    urlSearchParams.append('description', parameterDescription);
+    if (parameterDescription !== undefined) {
+        urlSearchParams.append('description', parameterDescription);
+    }
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
