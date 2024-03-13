@@ -10,11 +10,6 @@ import { ElementType } from '../../utils/elementType';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
-type ExportCaseError = {
-    caseUuid: string;
-    message: string;
-};
-
 const exportCases = async (
     uuids: string[],
     format: string,
@@ -22,9 +17,8 @@ const exportCases = async (
         [parameterName: string]: any;
     },
     onError?: (caseUuid: string, errorMsg: string) => void
-): Promise<ExportCaseError[]> => {
+): Promise<void> => {
     const files: { name: string; blob: Blob }[] = [];
-    const errors: ExportCaseError[] = [];
     for (const uuid of uuids) {
         try {
             const result = await exportCase(uuid, format, formatParameters);
@@ -48,7 +42,6 @@ const exportCases = async (
         link.click();
         document.body.removeChild(link);
     }
-    return errors;
 };
 
 export function useDownloadUtils() {
