@@ -12,6 +12,7 @@
         "@mui/icons-material": "^5.5.0",
         "@mui/lab": "^5.0.0-alpha.72",
         "@mui/material": "^5.5.0",
+        "@mui/x-tree-view": "^6.17.0",
         "@react-querybuilder/dnd": "^6.5.4",
         "@react-querybuilder/material": "^6.5.1",
         "@reduxjs/toolkit": "^1.2.3",
