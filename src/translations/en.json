@@ -282,7 +282,6 @@
   "descriptionLimitError": "Description exceeds character limit",
   "selectFilterDialogTitle": "Choose a filter",
   "filter": "Filter",
-  "ElementAlreadyUsed": "This element is already used",
   "StashedElements": "Restore elements",
   "All": "All",
   "restore": "Restore",
