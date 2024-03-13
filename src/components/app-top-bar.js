@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { LIGHT_THEME, logout, TopBar } from '@gridsuite/commons-ui';
 import ParametersDialog, {
     useParameterState,
@@ -40,6 +40,8 @@ const AppTopBar = ({ user, userManager }) => {
 
     const [showParameters, setShowParameters] = useState(false);
 
+    const searchInputRef = useRef(null);
+
     useEffect(() => {
         if (user !== null) {
             fetchAppsAndUrls().then((res) => {
@@ -47,6 +49,23 @@ const AppTopBar = ({ user, userManager }) => {
             });
         }
     }, [user, dispatch]);
+
+    useEffect(() => {
+        if (user) {
+            const openSearch = (e) => {
+                if (
+                    e.ctrlKey &&
+                    e.shiftKey &&
+                    (e.key === 'F' || e.key === 'f')
+                ) {
+                    e.preventDefault();
+                    searchInputRef.current.focus();
+                }
+            };
+            document.addEventListener('keydown', openSearch);
+            return () => document.removeEventListener('keydown', openSearch);
+        }
+    }, [user]);
 
     return (
         <>
@@ -75,7 +94,7 @@ const AppTopBar = ({ user, userManager }) => {
                 }
                 additionalModulesPromise={getServersInfos}
             >
-                {user && <SearchBar />}
+                {user && <SearchBar inputRef={searchInputRef} />}
             </TopBar>
             <ParametersDialog
                 showParameters={showParameters}

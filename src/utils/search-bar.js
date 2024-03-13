@@ -37,7 +37,7 @@ const styles = {
 };
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 
-export const SearchBar = () => {
+export const SearchBar = ({ inputRef }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const [elementsFound, setElementsFound] = useState([]);
@@ -181,6 +181,7 @@ export const SearchBar = () => {
                     <TextField
                         autoFocus={true}
                         {...params}
+                        inputRef={inputRef}
                         placeholder={'Search (ex.: case name, filter...)'}
                         variant="outlined"
                         InputProps={{
