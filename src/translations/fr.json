@@ -251,7 +251,7 @@
   "download.message.lists": "listes",
   "download.message.studies": "études",
   "download.message.others": "autres",
-  "download.error": "Une erreur est survenue lors de l'export de la situation {caseUuid}",
+  "download.error": "Une erreur est survenue lors de l'export de la situation {caseName}",
   "connected": "Connecté",
   "maximumSectionCount": "Nombre de gradins",
   "sectionCount": "Gradin courant",

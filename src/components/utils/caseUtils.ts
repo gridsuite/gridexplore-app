@@ -11,17 +11,21 @@ import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const exportCases = async (
-    uuids: string[],
+    cases: any[],
     format: string,
     formatParameters: {
         [parameterName: string]: any;
     },
-    onError?: (caseUuid: string, errorMsg: string) => void
+    onError?: (caseElement: any, errorMsg: string) => void
 ): Promise<void> => {
     const files: { name: string; blob: Blob }[] = [];
-    for (const uuid of uuids) {
+    for (const c of cases) {
         try {
-            const result = await exportCase(uuid, format, formatParameters);
+            const result = await exportCase(
+                c.elementUuid,
+                format,
+                formatParameters
+            );
             let filename = result.headers
                 .get('Content-Disposition')
                 .split('filename=')[1];
@@ -29,8 +33,7 @@ const exportCases = async (
             const blob = await result.blob();
             files.push({ name: filename, blob });
         } catch (e: any) {
-            console.log({ ...e });
-            onError?.(uuid, e);
+            onError?.(c, e);
         }
     }
     for (const file of files) {
@@ -159,10 +162,10 @@ export function useDownloadUtils() {
         );
     };
 
-    const handleCaseExportError = (caseUuid: string, errorMsg: string) =>
+    const handleCaseExportError = (caseElement: any, errorMsg: string) =>
         snackError({
             headerId: 'download.error',
-            headerValues: { caseUuid },
+            headerValues: { caseName: caseElement.elementName },
             messageTxt: errorMsg,
         });
 
@@ -173,19 +176,19 @@ export function useDownloadUtils() {
             [parameterName: string]: any;
         }
     ) => {
-        const casesUuids = selectedElements
-            .filter((element) => element.type === ElementType.CASE)
-            .map((element) => element.elementUuid);
+        const cases = selectedElements.filter(
+            (element) => element.type === ElementType.CASE
+        );
         await exportCases(
-            casesUuids,
+            cases,
             format,
             formatParameters,
             handleCaseExportError
         );
-        if (casesUuids.length !== selectedElements.length) {
+        if (cases.length !== selectedElements.length) {
             snackInfo({
                 messageTxt: buildPartialDownloadMessage(
-                    casesUuids.length,
+                    cases.length,
                     selectedElements
                 ),
             });
