@@ -896,13 +896,17 @@ export function duplicateParameter(
     name,
     parameterType,
     sourceParameterUuid,
-    parentDirectoryUuid
+    parentDirectoryUuid,
+    parameterDescription
 ) {
     console.info('Duplicating parameters of type ' + parameterType + '...');
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('duplicateFrom', sourceParameterUuid);
     urlSearchParams.append('name', name);
     urlSearchParams.append('type', parameterType);
+    if (parameterDescription !== undefined) {
+        urlSearchParams.append('description', parameterDescription);
+    }
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
