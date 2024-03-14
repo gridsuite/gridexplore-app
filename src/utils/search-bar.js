@@ -6,7 +6,7 @@
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Autocomplete, Stack, TextField } from '@mui/material';
-import { searchElementsInfos } from './rest-api';
+import { fetchDirectoryContent, searchElementsInfos } from './rest-api';
 import {
     getFileIcon,
     useDebounce,
@@ -14,12 +14,13 @@ import {
 } from '@gridsuite/commons-ui';
 import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDirectory } from '../redux/actions';
+import { setSelectedDirectory, setTreeData } from '../redux/actions';
 import Grid from '@mui/material/Grid';
+import { updatedTree } from '../components/tree-views-container';
 
 const styles = {
     icon: (theme) => ({
-        marginRight: theme.spacing(1),
+        marginRight: theme.spacing(2),
         width: '18px',
         height: '18px',
     }),
@@ -28,12 +29,13 @@ const styles = {
         textOverflow: 'ellipsis',
         display: 'inline-block',
     },
-    grid2: {
+    grid2: (theme) => ({
+        marginRight: theme.spacing(2),
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         display: 'inline-block',
         color: 'grey',
-    },
+    }),
 };
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 
@@ -41,16 +43,10 @@ export const SearchBar = ({ inputRef }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const [elementsFound, setElementsFound] = useState([]);
-    const [selectedParentDir, setSelectedParentDir] = useState(true);
-    const [selectedElementDir, setSelectedElementDir] = useState(true);
-    const [processingDispatch, setProcessingDispatch] = useState(false);
     const lastSearchTermRef = useRef('');
     const [loading, setLoading] = useState(false);
     const treeData = useSelector((state) => state.treeData);
     const treeDataRef = useRef();
-    const currentChildren = useSelector((state) => state.currentChildren);
-    const currentChildrenRef = useRef(currentChildren);
-    currentChildrenRef.current = currentChildren;
 
     treeDataRef.current = treeData;
     const searchMatchingEquipments = useCallback(
@@ -94,11 +90,7 @@ export const SearchBar = ({ inputRef }) => {
                         {element.name}
                     </Grid>
                     <Grid item sx={styles.grid2}>
-                        {element.path
-                            .map((path, index) =>
-                                index > 0 ? path.elementName + '/' : ''
-                            )
-                            .join('')}
+                        {element.elementName.join('/')}
                     </Grid>
                 </Grid>
             </>
@@ -112,9 +104,29 @@ export const SearchBar = ({ inputRef }) => {
         return <li {...props}>{convertChildren(matchingElement)}</li>;
     };
 
+    const updateMapData = useCallback(
+        (nodeId, children) => {
+            let [nrs, mdr] = updatedTree(
+                treeDataRef.current.rootDirectories,
+                treeDataRef.current.mapData,
+                nodeId,
+                children
+            );
+            dispatch(
+                setTreeData({
+                    rootDirectories: nrs,
+                    mapData: mdr,
+                })
+            );
+        },
+        [dispatch]
+    );
+
     const handleDispatchDirectory = useCallback(
-        (elementUuid) => {
-            const selectedDirectory = treeDataRef.current.mapData[elementUuid];
+        (elementUuidPath) => {
+            const selectedDirectory =
+                treeDataRef.current.mapData[elementUuidPath];
+
             dispatch(setSelectedDirectory(selectedDirectory));
         },
         [dispatch]
@@ -122,38 +134,19 @@ export const SearchBar = ({ inputRef }) => {
 
     const handleMatchingElement = useCallback(
         (matchingElement) => {
-            if (matchingElement) {
-                const elementUuidPath = matchingElement.path
-                    .slice(1) // Skip the first element*!/
-                    .map((e) => e.elementUuid)
-                    .reverse();
-
-                const [rootUuid, parentUuid, elementUuid] = elementUuidPath;
-
-                handleDispatchDirectory(rootUuid);
-
-                setSelectedParentDir(parentUuid);
-                setProcessingDispatch(true);
-                setSelectedElementDir(elementUuid);
-            }
+            const elementUuidPath = matchingElement.elementUuid.reverse();
+            elementUuidPath.forEach((e) => {
+                fetchDirectoryContent(e)
+                    .then((res) => {
+                        updateMapData(e, res);
+                    })
+                    .then(() => {
+                        handleDispatchDirectory(e);
+                    });
+            });
         },
-        [setSelectedParentDir, handleDispatchDirectory]
+        [updateMapData, handleDispatchDirectory]
     );
-
-    useEffect(() => {
-        if (processingDispatch && selectedParentDir) {
-            handleDispatchDirectory(selectedParentDir);
-            setProcessingDispatch(false);
-        } else if (selectedElementDir) {
-            handleDispatchDirectory(selectedElementDir);
-            setProcessingDispatch(false);
-        }
-    }, [
-        processingDispatch,
-        handleDispatchDirectory,
-        selectedParentDir,
-        selectedElementDir,
-    ]);
 
     return (
         <Stack sx={{ width: '50%', marginLeft: '14%' }}>
