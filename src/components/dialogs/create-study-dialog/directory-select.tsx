@@ -93,10 +93,10 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = (
                 {activeDirectoryName
                     ? activeDirectoryName
                     : props?.noElementMessageLabel
-                    ? intl.formatMessage({
-                          id: props.noElementMessageLabel,
-                      })
-                    : ''}
+                      ? intl.formatMessage({
+                            id: props.noElementMessageLabel,
+                        })
+                      : ''}
             </Typography>
             <DirectorySelector
                 open={open}

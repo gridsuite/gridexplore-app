@@ -15,8 +15,8 @@ const AceInput = ({ name, ...props }) => {
         return selectedTheme === 'Light'
             ? 'github'
             : selectedTheme === 'Dark'
-            ? 'clouds_midnight'
-            : '';
+              ? 'clouds_midnight'
+              : '';
     };
 
     const {

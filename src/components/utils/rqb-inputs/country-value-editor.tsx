@@ -20,8 +20,10 @@ const CountryValueEditor = (props: ValueEditorProps) => {
     const countriesListCB = useCallback(() => {
         try {
             return require('localized-countries')(
-                require('localized-countries/data/' +
-                    getComputedLanguage(languageLocal).substr(0, 2))
+                require(
+                    'localized-countries/data/' +
+                        getComputedLanguage(languageLocal).substr(0, 2)
+                )
             );
         } catch (error) {
             // fallback to English if no localized list is found
