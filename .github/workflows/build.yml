@@ -19,6 +19,7 @@ jobs:
             - name: Install and Build
               run: |
                   npm install
+                  npm run licenses-check
                   npm run-script build
                   npm run-script test
 
