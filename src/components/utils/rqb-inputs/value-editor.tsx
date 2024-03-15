@@ -44,15 +44,10 @@ const ValueEditor = (props: ValueEditorProps) => {
                 return (
                     // we do not authorize to use an expert filter in the rules of
                     // another expert filter, to prevent potential cycle problems
-                    value?.specificMetadata?.type !== FilterType.EXPERT.id &&
-                    ((props.field === FieldType.ID &&
-                        value?.specificMetadata?.equipmentType ===
-                            getValues(EQUIPMENT_TYPE)) ||
-                        ((props.field === FieldType.VOLTAGE_LEVEL_ID ||
-                            props.field === FieldType.VOLTAGE_LEVEL_ID_1 ||
-                            props.field === FieldType.VOLTAGE_LEVEL_ID_2) &&
-                            value?.specificMetadata?.equipmentType ===
-                                VoltageLevel.type))
+                    (value?.specificMetadata?.type !== FilterType.EXPERT.id && ((props.field === FieldType.ID && value?.specificMetadata?.equipmentType ===
+                        getValues(EQUIPMENT_TYPE)) || ((props.field === FieldType.VOLTAGE_LEVEL_ID ||
+                            props.field === FieldType.VOLTAGE_LEVEL_ID_1 || props.field === FieldType.VOLTAGE_LEVEL_ID_2) && value?.specificMetadata?.equipmentType ===
+                        VoltageLevel.type)))
                 );
             }
             return true;
