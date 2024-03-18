@@ -161,8 +161,8 @@ const DirectoryContent = () => {
     const [childrenMetadata, setChildrenMetadata] = useState({});
 
     const [selectedUuids, setSelectedUuids] = useState(new Set());
-    // used for shift clicking selection
-    const [lastClickedElementUuid, setLastClickedElementUuid] = useState();
+    // used for shift clicking selection, stores last clicked element for selection
+    const [lastSelectedElementUuid, setLastSelectedElementUuid] = useState();
 
     const currentChildren = useSelector((state) => state.currentChildren);
     const currentChildrenRef = useRef();
@@ -416,7 +416,7 @@ const DirectoryContent = () => {
                 newSelection.add(elementUuid);
             }
             setSelectedUuids(newSelection);
-            setLastClickedElementUuid(elementUuid);
+            setLastSelectedElementUuid(elementUuid);
         },
         [selectedUuids, currentChildren]
     );
@@ -456,17 +456,23 @@ const DirectoryContent = () => {
             window.getSelection().empty();
 
             // sorted list of displayed elements
-            const currentChildrenUuid = currentChildren.map(
+            const currentChildrenUuids = currentChildren.map(
                 (e) => e.elementUuid
             );
-            const lastSelectedUuidIndex = currentChildrenUuid.indexOf(
-                lastClickedElementUuid
+            const lastSelectedUuidIndex = currentChildrenUuids.indexOf(
+                lastSelectedElementUuid
             );
             const clickedElementUuidIndex =
-                currentChildrenUuid.indexOf(clickedElementUuid);
+                currentChildrenUuids.indexOf(clickedElementUuid);
+
+            // if no lastSelectedUuid is found (first click, or unknown uuid), we only toggle clicked element
+            if (lastSelectedUuidIndex < 0) {
+                toggleSelection(clickedElementUuid);
+                return;
+            }
 
             // list of elements between lastClickedElement and clickedElement, both included
-            const elementsToToggle = currentChildrenUuid.slice(
+            const elementsToToggle = currentChildrenUuids.slice(
                 Math.min(lastSelectedUuidIndex, clickedElementUuidIndex),
                 Math.max(lastSelectedUuidIndex, clickedElementUuidIndex) + 1
             );
@@ -478,14 +484,15 @@ const DirectoryContent = () => {
                 // if clicked element is unchecked, we check all elements between last clicked element and clicked element
                 selectElements(elementsToToggle);
             }
-            setLastClickedElementUuid(clickedElementUuid);
+            setLastSelectedElementUuid(clickedElementUuid);
         },
         [
             currentChildren,
-            lastClickedElementUuid,
+            lastSelectedElementUuid,
             selectedUuids,
             selectElements,
             unselectElements,
+            toggleSelection,
         ]
     );
 
@@ -499,7 +506,6 @@ const DirectoryContent = () => {
             }
 
             toggleSelection(elementUuid);
-
             clickEvent.stopPropagation();
         },
         [handleShiftClick, toggleSelection]
@@ -511,6 +517,8 @@ const DirectoryContent = () => {
             const element = currentChildren.find(
                 (e) => e.elementUuid === clickedElementUuid
             );
+
+            // if clicked element is not known within current directory, nothing happens
             if (childrenMetadata[element.elementUuid] === undefined) {
                 return;
             }
@@ -523,7 +531,7 @@ const DirectoryContent = () => {
             }
 
             if (clickEvent.event?.shiftKey) {
-                // if row is clicked while shift is pressed, range of rows selection is toggled
+                // if row is clicked while shift is pressed, range of rows selection is toggled, depending on clicked element state
                 handleShiftClick(clickedElementUuid);
                 // nothing else happens, hence the return
                 return;
