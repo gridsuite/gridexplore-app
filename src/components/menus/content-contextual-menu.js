@@ -63,6 +63,7 @@ import { useDownloadUtils } from '../utils/caseUtils';
 import { useDispatch } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
 import FilterCreationDialog from '../dialogs/filter/filter-creation-dialog';
+import ExportCaseDialog from '../dialogs/export-case-dialog';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -267,7 +268,8 @@ const ContentContextualMenu = (props) => {
                                 newItemName,
                                 activeElement.type,
                                 activeElement.elementUuid,
-                                selectedDirectory.elementUuid
+                                selectedDirectory.elementUuid,
+                                activeElement.description
                             ).catch((error) => {
                                 handleDuplicateError(error.message);
                             });
@@ -585,13 +587,9 @@ const ContentContextualMenu = (props) => {
         }
 
         if (allowsDownloadCase()) {
-            // is export allowed
             menuItems.push({
                 messageDescriptorId: 'download.button',
-                callback: async () => {
-                    await handleDownloadCases(selectedElements);
-                    handleCloseDialog();
-                },
+                callback: () => handleOpenDialog(DialogsId.EXPORT),
                 icon: <FileDownload fontSize="small" />,
             });
         }
@@ -688,6 +686,19 @@ const ContentContextualMenu = (props) => {
                             handleCloseDialog();
                         }}
                         items={selectedElements}
+                    />
+                );
+            case DialogsId.EXPORT:
+                return (
+                    <ExportCaseDialog
+                        onClose={handleCloseDialog}
+                        onExport={(format, formatParameters) =>
+                            handleDownloadCases(
+                                selectedElements,
+                                format,
+                                formatParameters
+                            )
+                        }
                     />
                 );
             case DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY:
