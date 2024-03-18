@@ -22,23 +22,26 @@ import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
 import AccessRightsDialog from '../dialogs/access-rights-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
-import FilterCreationDialog from '../dialogs/filter/filter-creation-dialog';
 
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
+    createFilter,
     duplicateCase,
     duplicateContingencyList,
     duplicateFilter,
     duplicateModification,
     duplicateParameter,
     duplicateStudy,
+    elementExists,
+    fetchAppsAndUrls,
     fetchElementsInfos,
     getNameCandidate,
     getStashedElements,
     insertDirectory,
     insertRootDirectory,
     renameElement,
+    saveFilter,
     stashElements,
     updateAccessRights,
 } from '../../utils/rest-api';
@@ -52,6 +55,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import StashedElementsDialog from '../dialogs/stashed-elements/stashed-elements-dialog';
 import { RestoreFromTrash } from '@mui/icons-material';
 import { notificationType } from '../../utils/notificationType';
+import { FilterCreationDialog } from '@gridsuite/commons-ui';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
@@ -65,6 +69,7 @@ const DirectoryTreeContextualMenu = (props) => {
     const directoryUpdatedEvent = useSelector(
         (state) => state.directoryUpdated
     );
+    const activeDirectory = useSelector((state) => state.activeDirectory);
 
     const handleOpenDialog = (dialogId) => {
         setHideMenu(true);
@@ -519,6 +524,11 @@ const DirectoryTreeContextualMenu = (props) => {
                     <FilterCreationDialog
                         open={true}
                         onClose={handleCloseDialog}
+                        activeDirectory={activeDirectory}
+                        createfilter={createFilter}
+                        saveFilter={saveFilter}
+                        fetchAppsAndUrls={fetchAppsAndUrls}
+                        elementExists={elementExists}
                     />
                 );
             case DialogsId.ADD_NEW_CASE:

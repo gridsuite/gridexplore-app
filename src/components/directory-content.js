@@ -27,13 +27,20 @@ import {
 } from '../utils/elementType';
 import {
     DEFAULT_CELL_PADDING,
+    ExplicitNamingFilterEditionDialog,
     OverflowableText,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Box, Checkbox } from '@mui/material';
 
-import { fetchElementsInfos } from '../utils/rest-api';
-import CriteriaBasedFilterEditionDialog from './dialogs/filter/criteria-based/criteria-based-filter-edition-dialog';
+import {
+    createFilter,
+    elementExists,
+    fetchAppsAndUrls,
+    fetchElementsInfos,
+    getFilterById,
+    saveFilter,
+} from '../utils/rest-api';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
@@ -44,13 +51,13 @@ import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
 import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
 import CreateIcon from '@mui/icons-material/Create';
-import ExplicitNamingFilterEditionDialog from './dialogs/filter/explicit-naming/explicit-naming-filter-edition-dialog';
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
-import ExpertFilterEditionDialog from './dialogs/filter/expert/expert-filter-edition-dialog';
 import { noSelectionForCopy } from 'utils/constants';
 import DescriptionModificationDialogue from './dialogs/description-modification/description-modification-dialogue';
+import { ExpertFilterEditionDialog } from '@gridsuite/commons-ui';
+import { CriteriaBasedFilterEditionDialog } from '@gridsuite/commons-ui';
 
 const circularProgressSize = '70px';
 
@@ -116,6 +123,9 @@ const initialMousePosition = {
 const DirectoryContent = () => {
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
+
+    const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const activeDirectory = useSelector((state) => state.activeDirectory);
 
     const dispatchSelectionForCopy = useCallback(
         (
@@ -1078,6 +1088,12 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
+                        createfilter={createFilter}
+                        saveFilter={saveFilter}
+                        fetchAppsAndUrls={fetchAppsAndUrls}
+                        getFilterById={getFilterById}
+                        activeDirectory={activeDirectory}
+                        elementExists={elementExists}
                     />
                 );
             case FilterType.CRITERIA_BASED.id:
@@ -1089,6 +1105,13 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
+                        createfilter={createFilter}
+                        saveFilter={saveFilter}
+                        fetchAppsAndUrls={fetchAppsAndUrls}
+                        getFilterById={getFilterById}
+                        selectionForCopy={selectionForCopy}
+                        activeDirectory={activeDirectory}
+                        elementExists={elementExists}
                     />
                 );
             case FilterType.EXPERT.id:
@@ -1100,6 +1123,13 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
+                        createfilter={createFilter}
+                        saveFilter={saveFilter}
+                        fetchAppsAndUrls={fetchAppsAndUrls}
+                        selectionForCopy={selectionForCopy}
+                        getFilterById={getFilterById}
+                        activeDirectory={activeDirectory}
+                        elementExists={elementExists}
                     />
                 );
             default:

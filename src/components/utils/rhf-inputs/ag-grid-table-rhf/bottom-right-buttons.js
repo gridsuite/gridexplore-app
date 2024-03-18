@@ -3,11 +3,10 @@ import IconButton from '@mui/material/IconButton';
 import { ArrowCircleDown, ArrowCircleUp, Upload } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CsvUploader from './csv-uploader/csv-uploader';
 import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
 import { styled } from '@mui/material/styles';
-import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
+import { ErrorInput, FieldErrorAlert, CsvUploader } from '@gridsuite/commons-ui';
 
 const InnerColoredButton = styled(IconButton)(({ theme, root }) => {
     return {

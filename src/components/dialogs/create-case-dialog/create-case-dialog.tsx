@@ -17,7 +17,6 @@ import {
 } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
 import { ElementType } from '../../../utils/elementType';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../../utils/field-constants';
 import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
@@ -30,6 +29,7 @@ import {
 import { ReduxState } from '../../../redux/reducer.type';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import DescriptionInput from '../description-modification/description-input';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 interface IFormData {
     [CASE_NAME]: string;

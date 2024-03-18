@@ -28,12 +28,15 @@ import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialo
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
+    createFilter,
     duplicateCase,
     duplicateContingencyList,
     duplicateFilter,
     duplicateModification,
     duplicateParameter,
     duplicateStudy,
+    elementExists,
+    fetchAppsAndUrls,
     fetchElementsInfos,
     getNameCandidate,
     moveElementToDirectory,
@@ -42,6 +45,7 @@ import {
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
+    saveFilter,
     stashElements,
 } from '../../utils/rest-api';
 
@@ -62,7 +66,7 @@ import { FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import { useDispatch } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
-import FilterCreationDialog from '../dialogs/filter/filter-creation-dialog';
+import { FilterCreationDialog } from '@gridsuite/commons-ui';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -79,6 +83,7 @@ const ContentContextualMenu = (props) => {
     const intl = useIntl();
     const dispatch = useDispatch();
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const activeDirectory = useSelector((state) => state.activeDirectory);
 
     const { snackError } = useSnackMessage();
 
@@ -775,6 +780,11 @@ const ContentContextualMenu = (props) => {
                             equipmentType:
                                 activeElement.specificMetadata.equipmentType,
                         }}
+                        activeDirectory={activeDirectory}
+                        createfilter={createFilter}
+                        saveFilter={saveFilter}
+                        fetchAppsAndUrls={fetchAppsAndUrls}
+                        elementExists={elementExists}
                     />
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:

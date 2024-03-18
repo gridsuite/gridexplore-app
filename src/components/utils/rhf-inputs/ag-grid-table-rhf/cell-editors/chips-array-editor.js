@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import TableCellWrapper from './table-cell-wrapper';
-import MultipleAutocompleteInput from '../../autocomplete-inputs/multiple-autocomplete-input';
+import { MultipleAutocompleteInput } from '@gridsuite/commons-ui';
 
 const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     const { name, node, colDef } = props;

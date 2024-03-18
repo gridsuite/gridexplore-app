@@ -9,7 +9,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TreeViewFinder } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { fetchDirectoryContent } from '../../utils/rest-api';
-import { getFileIcon, elementType } from '@gridsuite/commons-ui';
+import { getFileIcon, ElementType } from '@gridsuite/commons-ui';
 import { useSelector, useDispatch } from 'react-redux';
 import { updatedTree } from '../tree-views-container';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -31,7 +31,7 @@ const DirectorySelector = (props) => {
     const [data, setData] = useState([]);
 
     const contentFilter = useMemo(
-        () => new Set([elementType.DIRECTORY, ...props.types]),
+        () => new Set([ElementType.DIRECTORY, ...props.types]),
         [props.types]
     );
 
@@ -46,11 +46,11 @@ const DirectorySelector = (props) => {
                 name: e.elementName,
                 icon: getFileIcon(e.type, styles.icon),
                 children:
-                    e.type === elementType.DIRECTORY
+                    e.type === ElementType.DIRECTORY
                         ? convertChildren(e.children)
                         : undefined,
                 childrenCount:
-                    e.type === elementType.DIRECTORY
+                    e.type === ElementType.DIRECTORY
                         ? e.subdirectoriesCount
                         : undefined,
             };
@@ -65,13 +65,13 @@ const DirectorySelector = (props) => {
                     name: e.elementName,
                     icon: getFileIcon(e.type, styles.icon),
                     children:
-                        e.type === elementType.DIRECTORY
+                        e.type === ElementType.DIRECTORY
                             ? convertChildren(
                                   treeData.mapData[e.elementUuid].children
                               )
                             : undefined,
                     childrenCount:
-                        e.type === elementType.DIRECTORY
+                        e.type === ElementType.DIRECTORY
                             ? e.subdirectoriesCount
                             : undefined,
                 };
@@ -116,7 +116,7 @@ const DirectorySelector = (props) => {
 
     const fetchDirectory = useCallback(
         (directoryUuid) => {
-            const typeList = props.types.includes(elementType.DIRECTORY)
+            const typeList = props.types.includes(ElementType.DIRECTORY)
                 ? undefined
                 : props.types;
             fetchDirectoryContent(directoryUuid, typeList)
@@ -140,7 +140,7 @@ const DirectorySelector = (props) => {
         <TreeViewFinder
             onTreeBrowse={fetchDirectory}
             data={data}
-            onlyLeaves={!props.types.includes(elementType.DIRECTORY)}
+            onlyLeaves={!props.types.includes(ElementType.DIRECTORY)}
             sortMethod={sortAlphabetically}
             {...props}
         />
