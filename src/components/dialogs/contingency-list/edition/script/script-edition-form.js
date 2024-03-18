@@ -9,7 +9,7 @@ import { Grid } from '@mui/material';
 import { NAME, SCRIPT } from 'components/utils/field-constants';
 import React from 'react';
 import ScriptInputForm from '../../script/script-input-form';
-import { UniqueNameInput } from '../../../commons/unique-name-input';
+import { UniqueNameInput } from '@gridsuite/commons-ui';
 import { ElementType } from '../../../../../utils/elementType';
 
 const ScriptEditionForm = () => {

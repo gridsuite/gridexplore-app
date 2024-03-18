@@ -12,7 +12,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import CustomMuiDialog from './commons/custom-mui-dialog/custom-mui-dialog';
 import { CircularProgress, Grid } from '@mui/material';
-import { UniqueNameInput } from './commons/unique-name-input';
+import { UniqueNameInput } from '@gridsuite/commons-ui';
 import { ElementType } from 'utils/elementType';
 import { getNameCandidate } from 'utils/rest-api';
 

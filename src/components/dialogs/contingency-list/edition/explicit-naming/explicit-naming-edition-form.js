@@ -8,7 +8,7 @@
 import { Grid } from '@mui/material';
 import React from 'react';
 import ExplicitNamingForm from '../../explicit-naming/explicit-naming-form';
-import { UniqueNameInput } from '../../../commons/unique-name-input';
+import { UniqueNameInput } from '@gridsuite/commons-ui';
 import { NAME } from '../../../../utils/field-constants';
 import { ElementType } from '../../../../../utils/elementType';
 
