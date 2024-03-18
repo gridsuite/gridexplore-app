@@ -64,8 +64,6 @@ export const FilterForm: FunctionComponent<FilterFormProps> = (props) => {
                             <RadioInput
                                 name={FILTER_TYPE}
                                 options={Object.values(FilterType)}
-                                //TODO FM remove when type from commons-ui updated
-                                //@ts-ignore
                                 formProps={{ onChange: handleChange }} // need to override this in order to do not activate the validate button when changing the filter type
                             />
                         </Grid>
