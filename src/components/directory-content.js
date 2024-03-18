@@ -161,6 +161,8 @@ const DirectoryContent = () => {
     const [childrenMetadata, setChildrenMetadata] = useState({});
 
     const [selectedUuids, setSelectedUuids] = useState(new Set());
+    // used for shift clicking selection
+    const [lastClickedElementUuid, setLastClickedElementUuid] = useState();
 
     const currentChildren = useSelector((state) => state.currentChildren);
     const currentChildrenRef = useRef();
@@ -401,75 +403,188 @@ const DirectoryContent = () => {
         [appsAndUrls]
     );
 
-    const handleRowClick = useCallback(
-        (event) => {
-            const element = currentChildren.find(
-                (e) => e.elementUuid === event.rowData.elementUuid
+    const toggleSelection = useCallback(
+        (elementUuid) => {
+            let element = currentChildren?.find(
+                (e) => e.elementUuid === elementUuid
             );
-            if (childrenMetadata[element.elementUuid] !== undefined) {
-                setElementName(childrenMetadata[element.elementUuid]?.name);
-                const subtype = childrenMetadata[element.elementUuid].subtype;
-                /** set active directory on the store because it will be used while editing the contingency name */
-                dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-                switch (element.type) {
-                    case ElementType.STUDY:
-                        let url = getLink(element.elementUuid, element.type);
-                        url
-                            ? window.open(url, '_blank')
-                            : handleError(
-                                  intl.formatMessage(
-                                      { id: 'getAppLinkError' },
-                                      { type: element.type }
-                                  )
-                              );
-                        break;
-                    case ElementType.CONTINGENCY_LIST:
-                        if (subtype === ContingencyListType.CRITERIA_BASED.id) {
-                            setCurrentFiltersContingencyListId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (subtype === ContingencyListType.SCRIPT.id) {
-                            setCurrentScriptContingencyListId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (
-                            subtype === ContingencyListType.EXPLICIT_NAMING.id
-                        ) {
-                            setCurrentExplicitNamingContingencyListId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        }
-                        break;
-                    case ElementType.FILTER:
-                        if (subtype === FilterType.EXPLICIT_NAMING.id) {
-                            setCurrentExplicitNamingFilterId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (subtype === FilterType.CRITERIA_BASED.id) {
-                            setCurrentCriteriaBasedFilterId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (subtype === FilterType.EXPERT.id) {
-                            setCurrentExpertFilterId(element.elementUuid);
-                            setOpenDialog(subtype);
-                        }
-                        break;
-                    default:
-                        break;
+            if (element === undefined) {
+                return;
+            }
+            let newSelection = new Set(selectedUuids);
+            if (!newSelection.delete(elementUuid)) {
+                newSelection.add(elementUuid);
+            }
+            setSelectedUuids(newSelection);
+            setLastClickedElementUuid(elementUuid);
+        },
+        [selectedUuids, currentChildren]
+    );
+
+    const selectElements = useCallback(
+        (elementUuids) => {
+            const newSelection = new Set(selectedUuids);
+
+            elementUuids.forEach((uuid) => {
+                let element = currentChildren?.find(
+                    (e) => e.elementUuid === uuid
+                );
+                if (element !== undefined) {
+                    newSelection.add(uuid);
                 }
+            });
+            setSelectedUuids(newSelection);
+        },
+        [selectedUuids, currentChildren]
+    );
+
+    const unselectElements = useCallback(
+        (elementUuids) => {
+            const newSelection = new Set(selectedUuids);
+
+            elementUuids.forEach((uuid) => {
+                newSelection.delete(uuid);
+            });
+            setSelectedUuids(newSelection);
+        },
+        [selectedUuids]
+    );
+
+    const handleShiftClick = useCallback(
+        (clickedElementUuid) => {
+            // remove text selection due to shift clicking
+            window.getSelection().empty();
+
+            // sorted list of displayed elements
+            const currentChildrenUuid = currentChildren.map(
+                (e) => e.elementUuid
+            );
+            const lastSelectedUuidIndex = currentChildrenUuid.indexOf(
+                lastClickedElementUuid
+            );
+            const clickedElementUuidIndex =
+                currentChildrenUuid.indexOf(clickedElementUuid);
+
+            // list of elements between lastClickedElement and clickedElement, both included
+            const elementsToToggle = currentChildrenUuid.slice(
+                Math.min(lastSelectedUuidIndex, clickedElementUuidIndex),
+                Math.max(lastSelectedUuidIndex, clickedElementUuidIndex) + 1
+            );
+
+            if (selectedUuids.has(clickedElementUuid)) {
+                // if clicked element is checked, we unchecked all elements between last clicked element and clicked element
+                unselectElements(elementsToToggle);
+            } else {
+                // if clicked element is unchecked, we check all elements between last clicked element and clicked element
+                selectElements(elementsToToggle);
+            }
+            setLastClickedElementUuid(clickedElementUuid);
+        },
+        [
+            currentChildren,
+            lastClickedElementUuid,
+            selectedUuids,
+            selectElements,
+            unselectElements,
+        ]
+    );
+
+    const handleClickElementCheckbox = useCallback(
+        (clickEvent, elementUuid) => {
+            if (clickEvent.shiftKey) {
+                // if row is clicked while shift is pressed, range of rows selection is toggled
+                handleShiftClick(elementUuid);
+                // nothing else happens, hence the return
+                return;
+            }
+
+            toggleSelection(elementUuid);
+
+            clickEvent.stopPropagation();
+        },
+        [handleShiftClick, toggleSelection]
+    );
+
+    const handleRowClick = useCallback(
+        (clickEvent) => {
+            const clickedElementUuid = clickEvent.rowData.elementUuid;
+            const element = currentChildren.find(
+                (e) => e.elementUuid === clickedElementUuid
+            );
+            if (childrenMetadata[element.elementUuid] === undefined) {
+                return;
+            }
+
+            if (clickEvent.event?.ctrlKey) {
+                // if row is clicked while ctrl is pressed, row selection is toggled
+                // nothing else happens, hence the return right after
+                toggleSelection(clickedElementUuid);
+                return;
+            }
+
+            if (clickEvent.event?.shiftKey) {
+                // if row is clicked while shift is pressed, range of rows selection is toggled
+                handleShiftClick(clickedElementUuid);
+                // nothing else happens, hence the return
+                return;
+            }
+
+            setElementName(childrenMetadata[element.elementUuid]?.name);
+            const subtype = childrenMetadata[element.elementUuid].subtype;
+            /** set active directory on the store because it will be used while editing the contingency name */
+            dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
+            switch (element.type) {
+                case ElementType.STUDY:
+                    let url = getLink(element.elementUuid, element.type);
+                    url
+                        ? window.open(url, '_blank')
+                        : handleError(
+                              intl.formatMessage(
+                                  { id: 'getAppLinkError' },
+                                  { type: element.type }
+                              )
+                          );
+                    break;
+                case ElementType.CONTINGENCY_LIST:
+                    if (subtype === ContingencyListType.CRITERIA_BASED.id) {
+                        setCurrentFiltersContingencyListId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    } else if (subtype === ContingencyListType.SCRIPT.id) {
+                        setCurrentScriptContingencyListId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    } else if (
+                        subtype === ContingencyListType.EXPLICIT_NAMING.id
+                    ) {
+                        setCurrentExplicitNamingContingencyListId(
+                            element.elementUuid
+                        );
+                        setOpenDialog(subtype);
+                    }
+                    break;
+                case ElementType.FILTER:
+                    if (subtype === FilterType.EXPLICIT_NAMING.id) {
+                        setCurrentExplicitNamingFilterId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    } else if (subtype === FilterType.CRITERIA_BASED.id) {
+                        setCurrentCriteriaBasedFilterId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    } else if (subtype === FilterType.EXPERT.id) {
+                        setCurrentExpertFilterId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    }
+                    break;
+                default:
+                    break;
             }
         },
         [
             childrenMetadata,
             currentChildren,
+            handleShiftClick,
             dispatch,
             getLink,
             handleError,
+            toggleSelection,
             intl,
             selectedDirectory?.elementUuid,
         ]
@@ -698,20 +813,6 @@ const DirectoryContent = () => {
         ]
     );
 
-    function toggleSelection(elementUuid) {
-        let element = currentChildren?.find(
-            (e) => e.elementUuid === elementUuid
-        );
-        if (element === undefined) {
-            return;
-        }
-        let newSelection = new Set(selectedUuids);
-        if (!newSelection.delete(elementUuid)) {
-            newSelection.add(elementUuid);
-        }
-        setSelectedUuids(newSelection);
-    }
-
     function toggleSelectAll() {
         if (selectedUuids.size === 0) {
             setSelectedUuids(
@@ -750,10 +851,9 @@ const DirectoryContent = () => {
         const elementUuid = cellData.rowData['elementUuid'];
         return (
             <Box
-                onClick={(e) => {
-                    toggleSelection(elementUuid);
-                    e.stopPropagation();
-                }}
+                onClick={(clickEvent) =>
+                    handleClickElementCheckbox(clickEvent, elementUuid)
+                }
                 sx={styles.checkboxes}
             >
                 <Checkbox checked={selectedUuids.has(elementUuid)} />
