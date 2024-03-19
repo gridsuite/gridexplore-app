@@ -51,6 +51,7 @@ import ScriptEditionDialog from './dialogs/contingency-list/edition/script/scrip
 import ExpertFilterEditionDialog from './dialogs/filter/expert/expert-filter-edition-dialog';
 import { noSelectionForCopy } from 'utils/constants';
 import DescriptionModificationDialogue from './dialogs/description-modification/description-modification-dialogue';
+import { useMultiselect } from 'utils/use-multiselect';
 
 const circularProgressSize = '70px';
 
@@ -160,13 +161,22 @@ const DirectoryContent = () => {
     });
     const [childrenMetadata, setChildrenMetadata] = useState({});
 
-    const [selectedUuids, setSelectedUuids] = useState(new Set());
-    // used for shift clicking selection, stores last clicked element for selection
-    const [lastSelectedElementUuid, setLastSelectedElementUuid] = useState();
-
     const currentChildren = useSelector((state) => state.currentChildren);
     const currentChildrenRef = useRef();
     currentChildrenRef.current = currentChildren;
+
+    const currentChildrenUuids = useMemo(
+        () =>
+            currentChildren ? currentChildren.map((e) => e.elementUuid) : [],
+        [currentChildren]
+    );
+
+    const [
+        selectedUuids,
+        toggleSelection,
+        toggleSelectAll,
+        handleShiftAndCtrlClick,
+    ] = useMultiselect(currentChildrenUuids);
 
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -323,7 +333,7 @@ const DirectoryContent = () => {
                             element?.elementUuid &&
                             !selectedUuids.has(element.elementUuid)
                         ) {
-                            setSelectedUuids(new Set());
+                            toggleSelectAll(new Set(), true);
                         }
                     } else {
                         // If some elements were already selected, we add the active element to the selected list if not already in it.
@@ -334,7 +344,7 @@ const DirectoryContent = () => {
                         ) {
                             let updatedSelectedUuids = new Set(selectedUuids);
                             updatedSelectedUuids.add(element.elementUuid);
-                            setSelectedUuids(updatedSelectedUuids);
+                            toggleSelectAll(updatedSelectedUuids, true);
                         }
                     }
                 }
@@ -359,6 +369,7 @@ const DirectoryContent = () => {
             contextualMixPolicies,
             contextualMixPolicy,
             childrenMetadata,
+            toggleSelectAll,
         ]
     );
 
@@ -403,104 +414,11 @@ const DirectoryContent = () => {
         [appsAndUrls]
     );
 
-    const toggleSelection = useCallback(
-        (elementUuid) => {
-            let element = currentChildren?.find(
-                (e) => e.elementUuid === elementUuid
-            );
-            if (element === undefined) {
-                return;
-            }
-            let newSelection = new Set(selectedUuids);
-            if (!newSelection.delete(elementUuid)) {
-                newSelection.add(elementUuid);
-            }
-            setSelectedUuids(newSelection);
-            setLastSelectedElementUuid(elementUuid);
-        },
-        [selectedUuids, currentChildren]
-    );
-
-    const selectElements = useCallback(
-        (elementUuids) => {
-            const newSelection = new Set(selectedUuids);
-
-            elementUuids.forEach((uuid) => {
-                let element = currentChildren?.find(
-                    (e) => e.elementUuid === uuid
-                );
-                if (element !== undefined) {
-                    newSelection.add(uuid);
-                }
-            });
-            setSelectedUuids(newSelection);
-        },
-        [selectedUuids, currentChildren]
-    );
-
-    const unselectElements = useCallback(
-        (elementUuids) => {
-            const newSelection = new Set(selectedUuids);
-
-            elementUuids.forEach((uuid) => {
-                newSelection.delete(uuid);
-            });
-            setSelectedUuids(newSelection);
-        },
-        [selectedUuids]
-    );
-
-    const handleShiftClick = useCallback(
-        (clickedElementUuid) => {
-            // remove text selection due to shift clicking
-            window.getSelection().empty();
-
-            // sorted list of displayed elements
-            const currentChildrenUuids = currentChildren.map(
-                (e) => e.elementUuid
-            );
-            const lastSelectedUuidIndex = currentChildrenUuids.indexOf(
-                lastSelectedElementUuid
-            );
-            const clickedElementUuidIndex =
-                currentChildrenUuids.indexOf(clickedElementUuid);
-
-            // if no lastSelectedUuid is found (first click, or unknown uuid), we only toggle clicked element
-            if (lastSelectedUuidIndex < 0) {
-                toggleSelection(clickedElementUuid);
-                return;
-            }
-
-            // list of elements between lastClickedElement and clickedElement, both included
-            const elementsToToggle = currentChildrenUuids.slice(
-                Math.min(lastSelectedUuidIndex, clickedElementUuidIndex),
-                Math.max(lastSelectedUuidIndex, clickedElementUuidIndex) + 1
-            );
-
-            if (selectedUuids.has(clickedElementUuid)) {
-                // if clicked element is checked, we unchecked all elements between last clicked element and clicked element
-                unselectElements(elementsToToggle);
-            } else {
-                // if clicked element is unchecked, we check all elements between last clicked element and clicked element
-                selectElements(elementsToToggle);
-            }
-            setLastSelectedElementUuid(clickedElementUuid);
-        },
-        [
-            currentChildren,
-            lastSelectedElementUuid,
-            selectedUuids,
-            selectElements,
-            unselectElements,
-            toggleSelection,
-        ]
-    );
-
     const handleClickElementCheckbox = useCallback(
         (clickEvent, elementUuid) => {
             if (clickEvent.shiftKey) {
                 // if row is clicked while shift is pressed, range of rows selection is toggled
-                handleShiftClick(elementUuid);
+                handleShiftAndCtrlClick(clickEvent, elementUuid);
                 // nothing else happens, hence the return
                 return;
             }
@@ -508,7 +426,7 @@ const DirectoryContent = () => {
             toggleSelection(elementUuid);
             clickEvent.stopPropagation();
         },
-        [handleShiftClick, toggleSelection]
+        [handleShiftAndCtrlClick, toggleSelection]
     );
 
     const handleRowClick = useCallback(
@@ -523,16 +441,8 @@ const DirectoryContent = () => {
                 return;
             }
 
-            if (clickEvent.event?.ctrlKey) {
-                // if row is clicked while ctrl is pressed, row selection is toggled
-                // nothing else happens, hence the return right after
-                toggleSelection(clickedElementUuid);
-                return;
-            }
-
-            if (clickEvent.event?.shiftKey) {
-                // if row is clicked while shift is pressed, range of rows selection is toggled, depending on clicked element state
-                handleShiftClick(clickedElementUuid);
+            if (clickEvent.event?.shiftKey || clickEvent.event?.ctrlKey) {
+                handleShiftAndCtrlClick(clickEvent.event, clickedElementUuid);
                 // nothing else happens, hence the return
                 return;
             }
@@ -588,11 +498,11 @@ const DirectoryContent = () => {
         [
             childrenMetadata,
             currentChildren,
-            handleShiftClick,
+            handleShiftAndCtrlClick,
             dispatch,
             getLink,
             handleError,
-            toggleSelection,
+
             intl,
             selectedDirectory?.elementUuid,
         ]
@@ -821,25 +731,15 @@ const DirectoryContent = () => {
         ]
     );
 
-    function toggleSelectAll() {
-        if (selectedUuids.size === 0) {
-            setSelectedUuids(
-                new Set(
-                    currentChildren
-                        .filter((e) => !e.uploading)
-                        .map((c) => c.elementUuid)
-                )
-            );
-        } else {
-            setSelectedUuids(new Set());
-        }
-    }
-
     function selectionHeaderRenderer() {
         return (
             <Box
                 onClick={(e) => {
-                    toggleSelectAll();
+                    toggleSelectAll(
+                        currentChildren
+                            .filter((e) => !e.uploading)
+                            .map((c) => c.elementUuid)
+                    );
                     e.stopPropagation();
                 }}
                 sx={styles.checkboxes}
@@ -914,7 +814,6 @@ const DirectoryContent = () => {
                     }
                 });
         }
-        setSelectedUuids(new Set());
     }, [handleError, currentChildren, currentChildrenRef]);
 
     const getSelectedChildren = () => {
