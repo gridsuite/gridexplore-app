@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 
 export const useMultiselect = (elementIds: string[]) => {
-    const [selectedUuids, setSelectedUuids] = useState<Set<string>>(new Set());
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     // used for shift clicking selection, stores last clicked element for selection
-    const [lastSelectedElementUuid, setLastSelectedElementUuid] =
+    const [lastSelectedElementId, setLastSelectedElementId] =
         useState<string>();
 
     useEffect(() => {
-        setSelectedUuids(new Set());
-        setLastSelectedElementUuid(undefined);
+        setSelectedIds(new Set());
+        setLastSelectedElementId(undefined);
     }, [elementIds]);
 
     /**
@@ -22,7 +22,7 @@ export const useMultiselect = (elementIds: string[]) => {
             if (element === undefined) {
                 return;
             }
-            let newSelection = new Set(selectedUuids);
+            let newSelection = new Set(selectedIds);
 
             if (forceState === undefined) {
                 if (!newSelection.delete(elementId)) {
@@ -35,15 +35,15 @@ export const useMultiselect = (elementIds: string[]) => {
                     newSelection.delete(elementId);
                 }
             }
-            setSelectedUuids(newSelection);
-            setLastSelectedElementUuid(elementId);
+            setSelectedIds(newSelection);
+            setLastSelectedElementId(elementId);
         },
-        [selectedUuids, elementIds]
+        [selectedIds, elementIds]
     );
 
     const selectElements = useCallback(
         (elementToSelectIds: string[]) => {
-            const newSelection = new Set(selectedUuids);
+            const newSelection = new Set(selectedIds);
 
             elementToSelectIds.forEach((elementToSelectId) => {
                 let element = elementIds?.find(
@@ -53,21 +53,21 @@ export const useMultiselect = (elementIds: string[]) => {
                     newSelection.add(elementToSelectId);
                 }
             });
-            setSelectedUuids(newSelection);
+            setSelectedIds(newSelection);
         },
-        [selectedUuids, elementIds]
+        [selectedIds, elementIds]
     );
 
     const unselectElements = useCallback(
         (elementsToUnselectIds: string[]) => {
-            const newSelection = new Set(selectedUuids);
+            const newSelection = new Set(selectedIds);
 
             elementsToUnselectIds.forEach((id) => {
                 newSelection.delete(id);
             });
-            setSelectedUuids(newSelection);
+            setSelectedIds(newSelection);
         },
-        [selectedUuids]
+        [selectedIds]
     );
 
     const handleShiftClick = useCallback(
@@ -77,37 +77,36 @@ export const useMultiselect = (elementIds: string[]) => {
 
             // sorted list of displayed elements
 
-            const lastSelectedUuidIndex = lastSelectedElementUuid
-                ? elementIds.indexOf(lastSelectedElementUuid)
+            const lastSelectedIdIndex = lastSelectedElementId
+                ? elementIds.indexOf(lastSelectedElementId)
                 : -1;
-            const clickedElementUuidIndex =
-                elementIds.indexOf(clickedElementId);
+            const clickedElementIdIndex = elementIds.indexOf(clickedElementId);
 
-            // if no lastSelectedUuid is found (first click, or unknown uuid), we only toggle clicked element
-            if (lastSelectedUuidIndex < 0) {
+            // if no lastSelectedId is found (first click, or unknown id), we only toggle clicked element
+            if (lastSelectedIdIndex < 0) {
                 toggleSelection(clickedElementId);
                 return;
             }
 
             // list of elements between lastClickedElement and clickedElement, both included
             const elementsToToggle = elementIds.slice(
-                Math.min(lastSelectedUuidIndex, clickedElementUuidIndex),
-                Math.max(lastSelectedUuidIndex, clickedElementUuidIndex) + 1
+                Math.min(lastSelectedIdIndex, clickedElementIdIndex),
+                Math.max(lastSelectedIdIndex, clickedElementIdIndex) + 1
             );
 
-            if (selectedUuids.has(clickedElementId)) {
+            if (selectedIds.has(clickedElementId)) {
                 // if clicked element is checked, we unchecked all elements between last clicked element and clicked element
                 unselectElements(elementsToToggle);
             } else {
                 // if clicked element is unchecked, we check all elements between last clicked element and clicked element
                 selectElements(elementsToToggle);
             }
-            setLastSelectedElementUuid(clickedElementId);
+            setLastSelectedElementId(clickedElementId);
         },
         [
             elementIds,
-            lastSelectedElementUuid,
-            selectedUuids,
+            lastSelectedElementId,
+            selectedIds,
             selectElements,
             unselectElements,
             toggleSelection,
@@ -134,23 +133,23 @@ export const useMultiselect = (elementIds: string[]) => {
     };
 
     /**
-     * toggle selection for all element depending on current selectedUuids
+     * toggle selection for all element depending on current selectedIds
      * @param elementsToSelectIds if defined, it will toggle only elementsToSelectIds instead of all elementIds
-     * @param forceSelectedIds if true, it will set selection to elementsToSelectIds/elementIds without checking current selectedUuids
+     * @param forceSelectedIds if true, it will set selection to elementsToSelectIds/elementIds without checking current selectedIds
      */
     function toggleSelectAll(
         elementsToSelectIds?: string[],
         forceSelectedIds = false
     ) {
-        if (selectedUuids.size === 0 || forceSelectedIds) {
-            setSelectedUuids(new Set(elementsToSelectIds ?? elementIds));
+        if (selectedIds.size === 0 || forceSelectedIds) {
+            setSelectedIds(new Set(elementsToSelectIds ?? elementIds));
         } else {
-            setSelectedUuids(new Set());
+            setSelectedIds(new Set());
         }
     }
 
     return [
-        selectedUuids,
+        selectedIds,
         toggleSelection,
         toggleSelectAll,
         handleShiftAndCtrlClick,
