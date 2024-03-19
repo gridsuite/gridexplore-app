@@ -407,6 +407,33 @@ export function fetchRootFolders(types) {
     return backendFetchJson(fetchRootFoldersUrl);
 }
 
+export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
+    console.info('Fetching elements metadata');
+
+    // Add params to Url
+    const idsParams = getRequestParamFromList(
+        ids.filter((id) => id), // filter falsy elements
+        'ids'
+    );
+    const equipmentTypesParams = getRequestParamFromList(
+        equipmentTypes,
+        'equipmentTypes'
+    );
+    const elementTypesParams = getRequestParamFromList(
+        elementTypes,
+        'elementTypes'
+    );
+    const params = [
+        ...idsParams,
+        ...equipmentTypesParams,
+        ...elementTypesParams,
+    ];
+    const urlSearchParams = new URLSearchParams(params);
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/metadata?${urlSearchParams}`;
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
 export function updateConfigParameter(name, value) {
     const appName = getAppName(name);
     console.info(

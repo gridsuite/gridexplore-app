@@ -7,19 +7,25 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import DirectorySelector from './directory-selector';
+import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ElementType } from '../../utils/elementType';
+import {
+    fetchDirectoryContent,
+    fetchElementsMetadata,
+    fetchRootFolders,
+} from '../../utils/rest-api';
 
 const MoveDialog = ({ open, onClose, items }) => {
     const intl = useIntl();
 
     return (
-        <DirectorySelector
+        <DirectoryItemSelector
             open={open}
             onClose={onClose}
             types={[ElementType.DIRECTORY]}
-            title={intl.formatMessage({ id: 'moveItemTitle' })}
+            onlyLeaves={false}
+            multiselect={false}
             validationButtonText={intl.formatMessage(
                 {
                     id: 'moveItemValidate',
@@ -28,7 +34,12 @@ const MoveDialog = ({ open, onClose, items }) => {
                     nbElements: items.length,
                 }
             )}
-            contentText={intl.formatMessage({ id: 'moveItemContentText' })}
+            title={intl.formatMessage({
+                id: 'moveItemTitle',
+            })}
+            fetchDirectoryContent={fetchDirectoryContent}
+            fetchRootFolders={fetchRootFolders}
+            fetchElementsInfos={fetchElementsMetadata}
         />
     );
 };
