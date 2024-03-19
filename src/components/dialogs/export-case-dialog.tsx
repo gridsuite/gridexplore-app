@@ -177,7 +177,9 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                         initValues={currentParameters}
                         onChange={handleParameterChange}
                         variant="standard"
-                        selectionWithDialog={(params) =>
+                        selectionWithDialog={(params: {
+                            possibleValues: string | any[];
+                        }) =>
                             !!params?.possibleValues?.length &&
                             params.possibleValues.length > 10
                         }
