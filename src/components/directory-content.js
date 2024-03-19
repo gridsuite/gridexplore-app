@@ -502,7 +502,6 @@ const DirectoryContent = () => {
             dispatch,
             getLink,
             handleError,
-
             intl,
             selectedDirectory?.elementUuid,
         ]

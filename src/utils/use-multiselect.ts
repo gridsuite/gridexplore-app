@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 
+/**
+ * Hook to deal with list of checkboxes
+ * @param elementIds list of all ids used for selection, whether they are selected or not
+ * for "handleShiftAndCtrlClick" to work, this list needs to be sorted in the same order as it is displayed
+ */
 export const useMultiselect = (elementIds: string[]) => {
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     // used for shift clicking selection, stores last clicked element for selection
