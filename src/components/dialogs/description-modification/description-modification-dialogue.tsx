@@ -14,6 +14,7 @@ import { updateElement } from '../../../utils/rest-api';
 import { ExpandingTextField, useSnackMessage } from '@gridsuite/commons-ui';
 import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
 import React from 'react';
+import { Box } from '@mui/material';
 
 interface IDescriptionModificationDialogue {
     elementUuid: string;
@@ -73,13 +74,14 @@ const DescriptionModificationDialogue: FunctionComponent<
             titleId={'description'}
             removeOptional={true}
         >
-            <ExpandingTextField
-                name={DESCRIPTION}
-                label={'descriptionProperty'}
-                minRows={3}
-                rows={5}
-                sx={{ marginTop: '10px' }}
-            />
+            <Box paddingTop={2}>
+                <ExpandingTextField
+                    name={DESCRIPTION}
+                    label={'descriptionProperty'}
+                    minRows={3}
+                    rows={5}
+                ></ExpandingTextField>
+            </Box>
         </CustomMuiDialog>
     );
 };

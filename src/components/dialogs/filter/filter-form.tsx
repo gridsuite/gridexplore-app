@@ -17,6 +17,7 @@ import ExplicitNamingFilterForm, {
 import React, { FunctionComponent, useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import ExpertFilterForm from './expert/expert-filter-form';
+import { Box } from '@mui/material';
 
 interface FilterFormProps {
     creation?: boolean;
@@ -55,12 +56,14 @@ export const FilterForm: FunctionComponent<FilterFormProps> = (props) => {
             {props.creation && (
                 <>
                     <Grid item xs={12}>
-                        <ExpandingTextField
-                            name={DESCRIPTION}
-                            label={'descriptionProperty'}
-                            minRows={3}
-                            rows={5}
-                        />
+                        <Box paddingTop={1}>
+                            <ExpandingTextField
+                                name={DESCRIPTION}
+                                label={'descriptionProperty'}
+                                minRows={3}
+                                rows={5}
+                            />
+                        </Box>
                     </Grid>
                     {!props.sourceFilterForExplicitNamingConversion && (
                         <Grid item>
