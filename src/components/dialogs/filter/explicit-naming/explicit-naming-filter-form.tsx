@@ -27,7 +27,7 @@ import { toFloatOrNullValue } from '../../../utils/dialog-utils';
 import InputWithPopupConfirmation from '../../../utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
 import { v4 as uuid4 } from 'uuid';
 import { UUID } from 'crypto';
-import DirectorySelect from '../../create-study-dialog/directory-select';
+import ModifyElementSelection from '../../commons/modify-element-selection';
 import { exportFilter } from '../../../../utils/rest-api';
 
 export const FILTER_EQUIPMENTS_ATTRIBUTES = 'filterEquipmentsAttributes';
@@ -240,12 +240,11 @@ export const ExplicitNamingFilterForm: FunctionComponent<
                     validateButtonLabel={'button.changeType'}
                 />
                 {props.sourceFilterForExplicitNamingConversion && (
-                    <DirectorySelect
-                        types={[ElementType.STUDY]}
+                    <ModifyElementSelection
+                        elementType={ElementType.STUDY}
                         onElementValidated={onStudySelected}
                         dialogOpeningButtonLabel={'selectStudyDialogButton'}
                         dialogTitleLabel={'selectStudyDialogTitle'}
-                        dialogMessageLabel={'selectStudyText'}
                         noElementMessageLabel={'noSelectedStudyText'}
                     />
                 )}
