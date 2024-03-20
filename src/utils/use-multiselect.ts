@@ -67,7 +67,7 @@ export const useMultiselect = (elementIds: string[]) => {
                 });
             setSelectedIds([...selectedIds]);
         },
-        [selectedIds, elementIds]
+        [selectedIds]
     );
 
     const removeElementsFromSelection = useCallback(
