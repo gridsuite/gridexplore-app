@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import { useCallback, useEffect, useState } from 'react';
 
 /**
@@ -6,14 +12,19 @@ import { useCallback, useEffect, useState } from 'react';
  * for "handleShiftAndCtrlClick" to work, this list needs to be sorted in the same order as it is displayed
  */
 export const useMultiselect = (elementIds: string[]) => {
-    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
     // used for shift clicking selection, stores last clicked element for selection
-    const [lastSelectedElementId, setLastSelectedElementId] =
-        useState<string>();
+    const [lastSelectedElementId, setLastSelectedElementId] = useState<
+        string | null
+    >(null);
+
+    const clearSelection = () => {
+        setSelectedIds([]);
+    };
 
     useEffect(() => {
-        setSelectedIds(new Set());
-        setLastSelectedElementId(undefined);
+        clearSelection();
+        setLastSelectedElementId(null);
     }, [elementIds]);
 
     /**
@@ -22,56 +33,50 @@ export const useMultiselect = (elementIds: string[]) => {
      * @param forceState if defined, it will force element state instead of toggling (false -> unselect element ; true -> select element)
      */
     const toggleSelection = useCallback(
-        (elementId: string, forceState?: boolean) => {
-            let element = elementIds?.find((id) => id === elementId);
+        (elementToToggleId: string) => {
+            let element = elementIds?.find((id) => id === elementToToggleId);
             if (element === undefined) {
                 return;
             }
-            let newSelection = new Set(selectedIds);
 
-            if (forceState === undefined) {
-                if (!newSelection.delete(elementId)) {
-                    newSelection.add(elementId);
-                }
+            selectedIds.indexOf(elementToToggleId);
+            const elementToToggleIdIndex =
+                selectedIds.indexOf(elementToToggleId);
+            // if element to toggle is not selected, we select it
+            if (elementToToggleIdIndex < 0) {
+                selectedIds.push(elementToToggleId);
             } else {
-                if (forceState) {
-                    newSelection.add(elementId);
-                } else {
-                    newSelection.delete(elementId);
-                }
+                selectedIds.splice(elementToToggleIdIndex, 1);
             }
-            setSelectedIds(newSelection);
-            setLastSelectedElementId(elementId);
+
+            setSelectedIds([...selectedIds]);
+            setLastSelectedElementId(elementToToggleId);
         },
         [selectedIds, elementIds]
     );
 
-    const selectElements = useCallback(
-        (elementToSelectIds: string[]) => {
-            const newSelection = new Set(selectedIds);
-
-            elementToSelectIds.forEach((elementToSelectId) => {
-                let element = elementIds?.find(
-                    (id) => id === elementToSelectId
-                );
-                if (element !== undefined) {
-                    newSelection.add(elementToSelectId);
-                }
-            });
-            setSelectedIds(newSelection);
+    const addElementsToSelection = useCallback(
+        (elementsToSelectIds: string[]) => {
+            elementsToSelectIds
+                .filter(
+                    (elementToSelectId) =>
+                        !selectedIds.includes(elementToSelectId)
+                )
+                .forEach((elementToSelectId) => {
+                    selectedIds.push(elementToSelectId);
+                });
+            setSelectedIds([...selectedIds]);
         },
         [selectedIds, elementIds]
     );
 
-    const unselectElements = useCallback(
-        (elementsToUnselectIds: string[]) => {
-            const newSelection = new Set(selectedIds);
-
-            elementsToUnselectIds.forEach((id) => {
-                newSelection.delete(id);
-            });
-            setSelectedIds(newSelection);
-        },
+    const removeElementsFromSelection = useCallback(
+        (elementsToUnselectIds: string[]) =>
+            setSelectedIds([
+                ...selectedIds.filter(
+                    (id) => !elementsToUnselectIds.includes(id)
+                ),
+            ]),
         [selectedIds]
     );
 
@@ -81,7 +86,6 @@ export const useMultiselect = (elementIds: string[]) => {
             window.getSelection()?.empty();
 
             // sorted list of displayed elements
-
             const lastSelectedIdIndex = lastSelectedElementId
                 ? elementIds.indexOf(lastSelectedElementId)
                 : -1;
@@ -99,12 +103,12 @@ export const useMultiselect = (elementIds: string[]) => {
                 Math.max(lastSelectedIdIndex, clickedElementIdIndex) + 1
             );
 
-            if (selectedIds.has(clickedElementId)) {
+            if (selectedIds.includes(clickedElementId)) {
                 // if clicked element is checked, we unchecked all elements between last clicked element and clicked element
-                unselectElements(elementsToToggle);
+                removeElementsFromSelection(elementsToToggle);
             } else {
                 // if clicked element is unchecked, we check all elements between last clicked element and clicked element
-                selectElements(elementsToToggle);
+                addElementsToSelection(elementsToToggle);
             }
             setLastSelectedElementId(clickedElementId);
         },
@@ -112,8 +116,8 @@ export const useMultiselect = (elementIds: string[]) => {
             elementIds,
             lastSelectedElementId,
             selectedIds,
-            selectElements,
-            unselectElements,
+            addElementsToSelection,
+            removeElementsFromSelection,
             toggleSelection,
         ]
     );
@@ -131,8 +135,8 @@ export const useMultiselect = (elementIds: string[]) => {
 
         if (clickEvent.ctrlKey) {
             // if row is clicked while ctrl is pressed, row selection is toggled
-            // nothing else happens, hence the return right after
             toggleSelection(clickedElementId);
+            // nothing else happens, hence the return
             return;
         }
     };
@@ -142,21 +146,19 @@ export const useMultiselect = (elementIds: string[]) => {
      * @param elementsToSelectIds if defined, it will toggle only elementsToSelectIds instead of all elementIds
      * @param forceSelectedIds if true, it will set selection to elementsToSelectIds/elementIds without checking current selectedIds
      */
-    function toggleSelectAll(
-        elementsToSelectIds?: string[],
-        forceSelectedIds = false
-    ) {
-        if (selectedIds.size === 0 || forceSelectedIds) {
-            setSelectedIds(new Set(elementsToSelectIds ?? elementIds));
+    function toggleSelectAll() {
+        if (selectedIds.length === 0) {
+            setSelectedIds(elementIds);
         } else {
-            setSelectedIds(new Set());
+            setSelectedIds([]);
         }
     }
 
-    return [
+    return {
         selectedIds,
         toggleSelection,
         toggleSelectAll,
+        clearSelection,
         handleShiftAndCtrlClick,
-    ];
+    };
 };

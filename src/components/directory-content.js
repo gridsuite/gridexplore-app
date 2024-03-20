@@ -167,16 +167,21 @@ const DirectoryContent = () => {
 
     const currentChildrenUuids = useMemo(
         () =>
-            currentChildren ? currentChildren.map((e) => e.elementUuid) : [],
+            currentChildren
+                ? currentChildren
+                      .map((e) => e.elementUuid)
+                      .filter((e) => !e.uploading)
+                : [],
         [currentChildren]
     );
 
-    const [
-        selectedUuids,
+    const {
+        selectedIds,
         toggleSelection,
         toggleSelectAll,
         handleShiftAndCtrlClick,
-    ] = useMultiselect(currentChildrenUuids);
+        clearSelection,
+    } = useMultiselect(currentChildrenUuids);
 
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -297,7 +302,7 @@ const DirectoryContent = () => {
     /* User interactions */
     const contextualMixPolicies = useMemo(
         () => ({
-            BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
+            BIG: 'GoogleMicrosoft', // if !selectedUuids.includes(selected.Uuid) deselects selectedUuids
             ALL: 'All', // union of activeElement.Uuid and selectedUuids (currently implemented)
         }),
         []
@@ -329,22 +334,20 @@ const DirectoryContent = () => {
                     if (contextualMixPolicy === contextualMixPolicies.BIG) {
                         // If some elements were already selected and the active element is not in them, we deselect the already selected elements.
                         if (
-                            selectedUuids?.size &&
+                            selectedIds.length &&
                             element?.elementUuid &&
-                            !selectedUuids.has(element.elementUuid)
+                            !selectedIds.includes(element.elementUuid)
                         ) {
-                            toggleSelectAll(new Set(), true);
+                            clearSelection();
                         }
                     } else {
                         // If some elements were already selected, we add the active element to the selected list if not already in it.
                         if (
-                            selectedUuids?.size &&
+                            selectedIds.length &&
                             element?.elementUuid &&
-                            !selectedUuids.has(element.elementUuid)
+                            !selectedIds.includes(element.elementUuid)
                         ) {
-                            let updatedSelectedUuids = new Set(selectedUuids);
-                            updatedSelectedUuids.add(element.elementUuid);
-                            toggleSelectAll(updatedSelectedUuids, true);
+                            toggleSelection(element.elementUuid);
                         }
                     }
                 }
@@ -365,11 +368,12 @@ const DirectoryContent = () => {
             currentChildren,
             dispatch,
             selectedDirectory,
-            selectedUuids,
+            selectedIds,
             contextualMixPolicies,
             contextualMixPolicy,
             childrenMetadata,
-            toggleSelectAll,
+            toggleSelection,
+            clearSelection,
         ]
     );
 
@@ -416,6 +420,7 @@ const DirectoryContent = () => {
 
     const handleClickElementCheckbox = useCallback(
         (clickEvent, elementUuid) => {
+            clickEvent.stopPropagation();
             if (clickEvent.shiftKey) {
                 // if row is clicked while shift is pressed, range of rows selection is toggled
                 handleShiftAndCtrlClick(clickEvent, elementUuid);
@@ -424,7 +429,6 @@ const DirectoryContent = () => {
             }
 
             toggleSelection(elementUuid);
-            clickEvent.stopPropagation();
         },
         [handleShiftAndCtrlClick, toggleSelection]
     );
@@ -734,20 +738,16 @@ const DirectoryContent = () => {
         return (
             <Box
                 onClick={(e) => {
-                    toggleSelectAll(
-                        currentChildren
-                            .filter((e) => !e.uploading)
-                            .map((c) => c.elementUuid)
-                    );
+                    toggleSelectAll();
                     e.stopPropagation();
                 }}
                 sx={styles.checkboxes}
             >
                 <Checkbox
-                    checked={selectedUuids.size > 0}
+                    checked={selectedIds.length > 0}
                     indeterminate={
-                        selectedUuids.size !== 0 &&
-                        selectedUuids.size !== currentChildren.length
+                        selectedIds.length !== 0 &&
+                        selectedIds.length !== currentChildren.length
                     }
                 />
             </Box>
@@ -763,7 +763,7 @@ const DirectoryContent = () => {
                 }
                 sx={styles.checkboxes}
             >
-                <Checkbox checked={selectedUuids.has(elementUuid)} />
+                <Checkbox checked={selectedIds.includes(elementUuid)} />
             </Box>
         );
     }
@@ -819,11 +819,11 @@ const DirectoryContent = () => {
         let selectedChildren = [];
         if (currentChildren?.length > 0) {
             // Adds the previously selected elements
-            if (selectedUuids?.size) {
+            if (selectedIds.length) {
                 selectedChildren = currentChildren
                     .filter(
                         (child) =>
-                            selectedUuids.has(child.elementUuid) &&
+                            selectedIds.includes(child.elementUuid) &&
                             child.elementUuid !== activeElement?.elementUuid
                     )
                     .map((child) => {
@@ -888,7 +888,7 @@ const DirectoryContent = () => {
                     selectedElements={
                         // Check selectedUuids.size here to show toolbar options only
                         // when multi selection checkboxes are used.
-                        selectedUuids.size > 0 ? getSelectedChildren() : []
+                        selectedIds?.length > 0 ? getSelectedChildren() : []
                     }
                 />
                 <div style={{ textAlign: 'center', marginTop: '100px' }}>
@@ -910,7 +910,7 @@ const DirectoryContent = () => {
                     selectedElements={
                         // Check selectedUuids.size here to show toolbar options only
                         // when multi selection checkboxes are used.
-                        selectedUuids.size > 0 ? getSelectedChildren() : []
+                        selectedIds?.length > 0 ? getSelectedChildren() : []
                     }
                 />
                 <VirtualizedTable
