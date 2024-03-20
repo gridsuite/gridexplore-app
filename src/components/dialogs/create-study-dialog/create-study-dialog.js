@@ -273,6 +273,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     elementType={ElementType.DIRECTORY}
                     dialogOpeningButtonLabel={'showSelectDirectoryDialog'}
                     dialogTitleLabel={'selectDirectoryDialogTitle'}
+                    dialogMessageLabel={'moveItemContentText'}
                 />
             ) : (
                 <UploadNewCase

@@ -245,6 +245,7 @@ export const ExplicitNamingFilterForm: FunctionComponent<
                         onElementValidated={onStudySelected}
                         dialogOpeningButtonLabel={'selectStudyDialogButton'}
                         dialogTitleLabel={'selectStudyDialogTitle'}
+                        dialogMessageLabel={'selectStudyText'}
                         noElementMessageLabel={'noSelectedStudyText'}
                     />
                 )}

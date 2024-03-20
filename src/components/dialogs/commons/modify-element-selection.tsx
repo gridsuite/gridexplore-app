@@ -24,6 +24,7 @@ export interface ModifyElementSelectionProps {
     elementType: ElementType;
     dialogOpeningButtonLabel: string;
     dialogTitleLabel: string;
+    dialogMessageLabel: string;
     noElementMessageLabel?: string;
     onElementValidated?: (elementId: UUID) => void;
 }
@@ -113,6 +114,9 @@ const ModifyElementSelection: React.FunctionComponent<
                 })}
                 title={intl.formatMessage({
                     id: props.dialogTitleLabel,
+                })}
+                contentText={intl.formatMessage({
+                    id: props.dialogMessageLabel,
                 })}
                 fetchDirectoryContent={fetchDirectoryContent}
                 fetchRootFolders={fetchRootFolders}

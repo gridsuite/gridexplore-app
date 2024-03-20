@@ -37,6 +37,7 @@ const MoveDialog = ({ open, onClose, items }) => {
             title={intl.formatMessage({
                 id: 'moveItemTitle',
             })}
+            contentText={intl.formatMessage({ id: 'moveItemContentText' })}
             fetchDirectoryContent={fetchDirectoryContent}
             fetchRootFolders={fetchRootFolders}
             fetchElementsInfos={fetchElementsMetadata}
