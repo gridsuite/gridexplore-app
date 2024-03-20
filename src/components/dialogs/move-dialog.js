@@ -12,7 +12,7 @@ import { useIntl } from 'react-intl';
 import { ElementType } from '../../utils/elementType';
 import {
     fetchDirectoryContent,
-    fetchElementsMetadata,
+    fetchElementsInfos,
     fetchRootFolders,
 } from '../../utils/rest-api';
 
@@ -40,7 +40,7 @@ const MoveDialog = ({ open, onClose, items }) => {
             contentText={intl.formatMessage({ id: 'moveItemContentText' })}
             fetchDirectoryContent={fetchDirectoryContent}
             fetchRootFolders={fetchRootFolders}
-            fetchElementsInfos={fetchElementsMetadata}
+            fetchElementsInfos={fetchElementsInfos}
         />
     );
 };

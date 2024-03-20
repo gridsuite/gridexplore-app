@@ -16,7 +16,7 @@ import { ElementType } from '../../../utils/elementType';
 import { UUID } from 'crypto';
 import {
     fetchDirectoryContent,
-    fetchElementsMetadata,
+    fetchElementsInfos,
     fetchRootFolders,
 } from '../../../utils/rest-api';
 
@@ -120,7 +120,7 @@ const ModifyElementSelection: React.FunctionComponent<
                 })}
                 fetchDirectoryContent={fetchDirectoryContent}
                 fetchRootFolders={fetchRootFolders}
-                fetchElementsInfos={fetchElementsMetadata}
+                fetchElementsInfos={fetchElementsInfos}
             />
         </Grid>
     );
