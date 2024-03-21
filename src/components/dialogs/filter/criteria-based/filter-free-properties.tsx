@@ -13,7 +13,7 @@ import {
 } from 'components/utils/field-constants';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { Hvdc, Line } from 'utils/equipment-types';
+import { EquipmentType } from 'utils/equipment-types';
 import { FreePropertiesTypes } from './filter-properties';
 import FilterProperty, {
     PROPERTY_NAME,
@@ -37,8 +37,8 @@ function FilterFreeProperties({
         name: EQUIPMENT_TYPE,
     });
     const isForLineOrHvdcLineSubstation =
-        (watchEquipmentType === Line.type ||
-            watchEquipmentType === Hvdc.type) &&
+        (watchEquipmentType === EquipmentType.LINE ||
+            watchEquipmentType === EquipmentType.HVDC_LINE) &&
         freePropertiesType === FreePropertiesTypes.SUBSTATION_FILTER_PROPERTIES;
 
     const fieldName = `${CRITERIA_BASED}.${freePropertiesType}`;

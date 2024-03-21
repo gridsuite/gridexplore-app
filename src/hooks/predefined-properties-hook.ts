@@ -6,11 +6,9 @@
  */
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    EquipmentType,
-    mapEquipmentTypeForPredefinedProperties,
-} from '../utils/equipment-types-for-predefined-properties-mapper';
+import { mapEquipmentTypeForPredefinedProperties } from '../utils/equipment-types-for-predefined-properties-mapper';
 import { fetchAppsAndUrls } from '../utils/rest-api';
+import { EquipmentType } from '../utils/equipment-types';
 
 export type PredefinedProperties = {
     [propertyName: string]: string[];

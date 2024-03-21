@@ -20,7 +20,7 @@ import ElementValueEditor from './element-value-editor';
 import { ElementType, FilterType } from '../../../utils/elementType';
 import { EQUIPMENT_TYPE, FILTER_UUID } from '../field-constants';
 import { useFormContext } from 'react-hook-form';
-import { VoltageLevel } from '../../../utils/equipment-types';
+import { EquipmentType } from '../../../utils/equipment-types';
 
 const styles = {
     noArrows: {
@@ -52,7 +52,7 @@ const ValueEditor = (props: ValueEditorProps) => {
                             props.field === FieldType.VOLTAGE_LEVEL_ID_1 ||
                             props.field === FieldType.VOLTAGE_LEVEL_ID_2) &&
                             value?.specificMetadata?.equipmentType ===
-                                VoltageLevel.type))
+                                EquipmentType.VOLTAGE_LEVEL))
                 );
             }
             return true;
@@ -87,7 +87,7 @@ const ValueEditor = (props: ValueEditorProps) => {
             props.field === FieldType.VOLTAGE_LEVEL_ID_1 ||
             props.field === FieldType.VOLTAGE_LEVEL_ID_2
         ) {
-            equipmentTypes = [VoltageLevel.type];
+            equipmentTypes = [EquipmentType.VOLTAGE_LEVEL];
         } else if (props.field === FieldType.ID) {
             equipmentTypes = [getValues(EQUIPMENT_TYPE)];
         }
