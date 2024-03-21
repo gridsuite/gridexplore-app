@@ -19,7 +19,7 @@ import Alert from '@mui/material/Alert';
 import PropTypes from 'prop-types';
 import { DialogContentText } from '@mui/material';
 import { ElementType } from '../../utils/elementType';
-import { Generator, Load } from '../../utils/equipment-types';
+import { EquipmentType } from '../../utils/equipment-types';
 import { CancelButton } from '@gridsuite/commons-ui';
 
 const CsvImportFilterCreationDialog = ({
@@ -41,8 +41,8 @@ const CsvImportFilterCreationDialog = ({
         // TODO This is temporary : should be refactored to remove the business logic.
         if (formType === ElementType.FILTER) {
             if (
-                equipmentType === Generator.type ||
-                equipmentType === Load.type
+                equipmentType === EquipmentType.GENERATOR ||
+                equipmentType === EquipmentType.LOAD
             ) {
                 return [
                     intl.formatMessage({ id: 'equipmentID' }),

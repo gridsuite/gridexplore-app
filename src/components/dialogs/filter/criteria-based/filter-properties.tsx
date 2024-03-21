@@ -3,12 +3,7 @@ import { useEffect, useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { FilterType } from '../../../../utils/elementType';
-import {
-    Hvdc,
-    Line,
-    Load,
-    Substation,
-} from '../../../../utils/equipment-types';
+import { EquipmentType } from '../../../../utils/equipment-types';
 import { areArrayElementsUnique } from '../../../../utils/functions';
 import { EQUIPMENT_TYPE, FILTER_TYPE } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
@@ -40,7 +35,8 @@ function propertyValuesTest(
     }
     const equipmentType = rootLevelForm.value[EQUIPMENT_TYPE];
     const isForLineOrHvdcLine =
-        equipmentType === Line.type || equipmentType === Hvdc.type;
+        equipmentType === EquipmentType.LINE ||
+        equipmentType === EquipmentType.HVDC_LINE;
     if (doublePropertyValues) {
         return isForLineOrHvdcLine ? values?.length! > 0 : true;
     } else {
@@ -136,7 +132,7 @@ export const filterPropertiesYupSchema = {
 };
 
 function FilterProperties() {
-    const watchEquipmentType = useWatch({
+    const watchEquipmentType: EquipmentType = useWatch({
         name: EQUIPMENT_TYPE,
     });
     const [equipmentPredefinedProps, setEquipmentType] =
@@ -146,14 +142,14 @@ function FilterProperties() {
 
     const displayEquipmentProperties = useMemo(() => {
         return (
-            watchEquipmentType === Substation.type ||
-            watchEquipmentType === Load.type
+            watchEquipmentType === EquipmentType.SUBSTATION ||
+            watchEquipmentType === EquipmentType.LOAD
         );
     }, [watchEquipmentType]);
 
     const displaySubstationProperties = useMemo(() => {
         return (
-            watchEquipmentType !== Substation.type &&
+            watchEquipmentType !== EquipmentType.SUBSTATION &&
             watchEquipmentType !== null
         );
     }, [watchEquipmentType]);
@@ -166,7 +162,7 @@ function FilterProperties() {
 
     useEffect(() => {
         if (displaySubstationProperties) {
-            setSubstationType(Substation.type);
+            setSubstationType(EquipmentType.SUBSTATION);
         }
     }, [displaySubstationProperties, setSubstationType]);
 

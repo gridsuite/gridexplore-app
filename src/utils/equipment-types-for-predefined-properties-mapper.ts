@@ -4,73 +4,35 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    Battery,
-    BusBar,
-    DanglingLine,
-    Generator,
-    Hvdc,
-    LCC,
-    Line,
-    Load,
-    ShuntCompensator,
-    Substation,
-    SVC,
-    ThreeWindingTransfo,
-    TwoWindingTransfo,
-    VoltageLevel,
-    VSC,
-} from './equipment-types';
-
-export type Equipment =
-    | typeof Substation
-    | typeof Line
-    | typeof Generator
-    | typeof Load
-    | typeof Battery
-    | typeof SVC
-    | typeof DanglingLine
-    | typeof LCC
-    | typeof VSC
-    | typeof Hvdc
-    | typeof BusBar
-    | typeof TwoWindingTransfo
-    | typeof ThreeWindingTransfo
-    | typeof ShuntCompensator
-    | typeof VoltageLevel
-    | typeof Substation;
-
-export type EquipmentType = {
-    [Type in Equipment['type']]: Type;
-}[Equipment['type']];
+import { EquipmentType } from './equipment-types';
 
 export const mapEquipmentTypeForPredefinedProperties = (
     type: EquipmentType
 ): string | undefined => {
     switch (type) {
-        case 'SUBSTATION':
+        case EquipmentType.SUBSTATION:
             return 'substation';
-        case 'LOAD':
+        case EquipmentType.LOAD:
             return 'load';
-        case 'GENERATOR':
+        case EquipmentType.GENERATOR:
             return 'generator';
-        case 'LINE':
+        case EquipmentType.LINE:
             return 'line';
-        case 'TWO_WINDINGS_TRANSFORMER':
+        case EquipmentType.TWO_WINDING_TRANSFORMER:
             return 'twt';
-        case 'BATTERY':
+        case EquipmentType.BATTERY:
             return 'battery';
-        case 'SHUNT_COMPENSATOR':
+        case EquipmentType.SHUNT_COMPENSATOR:
             return 'shuntCompensator';
-        case 'VOLTAGE_LEVEL':
+        case EquipmentType.VOLTAGE_LEVEL:
             return 'voltageLevel';
-        case 'BUSBAR_SECTION':
-        case 'DANGLING_LINE':
-        case 'HVDC_LINE':
-        case 'LCC_CONVERTER_STATION':
-        case 'THREE_WINDINGS_TRANSFORMER':
-        case 'STATIC_VAR_COMPENSATOR':
-        case 'VSC_CONVERTER_STATION':
+        case EquipmentType.BUSBAR_SECTION:
+        case EquipmentType.DANGLING_LINE:
+        case EquipmentType.HVDC_LINE:
+        case EquipmentType.LCC_CONVERTER_STATION:
+        case EquipmentType.THREE_WINDINGS_TRANSFORMER:
+        case EquipmentType.STATIC_VAR_COMPENSATOR:
+        case EquipmentType.VSC_CONVERTER_STATION:
             return undefined;
     }
 };

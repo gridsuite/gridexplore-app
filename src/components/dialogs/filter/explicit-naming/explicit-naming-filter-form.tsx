@@ -20,7 +20,7 @@ import { FILTER_EQUIPMENTS } from '../../commons/criteria-based/criteria-based-u
 import Grid from '@mui/material/Grid';
 import { SelectInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { ValueParserParams } from 'ag-grid-community';
-import { Generator, Load } from '../../../../utils/equipment-types';
+import { EquipmentType } from '../../../../utils/equipment-types';
 import { ElementType, FilterType } from '../../../../utils/elementType';
 import { NumericEditor } from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/numericEditor';
 import { toFloatOrNullValue } from '../../../utils/dialog-utils';
@@ -80,7 +80,10 @@ export const explicitNamingFilterSchema = {
 };
 
 function isGeneratorOrLoad(equipmentType: string): boolean {
-    return equipmentType === Generator.type || equipmentType === Load.type;
+    return (
+        equipmentType === EquipmentType.GENERATOR ||
+        equipmentType === EquipmentType.LOAD
+    );
 }
 
 interface FilterTableRow {
@@ -111,6 +114,7 @@ export interface FilterForExplicitConversionProps {
     id: UUID;
     equipmentType: String;
 }
+
 interface ExplicitNamingFilterFormProps {
     sourceFilterForExplicitNamingConversion?: FilterForExplicitConversionProps;
 }
