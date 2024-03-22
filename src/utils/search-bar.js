@@ -17,6 +17,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory, setTreeData } from '../redux/actions';
 import Grid from '@mui/material/Grid';
 import { updatedTree } from '../components/tree-views-container';
+import Typography from '@mui/material/Typography';
+import { FormattedMessage } from 'react-intl';
 
 const styles = {
     icon: (theme) => ({
@@ -73,12 +75,12 @@ export const SearchBar = ({ inputRef }) => {
     );
 
     const handleChangeInput = (newId) => {
-        newId && setLoading(true);
+        newId !== undefined && setLoading(true);
         debouncedSearchMatchingElements(newId);
     };
 
     useEffect(() => {
-        setLoading(false);
+        elementsFound !== undefined && setLoading(false);
     }, [elementsFound]);
 
     const convertChildren = useCallback((element) => {
@@ -90,7 +92,10 @@ export const SearchBar = ({ inputRef }) => {
                         {element.name}
                     </Grid>
                     <Grid item sx={styles.grid2}>
-                        {element.elementName.join('/')}
+                        <Typography>
+                            <FormattedMessage id="path" />
+                            {element.elementName.join(' / ')}
+                        </Typography>
                     </Grid>
                 </Grid>
             </>
@@ -134,18 +139,29 @@ export const SearchBar = ({ inputRef }) => {
 
     const handleMatchingElement = useCallback(
         (matchingElement) => {
-            const elementUuidPath = matchingElement.elementUuid.reverse();
-            elementUuidPath.forEach((e) => {
-                fetchDirectoryContent(e)
-                    .then((res) => {
-                        updateMapData(e, res);
-                    })
-                    .then(() => {
-                        handleDispatchDirectory(e);
-                    });
-            });
+            if (matchingElement !== undefined) {
+                const elementUuidPath = matchingElement?.elementUuid.reverse();
+
+                const promises = elementUuidPath.map((e) => {
+                    return fetchDirectoryContent(e)
+                        .then((res) => {
+                            updateMapData(e, res);
+                        })
+                        .catch((error) =>
+                            snackError({
+                                messageTxt: error.message,
+                                headerId: 'pathRetrievingError',
+                            })
+                        );
+                });
+
+                Promise.all(promises).then(() => {
+                    const lastElement = elementUuidPath.pop();
+                    handleDispatchDirectory(lastElement);
+                });
+            }
         },
-        [updateMapData, handleDispatchDirectory]
+        [updateMapData, handleDispatchDirectory, snackError]
     );
 
     return (

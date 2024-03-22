@@ -269,5 +269,6 @@
   "highVoltageLimit": "High voltage limit",
   "MODIFICATION": "Modification",
   "descriptionModificationError": "An error when modifying the description",
-  "descriptionLimitError": "Description exceeds character limit"
+  "descriptionLimitError": "Description exceeds character limit",
+  "path": "path : "
 }
