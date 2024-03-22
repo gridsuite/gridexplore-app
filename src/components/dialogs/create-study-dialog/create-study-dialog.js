@@ -22,7 +22,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
 import { ElementType } from '../../../utils/elementType';
-import DirectorySelect from './directory-select';
+import ModifyElementSelection from '../commons/modify-element-selection';
 import { isObjectEmpty, keyGenerator } from '../../../utils/functions';
 import {
     addUploadingElement,
@@ -278,8 +278,8 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 </Grid>
             </Grid>
             {providedExistingCase ? (
-                <DirectorySelect
-                    types={[ElementType.DIRECTORY]}
+                <ModifyElementSelection
+                    elementType={ElementType.DIRECTORY}
                     dialogOpeningButtonLabel={'showSelectDirectoryDialog'}
                     dialogTitleLabel={'selectDirectoryDialogTitle'}
                     dialogMessageLabel={'moveItemContentText'}
