@@ -1,9 +1,7 @@
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { fetchAppsAndUrls } from 'utils/rest-api';
 import { FilterType } from '../../../../utils/elementType';
 import {
     Hvdc,
@@ -21,25 +19,11 @@ import {
     PROPERTY_VALUES_1,
     PROPERTY_VALUES_2,
 } from './filter-property';
+import { usePredefinedProperties } from '../../../../hooks/predefined-properties-hook';
 
 export enum FreePropertiesTypes {
     SUBSTATION_FILTER_PROPERTIES = 'substationFreeProperties',
     FREE_FILTER_PROPERTIES = 'freeProperties',
-}
-
-function fetchPredefinedProperties() {
-    return fetchAppsAndUrls().then((res) => {
-        const studyMetadata = res.find(
-            (metadata: any) => metadata.name === 'Study'
-        );
-        if (!studyMetadata) {
-            return Promise.reject(
-                'Study entry could not be found in metadatas'
-            );
-        }
-
-        return studyMetadata?.predefinedEquipmentProperties?.substation;
-    });
 }
 
 function propertyValuesTest(
@@ -155,21 +139,36 @@ function FilterProperties() {
     const watchEquipmentType = useWatch({
         name: EQUIPMENT_TYPE,
     });
-    const isForSubstation = watchEquipmentType === Substation.type;
-    const isForLoad = watchEquipmentType === Load.type;
-    const [fieldProps, setFieldProps] = useState({});
+    const [equipmentPredefinedProps, setEquipmentType] =
+        usePredefinedProperties(watchEquipmentType);
+    const [substationPredefinedProps, setSubstationType] =
+        usePredefinedProperties(null);
 
-    const { snackError } = useSnackMessage();
+    const displayEquipmentProperties = useMemo(() => {
+        return (
+            watchEquipmentType === Substation.type ||
+            watchEquipmentType === Load.type
+        );
+    }, [watchEquipmentType]);
+
+    const displaySubstationProperties = useMemo(() => {
+        return (
+            watchEquipmentType !== Substation.type &&
+            watchEquipmentType !== null
+        );
+    }, [watchEquipmentType]);
 
     useEffect(() => {
-        fetchPredefinedProperties()
-            .then((p) => setFieldProps(p))
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message ?? error,
-                });
-            });
-    }, [snackError]);
+        if (displayEquipmentProperties) {
+            setEquipmentType(watchEquipmentType);
+        }
+    }, [displayEquipmentProperties, watchEquipmentType, setEquipmentType]);
+
+    useEffect(() => {
+        if (displaySubstationProperties) {
+            setSubstationType(Substation.type);
+        }
+    }, [displaySubstationProperties, setSubstationType]);
 
     return (
         watchEquipmentType && (
@@ -178,20 +177,20 @@ function FilterProperties() {
                     <FormattedMessage id={'FreePropsCrit'}>
                         {(txt) => <h3>{txt}</h3>}
                     </FormattedMessage>
-                    {(isForSubstation || isForLoad) && (
+                    {displayEquipmentProperties && (
                         <FilterFreeProperties
                             freePropertiesType={
                                 FreePropertiesTypes.FREE_FILTER_PROPERTIES
                             }
-                            predefined={fieldProps}
+                            predefined={equipmentPredefinedProps}
                         />
                     )}
-                    {!isForSubstation && (
+                    {displaySubstationProperties && (
                         <FilterFreeProperties
                             freePropertiesType={
                                 FreePropertiesTypes.SUBSTATION_FILTER_PROPERTIES
                             }
-                            predefined={fieldProps}
+                            predefined={substationPredefinedProps}
                         />
                     )}
                 </Grid>
