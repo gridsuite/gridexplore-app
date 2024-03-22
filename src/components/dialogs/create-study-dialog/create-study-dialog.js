@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useForm } from 'react-hook-form';
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
 import {
     createStudy,
@@ -269,6 +269,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     />
                 </Grid>
                 <Grid item>
+                    <Box height={10} />
                     <ExpandingTextField
                         name={DESCRIPTION}
                         label={'descriptionProperty'}
