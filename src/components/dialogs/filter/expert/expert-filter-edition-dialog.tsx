@@ -24,8 +24,7 @@ import { FilterForm } from '../filter-form';
 import { EXPERT_FILTER_QUERY, expertFilterSchema } from './expert-filter-form';
 import { saveExpertFilter } from '../filters-utils';
 import { importExpertRules } from './expert-filter-utils';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
 
 const formSchema = yup

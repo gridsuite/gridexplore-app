@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -28,7 +28,6 @@ import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialo
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
-    deleteElement,
     duplicateCase,
     duplicateContingencyList,
     duplicateFilter,
@@ -43,9 +42,14 @@ import {
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
+    stashElements,
 } from '../../utils/rest-api';
 
-import { ContingencyListType, ElementType } from '../../utils/elementType';
+import {
+    ContingencyListType,
+    ElementType,
+    FilterType,
+} from '../../utils/elementType';
 
 import CommonContextualMenu from './common-contextual-menu';
 import {
@@ -58,6 +62,8 @@ import { FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import { useDispatch } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
+import FilterCreationDialog from '../dialogs/filter/filter-creation-dialog';
+import ExportCaseDialog from '../dialogs/export-case-dialog';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -161,6 +167,7 @@ const ContentContextualMenu = (props) => {
                 case ElementType.MODIFICATION:
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+                case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.CONTINGENCY_LIST:
                     console.info(
@@ -195,115 +202,90 @@ const ContentContextualMenu = (props) => {
                 activeElement.type
             )
                 .then((newItemName) => {
-                    if (newItemName) {
-                        switch (activeElement.type) {
-                            case ElementType.CASE:
-                                duplicateCase(
-                                    newItemName,
-                                    activeElement.description,
-                                    activeElement.elementUuid,
-                                    selectedDirectory.elementUuid
-                                )
-                                    .then(() => {
-                                        handleCloseDialog();
-                                    })
-                                    .catch((error) => {
+                    switch (activeElement.type) {
+                        case ElementType.CASE:
+                            duplicateCase(
+                                newItemName,
+                                activeElement.description,
+                                activeElement.elementUuid,
+                                selectedDirectory.elementUuid
+                            ).catch((error) => {
+                                handleDuplicateError(error.message);
+                            });
+                            break;
+                        case ElementType.CONTINGENCY_LIST:
+                            fetchElementsInfos([activeElement.elementUuid])
+                                .then((res) => {
+                                    duplicateContingencyList(
+                                        res[0].specificMetadata.type,
+                                        newItemName,
+                                        activeElement.description,
+                                        activeElement.elementUuid,
+                                        selectedDirectory.elementUuid
+                                    ).catch((error) => {
                                         handleDuplicateError(error.message);
                                     });
-                                break;
-                            case ElementType.CONTINGENCY_LIST:
-                                fetchElementsInfos([activeElement.elementUuid])
-                                    .then((res) => {
-                                        duplicateContingencyList(
-                                            res[0].specificMetadata.type,
-                                            newItemName,
-                                            activeElement.description,
-                                            activeElement.elementUuid,
-                                            selectedDirectory.elementUuid
-                                        ).catch((error) => {
-                                            handleDuplicateError(error.message);
-                                        });
-                                    })
-                                    .catch((error) => {
-                                        handleLastError(error.message);
-                                    })
-                                    .finally(() => {
-                                        handleCloseDialog();
-                                    });
-
-                                break;
-                            case ElementType.STUDY:
-                                duplicateStudy(
-                                    newItemName,
-                                    activeElement.description,
-                                    activeElement.elementUuid,
-                                    selectedDirectory.elementUuid
-                                )
-                                    .then(() => {
-                                        handleCloseDialog();
-                                    })
-                                    .catch((error) => {
-                                        handleDuplicateError(error.message);
-                                    });
-                                break;
-                            case ElementType.FILTER:
-                                duplicateFilter(
-                                    newItemName,
-                                    activeElement.description,
-                                    activeElement.elementUuid,
-                                    selectedDirectory.elementUuid
-                                ).catch((error) => {
-                                    handleDuplicateError(error.message);
-                                });
-                                handleCloseDialog();
-                                break;
-                            case ElementType.MODIFICATION:
-                                duplicateModification(
-                                    newItemName,
-                                    activeElement.description,
-                                    activeElement.elementUuid,
-                                    selectedDirectory.elementUuid
-                                ).catch((error) => {
-                                    handleDuplicateError(error.message);
-                                });
-                                handleCloseDialog();
-                                break;
-                            case ElementType.VOLTAGE_INIT_PARAMETERS:
-                            case ElementType.SECURITY_ANALYSIS_PARAMETERS:
-                            case ElementType.LOADFLOW_PARAMETERS:
-                                duplicateParameter(
-                                    newItemName,
-                                    activeElement.type,
-                                    activeElement.elementUuid,
-                                    selectedDirectory.elementUuid
-                                )
-                                    .then(() => {
-                                        handleCloseDialog();
-                                    })
-                                    .catch((error) => {
-                                        handleDuplicateError(error.message);
-                                    });
-                                break;
-                            default:
-                                handleLastError(
-                                    intl.formatMessage({
-                                        id: 'unsupportedItem',
-                                    })
-                                );
-                        }
-                    } else {
-                        handleLastError(
-                            activeElement.elementName +
-                                ' : ' +
-                                intl.formatMessage({
-                                    id: 'nameAlreadyUsed',
                                 })
-                        );
+                                .catch((error) => {
+                                    handleLastError(error.message);
+                                });
+                            break;
+                        case ElementType.STUDY:
+                            duplicateStudy(
+                                newItemName,
+                                activeElement.description,
+                                activeElement.elementUuid,
+                                selectedDirectory.elementUuid
+                            ).catch((error) => {
+                                handleDuplicateError(error.message);
+                            });
+                            break;
+                        case ElementType.FILTER:
+                            duplicateFilter(
+                                newItemName,
+                                activeElement.description,
+                                activeElement.elementUuid,
+                                selectedDirectory.elementUuid
+                            ).catch((error) => {
+                                handleDuplicateError(error.message);
+                            });
+                            break;
+                        case ElementType.MODIFICATION:
+                            duplicateModification(
+                                newItemName,
+                                activeElement.description,
+                                activeElement.elementUuid,
+                                selectedDirectory.elementUuid
+                            ).catch((error) => {
+                                handleDuplicateError(error.message);
+                            });
+                            break;
+                        case ElementType.VOLTAGE_INIT_PARAMETERS:
+                        case ElementType.SENSITIVITY_PARAMETERS:
+                        case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+                        case ElementType.LOADFLOW_PARAMETERS:
+                            duplicateParameter(
+                                newItemName,
+                                activeElement.type,
+                                activeElement.elementUuid,
+                                selectedDirectory.elementUuid,
+                                activeElement.description
+                            ).catch((error) => {
+                                handleDuplicateError(error.message);
+                            });
+                            break;
+                        default:
+                            handleLastError(
+                                intl.formatMessage({
+                                    id: 'unsupportedItem',
+                                })
+                            );
                     }
                 })
                 .catch((error) => {
                     handleDuplicateError(error.message);
-                });
+                })
+                .finally(() => handleCloseDialog());
         }
     };
 
@@ -313,31 +295,17 @@ const ContentContextualMenu = (props) => {
         setHideMenu(false);
     }, [onClose, setOpenDialog]);
 
-    const [multipleDeleteError, setMultipleDeleteError] = useState('');
-
-    const deleteElementOnError = useCallback(
-        (errorMessages, params, paramsOnErrors) => {
-            let msg = intl.formatMessage(
-                { id: 'deleteElementsFailure' },
-                {
-                    pbn: errorMessages.length,
-                    stn: params.length,
-                    problematic: paramsOnErrors
-                        .map((p) => p.elementUuid)
-                        .join(' '),
-                }
-            );
-            console.debug(msg);
-            setMultipleDeleteError(msg);
+    const [deleteError, setDeleteError] = useState('');
+    const handleStashElements = useCallback(
+        (elementsUuids) => {
+            stashElements(elementsUuids)
+                .catch((error) => {
+                    setDeleteError(error.message);
+                    handleLastError(error.message);
+                })
+                .finally(() => handleCloseDialog());
         },
-        [intl]
-    );
-    const [deleteCB] = useMultipleDeferredFetch(
-        deleteElement,
-        handleCloseDialog,
-        undefined,
-        deleteElementOnError,
-        false
+        [handleCloseDialog, handleLastError]
     );
 
     const moveElementErrorToString = useCallback(
@@ -488,6 +456,8 @@ const ContentContextualMenu = (props) => {
                     ElementType.VOLTAGE_INIT_PARAMETERS ||
                 selectedElements[0].type ===
                     ElementType.SECURITY_ANALYSIS_PARAMETERS ||
+                selectedElements[0].type ===
+                    ElementType.SENSITIVITY_PARAMETERS ||
                 selectedElements[0].type === ElementType.LOADFLOW_PARAMETERS)
         );
     }, [selectedElements]);
@@ -515,6 +485,15 @@ const ContentContextualMenu = (props) => {
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
             selectedElements[0].subtype ===
                 ContingencyListType.CRITERIA_BASED.id &&
+            isUserAllowed()
+        );
+    }, [isUserAllowed, selectedElements]);
+
+    const allowsConvertFilterIntoExplicitNaming = useCallback(() => {
+        return (
+            selectedElements.length === 1 &&
+            selectedElements[0].type === ElementType.FILTER &&
+            selectedElements[0].subtype !== FilterType.EXPLICIT_NAMING.id &&
             isUserAllowed()
         );
     }, [isUserAllowed, selectedElements]);
@@ -608,13 +587,9 @@ const ContentContextualMenu = (props) => {
         }
 
         if (allowsDownloadCase()) {
-            // is export allowed
             menuItems.push({
                 messageDescriptorId: 'download.button',
-                callback: async () => {
-                    await handleDownloadCases(selectedElements);
-                    handleCloseDialog();
-                },
+                callback: () => handleOpenDialog(DialogsId.EXPORT),
                 icon: <FileDownload fontSize="small" />,
             });
         }
@@ -625,6 +600,18 @@ const ContentContextualMenu = (props) => {
                 callback: () => {
                     handleOpenDialog(
                         DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY
+                    );
+                },
+                icon: <InsertDriveFileIcon fontSize="small" />,
+            });
+        }
+
+        if (allowsConvertFilterIntoExplicitNaming()) {
+            menuItems.push({
+                messageDescriptorId: 'convertFilterIntoExplicitNaming',
+                callback: () => {
+                    handleOpenDialog(
+                        DialogsId.CONVERT_TO_EXPLICIT_NAMING_FILTER
                     );
                 },
                 icon: <InsertDriveFileIcon fontSize="small" />,
@@ -669,10 +656,8 @@ const ContentContextualMenu = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         onClick={() =>
-                            deleteCB(
-                                selectedElements.map((e) => {
-                                    return [e.elementUuid];
-                                })
+                            handleStashElements(
+                                selectedElements.map((e) => e.elementUuid)
                             )
                         }
                         items={selectedElements}
@@ -680,7 +665,7 @@ const ContentContextualMenu = (props) => {
                             'deleteMultipleItemsDialogMessage'
                         }
                         simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
-                        error={multipleDeleteError}
+                        error={deleteError}
                     />
                 );
             case DialogsId.MOVE:
@@ -701,6 +686,19 @@ const ContentContextualMenu = (props) => {
                             handleCloseDialog();
                         }}
                         items={selectedElements}
+                    />
+                );
+            case DialogsId.EXPORT:
+                return (
+                    <ExportCaseDialog
+                        onClose={handleCloseDialog}
+                        onExport={(format, formatParameters) =>
+                            handleDownloadCases(
+                                selectedElements,
+                                format,
+                                formatParameters
+                            )
+                        }
                     />
                 );
             case DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY:
@@ -776,6 +774,18 @@ const ContentContextualMenu = (props) => {
                         directoryUuid={selectedDirectory?.elementUuid}
                         elementType={activeElement?.type}
                         handleError={handleLastError}
+                    />
+                );
+            case DialogsId.CONVERT_TO_EXPLICIT_NAMING_FILTER:
+                return (
+                    <FilterCreationDialog
+                        open={true}
+                        onClose={handleCloseDialog}
+                        sourceFilterForExplicitNamingConversion={{
+                            id: activeElement.elementUuid,
+                            equipmentType:
+                                activeElement.specificMetadata.equipmentType,
+                        }}
                     />
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:

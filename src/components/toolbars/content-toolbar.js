@@ -5,30 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
-import { deleteElement, moveElementToDirectory } from '../../utils/rest-api';
+import {
+    getStashedElements,
+    moveElementToDirectory,
+    stashElements,
+} from '../../utils/rest-api';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
-
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar from './common-toolbar';
-
 import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { ElementType } from '../../utils/elementType';
-import { FileDownload } from '@mui/icons-material';
+import { FileDownload, RestoreFromTrash } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
-
-const DialogsId = {
-    DELETE: 'delete',
-    MOVE: 'move',
-    NONE: 'none',
-};
+import ExportCaseDialog from '../dialogs/export-case-dialog';
+import StashedElementsDialog from '../dialogs/stashed-elements/stashed-elements-dialog';
+import { DialogsId } from '../../utils/UIconstants';
+import { notificationType } from '../../utils/notificationType';
 
 const ContentToolbar = (props) => {
     const { selectedElements, ...others } = props;
@@ -38,6 +38,11 @@ const ContentToolbar = (props) => {
     const { handleDownloadCases } = useDownloadUtils();
 
     const [openDialog, setOpenDialog] = useState(null);
+    const directoryUpdatedEvent = useSelector(
+        (state) => state.directoryUpdated
+    );
+
+    const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
     const handleLastError = useCallback(
         (message) => {
@@ -55,32 +60,6 @@ const ContentToolbar = (props) => {
     const handleCloseDialog = useCallback(() => {
         setOpenDialog(DialogsId.NONE);
     }, []);
-
-    const [multipleDeleteError, setMultipleDeleteError] = useState('');
-    const deleteElementOnError = useCallback(
-        (errorMessages, params, paramsOnErrors) => {
-            let msg = intl.formatMessage(
-                { id: 'deleteElementsFailure' },
-                {
-                    pbn: errorMessages.length,
-                    stn: params.length,
-                    problematic: paramsOnErrors
-                        .map((p) => p.elementUuid)
-                        .join(' '),
-                }
-            );
-            console.debug(msg);
-            setMultipleDeleteError(msg);
-        },
-        [intl]
-    );
-    const [deleteCB] = useMultipleDeferredFetch(
-        deleteElement,
-        handleCloseDialog,
-        undefined,
-        deleteElementOnError,
-        false
-    );
 
     const moveElementErrorToString = useCallback(
         (HTTPStatusCode) => {
@@ -153,44 +132,95 @@ const ContentToolbar = (props) => {
         [selectedElements, noCreationInProgress]
     );
 
-    const items = useMemo(
-        () =>
+    const [stashedElements, setStashedElements] = useState([]);
+    const handleGetStashedElement = useCallback(() => {
+        getStashedElements()
+            .then(setStashedElements)
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                });
+            });
+    }, [snackError]);
+
+    const [deleteError, setDeleteError] = useState('');
+    const handleStashElements = useCallback(
+        (elementsUuids) => {
+            stashElements(elementsUuids)
+                .then(handleGetStashedElement)
+                .catch((error) => {
+                    setDeleteError(error.message);
+                    handleLastError(error.message);
+                })
+                .finally(handleCloseDialog);
+        },
+        [handleCloseDialog, handleLastError, handleGetStashedElement]
+    );
+
+    useEffect(() => {
+        handleGetStashedElement();
+    }, [handleGetStashedElement]);
+
+    useEffect(() => {
+        if (
+            directoryUpdatedEvent.eventData?.headers &&
+            (directoryUpdatedEvent.eventData.headers['notificationType'] ===
+                notificationType.UPDATE_DIRECTORY ||
+                directoryUpdatedEvent.eventData.headers['notificationType'] ===
+                    notificationType.DELETE_DIRECTORY)
+        ) {
+            handleGetStashedElement();
+        }
+    }, [directoryUpdatedEvent, handleGetStashedElement]);
+
+    const items = useMemo(() => {
+        const toolbarItems = [];
+
+        if (
             selectedElements.length &&
             (allowsDelete || allowsMove || allowsDownloadCases)
-                ? [
-                      {
-                          tooltipTextId: 'delete',
-                          callback: () => {
-                              handleOpenDialog(DialogsId.DELETE);
-                          },
-                          icon: <DeleteIcon fontSize="small" />,
-                          disabled: !selectedElements.length || !allowsDelete,
-                      },
-                      {
-                          tooltipTextId: 'move',
-                          callback: () => {
-                              handleOpenDialog(DialogsId.MOVE);
-                          },
-                          icon: <DriveFileMoveIcon fontSize="small" />,
-                          disabled: !selectedElements.length || !allowsMove,
-                      },
-                      {
-                          tooltipTextId: 'download.button',
-                          callback: () => handleDownloadCases(selectedElements),
-                          icon: <FileDownload fontSize="small" />,
-                          disabled:
-                              !selectedElements.length || !allowsDownloadCases,
-                      },
-                  ]
-                : [],
-        [
-            allowsDelete,
-            allowsDownloadCases,
-            allowsMove,
-            handleDownloadCases,
-            selectedElements,
-        ]
-    );
+        ) {
+            toolbarItems.push(
+                {
+                    tooltipTextId: 'delete',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.DELETE);
+                    },
+                    icon: <DeleteIcon fontSize="small" />,
+                    disabled: !selectedElements.length || !allowsDelete,
+                },
+                {
+                    tooltipTextId: 'move',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.MOVE);
+                    },
+                    icon: <DriveFileMoveIcon fontSize="small" />,
+                    disabled: !selectedElements.length || !allowsMove,
+                },
+                {
+                    tooltipTextId: 'download.button',
+                    callback: () => handleOpenDialog(DialogsId.EXPORT),
+                    icon: <FileDownload fontSize="small" />,
+                    disabled: !selectedElements.length || !allowsDownloadCases,
+                }
+            );
+        }
+
+        toolbarItems.push({
+            tooltipTextId: 'StashedElements',
+            callback: () => handleOpenDialog(DialogsId.STASHED_ELEMENTS),
+            icon: <RestoreFromTrash fontSize="small" />,
+            disabled: stashedElements.length === 0,
+        });
+
+        return toolbarItems;
+    }, [
+        allowsDelete,
+        allowsDownloadCases,
+        allowsMove,
+        selectedElements.length,
+        stashedElements.length,
+    ]);
 
     const renderDialog = () => {
         switch (openDialog) {
@@ -200,10 +230,8 @@ const ContentToolbar = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         onClick={() =>
-                            deleteCB(
-                                selectedElements.map((e) => {
-                                    return [e.elementUuid];
-                                })
+                            handleStashElements(
+                                selectedElements.map((e) => e.elementUuid)
                             )
                         }
                         items={selectedElements}
@@ -211,7 +239,7 @@ const ContentToolbar = (props) => {
                             'deleteMultipleItemsDialogMessage'
                         }
                         simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
-                        error={multipleDeleteError}
+                        error={deleteError}
                     />
                 );
             case DialogsId.MOVE:
@@ -232,6 +260,29 @@ const ContentToolbar = (props) => {
                             handleCloseDialog();
                         }}
                         items={selectedElements}
+                    />
+                );
+            case DialogsId.STASHED_ELEMENTS:
+                return (
+                    <StashedElementsDialog
+                        open
+                        onClose={handleCloseDialog}
+                        stashedElements={stashedElements}
+                        onStashedElementChange={handleGetStashedElement}
+                        directoryToRestore={selectedDirectory}
+                    />
+                );
+            case DialogsId.EXPORT:
+                return (
+                    <ExportCaseDialog
+                        onClose={handleCloseDialog}
+                        onExport={(format, formatParameters) =>
+                            handleDownloadCases(
+                                selectedElements,
+                                format,
+                                formatParameters
+                            )
+                        }
                     />
                 );
             default:

@@ -35,6 +35,12 @@ function getToken() {
     return state.user.id_token;
 }
 
+export const getRequestParamFromList = (params, paramName) => {
+    return new URLSearchParams(
+        params?.length ? params.map((param) => [paramName, param]) : []
+    );
+};
+
 export function connectNotificationsWsUpdateConfig() {
     const webSocketBaseUrl = document.baseURI
         .replace(/^http:\/\//, 'ws://')
@@ -244,11 +250,18 @@ export function fetchConfigParameter(name) {
     return backendFetchJson(fetchParams);
 }
 
-export function fetchDirectoryContent(directoryUuid) {
+export function fetchDirectoryContent(directoryUuid, elementTypes) {
     console.info("Fetching Folder content '%s'", directoryUuid);
-    const fetchDirectoryContentUrl =
+    const typeParams = getRequestParamFromList(
+        elementTypes,
+        'elementTypes'
+    ).toString();
+    let fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${directoryUuid}/elements`;
+    if (typeParams.length > 0) {
+        fetchDirectoryContentUrl += '?' + typeParams;
+    }
     return backendFetchJson(fetchDirectoryContentUrl);
 }
 
@@ -259,6 +272,21 @@ export function deleteElement(elementUuid) {
     return backendFetch(fetchParams, {
         method: 'delete',
     });
+}
+
+export function deleteElements(elementUuids, activeDirectory) {
+    console.info('Deleting elements : %s', elementUuids);
+    const idsParams = getRequestParamFromList(elementUuids, 'ids').toString();
+    return backendFetch(
+        PREFIX_EXPLORE_SERVER_QUERIES +
+            `/v1/explore/elements/` +
+            activeDirectory +
+            '/delete-stashed?' +
+            idsParams,
+        {
+            method: 'delete',
+        }
+    );
 }
 
 export function moveElementToDirectory(elementUuid, directoryUuid) {
@@ -297,7 +325,6 @@ export function updateAccessRights(elementUuid, isPrivate) {
 }
 
 export function updateElement(elementUuid, element) {
-    console.log('element : ', element);
     console.info('Updating element info for ' + elementUuid);
     const updateAccessRightUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${elementUuid}`;
@@ -367,10 +394,16 @@ export function renameElement(elementUuid, newElementName) {
     });
 }
 
-export function fetchRootFolders() {
+export function fetchRootFolders(types) {
     console.info('Fetching Root Directories');
+
+    // Add params to Url
+    const typesParams = getRequestParamFromList(types, 'elementTypes');
+    const urlSearchParams = new URLSearchParams(typesParams);
+
     const fetchRootFoldersUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/root-directories?${urlSearchParams}`;
     return backendFetchJson(fetchRootFoldersUrl);
 }
 
@@ -389,21 +422,22 @@ export function updateConfigParameter(name, value) {
     return backendFetch(updateParams, { method: 'put' });
 }
 
-function getElementsIdsListsQueryParams(ids) {
-    if (ids !== undefined && ids.length > 0) {
-        const urlSearchParams = new URLSearchParams();
-        ids.forEach((id) => urlSearchParams.append('ids', id));
-        return '?' + urlSearchParams.toString();
-    }
-    return '';
-}
-
-export function fetchElementsInfos(ids) {
+export function fetchElementsInfos(ids, elementTypes) {
     console.info('Fetching elements metadata ... ');
+
+    // Add params to Url
+    const tmp = ids?.filter((id) => id);
+    const idsParams = tmp?.length ? tmp.map((id) => ['ids', id]) : [];
+    const elementTypesParams = elementTypes?.length
+        ? elementTypes.map((type) => ['elementTypes', type])
+        : [];
+    const params = [...idsParams, ...elementTypesParams];
+    const urlSearchParams = new URLSearchParams(params).toString();
+
     const fetchElementsInfosUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/elements/metadata' +
-        getElementsIdsListsQueryParams(ids);
+        '/v1/explore/elements/metadata?' +
+        urlSearchParams;
     return backendFetchJson(fetchElementsInfosUrl);
 }
 
@@ -522,35 +556,11 @@ export function elementExists(directoryUuid, elementName, type) {
 }
 
 export function getNameCandidate(directoryUuid, elementName, type) {
-    const existsElementUrl =
+    const nameCandidateUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${directoryUuid}/${elementName}/newNameCandidate?type=${type}`;
-
-    console.debug(existsElementUrl);
-    return backendFetchText(existsElementUrl).catch((error) => {
-        if (error.status === 404) {
-            return false;
-        } else {
-            throw error;
-        }
-    });
-}
-
-/**
- * Retrieves the original name of a case using its UUID.
- * @param {string} caseUuid - The UUID of the element.
- * @returns {Promise<string|boolean>} - A promise that resolves to the original name of the case if found, or false if not found.
- */
-export function getCaseOriginalName(caseUuid) {
-    const caseNameUrl = PREFIX_CASE_QUERIES + `/v1/cases/${caseUuid}/name`;
-    console.debug(caseNameUrl);
-    return backendFetchText(caseNameUrl).catch((error) => {
-        if (error.status === 404) {
-            return false;
-        } else {
-            throw error;
-        }
-    });
+    console.debug(nameCandidateUrl);
+    return backendFetchText(nameCandidateUrl);
 }
 
 export function rootDirectoryExists(directoryName) {
@@ -885,14 +895,18 @@ export function duplicateModification(
 export function duplicateParameter(
     name,
     parameterType,
-    sourceFilterUuid,
-    parentDirectoryUuid
+    sourceParameterUuid,
+    parentDirectoryUuid,
+    parameterDescription
 ) {
     console.info('Duplicating parameters of type ' + parameterType + '...');
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('duplicateFrom', sourceFilterUuid);
+    urlSearchParams.append('duplicateFrom', sourceParameterUuid);
     urlSearchParams.append('name', name);
     urlSearchParams.append('type', parameterType);
+    if (parameterDescription !== undefined) {
+        urlSearchParams.append('description', parameterDescription);
+    }
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
@@ -1034,13 +1048,15 @@ export function deleteCase(caseUuid) {
     });
 }
 
-export function downloadCase(caseUuid) {
-    const downloadCaseUrl =
-        PREFIX_CASE_QUERIES + '/v1/cases/' + caseUuid + '?xiidm=false';
-    return backendFetch(downloadCaseUrl, {
-        method: 'get',
-    });
-}
+export const exportCase = (caseUuid, format, formatParameters) =>
+    backendFetch(
+        `${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}?format=${format}`,
+        {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formatParameters),
+        }
+    );
 
 export function getServersInfos() {
     console.info('get backend servers informations');
@@ -1051,6 +1067,68 @@ export function getServersInfos() {
         return reason;
     });
 }
+
+export function exportFilter(studyUuid, filterUuid) {
+    console.info('get filter export on study root node');
+    return backendFetchJson(
+        PREFIX_STUDY_QUERIES +
+            '/v1/studies/' +
+            studyUuid +
+            '/filters/' +
+            filterUuid +
+            '/elements'
+    );
+}
+
+export function stashElements(elementUuids) {
+    console.info('Stashing elements: ' + elementUuids);
+
+    const url =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/elements/' +
+        `stash?ids=` +
+        elementUuids;
+
+    return backendFetch(url, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function restoreElements(elementUuids, activeDirectory) {
+    console.info('Restoring elements: ' + elementUuids);
+
+    const url =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/elements/' +
+        activeDirectory +
+        '/restore';
+
+    return backendFetch(url, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(elementUuids),
+    });
+}
+
+export function getStashedElements() {
+    console.info('get stashed elements');
+    const url = PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/stash`;
+    return backendFetchJson(url);
+}
+
+export const getExportFormats = () => {
+    console.info('get export formats');
+    const url = PREFIX_NETWORK_CONVERSION_SERVER_QUERIES + '/v1/export/formats';
+    console.debug(url);
+    return backendFetchJson(url);
+};
 
 export function searchElementsInfos(searchTerm) {
     console.info(

@@ -32,6 +32,8 @@ import {
     multiple_selection_dialog_fr,
     common_button_en,
     common_button_fr,
+    directory_items_input_fr,
+    directory_items_input_en,
     element_search_fr,
     element_search_en,
 } from '@gridsuite/commons-ui';
@@ -183,6 +185,7 @@ const messages = {
         ...multiple_selection_dialog_en,
         ...common_button_en,
         ...backend_locale_en,
+        ...directory_items_input_en,
         ...element_search_en,
         ...messages_plugins_en, // keep it at the end to allow translation overwritting
     },
@@ -201,6 +204,7 @@ const messages = {
         ...backend_locale_fr,
         ...element_search_fr,
         ...aggrid_locale_fr, // Only the french locale is needed
+        ...directory_items_input_fr,
         ...messages_plugins_fr, // keep it at the end to allow translation overwritting
     },
 };

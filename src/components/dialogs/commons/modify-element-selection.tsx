@@ -6,21 +6,32 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Button, Typography, Grid } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import DirectorySelector from '../directory-selector';
+import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { fetchPath } from '../../../utils/rest-api';
 import { useController } from 'react-hook-form';
 import { DIRECTORY } from '../../utils/field-constants';
 import { ElementType } from '../../../utils/elementType';
+import { UUID } from 'crypto';
+import {
+    fetchDirectoryContent,
+    fetchElementsInfos,
+    fetchRootFolders,
+} from '../../../utils/rest-api';
 
-interface DirectorySelectProps {
-    types: ElementType[];
+export interface ModifyElementSelectionProps {
+    elementType: ElementType;
+    dialogOpeningButtonLabel: string;
+    dialogTitleLabel: string;
+    dialogMessageLabel: string;
+    noElementMessageLabel?: string;
+    onElementValidated?: (elementId: UUID) => void;
 }
 
-const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
-    types,
-}) => {
+const ModifyElementSelection: React.FunctionComponent<
+    ModifyElementSelectionProps
+> = (props) => {
     const intl = useIntl();
 
     const [open, setOpen] = useState<boolean>(false);
@@ -52,6 +63,9 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
     const handleClose = (directory: any) => {
         if (directory.length) {
             onChange(directory[0]?.id);
+            if (props.onElementValidated) {
+                props.onElementValidated(directory[0]?.id);
+            }
         }
         setOpen(false);
     };
@@ -73,7 +87,7 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
                 color="primary"
                 component="label"
             >
-                <FormattedMessage id="showSelectDirectoryDialog" />
+                <FormattedMessage id={props.dialogOpeningButtonLabel} />
             </Button>
             <Typography
                 sx={{
@@ -81,24 +95,35 @@ const DirectorySelect: React.FunctionComponent<DirectorySelectProps> = ({
                     fontWeight: 'bold',
                 }}
             >
-                {activeDirectoryName}
+                {activeDirectoryName
+                    ? activeDirectoryName
+                    : props?.noElementMessageLabel
+                    ? intl.formatMessage({
+                          id: props.noElementMessageLabel,
+                      })
+                    : ''}
             </Typography>
-            <DirectorySelector
+            <DirectoryItemSelector
                 open={open}
                 onClose={handleClose}
-                types={types}
-                title={intl.formatMessage({
-                    id: 'selectDirectoryDialogTitle',
-                })}
+                types={[props.elementType]}
+                onlyLeaves={props.elementType !== ElementType.DIRECTORY}
+                multiselect={false}
                 validationButtonText={intl.formatMessage({
                     id: 'confirmDirectoryDialog',
                 })}
-                contentText={intl.formatMessage({
-                    id: 'moveItemContentText',
+                title={intl.formatMessage({
+                    id: props.dialogTitleLabel,
                 })}
+                contentText={intl.formatMessage({
+                    id: props.dialogMessageLabel,
+                })}
+                fetchDirectoryContent={fetchDirectoryContent}
+                fetchRootFolders={fetchRootFolders}
+                fetchElementsInfos={fetchElementsInfos}
             />
         </Grid>
     );
 };
 
-export default DirectorySelect;
+export default ModifyElementSelection;
