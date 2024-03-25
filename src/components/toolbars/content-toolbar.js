@@ -12,7 +12,7 @@ import { useIntl } from 'react-intl';
 
 import {
     getStashedElements,
-    moveElementToDirectory,
+    moveElementsToDirectory,
     stashElements,
 } from '../../utils/rest-api';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -91,7 +91,7 @@ const ContentToolbar = (props) => {
     );
 
     const [moveCB] = useMultipleDeferredFetch(
-        moveElementToDirectory,
+        moveElementsToDirectory,
         undefined,
         moveElementErrorToString,
         moveElementOnError,
@@ -248,14 +248,14 @@ const ContentToolbar = (props) => {
                         open={true}
                         onClose={(selectedDir) => {
                             if (selectedDir.length > 0) {
-                                moveCB(
-                                    selectedElements.map((element) => {
-                                        return [
-                                            element.elementUuid,
-                                            selectedDir[0].id,
-                                        ];
-                                    })
-                                );
+                                moveCB([
+                                    [
+                                        selectedElements.map(
+                                            (element) => element.elementUuid
+                                        ),
+                                        selectedDir[0].id,
+                                    ],
+                                ]);
                             }
                             handleCloseDialog();
                         }}
