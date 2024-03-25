@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Autocomplete, Stack, TextField } from '@mui/material';
+import { Autocomplete, TextField } from '@mui/material';
 import { fetchDirectoryContent, searchElementsInfos } from './rest-api';
 import {
     getFileIcon,
@@ -18,7 +18,7 @@ import { setSelectedDirectory, setTreeData } from '../redux/actions';
 import Grid from '@mui/material/Grid';
 import { updatedTree } from '../components/tree-views-container';
 import Typography from '@mui/material/Typography';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const styles = {
     icon: (theme) => ({
@@ -49,7 +49,7 @@ export const SearchBar = ({ inputRef }) => {
     const [loading, setLoading] = useState(false);
     const treeData = useSelector((state) => state.treeData);
     const treeDataRef = useRef();
-
+    const intl = useIntl();
     treeDataRef.current = treeData;
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
@@ -62,7 +62,7 @@ export const SearchBar = ({ inputRef }) => {
                     .catch((error) => {
                         snackError({
                             messageTxt: error.message,
-                            headerId: 'equipmentsSearchingError',
+                            headerId: 'elementsSearchingError',
                         });
                     });
         },
@@ -75,7 +75,7 @@ export const SearchBar = ({ inputRef }) => {
     );
 
     const handleChangeInput = (newId) => {
-        newId !== undefined && setLoading(true);
+        newId !== undefined && newId.trim() !== '' && setLoading(true);
         debouncedSearchMatchingElements(newId);
     };
 
@@ -94,7 +94,7 @@ export const SearchBar = ({ inputRef }) => {
                     <Grid item sx={styles.grid2}>
                         <Typography>
                             <FormattedMessage id="path" />
-                            {element.elementName.join(' / ')}
+                            {element.directoryName.join(' / ')}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -140,7 +140,8 @@ export const SearchBar = ({ inputRef }) => {
     const handleMatchingElement = useCallback(
         (matchingElement) => {
             if (matchingElement !== undefined) {
-                const elementUuidPath = matchingElement?.elementUuid.reverse();
+                const elementUuidPath =
+                    matchingElement?.directoryUuid.reverse();
 
                 const promises = elementUuidPath.map((e) => {
                     return fetchDirectoryContent(e)
@@ -165,8 +166,9 @@ export const SearchBar = ({ inputRef }) => {
     );
 
     return (
-        <Stack sx={{ width: '50%', marginLeft: '14%' }}>
+        <>
             <Autocomplete
+                sx={{ width: '50%', marginLeft: '14%' }}
                 freeSolo
                 size="small"
                 disableClearable={false}
@@ -191,11 +193,12 @@ export const SearchBar = ({ inputRef }) => {
                         autoFocus={true}
                         {...params}
                         inputRef={inputRef}
-                        placeholder={'Search (ex.: case name, filter...)'}
+                        placeholder={intl.formatMessage({
+                            id: 'searchPlaceholder',
+                        })}
                         variant="outlined"
                         InputProps={{
                             ...params.InputProps,
-                            type: 'search',
                             startAdornment: (
                                 <React.Fragment>
                                     <Search />
@@ -206,7 +209,7 @@ export const SearchBar = ({ inputRef }) => {
                     />
                 )}
             />
-        </Stack>
+        </>
     );
 };
 

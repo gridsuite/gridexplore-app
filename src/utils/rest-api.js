@@ -1135,7 +1135,7 @@ export function searchElementsInfos(searchTerm) {
         "Fetching elements infos matching with '%s' term ... ",
         searchTerm
     );
-    let urlSearchParams = new URLSearchParams();
+    const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
     return backendFetchJson(
         PREFIX_DIRECTORY_SERVER_QUERIES +
