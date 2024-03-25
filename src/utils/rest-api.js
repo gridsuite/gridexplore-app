@@ -422,7 +422,7 @@ export function updateConfigParameter(name, value) {
     return backendFetch(updateParams, { method: 'put' });
 }
 
-export function fetchElementsInfos(ids, elementTypes) {
+export function fetchElementsInfos(ids, elementTypes, _equipmentTypes) {
     console.info('Fetching elements metadata ... ');
 
     // Add params to Url
