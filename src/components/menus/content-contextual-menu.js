@@ -62,6 +62,7 @@ import { FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import FilterCreationDialog from '../dialogs/filter/filter-creation-dialog';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
+import { setSelectionForCopy } from '../../redux/actions';
 
 const ContentContextualMenu = (props) => {
     const {
