@@ -13,7 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import CustomMuiDialog from './commons/custom-mui-dialog/custom-mui-dialog';
 import { CircularProgress, Grid } from '@mui/material';
 import { UniqueNameInput } from './commons/unique-name-input';
-import { ElementType } from 'utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import { getNameCandidate } from 'utils/rest-api';
 
 const schema = yup.object().shape({

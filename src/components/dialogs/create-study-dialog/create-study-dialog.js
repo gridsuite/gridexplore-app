@@ -21,7 +21,7 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
-import { ElementType } from '../../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import ModifyElementSelection from '../commons/modify-element-selection';
 import { isObjectEmpty, keyGenerator } from '../../../utils/functions';
 import {
@@ -269,13 +269,14 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     />
                 </Grid>
                 <Grid item>
-                    <Box height={10} />
-                    <ExpandingTextField
-                        name={DESCRIPTION}
-                        label={'descriptionProperty'}
-                        minRows={3}
-                        rows={5}
-                    />
+                    <Box>
+                        <ExpandingTextField
+                            name={DESCRIPTION}
+                            label={'descriptionProperty'}
+                            minRows={3}
+                            rows={5}
+                        />
+                    </Box>
                 </Grid>
             </Grid>
             {providedExistingCase ? (

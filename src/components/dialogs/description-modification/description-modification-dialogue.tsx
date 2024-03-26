@@ -74,7 +74,7 @@ const DescriptionModificationDialogue: FunctionComponent<
             titleId={'description'}
             removeOptional={true}
         >
-            <Box paddingTop={2}>
+            <Box>
                 <ExpandingTextField
                     name={DESCRIPTION}
                     label={'descriptionProperty'}

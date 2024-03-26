@@ -9,7 +9,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { ElementType } from '../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import {
     fetchDirectoryContent,
     fetchElementsInfos,
