@@ -12,7 +12,7 @@ import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { fetchPath } from '../../../utils/rest-api';
 import { useController } from 'react-hook-form';
 import { DIRECTORY } from '../../utils/field-constants';
-import { ElementType } from '../../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import {
     fetchDirectoryContent,

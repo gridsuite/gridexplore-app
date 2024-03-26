@@ -45,11 +45,8 @@ import {
     stashElements,
 } from '../../utils/rest-api';
 
-import {
-    ContingencyListType,
-    ElementType,
-    FilterType,
-} from '../../utils/elementType';
+import { ContingencyListType, FilterType } from '../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 
 import CommonContextualMenu from './common-contextual-menu';
 import {

@@ -16,12 +16,8 @@ import {
     removeUploadingElement,
 } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
-import { ElementType } from '../../../utils/elementType';
-import {
-    ErrorInput,
-    FieldErrorAlert,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { ElementType, ErrorInput, FieldErrorAlert } from "@gridsuite/commons-ui";
+import { ExpandingTextField, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
@@ -32,7 +28,6 @@ import {
 } from './create-case-dialog-utils';
 import { ReduxState } from '../../../redux/reducer.type';
 import PrefilledNameInput from '../commons/prefilled-name-input';
-import DescriptionInput from '../description-modification/description-input';
 
 interface IFormData {
     [CASE_NAME]: string;
@@ -130,7 +125,12 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
                     />
                 </Grid>
                 <Grid item>
-                    <DescriptionInput rows={5} />
+                    <ExpandingTextField
+                        name={DESCRIPTION}
+                        label={'descriptionProperty'}
+                        minRows={3}
+                        rows={5}
+                    />
                 </Grid>
             </Grid>
             <ErrorInput name={CASE_FILE} InputField={FieldErrorAlert} />
