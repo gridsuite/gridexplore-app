@@ -36,7 +36,7 @@ import {
     duplicateStudy,
     fetchElementsInfos,
     getNameCandidate,
-    moveElementToDirectory,
+    moveElementsToDirectory,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,
     renameElement,
@@ -335,7 +335,7 @@ const ContentContextualMenu = (props) => {
     );
 
     const [moveCB] = useMultipleDeferredFetch(
-        moveElementToDirectory,
+        moveElementsToDirectory,
         undefined,
         moveElementErrorToString,
         moveElementOnError,
@@ -671,14 +671,14 @@ const ContentContextualMenu = (props) => {
                         open={true}
                         onClose={(selectedDir) => {
                             if (selectedDir.length > 0) {
-                                moveCB(
-                                    selectedElements.map((element) => {
-                                        return [
-                                            element.elementUuid,
-                                            selectedDir[0].id,
-                                        ];
-                                    })
-                                );
+                                moveCB([
+                                    [
+                                        selectedElements.map(
+                                            (element) => element.elementUuid
+                                        ),
+                                        selectedDir[0].id,
+                                    ],
+                                ]);
                             }
                             handleCloseDialog();
                         }}
