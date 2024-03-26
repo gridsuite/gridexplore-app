@@ -73,7 +73,10 @@ const ValueEditor = (props: ValueEditorProps) => {
     }
     if (
         props.field === FieldType.ENERGY_SOURCE ||
-        props.field === FieldType.SHUNT_COMPENSATOR_TYPE
+        props.field === FieldType.SHUNT_COMPENSATOR_TYPE ||
+        props.field === FieldType.LOAD_TYPE ||
+        props.field === FieldType.RATIO_REGULATION_MODE ||
+        props.field == FieldType.PHASE_REGULATION_MODE
     ) {
         return <TranslatedValueEditor {...props} />;
     }
