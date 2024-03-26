@@ -7,7 +7,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 /**
- * Hook to deal with list of checkboxes
+ * Hook to deal with list of components multiselection
  * @param elementIds list of all ids used for selection, whether they are selected or not
  * for "handleShiftAndCtrlClick" to work, this list needs to be sorted in the same order as it is displayed
  */
@@ -39,7 +39,6 @@ export const useMultiselect = (elementIds: string[]) => {
                 return;
             }
 
-            selectedIds.indexOf(elementToToggleId);
             const elementToToggleIdIndex =
                 selectedIds.indexOf(elementToToggleId);
             // if element to toggle is not selected, we select it
@@ -91,6 +90,10 @@ export const useMultiselect = (elementIds: string[]) => {
                 : -1;
             const clickedElementIdIndex = elementIds.indexOf(clickedElementId);
 
+            if (clickedElementIdIndex < 0) {
+                return;
+            }
+
             // if no lastSelectedId is found (first click, or unknown id), we only toggle clicked element
             if (lastSelectedIdIndex < 0) {
                 toggleSelection(clickedElementId);
@@ -127,14 +130,14 @@ export const useMultiselect = (elementIds: string[]) => {
         clickedElementId: string
     ) => {
         if (clickEvent.shiftKey) {
-            // if row is clicked while shift is pressed, range of rows selection is toggled, depending on clicked element state
+            // if component is clicked while shift is pressed, range of components selection is toggled, depending on clicked element state
             handleShiftClick(clickedElementId);
             // nothing else happens, hence the return
             return;
         }
 
         if (clickEvent.ctrlKey) {
-            // if row is clicked while ctrl is pressed, row selection is toggled
+            // if component is clicked while ctrl is pressed, component selection is toggled
             toggleSelection(clickedElementId);
             // nothing else happens, hence the return
             return;
@@ -148,7 +151,7 @@ export const useMultiselect = (elementIds: string[]) => {
      */
     function toggleSelectAll() {
         if (selectedIds.length === 0) {
-            setSelectedIds(elementIds);
+            setSelectedIds([...elementIds]);
         } else {
             setSelectedIds([]);
         }

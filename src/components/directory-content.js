@@ -169,8 +169,8 @@ const DirectoryContent = () => {
         () =>
             currentChildren
                 ? currentChildren
-                      .map((e) => e.elementUuid)
                       .filter((e) => !e.uploading)
+                      .map((e) => e.elementUuid)
                 : [],
         [currentChildren]
     );
@@ -312,7 +312,9 @@ const DirectoryContent = () => {
     const onContextMenu = useCallback(
         (event) => {
             const element = currentChildren.find(
-                (e) => e.elementUuid === event.rowData?.elementUuid
+                (e) =>
+                    event.rowData && // prevent bug when right clicking out of the table when an element is uploading
+                    e.elementUuid === event.rowData?.elementUuid
             );
 
             if (selectedDirectory) {
@@ -756,6 +758,7 @@ const DirectoryContent = () => {
 
     function selectionRenderer(cellData) {
         const elementUuid = cellData.rowData['elementUuid'];
+        const isUploading = cellData.rowData['uploading'];
         return (
             <Box
                 onClick={(clickEvent) =>
@@ -763,7 +766,10 @@ const DirectoryContent = () => {
                 }
                 sx={styles.checkboxes}
             >
-                <Checkbox checked={selectedIds.includes(elementUuid)} />
+                <Checkbox
+                    disabled={isUploading}
+                    checked={selectedIds.includes(elementUuid)}
+                />
             </Box>
         );
     }
