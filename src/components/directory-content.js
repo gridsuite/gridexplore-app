@@ -294,7 +294,7 @@ const DirectoryContent = () => {
 
     const onContextMenu = useCallback(
         (event) => {
-            const element = currentChildren.find(
+            const element = currentChildren?.find(
                 (e) => e.elementUuid === event.rowData?.elementUuid
             );
 
