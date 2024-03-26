@@ -25,7 +25,7 @@ import {
 import DirectoryTreeView from './directory-tree-view';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { ElementType } from '../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import { notificationType } from '../utils/notificationType';
 
 import * as constants from '../utils/UIconstants';

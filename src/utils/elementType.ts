@@ -5,19 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export enum ElementType {
-    DIRECTORY = 'DIRECTORY',
-    STUDY = 'STUDY',
-    FILTER = 'FILTER',
-    CONTINGENCY_LIST = 'CONTINGENCY_LIST',
-    MODIFICATION = 'MODIFICATION',
-    CASE = 'CASE',
-    VOLTAGE_INIT_PARAMETERS = 'VOLTAGE_INIT_PARAMETERS',
-    SECURITY_ANALYSIS_PARAMETERS = 'SECURITY_ANALYSIS_PARAMETERS',
-    LOADFLOW_PARAMETERS = 'LOADFLOW_PARAMETERS',
-    SENSITIVITY_PARAMETERS = 'SENSITIVITY_PARAMETERS',
-}
-
 export const FilterType = {
     CRITERIA_BASED: { id: 'CRITERIA', label: 'filter.criteriaBased' },
     EXPLICIT_NAMING: { id: 'IDENTIFIER_LIST', label: 'filter.explicitNaming' },
