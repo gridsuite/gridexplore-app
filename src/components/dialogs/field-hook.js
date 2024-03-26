@@ -10,7 +10,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import { ElementType } from '../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import { useDebounce } from '@gridsuite/commons-ui';
 
 const styles = {
@@ -36,8 +36,8 @@ export const useTextValue = ({
         setHasChanged(true);
     }, []);
 
-    const field = useMemo(() => {
-        return (
+    const field = useMemo(
+        () => (
             <TextField
                 key={id}
                 margin="dense"
@@ -50,10 +50,13 @@ export const useTextValue = ({
                     sx: styles.helperText,
                 }}
                 {...formProps}
-                {...(adornment && { InputProps: adornment })}
+                InputProps={{
+                    endAdornment: adornment,
+                }}
             />
-        );
-    }, [id, label, value, handleChangeValue, formProps, adornment]);
+        ),
+        [id, label, value, handleChangeValue, formProps, adornment]
+    );
 
     useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
 
@@ -71,7 +74,6 @@ export const useNameField = ({
     const [error, setError] = useState();
     const intl = useIntl();
     const [checking, setChecking] = useState(undefined);
-    const [adornment, setAdornment] = useState();
 
     // if element is a root directory, we need to make a specific api rest call (elementType is directory, and no parent element)
     const doesElementExist = useCallback(
@@ -141,19 +143,18 @@ export const useNameField = ({
 
     const debouncedUpdateValidity = useDebounce(updateValidity, 700);
 
-    useEffect(() => {
+    const adornment = useMemo(() => {
         if (checking === undefined || error) {
-            setAdornment(undefined);
-            return;
+            return undefined;
         }
         if (checking) {
-            setAdornment(
+            return (
                 <InputAdornment position="end">
                     <CircularProgress size="1rem" />
                 </InputAdornment>
             );
         } else {
-            setAdornment(
+            return (
                 <InputAdornment position="end">
                     <CheckIcon style={{ color: 'green' }} />
                 </InputAdornment>
@@ -180,7 +181,6 @@ export const useNameField = ({
     useEffect(() => {
         setError(undefined);
         setChecking(undefined);
-        setAdornment(undefined);
     }, [triggerReset]);
     return [
         name,

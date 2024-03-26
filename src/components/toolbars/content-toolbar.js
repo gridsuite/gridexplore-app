@@ -12,7 +12,7 @@ import { useIntl } from 'react-intl';
 
 import {
     getStashedElements,
-    moveElementToDirectory,
+    moveElementsToDirectory,
     stashElements,
 } from '../../utils/rest-api';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -22,7 +22,7 @@ import CommonToolbar from './common-toolbar';
 import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
-import { ElementType } from '../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import { FileDownload, RestoreFromTrash } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
@@ -91,7 +91,7 @@ const ContentToolbar = (props) => {
     );
 
     const [moveCB] = useMultipleDeferredFetch(
-        moveElementToDirectory,
+        moveElementsToDirectory,
         undefined,
         moveElementErrorToString,
         moveElementOnError,
@@ -248,14 +248,14 @@ const ContentToolbar = (props) => {
                         open={true}
                         onClose={(selectedDir) => {
                             if (selectedDir.length > 0) {
-                                moveCB(
-                                    selectedElements.map((element) => {
-                                        return [
-                                            element.elementUuid,
-                                            selectedDir[0].id,
-                                        ];
-                                    })
-                                );
+                                moveCB([
+                                    [
+                                        selectedElements.map(
+                                            (element) => element.elementUuid
+                                        ),
+                                        selectedDir[0].id,
+                                    ],
+                                ]);
                             }
                             handleCloseDialog();
                         }}
