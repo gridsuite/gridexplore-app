@@ -6,9 +6,8 @@
  */
 
 import { exportCase } from '../../utils/rest-api';
-import { ElementType } from '../../utils/elementType';
 import { useIntl } from 'react-intl';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 
 const exportCases = async (
     cases: any[],

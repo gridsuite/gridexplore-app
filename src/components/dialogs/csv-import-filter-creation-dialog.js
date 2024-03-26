@@ -18,7 +18,7 @@ import CsvDownloader from 'react-csv-downloader';
 import Alert from '@mui/material/Alert';
 import PropTypes from 'prop-types';
 import { DialogContentText } from '@mui/material';
-import { ElementType } from '../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import { Generator, Load } from '../../utils/equipment-types';
 import { CancelButton } from '@gridsuite/commons-ui';
 

@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useForm } from 'react-hook-form';
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
 import {
     createStudy,
@@ -21,7 +21,7 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
-import { ElementType } from '../../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import ModifyElementSelection from '../commons/modify-element-selection';
 import { isObjectEmpty, keyGenerator } from '../../../utils/functions';
 import {
@@ -45,9 +45,13 @@ import {
 } from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
-import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
+import {
+    ErrorInput,
+    FieldErrorAlert,
+    ExpandingTextField,
+} from '@gridsuite/commons-ui';
 import PrefilledNameInput from '../commons/prefilled-name-input';
-import DescriptionInput from '../description-modification/description-input';
+import { DESCRIPTION } from '../../../components/utils/field-constants';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -265,7 +269,14 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     />
                 </Grid>
                 <Grid item>
-                    <DescriptionInput rows={5} />
+                    <Box>
+                        <ExpandingTextField
+                            name={DESCRIPTION}
+                            label={'descriptionProperty'}
+                            minRows={3}
+                            rows={5}
+                        />
+                    </Box>
                 </Grid>
             </Grid>
             {providedExistingCase ? (
