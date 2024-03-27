@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import CountriesInput from '../../../utils/rhf-inputs/select-inputs/countries-input';
+import { CountriesInput } from '@gridsuite/commons-ui';
 import {
     COUNTRIES,
     COUNTRIES_1,
@@ -17,11 +17,12 @@ import {
     NOMINAL_VOLTAGE_2,
     NOMINAL_VOLTAGE_3,
 } from '../../../utils/field-constants';
-import RangeInput, {
+import {
+    RangeInput,
     DEFAULT_RANGE_VALUE,
     getRangeInputDataForm,
     getRangeInputSchema,
-} from '../../../utils/rhf-inputs/range-input';
+} from '@gridsuite/commons-ui';
 import yup from '../../../utils/yup-config';
 import { SelectInput } from '@gridsuite/commons-ui';
 

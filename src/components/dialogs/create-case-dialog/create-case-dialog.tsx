@@ -16,8 +16,7 @@ import {
     removeUploadingElement,
 } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
-import { ElementType } from '@gridsuite/commons-ui';
-import { ExpandingTextField, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementType, ExpandingTextField, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../../utils/field-constants';
 import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';

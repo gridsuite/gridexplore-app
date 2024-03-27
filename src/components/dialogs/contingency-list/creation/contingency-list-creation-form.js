@@ -13,7 +13,6 @@ import {
     SCRIPT,
 } from '../../../utils/field-constants';
 import { ContingencyListType } from '../../../../utils/elementType';
-import { ElementType } from '@gridsuite/commons-ui';
 import { Box, Grid } from '@mui/material';
 import { gridItem } from '../../../utils/dialog-utils';
 import React from 'react';
@@ -25,9 +24,8 @@ import {
 } from '../../commons/criteria-based/criteria-based-utils';
 import CriteriaBasedForm from '../../commons/criteria-based/criteria-based-form';
 import ScriptInputForm from '../script/script-input-form';
-import { UniqueNameInput } from '../../commons/unique-name-input';
+import { UniqueNameInput, ExpandingTextField, ElementType } from '@gridsuite/commons-ui';
 import { DESCRIPTION } from '../../../utils/field-constants';
-import { ExpandingTextField } from '@gridsuite/commons-ui';
 
 const ContingencyListCreationForm = () => {
     const { setValue } = useFormContext();

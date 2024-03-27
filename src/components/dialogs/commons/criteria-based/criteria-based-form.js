@@ -11,7 +11,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { gridItem } from '../../../utils/dialog-utils';
 import { Grid } from '@mui/material';
 import { SelectInput } from '@gridsuite/commons-ui';
-import InputWithPopupConfirmation from '../../../utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
+import { InputWithPopupConfirmation } from '@gridsuite/commons-ui';
 
 const CriteriaBasedForm = ({ equipments, defaultValues }) => {
     const { getValues, setValue } = useFormContext();
