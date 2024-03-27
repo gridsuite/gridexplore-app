@@ -8,8 +8,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { CASE_FILE } from '../../utils/field-constants';
-import { UniqueNameInput } from '@gridsuite/commons-ui';
-import { ElementType } from '../../../utils/elementType';
+import { UniqueNameInput, ElementType } from '@gridsuite/commons-ui';
 
 interface PrefilledNameInputProps {
     label: string;

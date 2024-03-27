@@ -39,7 +39,7 @@ import {
     fetchAppsAndUrls,
     fetchElementsInfos,
     getNameCandidate,
-    moveElementToDirectory,
+    moveElementsToDirectory,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,
     renameElement,
@@ -49,11 +49,8 @@ import {
     stashElements,
 } from '../../utils/rest-api';
 
-import {
-    ContingencyListType,
-    ElementType,
-    FilterType,
-} from '../../utils/elementType';
+import { ContingencyListType, FilterType } from '../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 
 import CommonContextualMenu from './common-contextual-menu';
 import {
@@ -66,7 +63,7 @@ import { FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import { useDispatch } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
-import { FilterCreationDialog } from '@gridsuite/commons-ui';
+import { FilterCreationDialog, ExportCaseDialog } from '@gridsuite/commons-ui';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -272,7 +269,8 @@ const ContentContextualMenu = (props) => {
                                 newItemName,
                                 activeElement.type,
                                 activeElement.elementUuid,
-                                selectedDirectory.elementUuid
+                                selectedDirectory.elementUuid,
+                                activeElement.description
                             ).catch((error) => {
                                 handleDuplicateError(error.message);
                             });
@@ -341,7 +339,7 @@ const ContentContextualMenu = (props) => {
     );
 
     const [moveCB] = useMultipleDeferredFetch(
-        moveElementToDirectory,
+        moveElementsToDirectory,
         undefined,
         moveElementErrorToString,
         moveElementOnError,
@@ -590,13 +588,9 @@ const ContentContextualMenu = (props) => {
         }
 
         if (allowsDownloadCase()) {
-            // is export allowed
             menuItems.push({
                 messageDescriptorId: 'download.button',
-                callback: async () => {
-                    await handleDownloadCases(selectedElements);
-                    handleCloseDialog();
-                },
+                callback: () => handleOpenDialog(DialogsId.EXPORT),
                 icon: <FileDownload fontSize="small" />,
             });
         }
@@ -681,18 +675,31 @@ const ContentContextualMenu = (props) => {
                         open={true}
                         onClose={(selectedDir) => {
                             if (selectedDir.length > 0) {
-                                moveCB(
-                                    selectedElements.map((element) => {
-                                        return [
-                                            element.elementUuid,
-                                            selectedDir[0].id,
-                                        ];
-                                    })
-                                );
+                                moveCB([
+                                    [
+                                        selectedElements.map(
+                                            (element) => element.elementUuid
+                                        ),
+                                        selectedDir[0].id,
+                                    ],
+                                ]);
                             }
                             handleCloseDialog();
                         }}
                         items={selectedElements}
+                    />
+                );
+            case DialogsId.EXPORT:
+                return (
+                    <ExportCaseDialog
+                        onClose={handleCloseDialog}
+                        onExport={(format, formatParameters) =>
+                            handleDownloadCases(
+                                selectedElements,
+                                format,
+                                formatParameters
+                            )
+                        }
                     />
                 );
             case DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY:

@@ -12,11 +12,8 @@ import {
     NAME,
     SCRIPT,
 } from '../../../utils/field-constants';
-import {
-    ContingencyListType,
-    ElementType,
-} from '../../../../utils/elementType';
-import { Grid } from '@mui/material';
+import { ContingencyListType } from '../../../../utils/elementType';
+import { Box, Grid } from '@mui/material';
 import { gridItem } from '../../../utils/dialog-utils';
 import React from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -27,8 +24,8 @@ import {
 } from '../../commons/criteria-based/criteria-based-utils';
 import CriteriaBasedForm from '../../commons/criteria-based/criteria-based-form';
 import ScriptInputForm from '../script/script-input-form';
-import { UniqueNameInput } from '@gridsuite/commons-ui';
-import DescriptionInput from '../../description-modification/description-input';
+import { UniqueNameInput, ExpandingTextField, ElementType } from '@gridsuite/commons-ui';
+import { DESCRIPTION } from '../../../utils/field-constants';
 
 const ContingencyListCreationForm = () => {
     const { setValue } = useFormContext();
@@ -62,7 +59,14 @@ const ContingencyListCreationForm = () => {
                 />
             </Grid>
             <Grid item xs={12}>
-                <DescriptionInput rows={5} />
+                <Box>
+                    <ExpandingTextField
+                        name={DESCRIPTION}
+                        label={'descriptionProperty'}
+                        minRows={3}
+                        rows={5}
+                    />
+                </Box>
             </Grid>
             <Grid container item>
                 {gridItem(contingencyListTypeField, 12)}

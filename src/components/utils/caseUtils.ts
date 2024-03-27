@@ -5,23 +5,41 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { downloadCase, getCaseOriginalName } from '../../utils/rest-api';
-import { ElementType } from '../../utils/elementType';
+import { exportCase } from '../../utils/rest-api';
 import { useIntl } from 'react-intl';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 
-const downloadCases = async (uuids: string[]) => {
-    for (const uuid of uuids) {
-        const result = await downloadCase(uuid);
-        let name = await getCaseOriginalName(uuid);
-        const blob = await result.blob();
-        const href = window.URL.createObjectURL(blob);
+const exportCases = async (
+    cases: any[],
+    format: string,
+    formatParameters: {
+        [parameterName: string]: any;
+    },
+    onError?: (caseElement: any, errorMsg: string) => void
+): Promise<void> => {
+    const files: { name: string; blob: Blob }[] = [];
+    for (const c of cases) {
+        try {
+            const result = await exportCase(
+                c.elementUuid,
+                format,
+                formatParameters
+            );
+            let filename = result.headers
+                .get('Content-Disposition')
+                .split('filename=')[1];
+            filename = filename.substring(1, filename.length - 1); // We remove quotes
+            const blob = await result.blob();
+            files.push({ name: filename, blob });
+        } catch (e: any) {
+            onError?.(c, e);
+        }
+    }
+    for (const file of files) {
+        const href = window.URL.createObjectURL(file.blob);
         const link = document.createElement('a');
         link.href = href;
-        link.setAttribute(
-            'download',
-            typeof name === 'string' ? name : `${uuid}.xiidm`
-        );
+        link.setAttribute('download', file.name);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -30,7 +48,7 @@ const downloadCases = async (uuids: string[]) => {
 
 export function useDownloadUtils() {
     const intl = useIntl();
-    const { snackInfo } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
     const capitalizeFirstLetter = (string: string) =>
         `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
 
@@ -143,15 +161,33 @@ export function useDownloadUtils() {
         );
     };
 
-    const handleDownloadCases = async (selectedElements: any[]) => {
-        const casesUuids = selectedElements
-            .filter((element) => element.type === ElementType.CASE)
-            .map((element) => element.elementUuid);
-        await downloadCases(casesUuids);
-        if (casesUuids.length !== selectedElements.length) {
+    const handleCaseExportError = (caseElement: any, errorMsg: string) =>
+        snackError({
+            headerId: 'download.error',
+            headerValues: { caseName: caseElement.elementName },
+            messageTxt: errorMsg,
+        });
+
+    const handleDownloadCases = async (
+        selectedElements: any[],
+        format: string,
+        formatParameters: {
+            [parameterName: string]: any;
+        }
+    ) => {
+        const cases = selectedElements.filter(
+            (element) => element.type === ElementType.CASE
+        );
+        await exportCases(
+            cases,
+            format,
+            formatParameters,
+            handleCaseExportError
+        );
+        if (cases.length !== selectedElements.length) {
             snackInfo({
                 messageTxt: buildPartialDownloadMessage(
-                    casesUuids.length,
+                    cases.length,
                     selectedElements
                 ),
             });

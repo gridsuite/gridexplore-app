@@ -289,17 +289,19 @@ export function deleteElements(elementUuids, activeDirectory) {
     );
 }
 
-export function moveElementToDirectory(elementUuid, directoryUuid) {
-    console.info(
-        'Moving element %s to directory %s',
-        elementUuid,
-        directoryUuid
-    );
+export function moveElementsToDirectory(elementsUuids, targetDirectoryUuid) {
+    console.info('Moving elements to directory %s', targetDirectoryUuid);
+
     const fetchParams =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/elements/${elementUuid}?newDirectory=${directoryUuid}`;
+        `/v1/elements?targetDirectoryUuid=${targetDirectoryUuid}`;
     return backendFetch(fetchParams, {
-        method: 'PUT',
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(elementsUuids),
     });
 }
 
@@ -422,7 +424,7 @@ export function updateConfigParameter(name, value) {
     return backendFetch(updateParams, { method: 'put' });
 }
 
-export function fetchElementsInfos(ids, elementTypes) {
+export function fetchElementsInfos(ids, elementTypes, _equipmentTypes) {
     console.info('Fetching elements metadata ... ');
 
     // Add params to Url
@@ -561,23 +563,6 @@ export function getNameCandidate(directoryUuid, elementName, type) {
         `/v1/directories/${directoryUuid}/${elementName}/newNameCandidate?type=${type}`;
     console.debug(nameCandidateUrl);
     return backendFetchText(nameCandidateUrl);
-}
-
-/**
- * Retrieves the original name of a case using its UUID.
- * @param {string} caseUuid - The UUID of the element.
- * @returns {Promise<string|boolean>} - A promise that resolves to the original name of the case if found, or false if not found.
- */
-export function getCaseOriginalName(caseUuid) {
-    const caseNameUrl = PREFIX_CASE_QUERIES + `/v1/cases/${caseUuid}/name`;
-    console.debug(caseNameUrl);
-    return backendFetchText(caseNameUrl).catch((error) => {
-        if (error.status === 404) {
-            return false;
-        } else {
-            throw error;
-        }
-    });
 }
 
 export function rootDirectoryExists(directoryName) {
@@ -913,13 +898,17 @@ export function duplicateParameter(
     name,
     parameterType,
     sourceParameterUuid,
-    parentDirectoryUuid
+    parentDirectoryUuid,
+    parameterDescription
 ) {
     console.info('Duplicating parameters of type ' + parameterType + '...');
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('duplicateFrom', sourceParameterUuid);
     urlSearchParams.append('name', name);
     urlSearchParams.append('type', parameterType);
+    if (parameterDescription !== undefined) {
+        urlSearchParams.append('description', parameterDescription);
+    }
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
@@ -1061,13 +1050,15 @@ export function deleteCase(caseUuid) {
     });
 }
 
-export function downloadCase(caseUuid) {
-    const downloadCaseUrl =
-        PREFIX_CASE_QUERIES + '/v1/cases/' + caseUuid + '?xiidm=false';
-    return backendFetch(downloadCaseUrl, {
-        method: 'get',
-    });
-}
+export const exportCase = (caseUuid, format, formatParameters) =>
+    backendFetch(
+        `${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}?format=${format}`,
+        {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formatParameters),
+        }
+    );
 
 export function getServersInfos() {
     console.info('get backend servers informations');
@@ -1133,3 +1124,10 @@ export function getStashedElements() {
     const url = PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/stash`;
     return backendFetchJson(url);
 }
+
+export const getExportFormats = () => {
+    console.info('get export formats');
+    const url = PREFIX_NETWORK_CONVERSION_SERVER_QUERIES + '/v1/export/formats';
+    console.debug(url);
+    return backendFetchJson(url);
+};

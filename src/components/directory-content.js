@@ -15,19 +15,15 @@ import * as constants from '../utils/UIconstants';
 import Chip from '@mui/material/Chip';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
-import SettingsIcon from '@mui/icons-material/Settings';
 import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
 import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
 
 import VirtualizedTable from './virtualized-table';
+import { ContingencyListType, FilterType } from '../utils/elementType';
 import {
-    ContingencyListType,
     ElementType,
-    FilterType,
-} from '../utils/elementType';
-import {
     DEFAULT_CELL_PADDING,
-    ExplicitNamingFilterEditionDialog,
+    getFileIcon,
     OverflowableText,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -45,11 +41,6 @@ import {
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
-import PhotoIcon from '@mui/icons-material/Photo';
-import NoteAltIcon from '@mui/icons-material/NoteAlt';
-import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
-import ArticleIcon from '@mui/icons-material/Article';
-import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
 import CreateIcon from '@mui/icons-material/Create';
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
@@ -304,7 +295,7 @@ const DirectoryContent = () => {
 
     const onContextMenu = useCallback(
         (event) => {
-            const element = currentChildren.find(
+            const element = currentChildren?.find(
                 (e) => e.elementUuid === event.rowData?.elementUuid
             );
 
@@ -577,15 +568,6 @@ const DirectoryContent = () => {
     const [openDescModificationDialog, setOpenDescModificationDialog] =
         useState(false);
 
-    const isParameterTypeElement = useCallback(
-        (type) =>
-            type === ElementType.VOLTAGE_INIT_PARAMETERS ||
-            type === ElementType.SECURITY_ANALYSIS_PARAMETERS ||
-            type === ElementType.LOADFLOW_PARAMETERS ||
-            type === ElementType.SENSITIVITY_PARAMETERS,
-        []
-    );
-
     const descriptionCellRender = useCallback(
         (cellData) => {
             const element = currentChildren.find(
@@ -622,38 +604,13 @@ const DirectoryContent = () => {
             ) : (
                 <CreateIcon onClick={handleDescriptionIconClick} />
             );
-            const showEditDescriptionIcon = !isParameterTypeElement(
-                element.type
-            );
-
             return (
                 <>
-                    {showEditDescriptionIcon && (
-                        <Box sx={styles.cell}>{icon}</Box>
-                    )}
+                    <Box sx={styles.cell}>{icon}</Box>
                 </>
             );
         },
-        [currentChildren, isParameterTypeElement]
-    );
-
-    const getElementIcon = useCallback(
-        (objectType) => {
-            if (objectType === ElementType.STUDY) {
-                return <PhotoLibraryIcon sx={styles.icon} />;
-            } else if (objectType === ElementType.CONTINGENCY_LIST) {
-                return <OfflineBoltIcon sx={styles.icon} />;
-            } else if (objectType === ElementType.MODIFICATION) {
-                return <NoteAltIcon sx={styles.icon} />;
-            } else if (objectType === ElementType.FILTER) {
-                return <ArticleIcon sx={styles.icon} />;
-            } else if (objectType === ElementType.CASE) {
-                return <PhotoIcon sx={styles.icon} />;
-            } else if (isParameterTypeElement(objectType)) {
-                return <SettingsIcon sx={styles.icon} />;
-            }
-        },
-        [isParameterTypeElement]
+        [currentChildren]
     );
 
     const getDisplayedElementName = useCallback(
@@ -697,7 +654,7 @@ const DirectoryContent = () => {
                             />
                         )}
                     {childrenMetadata[element.elementUuid] &&
-                        getElementIcon(element.type)}
+                        getFileIcon(element.type, styles.icon)}
                     {/* Name */}
                     <OverflowableText
                         text={getDisplayedElementName(cellData)}
@@ -706,12 +663,7 @@ const DirectoryContent = () => {
                 </Box>
             );
         },
-        [
-            childrenMetadata,
-            currentChildren,
-            getDisplayedElementName,
-            getElementIcon,
-        ]
+        [childrenMetadata, currentChildren, getDisplayedElementName]
     );
 
     function toggleSelection(elementUuid) {

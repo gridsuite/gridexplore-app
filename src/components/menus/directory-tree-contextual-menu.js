@@ -48,7 +48,7 @@ import {
 
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
-import { ElementType } from '../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -215,7 +215,8 @@ const DirectoryTreeContextualMenu = (props) => {
                                         newItemName,
                                         selectionForCopy.typeItem,
                                         selectionForCopy.sourceItemUuid,
-                                        directoryUuid
+                                        directoryUuid,
+                                        selectionForCopy.descriptionItem
                                     ).catch((error) => {
                                         handlePasteError(error);
                                     });

@@ -10,7 +10,7 @@ import React from 'react';
 import ExplicitNamingForm from '../../explicit-naming/explicit-naming-form';
 import { UniqueNameInput } from '@gridsuite/commons-ui';
 import { NAME } from '../../../../utils/field-constants';
-import { ElementType } from '../../../../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 
 const ExplicitNamingEditionForm = () => {
     return (

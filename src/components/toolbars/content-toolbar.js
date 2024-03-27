@@ -5,39 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
 import {
     getStashedElements,
-    moveElementToDirectory,
+    moveElementsToDirectory,
     stashElements,
 } from '../../utils/rest-api';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
-
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar from './common-toolbar';
-
 import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
-import { ElementType } from '../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import { FileDownload, RestoreFromTrash } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
-import React from 'react';
+import ExportCaseDialog from '../dialogs/export-case-dialog';
 import StashedElementsDialog from '../dialogs/stashed-elements/stashed-elements-dialog';
-import { useEffect } from 'react';
+import { DialogsId } from '../../utils/UIconstants';
 import { notificationType } from '../../utils/notificationType';
-
-const DialogsId = {
-    DELETE: 'delete',
-    MOVE: 'move',
-    STASHED_ELEMENTS: 'stashed_elements',
-    NONE: 'none',
-};
 
 const ContentToolbar = (props) => {
     const { selectedElements, ...others } = props;
@@ -100,7 +91,7 @@ const ContentToolbar = (props) => {
     );
 
     const [moveCB] = useMultipleDeferredFetch(
-        moveElementToDirectory,
+        moveElementsToDirectory,
         undefined,
         moveElementErrorToString,
         moveElementOnError,
@@ -208,7 +199,7 @@ const ContentToolbar = (props) => {
                 },
                 {
                     tooltipTextId: 'download.button',
-                    callback: () => handleDownloadCases(selectedElements),
+                    callback: () => handleOpenDialog(DialogsId.EXPORT),
                     icon: <FileDownload fontSize="small" />,
                     disabled: !selectedElements.length || !allowsDownloadCases,
                 }
@@ -227,9 +218,8 @@ const ContentToolbar = (props) => {
         allowsDelete,
         allowsDownloadCases,
         allowsMove,
-        handleDownloadCases,
-        selectedElements,
-        stashedElements,
+        selectedElements.length,
+        stashedElements.length,
     ]);
 
     const renderDialog = () => {
@@ -258,14 +248,14 @@ const ContentToolbar = (props) => {
                         open={true}
                         onClose={(selectedDir) => {
                             if (selectedDir.length > 0) {
-                                moveCB(
-                                    selectedElements.map((element) => {
-                                        return [
-                                            element.elementUuid,
-                                            selectedDir[0].id,
-                                        ];
-                                    })
-                                );
+                                moveCB([
+                                    [
+                                        selectedElements.map(
+                                            (element) => element.elementUuid
+                                        ),
+                                        selectedDir[0].id,
+                                    ],
+                                ]);
                             }
                             handleCloseDialog();
                         }}
@@ -280,6 +270,19 @@ const ContentToolbar = (props) => {
                         stashedElements={stashedElements}
                         onStashedElementChange={handleGetStashedElement}
                         directoryToRestore={selectedDirectory}
+                    />
+                );
+            case DialogsId.EXPORT:
+                return (
+                    <ExportCaseDialog
+                        onClose={handleCloseDialog}
+                        onExport={(format, formatParameters) =>
+                            handleDownloadCases(
+                                selectedElements,
+                                format,
+                                formatParameters
+                            )
+                        }
                     />
                 );
             default:
