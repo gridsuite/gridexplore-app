@@ -177,6 +177,11 @@ export const FILTER_EQUIPMENTS = {
         label: 'Substations',
         fields: [countries, nominalVoltage],
     },
+    STATIC_VAR_COMPENSATOR: {
+        id: 'STATIC_VAR_COMPENSATOR',
+        label: 'StaticVarCompensators',
+        fields: [countries, nominalVoltage],
+    },
 };
 
 export const getCriteriaBasedSchema = (extraFields) => ({
