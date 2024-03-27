@@ -24,6 +24,7 @@ import DeleteDialog from '../dialogs/delete-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
+import ExportCaseDialog from '../dialogs/export-case-dialog';
 
 import { DialogsId } from '../../utils/UIconstants';
 
@@ -50,20 +51,18 @@ import {
 } from '../../utils/rest-api';
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
-import { ElementType } from '@gridsuite/commons-ui';
+import { ElementType, useSnackMessage, FilterCreationDialog } from '@gridsuite/commons-ui';
 
 import CommonContextualMenu from './common-contextual-menu';
 import {
     useDeferredFetch,
     useMultipleDeferredFetch,
 } from '../../utils/custom-hooks';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import { useDispatch } from 'react-redux';
 import { setSelectionForCopy } from 'redux/actions';
-import { FilterCreationDialog, ExportCaseDialog } from '@gridsuite/commons-ui';
 
 const ContentContextualMenu = (props) => {
     const {
