@@ -63,7 +63,7 @@ const styles = {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-    chip: {
+    clickable: {
         cursor: 'pointer',
     },
     icon: (theme) => ({
@@ -305,7 +305,7 @@ const DirectoryContent = () => {
         (event) => {
             const element = currentChildren?.find(
                 (e) =>
-                    event.rowData && // prevent bug when right clicking out of the table when an element is uploading
+                    event.rowData && // check if right click is made out of table in order to prevent bug when right clicking out of the table when an element is uploading
                     e.elementUuid === event.rowData?.elementUuid
             );
 
@@ -556,7 +556,7 @@ const DirectoryContent = () => {
             <Box sx={styles.cell}>
                 <Tooltip title={user} placement="right">
                     <Chip
-                        sx={styles.chip}
+                        sx={styles.clickable}
                         label={abbreviationFromUserName(user)}
                     />
                 </Tooltip>
@@ -610,10 +610,16 @@ const DirectoryContent = () => {
             }
             const tooltip = descriptionLines?.join('\n');
 
-            const handleDescriptionIconClick = (e) => {
+            const handleDescriptionIconClick = (clickEvent) => {
+                clickEvent.stopPropagation();
+                if (clickEvent.shiftKey || clickEvent.ctrlKey) {
+                    handleShiftAndCtrlClick(clickEvent, element?.elementUuid);
+                    // nothing else happens, hence the return
+                    return;
+                }
+
                 setActiveElement(element);
                 setOpenDescModificationDialog(true);
-                e.stopPropagation();
             };
 
             const icon = description ? (
@@ -627,11 +633,15 @@ const DirectoryContent = () => {
                     placement="right"
                 >
                     <StickyNote2OutlinedIcon
+                        sx={styles.clickable}
                         onClick={handleDescriptionIconClick}
                     />
                 </Tooltip>
             ) : (
-                <CreateIcon onClick={handleDescriptionIconClick} />
+                <CreateIcon
+                    sx={styles.clickable}
+                    onClick={handleDescriptionIconClick}
+                />
             );
             return (
                 <>
@@ -639,7 +649,7 @@ const DirectoryContent = () => {
                 </>
             );
         },
-        [currentChildren]
+        [currentChildren, handleShiftAndCtrlClick]
     );
 
     const getDisplayedElementName = useCallback(
