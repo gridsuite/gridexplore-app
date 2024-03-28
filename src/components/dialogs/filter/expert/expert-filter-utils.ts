@@ -92,6 +92,12 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
                 operators.push(OPERATOR_OPTIONS.IS_PART_OF);
                 operators.push(OPERATOR_OPTIONS.IS_NOT_PART_OF);
             }
+            if (field.name === FieldType.ID) {
+                // When the ID is selected, the operator EXISTS must be removed.
+                operators = operators.filter(
+                    (field) => field.name !== OperatorType.EXISTS
+                );
+            }
             return operators.map((operator) => ({
                 name: operator.name,
                 label: intl.formatMessage({ id: operator.label }),
@@ -115,11 +121,22 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
                 label: intl.formatMessage({ id: operator.label }),
             }));
         case DataType.ENUM:
-            return [
+            let enumOperators: {
+                name: string;
+                customName: string;
+                label: string;
+            }[] = [
                 OPERATOR_OPTIONS.EQUALS,
                 OPERATOR_OPTIONS.NOT_EQUALS,
                 OPERATOR_OPTIONS.IN,
-            ].map((operator) => ({
+            ];
+            if (field.name === FieldType.SHUNT_COMPENSATOR_TYPE) {
+                // When the SHUNT_COMPENSATOR_TYPE is selected, the operator IN must be removed.
+                enumOperators = enumOperators.filter(
+                    (field) => field.customName !== OperatorType.IN
+                );
+            }
+            return enumOperators.map((operator) => ({
                 name: operator.name,
                 label: intl.formatMessage({ id: operator.label }),
             }));
