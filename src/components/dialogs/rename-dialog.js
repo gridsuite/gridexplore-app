@@ -15,7 +15,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { useNameField } from './field-hook';
 import { useSelector } from 'react-redux';
-import { ElementType } from '../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import { CancelButton } from '@gridsuite/commons-ui';
 
 /**

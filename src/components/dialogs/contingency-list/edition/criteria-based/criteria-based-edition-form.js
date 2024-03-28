@@ -14,7 +14,7 @@ import {
 import CriteriaBasedForm from 'components/dialogs/commons/criteria-based/criteria-based-form';
 import { CRITERIA_BASED, NAME } from 'components/utils/field-constants';
 import { UniqueNameInput } from '../../../commons/unique-name-input';
-import { ElementType } from '../../../../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 
 const CriteriaBasedEditionForm = () => {
     const emptyValues = getCriteriaBasedFormData();
