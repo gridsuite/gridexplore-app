@@ -49,7 +49,7 @@
         "yup": "^1.0.0"
     },
     "scripts": {
-        "start": "react-scripts start",
+        "start": "PORT=3001 react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test --watchAll=false --transformIgnorePatterns \"node_modules/(?!@gridsuite/commons-ui)/\"",
         "eject": "react-scripts eject"
