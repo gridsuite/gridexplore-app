@@ -28,6 +28,7 @@ import {
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
+    useAnnouncementsSubscriber,
 } from '@gridsuite/commons-ui';
 
 import { useMatch } from 'react-router-dom';
@@ -39,6 +40,8 @@ import {
     fetchConfigParameter,
     fetchConfigParameters,
     fetchValidateUser,
+    getAnnouncementsWsUrl,
+    getToken,
 } from '../utils/rest-api';
 import {
     APP_NAME,
@@ -78,6 +81,8 @@ const App = () => {
     const dispatch = useDispatch();
 
     const location = useLocation();
+
+    useAnnouncementsSubscriber(getAnnouncementsWsUrl(), getToken());
 
     const updateParams = useCallback(
         (params) => {
