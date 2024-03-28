@@ -20,8 +20,9 @@ import yup from 'components/utils/yup-config';
 import ScriptEditionForm from './script-edition-form';
 import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectionForCopy } from 'redux/actions';
 import { noSelectionForCopy } from 'utils/constants';
+import { setSelectionForCopy } from '../../../../../redux/actions';
+
 const schema = yup.object().shape({
     [NAME]: yup.string().trim().required('nameEmpty'),
     [EQUIPMENT_TYPE]: yup.string().nullable(),

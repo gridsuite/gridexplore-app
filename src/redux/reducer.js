@@ -72,96 +72,98 @@ const initialState = {
     ...paramsInitialState,
 };
 
-export const reducer = createReducer(initialState, {
-    [SELECT_THEME]: (state, action) => {
+export const reducer = createReducer(initialState, (builder) => {
+    builder.addCase(SELECT_THEME, (state, action) => {
         state.theme = action.theme;
         saveLocalStorageTheme(state.theme);
-    },
+    });
 
-    [SELECT_LANGUAGE]: (state, action) => {
+    builder.addCase(SELECT_LANGUAGE, (state, action) => {
         state.language = action.language;
         saveLocalStorageLanguage(state.language);
-    },
+    });
 
-    [USER]: (state, action) => {
+    builder.addCase(USER, (state, action) => {
         state.user = action.user;
-    },
+    });
 
-    [SIGNIN_CALLBACK_ERROR]: (state, action) => {
+    builder.addCase(SIGNIN_CALLBACK_ERROR, (state, action) => {
         state.signInCallbackError = action.signInCallbackError;
-    },
+    });
 
-    [UNAUTHORIZED_USER_INFO]: (state, action) => {
+    builder.addCase(UNAUTHORIZED_USER_INFO, (state, action) => {
         state.authenticationRouterError = action.authenticationRouterError;
-    },
+    });
 
-    [LOGOUT_ERROR]: (state, action) => {
+    builder.addCase(LOGOUT_ERROR, (state, action) => {
         state.authenticationRouterError = action.authenticationRouterError;
-    },
+    });
 
-    [USER_VALIDATION_ERROR]: (state, action) => {
+    builder.addCase(USER_VALIDATION_ERROR, (state, action) => {
         state.authenticationRouterError = action.authenticationRouterError;
-    },
+    });
 
-    [RESET_AUTHENTICATION_ROUTER_ERROR]: (state, action) => {
+    builder.addCase(RESET_AUTHENTICATION_ROUTER_ERROR, (state, action) => {
         state.authenticationRouterError = null;
-    },
+    });
 
-    [SHOW_AUTH_INFO_LOGIN]: (state, action) => {
+    builder.addCase(SHOW_AUTH_INFO_LOGIN, (state, action) => {
         state.showAuthenticationRouterLogin =
             action.showAuthenticationRouterLogin;
-    },
+    });
 
-    [SELECT_COMPUTED_LANGUAGE]: (state, action) => {
+    builder.addCase(SELECT_COMPUTED_LANGUAGE, (state, action) => {
         state.computedLanguage = action.computedLanguage;
-    },
+    });
 
-    [CURRENT_CHILDREN]: (state, action) => {
+    builder.addCase(CURRENT_CHILDREN, (state, action) => {
         state.currentChildren = action.currentChildren;
-    },
+    });
 
-    [SELECT_DIRECTORY]: (state, action) => {
+    builder.addCase(SELECT_DIRECTORY, (state, action) => {
         state.selectedDirectory = action.selectedDirectory
             ? { ...action.selectedDirectory }
             : null;
-    },
+    });
 
-    [ACTIVE_DIRECTORY]: (state, action) => {
+    builder.addCase(ACTIVE_DIRECTORY, (state, action) => {
         state.activeDirectory = action.activeDirectory;
-    },
+    });
 
-    [CURRENT_PATH]: (state, action) => {
+    builder.addCase(CURRENT_PATH, (state, action) => {
         state.currentPath = action.currentPath;
-    },
+    });
 
-    [SET_APPS_AND_URLS]: (state, action) => {
+    builder.addCase(SET_APPS_AND_URLS, (state, action) => {
         state.appsAndUrls = action.appsAndUrls;
-    },
+    });
 
-    [ADD_UPLOADING_ELEMENT]: (state, action) => {
+    builder.addCase(ADD_UPLOADING_ELEMENT, (state, action) => {
         state.uploadingElements = {
             ...state.uploadingElements,
             ...{ [action.uploadingElement.id]: action.uploadingElement },
         };
-    },
+    });
 
-    [REMOVE_UPLOADING_ELEMENT]: (state, action) => {
+    builder.addCase(REMOVE_UPLOADING_ELEMENT, (state, action) => {
         let newUploadingElements = { ...state.uploadingElements };
         delete newUploadingElements[action.uploadingElement.id];
         state.uploadingElements = newUploadingElements;
-    },
+    });
 
-    [DIRECTORY_UPDATED]: (state, action) => {
+    builder.addCase(DIRECTORY_UPDATED, (state, action) => {
         state.directoryUpdated = {
             force: 1 - state.directoryUpdated.force,
             eventData: action.eventData,
         };
-    },
-    [TREE_DATA]: (state, action) => {
+    });
+
+    builder.addCase(TREE_DATA, (state, action) => {
         state.treeData = action.treeData;
-    },
-    [SELECTION_FOR_COPY]: (state, action) => {
+    });
+
+    builder.addCase(SELECTION_FOR_COPY, (state, action) => {
         const selectionForCopy = action.selectionForCopy;
         state.selectionForCopy = selectionForCopy;
-    },
+    });
 });

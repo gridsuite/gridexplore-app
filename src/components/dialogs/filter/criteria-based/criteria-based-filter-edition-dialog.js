@@ -26,10 +26,9 @@ import {
 import PropTypes from 'prop-types';
 import { FetchStatus } from '../../../../utils/custom-hooks';
 import { FilterForm } from '../filter-form';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { setSelectionForCopy } from 'redux/actions';
+import { useSelector, useDispatch } from 'react-redux';
 import { noSelectionForCopy } from 'utils/constants';
+import { setSelectionForCopy } from '../../../../redux/actions';
 
 const formSchema = yup
     .object()

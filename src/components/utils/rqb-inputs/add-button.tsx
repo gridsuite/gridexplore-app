@@ -11,7 +11,12 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
 
-const AddButton = (props: ActionWithRulesAndAddersProps) => (
+interface ActionWithRulesAndAddersWithLabelProps
+    extends ActionWithRulesAndAddersProps {
+    label: string;
+}
+
+const AddButton = (props: ActionWithRulesAndAddersWithLabelProps) => (
     <span>
         <Button
             startIcon={<AddIcon />}

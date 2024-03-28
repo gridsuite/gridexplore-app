@@ -28,10 +28,9 @@ import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-nami
 import ExplicitNamingEditionForm from './explicit-naming-edition-form';
 import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
 import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';
-import { setSelectionForCopy } from 'redux/actions';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { noSelectionForCopy } from 'utils/constants';
+import { setSelectionForCopy } from '../../../../../redux/actions';
 
 const schema = yup.object().shape({
     [NAME]: yup.string().trim().required('nameEmpty'),
