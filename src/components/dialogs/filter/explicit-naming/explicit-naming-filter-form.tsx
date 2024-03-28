@@ -28,13 +28,14 @@ import Grid from '@mui/material/Grid';
 import { SelectInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { ValueParserParams } from 'ag-grid-community';
 import { Generator, Load } from '../../../../utils/equipment-types';
-import { ElementType, FilterType } from '../../../../utils/elementType';
+import { FilterType } from '../../../../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import { NumericEditor } from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/numericEditor';
 import { toFloatOrNullValue } from '../../../utils/dialog-utils';
 import InputWithPopupConfirmation from '../../../utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
 import { v4 as uuid4 } from 'uuid';
 import { UUID } from 'crypto';
-import DirectorySelect from '../../create-study-dialog/directory-select';
+import ModifyElementSelection from '../../commons/modify-element-selection';
 import { exportFilter } from '../../../../utils/rest-api';
 
 export const FILTER_EQUIPMENTS_ATTRIBUTES = 'filterEquipmentsAttributes';
@@ -247,8 +248,8 @@ export const ExplicitNamingFilterForm: FunctionComponent<
                     validateButtonLabel={'button.changeType'}
                 />
                 {props.sourceFilterForExplicitNamingConversion && (
-                    <DirectorySelect
-                        types={[ElementType.STUDY]}
+                    <ModifyElementSelection
+                        elementType={ElementType.STUDY}
                         onElementValidated={onStudySelected}
                         dialogOpeningButtonLabel={'selectStudyDialogButton'}
                         dialogTitleLabel={'selectStudyDialogTitle'}

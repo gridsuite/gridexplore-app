@@ -15,18 +15,15 @@ import * as constants from '../utils/UIconstants';
 import Chip from '@mui/material/Chip';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
-import SettingsIcon from '@mui/icons-material/Settings';
 import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
 import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
 
 import VirtualizedTable from './virtualized-table';
-import {
-    ContingencyListType,
-    ElementType,
-    FilterType,
-} from '../utils/elementType';
+import { ContingencyListType, FilterType } from '../utils/elementType';
+import { ElementType } from '@gridsuite/commons-ui';
 import {
     DEFAULT_CELL_PADDING,
+    getFileIcon,
     OverflowableText,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -38,11 +35,6 @@ import CriteriaBasedFilterEditionDialog from './dialogs/filter/criteria-based/cr
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
-import PhotoIcon from '@mui/icons-material/Photo';
-import NoteAltIcon from '@mui/icons-material/NoteAlt';
-import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
-import ArticleIcon from '@mui/icons-material/Article';
-import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
 import CreateIcon from '@mui/icons-material/Create';
 import ExplicitNamingFilterEditionDialog from './dialogs/filter/explicit-naming/explicit-naming-filter-edition-dialog';
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
@@ -51,6 +43,7 @@ import ScriptEditionDialog from './dialogs/contingency-list/edition/script/scrip
 import ExpertFilterEditionDialog from './dialogs/filter/expert/expert-filter-edition-dialog';
 import { noSelectionForCopy } from 'utils/constants';
 import DescriptionModificationDialogue from './dialogs/description-modification/description-modification-dialogue';
+import { useMultiselect } from 'utils/use-multiselect';
 
 const circularProgressSize = '70px';
 
@@ -70,7 +63,7 @@ const styles = {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-    chip: {
+    clickable: {
         cursor: 'pointer',
     },
     icon: (theme) => ({
@@ -160,11 +153,27 @@ const DirectoryContent = () => {
     });
     const [childrenMetadata, setChildrenMetadata] = useState({});
 
-    const [selectedUuids, setSelectedUuids] = useState(new Set());
-
     const currentChildren = useSelector((state) => state.currentChildren);
     const currentChildrenRef = useRef();
     currentChildrenRef.current = currentChildren;
+
+    const currentChildrenUuids = useMemo(
+        () =>
+            currentChildren
+                ? currentChildren
+                      .filter((e) => !e.uploading)
+                      .map((e) => e.elementUuid)
+                : [],
+        [currentChildren]
+    );
+
+    const {
+        selectedIds,
+        toggleSelection,
+        toggleSelectAll,
+        handleShiftAndCtrlClick,
+        clearSelection,
+    } = useMultiselect(currentChildrenUuids);
 
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -285,7 +294,7 @@ const DirectoryContent = () => {
     /* User interactions */
     const contextualMixPolicies = useMemo(
         () => ({
-            BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
+            BIG: 'GoogleMicrosoft', // if !selectedUuids.includes(selected.Uuid) deselects selectedUuids
             ALL: 'All', // union of activeElement.Uuid and selectedUuids (currently implemented)
         }),
         []
@@ -294,8 +303,10 @@ const DirectoryContent = () => {
 
     const onContextMenu = useCallback(
         (event) => {
-            const element = currentChildren.find(
-                (e) => e.elementUuid === event.rowData?.elementUuid
+            const element = currentChildren?.find(
+                (e) =>
+                    event.rowData && // check if right click is made out of table in order to prevent bug when right clicking out of the table when an element is uploading
+                    e.elementUuid === event.rowData?.elementUuid
             );
 
             if (selectedDirectory) {
@@ -317,22 +328,20 @@ const DirectoryContent = () => {
                     if (contextualMixPolicy === contextualMixPolicies.BIG) {
                         // If some elements were already selected and the active element is not in them, we deselect the already selected elements.
                         if (
-                            selectedUuids?.size &&
+                            selectedIds.length &&
                             element?.elementUuid &&
-                            !selectedUuids.has(element.elementUuid)
+                            !selectedIds.includes(element.elementUuid)
                         ) {
-                            setSelectedUuids(new Set());
+                            clearSelection();
                         }
                     } else {
                         // If some elements were already selected, we add the active element to the selected list if not already in it.
                         if (
-                            selectedUuids?.size &&
+                            selectedIds.length &&
                             element?.elementUuid &&
-                            !selectedUuids.has(element.elementUuid)
+                            !selectedIds.includes(element.elementUuid)
                         ) {
-                            let updatedSelectedUuids = new Set(selectedUuids);
-                            updatedSelectedUuids.add(element.elementUuid);
-                            setSelectedUuids(updatedSelectedUuids);
+                            toggleSelection(element.elementUuid);
                         }
                     }
                 }
@@ -353,10 +362,12 @@ const DirectoryContent = () => {
             currentChildren,
             dispatch,
             selectedDirectory,
-            selectedUuids,
+            selectedIds,
             contextualMixPolicies,
             contextualMixPolicy,
             childrenMetadata,
+            toggleSelection,
+            clearSelection,
         ]
     );
 
@@ -401,72 +412,91 @@ const DirectoryContent = () => {
         [appsAndUrls]
     );
 
+    const handleClickElementCheckbox = useCallback(
+        (clickEvent, elementUuid) => {
+            clickEvent.stopPropagation();
+            if (clickEvent.shiftKey) {
+                // if row is clicked while shift is pressed, range of rows selection is toggled
+                handleShiftAndCtrlClick(clickEvent, elementUuid);
+                // nothing else happens, hence the return
+                return;
+            }
+
+            toggleSelection(elementUuid);
+        },
+        [handleShiftAndCtrlClick, toggleSelection]
+    );
+
     const handleRowClick = useCallback(
-        (event) => {
+        (clickEvent) => {
+            const clickedElementUuid = clickEvent.rowData.elementUuid;
             const element = currentChildren.find(
-                (e) => e.elementUuid === event.rowData.elementUuid
+                (e) => e.elementUuid === clickedElementUuid
             );
-            if (childrenMetadata[element.elementUuid] !== undefined) {
-                setElementName(childrenMetadata[element.elementUuid]?.name);
-                const subtype = childrenMetadata[element.elementUuid].subtype;
-                /** set active directory on the store because it will be used while editing the contingency name */
-                dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-                switch (element.type) {
-                    case ElementType.STUDY:
-                        let url = getLink(element.elementUuid, element.type);
-                        url
-                            ? window.open(url, '_blank')
-                            : handleError(
-                                  intl.formatMessage(
-                                      { id: 'getAppLinkError' },
-                                      { type: element.type }
-                                  )
-                              );
-                        break;
-                    case ElementType.CONTINGENCY_LIST:
-                        if (subtype === ContingencyListType.CRITERIA_BASED.id) {
-                            setCurrentFiltersContingencyListId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (subtype === ContingencyListType.SCRIPT.id) {
-                            setCurrentScriptContingencyListId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (
-                            subtype === ContingencyListType.EXPLICIT_NAMING.id
-                        ) {
-                            setCurrentExplicitNamingContingencyListId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        }
-                        break;
-                    case ElementType.FILTER:
-                        if (subtype === FilterType.EXPLICIT_NAMING.id) {
-                            setCurrentExplicitNamingFilterId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (subtype === FilterType.CRITERIA_BASED.id) {
-                            setCurrentCriteriaBasedFilterId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (subtype === FilterType.EXPERT.id) {
-                            setCurrentExpertFilterId(element.elementUuid);
-                            setOpenDialog(subtype);
-                        }
-                        break;
-                    default:
-                        break;
-                }
+
+            // if clicked element is not known within current directory, nothing happens
+            if (childrenMetadata[element.elementUuid] === undefined) {
+                return;
+            }
+
+            if (clickEvent.event?.shiftKey || clickEvent.event?.ctrlKey) {
+                handleShiftAndCtrlClick(clickEvent.event, clickedElementUuid);
+                // nothing else happens, hence the return
+                return;
+            }
+
+            setElementName(childrenMetadata[element.elementUuid]?.name);
+            const subtype = childrenMetadata[element.elementUuid].subtype;
+            /** set active directory on the store because it will be used while editing the contingency name */
+            dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
+            switch (element.type) {
+                case ElementType.STUDY:
+                    let url = getLink(element.elementUuid, element.type);
+                    url
+                        ? window.open(url, '_blank')
+                        : handleError(
+                              intl.formatMessage(
+                                  { id: 'getAppLinkError' },
+                                  { type: element.type }
+                              )
+                          );
+                    break;
+                case ElementType.CONTINGENCY_LIST:
+                    if (subtype === ContingencyListType.CRITERIA_BASED.id) {
+                        setCurrentFiltersContingencyListId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    } else if (subtype === ContingencyListType.SCRIPT.id) {
+                        setCurrentScriptContingencyListId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    } else if (
+                        subtype === ContingencyListType.EXPLICIT_NAMING.id
+                    ) {
+                        setCurrentExplicitNamingContingencyListId(
+                            element.elementUuid
+                        );
+                        setOpenDialog(subtype);
+                    }
+                    break;
+                case ElementType.FILTER:
+                    if (subtype === FilterType.EXPLICIT_NAMING.id) {
+                        setCurrentExplicitNamingFilterId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    } else if (subtype === FilterType.CRITERIA_BASED.id) {
+                        setCurrentCriteriaBasedFilterId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    } else if (subtype === FilterType.EXPERT.id) {
+                        setCurrentExpertFilterId(element.elementUuid);
+                        setOpenDialog(subtype);
+                    }
+                    break;
+                default:
+                    break;
             }
         },
         [
             childrenMetadata,
             currentChildren,
+            handleShiftAndCtrlClick,
             dispatch,
             getLink,
             handleError,
@@ -526,7 +556,7 @@ const DirectoryContent = () => {
             <Box sx={styles.cell}>
                 <Tooltip title={user} placement="right">
                     <Chip
-                        sx={styles.chip}
+                        sx={styles.clickable}
                         label={abbreviationFromUserName(user)}
                     />
                 </Tooltip>
@@ -567,15 +597,6 @@ const DirectoryContent = () => {
     const [openDescModificationDialog, setOpenDescModificationDialog] =
         useState(false);
 
-    const isParameterTypeElement = useCallback(
-        (type) =>
-            type === ElementType.VOLTAGE_INIT_PARAMETERS ||
-            type === ElementType.SECURITY_ANALYSIS_PARAMETERS ||
-            type === ElementType.LOADFLOW_PARAMETERS ||
-            type === ElementType.SENSITIVITY_PARAMETERS,
-        []
-    );
-
     const descriptionCellRender = useCallback(
         (cellData) => {
             const element = currentChildren.find(
@@ -589,10 +610,16 @@ const DirectoryContent = () => {
             }
             const tooltip = descriptionLines?.join('\n');
 
-            const handleDescriptionIconClick = (e) => {
+            const handleDescriptionIconClick = (clickEvent) => {
+                clickEvent.stopPropagation();
+                if (clickEvent.shiftKey || clickEvent.ctrlKey) {
+                    handleShiftAndCtrlClick(clickEvent, element?.elementUuid);
+                    // nothing else happens, hence the return
+                    return;
+                }
+
                 setActiveElement(element);
                 setOpenDescModificationDialog(true);
-                e.stopPropagation();
             };
 
             const icon = description ? (
@@ -606,11 +633,15 @@ const DirectoryContent = () => {
                     placement="right"
                 >
                     <StickyNote2OutlinedIcon
+                        sx={styles.clickable}
                         onClick={handleDescriptionIconClick}
                     />
                 </Tooltip>
             ) : (
-                <CreateIcon onClick={handleDescriptionIconClick} />
+                <CreateIcon
+                    sx={styles.clickable}
+                    onClick={handleDescriptionIconClick}
+                />
             );
             return (
                 <>
@@ -618,26 +649,7 @@ const DirectoryContent = () => {
                 </>
             );
         },
-        [currentChildren]
-    );
-
-    const getElementIcon = useCallback(
-        (objectType) => {
-            if (objectType === ElementType.STUDY) {
-                return <PhotoLibraryIcon sx={styles.icon} />;
-            } else if (objectType === ElementType.CONTINGENCY_LIST) {
-                return <OfflineBoltIcon sx={styles.icon} />;
-            } else if (objectType === ElementType.MODIFICATION) {
-                return <NoteAltIcon sx={styles.icon} />;
-            } else if (objectType === ElementType.FILTER) {
-                return <ArticleIcon sx={styles.icon} />;
-            } else if (objectType === ElementType.CASE) {
-                return <PhotoIcon sx={styles.icon} />;
-            } else if (isParameterTypeElement(objectType)) {
-                return <SettingsIcon sx={styles.icon} />;
-            }
-        },
-        [isParameterTypeElement]
+        [currentChildren, handleShiftAndCtrlClick]
     );
 
     const getDisplayedElementName = useCallback(
@@ -681,7 +693,7 @@ const DirectoryContent = () => {
                             />
                         )}
                     {childrenMetadata[element.elementUuid] &&
-                        getElementIcon(element.type)}
+                        getFileIcon(element.type, styles.icon)}
                     {/* Name */}
                     <OverflowableText
                         text={getDisplayedElementName(cellData)}
@@ -690,41 +702,8 @@ const DirectoryContent = () => {
                 </Box>
             );
         },
-        [
-            childrenMetadata,
-            currentChildren,
-            getDisplayedElementName,
-            getElementIcon,
-        ]
+        [childrenMetadata, currentChildren, getDisplayedElementName]
     );
-
-    function toggleSelection(elementUuid) {
-        let element = currentChildren?.find(
-            (e) => e.elementUuid === elementUuid
-        );
-        if (element === undefined) {
-            return;
-        }
-        let newSelection = new Set(selectedUuids);
-        if (!newSelection.delete(elementUuid)) {
-            newSelection.add(elementUuid);
-        }
-        setSelectedUuids(newSelection);
-    }
-
-    function toggleSelectAll() {
-        if (selectedUuids.size === 0) {
-            setSelectedUuids(
-                new Set(
-                    currentChildren
-                        .filter((e) => !e.uploading)
-                        .map((c) => c.elementUuid)
-                )
-            );
-        } else {
-            setSelectedUuids(new Set());
-        }
-    }
 
     function selectionHeaderRenderer() {
         return (
@@ -736,10 +715,10 @@ const DirectoryContent = () => {
                 sx={styles.checkboxes}
             >
                 <Checkbox
-                    checked={selectedUuids.size > 0}
+                    checked={selectedIds.length > 0}
                     indeterminate={
-                        selectedUuids.size !== 0 &&
-                        selectedUuids.size !== currentChildren.length
+                        selectedIds.length !== 0 &&
+                        selectedIds.length !== currentChildren.length
                     }
                 />
             </Box>
@@ -748,15 +727,18 @@ const DirectoryContent = () => {
 
     function selectionRenderer(cellData) {
         const elementUuid = cellData.rowData['elementUuid'];
+        const isUploading = cellData.rowData['uploading'];
         return (
             <Box
-                onClick={(e) => {
-                    toggleSelection(elementUuid);
-                    e.stopPropagation();
-                }}
+                onClick={(clickEvent) =>
+                    handleClickElementCheckbox(clickEvent, elementUuid)
+                }
                 sx={styles.checkboxes}
             >
-                <Checkbox checked={selectedUuids.has(elementUuid)} />
+                <Checkbox
+                    disabled={isUploading}
+                    checked={selectedIds.includes(elementUuid)}
+                />
             </Box>
         );
     }
@@ -806,18 +788,17 @@ const DirectoryContent = () => {
                     }
                 });
         }
-        setSelectedUuids(new Set());
     }, [handleError, currentChildren, currentChildrenRef]);
 
     const getSelectedChildren = () => {
         let selectedChildren = [];
         if (currentChildren?.length > 0) {
             // Adds the previously selected elements
-            if (selectedUuids?.size) {
+            if (selectedIds.length) {
                 selectedChildren = currentChildren
                     .filter(
                         (child) =>
-                            selectedUuids.has(child.elementUuid) &&
+                            selectedIds.includes(child.elementUuid) &&
                             child.elementUuid !== activeElement?.elementUuid
                     )
                     .map((child) => {
@@ -882,7 +863,7 @@ const DirectoryContent = () => {
                     selectedElements={
                         // Check selectedUuids.size here to show toolbar options only
                         // when multi selection checkboxes are used.
-                        selectedUuids.size > 0 ? getSelectedChildren() : []
+                        selectedIds?.length > 0 ? getSelectedChildren() : []
                     }
                 />
                 <div style={{ textAlign: 'center', marginTop: '100px' }}>
@@ -904,7 +885,7 @@ const DirectoryContent = () => {
                     selectedElements={
                         // Check selectedUuids.size here to show toolbar options only
                         // when multi selection checkboxes are used.
-                        selectedUuids.size > 0 ? getSelectedChildren() : []
+                        selectedIds?.length > 0 ? getSelectedChildren() : []
                     }
                 />
                 <VirtualizedTable
