@@ -57,7 +57,11 @@ export const SearchBar = ({ inputRef }) => {
             searchTerm &&
                 searchElementsInfos(searchTerm)
                     .then((infos) => {
-                        setElementsFound(infos);
+                        if (infos.length) {
+                            setElementsFound(infos);
+                        } else {
+                            setElementsFound([]);
+                        }
                     })
                     .catch((error) => {
                         snackError({
@@ -94,7 +98,7 @@ export const SearchBar = ({ inputRef }) => {
                     <Grid item sx={styles.grid2}>
                         <Typography>
                             <FormattedMessage id="path" />
-                            {element.directoryName.join(' / ')}
+                            {element.pathName.join(' / ')}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -140,8 +144,7 @@ export const SearchBar = ({ inputRef }) => {
     const handleMatchingElement = useCallback(
         (matchingElement) => {
             if (matchingElement !== undefined) {
-                const elementUuidPath =
-                    matchingElement?.directoryUuid.reverse();
+                const elementUuidPath = matchingElement?.pathUuid.reverse();
 
                 const promises = elementUuidPath.map((e) => {
                     return fetchDirectoryContent(e)
