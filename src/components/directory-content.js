@@ -26,6 +26,7 @@ import {
     getFileIcon,
     OverflowableText,
     useSnackMessage,
+    ExplicitNamingFilterEditionDialog,
 } from '@gridsuite/commons-ui';
 import { Box, Checkbox } from '@mui/material';
 
