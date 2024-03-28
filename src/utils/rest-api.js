@@ -289,17 +289,19 @@ export function deleteElements(elementUuids, activeDirectory) {
     );
 }
 
-export function moveElementToDirectory(elementUuid, directoryUuid) {
-    console.info(
-        'Moving element %s to directory %s',
-        elementUuid,
-        directoryUuid
-    );
+export function moveElementsToDirectory(elementsUuids, targetDirectoryUuid) {
+    console.info('Moving elements to directory %s', targetDirectoryUuid);
+
     const fetchParams =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/elements/${elementUuid}?newDirectory=${directoryUuid}`;
+        `/v1/elements?targetDirectoryUuid=${targetDirectoryUuid}`;
     return backendFetch(fetchParams, {
-        method: 'PUT',
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(elementsUuids),
     });
 }
 
