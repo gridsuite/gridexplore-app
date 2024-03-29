@@ -98,10 +98,10 @@ const ModifyElementSelection: React.FunctionComponent<
                 {activeDirectoryName
                     ? activeDirectoryName
                     : props?.noElementMessageLabel
-                      ? intl.formatMessage({
-                            id: props.noElementMessageLabel,
-                        })
-                      : ''}
+                    ? intl.formatMessage({
+                          id: props.noElementMessageLabel,
+                      })
+                    : ''}
             </Typography>
             <DirectoryItemSelector
                 open={open}

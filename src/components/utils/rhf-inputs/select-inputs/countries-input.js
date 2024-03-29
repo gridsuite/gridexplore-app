@@ -10,10 +10,8 @@ export const CountriesInput = ({ name, label }) => {
     const countriesListCB = useCallback(() => {
         try {
             return require('localized-countries')(
-                require(
-                    'localized-countries/data/' +
-                        getComputedLanguage(languageLocal).substr(0, 2)
-                )
+                require('localized-countries/data/' +
+                    getComputedLanguage(languageLocal).substr(0, 2))
             );
         } catch (error) {
             // fallback to english if no localised list found
