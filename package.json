@@ -52,7 +52,8 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test --watchAll=false --transformIgnorePatterns \"node_modules/(?!@gridsuite/commons-ui)/\"",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "licenses-check": "license-checker --summary --excludePrivatePackages --production --onlyAllow \"$( jq -r .onlyAllow[] license-checker-config.json | tr '\n' ';')\" --excludePackages \"$( jq -r .excludePackages[] license-checker-config.json | tr '\n' ';')\""
     },
     "eslintConfig": {
         "extends": [
@@ -80,6 +81,7 @@
         "eslint-config-prettier": "^8.0.0",
         "eslint-plugin-prettier": "^4.0.0",
         "http-proxy-middleware": "^2.0.0",
+        "license-checker": "^25.0.1",
         "prettier": "^2.0.0"
     }
 }
