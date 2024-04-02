@@ -7,7 +7,6 @@
 
 import React, { useCallback, useEffect, useRef } from 'react';
 
-import TreeView from '@mui/lab/TreeView';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LockIcon from '@mui/icons-material/Lock';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -21,6 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory } from '../redux/actions';
 import CustomTreeItem from './custom-tree-item';
 import { Box } from '@mui/material';
+import { TreeView } from '@mui/x-tree-view';
 
 const styles = {
     treeViewRoot: (theme) => ({

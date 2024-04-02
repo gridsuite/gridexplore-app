@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
@@ -57,10 +57,9 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
-import { useDispatch } from 'react-redux';
-import { setSelectionForCopy } from 'redux/actions';
 import FilterCreationDialog from '../dialogs/filter/filter-creation-dialog';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
+import { setSelectionForCopy } from '../../redux/actions';
 
 const ContentContextualMenu = (props) => {
     const {

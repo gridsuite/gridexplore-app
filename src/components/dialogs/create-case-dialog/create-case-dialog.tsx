@@ -16,11 +16,15 @@ import {
     removeUploadingElement,
 } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
-import { ElementType } from '@gridsuite/commons-ui';
-import { ExpandingTextField, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    ErrorInput,
+    ExpandingTextField,
+    FieldErrorAlert,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../../utils/field-constants';
-import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
 import {
@@ -32,7 +36,7 @@ import PrefilledNameInput from '../commons/prefilled-name-input';
 
 interface IFormData {
     [CASE_NAME]: string;
-    [DESCRIPTION]: string;
+    [DESCRIPTION]?: string;
     [CASE_FILE]: File | null;
 }
 
@@ -50,7 +54,7 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
 
     const createCaseFormMethods = useForm<IFormData>({
         defaultValues: getCreateCaseDialogFormValidationDefaultValues(),
-        resolver: yupResolver(createCaseDialogFormValidationSchema),
+        resolver: yupResolver<IFormData>(createCaseDialogFormValidationSchema),
     });
 
     const {
