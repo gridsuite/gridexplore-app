@@ -24,7 +24,11 @@ import {
 } from '../../commons/criteria-based/criteria-based-utils';
 import CriteriaBasedForm from '../../commons/criteria-based/criteria-based-form';
 import ScriptInputForm from '../script/script-input-form';
-import { UniqueNameInput, ExpandingTextField, ElementType } from '@gridsuite/commons-ui';
+import {
+    UniqueNameInput,
+    ExpandingTextField,
+    ElementType,
+} from '@gridsuite/commons-ui';
 import { DESCRIPTION } from '../../../utils/field-constants';
 
 const ContingencyListCreationForm = () => {

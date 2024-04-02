@@ -73,7 +73,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                     ) {
                         param.defaultValue = param.possibleValues;
                     }
-                }),
+                })
             );
             setFormats(fetchedFormats);
         });
@@ -88,7 +88,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                 }));
             }
         },
-        [],
+        []
     );
 
     const handleExport = useCallback(async () => {
@@ -134,7 +134,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                             .filter(
                                 (format) =>
                                     // Hide the CGMES item while waiting for the Fix of getIdentifiable on the back end
-                                    format !== 'CGMES',
+                                    format !== 'CGMES'
                             )
                             .map((formatKey) => (
                                 <MenuItem key={formatKey} value={formatKey}>

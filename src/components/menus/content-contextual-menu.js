@@ -51,7 +51,11 @@ import {
 } from '../../utils/rest-api';
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
-import { ElementType, useSnackMessage, FilterCreationDialog } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    useSnackMessage,
+    FilterCreationDialog,
+} from '@gridsuite/commons-ui';
 
 import CommonContextualMenu from './common-contextual-menu';
 import {

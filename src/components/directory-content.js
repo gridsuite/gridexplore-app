@@ -48,7 +48,10 @@ import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/expl
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
 import { noSelectionForCopy } from 'utils/constants';
 import DescriptionModificationDialogue from './dialogs/description-modification/description-modification-dialogue';
-import { ExpertFilterEditionDialog, CriteriaBasedFilterEditionDialog } from '@gridsuite/commons-ui';
+import {
+    ExpertFilterEditionDialog,
+    CriteriaBasedFilterEditionDialog,
+} from '@gridsuite/commons-ui';
 import { useMultiselect } from 'utils/use-multiselect';
 
 const circularProgressSize = '70px';

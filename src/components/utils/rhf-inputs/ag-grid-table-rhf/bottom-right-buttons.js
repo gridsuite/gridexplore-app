@@ -13,7 +13,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
 import { styled } from '@mui/material/styles';
-import { ErrorInput, FieldErrorAlert, CsvUploader } from '@gridsuite/commons-ui';
+import {
+    ErrorInput,
+    FieldErrorAlert,
+    CsvUploader,
+} from '@gridsuite/commons-ui';
 
 const InnerColoredButton = styled(IconButton)(({ theme, root }) => {
     return {
