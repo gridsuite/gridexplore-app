@@ -62,6 +62,23 @@ export const SHUNT_COMPENSATOR_TYPE_OPTIONS = [
     { name: 'REACTOR', label: 'Reactor' },
 ];
 
+export const LOAD_TYPE_OPTIONS = [
+    { name: 'UNDEFINED', label: 'Undefined' },
+    { name: 'AUXILIARY', label: 'Auxiliary' },
+    { name: 'FICTITIOUS', label: 'Fictitious' },
+];
+
+export const RATIO_REGULATION_MODE_OPTIONS = [
+    { name: 'VOLTAGE', label: 'Voltage' },
+    { name: 'REACTIVE_POWER', label: 'ReactivePower' },
+];
+
+export const PHASE_REGULATION_MODE_OPTIONS = [
+    { name: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
+    { name: 'ACTIVE_POWER_CONTROL', label: 'ActivePowerControl' },
+    { name: 'FIXED_TAP', label: 'FixedTap' },
+];
+
 // customName is used to export to the server
 export const OPERATOR_OPTIONS = {
     EQUALS: { name: '=', customName: OperatorType.EQUALS, label: 'equality' },
@@ -344,6 +361,18 @@ export const FIELDS_OPTIONS = {
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
+    RATED_VOLTAGE_1: {
+        name: FieldType.RATED_VOLTAGE_1,
+        label: 'ratedVoltage1Or',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    RATED_VOLTAGE_2: {
+        name: FieldType.RATED_VOLTAGE_2,
+        label: 'ratedVoltage2Ex',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
     COUNTRY_1: {
         name: FieldType.COUNTRY_1,
         label: 'country1',
@@ -406,9 +435,17 @@ export const FIELDS_OPTIONS = {
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
-    LOAD_TAP_CHANGING_CAPABILITIES: {
-        name: FieldType.LOAD_TAP_CHANGING_CAPABILITIES,
-        label: 'loadTapChangingCapabilities',
+    LOAD_TYPE: {
+        name: FieldType.LOAD_TYPE,
+        label: 'loadType',
+        dataType: DataType.ENUM,
+        values: LOAD_TYPE_OPTIONS,
+        valueEditorType: 'select',
+        defaultValue: 'UNDEFINED',
+    },
+    HAS_RATIO_TAP_CHANGER: {
+        name: FieldType.HAS_RATIO_TAP_CHANGER,
+        label: 'hasRatioTapChanger',
         dataType: DataType.BOOLEAN,
         valueEditorType: 'switch',
     },
@@ -418,9 +455,49 @@ export const FIELDS_OPTIONS = {
         dataType: DataType.BOOLEAN,
         valueEditorType: 'switch',
     },
+    LOAD_TAP_CHANGING_CAPABILITIES: {
+        name: FieldType.LOAD_TAP_CHANGING_CAPABILITIES,
+        label: 'loadTapChangingCapabilities',
+        dataType: DataType.BOOLEAN,
+        valueEditorType: 'switch',
+    },
+    RATIO_REGULATION_MODE: {
+        name: FieldType.RATIO_REGULATION_MODE,
+        label: 'ratioRegulationMode',
+        dataType: DataType.ENUM,
+        values: RATIO_REGULATION_MODE_OPTIONS,
+        valueEditorType: 'select',
+        defaultValue: 'VOLTAGE',
+    },
     RATIO_TARGET_V: {
         name: FieldType.RATIO_TARGET_V,
         label: 'ratioTargetV',
+        dataType: DataType.NUMBER,
+        inputType: 'number',
+    },
+    HAS_PHASE_TAP_CHANGER: {
+        name: FieldType.HAS_PHASE_TAP_CHANGER,
+        label: 'hasPhaseTapChanger',
+        dataType: DataType.BOOLEAN,
+        valueEditorType: 'switch',
+    },
+    PHASE_REGULATING: {
+        name: FieldType.PHASE_REGULATING,
+        label: 'phaseRegulating',
+        dataType: DataType.BOOLEAN,
+        valueEditorType: 'switch',
+    },
+    PHASE_REGULATION_MODE: {
+        name: FieldType.PHASE_REGULATION_MODE,
+        label: 'phaseRegulationMode',
+        dataType: DataType.ENUM,
+        values: PHASE_REGULATION_MODE_OPTIONS,
+        valueEditorType: 'select',
+        defaultValue: 'CURRENT_LIMITER',
+    },
+    PHASE_REGULATION_VALUE: {
+        name: FieldType.PHASE_REGULATION_VALUE,
+        label: 'phaseRegulationValue',
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
@@ -463,6 +540,8 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.NAME,
         FIELDS_OPTIONS.NOMINAL_VOLTAGE_1,
         FIELDS_OPTIONS.NOMINAL_VOLTAGE_2,
+        FIELDS_OPTIONS.RATED_VOLTAGE_1,
+        FIELDS_OPTIONS.RATED_VOLTAGE_2,
         FIELDS_OPTIONS.RATED_S,
         FIELDS_OPTIONS.SERIE_RESISTANCE,
         FIELDS_OPTIONS.SERIE_REACTANCE,
@@ -473,9 +552,15 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.VOLTAGE_LEVEL_ID_1,
         FIELDS_OPTIONS.VOLTAGE_LEVEL_ID_2,
         FIELDS_OPTIONS.COUNTRY,
+        FIELDS_OPTIONS.HAS_RATIO_TAP_CHANGER,
         FIELDS_OPTIONS.LOAD_TAP_CHANGING_CAPABILITIES,
+        FIELDS_OPTIONS.RATIO_REGULATION_MODE,
         FIELDS_OPTIONS.RATIO_REGULATING,
         FIELDS_OPTIONS.RATIO_TARGET_V,
+        FIELDS_OPTIONS.HAS_PHASE_TAP_CHANGER,
+        FIELDS_OPTIONS.PHASE_REGULATING,
+        FIELDS_OPTIONS.PHASE_REGULATION_MODE,
+        FIELDS_OPTIONS.PHASE_REGULATION_VALUE,
     ],
     GENERATOR: [
         FIELDS_OPTIONS.ID,
