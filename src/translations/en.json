@@ -271,7 +271,7 @@
   "q0": "Constant Q (MVar)",
   "loadTapChangingCapabilities": "Ratio tap changer on-load",
   "regulatingRatio": "Ratio tap changer regulating",
-  "ratioTargetV": "Ratio tap changer voltage set point",
+  "ratioTargetV": "Ratio tap changer voltage set point (kV)",
   "magnetizingConductance": "Magnetizing conductance (μS)",
   "magnetizingSusceptance": "Magnetizing susceptance (μS)",
   "vlNominalVoltage": "Voltage level nominal voltage (kV)",

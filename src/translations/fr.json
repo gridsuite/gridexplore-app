@@ -271,7 +271,7 @@
   "q0": "Q constant (MVar)",
   "loadTapChangingCapabilities": "Régleur en charge",
   "regulatingRatio": "Régleur en réglage",
-  "ratioTargetV": "Tension de consigne du régleur",
+  "ratioTargetV": "Tension de consigne du régleur (kV)",
   "magnetizingConductance": "Conductance magnétisante (μS)",
   "magnetizingSusceptance": "Susceptance magnétisante (μS)",
   "vlNominalVoltage": "Tension nominale poste (kV)",
