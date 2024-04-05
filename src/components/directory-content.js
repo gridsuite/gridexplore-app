@@ -27,7 +27,7 @@ import {
     OverflowableText,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Box, Checkbox } from '@mui/material';
+import { Box, Checkbox, Grid } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
 import CriteriaBasedFilterEditionDialog from './dialogs/filter/criteria-based/criteria-based-filter-edition-dialog';
@@ -44,6 +44,8 @@ import ExpertFilterEditionDialog from './dialogs/filter/expert/expert-filter-edi
 import { noSelectionForCopy } from 'utils/constants';
 import DescriptionModificationDialogue from './dialogs/description-modification/description-modification-dialogue';
 import { useMultiselect } from 'utils/use-multiselect';
+import CustomAgGridTable from './utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
+import { CustomAGGrid } from './custom-aggrid';
 
 const circularProgressSize = '70px';
 
@@ -52,16 +54,16 @@ const styles = {
         color: theme.link.color,
         textDecoration: 'none',
     }),
-    cell: {
+    grid: { height: 500, width: '100%' },
+    tableCell: (theme) => ({
+        fontSize: 'small',
         display: 'flex',
         alignItems: 'center',
-        textAlign: 'center',
-        boxSizing: 'border-box',
-        flex: 1,
-        height: '48px',
-        padding: `${DEFAULT_CELL_PADDING}px`,
-        overflow: 'hidden',
+    }),
+    overflow: {
+        whiteSpace: 'pre',
         textOverflow: 'ellipsis',
+        overflow: 'hidden',
     },
     clickable: {
         cursor: 'pointer',
@@ -167,12 +169,14 @@ const DirectoryContent = () => {
         [currentChildren]
     );
 
+    const [selectedIds, setSelectedIds] = useState([]);
+
     const {
-        selectedIds,
+        selectedIdss,
         toggleSelection,
         toggleSelectAll,
         handleShiftAndCtrlClick,
-        clearSelection,
+        clearSelections,
     } = useMultiselect(currentChildrenUuids);
 
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
@@ -301,12 +305,16 @@ const DirectoryContent = () => {
     );
     const contextualMixPolicy = contextualMixPolicies.ALL;
 
+    const clearSelection = () => {
+        gridRef.current.api.forEachNode((node) => node.setSelected(false));
+    };
+
     const onContextMenu = useCallback(
         (event) => {
             const element = currentChildren?.find(
                 (e) =>
-                    event.rowData && // check if right click is made out of table in order to prevent bug when right clicking out of the table when an element is uploading
-                    e.elementUuid === event.rowData?.elementUuid
+                    event.data && // check if right click is made out of table in order to prevent bug when right clicking out of the table when an element is uploading
+                    e.elementUuid === event.data?.elementUuid
             );
 
             if (selectedDirectory) {
@@ -317,10 +325,10 @@ const DirectoryContent = () => {
                 if (element.type !== 'DIRECTORY') {
                     setActiveElement({
                         hasMetadata:
-                            childrenMetadata[event.rowData.elementUuid] !==
+                            childrenMetadata[event.data.elementUuid] !==
                             undefined,
                         specificMetadata:
-                            childrenMetadata[event.rowData.elementUuid]
+                            childrenMetadata[event.data.elementUuid]
                                 ?.specificMetadata,
                         ...element,
                     });
@@ -341,7 +349,7 @@ const DirectoryContent = () => {
                             element?.elementUuid &&
                             !selectedIds.includes(element.elementUuid)
                         ) {
-                            toggleSelection(element.elementUuid);
+                            event.node.setSelected(true);
                         }
                     }
                 }
@@ -366,7 +374,6 @@ const DirectoryContent = () => {
             contextualMixPolicies,
             contextualMixPolicy,
             childrenMetadata,
-            toggleSelection,
             clearSelection,
         ]
     );
@@ -412,24 +419,10 @@ const DirectoryContent = () => {
         [appsAndUrls]
     );
 
-    const handleClickElementCheckbox = useCallback(
-        (clickEvent, elementUuid) => {
-            clickEvent.stopPropagation();
-            if (clickEvent.shiftKey) {
-                // if row is clicked while shift is pressed, range of rows selection is toggled
-                handleShiftAndCtrlClick(clickEvent, elementUuid);
-                // nothing else happens, hence the return
-                return;
-            }
-
-            toggleSelection(elementUuid);
-        },
-        [handleShiftAndCtrlClick, toggleSelection]
-    );
-
     const handleRowClick = useCallback(
         (clickEvent) => {
-            const clickedElementUuid = clickEvent.rowData.elementUuid;
+            console.log('ROW CLICKED', clickEvent);
+            const clickedElementUuid = clickEvent.data.elementUuid;
             const element = currentChildren.find(
                 (e) => e.elementUuid === clickedElementUuid
             );
@@ -439,11 +432,11 @@ const DirectoryContent = () => {
                 return;
             }
 
-            if (clickEvent.event?.shiftKey || clickEvent.event?.ctrlKey) {
-                handleShiftAndCtrlClick(clickEvent.event, clickedElementUuid);
-                // nothing else happens, hence the return
-                return;
-            }
+            // if (clickEvent.event?.shiftKey || clickEvent.event?.ctrlKey) {
+            //     handleShiftAndCtrlClick(clickEvent.event, clickedElementUuid);
+            //     // nothing else happens, hence the return
+            //     return;
+            // }
 
             setElementName(childrenMetadata[element.elementUuid]?.name);
             const subtype = childrenMetadata[element.elementUuid].subtype;
@@ -539,19 +532,17 @@ const DirectoryContent = () => {
     );
 
     const typeCellRender = useCallback((cellData) => {
-        const { rowData = {} } = cellData || {};
+        const { data = {} } = cellData || {};
         return (
             <Box sx={styles.cell}>
-                <OverflowableText
-                    text={rowData.type}
-                    tooltipSx={styles.tooltip}
-                />
+                <OverflowableText text={data.type} tooltipSx={styles.tooltip} />
             </Box>
         );
     }, []);
 
     function userCellRender(cellData) {
-        const user = cellData.rowData[cellData.dataKey];
+        const user = cellData.data[cellData.colDef.field];
+        console.log('USER', user, cellData);
         return (
             <Box sx={styles.cell}>
                 <Tooltip title={user} placement="right">
@@ -565,7 +556,8 @@ const DirectoryContent = () => {
     }
 
     function dateCellRender(cellData) {
-        const data = new Date(cellData.rowData[cellData.dataKey]);
+        console.log('ROWDATA', { ...cellData });
+        const data = new Date(cellData.data[cellData.colDef.field]);
         if (data instanceof Date && !isNaN(data)) {
             const cellMidnight = new Date(data).setHours(0, 0, 0, 0);
 
@@ -600,7 +592,7 @@ const DirectoryContent = () => {
     const descriptionCellRender = useCallback(
         (cellData) => {
             const element = currentChildren.find(
-                (e) => e.elementUuid === cellData.rowData.elementUuid
+                (e) => e.elementUuid === cellData.data.elementUuid
             );
 
             const description = element.description;
@@ -611,7 +603,10 @@ const DirectoryContent = () => {
             const tooltip = descriptionLines?.join('\n');
 
             const handleDescriptionIconClick = (clickEvent) => {
+                console.log('ROW CLICKED 22', clickEvent);
                 clickEvent.stopPropagation();
+                clickEvent.preventDefault();
+                clickEvent.nativeEvent.stopImmediatePropagation();
                 if (clickEvent.shiftKey || clickEvent.ctrlKey) {
                     handleShiftAndCtrlClick(clickEvent, element?.elementUuid);
                     // nothing else happens, hence the return
@@ -643,18 +638,14 @@ const DirectoryContent = () => {
                     onClick={handleDescriptionIconClick}
                 />
             );
-            return (
-                <>
-                    <Box sx={styles.cell}>{icon}</Box>
-                </>
-            );
+            return <Box>{icon}</Box>;
         },
         [currentChildren, handleShiftAndCtrlClick]
     );
 
     const getDisplayedElementName = useCallback(
         (cellData) => {
-            const { elementName, uploading, elementUuid } = cellData.rowData;
+            const { elementName, uploading, elementUuid } = cellData.data;
             const formatMessage = intl.formatMessage;
             if (uploading) {
                 return elementName + '\n' + formatMessage({ id: 'uploading' });
@@ -679,12 +670,13 @@ const DirectoryContent = () => {
 
     const nameCellRender = useCallback(
         (cellData) => {
+            console.log('CELLDATA', cellData);
+
             const element = currentChildren.find(
-                (e) => e.elementUuid === cellData.rowData.elementUuid
+                (e) => e.elementUuid === cellData.data.elementUuid
             );
             return (
-                <Box sx={styles.cell}>
-                    {/*  Icon */}
+                <Box sx={styles.tableCell}>
                     {!childrenMetadata[element.elementUuid] &&
                         isElementCaseOrStudy(element.type) && (
                             <CircularProgress
@@ -694,54 +686,23 @@ const DirectoryContent = () => {
                         )}
                     {childrenMetadata[element.elementUuid] &&
                         getFileIcon(element.type, styles.icon)}
-                    {/* Name */}
-                    <OverflowableText
-                        text={getDisplayedElementName(cellData)}
-                        tooltipSx={styles.tooltip}
-                    />
+                    <Tooltip
+                        disableFocusListener
+                        disableTouchListener
+                        title={
+                            cellData.tooltip ? cellData.tooltip : cellData.value
+                        }
+                    >
+                        <Box
+                            sx={styles.overflow}
+                            children={getDisplayedElementName(cellData)}
+                        />
+                    </Tooltip>
                 </Box>
             );
         },
         [childrenMetadata, currentChildren, getDisplayedElementName]
     );
-
-    function selectionHeaderRenderer() {
-        return (
-            <Box
-                onClick={(e) => {
-                    toggleSelectAll();
-                    e.stopPropagation();
-                }}
-                sx={styles.checkboxes}
-            >
-                <Checkbox
-                    checked={selectedIds.length > 0}
-                    indeterminate={
-                        selectedIds.length !== 0 &&
-                        selectedIds.length !== currentChildren.length
-                    }
-                />
-            </Box>
-        );
-    }
-
-    function selectionRenderer(cellData) {
-        const elementUuid = cellData.rowData['elementUuid'];
-        const isUploading = cellData.rowData['uploading'];
-        return (
-            <Box
-                onClick={(clickEvent) =>
-                    handleClickElementCheckbox(clickEvent, elementUuid)
-                }
-                sx={styles.checkboxes}
-            >
-                <Checkbox
-                    disabled={isUploading}
-                    checked={selectedIds.includes(elementUuid)}
-                />
-            </Box>
-        );
-    }
 
     useEffect(() => {
         if (!selectedDirectory) {
@@ -832,6 +793,7 @@ const DirectoryContent = () => {
         () =>
             currentChildren?.map((child) => ({
                 ...child,
+                selected: true,
                 type:
                     childrenMetadata[child.elementUuid] &&
                     getElementTypeTranslation(
@@ -878,6 +840,78 @@ const DirectoryContent = () => {
         );
     };
 
+    const formatCell = (props) => {
+        let value = props?.valueFormatted || props.value;
+        let tooltipValue = undefined;
+        if (props.colDef.valueGetter) {
+            value = props?.context?.network
+                ? props.colDef.valueGetter(props, props.context.network)
+                : props.colDef.valueGetter(props);
+        }
+        if (props.colDef.normed) {
+            value = props.colDef.normed(props.fluxConvention, value);
+        }
+        if (
+            value != null &&
+            props.colDef.numeric &&
+            props.colDef.fractionDigits
+        ) {
+            // only numeric rounded cells have a tooltip (their raw numeric value)
+            tooltipValue = value;
+            value = parseFloat(value).toFixed(props.colDef.fractionDigits);
+        }
+        if (props.colDef.numeric && isNaN(value)) {
+            value = null;
+        }
+        return { value: value, tooltip: tooltipValue };
+    };
+
+    const DefaultCellRenderer = (props) => {
+        const cellValue = formatCell(props);
+        return (
+            <Box sx={styles.tableCell}>
+                <Tooltip
+                    disableFocusListener
+                    disableTouchListener
+                    title={
+                        cellValue.tooltip ? cellValue.tooltip : cellValue.value
+                    }
+                >
+                    <Box sx={styles.overflow} children={cellValue.value} />
+                </Tooltip>
+            </Box>
+        );
+    };
+
+    const gridRef = useRef();
+
+    const onSelectionChanged = useCallback(() => {
+        var selectedRows = gridRef.current.api.getSelectedRows();
+        var selectedRowsString = '';
+        var maxToShow = 5;
+        selectedRows.forEach(function (selectedRow, index) {
+            console.log('SELECTED', selectedRow);
+        });
+
+        setSelectedIds(selectedRows.map((row) => row.elementUuid));
+    }, []);
+
+    const defaultColDef = useMemo(
+        () => ({
+            sortable: true,
+            resizable: false,
+            lockPinned: true,
+            wrapHeaderText: true,
+            autoHeaderHeight: true,
+        }),
+        []
+    );
+
+    const onGridReady = useCallback(({ api }) => {
+        api?.sizeColumnsToFit();
+    }, []);
+
+    console.log('ROWS', rows);
     const renderTableContent = () => {
         return (
             <>
@@ -888,77 +922,85 @@ const DirectoryContent = () => {
                         selectedIds?.length > 0 ? getSelectedChildren() : []
                     }
                 />
-                <VirtualizedTable
-                    style={{ flexGrow: 1 }}
-                    onRowRightClick={(e) => onContextMenu(e)}
-                    onRowClick={handleRowClick}
-                    rows={rows}
-                    columns={[
+                <CustomAGGrid
+                    ref={gridRef}
+                    rowData={rows}
+                    defaultColDef={defaultColDef}
+                    rowSelection="multiple"
+                    suppressRowClickSelection={true}
+                    onGridReady={onGridReady}
+                    onRowClicked={handleRowClick}
+                    onCellContextMenu={onContextMenu}
+                    columnDefs={[
                         {
-                            cellRenderer: selectionRenderer,
-                            dataKey: 'selected',
-                            label: '',
-                            headerRenderer: selectionHeaderRenderer,
-                            minWidth: '3%',
-                        },
-                        {
-                            label: intl.formatMessage({
+                            headerName: intl.formatMessage({
                                 id: 'elementName',
                             }),
-                            dataKey: 'elementName',
+                            field: 'elementName',
                             cellRenderer: nameCellRender,
-                            minWidth: '31%',
+
+                            headerCheckboxSelection: true,
+                            checkboxSelection: true,
                         },
                         {
-                            label: intl.formatMessage({
+                            headerName: intl.formatMessage({
                                 id: 'description',
                             }),
-                            dataKey: 'description',
-                            minWidth: '10%',
+                            field: 'description',
                             cellRenderer: descriptionCellRender,
+                            maxWidth: '150',
                         },
                         {
-                            minWidth: '15%',
-                            label: intl.formatMessage({
+                            headerName: intl.formatMessage({
                                 id: 'type',
                             }),
-                            dataKey: 'type',
+                            field: 'type',
                             cellRenderer: typeCellRender,
                         },
                         {
-                            minWidth: '10%',
-                            label: intl.formatMessage({
+                            headerName: intl.formatMessage({
                                 id: 'creator',
                             }),
-                            dataKey: 'owner',
+                            field: 'owner',
                             cellRenderer: userCellRender,
+                            maxWidth: '150',
                         },
                         {
-                            minWidth: '10%',
-                            label: intl.formatMessage({
+                            headerName: intl.formatMessage({
                                 id: 'created',
                             }),
-                            dataKey: 'creationDate',
+                            field: 'creationDate',
                             cellRenderer: dateCellRender,
+                            maxWidth: '150',
                         },
                         {
-                            minWidth: '11%',
-                            label: intl.formatMessage({
+                            headerName: intl.formatMessage({
                                 id: 'modifiedBy',
                             }),
-                            dataKey: 'lastModifiedBy',
+                            field: 'lastModifiedBy',
                             cellRenderer: userCellRender,
+                            maxWidth: '150',
                         },
                         {
-                            minWidth: '10%',
-                            label: intl.formatMessage({
+                            headerName: intl.formatMessage({
                                 id: 'modified',
                             }),
-                            dataKey: 'lastModificationDate',
+                            field: 'lastModificationDate',
                             cellRenderer: dateCellRender,
+                            maxWidth: '150',
                         },
                     ]}
-                    sortable
+                    getRowStyle={(cellData) => {
+                        console.log(
+                            'CHACKING',
+                            cellData,
+                            cellData.data?.notClickable !== true
+                        );
+                        if (cellData.data?.notClickable !== true) {
+                            return { cursor: 'pointer' };
+                        }
+                    }}
+                    onSelectionChanged={onSelectionChanged}
                 />
             </>
         );
@@ -1084,16 +1126,9 @@ const DirectoryContent = () => {
 
     return (
         <>
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    flexGrow: 1,
-                }}
-                onContextMenu={(e) => onContextMenu(e)}
-            >
+            <Grid item xs={12} sx={styles.grid}>
                 {renderContent()}
-            </div>
+            </Grid>
 
             <div
                 onMouseDown={(e) => {
