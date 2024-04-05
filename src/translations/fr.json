@@ -240,6 +240,7 @@
   "voltageRegulatorOn": "Réglage de tension",
   "PlannedActivePowerSetPoint": "Puissance imposée",
   "download.button": "Télécharger",
+  "download.export.button": "Convertir",
   "download.exportFormat": "Format de l'export",
   "download.message.downloadedCase": "Une situation a été téléchargée.",
   "download.message.downloadedCases": "{number} situations ont été téléchargées.",

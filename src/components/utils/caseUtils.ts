@@ -5,9 +5,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { exportCase } from '../../utils/rest-api';
+import {
+    downloadCase,
+    exportCase,
+    getCaseOriginalName,
+} from '../../utils/rest-api';
 import { useIntl } from 'react-intl';
 import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+
+const downloadCases = async (uuids: string[]) => {
+    for (const uuid of uuids) {
+        const result = await downloadCase(uuid);
+        let name = await getCaseOriginalName(uuid);
+        const blob = await result.blob();
+        const href = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = href;
+        link.setAttribute(
+            'download',
+            typeof name === 'string' ? name : `${uuid}.xiidm`
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+};
 
 const exportCases = async (
     cases: any[],
@@ -168,7 +190,7 @@ export function useDownloadUtils() {
             messageTxt: errorMsg,
         });
 
-    const handleDownloadCases = async (
+    const handleExportCases = async (
         selectedElements: any[],
         format: string,
         formatParameters: {
@@ -194,5 +216,20 @@ export function useDownloadUtils() {
         }
     };
 
-    return { handleDownloadCases };
+    const handleDownloadCases = async (selectedElements: any[]) => {
+        const casesUuids = selectedElements
+            .filter((element) => element.type === ElementType.CASE)
+            .map((element) => element.elementUuid);
+        await downloadCases(casesUuids);
+        if (casesUuids.length !== selectedElements.length) {
+            snackInfo({
+                messageTxt: buildPartialDownloadMessage(
+                    casesUuids.length,
+                    selectedElements
+                ),
+            });
+        }
+    };
+
+    return [handleDownloadCases, handleExportCases];
 }

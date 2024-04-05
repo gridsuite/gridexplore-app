@@ -106,7 +106,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
             aria-labelledby="dialog-title-export-case"
         >
             <DialogTitle>
-                {intl.formatMessage({ id: 'download.button' })}
+                {intl.formatMessage({ id: 'download.export.button' })}
             </DialogTitle>
             <DialogContent>
                 <FormControl fullWidth size="small">
@@ -202,7 +202,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                     variant="outlined"
                     disabled={loading || !selectedFormat}
                 >
-                    <FormattedMessage id="download.button" />
+                    <FormattedMessage id="download.export.button" />
                 </Button>
             </DialogActions>
         </Dialog>
