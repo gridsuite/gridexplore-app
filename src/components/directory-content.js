@@ -43,7 +43,6 @@ import ScriptEditionDialog from './dialogs/contingency-list/edition/script/scrip
 import ExpertFilterEditionDialog from './dialogs/filter/expert/expert-filter-edition-dialog';
 import { noSelectionForCopy } from 'utils/constants';
 import DescriptionModificationDialogue from './dialogs/description-modification/description-modification-dialogue';
-import { useMultiselect } from 'utils/use-multiselect';
 
 const circularProgressSize = '70px';
 
@@ -63,7 +62,7 @@ const styles = {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-    clickable: {
+    chip: {
         cursor: 'pointer',
     },
     icon: (theme) => ({
@@ -153,27 +152,11 @@ const DirectoryContent = () => {
     });
     const [childrenMetadata, setChildrenMetadata] = useState({});
 
+    const [selectedUuids, setSelectedUuids] = useState(new Set());
+
     const currentChildren = useSelector((state) => state.currentChildren);
     const currentChildrenRef = useRef();
     currentChildrenRef.current = currentChildren;
-
-    const currentChildrenUuids = useMemo(
-        () =>
-            currentChildren
-                ? currentChildren
-                      .filter((e) => !e.uploading)
-                      .map((e) => e.elementUuid)
-                : [],
-        [currentChildren]
-    );
-
-    const {
-        selectedIds,
-        toggleSelection,
-        toggleSelectAll,
-        handleShiftAndCtrlClick,
-        clearSelection,
-    } = useMultiselect(currentChildrenUuids);
 
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -294,7 +277,7 @@ const DirectoryContent = () => {
     /* User interactions */
     const contextualMixPolicies = useMemo(
         () => ({
-            BIG: 'GoogleMicrosoft', // if !selectedUuids.includes(selected.Uuid) deselects selectedUuids
+            BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
             ALL: 'All', // union of activeElement.Uuid and selectedUuids (currently implemented)
         }),
         []
@@ -304,9 +287,7 @@ const DirectoryContent = () => {
     const onContextMenu = useCallback(
         (event) => {
             const element = currentChildren?.find(
-                (e) =>
-                    event.rowData && // check if right click is made out of table in order to prevent bug when right clicking out of the table when an element is uploading
-                    e.elementUuid === event.rowData?.elementUuid
+                (e) => e.elementUuid === event.rowData?.elementUuid
             );
 
             if (selectedDirectory) {
@@ -328,20 +309,22 @@ const DirectoryContent = () => {
                     if (contextualMixPolicy === contextualMixPolicies.BIG) {
                         // If some elements were already selected and the active element is not in them, we deselect the already selected elements.
                         if (
-                            selectedIds.length &&
+                            selectedUuids?.size &&
                             element?.elementUuid &&
-                            !selectedIds.includes(element.elementUuid)
+                            !selectedUuids.has(element.elementUuid)
                         ) {
-                            clearSelection();
+                            setSelectedUuids(new Set());
                         }
                     } else {
                         // If some elements were already selected, we add the active element to the selected list if not already in it.
                         if (
-                            selectedIds.length &&
+                            selectedUuids?.size &&
                             element?.elementUuid &&
-                            !selectedIds.includes(element.elementUuid)
+                            !selectedUuids.has(element.elementUuid)
                         ) {
-                            toggleSelection(element.elementUuid);
+                            let updatedSelectedUuids = new Set(selectedUuids);
+                            updatedSelectedUuids.add(element.elementUuid);
+                            setSelectedUuids(updatedSelectedUuids);
                         }
                     }
                 }
@@ -362,12 +345,10 @@ const DirectoryContent = () => {
             currentChildren,
             dispatch,
             selectedDirectory,
-            selectedIds,
+            selectedUuids,
             contextualMixPolicies,
             contextualMixPolicy,
             childrenMetadata,
-            toggleSelection,
-            clearSelection,
         ]
     );
 
@@ -412,91 +393,72 @@ const DirectoryContent = () => {
         [appsAndUrls]
     );
 
-    const handleClickElementCheckbox = useCallback(
-        (clickEvent, elementUuid) => {
-            clickEvent.stopPropagation();
-            if (clickEvent.shiftKey) {
-                // if row is clicked while shift is pressed, range of rows selection is toggled
-                handleShiftAndCtrlClick(clickEvent, elementUuid);
-                // nothing else happens, hence the return
-                return;
-            }
-
-            toggleSelection(elementUuid);
-        },
-        [handleShiftAndCtrlClick, toggleSelection]
-    );
-
     const handleRowClick = useCallback(
-        (clickEvent) => {
-            const clickedElementUuid = clickEvent.rowData.elementUuid;
+        (event) => {
             const element = currentChildren.find(
-                (e) => e.elementUuid === clickedElementUuid
+                (e) => e.elementUuid === event.rowData.elementUuid
             );
-
-            // if clicked element is not known within current directory, nothing happens
-            if (childrenMetadata[element.elementUuid] === undefined) {
-                return;
-            }
-
-            if (clickEvent.event?.shiftKey || clickEvent.event?.ctrlKey) {
-                handleShiftAndCtrlClick(clickEvent.event, clickedElementUuid);
-                // nothing else happens, hence the return
-                return;
-            }
-
-            setElementName(childrenMetadata[element.elementUuid]?.name);
-            const subtype = childrenMetadata[element.elementUuid].subtype;
-            /** set active directory on the store because it will be used while editing the contingency name */
-            dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-            switch (element.type) {
-                case ElementType.STUDY:
-                    let url = getLink(element.elementUuid, element.type);
-                    url
-                        ? window.open(url, '_blank')
-                        : handleError(
-                              intl.formatMessage(
-                                  { id: 'getAppLinkError' },
-                                  { type: element.type }
-                              )
-                          );
-                    break;
-                case ElementType.CONTINGENCY_LIST:
-                    if (subtype === ContingencyListType.CRITERIA_BASED.id) {
-                        setCurrentFiltersContingencyListId(element.elementUuid);
-                        setOpenDialog(subtype);
-                    } else if (subtype === ContingencyListType.SCRIPT.id) {
-                        setCurrentScriptContingencyListId(element.elementUuid);
-                        setOpenDialog(subtype);
-                    } else if (
-                        subtype === ContingencyListType.EXPLICIT_NAMING.id
-                    ) {
-                        setCurrentExplicitNamingContingencyListId(
-                            element.elementUuid
-                        );
-                        setOpenDialog(subtype);
-                    }
-                    break;
-                case ElementType.FILTER:
-                    if (subtype === FilterType.EXPLICIT_NAMING.id) {
-                        setCurrentExplicitNamingFilterId(element.elementUuid);
-                        setOpenDialog(subtype);
-                    } else if (subtype === FilterType.CRITERIA_BASED.id) {
-                        setCurrentCriteriaBasedFilterId(element.elementUuid);
-                        setOpenDialog(subtype);
-                    } else if (subtype === FilterType.EXPERT.id) {
-                        setCurrentExpertFilterId(element.elementUuid);
-                        setOpenDialog(subtype);
-                    }
-                    break;
-                default:
-                    break;
+            if (childrenMetadata[element.elementUuid] !== undefined) {
+                setElementName(childrenMetadata[element.elementUuid]?.name);
+                const subtype = childrenMetadata[element.elementUuid].subtype;
+                /** set active directory on the store because it will be used while editing the contingency name */
+                dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
+                switch (element.type) {
+                    case ElementType.STUDY:
+                        let url = getLink(element.elementUuid, element.type);
+                        url
+                            ? window.open(url, '_blank')
+                            : handleError(
+                                  intl.formatMessage(
+                                      { id: 'getAppLinkError' },
+                                      { type: element.type }
+                                  )
+                              );
+                        break;
+                    case ElementType.CONTINGENCY_LIST:
+                        if (subtype === ContingencyListType.CRITERIA_BASED.id) {
+                            setCurrentFiltersContingencyListId(
+                                element.elementUuid
+                            );
+                            setOpenDialog(subtype);
+                        } else if (subtype === ContingencyListType.SCRIPT.id) {
+                            setCurrentScriptContingencyListId(
+                                element.elementUuid
+                            );
+                            setOpenDialog(subtype);
+                        } else if (
+                            subtype === ContingencyListType.EXPLICIT_NAMING.id
+                        ) {
+                            setCurrentExplicitNamingContingencyListId(
+                                element.elementUuid
+                            );
+                            setOpenDialog(subtype);
+                        }
+                        break;
+                    case ElementType.FILTER:
+                        if (subtype === FilterType.EXPLICIT_NAMING.id) {
+                            setCurrentExplicitNamingFilterId(
+                                element.elementUuid
+                            );
+                            setOpenDialog(subtype);
+                        } else if (subtype === FilterType.CRITERIA_BASED.id) {
+                            setCurrentCriteriaBasedFilterId(
+                                element.elementUuid
+                            );
+                            setOpenDialog(subtype);
+                        } else if (subtype === FilterType.EXPERT.id) {
+                            setCurrentExpertFilterId(element.elementUuid);
+                            setOpenDialog(subtype);
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         },
         [
             childrenMetadata,
             currentChildren,
-            handleShiftAndCtrlClick,
             dispatch,
             getLink,
             handleError,
@@ -556,7 +518,7 @@ const DirectoryContent = () => {
             <Box sx={styles.cell}>
                 <Tooltip title={user} placement="right">
                     <Chip
-                        sx={styles.clickable}
+                        sx={styles.chip}
                         label={abbreviationFromUserName(user)}
                     />
                 </Tooltip>
@@ -610,16 +572,10 @@ const DirectoryContent = () => {
             }
             const tooltip = descriptionLines?.join('\n');
 
-            const handleDescriptionIconClick = (clickEvent) => {
-                clickEvent.stopPropagation();
-                if (clickEvent.shiftKey || clickEvent.ctrlKey) {
-                    handleShiftAndCtrlClick(clickEvent, element?.elementUuid);
-                    // nothing else happens, hence the return
-                    return;
-                }
-
+            const handleDescriptionIconClick = (e) => {
                 setActiveElement(element);
                 setOpenDescModificationDialog(true);
+                e.stopPropagation();
             };
 
             const icon = description ? (
@@ -633,15 +589,11 @@ const DirectoryContent = () => {
                     placement="right"
                 >
                     <StickyNote2OutlinedIcon
-                        sx={styles.clickable}
                         onClick={handleDescriptionIconClick}
                     />
                 </Tooltip>
             ) : (
-                <CreateIcon
-                    sx={styles.clickable}
-                    onClick={handleDescriptionIconClick}
-                />
+                <CreateIcon onClick={handleDescriptionIconClick} />
             );
             return (
                 <>
@@ -649,7 +601,7 @@ const DirectoryContent = () => {
                 </>
             );
         },
-        [currentChildren, handleShiftAndCtrlClick]
+        [currentChildren]
     );
 
     const getDisplayedElementName = useCallback(
@@ -705,6 +657,34 @@ const DirectoryContent = () => {
         [childrenMetadata, currentChildren, getDisplayedElementName]
     );
 
+    function toggleSelection(elementUuid) {
+        let element = currentChildren?.find(
+            (e) => e.elementUuid === elementUuid
+        );
+        if (element === undefined) {
+            return;
+        }
+        let newSelection = new Set(selectedUuids);
+        if (!newSelection.delete(elementUuid)) {
+            newSelection.add(elementUuid);
+        }
+        setSelectedUuids(newSelection);
+    }
+
+    function toggleSelectAll() {
+        if (selectedUuids.size === 0) {
+            setSelectedUuids(
+                new Set(
+                    currentChildren
+                        .filter((e) => !e.uploading)
+                        .map((c) => c.elementUuid)
+                )
+            );
+        } else {
+            setSelectedUuids(new Set());
+        }
+    }
+
     function selectionHeaderRenderer() {
         return (
             <Box
@@ -715,10 +695,10 @@ const DirectoryContent = () => {
                 sx={styles.checkboxes}
             >
                 <Checkbox
-                    checked={selectedIds.length > 0}
+                    checked={selectedUuids.size > 0}
                     indeterminate={
-                        selectedIds.length !== 0 &&
-                        selectedIds.length !== currentChildren.length
+                        selectedUuids.size !== 0 &&
+                        selectedUuids.size !== currentChildren.length
                     }
                 />
             </Box>
@@ -727,18 +707,15 @@ const DirectoryContent = () => {
 
     function selectionRenderer(cellData) {
         const elementUuid = cellData.rowData['elementUuid'];
-        const isUploading = cellData.rowData['uploading'];
         return (
             <Box
-                onClick={(clickEvent) =>
-                    handleClickElementCheckbox(clickEvent, elementUuid)
-                }
+                onClick={(e) => {
+                    toggleSelection(elementUuid);
+                    e.stopPropagation();
+                }}
                 sx={styles.checkboxes}
             >
-                <Checkbox
-                    disabled={isUploading}
-                    checked={selectedIds.includes(elementUuid)}
-                />
+                <Checkbox checked={selectedUuids.has(elementUuid)} />
             </Box>
         );
     }
@@ -788,17 +765,18 @@ const DirectoryContent = () => {
                     }
                 });
         }
+        setSelectedUuids(new Set());
     }, [handleError, currentChildren, currentChildrenRef]);
 
     const getSelectedChildren = () => {
         let selectedChildren = [];
         if (currentChildren?.length > 0) {
             // Adds the previously selected elements
-            if (selectedIds.length) {
+            if (selectedUuids?.size) {
                 selectedChildren = currentChildren
                     .filter(
                         (child) =>
-                            selectedIds.includes(child.elementUuid) &&
+                            selectedUuids.has(child.elementUuid) &&
                             child.elementUuid !== activeElement?.elementUuid
                     )
                     .map((child) => {
@@ -863,7 +841,7 @@ const DirectoryContent = () => {
                     selectedElements={
                         // Check selectedUuids.size here to show toolbar options only
                         // when multi selection checkboxes are used.
-                        selectedIds?.length > 0 ? getSelectedChildren() : []
+                        selectedUuids.size > 0 ? getSelectedChildren() : []
                     }
                 />
                 <div style={{ textAlign: 'center', marginTop: '100px' }}>
@@ -885,7 +863,7 @@ const DirectoryContent = () => {
                     selectedElements={
                         // Check selectedUuids.size here to show toolbar options only
                         // when multi selection checkboxes are used.
-                        selectedIds?.length > 0 ? getSelectedChildren() : []
+                        selectedUuids.size > 0 ? getSelectedChildren() : []
                     }
                 />
                 <VirtualizedTable
