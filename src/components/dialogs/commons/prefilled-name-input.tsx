@@ -9,6 +9,9 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { CASE_FILE } from '../../utils/field-constants';
 import { UniqueNameInput, ElementType } from '@gridsuite/commons-ui';
+import { elementExists } from '../../../utils/rest-api';
+import { useSelector } from 'react-redux';
+import { ReduxState } from '../../../redux/reducer.type';
 
 interface PrefilledNameInputProps {
     label: string;
@@ -37,6 +40,10 @@ const PrefilledNameInput: FunctionComponent<PrefilledNameInputProps> = ({
     const caseFile = watch(CASE_FILE) as File;
     const caseFileErrorMessage = errors.caseFile?.message;
     const apiCallErrorMessage = errors.root?.apiCall?.message;
+
+    const activeDirectory = useSelector(
+        (state: ReduxState) => state.activeDirectory
+    );
 
     useEffect(() => {
         // we replace the name only if some conditions are respected
@@ -70,6 +77,8 @@ const PrefilledNameInput: FunctionComponent<PrefilledNameInputProps> = ({
             name={name}
             label={label}
             elementType={elementType}
+            elementExists={elementExists}
+            activeDirectory={activeDirectory}
             autoFocus={!caseFile}
             onManualChangeCallback={() => setModifiedByUser(true)}
         />

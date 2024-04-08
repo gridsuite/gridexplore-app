@@ -48,14 +48,13 @@ import {
 
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
-import { ElementType } from '@gridsuite/commons-ui';
+import { ElementType, FilterCreationDialog } from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import StashedElementsDialog from '../dialogs/stashed-elements/stashed-elements-dialog';
 import { RestoreFromTrash } from '@mui/icons-material';
 import { notificationType } from '../../utils/notificationType';
-import { FilterCreationDialog } from '@gridsuite/commons-ui';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
@@ -526,7 +525,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         activeDirectory={activeDirectory}
-                        createfilter={createFilter}
+                        createFilter={createFilter}
                         saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         elementExists={elementExists}
