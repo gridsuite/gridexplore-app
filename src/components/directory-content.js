@@ -638,7 +638,11 @@ const DirectoryContent = () => {
                     onClick={handleDescriptionIconClick}
                 />
             );
-            return <Box>{icon}</Box>;
+            return (
+                <Box sx={{ display: 'inline-flex', verticalAlign: 'middle' }}>
+                    {icon}
+                </Box>
+            );
         },
         [currentChildren, handleShiftAndCtrlClick]
     );
