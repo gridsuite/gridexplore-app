@@ -81,7 +81,7 @@ const ContentContextualMenu = (props) => {
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
-    const [handleDownloadCases, handleExportCases] = useDownloadUtils();
+    const { handleDownloadCases, handleConvertCases } = useDownloadUtils();
 
     const handleLastError = useCallback(
         (message) => {
@@ -697,7 +697,7 @@ const ContentContextualMenu = (props) => {
                     <ExportCaseDialog
                         onClose={handleCloseDialog}
                         onExport={(format, formatParameters) =>
-                            handleExportCases(
+                            handleConvertCases(
                                 selectedElements,
                                 format,
                                 formatParameters

@@ -190,7 +190,7 @@ export function useDownloadUtils() {
             messageTxt: errorMsg,
         });
 
-    const handleExportCases = async (
+    const handleConvertCases = async (
         selectedElements: any[],
         format: string,
         formatParameters: {
@@ -231,5 +231,5 @@ export function useDownloadUtils() {
         }
     };
 
-    return [handleDownloadCases, handleExportCases];
+    return { handleDownloadCases, handleConvertCases: handleConvertCases };
 }

@@ -39,7 +39,7 @@ const ContentToolbar = (props) => {
     const userId = useSelector((state) => state.user.profile.sub);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
-    const [handleDownloadCases, handleExportCases] = useDownloadUtils();
+    const { handleDownloadCases, handleConvertCases } = useDownloadUtils();
 
     const [openDialog, setOpenDialog] = useState(null);
     const directoryUpdatedEvent = useSelector(
@@ -232,7 +232,7 @@ const ContentToolbar = (props) => {
         allowsMove,
         handleDownloadCases,
         selectedElements,
-        stashedElements,
+        stashedElements.length,
     ]);
 
     const renderDialog = () => {
@@ -290,7 +290,7 @@ const ContentToolbar = (props) => {
                     <ExportCaseDialog
                         onClose={handleCloseDialog}
                         onExport={(format, formatParameters) =>
-                            handleExportCases(
+                            handleConvertCases(
                                 selectedElements,
                                 format,
                                 formatParameters
