@@ -108,9 +108,9 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                             ),
                             {
                                 shouldDirty: true,
+                                shouldValidate: true,
                             }
                         );
-                        onValueChange(caseName);
                     }
                 }
             } else {

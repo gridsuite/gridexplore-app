@@ -110,7 +110,13 @@ const ValueEditor = (props: ValueEditorProps) => {
                 defaultValue={props.value}
             />
         );
-    } else if (props.field === FieldType.ID || props.field === FieldType.NAME) {
+    } else if (
+        props.field === FieldType.ID ||
+        props.field === FieldType.NAME ||
+        props.field === FieldType.VOLTAGE_LEVEL_ID ||
+        props.field === FieldType.VOLTAGE_LEVEL_ID_1 ||
+        props.field === FieldType.VOLTAGE_LEVEL_ID_2
+    ) {
         return <TextValueEditor {...props} />;
     }
     return (
