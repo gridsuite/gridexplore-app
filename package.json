@@ -7,7 +7,7 @@
     "dependencies": {
         "@emotion/react": "^11.11.4",
         "@emotion/styled": "^11.11.5",
-        "@gridsuite/commons-ui": "0.52.1",
+        "@gridsuite/commons-ui": "0.53.0",
         "@hookform/resolvers": "^3.3.4",
         "@mui/icons-material": "^5.15.14",
         "@mui/lab": "5.0.0-alpha.169",
@@ -48,6 +48,11 @@
         "typescript": "5.1.6",
         "uuid": "^9.0.1",
         "yup": "^1.4.0"
+    },
+    "overrides": {
+        "react-scripts": {
+            "typescript": "$typescript"
+        }
     },
     "scripts": {
         "start": "react-scripts start",
