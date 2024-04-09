@@ -281,7 +281,7 @@ export function deleteElements(elementUuids, activeDirectory) {
         PREFIX_EXPLORE_SERVER_QUERIES +
             `/v1/explore/elements/` +
             activeDirectory +
-            '/delete-stashed?' +
+            '?' +
             idsParams,
         {
             method: 'delete',
@@ -1082,24 +1082,6 @@ export function exportFilter(studyUuid, filterUuid) {
     );
 }
 
-export function stashElements(elementUuids) {
-    console.info('Stashing elements: ' + elementUuids);
-
-    const url =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        '/v1/elements/' +
-        `stash?ids=` +
-        elementUuids;
-
-    return backendFetch(url, {
-        method: 'post',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-    });
-}
-
 export function restoreElements(elementUuids, activeDirectory) {
     console.info('Restoring elements: ' + elementUuids);
 
@@ -1117,12 +1099,6 @@ export function restoreElements(elementUuids, activeDirectory) {
         },
         body: JSON.stringify(elementUuids),
     });
-}
-
-export function getStashedElements() {
-    console.info('get stashed elements');
-    const url = PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/stash`;
-    return backendFetchJson(url);
 }
 
 export const getExportFormats = () => {

@@ -5,16 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
-import {
-    getStashedElements,
-    moveElementsToDirectory,
-    stashElements,
-} from '../../utils/rest-api';
+import { deleteElements, moveElementsToDirectory } from '../../utils/rest-api';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import DeleteDialog from '../dialogs/delete-dialog';
@@ -23,12 +19,10 @@ import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { ElementType } from '@gridsuite/commons-ui';
-import { FileDownload, RestoreFromTrash } from '@mui/icons-material';
+import { FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
-import StashedElementsDialog from '../dialogs/stashed-elements/stashed-elements-dialog';
 import { DialogsId } from '../../utils/UIconstants';
-import { notificationType } from '../../utils/notificationType';
 
 const ContentToolbar = (props) => {
     const { selectedElements, ...others } = props;
@@ -38,11 +32,6 @@ const ContentToolbar = (props) => {
     const { handleDownloadCases } = useDownloadUtils();
 
     const [openDialog, setOpenDialog] = useState(null);
-    const directoryUpdatedEvent = useSelector(
-        (state) => state.directoryUpdated
-    );
-
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
     const handleLastError = useCallback(
         (message) => {
@@ -132,46 +121,18 @@ const ContentToolbar = (props) => {
         [selectedElements, noCreationInProgress]
     );
 
-    const [stashedElements, setStashedElements] = useState([]);
-    const handleGetStashedElement = useCallback(() => {
-        getStashedElements()
-            .then(setStashedElements)
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
-            });
-    }, [snackError]);
-
     const [deleteError, setDeleteError] = useState('');
-    const handleStashElements = useCallback(
+    const handleDeleteElements = useCallback(
         (elementsUuids) => {
-            stashElements(elementsUuids)
-                .then(handleGetStashedElement)
+            deleteElements(elementsUuids)
                 .catch((error) => {
                     setDeleteError(error.message);
                     handleLastError(error.message);
                 })
                 .finally(handleCloseDialog);
         },
-        [handleCloseDialog, handleLastError, handleGetStashedElement]
+        [handleCloseDialog, handleLastError]
     );
-
-    useEffect(() => {
-        handleGetStashedElement();
-    }, [handleGetStashedElement]);
-
-    useEffect(() => {
-        if (
-            directoryUpdatedEvent.eventData?.headers &&
-            (directoryUpdatedEvent.eventData.headers['notificationType'] ===
-                notificationType.UPDATE_DIRECTORY ||
-                directoryUpdatedEvent.eventData.headers['notificationType'] ===
-                    notificationType.DELETE_DIRECTORY)
-        ) {
-            handleGetStashedElement();
-        }
-    }, [directoryUpdatedEvent, handleGetStashedElement]);
 
     const items = useMemo(() => {
         const toolbarItems = [];
@@ -205,21 +166,12 @@ const ContentToolbar = (props) => {
                 }
             );
         }
-
-        toolbarItems.push({
-            tooltipTextId: 'StashedElements',
-            callback: () => handleOpenDialog(DialogsId.STASHED_ELEMENTS),
-            icon: <RestoreFromTrash fontSize="small" />,
-            disabled: stashedElements.length === 0,
-        });
-
         return toolbarItems;
     }, [
         allowsDelete,
         allowsDownloadCases,
         allowsMove,
         selectedElements.length,
-        stashedElements.length,
     ]);
 
     const renderDialog = () => {
@@ -230,7 +182,7 @@ const ContentToolbar = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         onClick={() =>
-                            handleStashElements(
+                            handleDeleteElements(
                                 selectedElements.map((e) => e.elementUuid)
                             )
                         }
@@ -260,16 +212,6 @@ const ContentToolbar = (props) => {
                             handleCloseDialog();
                         }}
                         items={selectedElements}
-                    />
-                );
-            case DialogsId.STASHED_ELEMENTS:
-                return (
-                    <StashedElementsDialog
-                        open
-                        onClose={handleCloseDialog}
-                        stashedElements={stashedElements}
-                        onStashedElementChange={handleGetStashedElement}
-                        directoryToRestore={selectedDirectory}
                     />
                 );
             case DialogsId.EXPORT:
