@@ -52,7 +52,6 @@ import {
     ExpertFilterEditionDialog,
     CriteriaBasedFilterEditionDialog,
 } from '@gridsuite/commons-ui';
-import { useMultiselect } from 'utils/use-multiselect';
 
 const circularProgressSize = '70px';
 
