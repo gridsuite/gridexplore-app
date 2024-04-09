@@ -9,8 +9,7 @@ import Dialog from '@mui/material/Dialog';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import { Checkbox, FormGroup } from '@mui/material';
-import Box from '@mui/material/Box';
+import { Checkbox, DialogContentText, Divider, FormGroup } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DialogActions from '@mui/material/DialogActions';
@@ -20,22 +19,18 @@ import { deleteElements, restoreElements } from '../../../utils/rest-api';
 import { IDirectory } from '../../../redux/reducer.type';
 import PopupConfirmationDialog from '../../utils/popup-confirmation-dialog';
 import Alert from '@mui/material/Alert';
+import { StashedElementListItem } from './stashed-elements-list-item';
+import { StashedElement } from './stashed-elements.type';
 
 interface IStashedElementsDialog {
     open: boolean;
     onClose: () => void;
-    stashedElements: any[];
+    stashedElements: StashedElement[];
     onStashedElementChange: () => any[];
     directoryToRestore: IDirectory;
 }
 
-function getOptionLabel(element: any) {
-    return element.second
-        ? element.first.elementName + ' (' + element.second + ')'
-        : element.first.elementName;
-}
-
-function getElementId(element: any) {
+function getElementId(element: StashedElement) {
     return element.first.elementUuid;
 }
 
@@ -136,17 +131,13 @@ const StashedElementsDialog = ({
     const noSelectedElements = selectedElements.length === 0;
 
     const elementsField = stashedElements.map((element) => {
-        const elementId = getElementId(element);
+        const elementId = element.first.elementUuid;
         return (
-            <FormControlLabel
+            <StashedElementListItem
+                stashedElement={element}
+                handleCheckBoxChange={handleCheckBoxChange}
+                isSelected={selectedElements.includes(elementId)}
                 key={elementId}
-                control={
-                    <Checkbox
-                        checked={selectedElements.includes(elementId)}
-                        onChange={() => handleCheckBoxChange(elementId)}
-                    />
-                }
-                label={getOptionLabel(element)}
             />
         );
     });
@@ -156,28 +147,46 @@ const StashedElementsDialog = ({
             <Dialog open={open}>
                 <DialogTitle>
                     {intl.formatMessage({
-                        id: 'StashedElements',
+                        id: 'RecycleBin',
                     })}
+                    <DialogContentText>
+                        <FormattedMessage id="RecybleBin.autodeletionWarning" />
+                    </DialogContentText>
+                    <DialogActions>
+                        <Button
+                            size="small"
+                            onClick={() => setOpenConfirmationPopup(true)}
+                            disabled={noSelectedElements}
+                        >
+                            <FormattedMessage id="DeleteRows" />
+                        </Button>
+                        <Button
+                            size="small"
+                            onClick={handleRestore}
+                            disabled={noSelectedElements}
+                            variant="outlined"
+                        >
+                            <FormattedMessage id="restore" />
+                        </Button>
+                    </DialogActions>
+                    <Divider sx={{ opacity: 1 }} />
                 </DialogTitle>
+
                 <DialogContent>
-                    <FormControl>
-                        <FormGroup>
-                            <Box>
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={
-                                                selectedElements.length ===
-                                                stashedElements.length
-                                            }
-                                            onChange={handleSelectAll}
-                                        />
+                    <FormControl fullWidth>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={
+                                        selectedElements.length ===
+                                        stashedElements.length
                                     }
-                                    label={intl.formatMessage({ id: 'All' })}
+                                    onChange={handleSelectAll}
                                 />
-                            </Box>
-                            {elementsField}
-                        </FormGroup>
+                            }
+                            label={intl.formatMessage({ id: 'All' })}
+                        />
+                        <FormGroup>{elementsField}</FormGroup>
                     </FormControl>
                     {error && (
                         <Alert severity={'error'}>
@@ -186,21 +195,8 @@ const StashedElementsDialog = ({
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={onClose}>
+                    <Button onClick={onClose} variant="outlined">
                         <FormattedMessage id="close" />
-                    </Button>
-                    <Button
-                        onClick={() => setOpenConfirmationPopup(true)}
-                        disabled={noSelectedElements}
-                    >
-                        <FormattedMessage id="DeleteRows" />
-                    </Button>
-                    <Button
-                        onClick={handleRestore}
-                        disabled={noSelectedElements}
-                        variant="outlined"
-                    >
-                        <FormattedMessage id="restore" />
                     </Button>
                 </DialogActions>
             </Dialog>
