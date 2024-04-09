@@ -108,6 +108,7 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                             ),
                             {
                                 shouldDirty: true,
+                                shouldValidate: true,
                             }
                         );
                     }

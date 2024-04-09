@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
@@ -24,7 +24,6 @@ import DeleteDialog from '../dialogs/delete-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
-import ExportCaseDialog from '../dialogs/export-case-dialog';
 
 import { DialogsId } from '../../utils/UIconstants';
 
@@ -65,8 +64,8 @@ import {
 import MoveDialog from '../dialogs/move-dialog';
 import { FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
-import { useDispatch } from 'react-redux';
-import { setSelectionForCopy } from 'redux/actions';
+import ExportCaseDialog from '../dialogs/export-case-dialog';
+import { setSelectionForCopy } from '../../redux/actions'
 
 const ContentContextualMenu = (props) => {
     const {
