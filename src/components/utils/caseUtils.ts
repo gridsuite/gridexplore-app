@@ -231,5 +231,5 @@ export function useDownloadUtils() {
         }
     };
 
-    return { handleDownloadCases, handleConvertCases: handleConvertCases };
+    return { handleDownloadCases, handleConvertCases };
 }
