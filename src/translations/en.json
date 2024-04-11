@@ -240,6 +240,7 @@
   "voltageRegulatorOn": "Voltage regulation",
   "PlannedActivePowerSetPoint": "Planning active power set point (MW)",
   "download.button": "Download",
+  "download.export.button": "Convert",
   "download.exportFormat": "Export format",
   "download.message.downloadedCase": "A case has been downloaded",
   "download.message.downloadedCases": "{number} cases have been downloaded",
