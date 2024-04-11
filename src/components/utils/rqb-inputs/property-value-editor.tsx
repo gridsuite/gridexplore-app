@@ -11,7 +11,10 @@ import { useFormContext } from 'react-hook-form';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import MultipleAutocompleteInput from '../rhf-inputs/autocomplete-inputs/multiple-autocomplete-input';
 import { usePredefinedProperties } from '../../../hooks/predefined-properties-hook';
-import { PROPERTY_VALUES } from '../../dialogs/filter/criteria-based/filter-property';
+import {
+    PROPERTY_NAME,
+    PROPERTY_VALUES,
+} from '../../dialogs/filter/criteria-based/filter-property';
 
 interface ExpertFilterPropertyProps {
     name: string;
@@ -29,13 +32,16 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
 
     useEffect(() => {
         if (props.defaultValue) {
-            setValue(props.name, props.defaultValue.propertyName);
+            setValue(
+                `${props.name}_` + PROPERTY_NAME,
+                props.defaultValue.propertyName
+            );
             setValue(
                 `${props.name}_` + PROPERTY_VALUES,
                 props.defaultValue.propertyValues
             );
         }
-    }, [props.name, props.defaultValue, setValue]);
+    }, [props, setValue]);
 
     useEffect(() => {
         setEquipmentType(props.equipmentTypes[0]);
@@ -61,13 +67,13 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
             setPropertyName(value);
             setValue(`${props.name}_` + PROPERTY_VALUES, []);
         },
-        [setValue, setPropertyName, props.name]
+        [setValue, setPropertyName, props]
     );
 
     const onValuesChange = () => {
         props.onChange &&
             props.onChange(
-                getValues(props.name),
+                getValues(`${props.name}_` + PROPERTY_NAME),
                 getValues(`${props.name}_` + PROPERTY_VALUES)
             );
     };
@@ -76,7 +82,7 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
         <Grid container item spacing={1} columns={50}>
             <Grid item xs={30}>
                 <AutocompleteInput
-                    name={props.name}
+                    name={`${props.name}_` + PROPERTY_NAME}
                     options={predefinedNames}
                     freeSolo
                     autoSelect
