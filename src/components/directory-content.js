@@ -27,6 +27,8 @@ import {
     OverflowableText,
     useSnackMessage,
     ExplicitNamingFilterEditionDialog,
+    ExpertFilterEditionDialog,
+    CriteriaBasedFilterEditionDialog,
 } from '@gridsuite/commons-ui';
 import { Box, Checkbox } from '@mui/material';
 
@@ -48,10 +50,8 @@ import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/expl
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
 import { noSelectionForCopy } from 'utils/constants';
 import DescriptionModificationDialogue from './dialogs/description-modification/description-modification-dialogue';
-import {
-    ExpertFilterEditionDialog,
-    CriteriaBasedFilterEditionDialog,
-} from '@gridsuite/commons-ui';
+import { useParameterState } from './dialogs/parameters-dialog';
+import { PARAM_LANGUAGE } from '../utils/config-params';
 
 const circularProgressSize = '70px';
 
@@ -120,6 +120,8 @@ const DirectoryContent = () => {
 
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
     const activeDirectory = useSelector((state) => state.activeDirectory);
+
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const dispatchSelectionForCopy = useCallback(
         (
@@ -1049,6 +1051,7 @@ const DirectoryContent = () => {
                         getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
+                        language={languageLocal}
                     />
                 );
             case FilterType.CRITERIA_BASED.id:
@@ -1067,6 +1070,7 @@ const DirectoryContent = () => {
                         selectionForCopy={selectionForCopy}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
+                        language={languageLocal}
                     />
                 );
             case FilterType.EXPERT.id:
@@ -1085,6 +1089,7 @@ const DirectoryContent = () => {
                         getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
+                        language={languageLocal}
                     />
                 );
             default:

@@ -16,13 +16,6 @@ import {
     removeUploadingElement,
 } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
-import {
-    ElementType,
-    ErrorInput,
-    ExpandingTextField,
-    FieldErrorAlert,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
@@ -33,6 +26,13 @@ import {
 } from './create-case-dialog-utils';
 import { ReduxState } from '../../../redux/reducer.type';
 import PrefilledNameInput from '../commons/prefilled-name-input';
+import {
+    ElementType,
+    ErrorInput,
+    ExpandingTextField,
+    FieldErrorAlert,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 
 interface IFormData {
     [CASE_NAME]: string;

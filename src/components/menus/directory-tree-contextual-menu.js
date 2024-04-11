@@ -48,13 +48,18 @@ import {
 
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
-import { ElementType, FilterCreationDialog } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    FilterCreationDialog,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import StashedElementsDialog from '../dialogs/stashed-elements/stashed-elements-dialog';
 import { RestoreFromTrash } from '@mui/icons-material';
 import { notificationType } from '../../utils/notificationType';
+import { useParameterState } from '../dialogs/parameters-dialog';
+import { PARAM_LANGUAGE } from '../../utils/config-params';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
@@ -69,6 +74,8 @@ const DirectoryTreeContextualMenu = (props) => {
         (state) => state.directoryUpdated
     );
     const activeDirectory = useSelector((state) => state.activeDirectory);
+
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const handleOpenDialog = (dialogId) => {
         setHideMenu(true);
@@ -529,6 +536,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         elementExists={elementExists}
+                        language={languageLocal}
                     />
                 );
             case DialogsId.ADD_NEW_CASE:

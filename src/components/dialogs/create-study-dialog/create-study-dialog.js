@@ -18,10 +18,15 @@ import {
     HTTP_CONNECTION_FAILED_MESSAGE,
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
 } from '../../../utils/UIconstants';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    useSnackMessage,
+    ErrorInput,
+    FieldErrorAlert,
+    ExpandingTextField,
+    ElementType,
+} from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
-import { ElementType } from '@gridsuite/commons-ui';
 import ModifyElementSelection from '../commons/modify-element-selection';
 import { isObjectEmpty, keyGenerator } from '../../../utils/functions';
 import {
@@ -45,11 +50,6 @@ import {
 } from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
-import {
-    ErrorInput,
-    FieldErrorAlert,
-    ExpandingTextField,
-} from '@gridsuite/commons-ui';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import { DESCRIPTION } from '../../../components/utils/field-constants';
 

@@ -65,7 +65,9 @@ import MoveDialog from '../dialogs/move-dialog';
 import { FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
-import { setSelectionForCopy } from '../../redux/actions'
+import { setSelectionForCopy } from '../../redux/actions';
+import { useParameterState } from '../dialogs/parameters-dialog';
+import { PARAM_LANGUAGE } from '../../utils/config-params';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -89,6 +91,8 @@ const ContentContextualMenu = (props) => {
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
     const { handleDownloadCases } = useDownloadUtils();
+
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const handleLastError = useCallback(
         (message) => {
@@ -794,6 +798,7 @@ const ContentContextualMenu = (props) => {
                         saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         elementExists={elementExists}
+                        language={languageLocal}
                     />
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:
