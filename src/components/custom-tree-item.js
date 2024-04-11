@@ -8,10 +8,10 @@
 import React from 'react';
 
 import PropTypes from 'prop-types';
-import TreeItem, { useTreeItem } from '@mui/lab/TreeItem';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/material';
 import { mergeSx } from 'utils/functions';
+import { TreeItem, useTreeItem } from '@mui/x-tree-view';
 
 const CustomContent = React.forwardRef(function CustomContent(props, ref) {
     const {

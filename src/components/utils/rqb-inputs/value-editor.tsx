@@ -74,7 +74,10 @@ const ValueEditor = (props: ValueEditorProps) => {
     }
     if (
         props.field === FieldType.ENERGY_SOURCE ||
-        props.field === FieldType.SHUNT_COMPENSATOR_TYPE
+        props.field === FieldType.SHUNT_COMPENSATOR_TYPE ||
+        props.field === FieldType.LOAD_TYPE ||
+        props.field === FieldType.RATIO_REGULATION_MODE ||
+        props.field === FieldType.PHASE_REGULATION_MODE
     ) {
         return <TranslatedValueEditor {...props} />;
     }
@@ -107,7 +110,13 @@ const ValueEditor = (props: ValueEditorProps) => {
                 defaultValue={props.value}
             />
         );
-    } else if (props.field === FieldType.ID || props.field === FieldType.NAME) {
+    } else if (
+        props.field === FieldType.ID ||
+        props.field === FieldType.NAME ||
+        props.field === FieldType.VOLTAGE_LEVEL_ID ||
+        props.field === FieldType.VOLTAGE_LEVEL_ID_1 ||
+        props.field === FieldType.VOLTAGE_LEVEL_ID_2
+    ) {
         return <TextValueEditor {...props} />;
     }
     return (
