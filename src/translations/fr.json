@@ -307,5 +307,9 @@
   "ratioRegulationMode": "Mode de réglage régleur",
   "phaseRegulationMode" : "Mode de réglage déphaseur",
   "phaseRegulating": "Déphaseur en réglage",
-  "phaseRegulationValue": "Consigne de transit ou du courant du déphaseur"
+  "phaseRegulationValue": "Consigne de transit ou du courant du déphaseur",
+  "property": "Propriété",
+  "substationProperty": "Propriété site",
+  "substationProperty1": "Propriété site Or",
+  "substationProperty2": "Propriété site Ex"
 }

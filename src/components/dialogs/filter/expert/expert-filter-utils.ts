@@ -56,6 +56,14 @@ const getDataType = (fieldName: string, operator: string) => {
     ) {
         return DataType.FILTER_UUID;
     }
+    if (
+        fieldName === FieldType.PROPERTY ||
+        fieldName === FieldType.SUBSTATION_PROPERTY ||
+        fieldName === FieldType.SUBSTATION_PROPERTY_1 ||
+        fieldName === FieldType.SUBSTATION_PROPERTY_2
+    ) {
+        return DataType.PROPERTY;
+    }
     const field = Object.values(FIELDS_OPTIONS).find(
         (field) => field.name === fieldName
     );
@@ -140,6 +148,16 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
                 name: operator.name,
                 label: intl.formatMessage({ id: operator.label }),
             }));
+        case DataType.PROPERTY:
+            let propertiesOperators: {
+                name: string;
+                customName: string;
+                label: string;
+            }[] = [OPERATOR_OPTIONS.EQUALS];
+            return propertiesOperators.map((operator) => ({
+                name: operator.name,
+                label: intl.formatMessage({ id: operator.label }),
+            }));
     }
     return defaultOperators;
 };
@@ -160,19 +178,31 @@ export function exportExpertRules(
 ): RuleGroupTypeExport {
     function transformRule(rule: CustomRuleType): RuleTypeExport {
         const isValueAnArray = Array.isArray(rule.value);
+        const dataType = getDataType(rule.field, rule.operator) as DataType;
         return {
             field: rule.field as FieldType,
             operator: Object.values(OPERATOR_OPTIONS).find(
                 (operator) => operator.name === rule.operator
             )?.customName as OperatorType,
             value:
-                !isValueAnArray && rule.operator !== OperatorType.EXISTS
+                !isValueAnArray &&
+                rule.operator !== OperatorType.EXISTS &&
+                dataType !== DataType.PROPERTY
                     ? changeValueUnit(rule.value, rule.field as FieldType)
                     : undefined,
-            values: isValueAnArray
-                ? changeValueUnit(rule.value, rule.field as FieldType)
-                : undefined,
-            dataType: getDataType(rule.field, rule.operator) as DataType,
+            values:
+                isValueAnArray && dataType !== DataType.PROPERTY
+                    ? changeValueUnit(rule.value, rule.field as FieldType)
+                    : undefined,
+            dataType: dataType,
+            propertyName:
+                dataType === DataType.PROPERTY
+                    ? rule.value.propertyName
+                    : undefined,
+            propertyValues:
+                dataType === DataType.PROPERTY
+                    ? rule.value.propertyValues
+                    : undefined,
         };
     }
 
@@ -200,7 +230,12 @@ export function importExpertRules(
     query: RuleGroupTypeExport
 ): CustomRuleGroupType {
     function parseValue(rule: RuleTypeExport) {
-        if (rule.values) {
+        if (rule.propertyName) {
+            return {
+                propertyName: rule.propertyName,
+                propertyValues: rule.propertyValues,
+            };
+        } else if (rule.values) {
             // values is a Set on server side, so need to sort
             if (rule.dataType === DataType.NUMBER) {
                 return rule.values
@@ -345,6 +380,17 @@ export const queryValidator: QueryValidator = (query) => {
             (rule.operator === OPERATOR_OPTIONS.IS_PART_OF.name ||
                 rule.operator === OPERATOR_OPTIONS.IS_NOT_PART_OF.name) &&
             (!rule.value?.length || !uuidValidate(rule.value[0]))
+        ) {
+            result[rule.id] = {
+                valid: false,
+                reasons: [EMPTY_RULE],
+            };
+        } else if (
+            rule.id &&
+            getDataType(rule.field, rule.operator) === DataType.PROPERTY &&
+            (rule.value?.propertyName === undefined ||
+                rule.value?.propertyValues === undefined ||
+                !rule.value?.propertyValues.length)
         ) {
             result[rule.id] = {
                 valid: false,

@@ -307,5 +307,9 @@
   "ratioRegulationMode": "Ratio tap changer regulation mode",
   "phaseRegulationMode" : "Phase tap changer regulation mode",
   "phaseRegulating": "Phase tap changer regulating",
-  "phaseRegulationValue": "Phase tap changer flow set point or current limit"
+  "phaseRegulationValue": "Phase tap changer flow set point or current limit",
+  "property": "Property",
+  "substationProperty": "Substation property",
+  "substationProperty1": "Substation property 1",
+  "substationProperty2": "Substation property 2"
 }
