@@ -70,13 +70,13 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
         [setValue, setPropertyName, props]
     );
 
-    const onValuesChange = () => {
+    const onValuesChange = useCallback(() => {
         props.onChange &&
             props.onChange(
                 getValues(`${props.name}_` + PROPERTY_NAME),
                 getValues(`${props.name}_` + PROPERTY_VALUES)
             );
-    };
+    }, [getValues, props]);
 
     return (
         <Grid container item spacing={1} columns={50}>
