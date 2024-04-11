@@ -12,8 +12,6 @@ import { AutocompleteInput } from '@gridsuite/commons-ui';
 import MultipleAutocompleteInput from '../rhf-inputs/autocomplete-inputs/multiple-autocomplete-input';
 import { usePredefinedProperties } from '../../../hooks/predefined-properties-hook';
 import { PROPERTY_VALUES } from '../../dialogs/filter/criteria-based/filter-property';
-import { validate as uuidValidate } from 'uuid';
-import { fetchElementsInfos } from '../../../utils/rest-api';
 
 interface ExpertFilterPropertyProps {
     name: string;
