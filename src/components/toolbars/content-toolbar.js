@@ -30,6 +30,7 @@ const ContentToolbar = (props) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
     const { handleDownloadCases } = useDownloadUtils();
+    const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
     const [openDialog, setOpenDialog] = useState(null);
 
@@ -124,14 +125,14 @@ const ContentToolbar = (props) => {
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(
         (elementsUuids) => {
-            deleteElements(elementsUuids)
+            deleteElements(elementsUuids, selectedDirectory.elementUuid)
                 .catch((error) => {
                     setDeleteError(error.message);
                     handleLastError(error.message);
                 })
                 .finally(handleCloseDialog);
         },
-        [handleCloseDialog, handleLastError]
+        [selectedDirectory.elementUuid, handleCloseDialog, handleLastError]
     );
 
     const items = useMemo(() => {
