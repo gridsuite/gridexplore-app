@@ -8,7 +8,10 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Grid, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { DirectoryItemSelector } from '@gridsuite/commons-ui';
+import {
+    DirectoryItemSelector,
+    TreeViewFinderNodeProps,
+} from '@gridsuite/commons-ui';
 import { fetchPath } from '../../../utils/rest-api';
 import { useController } from 'react-hook-form';
 import { DIRECTORY } from '../../utils/field-constants';
@@ -60,7 +63,7 @@ const ModifyElementSelection: React.FunctionComponent<
         setOpen(true);
     };
 
-    const handleClose = (directory: any) => {
+    const handleClose = (directory: TreeViewFinderNodeProps) => {
         if (directory.length) {
             onChange(directory[0]?.id);
             if (props.onElementValidated) {
@@ -108,7 +111,7 @@ const ModifyElementSelection: React.FunctionComponent<
                 onClose={handleClose}
                 types={[props.elementType]}
                 onlyLeaves={props.elementType !== ElementType.DIRECTORY}
-                multiselect={false}
+                multiSelect={false}
                 validationButtonText={intl.formatMessage({
                     id: 'confirmDirectoryDialog',
                 })}
