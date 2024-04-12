@@ -6,17 +6,21 @@
  */
 
 import React, { FunctionComponent } from 'react';
-import { FieldErrors, FormProvider } from 'react-hook-form';
+import { FieldErrors } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import {
+    Dialog,
     DialogActions,
     DialogContent,
+    DialogTitle,
     Grid,
     LinearProgress,
-    Dialog,
-    DialogTitle,
 } from '@mui/material';
-import { CancelButton, SubmitButton } from '@gridsuite/commons-ui';
+import {
+    CancelButton,
+    CustomFormProvider,
+    SubmitButton,
+} from '@gridsuite/commons-ui';
 
 interface ICustomMuiDialog {
     open: boolean;
@@ -81,7 +85,7 @@ const CustomMuiDialog: FunctionComponent<ICustomMuiDialog> = ({
     };
 
     return (
-        <FormProvider
+        <CustomFormProvider
             validationSchema={formSchema}
             {...formMethods}
             removeOptional={removeOptional}
@@ -111,7 +115,7 @@ const CustomMuiDialog: FunctionComponent<ICustomMuiDialog> = ({
                     />
                 </DialogActions>
             </Dialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 
