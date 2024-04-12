@@ -294,7 +294,7 @@
   "DeleteElementFromStashError": "{multiselect, select, false {This element could not be deleted because it was created by another user} true {A subset of elements could not be deleted because they were created by another user} other {}}",
   "path": "path : ",
   "searchPlaceholder": "Search (ex.: case name, filter...)",
-  "elementsSearchingError": "An error occurred while searching the elements"
+  "elementsSearchingError": "An error occurred while searching the elements",
   "loadType": "Type",
   "Undefined": "Undefined",
   "Auxiliary": "Auxiliary",
