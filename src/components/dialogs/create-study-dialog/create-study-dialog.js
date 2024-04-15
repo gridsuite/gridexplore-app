@@ -19,17 +19,19 @@ import {
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
 } from '../../../utils/UIconstants';
 import {
-  useSnackMessage,
-  ErrorInput,
-  FieldErrorAlert,
-  ExpandingTextField,
-  ElementType,
-  CustomMuiDialog, FieldConstants
-} from "@gridsuite/commons-ui";
+    useSnackMessage,
+    ErrorInput,
+    FieldErrorAlert,
+    ExpandingTextField,
+    ElementType,
+    CustomMuiDialog,
+    FieldConstants,
+    isObjectEmpty,
+    keyGenerator,
+} from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
 import ModifyElementSelection from '../commons/modify-element-selection';
-import { isObjectEmpty, keyGenerator } from '../../../utils/functions';
 import {
     addUploadingElement,
     removeUploadingElement,
@@ -136,9 +138,13 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         customizeCurrentParameters(formattedParams)
                     );
 
-                    setValue(FieldConstants.FORMATTED_CASE_PARAMETERS, formattedParams, {
-                        shouldDirty: true,
-                    });
+                    setValue(
+                        FieldConstants.FORMATTED_CASE_PARAMETERS,
+                        formattedParams,
+                        {
+                            shouldDirty: true,
+                        }
+                    );
                     setValue(FieldConstants.CASE_FORMAT, result.formatName);
                 })
                 .catch(() => {
@@ -284,8 +290,14 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             )}
             <ImportParametersSection />
             <Grid pt={1}>
-                <ErrorInput name={FieldConstants.API_CALL} InputField={FieldErrorAlert} />
-                <ErrorInput name={FieldConstants.CASE_FILE} InputField={FieldErrorAlert} />
+                <ErrorInput
+                    name={FieldConstants.API_CALL}
+                    InputField={FieldErrorAlert}
+                />
+                <ErrorInput
+                    name={FieldConstants.CASE_FILE}
+                    InputField={FieldErrorAlert}
+                />
             </Grid>
         </CustomMuiDialog>
     );

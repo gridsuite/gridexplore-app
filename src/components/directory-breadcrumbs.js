@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import { emphasize } from '@mui/material/styles/';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import { Box, Tooltip } from '@mui/material';
-import { mergeSx } from 'utils/functions';
+import { mergeSx } from "@gridsuite/commons-ui";
 
 const styles = {
     link: (theme) => ({

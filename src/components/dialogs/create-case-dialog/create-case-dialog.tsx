@@ -7,7 +7,6 @@
 
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { isObjectEmpty, keyGenerator } from '../../../utils/functions';
 import { createCase } from '../../../utils/rest-api';
 import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import { Grid } from '@mui/material';
@@ -25,14 +24,14 @@ import {
 import { ReduxState } from '../../../redux/reducer.type';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import {
-    CustomMuiDialog,
-    ElementType,
-    ErrorInput,
-    ExpandingTextField,
-    FieldConstants,
-    FieldErrorAlert,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+  CustomMuiDialog,
+  ElementType,
+  ErrorInput,
+  ExpandingTextField,
+  FieldConstants,
+  FieldErrorAlert, isObjectEmpty, keyGenerator,
+  useSnackMessage
+} from "@gridsuite/commons-ui";
 
 interface IFormData {
     [FieldConstants.CASE_NAME]: string;
