@@ -12,23 +12,23 @@ import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/user-admin';
+    import.meta.env.VITE_API_GATEWAY + '/user-admin';
 const PREFIX_CONFIG_NOTIFICATION_WS =
-    process.env.REACT_APP_WS_GATEWAY + '/config-notification';
-const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
+    import.meta.env.VITE_WS_GATEWAY + '/config-notification';
+const PREFIX_CONFIG_QUERIES = import.meta.env.VITE_API_GATEWAY + '/config';
 const PREFIX_DIRECTORY_SERVER_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/directory';
+    import.meta.env.VITE_API_GATEWAY + '/directory';
 const PREFIX_EXPLORE_SERVER_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/explore';
-const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';
-const PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
+    import.meta.env.VITE_API_GATEWAY + '/explore';
+const PREFIX_ACTIONS_QUERIES = import.meta.env.VITE_API_GATEWAY + '/actions';
+const PREFIX_CASE_QUERIES = import.meta.env.VITE_API_GATEWAY + '/case';
 const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/network-conversion';
+    import.meta.env.VITE_API_GATEWAY + '/network-conversion';
 const PREFIX_NOTIFICATION_WS =
-    process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
+    import.meta.env.VITE_WS_GATEWAY + '/directory-notification';
 const PREFIX_FILTERS_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/filter/v1/filters';
-const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
+    import.meta.env.VITE_API_GATEWAY + '/filter/v1/filters';
+const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
 function getToken() {
     const state = store.getState();

@@ -5,4 +5,5 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/// <reference types="react-scripts" />
+/// <reference types="vite-plugin-svgr/client" />
+/// <reference types="vite/client" />
