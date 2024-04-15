@@ -14,10 +14,10 @@ import {
     UniqueNameInput,
     ExpandingTextField,
     ElementType,
+    gridItem,
 } from '@gridsuite/commons-ui';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { Box, Grid } from '@mui/material';
-import { gridItem } from '../../../utils/dialog-utils';
 import React from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';

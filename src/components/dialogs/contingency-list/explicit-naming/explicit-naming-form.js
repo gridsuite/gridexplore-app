@@ -10,13 +10,12 @@ import React, { useCallback, useMemo } from 'react';
 import CustomAgGridTable, {
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
 } from '../../../utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
-import { gridItem } from '../../../utils/dialog-utils';
 import yup from '../../../utils/yup-config';
 import { makeDefaultRowData } from '../contingency-list-utils';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { ContingencyListType } from 'utils/elementType';
 import { v4 as uuid4 } from 'uuid';
-import { FieldConstants } from "@gridsuite/commons-ui";
+import { FieldConstants, gridItem } from "@gridsuite/commons-ui";
 
 export const getExplicitNamingSchema = (id) => {
     return {
