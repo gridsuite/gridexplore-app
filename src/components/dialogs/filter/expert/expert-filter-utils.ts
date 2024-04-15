@@ -153,7 +153,7 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
                 name: string;
                 customName: string;
                 label: string;
-            }[] = [OPERATOR_OPTIONS.EQUALS];
+            }[] = [OPERATOR_OPTIONS.IS];
             return propertiesOperators.map((operator) => ({
                 name: operator.name,
                 label: intl.formatMessage({ id: operator.label }),
@@ -181,9 +181,12 @@ export function exportExpertRules(
         const dataType = getDataType(rule.field, rule.operator) as DataType;
         return {
             field: rule.field as FieldType,
-            operator: Object.values(OPERATOR_OPTIONS).find(
-                (operator) => operator.name === rule.operator
-            )?.customName as OperatorType,
+            operator:
+                dataType !== DataType.PROPERTY
+                    ? (Object.values(OPERATOR_OPTIONS).find(
+                          (operator) => operator.name === rule.operator
+                      )?.customName as OperatorType)
+                    : rule.value.propertyOperator,
             value:
                 !isValueAnArray &&
                 rule.operator !== OperatorType.EXISTS &&
@@ -234,6 +237,7 @@ export function importExpertRules(
             return {
                 propertyName: rule.propertyName,
                 propertyValues: rule.propertyValues,
+                propertyOperator: rule.operator,
             };
         } else if (rule.values) {
             // values is a Set on server side, so need to sort
@@ -259,9 +263,12 @@ export function importExpertRules(
     function transformRule(rule: RuleTypeExport): CustomRuleType {
         return {
             field: rule.field,
-            operator: Object.values(OPERATOR_OPTIONS).find(
-                (operator) => operator.customName === rule.operator
-            )?.name as string,
+            operator:
+                rule.dataType !== DataType.PROPERTY
+                    ? (Object.values(OPERATOR_OPTIONS).find(
+                          (operator) => operator.customName === rule.operator
+                      )?.name as string)
+                    : OperatorType.IS,
             value: parseValue(rule),
             dataType:
                 rule.operator === OperatorType.IS_PART_OF ||

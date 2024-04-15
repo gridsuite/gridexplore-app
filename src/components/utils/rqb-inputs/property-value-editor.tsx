@@ -8,18 +8,24 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useFormContext } from 'react-hook-form';
-import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, SelectInput } from '@gridsuite/commons-ui';
 import MultipleAutocompleteInput from '../rhf-inputs/autocomplete-inputs/multiple-autocomplete-input';
 import { usePredefinedProperties } from '../../../hooks/predefined-properties-hook';
 import {
     PROPERTY_NAME,
+    PROPERTY_OPERATOR,
     PROPERTY_VALUES,
 } from '../../dialogs/filter/criteria-based/filter-property';
+
+const PROPERTY_VALUE_IN = { id: 'IN', label: 'in' };
+export const PROPERTY_VALUE_OPERATORS = {
+    PROPERTY_VALUE_IN,
+};
 
 interface ExpertFilterPropertyProps {
     name: string;
     equipmentTypes: string[];
-    onChange: (name: string, values: string[]) => void;
+    onChange: (name: string, operator: string, values: string[]) => void;
     defaultValue?: any;
 }
 
@@ -36,6 +42,11 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
                 `${props.name}_` + PROPERTY_NAME,
                 props.defaultValue.propertyName
             );
+            setValue(
+                `${props.name}_` + PROPERTY_OPERATOR,
+                props.defaultValue.propertyOperator
+            );
+
             setValue(
                 `${props.name}_` + PROPERTY_VALUES,
                 props.defaultValue.propertyValues
@@ -74,13 +85,14 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
         props.onChange &&
             props.onChange(
                 getValues(`${props.name}_` + PROPERTY_NAME),
+                getValues(`${props.name}_` + PROPERTY_OPERATOR),
                 getValues(`${props.name}_` + PROPERTY_VALUES)
             );
     }, [getValues, props]);
 
     return (
-        <Grid container item spacing={1} columns={50}>
-            <Grid item xs={30}>
+        <Grid container item spacing={1} columns={100}>
+            <Grid item xs={40}>
                 <AutocompleteInput
                     name={`${props.name}_` + PROPERTY_NAME}
                     inputTransform={(value) => (!value ? '' : value)}
@@ -93,7 +105,15 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
                     }}
                 />
             </Grid>
-            <Grid item xs={20} key={propertyName}>
+            <Grid item xs={20}>
+                <SelectInput
+                    name={`${props.name}_` + PROPERTY_OPERATOR}
+                    options={Object.values(PROPERTY_VALUE_OPERATORS)}
+                    size={'medium'}
+                    disableClearable
+                />
+            </Grid>
+            <Grid item xs={40} key={propertyName}>
                 <MultipleAutocompleteInput
                     name={`${props.name}_` + PROPERTY_VALUES}
                     options={predefinedValues}

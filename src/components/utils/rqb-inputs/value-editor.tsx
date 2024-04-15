@@ -140,9 +140,14 @@ const ValueEditor = (props: ValueEditorProps) => {
             <PropertyValueEditor
                 name={PROPERTY + props.rule.id}
                 equipmentTypes={equipmentTypes}
-                onChange={(name: string, values: string[]) => {
+                onChange={(
+                    name: string,
+                    operator: string,
+                    values: string[]
+                ) => {
                     props.handleOnChange({
                         propertyName: name,
+                        propertyOperator: operator,
                         propertyValues: values,
                     });
                 }}
