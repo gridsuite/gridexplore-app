@@ -5,7 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { RadioInput } from '@gridsuite/commons-ui';
+import {
+  RadioInput,
+  getCriteriaBasedFormData,
+  CONTINGENCY_LIST_EQUIPMENTS,
+  CriteriaBasedForm
+} from "@gridsuite/commons-ui";
 import {
     CONTINGENCY_LIST_TYPE,
     CRITERIA_BASED,
@@ -18,11 +23,6 @@ import { gridItem } from '../../../utils/dialog-utils';
 import React from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
-import {
-    CONTINGENCY_LIST_EQUIPMENTS,
-    getCriteriaBasedFormData,
-} from '../../commons/criteria-based/criteria-based-utils';
-import CriteriaBasedForm from '../../commons/criteria-based/criteria-based-form';
 import ScriptInputForm from '../script/script-input-form';
 import {
     UniqueNameInput,

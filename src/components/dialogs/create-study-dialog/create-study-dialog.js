@@ -24,6 +24,7 @@ import {
     FieldErrorAlert,
     ExpandingTextField,
     ElementType,
+    CustomMuiDialog,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
@@ -49,7 +50,6 @@ import {
     STUDY_NAME,
 } from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import { DESCRIPTION } from '../../../components/utils/field-constants';
 

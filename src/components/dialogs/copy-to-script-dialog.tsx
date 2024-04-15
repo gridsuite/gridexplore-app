@@ -10,9 +10,12 @@ import yup from 'components/utils/yup-config';
 import { NAME } from 'components/utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import CustomMuiDialog from './commons/custom-mui-dialog/custom-mui-dialog';
 import { CircularProgress, Grid } from '@mui/material';
-import { UniqueNameInput, ElementType } from '@gridsuite/commons-ui';
+import {
+    UniqueNameInput,
+    ElementType,
+    CustomMuiDialog,
+} from '@gridsuite/commons-ui';
 import { getNameCandidate } from 'utils/rest-api';
 
 const schema = yup.object().shape({

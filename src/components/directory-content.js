@@ -29,6 +29,7 @@ import {
     ExplicitNamingFilterEditionDialog,
     ExpertFilterEditionDialog,
     CriteriaBasedFilterEditionDialog,
+    DescriptionModificationDialog,
 } from '@gridsuite/commons-ui';
 import { Box, Checkbox } from '@mui/material';
 
@@ -49,7 +50,6 @@ import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/crite
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
 import { noSelectionForCopy } from 'utils/constants';
-import DescriptionModificationDialogue from './dialogs/description-modification/description-modification-dialogue';
 import { useParameterState } from './dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../utils/config-params';
 
@@ -980,7 +980,7 @@ const DirectoryContent = () => {
     const renderDialog = (name) => {
         if (openDescModificationDialog && activeElement) {
             return (
-                <DescriptionModificationDialogue
+                <DescriptionModificationDialog
                     open={true}
                     description={activeElement.description}
                     elementUuid={activeElement.elementUuid}

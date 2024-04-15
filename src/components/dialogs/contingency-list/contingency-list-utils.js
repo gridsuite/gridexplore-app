@@ -26,7 +26,7 @@ import {
 import { ContingencyListType } from '../../../utils/elementType';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { v4 as uuid4 } from 'uuid';
-import { getCriteriaBasedFormData } from '../commons/criteria-based/criteria-based-utils';
+import { getCriteriaBasedFormData } from "@gridsuite/commons-ui";
 
 export const makeDefaultRowData = () => ({
     [AG_GRID_ROW_UUID]: uuid4(),

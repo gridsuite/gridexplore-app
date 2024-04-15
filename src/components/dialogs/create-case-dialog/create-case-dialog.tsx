@@ -19,7 +19,6 @@ import UploadNewCase from '../commons/upload-new-case';
 import { useForm } from 'react-hook-form';
 import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
 import {
     createCaseDialogFormValidationSchema,
     getCreateCaseDialogFormValidationDefaultValues,
@@ -27,6 +26,7 @@ import {
 import { ReduxState } from '../../../redux/reducer.type';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import {
+    CustomMuiDialog,
     ElementType,
     ErrorInput,
     ExpandingTextField,

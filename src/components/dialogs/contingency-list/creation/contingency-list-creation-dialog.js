@@ -6,7 +6,7 @@
  */
 
 import { useSelector } from 'react-redux';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, CustomMuiDialog, getCriteriaBasedSchema } from "@gridsuite/commons-ui";
 import {
     CONTINGENCY_LIST_TYPE,
     DESCRIPTION,
@@ -19,7 +19,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { createContingencyList } from '../../../../utils/rest-api';
 import React from 'react';
-import CustomMuiDialog from '../../commons/custom-mui-dialog/custom-mui-dialog';
 import ContingencyListCreationForm from './contingency-list-creation-form';
 import {
     getContingencyListEmptyFormData,
@@ -27,7 +26,6 @@ import {
 } from '../contingency-list-utils';
 import yup from '../../../utils/yup-config';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form';
-import { getCriteriaBasedSchema } from '../../commons/criteria-based/criteria-based-utils';
 import { ContingencyListType } from '../../../../utils/elementType';
 
 const schema = yup.object().shape({

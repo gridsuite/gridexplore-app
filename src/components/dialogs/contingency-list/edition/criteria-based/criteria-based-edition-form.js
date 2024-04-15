@@ -7,13 +7,14 @@
 
 import { Grid } from '@mui/material';
 import React from 'react';
-import {
-    CONTINGENCY_LIST_EQUIPMENTS,
-    getCriteriaBasedFormData,
-} from 'components/dialogs/commons/criteria-based/criteria-based-utils';
-import CriteriaBasedForm from 'components/dialogs/commons/criteria-based/criteria-based-form';
 import { CRITERIA_BASED, NAME } from 'components/utils/field-constants';
-import { UniqueNameInput, ElementType } from '@gridsuite/commons-ui';
+import {
+  UniqueNameInput,
+  ElementType,
+  CriteriaBasedForm,
+  getCriteriaBasedFormData,
+  CONTINGENCY_LIST_EQUIPMENTS
+} from "@gridsuite/commons-ui";
 
 const CriteriaBasedEditionForm = () => {
     const emptyValues = getCriteriaBasedFormData();

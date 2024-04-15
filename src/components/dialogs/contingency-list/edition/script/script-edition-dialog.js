@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, CustomMuiDialog } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
@@ -18,7 +18,6 @@ import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
 import { EQUIPMENT_TYPE, NAME, SCRIPT } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import ScriptEditionForm from './script-edition-form';
-import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';
 import { useDispatch, useSelector } from 'react-redux';
 import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
