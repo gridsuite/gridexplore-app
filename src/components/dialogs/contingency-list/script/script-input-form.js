@@ -7,7 +7,7 @@
 
 import AceInput from '../../../utils/rhf-inputs/ace-input';
 import { styled } from '@mui/system';
-import { FieldConstants } from "@gridsuite/commons-ui";
+import { FieldConstants } from '@gridsuite/commons-ui';
 
 const StyledAceInput = styled(AceInput)({
     minWidth: '650px',

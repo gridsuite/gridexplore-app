@@ -8,7 +8,11 @@
 import { Grid } from '@mui/material';
 import React from 'react';
 import ScriptInputForm from '../../script/script-input-form';
-import { UniqueNameInput, ElementType, FieldConstants } from "@gridsuite/commons-ui";
+import {
+    UniqueNameInput,
+    ElementType,
+    FieldConstants,
+} from '@gridsuite/commons-ui';
 
 const ScriptEditionForm = () => {
     return (

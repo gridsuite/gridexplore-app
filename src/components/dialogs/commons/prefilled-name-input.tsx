@@ -7,7 +7,11 @@
 
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { UniqueNameInput, ElementType, FieldConstants } from "@gridsuite/commons-ui";
+import {
+    UniqueNameInput,
+    ElementType,
+    FieldConstants,
+} from '@gridsuite/commons-ui';
 import { elementExists } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';

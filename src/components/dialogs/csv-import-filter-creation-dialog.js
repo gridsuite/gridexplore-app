@@ -18,7 +18,12 @@ import CsvDownloader from 'react-csv-downloader';
 import Alert from '@mui/material/Alert';
 import PropTypes from 'prop-types';
 import { DialogContentText } from '@mui/material';
-import { ElementType, CancelButton, Generator, Load } from "@gridsuite/commons-ui";
+import {
+    ElementType,
+    CancelButton,
+    Generator,
+    Load,
+} from '@gridsuite/commons-ui';
 
 const CsvImportFilterCreationDialog = ({
     onClose,

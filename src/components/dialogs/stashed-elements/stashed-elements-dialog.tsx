@@ -15,7 +15,10 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import { PopupConfirmationDialog, useSnackMessage } from "@gridsuite/commons-ui";
+import {
+    PopupConfirmationDialog,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { deleteElements, restoreElements } from '../../../utils/rest-api';
 import { IDirectory } from '../../../redux/reducer.type';
 import Alert from '@mui/material/Alert';

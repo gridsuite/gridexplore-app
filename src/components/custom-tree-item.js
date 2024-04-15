@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/material';
 import { TreeItem, useTreeItem } from '@mui/x-tree-view';
-import { mergeSx } from "@gridsuite/commons-ui";
+import { mergeSx } from '@gridsuite/commons-ui';
 
 const CustomContent = React.forwardRef(function CustomContent(props, ref) {
     const {

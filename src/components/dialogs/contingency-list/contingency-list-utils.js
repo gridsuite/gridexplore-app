@@ -88,15 +88,19 @@ export const getFormContent = (contingencyListId, contingencyList) => {
             );
         }
         case ContingencyListType.CRITERIA_BASED.id: {
-            const criteriaBaseForm = contingencyList[FieldConstants.CRITERIA_BASED];
+            const criteriaBaseForm =
+                contingencyList[FieldConstants.CRITERIA_BASED];
             return {
                 equipmentType: contingencyList[FieldConstants.EQUIPMENT_TYPE],
                 countries: criteriaBaseForm[FieldConstants.COUNTRIES],
                 countries1: criteriaBaseForm[FieldConstants.COUNTRIES_1],
                 countries2: criteriaBaseForm[FieldConstants.COUNTRIES_2],
-                nominalVoltage: criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE],
-                nominalVoltage1: criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE_1],
-                nominalVoltage2: criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE_2],
+                nominalVoltage:
+                    criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE],
+                nominalVoltage1:
+                    criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE_1],
+                nominalVoltage2:
+                    criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE_2],
             };
         }
         case ContingencyListType.SCRIPT.id: {

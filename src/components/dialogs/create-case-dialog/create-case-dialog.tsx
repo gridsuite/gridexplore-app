@@ -24,14 +24,16 @@ import {
 import { ReduxState } from '../../../redux/reducer.type';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import {
-  CustomMuiDialog,
-  ElementType,
-  ErrorInput,
-  ExpandingTextField,
-  FieldConstants,
-  FieldErrorAlert, isObjectEmpty, keyGenerator,
-  useSnackMessage
-} from "@gridsuite/commons-ui";
+    CustomMuiDialog,
+    ElementType,
+    ErrorInput,
+    ExpandingTextField,
+    FieldConstants,
+    FieldErrorAlert,
+    isObjectEmpty,
+    keyGenerator,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 
 interface IFormData {
     [FieldConstants.CASE_NAME]: string;
@@ -137,7 +139,10 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
                     />
                 </Grid>
             </Grid>
-            <ErrorInput name={FieldConstants.CASE_FILE} InputField={FieldErrorAlert} />
+            <ErrorInput
+                name={FieldConstants.CASE_FILE}
+                InputField={FieldErrorAlert}
+            />
             <UploadNewCase />
         </CustomMuiDialog>
     );

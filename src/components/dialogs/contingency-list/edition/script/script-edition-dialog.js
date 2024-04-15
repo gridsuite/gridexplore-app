@@ -5,7 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, CustomMuiDialog, FieldConstants } from '@gridsuite/commons-ui';
+import {
+    useSnackMessage,
+    CustomMuiDialog,
+    FieldConstants,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
@@ -87,7 +91,10 @@ const ScriptEditionDialog = ({
             id: contingencyListId,
             script: contingencyList[FieldConstants.SCRIPT],
         };
-        return saveScriptContingencyList(newScript, contingencyList[FieldConstants.NAME]);
+        return saveScriptContingencyList(
+            newScript,
+            contingencyList[FieldConstants.NAME]
+        );
     };
     const onSubmit = (contingencyList) => {
         editContingencyList(contingencyListId, contingencyList)
