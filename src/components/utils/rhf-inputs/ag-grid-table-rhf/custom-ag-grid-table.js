@@ -13,7 +13,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { Grid, useTheme } from '@mui/material';
 import BottomRightButtons from './bottom-right-buttons';
 import { useIntl } from 'react-intl';
-import { AG_GRID_ROW_UUID } from '../../field-constants';
+import { FieldConstants } from "@gridsuite/commons-ui";
 
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
@@ -111,12 +111,12 @@ export const CustomAgGridTable = ({
 
     const isFirstSelected =
         rowData?.length &&
-        gridApi?.api.getRowNode(rowData[0][AG_GRID_ROW_UUID])?.isSelected();
+        gridApi?.api.getRowNode(rowData[0][FieldConstants.AG_GRID_ROW_UUID])?.isSelected();
 
     const isLastSelected =
         rowData?.length &&
         gridApi?.api
-            .getRowNode(rowData[rowData.length - 1][AG_GRID_ROW_UUID])
+            .getRowNode(rowData[rowData.length - 1][FieldConstants.AG_GRID_ROW_UUID])
             ?.isSelected();
 
     const noRowSelected = selectedRows.length === 0;
@@ -166,7 +166,7 @@ export const CustomAgGridTable = ({
 
     const getIndex = (val) => {
         return getValues(name).findIndex(
-            (row) => row[AG_GRID_ROW_UUID] === val[AG_GRID_ROW_UUID]
+            (row) => row[FieldConstants.AG_GRID_ROW_UUID] === val[FieldConstants.AG_GRID_ROW_UUID]
         );
     };
 
@@ -231,7 +231,7 @@ export const CustomAgGridTable = ({
                     onCellEditingStopped={(event) => {
                         update(event.rowIndex, event.data);
                     }}
-                    getRowId={(row) => row.data[AG_GRID_ROW_UUID]}
+                    getRowId={(row) => row.data[FieldConstants.AG_GRID_ROW_UUID]}
                     {...props}
                 ></AgGridReact>
             </Grid>

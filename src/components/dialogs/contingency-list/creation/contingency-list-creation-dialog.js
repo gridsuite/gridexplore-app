@@ -6,15 +6,12 @@
  */
 
 import { useSelector } from 'react-redux';
-import { useSnackMessage, CustomMuiDialog, getCriteriaBasedSchema } from "@gridsuite/commons-ui";
 import {
-    CONTINGENCY_LIST_TYPE,
-    DESCRIPTION,
-    EQUIPMENT_TABLE,
-    EQUIPMENT_TYPE,
-    NAME,
-    SCRIPT,
-} from '../../../utils/field-constants';
+    useSnackMessage,
+    CustomMuiDialog,
+    getCriteriaBasedSchema,
+    FieldConstants,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { createContingencyList } from '../../../../utils/rest-api';
@@ -27,20 +24,24 @@ import {
 import yup from '../../../utils/yup-config';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form';
 import { ContingencyListType } from '../../../../utils/elementType';
-import { useParameterState } from "../../parameters-dialog";
-import { PARAM_LANGUAGE } from "../../../../utils/config-params";
+import { useParameterState } from '../../parameters-dialog';
+import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 
 const schema = yup.object().shape({
-    [NAME]: yup.string().trim().required('nameEmpty'),
-    [DESCRIPTION]: yup.string().max(500, 'descriptionLimitError'),
-    [CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
-    [SCRIPT]: yup.string().nullable(),
-    [EQUIPMENT_TYPE]: yup.string().when([CONTINGENCY_LIST_TYPE], {
-        is: ContingencyListType.CRITERIA_BASED.id,
-        then: (schema) => schema.required(),
-        otherwise: (schema) => schema.nullable(),
-    }),
-    ...getExplicitNamingSchema(EQUIPMENT_TABLE),
+    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.DESCRIPTION]: yup
+        .string()
+        .max(500, 'descriptionLimitError'),
+    [FieldConstants.CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
+    [FieldConstants.SCRIPT]: yup.string().nullable(),
+    [FieldConstants.EQUIPMENT_TYPE]: yup
+        .string()
+        .when([FieldConstants.CONTINGENCY_LIST_TYPE], {
+            is: ContingencyListType.CRITERIA_BASED.id,
+            then: (schema) => schema.required(),
+            otherwise: (schema) => schema.nullable(),
+        }),
+    ...getExplicitNamingSchema(FieldConstants.EQUIPMENT_TABLE),
     ...getCriteriaBasedSchema(),
 });
 
@@ -62,7 +63,7 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
         formState: { errors },
     } = methods;
 
-    const nameError = errors[NAME];
+    const nameError = errors[FieldConstants.NAME];
     const isValidating = errors.root?.isValidating;
 
     const closeAndClear = (event) => {
@@ -73,9 +74,9 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
     const onSubmit = (data) => {
         const formContent = getFormContent(null, data);
         createContingencyList(
-            data[CONTINGENCY_LIST_TYPE],
-            data[NAME],
-            data[DESCRIPTION],
+            data[FieldConstants.CONTINGENCY_LIST_TYPE],
+            data[FieldConstants.NAME],
+            data[FieldConstants.DESCRIPTION],
             formContent,
             activeDirectory
         )
@@ -84,7 +85,7 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'contingencyListCreationError',
-                    headerValues: { name: data[NAME] },
+                    headerValues: { name: data[FieldConstants.NAME] },
                 });
             });
     };

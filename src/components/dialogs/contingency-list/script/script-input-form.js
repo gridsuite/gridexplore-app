@@ -6,8 +6,8 @@
  */
 
 import AceInput from '../../../utils/rhf-inputs/ace-input';
-import { SCRIPT } from '../../../utils/field-constants';
 import { styled } from '@mui/system';
+import { FieldConstants } from "@gridsuite/commons-ui";
 
 const StyledAceInput = styled(AceInput)({
     minWidth: '650px',
@@ -19,7 +19,7 @@ const StyledAceInput = styled(AceInput)({
 const ScriptInputForm = () => {
     return (
         <StyledAceInput
-            name={SCRIPT}
+            name={FieldConstants.SCRIPT}
             placeholder="Insert your groovy script here"
             editorProps={{ $blockScrolling: true }}
             fontSize="18px"

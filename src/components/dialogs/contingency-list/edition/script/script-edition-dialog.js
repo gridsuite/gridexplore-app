@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, CustomMuiDialog } from '@gridsuite/commons-ui';
+import { useSnackMessage, CustomMuiDialog, FieldConstants } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
@@ -15,7 +15,6 @@ import {
     getScriptFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
 import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
-import { EQUIPMENT_TYPE, NAME, SCRIPT } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import ScriptEditionForm from './script-edition-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,9 +22,9 @@ import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
 
 const schema = yup.object().shape({
-    [NAME]: yup.string().trim().required('nameEmpty'),
-    [EQUIPMENT_TYPE]: yup.string().nullable(),
-    [SCRIPT]: yup.string().nullable(),
+    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.EQUIPMENT_TYPE]: yup.string().nullable(),
+    [FieldConstants.SCRIPT]: yup.string().nullable(),
 });
 
 const emptyFormData = (name) => getContingencyListEmptyFormData(name);
@@ -54,7 +53,7 @@ const ScriptEditionDialog = ({
         formState: { errors },
     } = methods;
 
-    const nameError = errors[NAME];
+    const nameError = errors[FieldConstants.NAME];
     const isValidating = errors.root?.isValidating;
 
     useEffect(() => {
@@ -65,7 +64,7 @@ const ScriptEditionDialog = ({
                     if (response) {
                         const formData =
                             getScriptFormDataFromFetchedElement(response);
-                        reset({ ...formData, [NAME]: name });
+                        reset({ ...formData, [FieldConstants.NAME]: name });
                     }
                 })
                 .catch((error) => {
@@ -86,9 +85,9 @@ const ScriptEditionDialog = ({
     const editContingencyList = (contingencyListId, contingencyList) => {
         const newScript = {
             id: contingencyListId,
-            script: contingencyList[SCRIPT],
+            script: contingencyList[FieldConstants.SCRIPT],
         };
-        return saveScriptContingencyList(newScript, contingencyList[NAME]);
+        return saveScriptContingencyList(newScript, contingencyList[FieldConstants.NAME]);
     };
     const onSubmit = (contingencyList) => {
         editContingencyList(contingencyListId, contingencyList)

@@ -17,7 +17,6 @@ import {
 } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
 import { useForm } from 'react-hook-form';
-import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import {
     createCaseDialogFormValidationSchema,
@@ -30,14 +29,15 @@ import {
     ElementType,
     ErrorInput,
     ExpandingTextField,
+    FieldConstants,
     FieldErrorAlert,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 
 interface IFormData {
-    [CASE_NAME]: string;
-    [DESCRIPTION]?: string;
-    [CASE_FILE]: File | null;
+    [FieldConstants.CASE_NAME]: string;
+    [FieldConstants.DESCRIPTION]?: string;
+    [FieldConstants.CASE_FILE]: File | null;
 }
 
 interface CreateCaseDialogProps {
@@ -124,21 +124,21 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>
                     <PrefilledNameInput
-                        name={CASE_NAME}
+                        name={FieldConstants.CASE_NAME}
                         label={'nameProperty'}
                         elementType={ElementType.CASE}
                     />
                 </Grid>
                 <Grid item>
                     <ExpandingTextField
-                        name={DESCRIPTION}
+                        name={FieldConstants.DESCRIPTION}
                         label={'descriptionProperty'}
                         minRows={3}
                         rows={5}
                     />
                 </Grid>
             </Grid>
-            <ErrorInput name={CASE_FILE} InputField={FieldErrorAlert} />
+            <ErrorInput name={FieldConstants.CASE_FILE} InputField={FieldErrorAlert} />
             <UploadNewCase />
         </CustomMuiDialog>
     );

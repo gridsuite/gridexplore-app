@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, CustomMuiDialog, getCriteriaBasedSchema } from "@gridsuite/commons-ui";
+import { useSnackMessage, CustomMuiDialog, getCriteriaBasedSchema, FieldConstants } from "@gridsuite/commons-ui";
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
@@ -18,7 +18,6 @@ import {
     getContingencyList,
     saveCriteriaBasedContingencyList,
 } from 'utils/rest-api';
-import { EQUIPMENT_TYPE, NAME } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,8 +25,8 @@ import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
 
 const schema = yup.object().shape({
-    [NAME]: yup.string().trim().required('nameEmpty'),
-    [EQUIPMENT_TYPE]: yup.string().required(),
+    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.EQUIPMENT_TYPE]: yup.string().required(),
     ...getCriteriaBasedSchema(),
 });
 
@@ -56,7 +55,7 @@ const CriteriaBasedEditionDialog = ({
         formState: { errors },
     } = methods;
 
-    const nameError = errors[NAME];
+    const nameError = errors[FieldConstants.NAME];
     const isValidating = errors.root?.isValidating;
 
     useEffect(() => {
@@ -70,7 +69,7 @@ const CriteriaBasedEditionDialog = ({
                                 response,
                                 name
                             );
-                        reset({ ...formData, [NAME]: name });
+                        reset({ ...formData, [FieldConstants.NAME]: name });
                     }
                 })
                 .catch((error) => {

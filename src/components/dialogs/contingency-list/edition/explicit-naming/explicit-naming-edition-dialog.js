@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, CustomMuiDialog } from '@gridsuite/commons-ui';
+import { useSnackMessage, CustomMuiDialog, FieldConstants } from "@gridsuite/commons-ui";
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
@@ -18,11 +18,6 @@ import {
     getContingencyList,
     saveExplicitNamingContingencyList,
 } from 'utils/rest-api';
-import {
-    EQUIPMENT_TABLE,
-    EQUIPMENT_TYPE,
-    NAME,
-} from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-form';
 import ExplicitNamingEditionForm from './explicit-naming-edition-form';
@@ -32,10 +27,10 @@ import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
 
 const schema = yup.object().shape({
-    [NAME]: yup.string().trim().required('nameEmpty'),
-    [EQUIPMENT_TYPE]: yup.string().nullable(),
-    [EQUIPMENT_TABLE]: yup.string().nullable(),
-    ...getExplicitNamingEditSchema(EQUIPMENT_TABLE),
+    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.EQUIPMENT_TYPE]: yup.string().nullable(),
+    [FieldConstants.EQUIPMENT_TABLE]: yup.string().nullable(),
+    ...getExplicitNamingEditSchema(FieldConstants.EQUIPMENT_TABLE),
 });
 
 const emptyFormData = (name) => getContingencyListEmptyFormData(name);
@@ -63,7 +58,7 @@ const ExplicitNamingEditionDialog = ({
         formState: { errors },
     } = methods;
 
-    const nameError = errors[NAME];
+    const nameError = errors[FieldConstants.NAME];
     const isValidating = errors.root?.isValidating;
 
     useEffect(() => {
@@ -76,7 +71,7 @@ const ExplicitNamingEditionDialog = ({
                             getExplicitNamingFormDataFromFetchedElement(
                                 response
                             );
-                        reset({ ...formData, [NAME]: name });
+                        reset({ ...formData, [FieldConstants.NAME]: name });
                     }
                 })
                 .catch((error) => {
@@ -101,7 +96,7 @@ const ExplicitNamingEditionDialog = ({
         );
         return saveExplicitNamingContingencyList(
             equipments,
-            contingencyList[NAME]
+            contingencyList[FieldConstants.NAME]
         );
     };
 
