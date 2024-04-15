@@ -83,6 +83,7 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
             <Grid item xs={30}>
                 <AutocompleteInput
                     name={`${props.name}_` + PROPERTY_NAME}
+                    inputTransform={(value) => (!value ? '' : value)}
                     options={predefinedNames}
                     freeSolo
                     autoSelect
