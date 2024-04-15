@@ -5,22 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
-    Battery,
-    BusBar,
-    DanglingLine,
-    Generator,
-    Hvdc,
-    LCC,
-    Line,
-    Load,
-    ShuntCompensator,
     Substation,
+    Line,
+    Generator,
+    Load,
+    Battery,
     SVC,
-    ThreeWindingTransfo,
-    TwoWindingTransfo,
-    VoltageLevel,
+    DanglingLine,
+    LCC,
     VSC,
-} from './equipment-types';
+    Hvdc,
+    BusBar,
+    TwoWindingTransfo,
+    ThreeWindingTransfo,
+    ShuntCompensator,
+    VoltageLevel,
+} from '@gridsuite/commons-ui';
 
 export type Equipment =
     | typeof Substation
