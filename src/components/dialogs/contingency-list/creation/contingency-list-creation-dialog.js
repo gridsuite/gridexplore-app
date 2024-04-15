@@ -27,6 +27,8 @@ import {
 import yup from '../../../utils/yup-config';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form';
 import { ContingencyListType } from '../../../../utils/elementType';
+import { useParameterState } from "../../parameters-dialog";
+import { PARAM_LANGUAGE } from "../../../../utils/config-params";
 
 const schema = yup.object().shape({
     [NAME]: yup.string().trim().required('nameEmpty'),
@@ -47,6 +49,8 @@ const emptyFormData = getContingencyListEmptyFormData();
 const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const { snackError } = useSnackMessage();
+
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const methods = useForm({
         defaultValues: emptyFormData,
@@ -94,6 +98,7 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
             titleId={titleId}
             removeOptional={true}
             disabledSave={!!nameError || isValidating}
+            language={languageLocal}
         >
             <ContingencyListCreationForm />
         </CustomMuiDialog>
