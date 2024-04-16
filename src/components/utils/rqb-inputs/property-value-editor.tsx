@@ -81,7 +81,6 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
     const onNameChange = useCallback(
         (value: string) => {
             setPropertyName(value);
-            setValue(`${props.name}_` + PROPERTY_NAME, value);
             setValue(`${props.name}_` + PROPERTY_VALUES, []);
         },
         [setValue, setPropertyName, props]
