@@ -44,6 +44,8 @@ import {
     saveFilter,
     stashElements,
     updateAccessRights,
+    fetchDirectoryContent,
+    fetchRootFolders,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu from './common-contextual-menu';
@@ -537,6 +539,9 @@ const DirectoryTreeContextualMenu = (props) => {
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         elementExists={elementExists}
                         language={languageLocal}
+                        fetchDirectoryContent={fetchDirectoryContent}
+                        fetchRootFolders={fetchRootFolders}
+                        fetchElementsInfos={fetchElementsInfos}
                     />
                 );
             case DialogsId.ADD_NEW_CASE:

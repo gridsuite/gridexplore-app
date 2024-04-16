@@ -40,6 +40,8 @@ import {
     fetchElementsInfos,
     getFilterById,
     saveFilter,
+    fetchDirectoryContent,
+    fetchRootFolders,
 } from '../utils/rest-api';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
@@ -1090,6 +1092,9 @@ const DirectoryContent = () => {
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
                         language={languageLocal}
+                        fetchDirectoryContent={fetchDirectoryContent}
+                        fetchRootFolders={fetchRootFolders}
+                        fetchElementsInfos={fetchElementsInfos}
                     />
                 );
             default:
