@@ -51,6 +51,11 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
                 `${props.name}_` + PROPERTY_VALUES,
                 props.defaultValue.propertyValues
             );
+        } else {
+            setValue(
+                `${props.name}_` + PROPERTY_OPERATOR,
+                PROPERTY_VALUE_IN.id
+            );
         }
     }, [props, setValue]);
 
@@ -76,6 +81,7 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
     const onNameChange = useCallback(
         (value: string) => {
             setPropertyName(value);
+            setValue(`${props.name}_` + PROPERTY_NAME, value);
             setValue(`${props.name}_` + PROPERTY_VALUES, []);
         },
         [setValue, setPropertyName, props]
@@ -95,7 +101,9 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
             <Grid item xs={40}>
                 <AutocompleteInput
                     name={`${props.name}_` + PROPERTY_NAME}
-                    inputTransform={(value) => (!value ? '' : value)}
+                    inputTransform={(value) =>
+                        !value ? predefinedNames[0] ?? '' : value
+                    }
                     options={predefinedNames}
                     freeSolo
                     autoSelect
@@ -103,6 +111,7 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
                     onInputChange={(event: any, value: any) => {
                         onNameChange(value);
                     }}
+                    disableClearable
                 />
             </Grid>
             <Grid item xs={20}>
@@ -117,7 +126,11 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
                 <MultipleAutocompleteInput
                     name={`${props.name}_` + PROPERTY_VALUES}
                     options={predefinedValues}
-                    onBlur={onValuesChange}
+                    //onBlur={onValuesChange}
+                    outputTransform={(value: any) => {
+                        setValue(`${props.name}_` + PROPERTY_VALUES, value);
+                        onValuesChange();
+                    }}
                 />
             </Grid>
         </Grid>
