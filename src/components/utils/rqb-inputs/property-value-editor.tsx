@@ -126,7 +126,6 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
                 <MultipleAutocompleteInput
                     name={`${props.name}_` + PROPERTY_VALUES}
                     options={predefinedValues}
-                    //onBlur={onValuesChange}
                     outputTransform={(value: any) => {
                         setValue(`${props.name}_` + PROPERTY_VALUES, value);
                         onValuesChange();
