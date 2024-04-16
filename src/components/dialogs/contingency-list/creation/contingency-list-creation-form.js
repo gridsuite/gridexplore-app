@@ -22,6 +22,8 @@ import React from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import ScriptInputForm from '../script/script-input-form';
+import { useSelector } from 'react-redux';
+import { elementExists } from '../../../../utils/rest-api';
 
 const ContingencyListCreationForm = () => {
     const { setValue } = useFormContext();
@@ -29,6 +31,8 @@ const ContingencyListCreationForm = () => {
     const watchContingencyListType = useWatch({
         name: FieldConstants.CONTINGENCY_LIST_TYPE,
     });
+
+    const activeDirectory = useSelector((state) => state.activeDirectory);
 
     // We do this because setValue don't set the field dirty
     const handleChange = (_event, value) => {
@@ -52,6 +56,8 @@ const ContingencyListCreationForm = () => {
                     label={'nameProperty'}
                     elementType={ElementType.CONTINGENCY_LIST}
                     autoFocus
+                    activeDirectory={activeDirectory}
+                    elementExists={elementExists}
                 />
             </Grid>
             <Grid item xs={12}>
