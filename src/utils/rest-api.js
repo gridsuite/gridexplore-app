@@ -1164,7 +1164,7 @@ export function searchElementsInfos(searchTerm) {
     urlSearchParams.append('userInput', searchTerm);
     return backendFetchJson(
         PREFIX_DIRECTORY_SERVER_QUERIES +
-            '/v1/elements/search?' +
+            '/v1/elements/indexation-infos?' +
             urlSearchParams.toString()
     );
 }

@@ -6,7 +6,10 @@
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
-import { fetchDirectoryContent, searchElementsInfos } from './rest-api';
+import {
+    fetchDirectoryContent,
+    searchElementsInfos,
+} from '../../utils/rest-api';
 import {
     getFileIcon,
     useDebounce,
@@ -14,9 +17,9 @@ import {
 } from '@gridsuite/commons-ui';
 import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDirectory, setTreeData } from '../redux/actions';
+import { setSelectedDirectory, setTreeData } from '../../redux/actions';
 import Grid from '@mui/material/Grid';
-import { updatedTree } from '../components/tree-views-container';
+import { updatedTree } from '../tree-views-container';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -45,6 +48,7 @@ export const SearchBar = ({ inputRef }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const [elementsFound, setElementsFound] = useState([]);
+    const [inputValue, onInputChange] = useState('');
     const lastSearchTermRef = useRef('');
     const [loading, setLoading] = useState(false);
     const treeData = useSelector((state) => state.treeData);
@@ -78,16 +82,20 @@ export const SearchBar = ({ inputRef }) => {
         SEARCH_FETCH_TIMEOUT_MILLIS
     );
 
-    const handleChangeInput = (newId) => {
-        newId !== undefined && newId.trim() !== '' && setLoading(true);
-        debouncedSearchMatchingElements(newId);
-    };
+    const handleChangeInput = useCallback(
+        (searchTerm) => {
+            onInputChange(searchTerm);
+            searchTerm && setLoading(true);
+            debouncedSearchMatchingElements(searchTerm);
+        },
+        [debouncedSearchMatchingElements]
+    );
 
     useEffect(() => {
         elementsFound !== undefined && setLoading(false);
     }, [elementsFound]);
 
-    const convertChildren = useCallback((element) => {
+    const renderElement = useCallback((element) => {
         return (
             <>
                 <span>{getFileIcon(element.type, styles.icon)}</span>
@@ -98,7 +106,7 @@ export const SearchBar = ({ inputRef }) => {
                     <Grid item sx={styles.grid2}>
                         <Typography>
                             <FormattedMessage id="path" />
-                            {element.pathName.join(' / ')}
+                            {element.pathName?.join(' / ')}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -106,16 +114,19 @@ export const SearchBar = ({ inputRef }) => {
         );
     }, []);
 
-    const renderOptionItem = (props, option) => {
-        const matchingElement = elementsFound.find(
-            (element) => element.name === option
-        );
-        return <li {...props}>{convertChildren(matchingElement)}</li>;
-    };
+    const renderOptionItem = useCallback(
+        (props, option) => {
+            const matchingElement = elementsFound.find(
+                (element) => element.id === option.id
+            );
+            return <li {...props}>{renderElement(matchingElement)}</li>;
+        },
+        [elementsFound, renderElement]
+    );
 
     const updateMapData = useCallback(
         (nodeId, children) => {
-            let [nrs, mdr] = updatedTree(
+            let [newRootDirectories, newMapData] = updatedTree(
                 treeDataRef.current.rootDirectories,
                 treeDataRef.current.mapData,
                 nodeId,
@@ -123,8 +134,8 @@ export const SearchBar = ({ inputRef }) => {
             );
             dispatch(
                 setTreeData({
-                    rootDirectories: nrs,
-                    mapData: mdr,
+                    rootDirectories: newRootDirectories,
+                    mapData: newMapData,
                 })
             );
         },
@@ -177,16 +188,17 @@ export const SearchBar = ({ inputRef }) => {
                 disableClearable={false}
                 forcePopupIcon={false}
                 clearOnBlur
+                inputValue={inputValue}
                 onInputChange={(_, data) => handleChangeInput(data)}
                 onChange={(event, data) => {
                     const matchingElement = elementsFound.find(
-                        (element) => element.name === data
+                        (element) => element === data
                     );
                     handleMatchingElement(matchingElement);
                 }}
-                options={
-                    loading ? [] : elementsFound.map((option) => option.name)
-                }
+                key={(option) => option.id}
+                options={loading ? [] : elementsFound}
+                getOptionLabel={(option) => option.name}
                 loading={loading}
                 renderOption={(props, option) =>
                     renderOptionItem(props, option)
