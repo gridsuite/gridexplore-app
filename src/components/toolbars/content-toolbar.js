@@ -19,7 +19,7 @@ import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { ElementType } from '@gridsuite/commons-ui';
-import { FileDownload } from '@mui/icons-material';
+import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { DialogsId } from '../../utils/UIconstants';
@@ -29,8 +29,8 @@ const ContentToolbar = (props) => {
     const userId = useSelector((state) => state.user.profile.sub);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
-    const { handleDownloadCases } = useDownloadUtils();
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const { handleDownloadCases, handleConvertCases } = useDownloadUtils();
 
     const [openDialog, setOpenDialog] = useState(null);
 
@@ -114,7 +114,7 @@ const ContentToolbar = (props) => {
         [isUserAllowed, selectedElements, noCreationInProgress]
     );
 
-    const allowsDownloadCases = useMemo(
+    const allowsDownloadExportCases = useMemo(
         () =>
             selectedElements.some(
                 (element) => element.type === ElementType.CASE
@@ -140,7 +140,7 @@ const ContentToolbar = (props) => {
 
         if (
             selectedElements.length &&
-            (allowsDelete || allowsMove || allowsDownloadCases)
+            (allowsDelete || allowsMove || allowsDownloadExportCases)
         ) {
             toolbarItems.push(
                 {
@@ -161,18 +161,27 @@ const ContentToolbar = (props) => {
                 },
                 {
                     tooltipTextId: 'download.button',
-                    callback: () => handleOpenDialog(DialogsId.EXPORT),
+                    callback: () => handleDownloadCases(selectedElements),
                     icon: <FileDownload fontSize="small" />,
-                    disabled: !selectedElements.length || !allowsDownloadCases,
+                    disabled:
+                        !selectedElements.length || !allowsDownloadExportCases,
+                },
+                {
+                    tooltipTextId: 'download.export.button',
+                    callback: () => handleOpenDialog(DialogsId.EXPORT),
+                    icon: <DownloadForOffline fontSize="small" />,
+                    disabled:
+                        !selectedElements.length || !allowsDownloadExportCases,
                 }
             );
         }
         return toolbarItems;
     }, [
         allowsDelete,
-        allowsDownloadCases,
+        allowsDownloadExportCases,
         allowsMove,
-        selectedElements.length,
+        handleDownloadCases,
+        selectedElements,
     ]);
 
     const renderDialog = () => {
@@ -220,7 +229,7 @@ const ContentToolbar = (props) => {
                     <ExportCaseDialog
                         onClose={handleCloseDialog}
                         onExport={(format, formatParameters) =>
-                            handleDownloadCases(
+                            handleConvertCases(
                                 selectedElements,
                                 format,
                                 formatParameters

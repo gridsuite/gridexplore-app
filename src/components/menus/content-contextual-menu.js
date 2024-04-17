@@ -55,7 +55,7 @@ import {
 } from '../../utils/custom-hooks';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
-import { FileDownload } from '@mui/icons-material';
+import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import FilterCreationDialog from '../dialogs/filter/filter-creation-dialog';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
@@ -81,7 +81,7 @@ const ContentContextualMenu = (props) => {
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
-    const { handleDownloadCases } = useDownloadUtils();
+    const { handleDownloadCases, handleConvertCases } = useDownloadUtils();
 
     const handleLastError = useCallback(
         (message) => {
@@ -585,8 +585,16 @@ const ContentContextualMenu = (props) => {
         if (allowsDownloadCase()) {
             menuItems.push({
                 messageDescriptorId: 'download.button',
-                callback: () => handleOpenDialog(DialogsId.EXPORT),
+                callback: async () => {
+                    await handleDownloadCases(selectedElements);
+                    handleCloseDialog();
+                },
                 icon: <FileDownload fontSize="small" />,
+            });
+            menuItems.push({
+                messageDescriptorId: 'download.export.button',
+                callback: () => handleOpenDialog(DialogsId.EXPORT),
+                icon: <DownloadForOffline fontSize="small" />,
             });
         }
 
@@ -689,7 +697,7 @@ const ContentContextualMenu = (props) => {
                     <ExportCaseDialog
                         onClose={handleCloseDialog}
                         onExport={(format, formatParameters) =>
-                            handleDownloadCases(
+                            handleConvertCases(
                                 selectedElements,
                                 format,
                                 formatParameters

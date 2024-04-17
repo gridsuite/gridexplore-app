@@ -1060,6 +1060,29 @@ export const exportCase = (caseUuid, format, formatParameters) =>
         }
     );
 
+export const downloadCase = (caseUuid) =>
+    backendFetch(`${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}`, {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json' },
+    });
+
+/**
+ * Retrieves the original name of a case using its UUID.
+ * @param {string} caseUuid - The UUID of the element.
+ * @returns {Promise<string|boolean>} - A promise that resolves to the original name of the case if found, or false if not found.
+ */
+export function getCaseOriginalName(caseUuid) {
+    const caseNameUrl = PREFIX_CASE_QUERIES + `/v1/cases/${caseUuid}/name`;
+    console.debug(caseNameUrl);
+    return backendFetchText(caseNameUrl).catch((error) => {
+        if (error.status === 404) {
+            return false;
+        } else {
+            throw error;
+        }
+    });
+}
+
 export function getServersInfos() {
     console.info('get backend servers informations');
     return backendFetchJson(
