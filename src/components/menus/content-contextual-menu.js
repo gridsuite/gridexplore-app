@@ -294,14 +294,14 @@ const ContentContextualMenu = (props) => {
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(
         (elementsUuids) => {
-            deleteElements(elementsUuids)
+            deleteElements(elementsUuids, selectedDirectory.elementUuid)
                 .catch((error) => {
                     setDeleteError(error.message);
                     handleLastError(error.message);
                 })
                 .finally(() => handleCloseDialog());
         },
-        [handleCloseDialog, handleLastError]
+        [selectedDirectory?.elementUuid, handleCloseDialog, handleLastError]
     );
 
     const moveElementErrorToString = useCallback(
