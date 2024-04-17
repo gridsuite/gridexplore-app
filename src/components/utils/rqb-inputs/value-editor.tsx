@@ -19,7 +19,7 @@ import Box from '@mui/material/Box';
 import ElementValueEditor from './element-value-editor';
 import { FilterType } from '../../../utils/elementType';
 import { ElementType } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPE, FILTER_UUID, PROPERTY } from '../field-constants';
+import { EQUIPMENT_TYPE, FILTER_UUID } from '../field-constants';
 import { useFormContext } from 'react-hook-form';
 import { Substation, VoltageLevel } from '../../../utils/equipment-types';
 import PropertyValueEditor from './property-value-editor';
@@ -125,33 +125,21 @@ const ValueEditor = (props: ValueEditorProps) => {
         props.field === FieldType.SUBSTATION_PROPERTY_1 ||
         props.field === FieldType.SUBSTATION_PROPERTY_2
     ) {
-        let equipmentTypes;
+        let equipmentType;
         if (
             props.field === FieldType.SUBSTATION_PROPERTY ||
             props.field === FieldType.SUBSTATION_PROPERTY_1 ||
             props.field === FieldType.SUBSTATION_PROPERTY_2
         ) {
-            equipmentTypes = [Substation.type];
+            equipmentType = Substation.type;
         } else {
-            equipmentTypes = [getValues(EQUIPMENT_TYPE)];
+            equipmentType = getValues(EQUIPMENT_TYPE);
         }
 
         return (
             <PropertyValueEditor
-                name={PROPERTY + props.rule.id}
-                equipmentTypes={equipmentTypes}
-                onChange={(
-                    name: string,
-                    operator: string,
-                    values: string[]
-                ) => {
-                    props.handleOnChange({
-                        propertyName: name,
-                        propertyOperator: operator,
-                        propertyValues: values,
-                    });
-                }}
-                defaultValue={props.value}
+                equipmentType={equipmentType}
+                valueEditorProps={props}
             />
         );
     }

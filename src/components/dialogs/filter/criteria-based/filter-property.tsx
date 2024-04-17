@@ -18,7 +18,6 @@ export const PROPERTY_NAME = 'name_property';
 export const PROPERTY_VALUES = 'prop_values';
 export const PROPERTY_VALUES_1 = 'prop_values1';
 export const PROPERTY_VALUES_2 = 'prop_values2';
-export const PROPERTY_OPERATOR = 'prop_operator';
 
 interface FilterPropertyProps {
     index: number;

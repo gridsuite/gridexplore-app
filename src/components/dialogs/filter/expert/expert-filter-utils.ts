@@ -32,7 +32,11 @@ import {
     RuleGroupTypeExport,
     RuleTypeExport,
 } from './expert-filter.type';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/conversion-utils';
+import {
+    isBlankOrEmpty,
+    microUnitToUnit,
+    unitToMicroUnit,
+} from 'utils/conversion-utils';
 import { validate as uuidValidate } from 'uuid';
 
 type CustomRuleType = RuleType & { dataType: DataType };
@@ -395,9 +399,10 @@ export const queryValidator: QueryValidator = (query) => {
         } else if (
             rule.id &&
             getDataType(rule.field, rule.operator) === DataType.PROPERTY &&
-            (rule.value?.propertyName === undefined ||
-                rule.value?.propertyValues === undefined ||
-                !rule.value?.propertyValues.length)
+            (isBlankOrEmpty(rule.value?.propertyName) ||
+                isBlankOrEmpty(rule.value?.propertyOperator) ||
+                isBlankOrEmpty(rule.value?.propertyValues) ||
+                !rule.value?.propertyValues?.length)
         ) {
             result[rule.id] = {
                 valid: false,

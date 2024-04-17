@@ -5,17 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import Grid from '@mui/material/Grid';
-import { useFormContext } from 'react-hook-form';
-import { AutocompleteInput, SelectInput } from '@gridsuite/commons-ui';
-import MultipleAutocompleteInput from '../rhf-inputs/autocomplete-inputs/multiple-autocomplete-input';
 import { usePredefinedProperties } from '../../../hooks/predefined-properties-hook';
+import { Autocomplete, MenuItem, Select, TextField } from '@mui/material';
+import { ValueEditorProps } from 'react-querybuilder';
+import useValid from './use-valid';
 import {
     PROPERTY_NAME,
     PROPERTY_OPERATOR,
     PROPERTY_VALUES,
-} from '../../dialogs/filter/criteria-based/filter-property';
+} from '../field-constants';
 
 const PROPERTY_VALUE_IN = { id: 'IN', label: 'in' };
 export const PROPERTY_VALUE_OPERATORS = {
@@ -23,45 +23,23 @@ export const PROPERTY_VALUE_OPERATORS = {
 };
 
 interface ExpertFilterPropertyProps {
-    name: string;
-    equipmentTypes: string[];
-    onChange: (name: string, operator: string, values: string[]) => void;
-    defaultValue?: any;
+    equipmentType: string;
+    valueEditorProps: ValueEditorProps;
 }
 
 function PropertyValueEditor(props: ExpertFilterPropertyProps) {
-    const { setValue, getValues } = useFormContext();
-    const [propertyName, setPropertyName] = useState('');
+    const { equipmentType, valueEditorProps } = props;
+    const valid = useValid(valueEditorProps);
+
+    const { propertyName, propertyOperator, propertyValues } =
+        valueEditorProps?.value ?? {};
 
     const [equipmentPredefinedProps, setEquipmentType] =
-        usePredefinedProperties(props.equipmentTypes[0]);
+        usePredefinedProperties(equipmentType);
 
     useEffect(() => {
-        if (props.defaultValue) {
-            setValue(
-                `${props.name}_` + PROPERTY_NAME,
-                props.defaultValue.propertyName
-            );
-            setValue(
-                `${props.name}_` + PROPERTY_OPERATOR,
-                props.defaultValue.propertyOperator
-            );
-
-            setValue(
-                `${props.name}_` + PROPERTY_VALUES,
-                props.defaultValue.propertyValues
-            );
-        } else {
-            setValue(
-                `${props.name}_` + PROPERTY_OPERATOR,
-                PROPERTY_VALUE_IN.id
-            );
-        }
-    }, [props, setValue]);
-
-    useEffect(() => {
-        setEquipmentType(props.equipmentTypes[0]);
-    }, [props.equipmentTypes, setEquipmentType]);
+        setEquipmentType(equipmentType);
+    }, [equipmentType, setEquipmentType]);
 
     const predefinedNames = useMemo(() => {
         return Object.keys(equipmentPredefinedProps ?? []).sort();
@@ -77,57 +55,72 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
         return [...new Set(predefinedForName)].sort();
     }, [equipmentPredefinedProps, propertyName]);
 
-    // We reset values when name change
-    const onNameChange = useCallback(
-        (value: string) => {
-            setPropertyName(value);
-            setValue(`${props.name}_` + PROPERTY_VALUES, []);
+    const onChange = useCallback(
+        (field: string, value: any) => {
+            let updatedValue = {
+                ...valueEditorProps?.value,
+                [PROPERTY_OPERATOR]:
+                    valueEditorProps?.value?.propertyOperator ??
+                    PROPERTY_VALUE_IN.id,
+                [field]: value,
+            };
+            // Reset the property values when the property name changes
+            if (field === PROPERTY_NAME) {
+                updatedValue = {
+                    ...updatedValue,
+                    [PROPERTY_VALUES]: [],
+                };
+            }
+            valueEditorProps?.handleOnChange?.(updatedValue);
         },
-        [setValue, setPropertyName, props]
+        [valueEditorProps]
     );
-
-    const onValuesChange = useCallback(() => {
-        props.onChange &&
-            props.onChange(
-                getValues(`${props.name}_` + PROPERTY_NAME),
-                getValues(`${props.name}_` + PROPERTY_OPERATOR),
-                getValues(`${props.name}_` + PROPERTY_VALUES)
-            );
-    }, [getValues, props]);
 
     return (
         <Grid container item spacing={1} columns={100}>
             <Grid item xs={40}>
-                <AutocompleteInput
-                    name={`${props.name}_` + PROPERTY_NAME}
-                    inputTransform={(value) =>
-                        !value ? predefinedNames[0] ?? '' : value
-                    }
+                <Autocomplete
+                    value={propertyName}
                     options={predefinedNames}
                     freeSolo
                     autoSelect
                     forcePopupIcon
-                    onInputChange={(event: any, value: any) => {
-                        onNameChange(value);
+                    renderInput={(params) => (
+                        <TextField {...params} error={!valid} />
+                    )}
+                    onChange={(event, value: any) => {
+                        onChange(PROPERTY_NAME, value);
                     }}
-                    disableClearable
                 />
             </Grid>
             <Grid item xs={20}>
-                <SelectInput
-                    name={`${props.name}_` + PROPERTY_OPERATOR}
-                    options={Object.values(PROPERTY_VALUE_OPERATORS)}
+                <Select
+                    value={propertyOperator ?? PROPERTY_VALUE_IN.id}
                     size={'medium'}
-                    disableClearable
-                />
+                    error={!valid}
+                    onChange={(event, value: any) => {
+                        onChange(PROPERTY_OPERATOR, value);
+                    }}
+                >
+                    {Object.values(PROPERTY_VALUE_OPERATORS).map((operator) => (
+                        <MenuItem key={operator.id} value={operator.id}>
+                            {operator.label}
+                        </MenuItem>
+                    ))}
+                </Select>
             </Grid>
-            <Grid item xs={40} key={propertyName}>
-                <MultipleAutocompleteInput
-                    name={`${props.name}_` + PROPERTY_VALUES}
-                    options={predefinedValues}
-                    outputTransform={(value: any) => {
-                        setValue(`${props.name}_` + PROPERTY_VALUES, value);
-                        onValuesChange();
+            <Grid item xs={40}>
+                <Autocomplete
+                    value={propertyValues ?? []}
+                    options={predefinedValues ?? []}
+                    multiple
+                    renderInput={(params) => (
+                        <TextField {...params} error={!valid} />
+                    )}
+                    freeSolo
+                    autoSelect
+                    onChange={(event, value: any) => {
+                        onChange(PROPERTY_VALUES, value);
                     }}
                 />
             </Grid>
