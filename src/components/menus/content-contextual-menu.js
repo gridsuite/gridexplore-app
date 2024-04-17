@@ -35,7 +35,6 @@ import {
     duplicateParameter,
     duplicateStudy,
     fetchElementsInfos,
-    getNameCandidate,
     moveElementsToDirectory,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,
@@ -192,96 +191,65 @@ const ContentContextualMenu = (props) => {
     };
     const duplicateItem = () => {
         if (activeElement) {
-            getNameCandidate(
-                selectedDirectory.elementUuid,
-                activeElement.elementName,
-                activeElement.type
-            )
-                .then((newItemName) => {
-                    switch (activeElement.type) {
-                        case ElementType.CASE:
-                            duplicateCase(
-                                newItemName,
-                                activeElement.description,
-                                activeElement.elementUuid,
-                                selectedDirectory.elementUuid
+            switch (activeElement.type) {
+                case ElementType.CASE:
+                    duplicateCase(activeElement.elementUuid).catch((error) => {
+                        handleDuplicateError(error.message);
+                    });
+                    break;
+                case ElementType.CONTINGENCY_LIST:
+                    fetchElementsInfos([activeElement.elementUuid])
+                        .then((res) => {
+                            duplicateContingencyList(
+                                res[0].specificMetadata.type,
+                                activeElement.elementUuid
                             ).catch((error) => {
                                 handleDuplicateError(error.message);
                             });
-                            break;
-                        case ElementType.CONTINGENCY_LIST:
-                            fetchElementsInfos([activeElement.elementUuid])
-                                .then((res) => {
-                                    duplicateContingencyList(
-                                        res[0].specificMetadata.type,
-                                        newItemName,
-                                        activeElement.description,
-                                        activeElement.elementUuid,
-                                        selectedDirectory.elementUuid
-                                    ).catch((error) => {
-                                        handleDuplicateError(error.message);
-                                    });
-                                })
-                                .catch((error) => {
-                                    handleLastError(error.message);
-                                });
-                            break;
-                        case ElementType.STUDY:
-                            duplicateStudy(
-                                newItemName,
-                                activeElement.description,
-                                activeElement.elementUuid,
-                                selectedDirectory.elementUuid
-                            ).catch((error) => {
-                                handleDuplicateError(error.message);
-                            });
-                            break;
-                        case ElementType.FILTER:
-                            duplicateFilter(
-                                newItemName,
-                                activeElement.description,
-                                activeElement.elementUuid,
-                                selectedDirectory.elementUuid
-                            ).catch((error) => {
-                                handleDuplicateError(error.message);
-                            });
-                            break;
-                        case ElementType.MODIFICATION:
-                            duplicateModification(
-                                newItemName,
-                                activeElement.description,
-                                activeElement.elementUuid,
-                                selectedDirectory.elementUuid
-                            ).catch((error) => {
-                                handleDuplicateError(error.message);
-                            });
-                            break;
-                        case ElementType.VOLTAGE_INIT_PARAMETERS:
-                        case ElementType.SENSITIVITY_PARAMETERS:
-                        case ElementType.SECURITY_ANALYSIS_PARAMETERS:
-                        case ElementType.LOADFLOW_PARAMETERS:
-                            duplicateParameter(
-                                newItemName,
-                                activeElement.type,
-                                activeElement.elementUuid,
-                                selectedDirectory.elementUuid,
-                                activeElement.description
-                            ).catch((error) => {
-                                handleDuplicateError(error.message);
-                            });
-                            break;
-                        default:
-                            handleLastError(
-                                intl.formatMessage({
-                                    id: 'unsupportedItem',
-                                })
-                            );
-                    }
-                })
-                .catch((error) => {
-                    handleDuplicateError(error.message);
-                })
-                .finally(() => handleCloseDialog());
+                        })
+                        .catch((error) => {
+                            handleLastError(error.message);
+                        });
+                    break;
+                case ElementType.STUDY:
+                    duplicateStudy(activeElement.elementUuid).catch((error) => {
+                        handleDuplicateError(error.message);
+                    });
+                    break;
+                case ElementType.FILTER:
+                    duplicateFilter(activeElement.elementUuid).catch(
+                        (error) => {
+                            handleDuplicateError(error.message);
+                        }
+                    );
+                    break;
+                case ElementType.MODIFICATION:
+                    duplicateModification(activeElement.elementUuid).catch(
+                        (error) => {
+                            handleDuplicateError(error.message);
+                        }
+                    );
+                    break;
+                case ElementType.VOLTAGE_INIT_PARAMETERS:
+                case ElementType.SENSITIVITY_PARAMETERS:
+                case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+                case ElementType.LOADFLOW_PARAMETERS:
+                    duplicateParameter(
+                        activeElement.type,
+                        activeElement.elementUuid
+                    ).catch((error) => {
+                        handleDuplicateError(error.message);
+                    });
+                    break;
+                default: {
+                    handleLastError(
+                        intl.formatMessage({
+                            id: 'unsupportedItem',
+                        })
+                    );
+                }
+            }
+            handleCloseDialog();
         }
     };
 

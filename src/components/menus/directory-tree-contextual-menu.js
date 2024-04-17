@@ -34,7 +34,6 @@ import {
     duplicateParameter,
     duplicateStudy,
     fetchElementsInfos,
-    getNameCandidate,
     getStashedElements,
     insertDirectory,
     insertRootDirectory,
@@ -153,91 +152,67 @@ const DirectoryTreeContextualMenu = (props) => {
             // existence check and infos for source element
             fetchElementsInfos([selectionForCopy.sourceItemUuid])
                 .then((elementInfos) => {
-                    // available new name
-                    getNameCandidate(
-                        directoryUuid,
-                        selectionForCopy.nameItem,
-                        selectionForCopy.typeItem
-                    )
-                        .then((newItemName) => {
-                            // duplicate source element with new name
-                            switch (selectionForCopy.typeItem) {
-                                case ElementType.CASE:
-                                    duplicateCase(
-                                        newItemName,
-                                        selectionForCopy.descriptionItem,
-                                        selectionForCopy.sourceItemUuid,
-                                        directoryUuid
-                                    ).catch((error) => {
-                                        handlePasteError(error);
-                                    });
-                                    break;
-                                case ElementType.STUDY:
-                                    duplicateStudy(
-                                        newItemName,
-                                        selectionForCopy.descriptionItem,
-                                        selectionForCopy.sourceItemUuid,
-                                        directoryUuid
-                                    ).catch((error) => {
-                                        handlePasteError(error);
-                                    });
-                                    break;
-                                case ElementType.FILTER:
-                                    duplicateFilter(
-                                        newItemName,
-                                        selectionForCopy.descriptionItem,
-                                        selectionForCopy.sourceItemUuid,
-                                        directoryUuid
-                                    ).catch((error) => {
-                                        handlePasteError(error);
-                                    });
-                                    break;
-                                case ElementType.MODIFICATION:
-                                    duplicateModification(
-                                        newItemName,
-                                        selectionForCopy.descriptionItem,
-                                        selectionForCopy.sourceItemUuid,
-                                        directoryUuid
-                                    ).catch((error) => {
-                                        handlePasteError(error);
-                                    });
-                                    break;
-                                case ElementType.VOLTAGE_INIT_PARAMETERS:
-                                case ElementType.SECURITY_ANALYSIS_PARAMETERS:
-                                case ElementType.SENSITIVITY_PARAMETERS:
-                                case ElementType.LOADFLOW_PARAMETERS:
-                                    duplicateParameter(
-                                        newItemName,
-                                        selectionForCopy.typeItem,
-                                        selectionForCopy.sourceItemUuid,
-                                        directoryUuid,
-                                        selectionForCopy.descriptionItem
-                                    ).catch((error) => {
-                                        handlePasteError(error);
-                                    });
-                                    break;
-                                case ElementType.CONTINGENCY_LIST:
-                                    duplicateContingencyList(
-                                        elementInfos[0].specificMetadata.type,
-                                        newItemName,
-                                        selectionForCopy.descriptionItem,
-                                        selectionForCopy.sourceItemUuid,
-                                        directoryUuid
-                                    ).catch((error) => {
-                                        handlePasteError(error);
-                                    });
-                                    break;
-                                default:
-                                    handleError(
-                                        intl.formatMessage({
-                                            id: 'unsupportedItem',
-                                        })
-                                    );
-                            }
-                        })
-                        .catch((error) => {
-                            handlePasteError(error);
-                        });
+                    switch (selectionForCopy.typeItem) {
+                        case ElementType.CASE:
+                            duplicateCase(
+                                selectionForCopy.sourceItemUuid,
+                                directoryUuid
+                            ).catch((error) => {
+                                handlePasteError(error);
+                            });
+                            break;
+                        case ElementType.STUDY:
+                            duplicateStudy(
+                                selectionForCopy.sourceItemUuid,
+                                directoryUuid
+                            ).catch((error) => {
+                                handlePasteError(error);
+                            });
+                            break;
+                        case ElementType.FILTER:
+                            duplicateFilter(
+                                selectionForCopy.sourceItemUuid,
+                                directoryUuid
+                            ).catch((error) => {
+                                handlePasteError(error);
+                            });
+                            break;
+                        case ElementType.MODIFICATION:
+                            duplicateModification(
+                                selectionForCopy.sourceItemUuid,
+                                directoryUuid
+                            ).catch((error) => {
+                                handlePasteError(error);
+                            });
+                            break;
+                        case ElementType.VOLTAGE_INIT_PARAMETERS:
+                        case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+                        case ElementType.SENSITIVITY_PARAMETERS:
+                        case ElementType.LOADFLOW_PARAMETERS:
+                            duplicateParameter(
+                                selectionForCopy.typeItem,
+                                selectionForCopy.sourceItemUuid,
+                                directoryUuid
+                            ).catch((error) => {
+                                handlePasteError(error);
+                            });
+                            break;
+                        case ElementType.CONTINGENCY_LIST:
+                            duplicateContingencyList(
+                                elementInfos[0].specificMetadata.type,
+                                selectionForCopy.sourceItemUuid,
+                                directoryUuid
+                            ).catch((error) => {
+                                handlePasteError(error);
+                            });
+                            break;
+                        default:
+                            handleError(
+                                intl.formatMessage({
+                                    id: 'unsupportedItem',
+                                })
+                            );
+                    }
                 })
                 .catch((error) => {
                     handlePasteError(error);
