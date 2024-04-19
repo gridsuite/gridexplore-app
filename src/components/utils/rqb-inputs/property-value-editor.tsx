@@ -18,11 +18,10 @@ import {
     PROPERTY_OPERATOR,
     PROPERTY_VALUES,
 } from '../field-constants';
+import { OPERATOR_OPTIONS } from '../../dialogs/filter/expert/expert-filter-constants';
 
 const PROPERTY_VALUE_IN = { id: 'IN', label: 'in' };
-export const PROPERTY_VALUE_OPERATORS = {
-    PROPERTY_VALUE_IN,
-};
+const PROPERTY_VALUE_OPERATORS = [OPERATOR_OPTIONS.IN];
 
 interface ExpertFilterPropertyProps {
     equipmentType: string;
@@ -106,7 +105,10 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
                     }}
                 >
                     {Object.values(PROPERTY_VALUE_OPERATORS).map((operator) => (
-                        <MenuItem key={operator.id} value={operator.id}>
+                        <MenuItem
+                            key={operator.customName}
+                            value={operator.customName}
+                        >
                             {intl.formatMessage({ id: operator.label })}
                         </MenuItem>
                     ))}
