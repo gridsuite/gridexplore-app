@@ -106,7 +106,7 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
                         onChange(PROPERTY_OPERATOR, value);
                     }}
                 >
-                    {Object.values(PROPERTY_VALUE_OPERATORS).map((operator) => (
+                    {PROPERTY_VALUE_OPERATORS.map((operator) => (
                         <MenuItem
                             key={operator.customName}
                             value={operator.customName}
