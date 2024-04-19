@@ -11,6 +11,8 @@ import { usePredefinedProperties } from '../../../hooks/predefined-properties-ho
 import { Autocomplete, MenuItem, Select, TextField } from '@mui/material';
 import { ValueEditorProps } from 'react-querybuilder';
 import useValid from './use-valid';
+import { useIntl } from 'react-intl';
+
 import {
     PROPERTY_NAME,
     PROPERTY_OPERATOR,
@@ -30,6 +32,7 @@ interface ExpertFilterPropertyProps {
 function PropertyValueEditor(props: ExpertFilterPropertyProps) {
     const { equipmentType, valueEditorProps } = props;
     const valid = useValid(valueEditorProps);
+    const intl = useIntl();
 
     const { propertyName, propertyOperator, propertyValues } =
         valueEditorProps?.value ?? {};
@@ -42,7 +45,7 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
     }, [equipmentType, setEquipmentType]);
 
     const predefinedNames = useMemo(() => {
-        return Object.keys(equipmentPredefinedProps ?? []).sort();
+        return Object.keys(equipmentPredefinedProps ?? {}).sort();
     }, [equipmentPredefinedProps]);
 
     const predefinedValues = useMemo(() => {
@@ -77,10 +80,10 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
     );
 
     return (
-        <Grid container item spacing={1} columns={100}>
-            <Grid item xs={40}>
+        <Grid container item spacing={1}>
+            <Grid item xs={5}>
                 <Autocomplete
-                    value={propertyName}
+                    value={propertyName ?? ''}
                     options={predefinedNames}
                     freeSolo
                     autoSelect
@@ -93,7 +96,7 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
                     }}
                 />
             </Grid>
-            <Grid item xs={20}>
+            <Grid item xs={2.5}>
                 <Select
                     value={propertyOperator ?? PROPERTY_VALUE_IN.id}
                     size={'medium'}
@@ -104,12 +107,12 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
                 >
                     {Object.values(PROPERTY_VALUE_OPERATORS).map((operator) => (
                         <MenuItem key={operator.id} value={operator.id}>
-                            {operator.label}
+                            {intl.formatMessage({ id: operator.label })}
                         </MenuItem>
                     ))}
                 </Select>
             </Grid>
-            <Grid item xs={40}>
+            <Grid item xs={4.5}>
                 <Autocomplete
                     value={propertyValues ?? []}
                     options={predefinedValues ?? []}

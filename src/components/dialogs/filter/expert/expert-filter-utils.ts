@@ -60,14 +60,14 @@ const getDataType = (fieldName: string, operator: string) => {
     ) {
         return DataType.FILTER_UUID;
     }
-    if (
-        fieldName === FieldType.PROPERTY ||
-        fieldName === FieldType.SUBSTATION_PROPERTY ||
-        fieldName === FieldType.SUBSTATION_PROPERTY_1 ||
-        fieldName === FieldType.SUBSTATION_PROPERTY_2
-    ) {
-        return DataType.PROPERTY;
-    }
+    // if (
+    //     fieldName === FieldType.PROPERTY ||
+    //     fieldName === FieldType.SUBSTATION_PROPERTY ||
+    //     fieldName === FieldType.SUBSTATION_PROPERTY_1 ||
+    //     fieldName === FieldType.SUBSTATION_PROPERTY_2
+    // ) {
+    //     return DataType.PROPERTY;
+    // }
     const field = Object.values(FIELDS_OPTIONS).find(
         (field) => field.name === fieldName
     );
