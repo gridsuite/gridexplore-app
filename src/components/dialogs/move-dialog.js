@@ -25,7 +25,7 @@ const MoveDialog = ({ open, onClose, items }) => {
             onClose={onClose}
             types={[ElementType.DIRECTORY]}
             onlyLeaves={false}
-            multiselect={false}
+            multiSelect={false}
             validationButtonText={intl.formatMessage(
                 {
                     id: 'moveItemValidate',

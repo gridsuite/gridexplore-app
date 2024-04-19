@@ -501,6 +501,34 @@ export const FIELDS_OPTIONS = {
         dataType: DataType.NUMBER,
         inputType: 'number',
     },
+    PROPERTY: {
+        name: FieldType.PROPERTY,
+        label: 'property',
+        dataType: DataType.PROPERTY,
+        valueEditorType: 'select',
+        defaultValue: '',
+    },
+    SUBSTATION_PROPERTY: {
+        name: FieldType.SUBSTATION_PROPERTY,
+        label: 'substationProperty',
+        dataType: DataType.PROPERTY,
+        valueEditorType: 'select',
+        defaultValue: '',
+    },
+    SUBSTATION_PROPERTY_1: {
+        name: FieldType.SUBSTATION_PROPERTY_1,
+        label: 'substationProperty1',
+        dataType: DataType.PROPERTY,
+        valueEditorType: 'select',
+        defaultValue: '',
+    },
+    SUBSTATION_PROPERTY_2: {
+        name: FieldType.SUBSTATION_PROPERTY_2,
+        label: 'substationProperty2',
+        dataType: DataType.PROPERTY,
+        valueEditorType: 'select',
+        defaultValue: '',
+    },
 };
 
 export const fields: Record<string, Field[]> = {
@@ -508,6 +536,7 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.ID,
         FIELDS_OPTIONS.NAME,
         FIELDS_OPTIONS.COUNTRY,
+        FIELDS_OPTIONS.PROPERTY,
     ],
     VOLTAGE_LEVEL: [
         FIELDS_OPTIONS.ID,
@@ -516,6 +545,8 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.NOMINAL_VOLTAGE,
         FIELDS_OPTIONS.LOW_VOLTAGE_LIMIT,
         FIELDS_OPTIONS.HIGH_VOLTAGE_LIMIT,
+        FIELDS_OPTIONS.PROPERTY,
+        FIELDS_OPTIONS.SUBSTATION_PROPERTY,
     ],
     LINE: [
         FIELDS_OPTIONS.ID,
@@ -534,6 +565,9 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.SHUNT_CONDUCTANCE_2,
         FIELDS_OPTIONS.SHUNT_SUSCEPTANCE_1,
         FIELDS_OPTIONS.SHUNT_SUSCEPTANCE_2,
+        FIELDS_OPTIONS.PROPERTY,
+        FIELDS_OPTIONS.SUBSTATION_PROPERTY_1,
+        FIELDS_OPTIONS.SUBSTATION_PROPERTY_2,
     ],
     TWO_WINDINGS_TRANSFORMER: [
         FIELDS_OPTIONS.ID,
@@ -561,6 +595,9 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.PHASE_REGULATING,
         FIELDS_OPTIONS.PHASE_REGULATION_MODE,
         FIELDS_OPTIONS.PHASE_REGULATION_VALUE,
+        FIELDS_OPTIONS.PROPERTY,
+        FIELDS_OPTIONS.SUBSTATION_PROPERTY_1,
+        FIELDS_OPTIONS.SUBSTATION_PROPERTY_2,
     ],
     GENERATOR: [
         FIELDS_OPTIONS.ID,
@@ -581,6 +618,8 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.MARGINAL_COST,
         FIELDS_OPTIONS.PLANNED_OUTAGE_RATE,
         FIELDS_OPTIONS.FORCED_OUTAGE_RATE,
+        FIELDS_OPTIONS.PROPERTY,
+        FIELDS_OPTIONS.SUBSTATION_PROPERTY,
     ],
     LOAD: [
         FIELDS_OPTIONS.ID,
@@ -591,6 +630,8 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.CONNECTED,
         FIELDS_OPTIONS.P0,
         FIELDS_OPTIONS.Q0,
+        FIELDS_OPTIONS.PROPERTY,
+        FIELDS_OPTIONS.SUBSTATION_PROPERTY,
     ],
     BATTERY: [
         FIELDS_OPTIONS.ID,
@@ -603,6 +644,8 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.MAX_P,
         FIELDS_OPTIONS.TARGET_P,
         FIELDS_OPTIONS.TARGET_Q,
+        FIELDS_OPTIONS.PROPERTY,
+        FIELDS_OPTIONS.SUBSTATION_PROPERTY,
     ],
     SHUNT_COMPENSATOR: [
         FIELDS_OPTIONS.ID,
@@ -618,5 +661,7 @@ export const fields: Record<string, Field[]> = {
         FIELDS_OPTIONS.SWITCHED_ON_Q_AT_NOMINAL_V,
         FIELDS_OPTIONS.MAX_SUSCEPTANCE,
         FIELDS_OPTIONS.SWITCHED_ON_SUSCEPTANCE,
+        FIELDS_OPTIONS.PROPERTY,
+        FIELDS_OPTIONS.SUBSTATION_PROPERTY,
     ],
 };
