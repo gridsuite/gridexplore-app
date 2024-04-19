@@ -1105,25 +1105,6 @@ export function exportFilter(studyUuid, filterUuid) {
     );
 }
 
-export function restoreElements(elementUuids, activeDirectory) {
-    console.info('Restoring elements: ' + elementUuids);
-
-    const url =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        '/v1/elements/' +
-        activeDirectory +
-        '/restore';
-
-    return backendFetch(url, {
-        method: 'post',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(elementUuids),
-    });
-}
-
 export const getExportFormats = () => {
     console.info('get export formats');
     const url = PREFIX_NETWORK_CONVERSION_SERVER_QUERIES + '/v1/export/formats';
