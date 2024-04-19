@@ -20,7 +20,6 @@ import {
 } from '../field-constants';
 import { OPERATOR_OPTIONS } from '../../dialogs/filter/expert/expert-filter-constants';
 
-const PROPERTY_VALUE_IN = { id: 'IN', label: 'in' };
 const PROPERTY_VALUE_OPERATORS = [OPERATOR_OPTIONS.IN];
 
 interface ExpertFilterPropertyProps {
@@ -63,7 +62,7 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
                 ...valueEditorProps?.value,
                 [PROPERTY_OPERATOR]:
                     valueEditorProps?.value?.propertyOperator ??
-                    PROPERTY_VALUE_IN.id,
+                    PROPERTY_VALUE_OPERATORS[0].customName,
                 [field]: value,
             };
             // Reset the property values when the property name changes
@@ -97,7 +96,10 @@ function PropertyValueEditor(props: ExpertFilterPropertyProps) {
             </Grid>
             <Grid item xs={2.5}>
                 <Select
-                    value={propertyOperator ?? PROPERTY_VALUE_IN.id}
+                    value={
+                        propertyOperator ??
+                        PROPERTY_VALUE_OPERATORS[0].customName
+                    }
                     size={'medium'}
                     error={!valid}
                     onChange={(event, value: any) => {
