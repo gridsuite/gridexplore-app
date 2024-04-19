@@ -10,38 +10,14 @@ import {
     fetchDirectoryContent,
     searchElementsInfos,
 } from '../../utils/rest-api';
-import {
-    getFileIcon,
-    useDebounce,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory, setTreeData } from '../../redux/actions';
-import Grid from '@mui/material/Grid';
 import { updatedTree } from '../tree-views-container';
-import Typography from '@mui/material/Typography';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
+import SearchItem from './search-item';
 
-const styles = {
-    icon: (theme) => ({
-        marginRight: theme.spacing(2),
-        width: '18px',
-        height: '18px',
-    }),
-    grid: {
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        display: 'inline-block',
-    },
-    grid2: (theme) => ({
-        marginRight: theme.spacing(2),
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        display: 'inline-block',
-        color: 'grey',
-    }),
-};
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 
 export const SearchBar = ({ inputRef }) => {
@@ -95,33 +71,14 @@ export const SearchBar = ({ inputRef }) => {
         elementsFound !== undefined && setLoading(false);
     }, [elementsFound]);
 
-    const renderElement = useCallback((element) => {
-        return (
-            <>
-                <span>{getFileIcon(element.type, styles.icon)}</span>
-                <Grid container>
-                    <Grid item xs={11} sx={styles.grid}>
-                        {element.name}
-                    </Grid>
-                    <Grid item sx={styles.grid2}>
-                        <Typography>
-                            <FormattedMessage id="path" />
-                            {element.pathName?.join(' / ')}
-                        </Typography>
-                    </Grid>
-                </Grid>
-            </>
-        );
-    }, []);
-
     const renderOptionItem = useCallback(
         (props, option) => {
             const matchingElement = elementsFound.find(
                 (element) => element.id === option.id
             );
-            return <li {...props}>{renderElement(matchingElement)}</li>;
+            return <SearchItem matchingElement={matchingElement} {...props} />;
         },
-        [elementsFound, renderElement]
+        [elementsFound]
     );
 
     const updateMapData = useCallback(
