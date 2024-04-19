@@ -22,14 +22,36 @@ const styles = {
         color: 'grey',
     }),
 };
-function SearchItem({ matchingElement, ...othersProps }) {
+
+function HighlightedText({ text, highlight }) {
+    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+
+    return (
+        <span>
+            {parts.map((part, i) =>
+                part.toLowerCase() === highlight.toLowerCase() ? (
+                    <span key={i} style={{ fontWeight: 'bold' }}>
+                        {part}
+                    </span>
+                ) : (
+                    part
+                )
+            )}
+        </span>
+    );
+}
+
+function SearchItem({ matchingElement, inputValue, ...othersProps }) {
     return (
         <li {...othersProps}>
             <>
                 <span>{getFileIcon(matchingElement.type, styles.icon)}</span>
                 <Grid container>
                     <Grid item xs={11} sx={styles.grid}>
-                        {matchingElement.name}
+                        <HighlightedText
+                            text={matchingElement.name}
+                            highlight={inputValue}
+                        />
                     </Grid>
                     <Grid item sx={styles.grid2}>
                         <Typography>

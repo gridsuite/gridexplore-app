@@ -76,9 +76,15 @@ export const SearchBar = ({ inputRef }) => {
             const matchingElement = elementsFound.find(
                 (element) => element.id === option.id
             );
-            return <SearchItem matchingElement={matchingElement} {...props} />;
+            return (
+                <SearchItem
+                    matchingElement={matchingElement}
+                    inputValue={inputValue}
+                    {...props}
+                />
+            );
         },
-        [elementsFound]
+        [elementsFound, inputValue]
     );
 
     const updateMapData = useCallback(
@@ -145,6 +151,8 @@ export const SearchBar = ({ inputRef }) => {
                 disableClearable={false}
                 forcePopupIcon={false}
                 clearOnBlur
+                autoHighlight={true}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
                 inputValue={inputValue}
                 onInputChange={(_, data) => handleChangeInput(data)}
                 onChange={(event, data) => {
