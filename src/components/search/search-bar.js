@@ -6,12 +6,15 @@
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
-import { fetchDirectoryContent, searchElementsInfos } from '../utils/rest-api';
+import {
+    fetchDirectoryContent,
+    searchElementsInfos,
+} from '../../utils/rest-api';
 import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDirectory, setTreeData } from '../redux/actions';
-import { updatedTree } from './tree-views-container';
+import { setSelectedDirectory, setTreeData } from '../../redux/actions';
+import { updatedTree } from '../tree-views-container';
 import { useIntl } from 'react-intl';
 import SearchItem from './search-item';
 
