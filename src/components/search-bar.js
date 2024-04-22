@@ -6,15 +6,12 @@
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
-import {
-    fetchDirectoryContent,
-    searchElementsInfos,
-} from '../../utils/rest-api';
+import { fetchDirectoryContent, searchElementsInfos } from '../utils/rest-api';
 import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDirectory, setTreeData } from '../../redux/actions';
-import { updatedTree } from '../tree-views-container';
+import { setSelectedDirectory, setTreeData } from '../redux/actions';
+import { updatedTree } from './tree-views-container';
 import { useIntl } from 'react-intl';
 import SearchItem from './search-item';
 
@@ -116,8 +113,11 @@ export const SearchBar = ({ inputRef }) => {
     );
 
     const handleMatchingElement = useCallback(
-        (matchingElement) => {
-            if (matchingElement !== undefined) {
+        (data) => {
+            if (data !== undefined) {
+                const matchingElement = elementsFound.find(
+                    (element) => element === data
+                );
                 const elementUuidPath = matchingElement?.pathUuid.reverse();
 
                 const promises = elementUuidPath.map((e) => {
@@ -139,7 +139,7 @@ export const SearchBar = ({ inputRef }) => {
                 });
             }
         },
-        [updateMapData, handleDispatchDirectory, snackError]
+        [elementsFound, updateMapData, handleDispatchDirectory, snackError]
     );
 
     return (
@@ -155,19 +155,12 @@ export const SearchBar = ({ inputRef }) => {
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 inputValue={inputValue}
                 onInputChange={(_, data) => handleChangeInput(data)}
-                onChange={(event, data) => {
-                    const matchingElement = elementsFound.find(
-                        (element) => element === data
-                    );
-                    handleMatchingElement(matchingElement);
-                }}
+                onChange={handleMatchingElement}
                 key={(option) => option.id}
                 options={loading ? [] : elementsFound}
                 getOptionLabel={(option) => option.name}
                 loading={loading}
-                renderOption={(props, option) =>
-                    renderOptionItem(props, option)
-                }
+                renderOption={renderOptionItem}
                 renderInput={(params) => (
                     <TextField
                         autoFocus={true}
