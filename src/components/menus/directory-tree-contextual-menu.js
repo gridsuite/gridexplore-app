@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -27,6 +27,7 @@ import FilterCreationDialog from '../dialogs/filter/filter-creation-dialog';
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
+    deleteElement,
     duplicateCase,
     duplicateContingencyList,
     duplicateFilter,
@@ -35,11 +36,9 @@ import {
     duplicateStudy,
     fetchElementsInfos,
     getNameCandidate,
-    getStashedElements,
     insertDirectory,
     insertRootDirectory,
     renameElement,
-    stashElements,
     updateAccessRights,
 } from '../../utils/rest-api';
 
@@ -49,9 +48,6 @@ import { ElementType } from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import StashedElementsDialog from '../dialogs/stashed-elements/stashed-elements-dialog';
-import { RestoreFromTrash } from '@mui/icons-material';
-import { notificationType } from '../../utils/notificationType';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
@@ -62,9 +58,6 @@ const DirectoryTreeContextualMenu = (props) => {
 
     const [hideMenu, setHideMenu] = useState(false);
     const { snackError } = useSnackMessage();
-    const directoryUpdatedEvent = useSelector(
-        (state) => state.directoryUpdated
-    );
 
     const handleOpenDialog = (dialogId) => {
         setHideMenu(true);
@@ -246,53 +239,18 @@ const DirectoryTreeContextualMenu = (props) => {
         }
     }
 
-    const [stashedElements, setStashedElements] = useState([]);
-    const handleGetStashedElement = useCallback(() => {
-        getStashedElements()
-            .then(setStashedElements)
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
-            });
-    }, [snackError]);
-
     const [deleteError, setDeleteError] = useState('');
-    const handleStashElements = useCallback(
+    const handleDeleteElement = useCallback(
         (elementsUuid) => {
-            stashElements(elementsUuid)
-                .then(handleGetStashedElement)
+            deleteElement(elementsUuid)
                 .catch((error) => {
                     setDeleteError(error.message);
                     handleError(error.message);
                 })
                 .finally(() => handleCloseDialog(null, directory?.parentUuid));
         },
-        [
-            handleCloseDialog,
-            directory?.parentUuid,
-            handleError,
-            handleGetStashedElement,
-        ]
+        [handleCloseDialog, directory?.parentUuid, handleError]
     );
-
-    useEffect(() => {
-        if (open) {
-            handleGetStashedElement();
-        }
-    }, [handleGetStashedElement, open]);
-
-    useEffect(() => {
-        if (
-            directoryUpdatedEvent.eventData?.headers &&
-            (directoryUpdatedEvent.eventData.headers['notificationType'] ===
-                notificationType.UPDATE_DIRECTORY ||
-                directoryUpdatedEvent.eventData.headers['notificationType'] ===
-                    notificationType.DELETE_DIRECTORY)
-        ) {
-            handleGetStashedElement();
-        }
-    }, [directoryUpdatedEvent, handleGetStashedElement]);
 
     // Allowance
     const showMenuFromEmptyZone = useCallback(() => {
@@ -395,17 +353,6 @@ const DirectoryTreeContextualMenu = (props) => {
             icon: <FolderSpecialIcon fontSize="small" />,
         });
 
-        if (!showMenuFromEmptyZone()) {
-            menuItems.push({
-                messageDescriptorId: 'StashedElements',
-                callback: () => {
-                    handleOpenDialog(DialogsId.STASHED_ELEMENTS);
-                },
-                icon: <RestoreFromTrash fontSize="small" />,
-                disabled: stashedElements.length === 0,
-            });
-        }
-
         return menuItems;
     };
 
@@ -491,7 +438,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         }
                         open={true}
                         onClick={() =>
-                            handleStashElements(directory?.elementUuid)
+                            handleDeleteElement(directory?.elementUuid)
                         }
                         onClose={handleCloseDialog}
                         error={deleteError}
@@ -525,16 +472,6 @@ const DirectoryTreeContextualMenu = (props) => {
             case DialogsId.ADD_NEW_CASE:
                 return (
                     <CreateCaseDialog open={true} onClose={handleCloseDialog} />
-                );
-            case DialogsId.STASHED_ELEMENTS:
-                return (
-                    <StashedElementsDialog
-                        open
-                        onClose={handleCloseDialog}
-                        stashedElements={stashedElements}
-                        onStashedElementChange={handleGetStashedElement}
-                        directoryToRestore={directory}
-                    />
                 );
             default:
                 return null;

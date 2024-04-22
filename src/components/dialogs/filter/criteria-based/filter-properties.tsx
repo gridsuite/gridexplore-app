@@ -11,10 +11,15 @@ import { useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { FilterType } from '../../../../utils/elementType';
 import {
+    Battery,
+    Generator,
     Hvdc,
     Line,
     Load,
+    ShuntCompensator,
     Substation,
+    TwoWindingTransfo,
+    VoltageLevel,
 } from '../../../../utils/equipment-types';
 import { areArrayElementsUnique } from '../../../../utils/functions';
 import { EQUIPMENT_TYPE, FILTER_TYPE } from '../../../utils/field-constants';
@@ -154,7 +159,13 @@ function FilterProperties() {
     const displayEquipmentProperties = useMemo(() => {
         return (
             watchEquipmentType === Substation.type ||
-            watchEquipmentType === Load.type
+            watchEquipmentType === Load.type ||
+            watchEquipmentType === Generator.type ||
+            watchEquipmentType === Line.type ||
+            watchEquipmentType === TwoWindingTransfo.type ||
+            watchEquipmentType === Battery.type ||
+            watchEquipmentType === ShuntCompensator.type ||
+            watchEquipmentType === VoltageLevel.type
         );
     }, [watchEquipmentType]);
 

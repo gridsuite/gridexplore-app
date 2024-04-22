@@ -259,7 +259,7 @@
   "shuntCompensatorType": "Type",
   "Capacitor": "Condensateur",
   "Reactor": "Réactance",
-  "maxQAtNominalV": "Q installée à tension nominale",
+  "maxQAtNominalV": "Q installée à tension nominale (MVar)",
   "SwitchedOnMaxQAtNominalV": "Q enclenchée à tension nominale (MVar)",
   "maxSusceptance": "Susceptance installée (S)",
   "SwitchedOnMaxSusceptance": "Susceptance enclenchée (S)",
@@ -283,7 +283,6 @@
   "descriptionLimitError": "La description dépasse la limite de caractères",
   "selectFilterDialogTitle": "Choisir un filtre",
   "filter": "Filtre",
-  "StashedElements": "Restaurer des elements",
   "All": "Tous",
   "DeleteRows": "Supprimer",
   "restore": "Restaurer",
@@ -299,8 +298,8 @@
   "Undefined": "Non défini",
   "Auxiliary": "Auxiliaire",
   "Fictitious": "Fictif",
-  "ratedVoltage1Or": "Tension d'enroulement Or",
-  "ratedVoltage2Ex": "Tension d'enroulement Ex",
+  "ratedVoltage1Or": "Tension d'enroulement Or (kV)",
+  "ratedVoltage2Ex": "Tension d'enroulement Ex (kV)",
   "hasRatioTapChanger": "Régleur existe",
   "hasPhaseTapChanger" : "Déphaseur existe",
   "Voltage": "Tension",
@@ -311,5 +310,9 @@
   "ratioRegulationMode": "Mode de réglage régleur",
   "phaseRegulationMode" : "Mode de réglage déphaseur",
   "phaseRegulating": "Déphaseur en réglage",
-  "phaseRegulationValue": "Consigne de transit ou du courant du déphaseur"
+  "phaseRegulationValue": "Consigne de transit ou du courant du déphaseur",
+  "property": "Propriété",
+  "substationProperty": "Propriété site",
+  "substationProperty1": "Propriété site Or",
+  "substationProperty2": "Propriété site Ex"
 }

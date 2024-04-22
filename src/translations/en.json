@@ -259,7 +259,7 @@
   "shuntCompensatorType": "Type",
   "Capacitor": "Capacitor",
   "Reactor": "Reactor",
-  "maxQAtNominalV": "Available Qmax at nominal voltage",
+  "maxQAtNominalV": "Available Qmax at nominal voltage (MVar)",
   "SwitchedOnMaxQAtNominalV": "Switch-on Q at nominal voltage (MVar)",
   "maxSusceptance": "Maximum available susceptance (S)",
   "SwitchedOnMaxSusceptance": "Switch-on susceptance (S)",
@@ -283,7 +283,6 @@
   "descriptionLimitError": "Description exceeds character limit",
   "selectFilterDialogTitle": "Choose a filter",
   "filter": "Filter",
-  "StashedElements": "Restore elements",
   "All": "All",
   "restore": "Restore",
   "DeleteRows": "Delete",
@@ -299,8 +298,8 @@
   "Undefined": "Undefined",
   "Auxiliary": "Auxiliary",
   "Fictitious": "Fictitious",
-  "ratedVoltage1Or": "Rated Voltage 1",
-  "ratedVoltage2Ex": "Rated Voltage 2",
+  "ratedVoltage1Or": "Rated Voltage 1 (kV)",
+  "ratedVoltage2Ex": "Rated Voltage 2 (kV)",
   "hasRatioTapChanger": "Ratio tap changer exists",
   "hasPhaseTapChanger" : "Phase tap changer exists",
   "Voltage": "Voltage",
@@ -311,5 +310,9 @@
   "ratioRegulationMode": "Ratio tap changer regulation mode",
   "phaseRegulationMode" : "Phase tap changer regulation mode",
   "phaseRegulating": "Phase tap changer regulating",
-  "phaseRegulationValue": "Phase tap changer flow set point or current limit"
+  "phaseRegulationValue": "Phase tap changer flow set point or current limit",
+  "property": "Property",
+  "substationProperty": "Substation property",
+  "substationProperty1": "Substation property 1",
+  "substationProperty2": "Substation property 2"
 }
