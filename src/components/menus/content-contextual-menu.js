@@ -29,6 +29,7 @@ import { DialogsId } from '../../utils/UIconstants';
 
 import {
     createFilter,
+    deleteElements,
     duplicateCase,
     duplicateContingencyList,
     duplicateFilter,
@@ -46,7 +47,6 @@ import {
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
     saveFilter,
-    stashElements,
 } from '../../utils/rest-api';
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
@@ -303,16 +303,16 @@ const ContentContextualMenu = (props) => {
     }, [onClose, setOpenDialog]);
 
     const [deleteError, setDeleteError] = useState('');
-    const handleStashElements = useCallback(
+    const handleDeleteElements = useCallback(
         (elementsUuids) => {
-            stashElements(elementsUuids)
+            deleteElements(elementsUuids, selectedDirectory.elementUuid)
                 .catch((error) => {
                     setDeleteError(error.message);
                     handleLastError(error.message);
                 })
                 .finally(() => handleCloseDialog());
         },
-        [handleCloseDialog, handleLastError]
+        [selectedDirectory?.elementUuid, handleCloseDialog, handleLastError]
     );
 
     const moveElementErrorToString = useCallback(
@@ -671,7 +671,7 @@ const ContentContextualMenu = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         onClick={() =>
-                            handleStashElements(
+                            handleDeleteElements(
                                 selectedElements.map((e) => e.elementUuid)
                             )
                         }
