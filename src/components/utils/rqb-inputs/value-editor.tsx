@@ -21,7 +21,8 @@ import { FilterType } from '../../../utils/elementType';
 import { ElementType } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPE, FILTER_UUID } from '../field-constants';
 import { useFormContext } from 'react-hook-form';
-import { VoltageLevel } from '../../../utils/equipment-types';
+import { Substation, VoltageLevel } from '../../../utils/equipment-types';
+import PropertyValueEditor from './property-value-editor';
 
 const styles = {
     noArrows: {
@@ -118,6 +119,29 @@ const ValueEditor = (props: ValueEditorProps) => {
         props.field === FieldType.VOLTAGE_LEVEL_ID_2
     ) {
         return <TextValueEditor {...props} />;
+    } else if (
+        props.field === FieldType.PROPERTY ||
+        props.field === FieldType.SUBSTATION_PROPERTY ||
+        props.field === FieldType.SUBSTATION_PROPERTY_1 ||
+        props.field === FieldType.SUBSTATION_PROPERTY_2
+    ) {
+        let equipmentType;
+        if (
+            props.field === FieldType.SUBSTATION_PROPERTY ||
+            props.field === FieldType.SUBSTATION_PROPERTY_1 ||
+            props.field === FieldType.SUBSTATION_PROPERTY_2
+        ) {
+            equipmentType = Substation.type;
+        } else {
+            equipmentType = getValues(EQUIPMENT_TYPE);
+        }
+
+        return (
+            <PropertyValueEditor
+                equipmentType={equipmentType}
+                valueEditorProps={props}
+            />
+        );
     }
     return (
         <Box sx={props.inputType === 'number' ? styles.noArrows : undefined}>

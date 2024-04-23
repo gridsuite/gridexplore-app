@@ -86,6 +86,10 @@ export enum FieldType {
     PHASE_REGULATING = 'PHASE_REGULATING',
     PHASE_REGULATION_MODE = 'PHASE_REGULATION_MODE',
     PHASE_REGULATION_VALUE = 'PHASE_REGULATION_VALUE',
+    PROPERTY = 'FREE_PROPERTIES',
+    SUBSTATION_PROPERTY = 'SUBSTATION_PROPERTIES',
+    SUBSTATION_PROPERTY_1 = 'SUBSTATION_PROPERTIES_1',
+    SUBSTATION_PROPERTY_2 = 'SUBSTATION_PROPERTIES_2',
 }
 
 export enum DataType {
@@ -95,6 +99,7 @@ export enum DataType {
     BOOLEAN = 'BOOLEAN',
     COMBINATOR = 'COMBINATOR',
     FILTER_UUID = 'FILTER_UUID',
+    PROPERTY = 'PROPERTIES',
 }
 
 export interface RuleTypeExport {
@@ -103,6 +108,8 @@ export interface RuleTypeExport {
     value: string | number | undefined;
     values: string[] | number[] | undefined;
     dataType: DataType;
+    propertyName?: string;
+    propertyValues?: string[];
 }
 
 export interface RuleGroupTypeExport {
