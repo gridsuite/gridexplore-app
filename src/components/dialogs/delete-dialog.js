@@ -74,23 +74,8 @@ const DeleteDialog = ({
         onClick();
     };
 
-    const buildTitle = (items) => {
-        return items.length === 1
-            ? intl.formatMessage(
-                  { id: 'deleteItemDialogTitle' },
-                  {
-                      itemName: (
-                          <OverflowableText
-                              text={items[0].elementName}
-                              tooltipSx={styles.tooltip}
-                          />
-                      ),
-                  }
-              )
-            : intl.formatMessage(
-                  { id: 'deleteMultipleItemsDialogTitle' },
-                  { itemsCount: items.length }
-              );
+    const buildTitle = () => {
+        return intl.formatMessage({ id: 'deleteDialogTitle' });
     };
 
     const renderElement = (items) => {
@@ -125,48 +110,11 @@ const DeleteDialog = ({
                 <Grid>
                     <Grid item>
                         <span>
-                            {intl.formatMessage(
-                                {
-                                    id: multipleDeleteFormatMessageId,
-                                },
-                                { itemsCount: items.length }
-                            )}
+                            {intl.formatMessage({
+                                id: multipleDeleteFormatMessageId,
+                            })}
                         </span>
                     </Grid>
-                    {items.slice(0, 10).map((file) => (
-                        <Grid item key={file.elementUuid}>
-                            <span>
-                                {
-                                    <div
-                                        style={{
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                        }}
-                                    >
-                                        {
-                                            <OverflowableText
-                                                text={file.elementName}
-                                                style={{ width: '100%' }}
-                                                tooltipSx={styles.tooltip}
-                                            />
-                                        }
-                                    </div>
-                                }
-                            </span>
-                        </Grid>
-                    ))}
-                    {items.length > 10 && (
-                        <Grid item>
-                            <span>
-                                {intl.formatMessage(
-                                    {
-                                        id: 'additionalItems',
-                                    },
-                                    { itemsCount: items.length - 10 }
-                                )}
-                            </span>
-                        </Grid>
-                    )}
                 </Grid>
             ) : (
                 <Grid>
