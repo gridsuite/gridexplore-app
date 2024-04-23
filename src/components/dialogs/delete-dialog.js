@@ -146,7 +146,7 @@ const DeleteDialog = ({
             aria-labelledby="dialog-title-delete"
         >
             <DialogTitle style={{ display: 'flex' }}>
-                {buildTitle(itemsState)}
+                {buildTitle()}
             </DialogTitle>
             <DialogContent>
                 {buildItemsToDeleteGrid(
