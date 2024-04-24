@@ -9,8 +9,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { DialogsId } from '../utils/UIconstants';
 
 import * as constants from '../utils/UIconstants';
+import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
 
 import Chip from '@mui/material/Chip';
 import Tooltip from '@mui/material/Tooltip';
@@ -22,12 +24,11 @@ import VirtualizedTable from './virtualized-table';
 import { ContingencyListType, FilterType } from '../utils/elementType';
 import { ElementType } from '@gridsuite/commons-ui';
 import {
-    DEFAULT_CELL_PADDING,
     getFileIcon,
     OverflowableText,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Box, Checkbox } from '@mui/material';
+import { Box, Button, Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
 import CriteriaBasedFilterEditionDialog from './dialogs/filter/criteria-based/criteria-based-filter-edition-dialog';
@@ -47,57 +48,34 @@ import DescriptionModificationDialogue from './dialogs/description-modification/
 const circularProgressSize = '70px';
 
 const styles = {
-    link: (theme) => ({
-        color: theme.link.color,
-        textDecoration: 'none',
-    }),
-    cell: {
+    noContentContainer: (theme) => ({
         display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
         alignItems: 'center',
-        textAlign: 'center',
-        boxSizing: 'border-box',
-        flex: 1,
-        height: '48px',
-        padding: `${DEFAULT_CELL_PADDING}px`,
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-    },
-    chip: {
-        cursor: 'pointer',
-    },
-    icon: (theme) => ({
-        marginRight: theme.spacing(1),
-        width: '18px',
-        height: '18px',
+        marginTop: theme.spacing(10),
     }),
-    circularRoot: (theme) => ({
-        marginRight: theme.spacing(1),
-    }),
-    checkboxes: {
-        width: '100%',
-        justifyContent: 'center',
-    },
-    circularProgressContainer: {
-        overflow: 'hidden',
+    noContentCircle: (theme) => ({
+        position: 'relative',
         display: 'flex',
-        flexDirection: 'row',
-        flexGrow: '1',
         justifyContent: 'center',
-    },
-    centeredCircularProgress: {
-        alignSelf: 'center',
-    },
-    tooltip: {
-        maxWidth: '1000px',
-    },
-    descriptionTooltip: {
-        display: 'inline-block',
-        whiteSpace: 'pre',
-        textOverflow: 'ellipsis',
-        overflow: 'hidden',
-        maxWidth: '250px',
-        maxHeight: '50px',
-    },
+        alignItems: 'center',
+        width: 200,
+        height: 200,
+        backgroundColor: theme.row.primary,
+        borderRadius: theme.spacing(15),
+    }),
+    noContentIcon: (theme) => ({
+        fontSize: '70px',
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+    }),
+    noContentText: (theme) => ({
+        textAlign: 'center',
+        marginTop: theme.spacing(4),
+    }),
 };
 
 const initialMousePosition = {
@@ -106,6 +84,7 @@ const initialMousePosition = {
 };
 
 const DirectoryContent = () => {
+    const treeData = useSelector((state) => state.treeData);
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
@@ -766,7 +745,7 @@ const DirectoryContent = () => {
                 });
         }
         setSelectedUuids(new Set());
-    }, [handleError, currentChildren, currentChildrenRef]);
+    }, [handleError, currentChildren, currentChildrenRef, treeData]);
 
     const getSelectedChildren = () => {
         let selectedChildren = [];
@@ -821,7 +800,36 @@ const DirectoryContent = () => {
             })),
         [childrenMetadata, currentChildren, getElementTypeTranslation]
     );
+    const handleOpenDialog = useCallback(() => {
+        setOpenDialog(DialogsId.ADD_ROOT_DIRECTORY);
+    }, [setOpenDialog]);
 
+    const renderNoContent = () => {
+        return (
+            <>
+                <Box sx={styles.noContentContainer}>
+                    <Box sx={styles.noContentCircle}>
+                        <CreateNewFolderOutlinedIcon
+                            sx={styles.noContentIcon}
+                        />
+                    </Box>
+                    <Box sx={styles.noContentText}>
+                        <h1>
+                            <FormattedMessage id={'firstDir'} />
+                        </h1>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            sx={styles.noContentButton}
+                            onClick={handleOpenDialog}
+                        >
+                            <FormattedMessage id={'createFolder'} />
+                        </Button>
+                    </Box>
+                </Box>
+            </>
+        );
+    };
     const renderLoadingContent = () => {
         return (
             <Box sx={styles.circularProgressContainer}>
@@ -949,8 +957,10 @@ const DirectoryContent = () => {
         }
 
         // If no selection or currentChildren = null (first time) render nothing
-        // TODO : Make a beautiful page here
         if (!currentChildren || !selectedDirectory) {
+            if (treeData.rootDirectories.length === 0 && treeData.initialized) {
+                return renderNoContent();
+            }
             return;
         }
 
