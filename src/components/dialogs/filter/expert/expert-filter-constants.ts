@@ -93,6 +93,11 @@ export const OPERATOR_OPTIONS = {
         customName: OperatorType.EXISTS,
         label: 'exists',
     },
+    NOT_EXISTS: {
+        name: OperatorType.NOT_EXISTS,
+        customName: OperatorType.NOT_EXISTS,
+        label: 'not_exists',
+    },
     // Number
     LOWER: { name: '<', customName: OperatorType.LOWER, label: 'lessThan' },
     LOWER_OR_EQUALS: {

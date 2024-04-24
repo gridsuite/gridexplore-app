@@ -93,6 +93,7 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
                 OPERATOR_OPTIONS.ENDS_WITH,
                 OPERATOR_OPTIONS.IN,
                 OPERATOR_OPTIONS.EXISTS,
+                OPERATOR_OPTIONS.NOT_EXISTS,
             ];
             if (
                 field.name === FieldType.ID ||
@@ -105,9 +106,11 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
                 operators.push(OPERATOR_OPTIONS.IS_NOT_PART_OF);
             }
             if (field.name === FieldType.ID) {
-                // When the ID is selected, the operator EXISTS must be removed.
+                // When the ID is selected, the operators EXISTS and NOT_EXISTS must be removed.
                 operators = operators.filter(
-                    (field) => field.name !== OperatorType.EXISTS
+                    (field) =>
+                        field.name !== OperatorType.EXISTS &&
+                        field.name !== OperatorType.NOT_EXISTS
                 );
             }
             return operators.map((operator) => ({
@@ -123,6 +126,7 @@ export const getOperators = (fieldName: string, intl: IntlShape) => {
                 OPERATOR_OPTIONS.LOWER_OR_EQUALS,
                 OPERATOR_OPTIONS.BETWEEN,
                 OPERATOR_OPTIONS.EXISTS,
+                OPERATOR_OPTIONS.NOT_EXISTS,
             ].map((operator) => ({
                 name: operator.name,
                 label: intl.formatMessage({ id: operator.label }),
@@ -194,6 +198,7 @@ export function exportExpertRules(
             value:
                 !isValueAnArray &&
                 rule.operator !== OperatorType.EXISTS &&
+                rule.operator !== OperatorType.NOT_EXISTS &&
                 dataType !== DataType.PROPERTY
                     ? changeValueUnit(rule.value, rule.field as FieldType)
                     : undefined,
@@ -337,8 +342,12 @@ export const queryValidator: QueryValidator = (query) => {
         const isStringInput =
             getDataType(rule.field, rule.operator) === DataType.STRING &&
             !isValueAnArray;
-        if (rule.id && rule.operator === OPERATOR_OPTIONS.EXISTS.name) {
-            // In the case of EXISTS operator, because we do not have a second value to evaluate, we force a valid result.
+        if (
+            rule.id &&
+            (rule.operator === OPERATOR_OPTIONS.EXISTS.name ||
+                rule.operator === OPERATOR_OPTIONS.NOT_EXISTS.name)
+        ) {
+            // In the case of (NOT_)EXISTS operator, because we do not have a second value to evaluate, we force a valid result.
             result[rule.id] = {
                 valid: true,
                 reasons: undefined,

@@ -19,6 +19,7 @@ export enum OperatorType {
     BEGINS_WITH = 'BEGINS_WITH',
     ENDS_WITH = 'ENDS_WITH',
     EXISTS = 'EXISTS',
+    NOT_EXISTS = 'NOT_EXISTS',
     IS_PART_OF = 'IS_PART_OF',
     IS_NOT_PART_OF = 'IS_NOT_PART_OF',
 }

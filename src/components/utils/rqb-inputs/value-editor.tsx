@@ -62,8 +62,11 @@ const ValueEditor = (props: ValueEditorProps) => {
         [props.field, getValues]
     );
 
-    if (props.operator === OperatorType.EXISTS) {
-        // No value needed for this operator
+    if (
+        props.operator === OperatorType.EXISTS ||
+        props.operator === OperatorType.NOT_EXISTS
+    ) {
+        // No value needed for these operators
         return null;
     }
     if (
