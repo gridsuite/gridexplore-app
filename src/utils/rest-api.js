@@ -1081,3 +1081,17 @@ export const getExportFormats = () => {
     console.debug(url);
     return backendFetchJson(url);
 };
+
+export function searchElementsInfos(searchTerm) {
+    console.info(
+        "Fetching elements infos matching with '%s' term ... ",
+        searchTerm
+    );
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('userInput', searchTerm);
+    return backendFetchJson(
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+            '/v1/elements/indexation-infos?' +
+            urlSearchParams.toString()
+    );
+}
