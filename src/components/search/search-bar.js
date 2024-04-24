@@ -116,7 +116,7 @@ export const SearchBar = ({ inputRef }) => {
     );
 
     const handleMatchingElement = useCallback(
-        (data) => {
+        (event, data) => {
             if (data !== undefined) {
                 const matchingElement = elementsFound.find(
                     (element) => element === data
