@@ -22,7 +22,7 @@ import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
 
 import VirtualizedTable from './virtualized-table';
 import { ContingencyListType, FilterType } from '../utils/elementType';
-import { ElementType } from '@gridsuite/commons-ui';
+import { DEFAULT_CELL_PADDING, ElementType } from '@gridsuite/commons-ui';
 import {
     getFileIcon,
     OverflowableText,
@@ -48,6 +48,57 @@ import DescriptionModificationDialogue from './dialogs/description-modification/
 const circularProgressSize = '70px';
 
 const styles = {
+    link: (theme) => ({
+        color: theme.link.color,
+        textDecoration: 'none',
+    }),
+    cell: {
+        display: 'flex',
+        alignItems: 'center',
+        textAlign: 'center',
+        boxSizing: 'border-box',
+        flex: 1,
+        height: '48px',
+        padding: `${DEFAULT_CELL_PADDING}px`,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
+    chip: {
+        cursor: 'pointer',
+    },
+    icon: (theme) => ({
+        marginRight: theme.spacing(1),
+        width: '18px',
+        height: '18px',
+    }),
+    circularRoot: (theme) => ({
+        marginRight: theme.spacing(1),
+    }),
+    checkboxes: {
+        width: '100%',
+        justifyContent: 'center',
+    },
+    circularProgressContainer: {
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'row',
+        flexGrow: '1',
+        justifyContent: 'center',
+    },
+    centeredCircularProgress: {
+        alignSelf: 'center',
+    },
+    tooltip: {
+        maxWidth: '1000px',
+    },
+    descriptionTooltip: {
+        display: 'inline-block',
+        whiteSpace: 'pre',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        maxWidth: '250px',
+        maxHeight: '50px',
+    },
     noContentContainer: (theme) => ({
         display: 'flex',
         flexDirection: 'column',
