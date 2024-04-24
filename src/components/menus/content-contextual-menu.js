@@ -81,7 +81,8 @@ const ContentContextualMenu = (props) => {
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
-    const { handleDownloadCases, handleConvertCases } = useDownloadUtils();
+    const { handleDownloadCases, handleConvertCases, stopCasesDownloads } =
+        useDownloadUtils();
 
     const handleLastError = useCallback(
         (message) => {
@@ -286,10 +287,11 @@ const ContentContextualMenu = (props) => {
     };
 
     const handleCloseDialog = useCallback(() => {
+        stopCasesDownloads();
         onClose();
         setOpenDialog(DialogsId.NONE);
         setHideMenu(false);
-    }, [onClose, setOpenDialog]);
+    }, [onClose, setOpenDialog, stopCasesDownloads]);
 
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(

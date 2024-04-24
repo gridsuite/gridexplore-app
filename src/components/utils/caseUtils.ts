@@ -7,7 +7,7 @@
 
 import {
     downloadCase,
-    exportCase,
+    fetchConvertedCase,
     getCaseOriginalName,
 } from '../../utils/rest-api';
 import { useIntl } from 'react-intl';
@@ -31,42 +31,40 @@ const downloadCases = async (uuids: string[]) => {
     }
 };
 
-const exportCases = async (
-    cases: any[],
+const exportCase = async (
+    caseElement: any,
     format: string,
     formatParameters: {
         [parameterName: string]: any;
     },
     onError?: (caseElement: any, errorMsg: string) => void
 ): Promise<void> => {
-    const files: { name: string; blob: Blob }[] = [];
-    for (const c of cases) {
-        try {
-            const result = await exportCase(
-                c.elementUuid,
-                format,
-                formatParameters
-            );
-            let filename = result.headers
-                .get('Content-Disposition')
-                .split('filename=')[1];
-            filename = filename.substring(1, filename.length - 1); // We remove quotes
-            const blob = await result.blob();
-            files.push({ name: filename, blob });
-        } catch (e: any) {
-            onError?.(c, e);
-        }
-    }
-    for (const file of files) {
-        const href = window.URL.createObjectURL(file.blob);
+    try {
+        const result = await fetchConvertedCase(
+            caseElement.elementUuid,
+            format,
+            formatParameters
+        );
+        let filename = result.headers
+            .get('Content-Disposition')
+            .split('filename=')[1];
+        filename = filename.substring(1, filename.length - 1); // We remove quotes
+        const blob = await result.blob();
+
+        const href = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = href;
-        link.setAttribute('download', file.name);
+        link.setAttribute('download', filename);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    } catch (e: any) {
+        downloadStopped = true;
+        onError?.(caseElement, e);
     }
 };
+
+let downloadStopped: boolean = false; // if set to true, interrupts the download queue
 
 export function useDownloadUtils() {
     const intl = useIntl();
@@ -190,6 +188,11 @@ export function useDownloadUtils() {
             messageTxt: errorMsg,
         });
 
+    const stopCasesDownloads = () => {
+        downloadStopped = true;
+    };
+
+    // downloads converted files one after another. The downloading may be interrupted midterm with a few files downloaded already.
     const handleConvertCases = async (
         selectedElements: any[],
         format: string,
@@ -200,18 +203,33 @@ export function useDownloadUtils() {
         const cases = selectedElements.filter(
             (element) => element.type === ElementType.CASE
         );
-        await exportCases(
-            cases,
-            format,
-            formatParameters,
-            handleCaseExportError
-        );
-        if (cases.length !== selectedElements.length) {
+        downloadStopped = false;
+
+        for (const c of cases) {
+            if (downloadStopped) {
+                break;
+            }
+            await exportCase(
+                c,
+                format,
+                formatParameters,
+                handleCaseExportError
+            );
+        }
+        let message: string = '';
+        if (downloadStopped) {
+            message = intl.formatMessage({
+                id: 'download.stopped',
+            });
+        } else if (cases.length !== selectedElements.length) {
+            message += buildPartialDownloadMessage(
+                cases.length,
+                selectedElements
+            );
+        }
+        if (message.length > 0) {
             snackInfo({
-                messageTxt: buildPartialDownloadMessage(
-                    cases.length,
-                    selectedElements
-                ),
+                messageTxt: message,
             });
         }
     };
@@ -231,5 +249,5 @@ export function useDownloadUtils() {
         }
     };
 
-    return { handleDownloadCases, handleConvertCases };
+    return { handleDownloadCases, handleConvertCases, stopCasesDownloads };
 }
