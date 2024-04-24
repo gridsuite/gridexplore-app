@@ -117,10 +117,10 @@ export const SearchBar = ({ inputRef }) => {
 
     const handleMatchingElement = useCallback(
         (event, data) => {
-            if (data !== undefined) {
-                const matchingElement = elementsFound.find(
-                    (element) => element === data
-                );
+            const matchingElement = elementsFound.find(
+                (element) => element === data
+            );
+            if (matchingElement !== undefined) {
                 const elementUuidPath = matchingElement?.pathUuid.reverse();
 
                 const promises = elementUuidPath.map((e) => {
