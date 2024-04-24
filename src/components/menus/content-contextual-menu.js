@@ -29,12 +29,7 @@ import { DialogsId } from '../../utils/UIconstants';
 
 import {
     deleteElements,
-    duplicateCase,
-    duplicateContingencyList,
-    duplicateFilter,
-    duplicateModification,
-    duplicateParameter,
-    duplicateStudy,
+    duplicateElement,
     fetchElementsInfos,
     moveElementsToDirectory,
     newScriptFromFilter,
@@ -101,7 +96,8 @@ const ContentContextualMenu = (props) => {
             nameItem,
             descriptionItem,
             sourceItemUuid,
-            parentDirectoryUuid
+            parentDirectoryUuid,
+            specificType
         ) => {
             dispatch(
                 setSelectionForCopy({
@@ -110,6 +106,7 @@ const ContentContextualMenu = (props) => {
                     nameItem: nameItem,
                     descriptionItem: descriptionItem,
                     parentDirectoryUuid: parentDirectoryUuid,
+                    specificType,
                 })
             );
         },
@@ -121,14 +118,16 @@ const ContentContextualMenu = (props) => {
         nameItem,
         descriptionItem,
         sourceItemUuid,
-        parentDirectoryUuid
+        parentDirectoryUuid,
+        sprecificTypeItem
     ) {
         dispatchSelectionForCopy(
             typeItem,
             nameItem,
             descriptionItem,
             sourceItemUuid,
-            parentDirectoryUuid
+            parentDirectoryUuid,
+            sprecificTypeItem
         );
         broadcastChannel.postMessage({
             typeItem: typeItem,
@@ -136,6 +135,7 @@ const ContentContextualMenu = (props) => {
             descriptionItem: descriptionItem,
             sourceItemUuid: sourceItemUuid,
             parentDirectoryUuid: parentDirectoryUuid,
+            specificTypeItem: sprecificTypeItem,
         });
 
         handleCloseDialog();
@@ -164,7 +164,6 @@ const ContentContextualMenu = (props) => {
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
-                case ElementType.CONTINGENCY_LIST:
                     console.info(
                         activeElement.type +
                             ' with uuid ' +
@@ -181,6 +180,24 @@ const ContentContextualMenu = (props) => {
                         selectedDirectory.elementUuid
                     );
                     break;
+                case ElementType.CONTINGENCY_LIST:
+                    console.info(
+                        activeElement.type +
+                            ' with uuid ' +
+                            activeElement.elementUuid +
+                            ' from directory ' +
+                            selectedDirectory.elementUuid +
+                            ' selected for copy'
+                    );
+                    copyElement(
+                        activeElement.type,
+                        activeElement.elementName,
+                        activeElement.description,
+                        activeElement.elementUuid,
+                        selectedDirectory.elementUuid,
+                        activeElement.specificMetadata.type
+                    );
+                    break;
 
                 default:
                     handleLastError(
@@ -193,50 +210,36 @@ const ContentContextualMenu = (props) => {
         if (activeElement) {
             switch (activeElement.type) {
                 case ElementType.CASE:
-                    duplicateCase(activeElement.elementUuid).catch((error) => {
+                case ElementType.STUDY:
+                case ElementType.FILTER:
+                case ElementType.MODIFICATION:
+                    duplicateElement(
+                        activeElement.elementUuid,
+                        undefined,
+                        activeElement.type
+                    ).catch((error) => {
                         handleDuplicateError(error.message);
                     });
                     break;
                 case ElementType.CONTINGENCY_LIST:
-                    fetchElementsInfos([activeElement.elementUuid])
-                        .then((res) => {
-                            duplicateContingencyList(
-                                res[0].specificMetadata.type,
-                                activeElement.elementUuid
-                            ).catch((error) => {
-                                handleDuplicateError(error.message);
-                            });
-                        })
-                        .catch((error) => {
-                            handleLastError(error.message);
-                        });
-                    break;
-                case ElementType.STUDY:
-                    duplicateStudy(activeElement.elementUuid).catch((error) => {
+                    duplicateElement(
+                        activeElement.elementUuid,
+                        undefined,
+                        activeElement.type,
+                        selectedElements[0].specificMetadata.type
+                    ).catch((error) => {
                         handleDuplicateError(error.message);
                     });
-                    break;
-                case ElementType.FILTER:
-                    duplicateFilter(activeElement.elementUuid).catch(
-                        (error) => {
-                            handleDuplicateError(error.message);
-                        }
-                    );
-                    break;
-                case ElementType.MODIFICATION:
-                    duplicateModification(activeElement.elementUuid).catch(
-                        (error) => {
-                            handleDuplicateError(error.message);
-                        }
-                    );
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
-                    duplicateParameter(
-                        activeElement.type,
-                        activeElement.elementUuid
+                    duplicateElement(
+                        activeElement.elementUuid,
+                        undefined,
+                        ElementType.PARAMETERS,
+                        activeElement.type
                     ).catch((error) => {
                         handleDuplicateError(error.message);
                     });

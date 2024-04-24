@@ -10,6 +10,7 @@ import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
+import { ElementType } from '@gridsuite/commons-ui';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -475,25 +476,6 @@ export function createStudy(
     });
 }
 
-export function duplicateStudy(sourceStudyUuid, parentDirectoryUuid) {
-    console.info('Duplicating a study...');
-    let queryParams = new URLSearchParams();
-    if (parentDirectoryUuid) {
-        queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
-    }
-
-    const url =
-        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/studies/${encodeURIComponent(
-            sourceStudyUuid
-        )}/duplicate?` + queryParams.toString();
-
-    console.debug(url);
-
-    return backendFetch(url, {
-        method: 'post',
-    });
-}
-
 export function createCase({ name, description, file, parentDirectoryUuid }) {
     console.info('Creating a new case...');
     let urlSearchParams = new URLSearchParams();
@@ -516,16 +498,44 @@ export function createCase({ name, description, file, parentDirectoryUuid }) {
     });
 }
 
-export function duplicateCase(sourceCaseUuid, parentDirectoryUuid) {
-    console.info('Duplicating a case...');
+const getDuplicateEndpoint = (type) => {
+    switch (type) {
+        case ElementType.CASE:
+            return '/cases';
+        case ElementType.STUDY:
+            return '/studies';
+        case ElementType.FILTER:
+            return '/filters';
+        case ElementType.CONTINGENCY_LIST:
+            return '/contingency-lists';
+        case ElementType.PARAMETERS:
+            return '/parameters';
+        case ElementType.MODIFICATION:
+            return '/modifications';
+        default:
+            break;
+    }
+};
+
+export function duplicateElement(
+    sourceCaseUuid,
+    parentDirectoryUuid,
+    type,
+    specificType
+) {
+    console.info('Duplicating a element...');
     let queryParams = new URLSearchParams();
+    queryParams.append('duplicateFrom', sourceCaseUuid);
     if (parentDirectoryUuid) {
         queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
     }
+    if (specificType) {
+        queryParams.append('type', specificType);
+    }
     const url =
-        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/${encodeURIComponent(
-            sourceCaseUuid
-        )}/duplicate?` + queryParams.toString();
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${getDuplicateEndpoint(
+            type
+        )}?` + queryParams.toString();
 
     console.debug(url);
 
@@ -599,30 +609,6 @@ export function createContingencyList(
     return backendFetch(createContingencyListUrl, {
         method: 'post',
         body: JSON.stringify(formContent),
-    });
-}
-
-export function duplicateContingencyList(
-    contingencyListType,
-    sourceContingencyListUuid,
-    parentDirectoryUuid
-) {
-    console.info('Duplicating a contingency list...');
-    let queryParams = new URLSearchParams();
-    queryParams.append('contingencyListType', contingencyListType);
-    if (parentDirectoryUuid) {
-        queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
-    }
-
-    const url =
-        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/contingency-lists/${encodeURIComponent(
-            sourceContingencyListUuid
-        )}/duplicate?` + queryParams.toString();
-
-    console.debug(url);
-
-    return backendFetch(url, {
-        method: 'post',
     });
 }
 
@@ -826,69 +812,6 @@ export function createFilter(
             body: JSON.stringify(newFilter),
         }
     );
-}
-
-export function duplicateFilter(sourceFilterUuid, parentDirectoryUuid) {
-    console.info('Duplicating a filter...');
-    let queryParams = new URLSearchParams();
-    if (parentDirectoryUuid) {
-        queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
-    }
-    const url =
-        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/filters/${encodeURIComponent(
-            sourceFilterUuid
-        )}/duplicate?` + queryParams.toString();
-    console.debug(url);
-
-    return backendFetch(url, {
-        method: 'post',
-    });
-}
-
-export function duplicateModification(
-    sourceModificationUuid,
-    parentDirectoryUuid
-) {
-    console.info('Duplicating a modification...');
-    let queryParams = new URLSearchParams();
-    queryParams.append('duplicateFrom', sourceModificationUuid);
-    if (parentDirectoryUuid) {
-        queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
-    }
-
-    const url =
-        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/modifications/${encodeURIComponent(
-            sourceModificationUuid
-        )}/duplicate?` + queryParams.toString();
-
-    console.debug(url);
-
-    return backendFetch(url, {
-        method: 'post',
-    });
-}
-
-export function duplicateParameter(
-    parameterType,
-    sourceParameterUuid,
-    parentDirectoryUuid
-) {
-    console.info('Duplicating parameters of type ' + parameterType + '...');
-    let queryParams = new URLSearchParams();
-    queryParams.append('type', parameterType);
-    if (parentDirectoryUuid) {
-        queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
-    }
-    const url =
-        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/parameters/${encodeURIComponent(
-            sourceParameterUuid
-        )}/duplicate?` + queryParams.toString();
-
-    console.debug(url);
-
-    return backendFetch(url, {
-        method: 'post',
-    });
 }
 
 /**

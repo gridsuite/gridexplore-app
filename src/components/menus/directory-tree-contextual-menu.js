@@ -28,12 +28,7 @@ import { DialogsId } from '../../utils/UIconstants';
 
 import {
     deleteElement,
-    duplicateCase,
-    duplicateContingencyList,
-    duplicateFilter,
-    duplicateModification,
-    duplicateParameter,
-    duplicateStudy,
+    duplicateElement,
     fetchElementsInfos,
     insertDirectory,
     insertRootDirectory,
@@ -142,75 +137,51 @@ const DirectoryTreeContextualMenu = (props) => {
                 selectionForCopy.nameItem,
                 directoryUuid
             );
-            // existence check and infos for source element
-            fetchElementsInfos([selectionForCopy.sourceItemUuid])
-                .then((elementInfos) => {
-                    switch (selectionForCopy.typeItem) {
-                        case ElementType.CASE:
-                            duplicateCase(
-                                selectionForCopy.sourceItemUuid,
-                                directoryUuid
-                            ).catch((error) => {
-                                handlePasteError(error);
-                            });
-                            break;
-                        case ElementType.STUDY:
-                            duplicateStudy(
-                                selectionForCopy.sourceItemUuid,
-                                directoryUuid
-                            ).catch((error) => {
-                                handlePasteError(error);
-                            });
-                            break;
-                        case ElementType.FILTER:
-                            duplicateFilter(
-                                selectionForCopy.sourceItemUuid,
-                                directoryUuid
-                            ).catch((error) => {
-                                handlePasteError(error);
-                            });
-                            break;
-                        case ElementType.MODIFICATION:
-                            duplicateModification(
-                                selectionForCopy.sourceItemUuid,
-                                directoryUuid
-                            ).catch((error) => {
-                                handlePasteError(error);
-                            });
-                            break;
-                        case ElementType.VOLTAGE_INIT_PARAMETERS:
-                        case ElementType.SECURITY_ANALYSIS_PARAMETERS:
-                        case ElementType.SENSITIVITY_PARAMETERS:
-                        case ElementType.LOADFLOW_PARAMETERS:
-                            duplicateParameter(
-                                selectionForCopy.typeItem,
-                                selectionForCopy.sourceItemUuid,
-                                directoryUuid
-                            ).catch((error) => {
-                                handlePasteError(error);
-                            });
-                            break;
-                        case ElementType.CONTINGENCY_LIST:
-                            duplicateContingencyList(
-                                elementInfos[0].specificMetadata.type,
-                                selectionForCopy.sourceItemUuid,
-                                directoryUuid
-                            ).catch((error) => {
-                                handlePasteError(error);
-                            });
-                            break;
-                        default:
-                            handleError(
-                                intl.formatMessage({
-                                    id: 'unsupportedItem',
-                                })
-                            );
-                    }
-                })
-                .catch((error) => {
-                    handlePasteError(error);
-                })
-                .finally(() => handleCloseDialog(null));
+
+            switch (selectionForCopy.typeItem) {
+                case ElementType.CASE:
+                case ElementType.STUDY:
+                case ElementType.FILTER:
+                case ElementType.MODIFICATION:
+                    duplicateElement(
+                        selectionForCopy.sourceItemUuid,
+                        directoryUuid,
+                        selectionForCopy.typeItem,
+                        undefined
+                    );
+                    break;
+                case ElementType.VOLTAGE_INIT_PARAMETERS:
+                case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+                case ElementType.SENSITIVITY_PARAMETERS:
+                case ElementType.LOADFLOW_PARAMETERS:
+                    duplicateElement(
+                        selectionForCopy.sourceItemUuid,
+                        directoryUuid,
+                        ElementType.PARAMETERS,
+                        selectionForCopy.typeItem
+                    ).catch((error) => {
+                        handlePasteError(error);
+                    });
+                    break;
+                case ElementType.CONTINGENCY_LIST:
+                    duplicateElement(
+                        selectionForCopy.sourceItemUuid,
+                        directoryUuid,
+                        selectionForCopy.typeItem,
+                        selectionForCopy.specificType
+                    ).catch((error) => {
+                        handlePasteError(error);
+                    });
+                    break;
+                default:
+                    handleError(
+                        intl.formatMessage({
+                            id: 'unsupportedItem',
+                        })
+                    );
+            }
+
+            handleCloseDialog(null);
         }
     }
 
