@@ -292,7 +292,7 @@
   "RestoreElementsInPublicDirectoryError": "Certains ou tous les éléments ne peuvent pas être restaurés : Pour effectuer une restauration dans un dossier public il est nécessaire soit d'être propriétaire de tous les éléments restaurés, soit les éléments restaurés doivent être publics",
   "DeleteElementFromStashError": "{multiselect, select, false {L'élément n'a pas pu être supprimé car il a été créé par un autre utilisateur} true {Certains éléments n'ont pas pu être supprimés car ils ont été créés par d'autres utilisateurs} other {}}",
   "path": "emplacement : ",
-  "searchPlaceholder": "Rechercher des elements (ex.: étude, filtre...)",
+  "searchPlaceholder": "Rechercher des éléments (ex.: étude, filtre...)",
   "elementsSearchingError": "Une erreur s'est produite lors de la recherche des éléments",
   "loadType": "Type",
   "Undefined": "Non défini",
