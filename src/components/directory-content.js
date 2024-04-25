@@ -116,17 +116,21 @@ const styles = {
         backgroundColor: theme.row.primary,
         borderRadius: theme.spacing(15),
     }),
-    noContentIcon: (theme) => ({
-        fontSize: '70px',
+    noContentIcon: {
+        fontSize: '100px',
         position: 'absolute',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-    }),
+    },
     noContentText: (theme) => ({
+        color: theme.row.primary,
         textAlign: 'center',
-        marginTop: theme.spacing(4),
+        marginTop: theme.spacing(1),
     }),
+    noContentButton: {
+        borderRadius: '30px',
+    },
 };
 
 const initialMousePosition = {
@@ -870,7 +874,6 @@ const DirectoryContent = () => {
                         </h1>
                         <Button
                             variant="contained"
-                            color="primary"
                             sx={styles.noContentButton}
                             onClick={handleOpenDialog}
                         >
