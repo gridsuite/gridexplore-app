@@ -38,8 +38,14 @@ export interface IDirectory {
     parentUuid: null | UUID;
 }
 
+export interface ITreeData {
+    rootDirectories: any[];
+    mapData: any[];
+}
+
 export interface ReduxState {
     activeDirectory: UUID;
     selectedDirectory: IDirectory;
+    treeData: ITreeData;
     user: IUser;
 }

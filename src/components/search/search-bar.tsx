@@ -4,7 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+    FunctionComponent,
+    SyntheticEvent,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import {
     fetchDirectoryContent,
@@ -16,23 +23,36 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory, setTreeData } from '../../redux/actions';
 import { updatedTree } from '../tree-views-container';
 import { useIntl } from 'react-intl';
-import SearchItem from './search-item';
+import { SearchItem } from './search-item';
+import { IDirectory, ITreeData, ReduxState } from '../../redux/reducer.type';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 
-export const SearchBar = ({ inputRef }) => {
+interface matchingElementProps {
+    id: string;
+    name: string;
+    type: string;
+    pathName: string[];
+    pathUuid: string[];
+}
+
+interface SearchBarProps {
+    inputRef: any;
+}
+
+export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const [elementsFound, setElementsFound] = useState([]);
     const [inputValue, onInputChange] = useState('');
     const lastSearchTermRef = useRef('');
     const [loading, setLoading] = useState(false);
-    const treeData = useSelector((state) => state.treeData);
-    const treeDataRef = useRef();
+    const treeData = useSelector((state: ReduxState) => state.treeData);
+    const treeDataRef = useRef<ITreeData>();
     const intl = useIntl();
     treeDataRef.current = treeData;
     const searchMatchingEquipments = useCallback(
-        (searchTerm) => {
+        (searchTerm: string) => {
             lastSearchTermRef.current = searchTerm;
             searchTerm &&
                 searchElementsInfos(searchTerm)
@@ -59,7 +79,7 @@ export const SearchBar = ({ inputRef }) => {
     );
 
     const handleChangeInput = useCallback(
-        (searchTerm) => {
+        (searchTerm: string) => {
             onInputChange(searchTerm);
             searchTerm && setLoading(true);
             debouncedSearchMatchingElements(searchTerm);
@@ -72,9 +92,9 @@ export const SearchBar = ({ inputRef }) => {
     }, [elementsFound]);
 
     const renderOptionItem = useCallback(
-        (props, option) => {
+        (props: any, option: matchingElementProps) => {
             const matchingElement = elementsFound.find(
-                (element) => element.id === option.id
+                (element: matchingElementProps) => element.id === option.id
             );
             return (
                 <SearchItem
@@ -88,7 +108,10 @@ export const SearchBar = ({ inputRef }) => {
     );
 
     const updateMapData = useCallback(
-        (nodeId, children) => {
+        (nodeId: string, children: IDirectory) => {
+            if (!treeDataRef.current) {
+                return;
+            }
             let [newRootDirectories, newMapData] = updatedTree(
                 treeDataRef.current.rootDirectories,
                 treeDataRef.current.mapData,
@@ -106,24 +129,27 @@ export const SearchBar = ({ inputRef }) => {
     );
 
     const handleDispatchDirectory = useCallback(
-        (elementUuidPath) => {
-            const selectedDirectory =
-                treeDataRef.current.mapData[elementUuidPath];
+        (elementUuidPath: any) => {
+            if (treeDataRef.current) {
+                const selectedDirectory =
+                    treeDataRef.current.mapData[elementUuidPath];
 
-            dispatch(setSelectedDirectory(selectedDirectory));
+                dispatch(setSelectedDirectory(selectedDirectory));
+            }
         },
         [dispatch]
     );
 
     const handleMatchingElement = useCallback(
-        (event, data) => {
+        (event: SyntheticEvent, data: matchingElementProps | string | null) => {
             const matchingElement = elementsFound.find(
-                (element) => element === data
+                (element: matchingElementProps) => element === data
             );
             if (matchingElement !== undefined) {
-                const elementUuidPath = matchingElement?.pathUuid.reverse();
-
-                const promises = elementUuidPath.map((e) => {
+                const elementUuidPath = (
+                    matchingElement as matchingElementProps
+                )?.pathUuid.reverse();
+                const promises = elementUuidPath.map((e: string) => {
                     return fetchDirectoryContent(e)
                         .then((res) => {
                             updateMapData(e, res);
@@ -159,9 +185,11 @@ export const SearchBar = ({ inputRef }) => {
                 inputValue={inputValue}
                 onInputChange={(_, data) => handleChangeInput(data)}
                 onChange={handleMatchingElement}
-                key={(option) => option.id}
+                getOptionKey={(option: any) => option.id}
                 options={loading ? [] : elementsFound}
-                getOptionLabel={(option) => option.name}
+                getOptionLabel={(option: any) =>
+                    option.name ? option.name : inputValue
+                }
                 loading={loading}
                 renderOption={renderOptionItem}
                 renderInput={(params) => (
@@ -188,5 +216,3 @@ export const SearchBar = ({ inputRef }) => {
         </>
     );
 };
-
-export default SearchBar;
