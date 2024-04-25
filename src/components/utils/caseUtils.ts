@@ -31,46 +31,45 @@ const downloadCases = async (uuids: string[]) => {
     }
 };
 
-const exportCase = async (
-    caseElement: any,
-    format: string,
-    formatParameters: {
-        [parameterName: string]: any;
-    },
-    onError?: (caseElement: any, errorMsg: string) => void
-): Promise<void> => {
-    try {
-        const result = await fetchConvertedCase(
-            caseElement.elementUuid,
-            format,
-            formatParameters
-        );
-        let filename = result.headers
-            .get('Content-Disposition')
-            .split('filename=')[1];
-        filename = filename.substring(1, filename.length - 1); // We remove quotes
-        const blob = await result.blob();
-
-        const href = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = href;
-        link.setAttribute('download', filename);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    } catch (e: any) {
-        downloadStopped = true;
-        onError?.(caseElement, e);
-    }
-};
-
-let downloadStopped: boolean = false; // if set to true, interrupts the download queue
-
 export function useDownloadUtils() {
     const intl = useIntl();
     const { snackError, snackInfo } = useSnackMessage();
     const capitalizeFirstLetter = (string: string) =>
         `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
+    let downloadStopped: boolean = false; // if set to true, interrupts the download queue
+
+    const exportCase = async (
+        caseElement: any,
+        format: string,
+        formatParameters: {
+            [parameterName: string]: any;
+        },
+        onError?: (caseElement: any, errorMsg: string) => void
+    ): Promise<void> => {
+        try {
+            const result = await fetchConvertedCase(
+                caseElement.elementUuid,
+                format,
+                formatParameters
+            );
+            let filename = result.headers
+                .get('Content-Disposition')
+                .split('filename=')[1];
+            filename = filename.substring(1, filename.length - 1); // We remove quotes
+            const blob = await result.blob();
+
+            const href = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = href;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (e: any) {
+            downloadStopped = true;
+            onError?.(caseElement, e);
+        }
+    };
 
     const buildPartialDownloadMessage = (
         numberOfDownloadedCases: number,
@@ -203,7 +202,6 @@ export function useDownloadUtils() {
         const cases = selectedElements.filter(
             (element) => element.type === ElementType.CASE
         );
-        downloadStopped = false;
 
         for (const c of cases) {
             if (downloadStopped) {
@@ -221,6 +219,7 @@ export function useDownloadUtils() {
             message = intl.formatMessage({
                 id: 'download.stopped',
             });
+            downloadStopped = false;
         } else if (cases.length !== selectedElements.length) {
             message += buildPartialDownloadMessage(
                 cases.length,
