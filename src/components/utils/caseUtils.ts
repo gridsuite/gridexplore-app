@@ -12,6 +12,7 @@ import {
 } from '../../utils/rest-api';
 import { useIntl } from 'react-intl';
 import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+import { useCallback, useState } from 'react';
 
 const downloadCases = async (uuids: string[]) => {
     for (const uuid of uuids) {
@@ -31,44 +32,11 @@ const downloadCases = async (uuids: string[]) => {
     }
 };
 
-const exportCase = async (
-    caseElement: any,
-    format: string,
-    formatParameters: {
-        [parameterName: string]: any;
-    },
-    onError?: (caseElement: any, errorMsg: string) => void
-): Promise<void> => {
-    try {
-        const result = await fetchConvertedCase(
-            caseElement.elementUuid,
-            format,
-            formatParameters
-        );
-        let filename = result.headers
-            .get('Content-Disposition')
-            .split('filename=')[1];
-        filename = filename.substring(1, filename.length - 1); // We remove quotes
-        const blob = await result.blob();
-
-        const href = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = href;
-        link.setAttribute('download', filename);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    } catch (e: any) {
-        downloadStopped = true;
-        onError?.(caseElement, e);
-    }
-};
-
-let downloadStopped: boolean = false; // if set to true, interrupts the download queue
-
 export function useDownloadUtils() {
     const intl = useIntl();
     const { snackError, snackInfo } = useSnackMessage();
+    const [abortController, setAbortController] = useState<AbortController>();
+
     const capitalizeFirstLetter = (string: string) =>
         `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
 
@@ -188,8 +156,44 @@ export function useDownloadUtils() {
             messageTxt: errorMsg,
         });
 
-    const stopCasesDownloads = () => {
-        downloadStopped = true;
+    const stopCasesDownloads = useCallback(() => {
+        if (abortController) {
+            abortController.abort();
+        }
+    }, [abortController]);
+
+    const exportCase = async (
+        caseElement: any,
+        format: string,
+        formatParameters: { [p: string]: any },
+        abortController: AbortController
+    ) => {
+        try {
+            const result = await fetchConvertedCase(
+                caseElement.elementUuid,
+                format,
+                formatParameters,
+                abortController
+            );
+            let filename = result.headers
+                .get('Content-Disposition')
+                .split('filename=')[1];
+            filename = filename.substring(1, filename.length - 1); // We remove quotes
+            const blob = await result.blob();
+
+            const href = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = href;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error: any) {
+            if (error.name === 'AbortError') {
+                throw error;
+            }
+            handleCaseExportError?.(caseElement, error);
+        }
     };
 
     // downloads converted files one after another. The downloading may be interrupted midterm with a few files downloaded already.
@@ -203,34 +207,35 @@ export function useDownloadUtils() {
         const cases = selectedElements.filter(
             (element) => element.type === ElementType.CASE
         );
-        downloadStopped = false;
-
-        for (const c of cases) {
-            if (downloadStopped) {
-                break;
-            }
-            await exportCase(
-                c,
-                format,
-                formatParameters,
-                handleCaseExportError
-            );
-        }
         let message: string = '';
-        if (downloadStopped) {
-            message = intl.formatMessage({
-                id: 'download.stopped',
-            });
-        } else if (cases.length !== selectedElements.length) {
-            message += buildPartialDownloadMessage(
-                cases.length,
-                selectedElements
-            );
-        }
-        if (message.length > 0) {
-            snackInfo({
-                messageTxt: message,
-            });
+        try {
+            const controller = new AbortController();
+            setAbortController(controller);
+            for (const c of cases) {
+                await exportCase(c, format, formatParameters, controller);
+            }
+        } catch (error: any) {
+            if (error.name === 'AbortError') {
+                message = intl.formatMessage({
+                    id: 'download.stopped',
+                });
+            }
+        } finally {
+            setAbortController(undefined);
+            if (
+                message.length === 0 &&
+                cases.length !== selectedElements.length
+            ) {
+                message += buildPartialDownloadMessage(
+                    cases.length,
+                    selectedElements
+                );
+            }
+            if (message.length > 0) {
+                snackInfo({
+                    messageTxt: message,
+                });
+            }
         }
     };
 
