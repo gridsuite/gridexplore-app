@@ -22,11 +22,11 @@ import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
 import AccessRightsDialog from '../dialogs/access-rights-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
-import FilterCreationDialog from '../dialogs/filter/filter-creation-dialog';
 
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
+    createFilter,
     deleteElement,
     duplicateCase,
     duplicateContingencyList,
@@ -34,20 +34,30 @@ import {
     duplicateModification,
     duplicateParameter,
     duplicateStudy,
+    elementExists,
+    fetchAppsAndUrls,
     fetchElementsInfos,
     getNameCandidate,
     insertDirectory,
     insertRootDirectory,
     renameElement,
+    saveFilter,
     updateAccessRights,
+    fetchDirectoryContent,
+    fetchRootFolders,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
-import { ElementType } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    FilterCreationDialog,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useParameterState } from '../dialogs/parameters-dialog';
+import { PARAM_LANGUAGE } from '../../utils/config-params';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
@@ -58,6 +68,9 @@ const DirectoryTreeContextualMenu = (props) => {
 
     const [hideMenu, setHideMenu] = useState(false);
     const { snackError } = useSnackMessage();
+    const activeDirectory = useSelector((state) => state.activeDirectory);
+
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const handleOpenDialog = (dialogId) => {
         setHideMenu(true);
@@ -467,6 +480,15 @@ const DirectoryTreeContextualMenu = (props) => {
                     <FilterCreationDialog
                         open={true}
                         onClose={handleCloseDialog}
+                        activeDirectory={activeDirectory}
+                        createFilter={createFilter}
+                        saveFilter={saveFilter}
+                        fetchAppsAndUrls={fetchAppsAndUrls}
+                        elementExists={elementExists}
+                        language={languageLocal}
+                        fetchDirectoryContent={fetchDirectoryContent}
+                        fetchRootFolders={fetchRootFolders}
+                        fetchElementsInfos={fetchElementsInfos}
                     />
                 );
             case DialogsId.ADD_NEW_CASE:

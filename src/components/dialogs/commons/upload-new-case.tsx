@@ -12,15 +12,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
 import {
-    API_CALL,
-    CASE_FILE,
-    CASE_NAME,
-    CASE_UUID,
-} from '../../utils/field-constants';
-import {
     createCaseWithoutDirectoryElementCreation,
     deleteCase,
 } from '../../../utils/rest-api';
+import { FieldConstants } from '@gridsuite/commons-ui';
 
 interface UploadNewCaseProps {
     isNewStudyCreation?: boolean;
@@ -43,13 +38,13 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
     const {
         field: { ref, value, onChange: onValueChange },
     } = useController({
-        name: CASE_FILE,
+        name: FieldConstants.CASE_FILE,
     });
 
     const {
         field: { onChange: onCaseUuidChange },
     } = useController({
-        name: CASE_UUID,
+        name: FieldConstants.CASE_UUID,
     });
 
     const { clearErrors, setError, getValues, setValue } = useFormContext();
@@ -60,8 +55,8 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
 
-        clearErrors(CASE_FILE);
-        clearErrors(`root.${API_CALL}`);
+        clearErrors(FieldConstants.CASE_FILE);
+        clearErrors(`root.${FieldConstants.API_CALL}`);
 
         const files = event.target.files;
 
@@ -78,7 +73,9 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                     setCaseFileLoading(true);
                     createCaseWithoutDirectoryElementCreation(currentFile)
                         .then((newCaseUuid) => {
-                            const prevCaseUuid = getValues(CASE_UUID);
+                            const prevCaseUuid = getValues(
+                                FieldConstants.CASE_UUID
+                            );
 
                             if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
                                 deleteCase(prevCaseUuid).catch(
@@ -97,11 +94,11 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                             setCaseFileLoading(false);
                         });
                 } else {
-                    const caseName = getValues(CASE_NAME);
+                    const caseName = getValues(FieldConstants.CASE_NAME);
                     if (caseFileName && !caseName) {
-                        clearErrors(CASE_NAME);
+                        clearErrors(FieldConstants.CASE_NAME);
                         setValue(
-                            CASE_NAME,
+                            FieldConstants.CASE_NAME,
                             caseFileName.substring(
                                 0,
                                 caseFileName.indexOf('.')
@@ -114,7 +111,7 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                     }
                 }
             } else {
-                setError(CASE_FILE, {
+                setError(FieldConstants.CASE_FILE, {
                     type: 'caseFileSize',
                     message: intl
                         .formatMessage(
