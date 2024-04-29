@@ -523,7 +523,7 @@ export function duplicateElement(
     type,
     specificType
 ) {
-    console.info('Duplicating a element...');
+    console.info('Duplicating an element of type ' + type + ' ...');
     let queryParams = new URLSearchParams();
     queryParams.append('duplicateFrom', sourceCaseUuid);
     if (parentDirectoryUuid) {

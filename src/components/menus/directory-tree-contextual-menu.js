@@ -158,7 +158,9 @@ const DirectoryTreeContextualMenu = (props) => {
                         directoryUuid,
                         selectionForCopy.typeItem,
                         undefined
-                    );
+                    ).catch((error) => {
+                        handlePasteError(error);
+                    });
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
