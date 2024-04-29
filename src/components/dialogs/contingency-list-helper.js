@@ -4,28 +4,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    CONTINGENCY_NAME,
-    EQUIPMENT_IDS,
-    EQUIPMENT_TABLE,
-    NAME,
-} from '../utils/field-constants';
+import { FieldConstants } from '@gridsuite/commons-ui';
 
 export const prepareContingencyListForBackend = (id, contingencyList) => {
-    const identifiersList = contingencyList[EQUIPMENT_TABLE].map(
+    const identifiersList = contingencyList[FieldConstants.EQUIPMENT_TABLE].map(
         (contingency) => {
-            const identifierList = contingency[EQUIPMENT_IDS].map(
-                (identifier) => {
-                    return {
-                        type: 'ID_BASED',
-                        identifier: identifier,
-                    };
-                }
-            );
+            const identifierList = contingency[
+                FieldConstants.EQUIPMENT_IDS
+            ].map((identifier) => {
+                return {
+                    type: 'ID_BASED',
+                    identifier: identifier,
+                };
+            });
 
             return {
                 type: 'LIST',
-                contingencyId: contingency[CONTINGENCY_NAME],
+                contingencyId: contingency[FieldConstants.CONTINGENCY_NAME],
                 identifierList: identifierList,
             };
         }
@@ -36,7 +31,7 @@ export const prepareContingencyListForBackend = (id, contingencyList) => {
         identifierContingencyList: {
             type: 'identifier',
             version: '1.2',
-            name: contingencyList[NAME],
+            name: contingencyList[FieldConstants.NAME],
             identifiers: identifiersList,
         },
         type: 'IDENTIFIERS',

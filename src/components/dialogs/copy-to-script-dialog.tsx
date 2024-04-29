@@ -7,21 +7,23 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import yup from 'components/utils/yup-config';
-import { NAME } from 'components/utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import CustomMuiDialog from './commons/custom-mui-dialog/custom-mui-dialog';
 import { CircularProgress, Grid } from '@mui/material';
-import { UniqueNameInput } from './commons/unique-name-input';
-import { ElementType } from '@gridsuite/commons-ui';
+import {
+    UniqueNameInput,
+    ElementType,
+    CustomMuiDialog,
+    FieldConstants,
+} from '@gridsuite/commons-ui';
 import { getNameCandidate } from 'utils/rest-api';
 
 const schema = yup.object().shape({
-    [NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
 });
 
 const emptyFormData = {
-    [NAME]: '',
+    [FieldConstants.NAME]: '',
 };
 
 interface CopyToScriptDialogProps {
@@ -37,7 +39,7 @@ interface CopyToScriptDialogProps {
 }
 
 interface FormData {
-    [NAME]: string;
+    [FieldConstants.NAME]: string;
 }
 
 /**
@@ -75,11 +77,11 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
         setValue,
     } = methods;
 
-    const nameError = errors[NAME];
+    const nameError = errors[FieldConstants.NAME];
     const isValidating = errors.root?.isValidating;
 
     const onSubmit = (data: FormData) => {
-        onValidate(id, data[NAME]);
+        onValidate(id, data[FieldConstants.NAME]);
     };
 
     const handleClose = () => {
@@ -102,7 +104,9 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
         getNameCandidate(directoryUuid, currentName, elementType)
             .then((newName) => {
                 let generatedName: string = newName || '';
-                setValue(NAME, generatedName, { shouldDirty: true });
+                setValue(FieldConstants.NAME, generatedName, {
+                    shouldDirty: true,
+                });
             })
             .catch(() => {
                 handleGenerateNameError();
@@ -135,7 +139,7 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
                         <CircularProgress />
                     ) : (
                         <UniqueNameInput
-                            name={NAME}
+                            name={FieldConstants.NAME}
                             label={'nameProperty'}
                             elementType={ElementType.CONTINGENCY_LIST}
                             autoFocus

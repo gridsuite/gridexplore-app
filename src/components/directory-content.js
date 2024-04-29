@@ -20,29 +20,40 @@ import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
 
 import VirtualizedTable from './virtualized-table';
 import { ContingencyListType, FilterType } from '../utils/elementType';
-import { ElementType } from '@gridsuite/commons-ui';
 import {
+    ElementType,
     DEFAULT_CELL_PADDING,
     getFileIcon,
     OverflowableText,
     useSnackMessage,
+    ExplicitNamingFilterEditionDialog,
+    ExpertFilterEditionDialog,
+    CriteriaBasedFilterEditionDialog,
+    DescriptionModificationDialog,
 } from '@gridsuite/commons-ui';
 import { Box, Checkbox } from '@mui/material';
 
-import { fetchElementsInfos } from '../utils/rest-api';
-import CriteriaBasedFilterEditionDialog from './dialogs/filter/criteria-based/criteria-based-filter-edition-dialog';
+import {
+    createFilter,
+    elementExists,
+    fetchAppsAndUrls,
+    fetchElementsInfos,
+    getFilterById,
+    saveFilter,
+    fetchDirectoryContent,
+    fetchRootFolders,
+} from '../utils/rest-api';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 import CreateIcon from '@mui/icons-material/Create';
-import ExplicitNamingFilterEditionDialog from './dialogs/filter/explicit-naming/explicit-naming-filter-edition-dialog';
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
-import ExpertFilterEditionDialog from './dialogs/filter/expert/expert-filter-edition-dialog';
 import { noSelectionForCopy } from 'utils/constants';
-import DescriptionModificationDialogue from './dialogs/description-modification/description-modification-dialogue';
+import { useParameterState } from './dialogs/parameters-dialog';
+import { PARAM_LANGUAGE } from '../utils/config-params';
 
 const circularProgressSize = '70px';
 
@@ -108,6 +119,11 @@ const initialMousePosition = {
 const DirectoryContent = () => {
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
+
+    const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const activeDirectory = useSelector((state) => state.activeDirectory);
+
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const dispatchSelectionForCopy = useCallback(
         (
@@ -969,7 +985,7 @@ const DirectoryContent = () => {
     const renderDialog = (name) => {
         if (openDescModificationDialog && activeElement) {
             return (
-                <DescriptionModificationDialogue
+                <DescriptionModificationDialog
                     open={true}
                     description={activeElement.description}
                     elementUuid={activeElement.elementUuid}
@@ -1034,6 +1050,13 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
+                        createfilter={createFilter}
+                        saveFilter={saveFilter}
+                        fetchAppsAndUrls={fetchAppsAndUrls}
+                        getFilterById={getFilterById}
+                        activeDirectory={activeDirectory}
+                        elementExists={elementExists}
+                        language={languageLocal}
                     />
                 );
             case FilterType.CRITERIA_BASED.id:
@@ -1045,6 +1068,14 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
+                        createfilter={createFilter}
+                        saveFilter={saveFilter}
+                        fetchAppsAndUrls={fetchAppsAndUrls}
+                        getFilterById={getFilterById}
+                        selectionForCopy={selectionForCopy}
+                        activeDirectory={activeDirectory}
+                        elementExists={elementExists}
+                        language={languageLocal}
                     />
                 );
             case FilterType.EXPERT.id:
@@ -1056,6 +1087,17 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
+                        createfilter={createFilter}
+                        saveFilter={saveFilter}
+                        fetchAppsAndUrls={fetchAppsAndUrls}
+                        selectionForCopy={selectionForCopy}
+                        getFilterById={getFilterById}
+                        activeDirectory={activeDirectory}
+                        elementExists={elementExists}
+                        language={languageLocal}
+                        fetchDirectoryContent={fetchDirectoryContent}
+                        fetchRootFolders={fetchRootFolders}
+                        fetchElementsInfos={fetchElementsInfos}
                     />
                 );
             default:

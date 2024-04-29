@@ -5,24 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CONTINGENCY_LIST_TYPE,
-    AG_GRID_ROW_UUID,
-    CONTINGENCY_NAME,
-    EQUIPMENT_IDS,
-    EQUIPMENT_TABLE,
-} from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
 import React, { useCallback, useMemo } from 'react';
-import CustomAgGridTable, {
-    ROW_DRAGGING_SELECTION_COLUMN_DEF,
-} from '../../../utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
-import { gridItem } from '../../../utils/dialog-utils';
 import yup from '../../../utils/yup-config';
 import { makeDefaultRowData } from '../contingency-list-utils';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { ContingencyListType } from 'utils/elementType';
 import { v4 as uuid4 } from 'uuid';
+import {
+    FieldConstants,
+    gridItem,
+    CustomAgGridTable,
+    ROW_DRAGGING_SELECTION_COLUMN_DEF,
+} from '@gridsuite/commons-ui';
 
 export const getExplicitNamingSchema = (id) => {
     return {
@@ -30,15 +25,19 @@ export const getExplicitNamingSchema = (id) => {
             .array()
             .of(
                 yup.object().shape({
-                    [CONTINGENCY_NAME]: yup.string().nullable(),
-                    [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
+                    [FieldConstants.CONTINGENCY_NAME]: yup.string().nullable(),
+                    [FieldConstants.EQUIPMENT_IDS]: yup
+                        .array()
+                        .of(yup.string().nullable()),
                 })
             )
             // we remove empty lines
             .compact(
-                (row) => !row[CONTINGENCY_NAME] && !row[EQUIPMENT_IDS]?.length
+                (row) =>
+                    !row[FieldConstants.CONTINGENCY_NAME] &&
+                    !row[FieldConstants.EQUIPMENT_IDS]?.length
             )
-            .when([CONTINGENCY_LIST_TYPE], {
+            .when([FieldConstants.CONTINGENCY_LIST_TYPE], {
                 is: ContingencyListType.EXPLICIT_NAMING.id,
                 then: (schema) => getExplicitNamingConditionSchema(schema),
             }),
@@ -50,12 +49,16 @@ export const getExplicitNamingEditSchema = (id) => {
         .array()
         .of(
             yup.object().shape({
-                [CONTINGENCY_NAME]: yup.string().nullable(),
-                [EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
+                [FieldConstants.CONTINGENCY_NAME]: yup.string().nullable(),
+                [FieldConstants.EQUIPMENT_IDS]: yup
+                    .array()
+                    .of(yup.string().nullable()),
             })
         ) // we remove empty lines
         .compact(
-            (row) => !row[CONTINGENCY_NAME] && !row[EQUIPMENT_IDS]?.length
+            (row) =>
+                !row[FieldConstants.CONTINGENCY_NAME] &&
+                !row[FieldConstants.EQUIPMENT_IDS]?.length
         );
 
     return {
@@ -70,14 +73,18 @@ const getExplicitNamingConditionSchema = (schema) => {
             'rowWithoutName',
             'contingencyTablePartiallyDefinedError',
             (array) => {
-                return !array.some((row) => !row[CONTINGENCY_NAME]?.trim());
+                return !array.some(
+                    (row) => !row[FieldConstants.CONTINGENCY_NAME]?.trim()
+                );
             }
         )
         .test(
             'rowWithoutEquipments',
             'contingencyTablePartiallyDefinedError',
             (array) => {
-                return !array.some((row) => !row[EQUIPMENT_IDS]?.length);
+                return !array.some(
+                    (row) => !row[FieldConstants.EQUIPMENT_IDS]?.length
+                );
             }
         );
 };
@@ -94,13 +101,13 @@ const ExplicitNamingForm = () => {
             ...ROW_DRAGGING_SELECTION_COLUMN_DEF,
             {
                 headerName: intl.formatMessage({ id: 'elementName' }),
-                field: CONTINGENCY_NAME,
+                field: FieldConstants.CONTINGENCY_NAME,
                 editable: true,
                 singleClickEdit: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'equipments' }),
-                field: EQUIPMENT_IDS,
+                field: FieldConstants.EQUIPMENT_IDS,
                 suppressKeyboardEvent: (params) =>
                     // we suppress the keys that are used by cellRenderer
                     suppressKeyboardEvent(params),
@@ -109,7 +116,7 @@ const ExplicitNamingForm = () => {
                 singleClickEdit: true,
                 cellRenderer: ChipsArrayEditor,
                 cellRendererParams: {
-                    name: EQUIPMENT_TABLE,
+                    name: FieldConstants.EQUIPMENT_TABLE,
                 },
                 cellStyle: { padding: 0 },
             },
@@ -120,9 +127,9 @@ const ExplicitNamingForm = () => {
         if (csvData) {
             return csvData.map((value) => {
                 return {
-                    [AG_GRID_ROW_UUID]: uuid4(),
-                    [CONTINGENCY_NAME]: value[0]?.trim() || '',
-                    [EQUIPMENT_IDS]:
+                    [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+                    [FieldConstants.CONTINGENCY_NAME]: value[0]?.trim() || '',
+                    [FieldConstants.EQUIPMENT_IDS]:
                         value[1]
                             ?.split('|')
                             .map((n) => n.trim())
@@ -161,7 +168,7 @@ const ExplicitNamingForm = () => {
 
     const equipmentTableField = (
         <CustomAgGridTable
-            name={EQUIPMENT_TABLE}
+            name={FieldConstants.EQUIPMENT_TABLE}
             columnDefs={columnDefs}
             makeDefaultRowData={makeDefaultRowData}
             pagination={true}

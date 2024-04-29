@@ -5,45 +5,43 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { RadioInput } from '@gridsuite/commons-ui';
 import {
-    CONTINGENCY_LIST_TYPE,
-    CRITERIA_BASED,
-    NAME,
-    SCRIPT,
-} from '../../../utils/field-constants';
+    RadioInput,
+    getCriteriaBasedFormData,
+    CONTINGENCY_LIST_EQUIPMENTS,
+    CriteriaBasedForm,
+    FieldConstants,
+    UniqueNameInput,
+    ExpandingTextField,
+    ElementType,
+    gridItem,
+} from '@gridsuite/commons-ui';
 import { ContingencyListType } from '../../../../utils/elementType';
-import { ElementType } from '@gridsuite/commons-ui';
 import { Box, Grid } from '@mui/material';
-import { gridItem } from '../../../utils/dialog-utils';
 import React from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
-import {
-    CONTINGENCY_LIST_EQUIPMENTS,
-    getCriteriaBasedFormData,
-} from '../../commons/criteria-based/criteria-based-utils';
-import CriteriaBasedForm from '../../commons/criteria-based/criteria-based-form';
 import ScriptInputForm from '../script/script-input-form';
-import { UniqueNameInput } from '../../commons/unique-name-input';
-import { DESCRIPTION } from '../../../utils/field-constants';
-import { ExpandingTextField } from '@gridsuite/commons-ui';
+import { useSelector } from 'react-redux';
+import { elementExists } from '../../../../utils/rest-api';
 
 const ContingencyListCreationForm = () => {
     const { setValue } = useFormContext();
 
     const watchContingencyListType = useWatch({
-        name: CONTINGENCY_LIST_TYPE,
+        name: FieldConstants.CONTINGENCY_LIST_TYPE,
     });
+
+    const activeDirectory = useSelector((state) => state.activeDirectory);
 
     // We do this because setValue don't set the field dirty
     const handleChange = (_event, value) => {
-        setValue(CONTINGENCY_LIST_TYPE, value);
+        setValue(FieldConstants.CONTINGENCY_LIST_TYPE, value);
     };
 
     const contingencyListTypeField = (
         <RadioInput
-            name={CONTINGENCY_LIST_TYPE}
+            name={FieldConstants.CONTINGENCY_LIST_TYPE}
             options={Object.values(ContingencyListType)}
             formProps={{ onChange: handleChange }} // need to override this in order to do not activate the validate button when changing the filter type
         />
@@ -54,16 +52,18 @@ const ContingencyListCreationForm = () => {
         <Grid container spacing={2}>
             <Grid item xs={12}>
                 <UniqueNameInput
-                    name={NAME}
+                    name={FieldConstants.NAME}
                     label={'nameProperty'}
                     elementType={ElementType.CONTINGENCY_LIST}
                     autoFocus
+                    activeDirectory={activeDirectory}
+                    elementExists={elementExists}
                 />
             </Grid>
             <Grid item xs={12}>
                 <Box>
                     <ExpandingTextField
-                        name={DESCRIPTION}
+                        name={FieldConstants.DESCRIPTION}
                         label={'descriptionProperty'}
                         minRows={3}
                         rows={5}
@@ -77,7 +77,7 @@ const ContingencyListCreationForm = () => {
                 ContingencyListType.CRITERIA_BASED.id && (
                 <CriteriaBasedForm
                     equipments={CONTINGENCY_LIST_EQUIPMENTS}
-                    defaultValues={emptyValues[CRITERIA_BASED]}
+                    defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
                 />
             )}
             {watchContingencyListType ===
@@ -85,7 +85,7 @@ const ContingencyListCreationForm = () => {
                 <ExplicitNamingForm />
             )}
             {watchContingencyListType === ContingencyListType.SCRIPT.id && (
-                <ScriptInputForm name={SCRIPT} />
+                <ScriptInputForm name={FieldConstants.SCRIPT} />
             )}
         </Grid>
     );
