@@ -29,7 +29,6 @@ import { DialogsId } from '../../utils/UIconstants';
 import {
     deleteElement,
     duplicateElement,
-    fetchElementsInfos,
     insertDirectory,
     insertRootDirectory,
     renameElement,

@@ -30,7 +30,6 @@ import { DialogsId } from '../../utils/UIconstants';
 import {
     deleteElements,
     duplicateElement,
-    fetchElementsInfos,
     moveElementsToDirectory,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,
