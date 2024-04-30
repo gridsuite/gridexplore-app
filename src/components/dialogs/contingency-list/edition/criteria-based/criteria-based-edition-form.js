@@ -8,13 +8,13 @@
 import { Grid } from '@mui/material';
 import React from 'react';
 import {
-    CONTINGENCY_LIST_EQUIPMENTS,
+    UniqueNameInput,
+    ElementType,
+    CriteriaBasedForm,
     getCriteriaBasedFormData,
-} from 'components/dialogs/commons/criteria-based/criteria-based-utils';
-import CriteriaBasedForm from 'components/dialogs/commons/criteria-based/criteria-based-form';
-import { CRITERIA_BASED, NAME } from 'components/utils/field-constants';
-import { UniqueNameInput } from '../../../commons/unique-name-input';
-import { ElementType } from '@gridsuite/commons-ui';
+    CONTINGENCY_LIST_EQUIPMENTS,
+    FieldConstants,
+} from '@gridsuite/commons-ui';
 
 const CriteriaBasedEditionForm = () => {
     const emptyValues = getCriteriaBasedFormData();
@@ -22,14 +22,14 @@ const CriteriaBasedEditionForm = () => {
         <Grid container spacing={2} marginTop={'auto'}>
             <Grid item xs={12}>
                 <UniqueNameInput
-                    name={NAME}
+                    name={FieldConstants.NAME}
                     label={'nameProperty'}
                     elementType={ElementType.CONTINGENCY_LIST}
                 />
             </Grid>
             <CriteriaBasedForm
                 equipments={CONTINGENCY_LIST_EQUIPMENTS}
-                defaultValues={emptyValues[CRITERIA_BASED]}
+                defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
             />
         </Grid>
     );

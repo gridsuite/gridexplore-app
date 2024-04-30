@@ -5,33 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    AG_GRID_ROW_UUID,
-    CONTINGENCY_LIST_TYPE,
-    CONTINGENCY_NAME,
-    COUNTRIES,
-    COUNTRIES_1,
-    COUNTRIES_2,
-    CRITERIA_BASED,
-    DESCRIPTION,
-    EQUIPMENT_IDS,
-    EQUIPMENT_TABLE,
-    EQUIPMENT_TYPE,
-    NAME,
-    NOMINAL_VOLTAGE,
-    NOMINAL_VOLTAGE_1,
-    NOMINAL_VOLTAGE_2,
-    SCRIPT,
-} from '../../utils/field-constants';
 import { ContingencyListType } from '../../../utils/elementType';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { v4 as uuid4 } from 'uuid';
-import { getCriteriaBasedFormData } from '../commons/criteria-based/criteria-based-utils';
+import {
+    getCriteriaBasedFormData,
+    FieldConstants,
+} from '@gridsuite/commons-ui';
 
 export const makeDefaultRowData = () => ({
-    [AG_GRID_ROW_UUID]: uuid4(),
-    [CONTINGENCY_NAME]: '',
-    [EQUIPMENT_IDS]: [],
+    [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+    [FieldConstants.CONTINGENCY_NAME]: '',
+    [FieldConstants.EQUIPMENT_IDS]: [],
 });
 
 export const makeDefaultTableRows = () => [
@@ -41,20 +26,22 @@ export const makeDefaultTableRows = () => [
 ];
 
 export const getContingencyListEmptyFormData = (name = '') => ({
-    [NAME]: name,
-    [DESCRIPTION]: '',
-    [EQUIPMENT_TABLE]: makeDefaultTableRows(),
-    [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
-    [SCRIPT]: '',
-    [EQUIPMENT_TYPE]: null,
+    [FieldConstants.NAME]: name,
+    [FieldConstants.DESCRIPTION]: '',
+    [FieldConstants.EQUIPMENT_TABLE]: makeDefaultTableRows(),
+    [FieldConstants.CONTINGENCY_LIST_TYPE]:
+        ContingencyListType.CRITERIA_BASED.id,
+    [FieldConstants.SCRIPT]: '',
+    [FieldConstants.EQUIPMENT_TYPE]: null,
     ...getCriteriaBasedFormData(),
 });
 
 export const getCriteriaBasedFormDataFromFetchedElement = (response, name) => {
     return {
-        [NAME]: name,
-        [CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
-        [EQUIPMENT_TYPE]: response.equipmentType,
+        [FieldConstants.NAME]: name,
+        [FieldConstants.CONTINGENCY_LIST_TYPE]:
+            ContingencyListType.CRITERIA_BASED.id,
+        [FieldConstants.EQUIPMENT_TYPE]: response.equipmentType,
         ...getCriteriaBasedFormData(response),
     };
 };
@@ -65,13 +52,15 @@ export const getExplicitNamingFormDataFromFetchedElement = (response) => {
         result = response.identifierContingencyList?.identifiers?.map(
             (identifiers) => {
                 return {
-                    [AG_GRID_ROW_UUID]: uuid4(),
-                    [CONTINGENCY_LIST_TYPE]:
+                    [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+                    [FieldConstants.CONTINGENCY_LIST_TYPE]:
                         ContingencyListType.EXPLICIT_NAMING.id,
-                    [CONTINGENCY_NAME]: identifiers.contingencyId,
-                    [EQUIPMENT_IDS]: identifiers.identifierList.map(
-                        (identifier) => identifier.identifier
-                    ),
+                    [FieldConstants.CONTINGENCY_NAME]:
+                        identifiers.contingencyId,
+                    [FieldConstants.EQUIPMENT_IDS]:
+                        identifiers.identifierList.map(
+                            (identifier) => identifier.identifier
+                        ),
                 };
             }
         );
@@ -80,18 +69,18 @@ export const getExplicitNamingFormDataFromFetchedElement = (response) => {
     }
 
     return {
-        [EQUIPMENT_TABLE]: result,
+        [FieldConstants.EQUIPMENT_TABLE]: result,
     };
 };
 
 export const getScriptFormDataFromFetchedElement = (response) => {
     return {
-        [SCRIPT]: response.script,
+        [FieldConstants.SCRIPT]: response.script,
     };
 };
 
 export const getFormContent = (contingencyListId, contingencyList) => {
-    switch (contingencyList[CONTINGENCY_LIST_TYPE]) {
+    switch (contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE]) {
         case ContingencyListType.EXPLICIT_NAMING.id: {
             return prepareContingencyListForBackend(
                 contingencyListId,
@@ -99,24 +88,28 @@ export const getFormContent = (contingencyListId, contingencyList) => {
             );
         }
         case ContingencyListType.CRITERIA_BASED.id: {
-            const criteriaBaseForm = contingencyList[CRITERIA_BASED];
+            const criteriaBaseForm =
+                contingencyList[FieldConstants.CRITERIA_BASED];
             return {
-                equipmentType: contingencyList[EQUIPMENT_TYPE],
-                countries: criteriaBaseForm[COUNTRIES],
-                countries1: criteriaBaseForm[COUNTRIES_1],
-                countries2: criteriaBaseForm[COUNTRIES_2],
-                nominalVoltage: criteriaBaseForm[NOMINAL_VOLTAGE],
-                nominalVoltage1: criteriaBaseForm[NOMINAL_VOLTAGE_1],
-                nominalVoltage2: criteriaBaseForm[NOMINAL_VOLTAGE_2],
+                equipmentType: contingencyList[FieldConstants.EQUIPMENT_TYPE],
+                countries: criteriaBaseForm[FieldConstants.COUNTRIES],
+                countries1: criteriaBaseForm[FieldConstants.COUNTRIES_1],
+                countries2: criteriaBaseForm[FieldConstants.COUNTRIES_2],
+                nominalVoltage:
+                    criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE],
+                nominalVoltage1:
+                    criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE_1],
+                nominalVoltage2:
+                    criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE_2],
             };
         }
         case ContingencyListType.SCRIPT.id: {
-            return { script: contingencyList[SCRIPT] };
+            return { script: contingencyList[FieldConstants.SCRIPT] };
         }
         default: {
             console.info(
                 "Unknown contingency list type '" +
-                    contingencyList[CONTINGENCY_LIST_TYPE] +
+                    contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE] +
                     "'"
             );
             return null;

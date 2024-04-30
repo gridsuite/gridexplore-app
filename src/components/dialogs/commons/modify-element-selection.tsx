@@ -11,10 +11,10 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import {
     DirectoryItemSelector,
     TreeViewFinderNodeProps,
+    FieldConstants,
 } from '@gridsuite/commons-ui';
 import { fetchPath } from '../../../utils/rest-api';
 import { useController } from 'react-hook-form';
-import { DIRECTORY } from '../../utils/field-constants';
 import { ElementType } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import {
@@ -43,7 +43,7 @@ const ModifyElementSelection: React.FunctionComponent<
     const {
         field: { onChange, value: directory },
     } = useController({
-        name: DIRECTORY,
+        name: FieldConstants.DIRECTORY,
     });
 
     useEffect(() => {

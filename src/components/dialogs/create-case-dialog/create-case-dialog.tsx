@@ -7,7 +7,6 @@
 
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { isObjectEmpty, keyGenerator } from '../../../utils/functions';
 import { createCase } from '../../../utils/rest-api';
 import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import { Grid } from '@mui/material';
@@ -16,28 +15,30 @@ import {
     removeUploadingElement,
 } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
-import {
-    ElementType,
-    ErrorInput,
-    ExpandingTextField,
-    FieldErrorAlert,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-import { CASE_FILE, CASE_NAME, DESCRIPTION } from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
 import {
     createCaseDialogFormValidationSchema,
     getCreateCaseDialogFormValidationDefaultValues,
 } from './create-case-dialog-utils';
 import { ReduxState } from '../../../redux/reducer.type';
 import PrefilledNameInput from '../commons/prefilled-name-input';
+import {
+    CustomMuiDialog,
+    ElementType,
+    ErrorInput,
+    ExpandingTextField,
+    FieldConstants,
+    FieldErrorAlert,
+    isObjectEmpty,
+    keyGenerator,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 
 interface IFormData {
-    [CASE_NAME]: string;
-    [DESCRIPTION]?: string;
-    [CASE_FILE]: File | null;
+    [FieldConstants.CASE_NAME]: string;
+    [FieldConstants.DESCRIPTION]?: string;
+    [FieldConstants.CASE_FILE]: File | null;
 }
 
 interface CreateCaseDialogProps {
@@ -124,21 +125,24 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>
                     <PrefilledNameInput
-                        name={CASE_NAME}
+                        name={FieldConstants.CASE_NAME}
                         label={'nameProperty'}
                         elementType={ElementType.CASE}
                     />
                 </Grid>
                 <Grid item>
                     <ExpandingTextField
-                        name={DESCRIPTION}
+                        name={FieldConstants.DESCRIPTION}
                         label={'descriptionProperty'}
                         minRows={3}
                         rows={5}
                     />
                 </Grid>
             </Grid>
-            <ErrorInput name={CASE_FILE} InputField={FieldErrorAlert} />
+            <ErrorInput
+                name={FieldConstants.CASE_FILE}
+                InputField={FieldErrorAlert}
+            />
             <UploadNewCase />
         </CustomMuiDialog>
     );
