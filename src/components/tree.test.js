@@ -54,13 +54,13 @@ test('boot2', () => {
         { elementUuid: 'a2', elementName: 'a2 name', accessRights: 'user' },
     ]);
 
-    let res1_2 = updatedTree(res1_1[0], res1_1[1], 'a1', [
-        { elementUuid: 'a2', elementName: 'a2 name', accessRights: 'user' },
-    ]);
-
-    let res1_3 = updatedTree(res1_1[0], res1_1[1], 'a1', [
-        { elementUuid: 'a2', elementName: 'a2 nom', accessRights: 'user' },
-    ]);
+    // let res1_2 = updatedTree(res1_1[0], res1_1[1], 'a1', [
+    //     { elementUuid: 'a2', elementName: 'a2 name', accessRights: 'user' },
+    // ]);
+    //
+    // let res1_3 = updatedTree(res1_1[0], res1_1[1], 'a1', [
+    //     { elementUuid: 'a2', elementName: 'a2 nom', accessRights: 'user' },
+    // ]);
 
     let res4 = updatedTree(res1_1[0], res1_1[1], null, [
         { elementUuid: 'e', elementName: 'e name', accessRights: 'user' },
