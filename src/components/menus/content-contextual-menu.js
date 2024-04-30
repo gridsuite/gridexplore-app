@@ -297,16 +297,16 @@ const ContentContextualMenu = (props) => {
         }
     };
 
-    const handleCloseExportDialog = useCallback(() => {
-        stopCasesExports();
-        handleCloseDialog();
-    }, [stopCasesExports]);
-
     const handleCloseDialog = useCallback(() => {
         onClose();
         setOpenDialog(DialogsId.NONE);
         setHideMenu(false);
     }, [onClose, setOpenDialog]);
+
+    const handleCloseExportDialog = useCallback(() => {
+        stopCasesExports();
+        handleCloseDialog();
+    }, [handleCloseDialog, stopCasesExports]);
 
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(
@@ -712,7 +712,7 @@ const ContentContextualMenu = (props) => {
             case DialogsId.EXPORT:
                 return (
                     <ExportCaseDialog
-                        onClose={handleCloseDialog}
+                        onClose={handleCloseExportDialog}
                         onExport={(format, formatParameters) =>
                             handleConvertCases(
                                 selectedElements,
@@ -819,7 +819,7 @@ const ContentContextualMenu = (props) => {
                 return (
                     <CreateStudyDialog
                         open={true}
-                        onClose={handleCloseExportDialog}
+                        onClose={handleCloseDialog}
                         providedExistingCase={activeElement}
                     />
                 );
