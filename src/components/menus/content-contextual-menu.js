@@ -28,6 +28,7 @@ import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialo
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
+    createFilter,
     deleteElements,
     duplicateCase,
     duplicateContingencyList,
@@ -35,6 +36,8 @@ import {
     duplicateModification,
     duplicateParameter,
     duplicateStudy,
+    elementExists,
+    fetchAppsAndUrls,
     fetchElementsInfos,
     getNameCandidate,
     moveElementsToDirectory,
@@ -43,23 +46,28 @@ import {
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
+    saveFilter,
 } from '../../utils/rest-api';
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
-import { ElementType } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    useSnackMessage,
+    FilterCreationDialog,
+} from '@gridsuite/commons-ui';
 
 import CommonContextualMenu from './common-contextual-menu';
 import {
     useDeferredFetch,
     useMultipleDeferredFetch,
 } from '../../utils/custom-hooks';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
-import FilterCreationDialog from '../dialogs/filter/filter-creation-dialog';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setSelectionForCopy } from '../../redux/actions';
+import { useParameterState } from '../dialogs/parameters-dialog';
+import { PARAM_LANGUAGE } from '../../utils/config-params';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -76,6 +84,7 @@ const ContentContextualMenu = (props) => {
     const intl = useIntl();
     const dispatch = useDispatch();
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const activeDirectory = useSelector((state) => state.activeDirectory);
 
     const { snackError } = useSnackMessage();
 
@@ -83,6 +92,8 @@ const ContentContextualMenu = (props) => {
     const [hideMenu, setHideMenu] = useState(false);
     const { handleDownloadCases, handleConvertCases, stopCasesExports } =
         useDownloadUtils();
+
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const handleLastError = useCallback(
         (message) => {
@@ -796,6 +807,12 @@ const ContentContextualMenu = (props) => {
                             equipmentType:
                                 activeElement.specificMetadata.equipmentType,
                         }}
+                        activeDirectory={activeDirectory}
+                        createfilter={createFilter}
+                        saveFilter={saveFilter}
+                        fetchAppsAndUrls={fetchAppsAndUrls}
+                        elementExists={elementExists}
+                        language={languageLocal}
                     />
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:
