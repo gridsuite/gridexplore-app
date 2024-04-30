@@ -5,8 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextEncoder, TextDecoder } from 'util';
-import fetch from './src/_mocks_/fetch';
+import { forwardRef, SVGProps } from 'react';
 
-// fix for ReferenceError: (.*) is not defined
-Object.assign(global, { TextDecoder, TextEncoder, fetch });
+const SvgrMock = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
+    (props, ref) => <svg ref={ref} {...props} />
+);
+
+export default SvgrMock;

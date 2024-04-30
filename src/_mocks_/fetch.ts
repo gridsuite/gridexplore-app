@@ -5,8 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextEncoder, TextDecoder } from 'util';
-import fetch from './src/_mocks_/fetch';
+function fetchMock() {
+    return Promise.resolve({
+        ok: true,
+        json: () => ({ appsMetadataServerUrl: '' }), // just to remove the error logs when fetching env
+    });
+}
 
-// fix for ReferenceError: (.*) is not defined
-Object.assign(global, { TextDecoder, TextEncoder, fetch });
+export default fetchMock;

@@ -10,7 +10,7 @@ import type { Config } from 'jest';
 const config: Config = {
     testEnvironment: 'jsdom',
     moduleNameMapper: {
-        '^.+\\.svg\\?react$': 'jest-svg-transformer',
+        '^.+\\.svg\\?react$': "<rootDir>/src/_mocks_/svg.tsx",
         '^.+\\.(css|less|scss)$': 'identity-obj-proxy',
     },
     transformIgnorePatterns: [
