@@ -30,7 +30,7 @@ const ContentToolbar = (props) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const { handleDownloadCases, handleConvertCases, stopCasesDownloads } =
+    const { handleDownloadCases, handleConvertCases, stopCasesExports } =
         useDownloadUtils();
 
     const [openDialog, setOpenDialog] = useState(null);
@@ -49,9 +49,9 @@ const ContentToolbar = (props) => {
     };
 
     const handleCloseDialog = useCallback(() => {
-        stopCasesDownloads();
+        stopCasesExports();
         setOpenDialog(DialogsId.NONE);
-    }, [stopCasesDownloads]);
+    }, [stopCasesExports]);
 
     const moveElementErrorToString = useCallback(
         (HTTPStatusCode) => {

@@ -12,6 +12,7 @@ import {
 } from '../../utils/rest-api';
 import { useIntl } from 'react-intl';
 import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+import { useCallback, useState } from 'react';
 
 const downloadCases = async (uuids: string[]) => {
     for (const uuid of uuids) {
@@ -36,7 +37,7 @@ export function useDownloadUtils() {
     const { snackError, snackInfo } = useSnackMessage();
     const capitalizeFirstLetter = (string: string) =>
         `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
-    let downloadStopped: boolean = false; // if set to true, interrupts the download queue
+    const [abortController, setAbortController] = useState<AbortController>();
 
     const exportCase = async (
         caseElement: any,
@@ -44,13 +45,14 @@ export function useDownloadUtils() {
         formatParameters: {
             [parameterName: string]: any;
         },
-        onError?: (caseElement: any, errorMsg: string) => void
+        abortController: AbortController
     ): Promise<void> => {
         try {
             const result = await fetchConvertedCase(
                 caseElement.elementUuid,
                 format,
-                formatParameters
+                formatParameters,
+                abortController
             );
             let filename = result.headers
                 .get('Content-Disposition')
@@ -65,9 +67,11 @@ export function useDownloadUtils() {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        } catch (e: any) {
-            downloadStopped = true;
-            onError?.(caseElement, e);
+        } catch (error: any) {
+            if (error.name === 'AbortError') {
+                throw error;
+            }
+            handleCaseExportError?.(caseElement, error);
         }
     };
 
@@ -187,9 +191,11 @@ export function useDownloadUtils() {
             messageTxt: errorMsg,
         });
 
-    const stopCasesDownloads = () => {
-        downloadStopped = true;
-    };
+    const stopCasesExports = useCallback(() => {
+        if (abortController) {
+            abortController.abort();
+        }
+    }, [abortController]);
 
     // downloads converted files one after another. The downloading may be interrupted midterm with a few files downloaded already.
     const handleConvertCases = async (
@@ -202,34 +208,38 @@ export function useDownloadUtils() {
         const cases = selectedElements.filter(
             (element) => element.type === ElementType.CASE
         );
-
-        for (const c of cases) {
-            if (downloadStopped) {
-                break;
-            }
-            await exportCase(
-                c,
-                format,
-                formatParameters,
-                handleCaseExportError
-            );
-        }
         let message: string = '';
-        if (downloadStopped) {
-            message = intl.formatMessage({
-                id: 'download.stopped',
-            });
-            downloadStopped = false;
-        } else if (cases.length !== selectedElements.length) {
-            message += buildPartialDownloadMessage(
-                cases.length,
-                selectedElements
-            );
-        }
-        if (message.length > 0) {
-            snackInfo({
-                messageTxt: message,
-            });
+
+        try {
+            const controller = new AbortController();
+            setAbortController(controller);
+
+            for (const c of cases) {
+                await exportCase(c, format, formatParameters, controller);
+            }
+        } catch (error: any) {
+            if (error.name === 'AbortError') {
+                message = intl.formatMessage({
+                    id: 'download.stopped',
+                });
+            }
+        } finally {
+            setAbortController(undefined);
+
+            if (
+                message.length === 0 &&
+                cases.length !== selectedElements.length
+            ) {
+                message += buildPartialDownloadMessage(
+                    cases.length,
+                    selectedElements
+                );
+            }
+            if (message.length > 0) {
+                snackInfo({
+                    messageTxt: message,
+                });
+            }
         }
     };
 
@@ -248,5 +258,5 @@ export function useDownloadUtils() {
         }
     };
 
-    return { handleDownloadCases, handleConvertCases, stopCasesDownloads };
+    return { handleDownloadCases, handleConvertCases, stopCasesExports };
 }
