@@ -18,12 +18,20 @@ import {
     HTTP_CONNECTION_FAILED_MESSAGE,
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
 } from '../../../utils/UIconstants';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    useSnackMessage,
+    ErrorInput,
+    FieldErrorAlert,
+    ExpandingTextField,
+    ElementType,
+    CustomMuiDialog,
+    FieldConstants,
+    isObjectEmpty,
+    keyGenerator,
+} from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
-import { ElementType } from '@gridsuite/commons-ui';
 import ModifyElementSelection from '../commons/modify-element-selection';
-import { isObjectEmpty, keyGenerator } from '../../../utils/functions';
 import {
     addUploadingElement,
     removeUploadingElement,
@@ -33,25 +41,8 @@ import {
     createStudyDialogFormValidationSchema,
     getCreateStudyDialogFormDefaultValues,
 } from './create-study-dialog-utils';
-import {
-    API_CALL,
-    CASE_FILE,
-    CASE_FORMAT,
-    CASE_NAME,
-    CASE_UUID,
-    CURRENT_PARAMETERS,
-    FORMATTED_CASE_PARAMETERS,
-    STUDY_NAME,
-} from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import CustomMuiDialog from '../commons/custom-mui-dialog/custom-mui-dialog';
-import {
-    ErrorInput,
-    FieldErrorAlert,
-    ExpandingTextField,
-} from '@gridsuite/commons-ui';
 import PrefilledNameInput from '../commons/prefilled-name-input';
-import { DESCRIPTION } from '../../../components/utils/field-constants';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -114,19 +105,19 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const handleApiCallError = useCallback(
         (error) => {
             if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
-                setError(`root.${API_CALL}`, {
+                setError(`root.${FieldConstants.API_CALL}`, {
                     type: 'invalidFormatOrName',
                     message: intl.formatMessage({ id: 'invalidFormatOrName' }),
                 });
             } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
-                setError(`root.${API_CALL}`, {
+                setError(`root.${FieldConstants.API_CALL}`, {
                     type: 'serverConnectionFailed',
                     message: intl.formatMessage({
                         id: 'serverConnectionFailed',
                     }),
                 });
             } else {
-                setError(`root.${API_CALL}`, {
+                setError(`root.${FieldConstants.API_CALL}`, {
                     type: 'apiCall',
                     message: error.message,
                 });
@@ -143,19 +134,23 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                         result.parameters
                     );
                     setValue(
-                        CURRENT_PARAMETERS,
+                        FieldConstants.CURRENT_PARAMETERS,
                         customizeCurrentParameters(formattedParams)
                     );
 
-                    setValue(FORMATTED_CASE_PARAMETERS, formattedParams, {
-                        shouldDirty: true,
-                    });
-                    setValue(CASE_FORMAT, result.formatName);
+                    setValue(
+                        FieldConstants.FORMATTED_CASE_PARAMETERS,
+                        formattedParams,
+                        {
+                            shouldDirty: true,
+                        }
+                    );
+                    setValue(FieldConstants.CASE_FORMAT, result.formatName);
                 })
                 .catch(() => {
-                    setValue(FORMATTED_CASE_PARAMETERS, []);
-                    setValue(CASE_FORMAT, '');
-                    setError(`root.${API_CALL}`, {
+                    setValue(FieldConstants.FORMATTED_CASE_PARAMETERS, []);
+                    setValue(FieldConstants.CASE_FORMAT, '');
+                    setError(`root.${FieldConstants.API_CALL}`, {
                         type: 'parameterLoadingProblem',
                         message: intl.formatMessage({
                             id: 'parameterLoadingProblem',
@@ -168,7 +163,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     // Methods
     const handleDeleteCase = () => {
-        const caseUuid = getValues(CASE_UUID);
+        const caseUuid = getValues(FieldConstants.CASE_UUID);
         // if we cancel case creation, we need to delete the associated newly created case (if we created one)
         if (caseUuid && !providedExistingCase) {
             deleteCase(caseUuid).catch(handleApiCallError);
@@ -183,20 +178,20 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         directory,
     }) => {
         if (!caseUuid && !providedExistingCase?.elementUuid) {
-            setError(CASE_NAME, {
+            setError(FieldConstants.CASE_NAME, {
                 type: 'custom',
                 message: intl.formatMessage({ id: 'caseNameErrorMsg' }),
             });
             return;
         }
         if (!caseUuid && !providedExistingCase) {
-            setError(CASE_FILE, {
+            setError(FieldConstants.CASE_FILE, {
                 type: 'custom',
                 message: intl.formatMessage({ id: 'uploadErrorMsg' }),
             });
             return;
         }
-        const caseFormat = getValues(CASE_FORMAT);
+        const caseFormat = getValues(FieldConstants.CASE_FORMAT);
 
         const uploadingStudy = {
             id: keyGenerator(),
@@ -232,7 +227,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 });
             })
             .finally(() => {
-                setValue(CASE_UUID, null);
+                setValue(FieldConstants.CASE_UUID, null);
                 dispatch(removeUploadingElement(uploadingStudy));
             });
 
@@ -263,7 +258,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>
                     <PrefilledNameInput
-                        name={STUDY_NAME}
+                        name={FieldConstants.STUDY_NAME}
                         label={'nameProperty'}
                         elementType={ElementType.STUDY}
                     />
@@ -271,7 +266,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 <Grid item>
                     <Box>
                         <ExpandingTextField
-                            name={DESCRIPTION}
+                            name={FieldConstants.DESCRIPTION}
                             label={'descriptionProperty'}
                             minRows={3}
                             rows={5}
@@ -295,8 +290,14 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             )}
             <ImportParametersSection />
             <Grid pt={1}>
-                <ErrorInput name={API_CALL} InputField={FieldErrorAlert} />
-                <ErrorInput name={CASE_FILE} InputField={FieldErrorAlert} />
+                <ErrorInput
+                    name={FieldConstants.API_CALL}
+                    InputField={FieldErrorAlert}
+                />
+                <ErrorInput
+                    name={FieldConstants.CASE_FILE}
+                    InputField={FieldErrorAlert}
+                />
             </Grid>
         </CustomMuiDialog>
     );
