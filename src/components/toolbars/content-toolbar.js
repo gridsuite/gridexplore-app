@@ -49,9 +49,13 @@ const ContentToolbar = (props) => {
     };
 
     const handleCloseDialog = useCallback(() => {
-        stopCasesExports();
         setOpenDialog(DialogsId.NONE);
-    }, [stopCasesExports]);
+    }, []);
+
+    const handleCloseExportDialog = useCallback(() => {
+        stopCasesExports();
+        handleCloseDialog();
+    }, [handleCloseDialog, stopCasesExports]);
 
     const moveElementErrorToString = useCallback(
         (HTTPStatusCode) => {
@@ -229,7 +233,7 @@ const ContentToolbar = (props) => {
             case DialogsId.EXPORT:
                 return (
                     <ExportCaseDialog
-                        onClose={handleCloseDialog}
+                        onClose={handleCloseExportDialog}
                         onExport={(format, formatParameters) =>
                             handleConvertCases(
                                 selectedElements,
