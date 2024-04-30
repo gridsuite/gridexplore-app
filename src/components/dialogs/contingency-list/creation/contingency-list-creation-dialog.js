@@ -53,10 +53,13 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
-    const methods = useForm({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
-    });
+    const methods = {
+        ...useForm({
+            defaultValues: emptyFormData,
+            resolver: yupResolver(schema),
+        }),
+        language: languageLocal,
+    };
 
     const {
         reset,
@@ -99,7 +102,6 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
             titleId={titleId}
             removeOptional={true}
             disabledSave={!!nameError || isValidating}
-            language={languageLocal}
         >
             <ContingencyListCreationForm />
         </CustomMuiDialog>
