@@ -34,14 +34,15 @@ import {
 import { Box, Checkbox } from '@mui/material';
 
 import {
-  createFilter,
-  elementExists,
-  fetchAppsAndUrls,
-  fetchElementsInfos,
-  getFilterById,
-  saveFilter,
-  fetchDirectoryContent,
-  fetchRootFolders, updateElement
+    createFilter,
+    elementExists,
+    fetchAppsAndUrls,
+    fetchElementsInfos,
+    getFilterById,
+    saveFilter,
+    fetchDirectoryContent,
+    fetchRootFolders,
+    updateElement,
 } from '../utils/rest-api';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
