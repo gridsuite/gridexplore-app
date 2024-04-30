@@ -34,14 +34,14 @@ import {
 import { Box, Checkbox } from '@mui/material';
 
 import {
-    createFilter,
-    elementExists,
-    fetchAppsAndUrls,
-    fetchElementsInfos,
-    getFilterById,
-    saveFilter,
-    fetchDirectoryContent,
-    fetchRootFolders,
+  createFilter,
+  elementExists,
+  fetchAppsAndUrls,
+  fetchElementsInfos,
+  getFilterById,
+  saveFilter,
+  fetchDirectoryContent,
+  fetchRootFolders, updateElement
 } from '../utils/rest-api';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
@@ -990,6 +990,7 @@ const DirectoryContent = () => {
                         setActiveElement(null);
                         setOpenDescModificationDialog(false);
                     }}
+                    updateElement={updateElement}
                 />
             );
         }
