@@ -31,6 +31,8 @@ import {
     createFilter,
     deleteElements,
     duplicateElement,
+    elementExists,
+    fetchAppsAndUrls,
     moveElementsToDirectory,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,

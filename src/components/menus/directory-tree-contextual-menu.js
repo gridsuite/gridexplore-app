@@ -36,6 +36,9 @@ import {
     updateAccessRights,
     fetchDirectoryContent,
     fetchRootFolders,
+    fetchAppsAndUrls,
+    fetchElementsInfos,
+    elementExists,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu from './common-contextual-menu';
