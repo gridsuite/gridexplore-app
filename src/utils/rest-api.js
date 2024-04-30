@@ -30,9 +30,9 @@ const PREFIX_FILTERS_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/filter/v1/filters';
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 
-function getToken() {
+export function getToken() {
     const state = store.getState();
-    return state.user.id_token;
+    return state.user?.id_token;
 }
 
 export const getRequestParamFromList = (params, paramName) => {
@@ -41,10 +41,18 @@ export const getRequestParamFromList = (params, paramName) => {
     );
 };
 
+export const getWsBase = () =>
+  document.baseURI
+    .replace(/^http:\/\//, 'ws://')
+    .replace(/^https:\/\//, 'wss://');
+
+export function getAnnouncementsWsUrl() {
+    const webSocketBaseUrl = getWsBase();
+    return webSocketBaseUrl + PREFIX_CONFIG_NOTIFICATION_WS + '/global';
+}
+
 export function connectNotificationsWsUpdateConfig() {
-    const webSocketBaseUrl = document.baseURI
-        .replace(/^http:\/\//, 'ws://')
-        .replace(/^https:\/\//, 'wss://');
+    const webSocketBaseUrl = getWsBase()
     const webSocketUrl =
         webSocketBaseUrl +
         PREFIX_CONFIG_NOTIFICATION_WS +
@@ -798,9 +806,7 @@ export function newScriptFromFiltersContingencyList(
  * @returns {ReconnectingWebSocket}
  */
 export function connectNotificationsWsUpdateDirectories() {
-    const webSocketBaseUrl = document.baseURI
-        .replace(/^http:\/\//, 'ws://')
-        .replace(/^https:\/\//, 'wss://');
+    const webSocketBaseUrl = getWsBase()
     const webSocketUrl =
         webSocketBaseUrl +
         PREFIX_NOTIFICATION_WS +
