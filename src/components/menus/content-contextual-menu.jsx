@@ -90,7 +90,8 @@ const ContentContextualMenu = (props) => {
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
-    const { handleDownloadCases, handleConvertCases } = useDownloadUtils();
+    const { handleDownloadCases, handleConvertCases, stopCasesExports } =
+        useDownloadUtils();
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -301,6 +302,11 @@ const ContentContextualMenu = (props) => {
         setOpenDialog(DialogsId.NONE);
         setHideMenu(false);
     }, [onClose, setOpenDialog]);
+
+    const handleCloseExportDialog = useCallback(() => {
+        stopCasesExports();
+        handleCloseDialog();
+    }, [handleCloseDialog, stopCasesExports]);
 
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(
@@ -706,7 +712,7 @@ const ContentContextualMenu = (props) => {
             case DialogsId.EXPORT:
                 return (
                     <ExportCaseDialog
-                        onClose={handleCloseDialog}
+                        onClose={handleCloseExportDialog}
                         onExport={(format, formatParameters) =>
                             handleConvertCases(
                                 selectedElements,
