@@ -9,7 +9,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { DialogsId } from '../utils/UIconstants';
 
 import * as constants from '../utils/UIconstants';
 import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
@@ -856,32 +855,28 @@ const DirectoryContent = () => {
         [childrenMetadata, currentChildren, getElementTypeTranslation]
     );
     const handleOpenDialog = useCallback(() => {
-        setOpenDialog(DialogsId.ADD_ROOT_DIRECTORY);
+        setOpenDialog(constants.DialogsId.ADD_ROOT_DIRECTORY);
     }, [setOpenDialog]);
 
     const renderNoContent = () => {
         return (
-            <>
-                <Box sx={styles.noContentContainer}>
-                    <Box sx={styles.noContentCircle}>
-                        <CreateNewFolderOutlinedIcon
-                            sx={styles.noContentIcon}
-                        />
-                    </Box>
-                    <Box sx={styles.noContentText}>
-                        <h1>
-                            <FormattedMessage id={'firstDir'} />
-                        </h1>
-                        <Button
-                            variant="contained"
-                            sx={styles.noContentButton}
-                            onClick={handleOpenDialog}
-                        >
-                            <FormattedMessage id={'createFolder'} />
-                        </Button>
-                    </Box>
+            <Box sx={styles.noContentContainer}>
+                <Box sx={styles.noContentCircle}>
+                    <CreateNewFolderOutlinedIcon sx={styles.noContentIcon} />
                 </Box>
-            </>
+                <Box sx={styles.noContentText}>
+                    <h1>
+                        <FormattedMessage id={'firstDir'} />
+                    </h1>
+                    <Button
+                        variant="contained"
+                        sx={styles.noContentButton}
+                        onClick={handleOpenDialog}
+                    >
+                        <FormattedMessage id={'createFolder'} />
+                    </Button>
+                </Box>
+            </Box>
         );
     };
     const renderLoadingContent = () => {
