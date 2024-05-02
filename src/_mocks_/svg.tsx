@@ -5,4 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/// <reference types="react-scripts" />
+import { forwardRef, SVGProps } from 'react';
+
+const SvgrMock = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
+    (props, ref) => <svg ref={ref} {...props} />
+);
+
+export default SvgrMock;

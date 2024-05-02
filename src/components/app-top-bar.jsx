@@ -18,8 +18,8 @@ import {
 } from '../utils/rest-api';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { ReactComponent as GridExploreLogoLight } from '../images/GridExplore_logo_light.svg';
-import { ReactComponent as GridExploreLogoDark } from '../images/GridExplore_logo_dark.svg';
+import GridExploreLogoLight from '../images/GridExplore_logo_light.svg?react';
+import GridExploreLogoDark from '../images/GridExplore_logo_dark.svg?react';
 import { setAppsAndUrls } from '../redux/actions';
 import AppPackage from '../../package.json';
 import SearchBar from './search/search-bar';
