@@ -39,6 +39,13 @@ export function useDownloadUtils() {
         `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
     const [abortController, setAbortController] = useState<AbortController>();
 
+    const handleCaseExportError = (caseElement: any, errorMsg: string) =>
+        snackError({
+            headerId: 'download.error',
+            headerValues: { caseName: caseElement.elementName },
+            messageTxt: errorMsg,
+        });
+
     const exportCase = async (
         caseElement: any,
         format: string,
@@ -71,7 +78,7 @@ export function useDownloadUtils() {
             if (error.name === 'AbortError') {
                 throw error;
             }
-            handleCaseExportError?.(caseElement, error);
+            handleCaseExportError(caseElement, error);
         }
     };
 
@@ -183,13 +190,6 @@ export function useDownloadUtils() {
             messageFirstLine + '\n' + capitalizeFirstLetter(messageSecondLine)
         );
     };
-
-    const handleCaseExportError = (caseElement: any, errorMsg: string) =>
-        snackError({
-            headerId: 'download.error',
-            headerValues: { caseName: caseElement.elementName },
-            messageTxt: errorMsg,
-        });
 
     const stopCasesExports = useCallback(() => {
         if (abortController) {
