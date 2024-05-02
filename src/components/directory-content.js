@@ -1162,7 +1162,6 @@ const DirectoryContent = () => {
                               }
                             : undefined
                     }
-                    broadcastChannel={broadcastChannel}
                 />
             </div>
             {renderDialog(elementName)}
