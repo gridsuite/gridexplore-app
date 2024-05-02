@@ -28,16 +28,7 @@ import { DialogsId } from '../../utils/UIconstants';
 import {
     createFilter,
     deleteElement,
-    duplicateCase,
-    duplicateContingencyList,
-    duplicateFilter,
-    duplicateModification,
-    duplicateParameter,
-    duplicateStudy,
-    elementExists,
-    fetchAppsAndUrls,
-    fetchElementsInfos,
-    getNameCandidate,
+    duplicateElement,
     insertDirectory,
     insertRootDirectory,
     renameElement,
@@ -45,6 +36,9 @@ import {
     updateAccessRights,
     fetchDirectoryContent,
     fetchRootFolders,
+    fetchAppsAndUrls,
+    fetchElementsInfos,
+    elementExists,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu from './common-contextual-menu';
@@ -156,99 +150,53 @@ const DirectoryTreeContextualMenu = (props) => {
                 selectionForCopy.nameItem,
                 directoryUuid
             );
-            // existence check and infos for source element
-            fetchElementsInfos([selectionForCopy.sourceItemUuid])
-                .then((elementInfos) => {
-                    // available new name
-                    getNameCandidate(
+
+            switch (selectionForCopy.typeItem) {
+                case ElementType.CASE:
+                case ElementType.STUDY:
+                case ElementType.FILTER:
+                case ElementType.MODIFICATION:
+                    duplicateElement(
+                        selectionForCopy.sourceItemUuid,
                         directoryUuid,
-                        selectionForCopy.nameItem,
+                        selectionForCopy.typeItem,
+                        undefined
+                    ).catch((error) => {
+                        handlePasteError(error);
+                    });
+                    break;
+                case ElementType.VOLTAGE_INIT_PARAMETERS:
+                case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+                case ElementType.SENSITIVITY_PARAMETERS:
+                case ElementType.LOADFLOW_PARAMETERS:
+                    duplicateElement(
+                        selectionForCopy.sourceItemUuid,
+                        directoryUuid,
+                        ElementType.PARAMETERS,
                         selectionForCopy.typeItem
-                    )
-                        .then((newItemName) => {
-                            // duplicate source element with new name
-                            switch (selectionForCopy.typeItem) {
-                                case ElementType.CASE:
-                                    duplicateCase(
-                                        newItemName,
-                                        selectionForCopy.descriptionItem,
-                                        selectionForCopy.sourceItemUuid,
-                                        directoryUuid
-                                    ).catch((error) => {
-                                        handlePasteError(error);
-                                    });
-                                    break;
-                                case ElementType.STUDY:
-                                    duplicateStudy(
-                                        newItemName,
-                                        selectionForCopy.descriptionItem,
-                                        selectionForCopy.sourceItemUuid,
-                                        directoryUuid
-                                    ).catch((error) => {
-                                        handlePasteError(error);
-                                    });
-                                    break;
-                                case ElementType.FILTER:
-                                    duplicateFilter(
-                                        newItemName,
-                                        selectionForCopy.descriptionItem,
-                                        selectionForCopy.sourceItemUuid,
-                                        directoryUuid
-                                    ).catch((error) => {
-                                        handlePasteError(error);
-                                    });
-                                    break;
-                                case ElementType.MODIFICATION:
-                                    duplicateModification(
-                                        newItemName,
-                                        selectionForCopy.descriptionItem,
-                                        selectionForCopy.sourceItemUuid,
-                                        directoryUuid
-                                    ).catch((error) => {
-                                        handlePasteError(error);
-                                    });
-                                    break;
-                                case ElementType.VOLTAGE_INIT_PARAMETERS:
-                                case ElementType.SECURITY_ANALYSIS_PARAMETERS:
-                                case ElementType.SENSITIVITY_PARAMETERS:
-                                case ElementType.LOADFLOW_PARAMETERS:
-                                    duplicateParameter(
-                                        newItemName,
-                                        selectionForCopy.typeItem,
-                                        selectionForCopy.sourceItemUuid,
-                                        directoryUuid,
-                                        selectionForCopy.descriptionItem
-                                    ).catch((error) => {
-                                        handlePasteError(error);
-                                    });
-                                    break;
-                                case ElementType.CONTINGENCY_LIST:
-                                    duplicateContingencyList(
-                                        elementInfos[0].specificMetadata.type,
-                                        newItemName,
-                                        selectionForCopy.descriptionItem,
-                                        selectionForCopy.sourceItemUuid,
-                                        directoryUuid
-                                    ).catch((error) => {
-                                        handlePasteError(error);
-                                    });
-                                    break;
-                                default:
-                                    handleError(
-                                        intl.formatMessage({
-                                            id: 'unsupportedItem',
-                                        })
-                                    );
-                            }
+                    ).catch((error) => {
+                        handlePasteError(error);
+                    });
+                    break;
+                case ElementType.CONTINGENCY_LIST:
+                    duplicateElement(
+                        selectionForCopy.sourceItemUuid,
+                        directoryUuid,
+                        selectionForCopy.typeItem,
+                        selectionForCopy.specificType
+                    ).catch((error) => {
+                        handlePasteError(error);
+                    });
+                    break;
+                default:
+                    handleError(
+                        intl.formatMessage({
+                            id: 'unsupportedItem',
                         })
-                        .catch((error) => {
-                            handlePasteError(error);
-                        });
-                })
-                .catch((error) => {
-                    handlePasteError(error);
-                })
-                .finally(() => handleCloseDialog(null));
+                    );
+            }
+
+            handleCloseDialog(null);
         }
     }
 

@@ -131,7 +131,8 @@ const DirectoryContent = () => {
             nameItem,
             descriptionItem,
             sourceItemUuid,
-            parentDirectoryUuid
+            parentDirectoryUuid,
+            specificTypeItem
         ) => {
             dispatch(
                 setSelectionForCopy({
@@ -140,6 +141,7 @@ const DirectoryContent = () => {
                     nameItem: nameItem,
                     descriptionItem: descriptionItem,
                     parentDirectoryUuid: parentDirectoryUuid,
+                    specificTypeItem: specificTypeItem,
                 })
             );
         },
@@ -160,7 +162,8 @@ const DirectoryContent = () => {
                     event.data.nameItem,
                     event.data.descriptionItem,
                     event.data.sourceItemUuid,
-                    event.data.parentDirectoryUuid
+                    event.data.parentDirectoryUuid,
+                    event.data.specificTypeItem
                 );
             }
         };
