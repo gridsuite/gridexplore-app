@@ -222,6 +222,7 @@
   "voltageRegulatorOn": "Réglage de tension",
   "PlannedActivePowerSetPoint": "Puissance imposée (MW)",
   "download.button": "Télécharger",
+  "download.stopped": "Téléchargement interrompu. Seule une partie des fichiers a été téléchargée.",
   "download.export.button": "Convertir",
   "download.exportFormat": "Format de l'export",
   "download.message.downloadedCase": "Une situation a été téléchargée.",
