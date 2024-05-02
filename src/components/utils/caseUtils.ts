@@ -7,11 +7,12 @@
 
 import {
     downloadCase,
-    exportCase,
+    fetchConvertedCase,
     getCaseOriginalName,
 } from '../../utils/rest-api';
 import { useIntl } from 'react-intl';
 import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+import { useCallback, useState } from 'react';
 
 const downloadCases = async (uuids: string[]) => {
     for (const uuid of uuids) {
@@ -31,48 +32,55 @@ const downloadCases = async (uuids: string[]) => {
     }
 };
 
-const exportCases = async (
-    cases: any[],
-    format: string,
-    formatParameters: {
-        [parameterName: string]: any;
-    },
-    onError?: (caseElement: any, errorMsg: string) => void
-): Promise<void> => {
-    const files: { name: string; blob: Blob }[] = [];
-    for (const c of cases) {
+export function useDownloadUtils() {
+    const intl = useIntl();
+    const { snackError, snackInfo } = useSnackMessage();
+    const capitalizeFirstLetter = (string: string) =>
+        `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
+    const [abortController, setAbortController] = useState<AbortController>();
+
+    const handleCaseExportError = (caseElement: any, errorMsg: string) =>
+        snackError({
+            headerId: 'download.error',
+            headerValues: { caseName: caseElement.elementName },
+            messageTxt: errorMsg,
+        });
+
+    const exportCase = async (
+        caseElement: any,
+        format: string,
+        formatParameters: {
+            [parameterName: string]: any;
+        },
+        abortController: AbortController
+    ): Promise<void> => {
         try {
-            const result = await exportCase(
-                c.elementUuid,
+            const result = await fetchConvertedCase(
+                caseElement.elementUuid,
                 format,
-                formatParameters
+                formatParameters,
+                abortController
             );
             let filename = result.headers
                 .get('Content-Disposition')
                 .split('filename=')[1];
             filename = filename.substring(1, filename.length - 1); // We remove quotes
             const blob = await result.blob();
-            files.push({ name: filename, blob });
-        } catch (e: any) {
-            onError?.(c, e);
-        }
-    }
-    for (const file of files) {
-        const href = window.URL.createObjectURL(file.blob);
-        const link = document.createElement('a');
-        link.href = href;
-        link.setAttribute('download', file.name);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-};
 
-export function useDownloadUtils() {
-    const intl = useIntl();
-    const { snackError, snackInfo } = useSnackMessage();
-    const capitalizeFirstLetter = (string: string) =>
-        `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
+            const href = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = href;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error: any) {
+            if (error.name === 'AbortError') {
+                throw error;
+            }
+            handleCaseExportError(caseElement, error);
+        }
+    };
 
     const buildPartialDownloadMessage = (
         numberOfDownloadedCases: number,
@@ -183,13 +191,13 @@ export function useDownloadUtils() {
         );
     };
 
-    const handleCaseExportError = (caseElement: any, errorMsg: string) =>
-        snackError({
-            headerId: 'download.error',
-            headerValues: { caseName: caseElement.elementName },
-            messageTxt: errorMsg,
-        });
+    const stopCasesExports = useCallback(() => {
+        if (abortController) {
+            abortController.abort();
+        }
+    }, [abortController]);
 
+    // downloads converted files one after another. The downloading may be interrupted midterm with a few files downloaded already.
     const handleConvertCases = async (
         selectedElements: any[],
         format: string,
@@ -200,19 +208,38 @@ export function useDownloadUtils() {
         const cases = selectedElements.filter(
             (element) => element.type === ElementType.CASE
         );
-        await exportCases(
-            cases,
-            format,
-            formatParameters,
-            handleCaseExportError
-        );
-        if (cases.length !== selectedElements.length) {
-            snackInfo({
-                messageTxt: buildPartialDownloadMessage(
+        let message: string = '';
+
+        try {
+            const controller = new AbortController();
+            setAbortController(controller);
+
+            for (const c of cases) {
+                await exportCase(c, format, formatParameters, controller);
+            }
+        } catch (error: any) {
+            if (error.name === 'AbortError') {
+                message = intl.formatMessage({
+                    id: 'download.stopped',
+                });
+            }
+        } finally {
+            setAbortController(undefined);
+
+            if (
+                message.length === 0 &&
+                cases.length !== selectedElements.length
+            ) {
+                message += buildPartialDownloadMessage(
                     cases.length,
                     selectedElements
-                ),
-            });
+                );
+            }
+            if (message.length > 0) {
+                snackInfo({
+                    messageTxt: message,
+                });
+            }
         }
     };
 
@@ -231,5 +258,5 @@ export function useDownloadUtils() {
         }
     };
 
-    return { handleDownloadCases, handleConvertCases };
+    return { handleDownloadCases, handleConvertCases, stopCasesExports };
 }
