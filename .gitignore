@@ -7,6 +7,9 @@
 # webstorm
 /.idea
 
+# vscode
+/.vscode
+
 # misc
 .env.local
 .env.development.local
