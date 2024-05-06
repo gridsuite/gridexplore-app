@@ -6,13 +6,9 @@
  */
 
 import { Divider } from '@mui/material';
-import { FlatParameters } from '@gridsuite/commons-ui';
+import { FlatParameters, FieldConstants } from '@gridsuite/commons-ui';
 import React, { useState, FunctionComponent } from 'react';
 import AdvancedParameterButton from './advancedParameterButton';
-import {
-    CURRENT_PARAMETERS,
-    FORMATTED_CASE_PARAMETERS,
-} from '../../utils/field-constants';
 import { useController, useWatch } from 'react-hook-form';
 import Box from '@mui/material/Box';
 
@@ -22,11 +18,11 @@ const ImportParametersSection: FunctionComponent = () => {
     const {
         field: { onChange, value: currentParameters },
     } = useController({
-        name: CURRENT_PARAMETERS,
+        name: FieldConstants.CURRENT_PARAMETERS,
     });
 
     const formatWithParameters = useWatch({
-        name: FORMATTED_CASE_PARAMETERS,
+        name: FieldConstants.FORMATTED_CASE_PARAMETERS,
     });
 
     const handleParamsChange = (
