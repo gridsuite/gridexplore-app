@@ -17,7 +17,7 @@
   "private": "private",
   "public": "public",
   "emptyDir": "Empty directory",
-  "firstDir": "Create your first directory",
+  "createFirstDir": "Create your first directory",
   "ID": "ID",
   "createNewStudy": "Create a study",
   "studyCreationError": "Error when creating study: {studyName}",

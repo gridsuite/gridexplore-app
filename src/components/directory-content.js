@@ -11,7 +11,6 @@ import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import * as constants from '../utils/UIconstants';
-import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
 
 import Chip from '@mui/material/Chip';
 import Tooltip from '@mui/material/Tooltip';
@@ -27,7 +26,7 @@ import {
     OverflowableText,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Box, Button, Checkbox } from '@mui/material';
+import { Box, Checkbox } from '@mui/material';
 
 import { fetchElementsInfos } from '../utils/rest-api';
 import CriteriaBasedFilterEditionDialog from './dialogs/filter/criteria-based/criteria-based-filter-edition-dialog';
@@ -43,6 +42,7 @@ import ScriptEditionDialog from './dialogs/contingency-list/edition/script/scrip
 import ExpertFilterEditionDialog from './dialogs/filter/expert/expert-filter-edition-dialog';
 import { noSelectionForCopy } from 'utils/constants';
 import DescriptionModificationDialogue from './dialogs/description-modification/description-modification-dialogue';
+import NoContentDirectory from './no-content-directory';
 
 const circularProgressSize = '70px';
 
@@ -97,38 +97,6 @@ const styles = {
         overflow: 'hidden',
         maxWidth: '250px',
         maxHeight: '50px',
-    },
-    noContentContainer: (theme) => ({
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: theme.spacing(10),
-    }),
-    noContentCircle: (theme) => ({
-        position: 'relative',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 200,
-        height: 200,
-        backgroundColor: theme.row.primary,
-        borderRadius: theme.spacing(15),
-    }),
-    noContentIcon: {
-        fontSize: '100px',
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-    },
-    noContentText: (theme) => ({
-        color: theme.row.primary,
-        textAlign: 'center',
-        marginTop: theme.spacing(1),
-    }),
-    noContentButton: {
-        borderRadius: '30px',
     },
 };
 
@@ -799,7 +767,7 @@ const DirectoryContent = () => {
                 });
         }
         setSelectedUuids(new Set());
-    }, [handleError, currentChildren, currentChildrenRef, treeData]);
+    }, [handleError, currentChildren, currentChildrenRef]);
 
     const getSelectedChildren = () => {
         let selectedChildren = [];
@@ -856,29 +824,8 @@ const DirectoryContent = () => {
     );
     const handleOpenDialog = useCallback(() => {
         setOpenDialog(constants.DialogsId.ADD_ROOT_DIRECTORY);
-    }, [setOpenDialog]);
+    }, []);
 
-    const renderNoContent = () => {
-        return (
-            <Box sx={styles.noContentContainer}>
-                <Box sx={styles.noContentCircle}>
-                    <CreateNewFolderOutlinedIcon sx={styles.noContentIcon} />
-                </Box>
-                <Box sx={styles.noContentText}>
-                    <h1>
-                        <FormattedMessage id={'firstDir'} />
-                    </h1>
-                    <Button
-                        variant="contained"
-                        sx={styles.noContentButton}
-                        onClick={handleOpenDialog}
-                    >
-                        <FormattedMessage id={'createFolder'} />
-                    </Button>
-                </Box>
-            </Box>
-        );
-    };
     const renderLoadingContent = () => {
         return (
             <Box sx={styles.circularProgressContainer}>
@@ -1008,7 +955,9 @@ const DirectoryContent = () => {
         // If no selection or currentChildren = null (first time) render nothing
         if (!currentChildren || !selectedDirectory) {
             if (treeData.rootDirectories.length === 0 && treeData.initialized) {
-                return renderNoContent();
+                return (
+                    <NoContentDirectory handleOpenDialog={handleOpenDialog} />
+                );
             }
             return;
         }
