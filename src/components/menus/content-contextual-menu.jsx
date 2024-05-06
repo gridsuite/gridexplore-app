@@ -28,7 +28,6 @@ import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialo
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
-    createFilter,
     deleteElements,
     duplicateElement,
     elementExists,
@@ -39,7 +38,6 @@ import {
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
-    saveFilter,
 } from '../../utils/rest-api';
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
@@ -778,8 +776,6 @@ const ContentContextualMenu = (props) => {
                                 activeElement.specificMetadata.equipmentType,
                         }}
                         activeDirectory={activeDirectory}
-                        createfilter={createFilter}
-                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         elementExists={elementExists}
                         language={languageLocal}
