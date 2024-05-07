@@ -96,6 +96,7 @@ function mapFromRoots(roots) {
     );
 }
 
+//TODO: to be changed to what?!!
 function sameRights(a, b) {
     if (!a && !b) {
         return true;
@@ -114,6 +115,7 @@ function sameRights(a, b) {
  * @param children new value of the node children (shallow nodes)
  */
 function updatedTree(prevRoots, prevMap, nodeId, children) {
+    //TODO: WTF is this !!!!!!!?
     const nextChildren = children
         .sort((a, b) => a.elementName.localeCompare(b.elementName))
         .map((n) => {
