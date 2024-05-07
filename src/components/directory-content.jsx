@@ -11,27 +11,21 @@ import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import * as constants from '../utils/UIconstants';
-
-import Chip from '@mui/material/Chip';
-import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
 import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
-import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
 
-import VirtualizedTable from './virtualized-table';
 import { ContingencyListType, FilterType } from '../utils/elementType';
 import {
     ElementType,
-    DEFAULT_CELL_PADDING,
-    getFileIcon,
-    OverflowableText,
     useSnackMessage,
     ExplicitNamingFilterEditionDialog,
     ExpertFilterEditionDialog,
     CriteriaBasedFilterEditionDialog,
     DescriptionModificationDialog,
+    CustomAGGrid,
+    noSelectionForCopy,
 } from '@gridsuite/commons-ui';
-import { Box, Checkbox } from '@mui/material';
+import { Box } from '@mui/material';
 
 import {
     createFilter,
@@ -42,18 +36,26 @@ import {
     saveFilter,
     fetchDirectoryContent,
     fetchRootFolders,
+    updateElement,
 } from '../utils/rest-api';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
-import CreateIcon from '@mui/icons-material/Create';
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
-import { noSelectionForCopy } from 'utils/constants';
 import { useParameterState } from './dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../utils/config-params';
+import Grid from '@mui/material/Grid';
+import {
+    TypeCellRenderer,
+    DescriptionCellRenderer,
+    UserCellRenderer,
+    DateCellRenderer,
+    NameCellRenderer,
+} from '../utils/directory-content-renderers.tsx';
+import { useDirectoryContent } from '../hooks/useDirectoryContent';
 
 const circularProgressSize = '70px';
 
@@ -62,28 +64,12 @@ const styles = {
         color: theme.link.color,
         textDecoration: 'none',
     }),
-    cell: {
-        display: 'flex',
-        alignItems: 'center',
-        textAlign: 'center',
-        boxSizing: 'border-box',
-        flex: 1,
-        height: '48px',
-        padding: `${DEFAULT_CELL_PADDING}px`,
-        overflow: 'hidden',
+    grid: { height: 500, width: '100%' },
+    overflow: {
+        whiteSpace: 'pre',
         textOverflow: 'ellipsis',
+        overflow: 'hidden',
     },
-    chip: {
-        cursor: 'pointer',
-    },
-    icon: (theme) => ({
-        marginRight: theme.spacing(1),
-        width: '18px',
-        height: '18px',
-    }),
-    circularRoot: (theme) => ({
-        marginRight: theme.spacing(1),
-    }),
     checkboxes: {
         width: '100%',
         justifyContent: 'center',
@@ -98,17 +84,6 @@ const styles = {
     centeredCircularProgress: {
         alignSelf: 'center',
     },
-    tooltip: {
-        maxWidth: '1000px',
-    },
-    descriptionTooltip: {
-        display: 'inline-block',
-        whiteSpace: 'pre',
-        textOverflow: 'ellipsis',
-        overflow: 'hidden',
-        maxWidth: '250px',
-        maxHeight: '50px',
-    },
 };
 
 const initialMousePosition = {
@@ -122,6 +97,7 @@ const DirectoryContent = () => {
 
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
     const activeDirectory = useSelector((state) => state.activeDirectory);
+    const currentChildren = useSelector((state) => state.currentChildren);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -169,23 +145,20 @@ const DirectoryContent = () => {
         };
         return broadcast;
     });
-    const [childrenMetadata, setChildrenMetadata] = useState({});
-
-    const [selectedUuids, setSelectedUuids] = useState(new Set());
-
-    const currentChildren = useSelector((state) => state.currentChildren);
-    const currentChildrenRef = useRef();
-    currentChildrenRef.current = currentChildren;
 
     const appsAndUrls = useSelector((state) => state.appsAndUrls);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
 
     const [activeElement, setActiveElement] = useState(null);
     const [isMissingDataAfterDirChange, setIsMissingDataAfterDirChange] =
-        useState(true);
+        useState(false);
 
     const intl = useIntl();
-    const todayStart = new Date().setHours(0, 0, 0, 0);
+    const gridRef = useRef();
+    const [data, childrenMetadata] = useDirectoryContent(
+        gridRef,
+        setIsMissingDataAfterDirChange
+    );
 
     /* Menu states */
     const [mousePosition, setMousePosition] = useState(initialMousePosition);
@@ -293,66 +266,48 @@ const DirectoryContent = () => {
         event.stopPropagation();
     };
 
-    /* User interactions */
-    const contextualMixPolicies = useMemo(
-        () => ({
-            BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
-            ALL: 'All', // union of activeElement.Uuid and selectedUuids (currently implemented)
-        }),
-        []
-    );
-    const contextualMixPolicy = contextualMixPolicies.ALL;
+    const isRowHovered = () => {
+        return !!gridRef.current?.api
+            ?.getRenderedNodes()
+            .find((node) => node.hovered);
+    };
 
-    const onContextMenu = useCallback(
+    const onCellContextMenu = useCallback(
         (event) => {
-            const element = currentChildren?.find(
-                (e) => e.elementUuid === event.rowData?.elementUuid
+            const element = data?.find(
+                (e) =>
+                    event.data && // check if right click is made out of table in order to prevent bug when right clicking out of the table when an element is uploading
+                    e.elementUuid === event.data?.elementUuid
             );
-
-            if (selectedDirectory) {
-                dispatch(setActiveDirectory(selectedDirectory.elementUuid));
-            }
 
             if (element && element.uploading !== null) {
                 if (element.type !== 'DIRECTORY') {
                     setActiveElement({
                         hasMetadata:
-                            childrenMetadata[event.rowData.elementUuid] !==
+                            childrenMetadata[event.data.elementUuid] !==
                             undefined,
                         specificMetadata:
-                            childrenMetadata[event.rowData.elementUuid]
+                            childrenMetadata[event.data.elementUuid]
                                 ?.specificMetadata,
                         ...element,
                     });
-
-                    if (contextualMixPolicy === contextualMixPolicies.BIG) {
-                        // If some elements were already selected and the active element is not in them, we deselect the already selected elements.
-                        if (
-                            selectedUuids?.size &&
-                            element?.elementUuid &&
-                            !selectedUuids.has(element.elementUuid)
-                        ) {
-                            setSelectedUuids(new Set());
-                        }
-                    } else {
-                        // If some elements were already selected, we add the active element to the selected list if not already in it.
-                        if (
-                            selectedUuids?.size &&
-                            element?.elementUuid &&
-                            !selectedUuids.has(element.elementUuid)
-                        ) {
-                            let updatedSelectedUuids = new Set(selectedUuids);
-                            updatedSelectedUuids.add(element.elementUuid);
-                            setSelectedUuids(updatedSelectedUuids);
-                        }
-                    }
                 }
                 setMousePosition({
                     mouseX: event.event.clientX + constants.HORIZONTAL_SHIFT,
                     mouseY: event.event.clientY + constants.VERTICAL_SHIFT,
                 });
                 handleOpenContentMenu(event.event);
-            } else {
+            }
+        },
+        [childrenMetadata, data]
+    );
+
+    const onContextMenu = useCallback(
+        (event) => {
+            if (!isRowHovered()) {
+                if (selectedDirectory) {
+                    dispatch(setActiveDirectory(selectedDirectory.elementUuid));
+                }
                 setMousePosition({
                     mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
                     mouseY: event.clientY + constants.VERTICAL_SHIFT,
@@ -360,25 +315,8 @@ const DirectoryContent = () => {
                 handleOpenDirectoryMenu(event);
             }
         },
-        [
-            currentChildren,
-            dispatch,
-            selectedDirectory,
-            selectedUuids,
-            contextualMixPolicies,
-            contextualMixPolicy,
-            childrenMetadata,
-        ]
+        [dispatch, selectedDirectory]
     );
-
-    const abbreviationFromUserName = (name) => {
-        const tab = name.split(' ').map((x) => x.charAt(0));
-        if (tab.length === 1) {
-            return tab[0];
-        } else {
-            return tab[0] + tab[tab.length - 1];
-        }
-    };
 
     const handleError = useCallback(
         (message) => {
@@ -412,332 +350,107 @@ const DirectoryContent = () => {
         [appsAndUrls]
     );
 
-    const handleRowClick = useCallback(
+    const handleDescriptionIconClick = (e) => {
+        setActiveElement(e.data);
+        setOpenDescModificationDialog(true);
+    };
+
+    //TODO DEAL WITH THIS RERENDERING BASTARD
+    const handleCellClick = useCallback(
         (event) => {
-            const element = currentChildren.find(
-                (e) => e.elementUuid === event.rowData.elementUuid
-            );
-            if (childrenMetadata[element.elementUuid] !== undefined) {
-                setElementName(childrenMetadata[element.elementUuid]?.name);
-                const subtype = childrenMetadata[element.elementUuid].subtype;
-                /** set active directory on the store because it will be used while editing the contingency name */
-                dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-                switch (element.type) {
-                    case ElementType.STUDY:
-                        let url = getLink(element.elementUuid, element.type);
-                        url
-                            ? window.open(url, '_blank')
-                            : handleError(
-                                  intl.formatMessage(
-                                      { id: 'getAppLinkError' },
-                                      { type: element.type }
-                                  )
-                              );
-                        break;
-                    case ElementType.CONTINGENCY_LIST:
-                        if (subtype === ContingencyListType.CRITERIA_BASED.id) {
-                            setCurrentFiltersContingencyListId(
-                                element.elementUuid
+            if (event.colDef.field === 'description') {
+                handleDescriptionIconClick(event);
+            } else {
+                if (childrenMetadata[event.data.elementUuid] !== undefined) {
+                    setElementName(
+                        childrenMetadata[event.data.elementUuid]?.elementName
+                    );
+                    const subtype =
+                        childrenMetadata[event.data.elementUuid]
+                            .specificMetadata.type;
+                    /** set active directory on the store because it will be used while editing the contingency name */
+                    dispatch(
+                        setActiveDirectory(selectedDirectory?.elementUuid)
+                    );
+                    switch (event.data.type) {
+                        case ElementType.STUDY:
+                            let url = getLink(
+                                event.data.elementUuid,
+                                event.data.type
                             );
-                            setOpenDialog(subtype);
-                        } else if (subtype === ContingencyListType.SCRIPT.id) {
-                            setCurrentScriptContingencyListId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (
-                            subtype === ContingencyListType.EXPLICIT_NAMING.id
-                        ) {
-                            setCurrentExplicitNamingContingencyListId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        }
-                        break;
-                    case ElementType.FILTER:
-                        if (subtype === FilterType.EXPLICIT_NAMING.id) {
-                            setCurrentExplicitNamingFilterId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (subtype === FilterType.CRITERIA_BASED.id) {
-                            setCurrentCriteriaBasedFilterId(
-                                element.elementUuid
-                            );
-                            setOpenDialog(subtype);
-                        } else if (subtype === FilterType.EXPERT.id) {
-                            setCurrentExpertFilterId(element.elementUuid);
-                            setOpenDialog(subtype);
-                        }
-                        break;
-                    default:
-                        break;
+                            url
+                                ? window.open(url, '_blank')
+                                : handleError(
+                                      intl.formatMessage(
+                                          { id: 'getAppLinkError' },
+                                          { type: event.data.type }
+                                      )
+                                  );
+                            break;
+                        case ElementType.CONTINGENCY_LIST:
+                            if (
+                                subtype ===
+                                ContingencyListType.CRITERIA_BASED.id
+                            ) {
+                                setCurrentFiltersContingencyListId(
+                                    event.data.elementUuid
+                                );
+                                setOpenDialog(subtype);
+                            } else if (
+                                subtype === ContingencyListType.SCRIPT.id
+                            ) {
+                                setCurrentScriptContingencyListId(
+                                    event.data.elementUuid
+                                );
+                                setOpenDialog(subtype);
+                            } else if (
+                                subtype ===
+                                ContingencyListType.EXPLICIT_NAMING.id
+                            ) {
+                                setCurrentExplicitNamingContingencyListId(
+                                    event.data.elementUuid
+                                );
+                                setOpenDialog(subtype);
+                            }
+                            break;
+                        case ElementType.FILTER:
+                            if (subtype === FilterType.EXPLICIT_NAMING.id) {
+                                setCurrentExplicitNamingFilterId(
+                                    event.data.elementUuid
+                                );
+                                setOpenDialog(subtype);
+                            } else if (
+                                subtype === FilterType.CRITERIA_BASED.id
+                            ) {
+                                setCurrentCriteriaBasedFilterId(
+                                    event.data.elementUuid
+                                );
+                                setOpenDialog(subtype);
+                            } else if (subtype === FilterType.EXPERT.id) {
+                                setCurrentExpertFilterId(
+                                    event.data.elementUuid
+                                );
+                                setOpenDialog(subtype);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         },
         [
             childrenMetadata,
-            currentChildren,
             dispatch,
             getLink,
             handleError,
             intl,
-            selectedDirectory?.elementUuid,
+            selectedDirectory,
         ]
     );
 
-    const getElementTypeTranslation = useCallback(
-        (type, subtype, formatCase) => {
-            let translatedType;
-            switch (type) {
-                case ElementType.FILTER:
-                case ElementType.CONTINGENCY_LIST:
-                    translatedType = intl.formatMessage({
-                        id: subtype + '_' + type,
-                    });
-                    break;
-                case ElementType.MODIFICATION:
-                    translatedType =
-                        intl.formatMessage({ id: type }) +
-                        ' (' +
-                        intl.formatMessage({
-                            id: 'network_modifications.' + subtype,
-                        }) +
-                        ')';
-                    break;
-                default:
-                    translatedType = intl.formatMessage({ id: type });
-                    break;
-            }
-
-            const translatedFormat = formatCase
-                ? ' (' + intl.formatMessage({ id: formatCase }) + ')'
-                : '';
-
-            return `${translatedType}${translatedFormat}`;
-        },
-        [intl]
-    );
-
-    const typeCellRender = useCallback((cellData) => {
-        const { rowData = {} } = cellData || {};
-        return (
-            <Box sx={styles.cell}>
-                <OverflowableText
-                    text={rowData.type}
-                    tooltipSx={styles.tooltip}
-                />
-            </Box>
-        );
-    }, []);
-
-    function userCellRender(cellData) {
-        const user = cellData.rowData[cellData.dataKey];
-        return (
-            <Box sx={styles.cell}>
-                <Tooltip title={user} placement="right">
-                    <Chip
-                        sx={styles.chip}
-                        label={abbreviationFromUserName(user)}
-                    />
-                </Tooltip>
-            </Box>
-        );
-    }
-
-    function dateCellRender(cellData) {
-        const data = new Date(cellData.rowData[cellData.dataKey]);
-        if (data instanceof Date && !isNaN(data)) {
-            const cellMidnight = new Date(data).setHours(0, 0, 0, 0);
-
-            const time = new Intl.DateTimeFormat(intl.locale, {
-                timeStyle: 'medium',
-                hour12: false,
-            }).format(data);
-            const displayedDate =
-                intl.locale === 'en'
-                    ? data.toISOString().substring(0, 10)
-                    : data.toLocaleDateString(intl.locale);
-            const cellText = todayStart === cellMidnight ? time : displayedDate;
-            const fullDate = new Intl.DateTimeFormat(intl.locale, {
-                dateStyle: 'long',
-                timeStyle: 'long',
-                hour12: false,
-            }).format(data);
-
-            return (
-                <Box sx={styles.cell}>
-                    <Tooltip title={fullDate} placement="right">
-                        <span>{cellText}</span>
-                    </Tooltip>
-                </Box>
-            );
-        }
-    }
-
     const [openDescModificationDialog, setOpenDescModificationDialog] =
         useState(false);
-
-    const descriptionCellRender = useCallback(
-        (cellData) => {
-            const element = currentChildren.find(
-                (e) => e.elementUuid === cellData.rowData.elementUuid
-            );
-
-            const description = element.description;
-            const descriptionLines = description?.split('\n');
-            if (descriptionLines?.length > 3) {
-                descriptionLines[2] = '...';
-            }
-            const tooltip = descriptionLines?.join('\n');
-
-            const handleDescriptionIconClick = (e) => {
-                setActiveElement(element);
-                setOpenDescModificationDialog(true);
-                e.stopPropagation();
-            };
-
-            const icon = description ? (
-                <Tooltip
-                    title={
-                        <Box
-                            children={tooltip}
-                            sx={styles.descriptionTooltip}
-                        />
-                    }
-                    placement="right"
-                >
-                    <StickyNote2OutlinedIcon
-                        onClick={handleDescriptionIconClick}
-                    />
-                </Tooltip>
-            ) : (
-                <CreateIcon onClick={handleDescriptionIconClick} />
-            );
-            return (
-                <>
-                    <Box sx={styles.cell}>{icon}</Box>
-                </>
-            );
-        },
-        [currentChildren]
-    );
-
-    const getDisplayedElementName = useCallback(
-        (cellData) => {
-            const { elementName, uploading, elementUuid } = cellData.rowData;
-            const formatMessage = intl.formatMessage;
-            if (uploading) {
-                return elementName + '\n' + formatMessage({ id: 'uploading' });
-            }
-            if (!childrenMetadata[elementUuid]) {
-                return (
-                    elementName +
-                    '\n' +
-                    formatMessage({ id: 'creationInProgress' })
-                );
-            }
-            return childrenMetadata[elementUuid].name;
-        },
-        [childrenMetadata, intl.formatMessage]
-    );
-
-    const isElementCaseOrStudy = (objectType) => {
-        return (
-            objectType === ElementType.STUDY || objectType === ElementType.CASE
-        );
-    };
-
-    const nameCellRender = useCallback(
-        (cellData) => {
-            const element = currentChildren.find(
-                (e) => e.elementUuid === cellData.rowData.elementUuid
-            );
-            return (
-                <Box sx={styles.cell}>
-                    {/*  Icon */}
-                    {!childrenMetadata[element.elementUuid] &&
-                        isElementCaseOrStudy(element.type) && (
-                            <CircularProgress
-                                size={18}
-                                sx={styles.circularRoot}
-                            />
-                        )}
-                    {childrenMetadata[element.elementUuid] &&
-                        getFileIcon(element.type, styles.icon)}
-                    {/* Name */}
-                    <OverflowableText
-                        text={getDisplayedElementName(cellData)}
-                        tooltipSx={styles.tooltip}
-                    />
-                </Box>
-            );
-        },
-        [childrenMetadata, currentChildren, getDisplayedElementName]
-    );
-
-    function toggleSelection(elementUuid) {
-        let element = currentChildren?.find(
-            (e) => e.elementUuid === elementUuid
-        );
-        if (element === undefined) {
-            return;
-        }
-        let newSelection = new Set(selectedUuids);
-        if (!newSelection.delete(elementUuid)) {
-            newSelection.add(elementUuid);
-        }
-        setSelectedUuids(newSelection);
-    }
-
-    function toggleSelectAll() {
-        if (selectedUuids.size === 0) {
-            setSelectedUuids(
-                new Set(
-                    currentChildren
-                        .filter((e) => !e.uploading)
-                        .map((c) => c.elementUuid)
-                )
-            );
-        } else {
-            setSelectedUuids(new Set());
-        }
-    }
-
-    function selectionHeaderRenderer() {
-        return (
-            <Box
-                onClick={(e) => {
-                    toggleSelectAll();
-                    e.stopPropagation();
-                }}
-                sx={styles.checkboxes}
-            >
-                <Checkbox
-                    checked={selectedUuids.size > 0}
-                    indeterminate={
-                        selectedUuids.size !== 0 &&
-                        selectedUuids.size !== currentChildren.length
-                    }
-                />
-            </Box>
-        );
-    }
-
-    function selectionRenderer(cellData) {
-        const elementUuid = cellData.rowData['elementUuid'];
-        return (
-            <Box
-                onClick={(e) => {
-                    toggleSelection(elementUuid);
-                    e.stopPropagation();
-                }}
-                sx={styles.checkboxes}
-            >
-                <Checkbox checked={selectedUuids.has(elementUuid)} />
-            </Box>
-        );
-    }
 
     useEffect(() => {
         if (!selectedDirectory) {
@@ -746,100 +459,28 @@ const DirectoryContent = () => {
         setIsMissingDataAfterDirChange(true);
     }, [selectedDirectory, setIsMissingDataAfterDirChange]);
 
-    useEffect(() => {
-        if (!currentChildren?.length) {
-            setChildrenMetadata({});
-            setIsMissingDataAfterDirChange(false);
-            return;
-        }
-
-        let metadata = {};
-        let childrenToFetchElementsInfos = Object.values(currentChildren)
-            .filter((e) => !e.uploading)
-            .map((e) => e.elementUuid);
-        if (childrenToFetchElementsInfos.length > 0) {
-            fetchElementsInfos(childrenToFetchElementsInfos)
-                .then((res) => {
-                    res.forEach((e) => {
-                        metadata[e.elementUuid] = {
-                            name: e.elementName,
-                            subtype: e.specificMetadata
-                                ? e.specificMetadata.type
-                                : null,
-                            format: e.specificMetadata?.format ?? null,
-                            specificMetadata: e.specificMetadata,
-                        };
-                    });
-                })
-                .catch((error) => {
-                    if (Object.keys(currentChildrenRef.current).length === 0) {
-                        handleError(error.message);
-                    }
-                })
-                .finally(() => {
-                    // discarding request for older directory
-                    if (currentChildrenRef.current === currentChildren) {
-                        setChildrenMetadata(metadata);
-                        setIsMissingDataAfterDirChange(false);
-                    }
-                });
-        }
-        setSelectedUuids(new Set());
-    }, [handleError, currentChildren, currentChildrenRef]);
-
     const getSelectedChildren = () => {
-        let selectedChildren = [];
-        if (currentChildren?.length > 0) {
-            // Adds the previously selected elements
-            if (selectedUuids?.size) {
-                selectedChildren = currentChildren
-                    .filter(
-                        (child) =>
-                            selectedUuids.has(child.elementUuid) &&
-                            child.elementUuid !== activeElement?.elementUuid
-                    )
-                    .map((child) => {
-                        return {
-                            subtype:
-                                childrenMetadata[child.elementUuid]?.subtype,
-                            hasMetadata:
-                                childrenMetadata[child.elementUuid] !==
-                                undefined,
-                            ...child,
-                        };
-                    });
-            }
-
-            // Adds the active element
-            if (activeElement) {
-                selectedChildren.push({
-                    ...activeElement,
+        let selectedChildren =
+            gridRef.current?.api?.getSelectedRows().map((row) => {
+                return {
+                    ...row,
                     subtype:
-                        childrenMetadata[activeElement.elementUuid]?.subtype,
+                        childrenMetadata[row.elementUuid]?.specificMetadata
+                            .type,
                     hasMetadata:
-                        childrenMetadata[activeElement.elementUuid] !==
-                        undefined,
-                });
-            }
+                        childrenMetadata[row.elementUuid] !== undefined,
+                };
+            }) ?? [];
+        if (activeElement) {
+            selectedChildren.push({
+                ...activeElement,
+                subtype: childrenMetadata[activeElement.elementUuid]?.subtype,
+                hasMetadata:
+                    childrenMetadata[activeElement.elementUuid] !== undefined,
+            });
         }
-        return [...new Set(selectedChildren)];
+        return selectedChildren;
     };
-
-    const rows = useMemo(
-        () =>
-            currentChildren?.map((child) => ({
-                ...child,
-                type:
-                    childrenMetadata[child.elementUuid] &&
-                    getElementTypeTranslation(
-                        child.type,
-                        childrenMetadata[child.elementUuid].subtype,
-                        childrenMetadata[child.elementUuid].format
-                    ),
-                notClickable: child.type === ElementType.CASE,
-            })),
-        [childrenMetadata, currentChildren, getElementTypeTranslation]
-    );
 
     const renderLoadingContent = () => {
         return (
@@ -856,13 +497,7 @@ const DirectoryContent = () => {
     const renderEmptyDirContent = () => {
         return (
             <>
-                <ContentToolbar
-                    selectedElements={
-                        // Check selectedUuids.size here to show toolbar options only
-                        // when multi selection checkboxes are used.
-                        selectedUuids.size > 0 ? getSelectedChildren() : []
-                    }
-                />
+                <ContentToolbar selectedElements={getSelectedChildren()} />
                 <div style={{ textAlign: 'center', marginTop: '100px' }}>
                     <FolderOpenRoundedIcon
                         style={{ width: '100px', height: '100px' }}
@@ -875,87 +510,124 @@ const DirectoryContent = () => {
         );
     };
 
+    const defaultColDef = useMemo(
+        () => ({
+            sortable: true,
+            resizable: false,
+            lockPinned: true,
+            wrapHeaderText: true,
+            autoHeaderHeight: true,
+            suppressMovable: true,
+            flex: 1,
+        }),
+        []
+    );
+
+    const onGridReady = useCallback(({ api }) => {
+        api?.sizeColumnsToFit();
+    }, []);
+
+    const getRowId = useCallback(
+        (params) =>
+            params.data.elementUuid ??
+            params.data.elementName + params.data.owner,
+        []
+    );
+
+    const getRowStyle = useCallback((cellData) => {
+        if (
+            ![ElementType.CASE, ElementType.PARAMETERS].includes(
+                cellData.data?.type
+            )
+        ) {
+            return { cursor: 'pointer' };
+        }
+    }, []);
+
     const renderTableContent = () => {
         return (
             <>
-                <ContentToolbar
-                    selectedElements={
-                        // Check selectedUuids.size here to show toolbar options only
-                        // when multi selection checkboxes are used.
-                        selectedUuids.size > 0 ? getSelectedChildren() : []
-                    }
-                />
-                <VirtualizedTable
-                    style={{ flexGrow: 1 }}
-                    onRowRightClick={(e) => onContextMenu(e)}
-                    onRowClick={handleRowClick}
-                    rows={rows}
-                    columns={[
+                <ContentToolbar selectedElements={getSelectedChildren()} />
+                <CustomAGGrid
+                    ref={gridRef}
+                    rowData={data}
+                    getRowId={getRowId}
+                    defaultColDef={defaultColDef}
+                    rowSelection="multiple"
+                    suppressRowClickSelection
+                    onGridReady={onGridReady}
+                    onCellClicked={handleCellClick}
+                    onCellContextMenu={onCellContextMenu}
+                    animateRows={false}
+                    columnDefs={[
                         {
-                            cellRenderer: selectionRenderer,
-                            dataKey: 'selected',
-                            label: '',
-                            headerRenderer: selectionHeaderRenderer,
-                            minWidth: '3%',
-                        },
-                        {
-                            label: intl.formatMessage({
+                            headerName: intl.formatMessage({
                                 id: 'elementName',
                             }),
-                            dataKey: 'elementName',
-                            cellRenderer: nameCellRender,
-                            minWidth: '31%',
+                            field: 'elementName',
+                            cellRenderer: NameCellRenderer,
+                            cellRendererParams: {
+                                childrenMetadata: childrenMetadata,
+                            },
+                            headerCheckboxSelection: true,
+                            checkboxSelection: true,
+                            flex: 5,
                         },
                         {
-                            label: intl.formatMessage({
+                            headerName: intl.formatMessage({
                                 id: 'description',
                             }),
-                            dataKey: 'description',
-                            minWidth: '10%',
-                            cellRenderer: descriptionCellRender,
+                            field: 'description',
+                            cellRenderer: DescriptionCellRenderer,
+                            maxWidth: '150',
                         },
                         {
-                            minWidth: '15%',
-                            label: intl.formatMessage({
+                            headerName: intl.formatMessage({
                                 id: 'type',
                             }),
-                            dataKey: 'type',
-                            cellRenderer: typeCellRender,
+                            field: 'type',
+                            cellRenderer: TypeCellRenderer,
+                            cellRendererParams: {
+                                childrenMetadata: childrenMetadata,
+                            },
+                            flex: 2,
                         },
                         {
-                            minWidth: '10%',
-                            label: intl.formatMessage({
+                            headerName: intl.formatMessage({
                                 id: 'creator',
                             }),
-                            dataKey: 'owner',
-                            cellRenderer: userCellRender,
+                            field: 'owner',
+                            cellRenderer: UserCellRenderer,
+                            maxWidth: '150',
                         },
                         {
-                            minWidth: '10%',
-                            label: intl.formatMessage({
+                            headerName: intl.formatMessage({
                                 id: 'created',
                             }),
-                            dataKey: 'creationDate',
-                            cellRenderer: dateCellRender,
+                            field: 'creationDate',
+                            cellRenderer: DateCellRenderer,
+                            maxWidth: '150',
+                            flex: 2,
                         },
                         {
-                            minWidth: '11%',
-                            label: intl.formatMessage({
+                            headerName: intl.formatMessage({
                                 id: 'modifiedBy',
                             }),
-                            dataKey: 'lastModifiedBy',
-                            cellRenderer: userCellRender,
+                            field: 'lastModifiedBy',
+                            cellRenderer: UserCellRenderer,
+                            maxWidth: '150',
                         },
                         {
-                            minWidth: '10%',
-                            label: intl.formatMessage({
+                            headerName: intl.formatMessage({
                                 id: 'modified',
                             }),
-                            dataKey: 'lastModificationDate',
-                            cellRenderer: dateCellRender,
+                            field: 'lastModificationDate',
+                            cellRenderer: DateCellRenderer,
+                            maxWidth: '150',
+                            flex: 2,
                         },
                     ]}
-                    sortable
+                    getRowStyle={getRowStyle}
                 />
             </>
         );
@@ -967,14 +639,14 @@ const DirectoryContent = () => {
             return renderLoadingContent();
         }
 
-        // If no selection or currentChildren = null (first time) render nothing
+        // If no selection or data = null (first time) render nothing
         // TODO : Make a beautiful page here
-        if (!currentChildren || !selectedDirectory) {
+        if (!data || !selectedDirectory) {
             return;
         }
 
         // If empty dir then render an appropriate content
-        if (currentChildren.length === 0) {
+        if (data.length === 0) {
             return renderEmptyDirContent();
         }
 
@@ -993,6 +665,7 @@ const DirectoryContent = () => {
                         setActiveElement(null);
                         setOpenDescModificationDialog(false);
                     }}
+                    updateElement={updateElement}
                 />
             );
         }
@@ -1107,17 +780,9 @@ const DirectoryContent = () => {
 
     return (
         <>
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    flexGrow: 1,
-                }}
-                onContextMenu={(e) => onContextMenu(e)}
-            >
+            <Grid item xs={12} sx={styles.grid} onContextMenu={onContextMenu}>
                 {renderContent()}
-            </div>
-
+            </Grid>
             <div
                 onMouseDown={(e) => {
                     if (
