@@ -191,7 +191,7 @@ export const DateCellRenderer = ({ value }: { value: string }) => {
 
     const todayStart = new Date().setHours(0, 0, 0, 0);
     const dateValue = new Date(value);
-    if (!Number.isNaN(dateValue)) {
+    if (!isNaN(dateValue.getDate())) {
         const cellMidnight = new Date(value).setHours(0, 0, 0, 0);
 
         const time = new Intl.DateTimeFormat(intl.locale, {

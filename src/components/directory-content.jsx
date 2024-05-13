@@ -97,7 +97,6 @@ const DirectoryContent = () => {
 
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
     const activeDirectory = useSelector((state) => state.activeDirectory);
-    const currentChildren = useSelector((state) => state.currentChildren);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -355,7 +354,6 @@ const DirectoryContent = () => {
         setOpenDescModificationDialog(true);
     };
 
-    //TODO DEAL WITH THIS RERENDERING BASTARD
     const handleCellClick = useCallback(
         (event) => {
             if (event.colDef.field === 'description') {
@@ -459,19 +457,20 @@ const DirectoryContent = () => {
         setIsMissingDataAfterDirChange(true);
     }, [selectedDirectory, setIsMissingDataAfterDirChange]);
 
-    const getSelectedChildren = () => {
-        let selectedChildren =
-            gridRef.current?.api?.getSelectedRows().map((row) => {
-                return {
-                    ...row,
-                    subtype:
-                        childrenMetadata[row.elementUuid]?.specificMetadata
-                            .type,
-                    hasMetadata:
-                        childrenMetadata[row.elementUuid] !== undefined,
-                };
-            }) ?? [];
-        if (activeElement) {
+    const getSelectedChildren = useCallback(() => {
+        const selectedChildren =
+            gridRef.current?.api?.getSelectedRows().map((row) => ({
+                ...row,
+                subtype:
+                    childrenMetadata[row.elementUuid]?.specificMetadata.type,
+                hasMetadata: childrenMetadata[row.elementUuid] !== undefined,
+            })) ?? [];
+        if (
+            activeElement &&
+            !selectedChildren.find(
+                (children) => children.elementUuid === activeElement.elementUuid
+            )
+        ) {
             selectedChildren.push({
                 ...activeElement,
                 subtype: childrenMetadata[activeElement.elementUuid]?.subtype,
@@ -480,7 +479,7 @@ const DirectoryContent = () => {
             });
         }
         return selectedChildren;
-    };
+    }, [activeElement, childrenMetadata]);
 
     const renderLoadingContent = () => {
         return (
@@ -497,7 +496,7 @@ const DirectoryContent = () => {
     const renderEmptyDirContent = () => {
         return (
             <>
-                <ContentToolbar selectedElements={getSelectedChildren()} />
+                <ContentToolbar selectedElements={selectedChildren} />
                 <div style={{ textAlign: 'center', marginTop: '100px' }}>
                     <FolderOpenRoundedIcon
                         style={{ width: '100px', height: '100px' }}
@@ -523,16 +522,20 @@ const DirectoryContent = () => {
         []
     );
 
-    const onGridReady = useCallback(({ api }) => {
-        api?.sizeColumnsToFit();
-    }, []);
-
-    const getRowId = useCallback(
-        (params) =>
-            params.data.elementUuid ??
-            params.data.elementName + params.data.owner,
-        []
+    const [selectedChildren, setSelectedChildren] = useState(
+        getSelectedChildren()
     );
+    const onGridReady = useCallback(
+        ({ api }) => {
+            api?.sizeColumnsToFit();
+            api?.addEventListener('rowSelected', () =>
+                setSelectedChildren(getSelectedChildren())
+            );
+        },
+        [getSelectedChildren]
+    );
+
+    const getRowId = useCallback((params) => params.data.elementUuid, []);
 
     const getRowStyle = useCallback((cellData) => {
         if (
@@ -547,7 +550,7 @@ const DirectoryContent = () => {
     const renderTableContent = () => {
         return (
             <>
-                <ContentToolbar selectedElements={getSelectedChildren()} />
+                <ContentToolbar selectedElements={selectedChildren} />
                 <CustomAGGrid
                     ref={gridRef}
                     rowData={data}
@@ -796,7 +799,7 @@ const DirectoryContent = () => {
             >
                 <ContentContextualMenu
                     activeElement={activeElement}
-                    selectedElements={getSelectedChildren()}
+                    selectedElements={selectedChildren}
                     open={openContentMenu}
                     openDialog={openDialog}
                     setOpenDialog={setOpenDialog}
