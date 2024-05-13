@@ -68,6 +68,7 @@ const initialState = {
         nameItem: null,
         descriptionItem: null,
         parentDirectoryUuid: null,
+        specificTypeItem: null,
     },
     ...paramsInitialState,
 };
