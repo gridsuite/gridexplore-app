@@ -53,13 +53,10 @@ const CriteriaBasedEditionDialog = ({
     const { snackError } = useSnackMessage();
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
     const dispatch = useDispatch();
-    const methods = {
-        ...useForm({
-            defaultValues: emptyFormData(name),
-            resolver: yupResolver(schema),
-        }),
-        language: languageLocal,
-    };
+    const methods = useForm({
+        defaultValues: emptyFormData(name),
+        resolver: yupResolver(schema),
+    });
 
     const {
         reset,
@@ -136,7 +133,8 @@ const CriteriaBasedEditionDialog = ({
             removeOptional={true}
             disabledSave={!!nameError || isValidating}
             isDataFetching={isFetching}
-        >
+            language={languageLocal}
+>
             {!isFetching && <CriteriaBasedEditionForm />}
         </CustomMuiDialog>
     );
