@@ -134,7 +134,7 @@ const CriteriaBasedEditionDialog = ({
             disabledSave={!!nameError || isValidating}
             isDataFetching={isFetching}
             language={languageLocal}
->
+        >
             {!isFetching && <CriteriaBasedEditionForm />}
         </CustomMuiDialog>
     );
