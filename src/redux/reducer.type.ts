@@ -39,8 +39,8 @@ export interface IDirectory {
 }
 
 export interface ITreeData {
-    rootDirectories: any[];
-    mapData: any[];
+    rootDirectories: IDirectory[];
+    mapData: Record<string, any>;
 }
 
 export interface ReduxState {

@@ -46,6 +46,7 @@ interface matchingElementProps {
     name: string;
     type: string;
     pathName: string[];
+    pathUuid: string[];
 }
 
 export const HighlightedText: FunctionComponent<HighlightedTextProps> = ({

@@ -4,8 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, {
+import {
+    Fragment,
     FunctionComponent,
+    Ref,
     SyntheticEvent,
     useCallback,
     useEffect,
@@ -37,13 +39,15 @@ interface matchingElementProps {
 }
 
 interface SearchBarProps {
-    inputRef: any;
+    inputRef: Ref<any>;
 }
 
 export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
-    const [elementsFound, setElementsFound] = useState([]);
+    const [elementsFound, setElementsFound] = useState<matchingElementProps[]>(
+        []
+    );
     const [inputValue, onInputChange] = useState('');
     const lastSearchTermRef = useRef('');
     const [loading, setLoading] = useState(false);
@@ -129,8 +133,8 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     );
 
     const handleDispatchDirectory = useCallback(
-        (elementUuidPath: any) => {
-            if (treeDataRef.current) {
+        (elementUuidPath: string | undefined) => {
+            if (treeDataRef.current && elementUuidPath !== undefined) {
                 const selectedDirectory =
                     treeDataRef.current.mapData[elementUuidPath];
 
@@ -146,9 +150,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 (element: matchingElementProps) => element === data
             );
             if (matchingElement !== undefined) {
-                const elementUuidPath = (
-                    matchingElement as matchingElementProps
-                )?.pathUuid.reverse();
+                const elementUuidPath = matchingElement?.pathUuid.reverse();
                 const promises = elementUuidPath.map((e: string) => {
                     return fetchDirectoryContent(e)
                         .then((res) => {
@@ -185,9 +187,9 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 inputValue={inputValue}
                 onInputChange={(_, data) => handleChangeInput(data)}
                 onChange={handleMatchingElement}
-                getOptionKey={(option: any) => option.id}
+                getOptionKey={(option: any | matchingElementProps) => option.id}
                 options={loading ? [] : elementsFound}
-                getOptionLabel={(option: any) =>
+                getOptionLabel={(option: any | matchingElementProps) =>
                     option.name ? option.name : inputValue
                 }
                 loading={loading}
@@ -204,10 +206,10 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                         InputProps={{
                             ...params.InputProps,
                             startAdornment: (
-                                <React.Fragment>
+                                <Fragment>
                                     <Search />
                                     {params.InputProps.startAdornment}
-                                </React.Fragment>
+                                </Fragment>
                             ),
                         }}
                     />
