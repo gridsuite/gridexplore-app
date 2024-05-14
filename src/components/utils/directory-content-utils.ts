@@ -15,6 +15,28 @@ import {
 import { IntlShape } from 'react-intl';
 import { UUID } from 'crypto';
 import { IElementMetadata } from '../../redux/reducer.type';
+import { AgGridReact } from 'ag-grid-react';
+import React from 'react';
+
+export const formatMetadata = (
+    data: any,
+    childrenMetadata: Record<UUID, IElementMetadata>
+) => ({
+    ...data,
+    subtype: childrenMetadata[data.elementUuid]?.specificMetadata.type,
+    hasMetadata: !!childrenMetadata[data.elementUuid],
+});
+
+export const computeCheckedElements = (
+    gridRef: React.MutableRefObject<AgGridReact | null>,
+    childrenMetadata: Record<UUID, IElementMetadata>
+) => {
+    return (
+        gridRef.current?.api
+            ?.getSelectedRows()
+            .map((row) => formatMetadata(row, childrenMetadata)) ?? []
+    );
+};
 
 export const defaultColumnDefinition = {
     sortable: true,

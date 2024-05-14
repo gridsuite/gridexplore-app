@@ -52,6 +52,8 @@ import { useDirectoryContent } from '../hooks/useDirectoryContent';
 import {
     getColumnsDefinition,
     defaultColumnDefinition,
+    computeCheckedElements,
+    formatMetadata,
 } from './utils/directory-content-utils.ts';
 
 const circularProgressSize = '70px';
@@ -447,18 +449,7 @@ const DirectoryContent = () => {
         setIsMissingDataAfterDirChange(true);
     }, [selectedDirectory, setIsMissingDataAfterDirChange]);
 
-    const getCheckedElements = useCallback(
-        () =>
-            gridRef.current?.api?.getSelectedRows().map((row) => ({
-                ...row,
-                subtype:
-                    childrenMetadata[row.elementUuid]?.specificMetadata.type,
-                hasMetadata: childrenMetadata[row.elementUuid] !== undefined,
-            })) ?? [],
-        [childrenMetadata]
-    );
-
-    const [checkedElement, setCheckedElement] = useState(getCheckedElements());
+    const [checkedElement, setCheckedElement] = useState([]);
 
     const isActiveElementUnchecked = useMemo(
         () =>
@@ -469,16 +460,15 @@ const DirectoryContent = () => {
         [activeElement, checkedElement]
     );
 
+    const handleRowSelected = useCallback(() => {
+        setCheckedElement(computeCheckedElements(gridRef, childrenMetadata));
+    }, [childrenMetadata]);
+
     //It includes checked rows and the row with its context menu open
     const fullSelection = useMemo(() => {
         const selection = [...checkedElement];
         if (isActiveElementUnchecked) {
-            selection.push({
-                ...activeElement,
-                subtype: childrenMetadata[activeElement.elementUuid]?.subtype,
-                hasMetadata:
-                    childrenMetadata[activeElement.elementUuid] !== undefined,
-            });
+            selection.push(formatMetadata(activeElement, childrenMetadata));
         }
         return selection;
     }, [
@@ -515,15 +505,9 @@ const DirectoryContent = () => {
         );
     };
 
-    const onGridReady = useCallback(
-        ({ api }) => {
-            api?.sizeColumnsToFit();
-            api?.addEventListener('selectionChanged', () =>
-                setCheckedElement(getCheckedElements())
-            );
-        },
-        [getCheckedElements]
-    );
+    const onGridReady = useCallback(({ api }) => {
+        api?.sizeColumnsToFit();
+    }, []);
 
     const getRowId = useCallback((params) => params.data.elementUuid, []);
     const getRowStyle = useCallback((cellData) => {
@@ -552,6 +536,7 @@ const DirectoryContent = () => {
                     onGridReady={onGridReady}
                     onCellClicked={handleCellClick}
                     onCellContextMenu={onCellContextMenu}
+                    onRowSelected={handleRowSelected}
                     animateRows={true}
                     columnDefs={getColumnsDefinition(childrenMetadata, intl)}
                     getRowStyle={getRowStyle}

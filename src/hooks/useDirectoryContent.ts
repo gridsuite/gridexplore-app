@@ -6,12 +6,7 @@
  */
 
 import { useSelector } from 'react-redux';
-import React, {
-    useRef,
-    useEffect,
-    useCallback,
-    useState,
-} from 'react';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchElementsInfos } from '../utils/rest-api';
 import { UUID } from 'crypto';
