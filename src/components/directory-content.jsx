@@ -48,14 +48,11 @@ import ScriptEditionDialog from './dialogs/contingency-list/edition/script/scrip
 import { useParameterState } from './dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../utils/config-params';
 import Grid from '@mui/material/Grid';
-import {
-    TypeCellRenderer,
-    DescriptionCellRenderer,
-    UserCellRenderer,
-    DateCellRenderer,
-    NameCellRenderer,
-} from '../utils/directory-content-renderers.tsx';
 import { useDirectoryContent } from '../hooks/useDirectoryContent';
+import {
+    getColumnsDefinition,
+    defaultColumnDefinition,
+} from './utils/directory-content-utils.ts';
 
 const circularProgressSize = '70px';
 
@@ -150,7 +147,7 @@ const DirectoryContent = () => {
 
     const [activeElement, setActiveElement] = useState(null);
     const [isMissingDataAfterDirChange, setIsMissingDataAfterDirChange] =
-        useState(false);
+        useState(true);
 
     const intl = useIntl();
     const gridRef = useRef();
@@ -451,7 +448,7 @@ const DirectoryContent = () => {
         setIsMissingDataAfterDirChange(true);
     }, [selectedDirectory, setIsMissingDataAfterDirChange]);
 
-    const getCheckedElement = useCallback(
+    const getCheckedElements = useCallback(
         () =>
             gridRef.current?.api?.getSelectedRows().map((row) => ({
                 ...row,
@@ -462,7 +459,7 @@ const DirectoryContent = () => {
         [childrenMetadata]
     );
 
-    const [checkedElement, setCheckedElement] = useState(getCheckedElement());
+    const [checkedElement, setCheckedElement] = useState(getCheckedElements());
 
     const isActiveElementUnchecked = useMemo(
         () =>
@@ -492,8 +489,6 @@ const DirectoryContent = () => {
         isActiveElementUnchecked,
     ]);
 
-    console.log(fullSelection);
-
     const renderLoadingContent = () => {
         return (
             <Box sx={styles.circularProgressContainer}>
@@ -521,39 +516,27 @@ const DirectoryContent = () => {
         );
     };
 
-    const defaultColDef = useMemo(
-        () => ({
-            sortable: true,
-            resizable: false,
-            lockPinned: true,
-            wrapHeaderText: true,
-            autoHeaderHeight: true,
-            suppressMovable: true,
-            flex: 1,
-        }),
-        []
-    );
-
     const onGridReady = useCallback(
         ({ api }) => {
             api?.sizeColumnsToFit();
             api?.addEventListener('selectionChanged', () =>
-                setCheckedElement(getCheckedElement())
+                setCheckedElement(getCheckedElements())
             );
         },
-        [getCheckedElement]
+        [getCheckedElements]
     );
 
     const getRowId = useCallback((params) => params.data.elementUuid, []);
-
     const getRowStyle = useCallback((cellData) => {
+        const style = { fontSize: '1rem' };
         if (
             ![ElementType.CASE, ElementType.PARAMETERS].includes(
                 cellData.data?.type
             )
         ) {
-            return { cursor: 'pointer' };
+            style.cursor = 'pointer';
         }
+        return style;
     }, []);
 
     const renderTableContent = () => {
@@ -564,82 +547,16 @@ const DirectoryContent = () => {
                     ref={gridRef}
                     rowData={data}
                     getRowId={getRowId}
-                    defaultColDef={defaultColDef}
+                    defaultColDef={defaultColumnDefinition}
                     rowSelection="multiple"
                     suppressRowClickSelection
                     onGridReady={onGridReady}
                     onCellClicked={handleCellClick}
                     onCellContextMenu={onCellContextMenu}
-                    animateRows={false}
-                    columnDefs={[
-                        {
-                            headerName: intl.formatMessage({
-                                id: 'elementName',
-                            }),
-                            field: 'elementName',
-                            cellRenderer: NameCellRenderer,
-                            cellRendererParams: {
-                                childrenMetadata: childrenMetadata,
-                            },
-                            headerCheckboxSelection: true,
-                            checkboxSelection: true,
-                            flex: 5,
-                        },
-                        {
-                            headerName: intl.formatMessage({
-                                id: 'description',
-                            }),
-                            field: 'description',
-                            cellRenderer: DescriptionCellRenderer,
-                            maxWidth: '150',
-                        },
-                        {
-                            headerName: intl.formatMessage({
-                                id: 'type',
-                            }),
-                            field: 'type',
-                            cellRenderer: TypeCellRenderer,
-                            cellRendererParams: {
-                                childrenMetadata: childrenMetadata,
-                            },
-                            flex: 2,
-                        },
-                        {
-                            headerName: intl.formatMessage({
-                                id: 'creator',
-                            }),
-                            field: 'owner',
-                            cellRenderer: UserCellRenderer,
-                            maxWidth: '150',
-                        },
-                        {
-                            headerName: intl.formatMessage({
-                                id: 'created',
-                            }),
-                            field: 'creationDate',
-                            cellRenderer: DateCellRenderer,
-                            maxWidth: '150',
-                            flex: 2,
-                        },
-                        {
-                            headerName: intl.formatMessage({
-                                id: 'modifiedBy',
-                            }),
-                            field: 'lastModifiedBy',
-                            cellRenderer: UserCellRenderer,
-                            maxWidth: '150',
-                        },
-                        {
-                            headerName: intl.formatMessage({
-                                id: 'modified',
-                            }),
-                            field: 'lastModificationDate',
-                            cellRenderer: DateCellRenderer,
-                            maxWidth: '150',
-                            flex: 2,
-                        },
-                    ]}
+                    animateRows={true}
+                    columnDefs={getColumnsDefinition(childrenMetadata, intl)}
                     getRowStyle={getRowStyle}
+                    alternateTheme
                 />
             </>
         );

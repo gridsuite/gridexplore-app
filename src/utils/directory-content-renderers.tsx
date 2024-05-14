@@ -15,7 +15,7 @@ import { IElement, IElementMetadata } from '../redux/reducer.type';
 
 const styles = {
     tableCell: (theme: Theme) => ({
-        fontSize: 'small',
+        fontSize: '1rem',
         display: 'flex',
         alignItems: 'center',
     }),

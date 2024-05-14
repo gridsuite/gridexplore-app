@@ -86,6 +86,7 @@ let lightTheme = createTheme({
         hover: '#8E9C9B',
     },
     aggrid: 'ag-theme-alpine',
+    alternateTheme: 'ag-theme-material',
     agGridBackground: {
         color: 'white',
     },
@@ -94,6 +95,8 @@ let lightTheme = createTheme({
             textTransform: 'none',
         },
     },
+    aggridMaterialColor: '#90caf9 !important',
+    aggridHiglightColor: '#8e9c9b !important',
 });
 
 lightTheme = createTheme(lightTheme, {
@@ -140,6 +143,7 @@ let darkTheme = createTheme({
         hover: '#545C5B',
     },
     aggrid: 'ag-theme-alpine-dark',
+    alternateTheme: 'ag-theme-material-dark',
     agGridBackground: {
         color: '#383838',
     },
@@ -148,6 +152,8 @@ let darkTheme = createTheme({
             textTransform: 'none',
         },
     },
+    aggridMaterialColor: '#1976d2 !important',
+    aggridHiglightColor: '#545c5b !important',
 });
 
 darkTheme = createTheme(darkTheme, {
