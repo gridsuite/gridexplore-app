@@ -187,11 +187,21 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 inputValue={inputValue}
                 onInputChange={(_, data) => handleChangeInput(data)}
                 onChange={handleMatchingElement}
-                getOptionKey={(option: any | matchingElementProps) => option.id}
+                getOptionKey={(option) => {
+                    if (typeof option === 'string') {
+                        return option;
+                    } else {
+                        return option.id;
+                    }
+                }}
                 options={loading ? [] : elementsFound}
-                getOptionLabel={(option: any | matchingElementProps) =>
-                    option.name ? option.name : inputValue
-                }
+                getOptionLabel={(option) => {
+                    if (typeof option === 'string') {
+                        return inputValue;
+                    } else {
+                        return option.name;
+                    }
+                }}
                 loading={loading}
                 renderOption={renderOptionItem}
                 renderInput={(params) => (
