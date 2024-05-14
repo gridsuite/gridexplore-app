@@ -273,14 +273,8 @@ const DirectoryContent = () => {
 
     const onCellContextMenu = useCallback(
         (event) => {
-            const element = data?.find(
-                (e) =>
-                    event.data && // check if right click is made out of table in order to prevent bug when right clicking out of the table when an element is uploading
-                    e.elementUuid === event.data?.elementUuid
-            );
-
-            if (element && element.uploading !== null) {
-                if (element.type !== 'DIRECTORY') {
+            if (event.data && event.data.uploading !== null) {
+                if (event.data.type !== 'DIRECTORY') {
                     setActiveElement({
                         hasMetadata:
                             childrenMetadata[event.data.elementUuid] !==
@@ -288,7 +282,7 @@ const DirectoryContent = () => {
                         specificMetadata:
                             childrenMetadata[event.data.elementUuid]
                                 ?.specificMetadata,
-                        ...element,
+                        ...event.data,
                     });
                 }
                 setMousePosition({
@@ -298,7 +292,7 @@ const DirectoryContent = () => {
                 handleOpenContentMenu(event.event);
             }
         },
-        [childrenMetadata, data]
+        [childrenMetadata]
     );
 
     const onContextMenu = useCallback(
@@ -457,29 +451,48 @@ const DirectoryContent = () => {
         setIsMissingDataAfterDirChange(true);
     }, [selectedDirectory, setIsMissingDataAfterDirChange]);
 
-    const getSelectedChildren = useCallback(() => {
-        const selectedChildren =
+    const getCheckedElement = useCallback(
+        () =>
             gridRef.current?.api?.getSelectedRows().map((row) => ({
                 ...row,
                 subtype:
                     childrenMetadata[row.elementUuid]?.specificMetadata.type,
                 hasMetadata: childrenMetadata[row.elementUuid] !== undefined,
-            })) ?? [];
-        if (
+            })) ?? [],
+        [childrenMetadata]
+    );
+
+    const [checkedElement, setCheckedElement] = useState(getCheckedElement());
+
+    const isActiveElementUnchecked = useMemo(
+        () =>
             activeElement &&
-            !selectedChildren.find(
+            !checkedElement.find(
                 (children) => children.elementUuid === activeElement.elementUuid
-            )
-        ) {
-            selectedChildren.push({
+            ),
+        [activeElement, checkedElement]
+    );
+
+    //It includes checked rows and the row with its context menu open
+    const fullSelection = useMemo(() => {
+        const selection = [...checkedElement];
+        if (isActiveElementUnchecked) {
+            selection.push({
                 ...activeElement,
                 subtype: childrenMetadata[activeElement.elementUuid]?.subtype,
                 hasMetadata:
                     childrenMetadata[activeElement.elementUuid] !== undefined,
             });
         }
-        return selectedChildren;
-    }, [activeElement, childrenMetadata]);
+        return selection;
+    }, [
+        activeElement,
+        checkedElement,
+        childrenMetadata,
+        isActiveElementUnchecked,
+    ]);
+
+    console.log(fullSelection);
 
     const renderLoadingContent = () => {
         return (
@@ -496,7 +509,6 @@ const DirectoryContent = () => {
     const renderEmptyDirContent = () => {
         return (
             <>
-                <ContentToolbar selectedElements={selectedChildren} />
                 <div style={{ textAlign: 'center', marginTop: '100px' }}>
                     <FolderOpenRoundedIcon
                         style={{ width: '100px', height: '100px' }}
@@ -522,17 +534,14 @@ const DirectoryContent = () => {
         []
     );
 
-    const [selectedChildren, setSelectedChildren] = useState(
-        getSelectedChildren()
-    );
     const onGridReady = useCallback(
         ({ api }) => {
             api?.sizeColumnsToFit();
-            api?.addEventListener('rowSelected', () =>
-                setSelectedChildren(getSelectedChildren())
+            api?.addEventListener('selectionChanged', () =>
+                setCheckedElement(getCheckedElement())
             );
         },
-        [getSelectedChildren]
+        [getCheckedElement]
     );
 
     const getRowId = useCallback((params) => params.data.elementUuid, []);
@@ -550,7 +559,7 @@ const DirectoryContent = () => {
     const renderTableContent = () => {
         return (
             <>
-                <ContentToolbar selectedElements={selectedChildren} />
+                <ContentToolbar selectedElements={checkedElement} />
                 <CustomAGGrid
                     ref={gridRef}
                     rowData={data}
@@ -799,7 +808,7 @@ const DirectoryContent = () => {
             >
                 <ContentContextualMenu
                     activeElement={activeElement}
-                    selectedElements={selectedChildren}
+                    selectedElements={fullSelection}
                     open={openContentMenu}
                     openDialog={openDialog}
                     setOpenDialog={setOpenDialog}
