@@ -152,7 +152,6 @@ const DirectoryContent = () => {
     const intl = useIntl();
     const gridRef = useRef();
     const [data, childrenMetadata] = useDirectoryContent(
-        gridRef,
         setIsMissingDataAfterDirChange
     );
 

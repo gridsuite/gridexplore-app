@@ -11,12 +11,10 @@ import React, {
     useEffect,
     useCallback,
     useState,
-    MutableRefObject,
 } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchElementsInfos } from '../utils/rest-api';
 import { UUID } from 'crypto';
-import { AgGridReact } from 'ag-grid-react';
 import { IElement, IElementMetadata, ReduxState } from '../redux/reducer.type';
 
 type useDirectoryContentReturnType = [
@@ -24,7 +22,6 @@ type useDirectoryContentReturnType = [
     childrenMetadata: Record<UUID, IElementMetadata>
 ];
 export const useDirectoryContent = (
-    gridRef: MutableRefObject<AgGridReact>,
     setIsMissingDataAfterDirChange: React.Dispatch<
         React.SetStateAction<boolean>
     >
@@ -86,7 +83,7 @@ export const useDirectoryContent = (
 
     useEffect(() => {
         setData(currentChildren);
-    }, [currentChildren, gridRef]);
+    }, [currentChildren]);
 
     return [data, childrenMetadata];
 };
