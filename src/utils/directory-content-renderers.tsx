@@ -94,7 +94,7 @@ const getElementTypeTranslation = (
         case ElementType.FILTER:
         case ElementType.CONTINGENCY_LIST:
             translatedType = intl.formatMessage({
-                id: subtype + '_' + type,
+                id: subtype ? subtype + '_' + type : type,
             });
             break;
         case ElementType.MODIFICATION:
