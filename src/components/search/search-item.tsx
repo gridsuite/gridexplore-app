@@ -8,9 +8,11 @@ import { getFileIcon } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
+import { FunctionComponent } from 'react';
+import { Theme } from '@mui/material';
 
 const styles = {
-    icon: (theme) => ({
+    icon: (theme: Theme) => ({
         marginRight: theme.spacing(2),
         width: '18px',
         height: '18px',
@@ -20,7 +22,7 @@ const styles = {
         textOverflow: 'ellipsis',
         display: 'inline-block',
     },
-    grid2: (theme) => ({
+    grid2: (theme: Theme) => ({
         marginRight: theme.spacing(2),
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -29,9 +31,29 @@ const styles = {
     }),
 };
 
-function HighlightedText({ text, highlight }) {
-    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+interface HighlightedTextProps {
+    text: string;
+    highlight: string;
+}
 
+interface SearchItemProps {
+    matchingElement: matchingElementProps;
+    inputValue: string;
+}
+
+interface matchingElementProps {
+    id: string;
+    name: string;
+    type: string;
+    pathName: string[];
+    pathUuid: string[];
+}
+
+export const HighlightedText: FunctionComponent<HighlightedTextProps> = ({
+    text,
+    highlight,
+}) => {
+    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
     return (
         <span>
             {parts.map((part, i) =>
@@ -45,9 +67,13 @@ function HighlightedText({ text, highlight }) {
             )}
         </span>
     );
-}
+};
 
-function SearchItem({ matchingElement, inputValue, ...othersProps }) {
+export const SearchItem: FunctionComponent<SearchItemProps> = ({
+    matchingElement,
+    inputValue,
+    ...othersProps
+}) => {
     return (
         <li {...othersProps}>
             <>
@@ -69,6 +95,4 @@ function SearchItem({ matchingElement, inputValue, ...othersProps }) {
             </>
         </li>
     );
-}
-
-export default SearchItem;
+};
