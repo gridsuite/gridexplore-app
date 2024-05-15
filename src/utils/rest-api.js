@@ -944,18 +944,6 @@ export function getServersInfos() {
     });
 }
 
-export function exportFilter(studyUuid, filterUuid) {
-    console.info('get filter export on study root node');
-    return backendFetchJson(
-        PREFIX_STUDY_QUERIES +
-            '/v1/studies/' +
-            studyUuid +
-            '/filters/' +
-            filterUuid +
-            '/elements'
-    );
-}
-
 export const getExportFormats = () => {
     console.info('get export formats');
     const url = PREFIX_NETWORK_CONVERSION_SERVER_QUERIES + '/v1/export/formats';
