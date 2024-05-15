@@ -33,13 +33,6 @@ const NoContentDirectory: React.FC<NoContentDirectoryProps> = ({
             alignItems: 'center',
             marginTop: theme.spacing(20),
         }),
-        noContentIcon: {
-            fontSize: `${CIRCLE_SIZE / 2}px`,
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-        },
         noContentText: (theme: any) => ({
             color: theme.row.primary,
             textAlign: 'center',
@@ -48,14 +41,15 @@ const NoContentDirectory: React.FC<NoContentDirectoryProps> = ({
         noContentButton: {
             borderRadius: '30px',
         },
+        iconSize: {
+            fontSize: CIRCLE_SIZE / 2,
+        },
     };
 
     return (
         <Box sx={styles.noContentContainer}>
             <CircleIcon size={CIRCLE_SIZE} iconStyles={stylesIcon.circle}>
-                <CreateNewFolderOutlinedIcon
-                    style={{ fontSize: CIRCLE_SIZE / 2 }}
-                />
+                <CreateNewFolderOutlinedIcon sx={styles.iconSize} />
             </CircleIcon>
             <Box sx={styles.noContentText}>
                 <h1>
