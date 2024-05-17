@@ -50,6 +50,7 @@ import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/crite
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
 import { noSelectionForCopy } from 'utils/constants';
+import NoContentDirectory from './no-content-directory';
 import { useParameterState } from './dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../utils/config-params';
 
@@ -115,6 +116,7 @@ const initialMousePosition = {
 };
 
 const DirectoryContent = () => {
+    const treeData = useSelector((state) => state.treeData);
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
@@ -838,6 +840,9 @@ const DirectoryContent = () => {
             })),
         [childrenMetadata, currentChildren, getElementTypeTranslation]
     );
+    const handleOpenDialog = useCallback(() => {
+        setOpenDialog(constants.DialogsId.ADD_ROOT_DIRECTORY);
+    }, []);
 
     const renderLoadingContent = () => {
         return (
@@ -966,8 +971,12 @@ const DirectoryContent = () => {
         }
 
         // If no selection or currentChildren = null (first time) render nothing
-        // TODO : Make a beautiful page here
         if (!currentChildren || !selectedDirectory) {
+            if (treeData.rootDirectories.length === 0 && treeData.initialized) {
+                return (
+                    <NoContentDirectory handleOpenDialog={handleOpenDialog} />
+                );
+            }
             return;
         }
 
