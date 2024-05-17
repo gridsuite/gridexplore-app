@@ -38,6 +38,10 @@ import {
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
+    fetchDirectoryContent,
+    fetchRootFolders,
+    fetchElementsInfos,
+    fetchPath,
 } from '../../utils/rest-api';
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
@@ -779,6 +783,10 @@ const ContentContextualMenu = (props) => {
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         elementExists={elementExists}
                         language={languageLocal}
+                        fetchDirectoryContent={fetchDirectoryContent}
+                        fetchRootFolders={fetchRootFolders}
+                        fetchElementsInfos={fetchElementsInfos}
+                        fetchPath={fetchPath}
                     />
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:
