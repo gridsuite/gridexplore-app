@@ -28,10 +28,10 @@ import {
     FieldConstants,
     isObjectEmpty,
     keyGenerator,
+    ModifyElementSelection,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
-import ModifyElementSelection from '../commons/modify-element-selection';
 import {
     addUploadingElement,
     removeUploadingElement,

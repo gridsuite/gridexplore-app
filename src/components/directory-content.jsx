@@ -34,14 +34,13 @@ import {
 import { Box, Checkbox } from '@mui/material';
 
 import {
-    createFilter,
     elementExists,
     fetchAppsAndUrls,
     fetchElementsInfos,
     getFilterById,
-    saveFilter,
     fetchDirectoryContent,
     fetchRootFolders,
+    updateElement,
 } from '../utils/rest-api';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
@@ -1002,6 +1001,7 @@ const DirectoryContent = () => {
                         setActiveElement(null);
                         setOpenDescModificationDialog(false);
                     }}
+                    updateElement={updateElement}
                 />
             );
         }
@@ -1059,8 +1059,6 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
-                        createfilter={createFilter}
-                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
@@ -1077,8 +1075,6 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
-                        createfilter={createFilter}
-                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         getFilterById={getFilterById}
                         selectionForCopy={selectionForCopy}
@@ -1096,8 +1092,6 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
-                        createfilter={createFilter}
-                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         selectionForCopy={selectionForCopy}
                         getFilterById={getFilterById}
