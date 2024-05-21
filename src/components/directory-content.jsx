@@ -34,14 +34,13 @@ import {
 import { Box, Checkbox } from '@mui/material';
 
 import {
-    createFilter,
     elementExists,
     fetchAppsAndUrls,
     fetchElementsInfos,
     getFilterById,
-    saveFilter,
     fetchDirectoryContent,
     fetchRootFolders,
+    updateElement,
 } from '../utils/rest-api';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
@@ -52,6 +51,7 @@ import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/crite
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
 import { noSelectionForCopy } from 'utils/constants';
+import NoContentDirectory from './no-content-directory';
 import { useParameterState } from './dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../utils/config-params';
 
@@ -117,6 +117,7 @@ const initialMousePosition = {
 };
 
 const DirectoryContent = () => {
+    const treeData = useSelector((state) => state.treeData);
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
@@ -840,6 +841,9 @@ const DirectoryContent = () => {
             })),
         [childrenMetadata, currentChildren, getElementTypeTranslation]
     );
+    const handleOpenDialog = useCallback(() => {
+        setOpenDialog(constants.DialogsId.ADD_ROOT_DIRECTORY);
+    }, []);
 
     const renderLoadingContent = () => {
         return (
@@ -968,8 +972,12 @@ const DirectoryContent = () => {
         }
 
         // If no selection or currentChildren = null (first time) render nothing
-        // TODO : Make a beautiful page here
         if (!currentChildren || !selectedDirectory) {
+            if (treeData.rootDirectories.length === 0 && treeData.initialized) {
+                return (
+                    <NoContentDirectory handleOpenDialog={handleOpenDialog} />
+                );
+            }
             return;
         }
 
@@ -993,6 +1001,7 @@ const DirectoryContent = () => {
                         setActiveElement(null);
                         setOpenDescModificationDialog(false);
                     }}
+                    updateElement={updateElement}
                 />
             );
         }
@@ -1050,8 +1059,6 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
-                        createfilter={createFilter}
-                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
@@ -1068,8 +1075,6 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
-                        createfilter={createFilter}
-                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         getFilterById={getFilterById}
                         selectionForCopy={selectionForCopy}
@@ -1087,8 +1092,6 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
-                        createfilter={createFilter}
-                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         selectionForCopy={selectionForCopy}
                         getFilterById={getFilterById}
