@@ -17,22 +17,37 @@ import { setSelectedDirectory, setTreeData } from '../../redux/actions';
 import { updatedTree } from '../tree-views-container';
 import { useIntl } from 'react-intl';
 import SearchItem from './search-item';
+import { UUID } from 'crypto';
+import { ITreeData, ReduxState } from 'redux/reducer.type';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 
-export const SearchBar = ({ inputRef }) => {
+interface ElementInfos {
+    id: UUID;
+    name: string;
+    type: string;
+    owner: string;
+    subdirectoryCount: number;
+    lastModificationDate: Date;
+    isPrivate: boolean | null;
+    pathName: string[];
+    pathUuid: UUID[];
+}
+
+export const SearchBar = () => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
-    const [elementsFound, setElementsFound] = useState([]);
-    const [inputValue, onInputChange] = useState('');
+    const [elementsFound, setElementsFound] = useState<ElementInfos[]>([]);
+    const [inputValue, setInputValue] = useState('');
     const lastSearchTermRef = useRef('');
     const [loading, setLoading] = useState(false);
-    const treeData = useSelector((state) => state.treeData);
-    const treeDataRef = useRef();
+    const treeData = useSelector((state: ReduxState) => state.treeData);
+    const treeDataRef = useRef<ITreeData>();
+    const searchInputRef = useRef<HTMLInputElement>();
     const intl = useIntl();
     treeDataRef.current = treeData;
     const searchMatchingEquipments = useCallback(
-        (searchTerm) => {
+        (searchTerm: string) => {
             lastSearchTermRef.current = searchTerm;
             searchTerm &&
                 searchElementsInfos(searchTerm)
@@ -59,8 +74,8 @@ export const SearchBar = ({ inputRef }) => {
     );
 
     const handleChangeInput = useCallback(
-        (searchTerm) => {
-            onInputChange(searchTerm);
+        (searchTerm: string) => {
+            setInputValue(searchTerm);
             searchTerm && setLoading(true);
             debouncedSearchMatchingElements(searchTerm);
         },
@@ -71,8 +86,19 @@ export const SearchBar = ({ inputRef }) => {
         elementsFound !== undefined && setLoading(false);
     }, [elementsFound]);
 
+    useEffect(() => {
+        const openSearch = (e: KeyboardEvent) => {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
+                e.preventDefault();
+                searchInputRef.current?.focus();
+            }
+        };
+        document.addEventListener('keydown', openSearch);
+        return () => document.removeEventListener('keydown', openSearch);
+    }, []);
+
     const renderOptionItem = useCallback(
-        (props, option) => {
+        (props: React.HTMLAttributes<HTMLLIElement>, option: ElementInfos) => {
             const matchingElement = elementsFound.find(
                 (element) => element.id === option.id
             );
@@ -88,10 +114,10 @@ export const SearchBar = ({ inputRef }) => {
     );
 
     const updateMapData = useCallback(
-        (nodeId, children) => {
+        (nodeId: UUID, children: ElementInfos[]) => {
             let [newRootDirectories, newMapData] = updatedTree(
-                treeDataRef.current.rootDirectories,
-                treeDataRef.current.mapData,
+                treeDataRef.current?.rootDirectories,
+                treeDataRef.current?.mapData,
                 nodeId,
                 children
             );
@@ -106,9 +132,9 @@ export const SearchBar = ({ inputRef }) => {
     );
 
     const handleDispatchDirectory = useCallback(
-        (elementUuidPath) => {
+        (elementUuidPath: UUID) => {
             const selectedDirectory =
-                treeDataRef.current.mapData[elementUuidPath];
+                treeDataRef.current?.mapData[elementUuidPath];
 
             dispatch(setSelectedDirectory(selectedDirectory));
         },
@@ -116,9 +142,13 @@ export const SearchBar = ({ inputRef }) => {
     );
 
     const handleMatchingElement = useCallback(
-        (event, data) => {
+        (data: ElementInfos | null) => {
+            if (data == null) {
+                return;
+            }
+
             const matchingElement = elementsFound.find(
-                (element) => element === data
+                (element) => element.id === data.id
             );
             if (matchingElement !== undefined) {
                 const elementUuidPath = matchingElement?.pathUuid.reverse();
@@ -138,7 +168,9 @@ export const SearchBar = ({ inputRef }) => {
 
                 Promise.all(promises).then(() => {
                     const lastElement = elementUuidPath.pop();
-                    handleDispatchDirectory(lastElement);
+                    if (lastElement) {
+                        handleDispatchDirectory(lastElement);
+                    }
                 });
             }
         },
@@ -146,46 +178,42 @@ export const SearchBar = ({ inputRef }) => {
     );
 
     return (
-        <>
-            <Autocomplete
-                sx={{ width: '50%', marginLeft: '14%' }}
-                freeSolo
-                size="small"
-                disableClearable={false}
-                forcePopupIcon={false}
-                clearOnBlur
-                autoHighlight={true}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                inputValue={inputValue}
-                onInputChange={(_, data) => handleChangeInput(data)}
-                onChange={handleMatchingElement}
-                key={(option) => option.id}
-                options={loading ? [] : elementsFound}
-                getOptionLabel={(option) => option.name}
-                loading={loading}
-                renderOption={renderOptionItem}
-                renderInput={(params) => (
-                    <TextField
-                        autoFocus={true}
-                        {...params}
-                        inputRef={inputRef}
-                        placeholder={intl.formatMessage({
-                            id: 'searchPlaceholder',
-                        })}
-                        variant="outlined"
-                        InputProps={{
-                            ...params.InputProps,
-                            startAdornment: (
-                                <React.Fragment>
-                                    <Search />
-                                    {params.InputProps.startAdornment}
-                                </React.Fragment>
-                            ),
-                        }}
-                    />
-                )}
-            />
-        </>
+        <Autocomplete
+            sx={{ width: '50%', marginLeft: '14%' }}
+            size="small"
+            disableClearable={false}
+            forcePopupIcon={false}
+            clearOnBlur
+            autoHighlight={true}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            inputValue={inputValue}
+            onInputChange={(_, data) => handleChangeInput(data)}
+            onChange={(_, data) => handleMatchingElement(data)}
+            options={loading ? [] : elementsFound}
+            getOptionLabel={(option) => option.name}
+            loading={loading}
+            renderOption={renderOptionItem}
+            renderInput={(params) => (
+                <TextField
+                    autoFocus={true}
+                    {...params}
+                    inputRef={searchInputRef}
+                    placeholder={intl.formatMessage({
+                        id: 'searchPlaceholder',
+                    })}
+                    variant="outlined"
+                    InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                            <React.Fragment>
+                                <Search />
+                                {params.InputProps.startAdornment}
+                            </React.Fragment>
+                        ),
+                    }}
+                />
+            )}
+        />
     );
 };
 
