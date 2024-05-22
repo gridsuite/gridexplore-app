@@ -19,20 +19,9 @@ import { useIntl } from 'react-intl';
 import SearchItem from './search-item';
 import { UUID } from 'crypto';
 import { ITreeData, ReduxState } from 'redux/reducer.type';
+import { ElementInfos } from './search.type';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
-
-interface ElementInfos {
-    id: UUID;
-    name: string;
-    type: string;
-    owner: string;
-    subdirectoryCount: number;
-    lastModificationDate: Date;
-    isPrivate: boolean | null;
-    pathName: string[];
-    pathUuid: UUID[];
-}
 
 export const SearchBar = () => {
     const dispatch = useDispatch();
@@ -103,11 +92,13 @@ export const SearchBar = () => {
                 (element) => element.id === option.id
             );
             return (
-                <SearchItem
-                    matchingElement={matchingElement}
-                    inputValue={inputValue}
-                    {...props}
-                />
+                matchingElement && (
+                    <SearchItem
+                        matchingElement={matchingElement}
+                        inputValue={inputValue}
+                        {...props}
+                    />
+                )
             );
         },
         [elementsFound, inputValue]
