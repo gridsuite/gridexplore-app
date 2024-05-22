@@ -73,6 +73,7 @@ const DirectoryTreeContextualMenu = (props) => {
             onClose(e, nextSelectedDirectoryId);
             setOpenDialog(DialogsId.NONE);
             setHideMenu(false);
+            setDeleteError('');
         },
         [onClose, setOpenDialog]
     );
@@ -187,12 +188,14 @@ const DirectoryTreeContextualMenu = (props) => {
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElement = useCallback(
         (elementsUuid) => {
+            setDeleteError('');
             deleteElement(elementsUuid)
+                .then(() => handleCloseDialog(null, directory?.parentUuid))
                 .catch((error) => {
+                    //show the error message and don't close the dialog
                     setDeleteError(error.message);
                     handleError(error.message);
-                })
-                .finally(() => handleCloseDialog(null, directory?.parentUuid));
+                });
         },
         [handleCloseDialog, directory?.parentUuid, handleError]
     );

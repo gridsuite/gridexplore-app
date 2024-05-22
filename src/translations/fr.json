@@ -71,7 +71,6 @@
   "deleteMultipleItemsDialogMessage": "Tous les éléments sélectionnés vont être supprimés définitivement.",
   "deleteDialogTitle": "Confirmation",
   "renameDirectoryDialogTitle": "Renommer le dossier",
-  "accessRights": "Droits d'accès",
   "modifyDirectoryAccessRightsError": "Le dossier ne vous appartient pas",
   "renameDirectoryError": "Vous ne pouvez pas renommer un dossier qui ne vous appartient pas",
   "edit": "Modifier",
