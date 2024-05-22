@@ -24,13 +24,11 @@ import DeleteDialog from '../dialogs/delete-dialog';
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
-    createFilter,
     deleteElement,
     duplicateElement,
     insertDirectory,
     insertRootDirectory,
     renameElement,
-    saveFilter,
     fetchDirectoryContent,
     fetchRootFolders,
     fetchAppsAndUrls,
@@ -386,8 +384,6 @@ const DirectoryTreeContextualMenu = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         activeDirectory={activeDirectory}
-                        createFilter={createFilter}
-                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         elementExists={elementExists}
                         language={languageLocal}

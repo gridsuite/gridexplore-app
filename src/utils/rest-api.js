@@ -766,32 +766,6 @@ export function connectNotificationsWsUpdateDirectories() {
 }
 
 /**
- * Create Filter
- * @returns {Promise<Response>}
- */
-export function createFilter(
-    newFilter,
-    name,
-    description,
-    parentDirectoryUuid
-) {
-    let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('name', name);
-    urlSearchParams.append('description', description);
-    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
-    return backendFetch(
-        PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore/filters?' +
-            urlSearchParams.toString(),
-        {
-            method: 'post',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newFilter),
-        }
-    );
-}
-
-/**
  * Get all filters (name & type)
  * @returns {Promise<Response>}
  */
@@ -850,28 +824,6 @@ export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
     return backendFetch(url, {
         method: 'post',
     });
-}
-
-/**
- * Save Filter
- */
-export function saveFilter(filter, name) {
-    let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('name', name);
-    const body = JSON.stringify(filter);
-
-    return backendFetch(
-        PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore/filters/' +
-            filter.id +
-            '?' +
-            urlSearchParams.toString(),
-        {
-            method: 'put',
-            headers: { 'Content-Type': 'application/json' },
-            body,
-        }
-    );
 }
 
 /**
@@ -967,18 +919,6 @@ export function getServersInfos() {
         console.error('Error while fetching the servers infos : ' + reason);
         return reason;
     });
-}
-
-export function exportFilter(studyUuid, filterUuid) {
-    console.info('get filter export on study root node');
-    return backendFetchJson(
-        PREFIX_STUDY_QUERIES +
-            '/v1/studies/' +
-            studyUuid +
-            '/filters/' +
-            filterUuid +
-            '/elements'
-    );
 }
 
 export const getExportFormats = () => {

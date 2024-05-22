@@ -275,6 +275,7 @@ const TreeViewsContainer = () => {
                     setTreeData({
                         rootDirectories: nrs,
                         mapData: mdr,
+                        initialized: true,
                     })
                 );
             })
