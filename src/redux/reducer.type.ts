@@ -60,6 +60,7 @@ export interface ReduxState {
     activeDirectory: UUID;
     currentChildren: IElement[];
     selectedDirectory: IElement;
+    searchedElement: IElement;
     user: IUser;
     treeData: ITreeData;
 }

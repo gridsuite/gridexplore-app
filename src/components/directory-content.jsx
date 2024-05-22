@@ -7,7 +7,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
+import {
+    setActiveDirectory,
+    setSearchedElement,
+    setSelectionForCopy,
+} from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import * as constants from '../utils/UIconstants';
@@ -25,7 +29,7 @@ import {
     CustomAGGrid,
     noSelectionForCopy,
 } from '@gridsuite/commons-ui';
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 
 import {
     createFilter,
@@ -57,6 +61,7 @@ import {
 } from './utils/directory-content-utils.ts';
 
 const circularProgressSize = '70px';
+const SEARCH_HIGHTLIGHT_DURATION_MS = 4000;
 
 const styles = {
     link: (theme) => ({
@@ -93,9 +98,11 @@ const initialMousePosition = {
 const DirectoryContent = () => {
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
+    const theme = useTheme();
 
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
     const activeDirectory = useSelector((state) => state.activeDirectory);
+    const searchedElement = useSelector((state) => state.searchedElement);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -492,35 +499,55 @@ const DirectoryContent = () => {
 
     const renderEmptyDirContent = () => {
         return (
-            <>
-                <div style={{ textAlign: 'center', marginTop: '100px' }}>
-                    <FolderOpenRoundedIcon
-                        style={{ width: '100px', height: '100px' }}
-                    />
-                    <h1>
-                        <FormattedMessage id={'emptyDir'} />
-                    </h1>
-                </div>
-            </>
+            <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                <FolderOpenRoundedIcon
+                    style={{ width: '100px', height: '100px' }}
+                />
+                <h1>
+                    <FormattedMessage id={'emptyDir'} />
+                </h1>
+            </div>
         );
     };
 
-    const onGridReady = useCallback(({ api }) => {
-        api?.sizeColumnsToFit();
-    }, []);
+    const onGridReady = useCallback(
+        ({ api }) => {
+            api?.sizeColumnsToFit();
+
+            // if there is a searched element, we scroll to it, style it for SEARCH_HIGHTLIGHT_DURATION, then remove it from searchedElement to go back to previous style
+            if (!searchedElement) {
+                return;
+            }
+            const searchedElementRow = api.getRowNode(searchedElement.id);
+            if (searchedElementRow) {
+                api.ensureIndexVisible(searchedElementRow.rowIndex, 'top');
+                setTimeout(() => {
+                    dispatch(setSearchedElement(null));
+                }, SEARCH_HIGHTLIGHT_DURATION_MS);
+            }
+        },
+        [searchedElement, dispatch]
+    );
 
     const getRowId = useCallback((params) => params.data.elementUuid, []);
-    const getRowStyle = useCallback((cellData) => {
-        const style = { fontSize: '1rem' };
-        if (
-            ![ElementType.CASE, ElementType.PARAMETERS].includes(
-                cellData.data?.type
-            )
-        ) {
-            style.cursor = 'pointer';
-        }
-        return style;
-    }, []);
+    const getRowStyle = useCallback(
+        (cellData) => {
+            const style = { fontSize: '1rem' };
+
+            if (
+                ![ElementType.CASE, ElementType.PARAMETERS].includes(
+                    cellData.data?.type
+                )
+            ) {
+                style.cursor = 'pointer';
+            }
+            if (cellData.data.elementUuid === searchedElement?.id) {
+                style.backgroundColor = theme.row.hover;
+            }
+            return style;
+        },
+        [searchedElement?.id, theme.row.hover]
+    );
 
     const renderTableContent = () => {
         return (

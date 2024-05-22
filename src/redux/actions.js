@@ -46,6 +46,15 @@ export function setSelectedDirectory(selectedDirectory) {
     };
 }
 
+export const SEARCHED_ELEMENT = 'SEARCHED_ELEMENT';
+
+export function setSearchedElement(searchedElement) {
+    return {
+        type: SEARCHED_ELEMENT,
+        searchedElement: searchedElement,
+    };
+}
+
 export const ACTIVE_DIRECTORY = 'ACTIVE_DIRECTORY';
 
 export function setActiveDirectory(activeDirectory) {
