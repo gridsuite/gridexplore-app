@@ -30,18 +30,12 @@ import { DialogsId } from '../../utils/UIconstants';
 import {
     deleteElements,
     duplicateElement,
-    elementExists,
-    fetchAppsAndUrls,
     moveElementsToDirectory,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
-    fetchDirectoryContent,
-    fetchRootFolders,
-    fetchElementsInfos,
-    fetchPath,
 } from '../../utils/rest-api';
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
@@ -780,13 +774,7 @@ const ContentContextualMenu = (props) => {
                                 activeElement.specificMetadata.equipmentType,
                         }}
                         activeDirectory={activeDirectory}
-                        fetchAppsAndUrls={fetchAppsAndUrls}
-                        elementExists={elementExists}
                         language={languageLocal}
-                        fetchDirectoryContent={fetchDirectoryContent}
-                        fetchRootFolders={fetchRootFolders}
-                        fetchElementsInfos={fetchElementsInfos}
-                        fetchPath={fetchPath}
                     />
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:

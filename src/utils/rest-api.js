@@ -213,13 +213,6 @@ export function fetchAuthorizationCodeFlowFeatureFlag() {
         });
 }
 
-export function fetchAppsAndUrls() {
-    console.info(`Fetching apps and urls...`);
-    return fetchEnv()
-        .then((env) => fetch(env.appsMetadataServerUrl + '/apps-metadata.json'))
-        .then((response) => response.json());
-}
-
 export function fetchVersion() {
     console.info(`Fetching global metadata...`);
     return fetchEnv()
@@ -249,21 +242,6 @@ export function fetchConfigParameter(name) {
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}`;
     return backendFetchJson(fetchParams);
-}
-
-export function fetchDirectoryContent(directoryUuid, elementTypes) {
-    console.info("Fetching Folder content '%s'", directoryUuid);
-    const typeParams = getRequestParamFromList(
-        elementTypes,
-        'elementTypes'
-    ).toString();
-    let fetchDirectoryContentUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/elements`;
-    if (typeParams.length > 0) {
-        fetchDirectoryContentUrl += '?' + typeParams;
-    }
-    return backendFetchJson(fetchDirectoryContentUrl);
 }
 
 export function deleteElement(elementUuid) {
@@ -397,19 +375,6 @@ export function renameElement(elementUuid, newElementName) {
     });
 }
 
-export function fetchRootFolders(types) {
-    console.info('Fetching Root Directories');
-
-    // Add params to Url
-    const typesParams = getRequestParamFromList(types, 'elementTypes');
-    const urlSearchParams = new URLSearchParams(typesParams);
-
-    const fetchRootFoldersUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/root-directories?${urlSearchParams}`;
-    return backendFetchJson(fetchRootFoldersUrl);
-}
-
 export function updateConfigParameter(name, value) {
     const appName = getAppName(name);
     console.info(
@@ -423,25 +388,6 @@ export function updateConfigParameter(name, value) {
         `/v1/applications/${appName}/parameters/${name}?value=` +
         encodeURIComponent(value);
     return backendFetch(updateParams, { method: 'put' });
-}
-
-export function fetchElementsInfos(ids, elementTypes, _equipmentTypes) {
-    console.info('Fetching elements metadata ... ');
-
-    // Add params to Url
-    const tmp = ids?.filter((id) => id);
-    const idsParams = tmp?.length ? tmp.map((id) => ['ids', id]) : [];
-    const elementTypesParams = elementTypes?.length
-        ? elementTypes.map((type) => ['elementTypes', type])
-        : [];
-    const params = [...idsParams, ...elementTypesParams];
-    const urlSearchParams = new URLSearchParams(params).toString();
-
-    const fetchElementsInfosUrl =
-        PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/elements/metadata?' +
-        urlSearchParams;
-    return backendFetchJson(fetchElementsInfosUrl);
 }
 
 export function createStudy(
@@ -542,19 +488,6 @@ export function duplicateElement(
     return backendFetch(url, {
         method: 'post',
     });
-}
-
-export function elementExists(directoryUuid, elementName, type) {
-    const elementNameEncoded = encodeURIComponent(elementName);
-    const existsElementUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/elements/${elementNameEncoded}/types/${type}`;
-    console.debug(existsElementUrl);
-    return backendFetch(existsElementUrl, { method: 'head' }).then(
-        (response) => {
-            return response.status !== 204; // HTTP 204 : No-content
-        }
-    );
 }
 
 export function getNameCandidate(directoryUuid, elementName, type) {
@@ -847,21 +780,6 @@ export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
     return backendFetch(url, {
         method: 'post',
     });
-}
-
-/**
- * Fetch element and all its parents info
- */
-
-export function fetchPath(elementUuid) {
-    console.info(`Fetching element '${elementUuid}' and its parents info ...`);
-    const fetchPathUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/elements/` +
-        encodeURIComponent(elementUuid) +
-        `/path`;
-    console.debug(fetchPathUrl);
-    return backendFetchJson(fetchPathUrl);
 }
 
 export function getCaseImportParameters(caseUuid) {

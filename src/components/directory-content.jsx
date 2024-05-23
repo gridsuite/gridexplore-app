@@ -30,18 +30,11 @@ import {
     ExpertFilterEditionDialog,
     CriteriaBasedFilterEditionDialog,
     DescriptionModificationDialog,
+    fetchElementsInfos,
 } from '@gridsuite/commons-ui';
 import { Box, Checkbox } from '@mui/material';
 
-import {
-    elementExists,
-    fetchAppsAndUrls,
-    fetchElementsInfos,
-    getFilterById,
-    fetchDirectoryContent,
-    fetchRootFolders,
-    updateElement,
-} from '../utils/rest-api';
+import { getFilterById, updateElement } from '../utils/rest-api';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
@@ -1059,10 +1052,8 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
-                        fetchAppsAndUrls={fetchAppsAndUrls}
                         getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
-                        elementExists={elementExists}
                         language={languageLocal}
                     />
                 );
@@ -1075,11 +1066,9 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
-                        fetchAppsAndUrls={fetchAppsAndUrls}
                         getFilterById={getFilterById}
                         selectionForCopy={selectionForCopy}
                         activeDirectory={activeDirectory}
-                        elementExists={elementExists}
                         language={languageLocal}
                     />
                 );
@@ -1092,15 +1081,10 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
-                        fetchAppsAndUrls={fetchAppsAndUrls}
                         selectionForCopy={selectionForCopy}
                         getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
-                        elementExists={elementExists}
                         language={languageLocal}
-                        fetchDirectoryContent={fetchDirectoryContent}
-                        fetchRootFolders={fetchRootFolders}
-                        fetchElementsInfos={fetchElementsInfos}
                     />
                 );
             default:

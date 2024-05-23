@@ -16,16 +16,14 @@ import {
     setTreeData,
 } from '../redux/actions';
 
+import { connectNotificationsWsUpdateDirectories } from '../utils/rest-api';
+import DirectoryTreeView from './directory-tree-view';
 import {
-    connectNotificationsWsUpdateDirectories,
+    useSnackMessage,
     fetchDirectoryContent,
     fetchRootFolders,
-} from '../utils/rest-api';
-
-import DirectoryTreeView from './directory-tree-view';
-
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { ElementType } from '@gridsuite/commons-ui';
+    ElementType,
+} from '@gridsuite/commons-ui';
 import { notificationType } from '../utils/notificationType';
 
 import * as constants from '../utils/UIconstants';

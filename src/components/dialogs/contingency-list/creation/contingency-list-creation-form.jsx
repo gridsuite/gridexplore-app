@@ -23,7 +23,6 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import ScriptInputForm from '../script/script-input-form';
 import { useSelector } from 'react-redux';
-import { elementExists } from '../../../../utils/rest-api';
 
 const ContingencyListCreationForm = () => {
     const { setValue } = useFormContext();
@@ -57,7 +56,6 @@ const ContingencyListCreationForm = () => {
                     elementType={ElementType.CONTINGENCY_LIST}
                     autoFocus
                     activeDirectory={activeDirectory}
-                    elementExists={elementExists}
                 />
             </Grid>
             <Grid item xs={12}>

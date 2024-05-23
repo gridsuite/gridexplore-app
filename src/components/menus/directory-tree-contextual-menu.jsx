@@ -32,11 +32,6 @@ import {
     insertRootDirectory,
     renameElement,
     updateAccessRights,
-    fetchDirectoryContent,
-    fetchRootFolders,
-    fetchAppsAndUrls,
-    fetchElementsInfos,
-    elementExists,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu from './common-contextual-menu';
@@ -427,12 +422,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         activeDirectory={activeDirectory}
-                        fetchAppsAndUrls={fetchAppsAndUrls}
-                        elementExists={elementExists}
                         language={languageLocal}
-                        fetchDirectoryContent={fetchDirectoryContent}
-                        fetchRootFolders={fetchRootFolders}
-                        fetchElementsInfos={fetchElementsInfos}
                     />
                 );
             case DialogsId.ADD_NEW_CASE:

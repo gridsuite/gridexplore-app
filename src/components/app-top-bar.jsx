@@ -5,17 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { LIGHT_THEME, logout, TopBar } from '@gridsuite/commons-ui';
+import {
+    LIGHT_THEME,
+    logout,
+    TopBar,
+    fetchAppsAndUrls,
+} from '@gridsuite/commons-ui';
 import ParametersDialog, {
     useParameterState,
 } from './dialogs/parameters-dialog';
 import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    fetchAppsAndUrls,
-    fetchVersion,
-    getServersInfos,
-} from '../utils/rest-api';
+import { fetchVersion, getServersInfos } from '../utils/rest-api';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import GridExploreLogoLight from '../images/GridExplore_logo_light.svg?react';
