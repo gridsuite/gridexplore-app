@@ -308,9 +308,9 @@ export function moveElementsToDirectory(elementsUuids, targetDirectoryUuid) {
 
 export function updateElement(elementUuid, element) {
     console.info('Updating element info for ' + elementUuid);
-    const updateAccessRightUrl =
+    const updateElementUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${elementUuid}`;
-    return backendFetch(updateAccessRightUrl, {
+    return backendFetch(updateElementUrl, {
         method: 'put',
         headers: {
             Accept: 'application/json',

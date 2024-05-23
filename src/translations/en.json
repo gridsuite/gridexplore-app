@@ -72,7 +72,6 @@
   "deleteMultipleItemsDialogMessage": "All selected items will be deleted permanently.",
   "deleteDialogTitle": "Confirmation",
   "renameDirectoryDialogTitle": "Rename the folder",
-  "modifyDirectoryAccessRightsError": "You are not the owner of the directory",
   "renameDirectoryError": "You cannot rename a directory you don't own",
   "edit": "Edit",
   "createNewContingencyList": "Create a contingency list",
