@@ -28,12 +28,10 @@ import {
 import { Box } from '@mui/material';
 
 import {
-    createFilter,
     elementExists,
     fetchAppsAndUrls,
     fetchElementsInfos,
     getFilterById,
-    saveFilter,
     fetchDirectoryContent,
     fetchRootFolders,
     updateElement,
@@ -55,6 +53,7 @@ import {
     computeCheckedElements,
     formatMetadata,
 } from './utils/directory-content-utils.ts';
+import NoContentDirectory from './no-content-directory.js';
 
 const circularProgressSize = '70px';
 
@@ -91,6 +90,7 @@ const initialMousePosition = {
 };
 
 const DirectoryContent = () => {
+    const treeData = useSelector((state) => state.treeData);
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
@@ -478,6 +478,10 @@ const DirectoryContent = () => {
         isActiveElementUnchecked,
     ]);
 
+    const handleOpenDialog = useCallback(() => {
+        setOpenDialog(constants.DialogsId.ADD_ROOT_DIRECTORY);
+    }, []);
+
     const renderLoadingContent = () => {
         return (
             <Box sx={styles.circularProgressContainer}>
@@ -552,9 +556,13 @@ const DirectoryContent = () => {
             return renderLoadingContent();
         }
 
-        // If no selection or data = null (first time) render nothing
-        // TODO : Make a beautiful page here
+        // If no selection or currentChildren = null (first time) render nothing
         if (!data || !selectedDirectory) {
+            if (treeData.rootDirectories.length === 0 && treeData.initialized) {
+                return (
+                    <NoContentDirectory handleOpenDialog={handleOpenDialog} />
+                );
+            }
             return;
         }
 
@@ -636,8 +644,6 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
-                        createfilter={createFilter}
-                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
@@ -654,8 +660,6 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
-                        createfilter={createFilter}
-                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         getFilterById={getFilterById}
                         selectionForCopy={selectionForCopy}
@@ -673,8 +677,6 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
-                        createfilter={createFilter}
-                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         selectionForCopy={selectionForCopy}
                         getFilterById={getFilterById}

@@ -51,9 +51,15 @@ export interface IElementMetadata {
     };
 }
 
+export interface ITreeData {
+    rootDirectories: IElement[];
+    mapData: Record<string, any>;
+}
+
 export interface ReduxState {
     activeDirectory: UUID;
     currentChildren: IElement[];
     selectedDirectory: IElement;
+    treeData: ITreeData;
     user: IUser;
 }
