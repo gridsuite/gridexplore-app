@@ -53,7 +53,7 @@ import {
     computeCheckedElements,
     formatMetadata,
 } from './utils/directory-content-utils.ts';
-import NoContentDirectory from './no-content-directory.js';
+import NoContentDirectory from './no-content-directory';
 
 const circularProgressSize = '70px';
 
