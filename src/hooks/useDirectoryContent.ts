@@ -12,22 +12,18 @@ import { fetchElementsInfos } from '../utils/rest-api';
 import { UUID } from 'crypto';
 import { IElement, IElementMetadata, ReduxState } from '../redux/reducer.type';
 
-type useDirectoryContentReturnType = [
-    data: IElement[],
-    childrenMetadata: Record<UUID, IElementMetadata>
-];
 export const useDirectoryContent = (
     setIsMissingDataAfterDirChange: React.Dispatch<
         React.SetStateAction<boolean>
     >
-): useDirectoryContentReturnType => {
+) => {
     const currentChildren = useSelector(
         (state: ReduxState) => state.currentChildren
     );
-    const [childrenMetadata, setChildrenMetadata] = useState({});
+    const [childrenMetadata, setChildrenMetadata] = useState<Record<UUID, IElementMetadata>>({});
     const { snackError } = useSnackMessage();
 
-    const [data, setData] = useState(currentChildren);
+    const [data, setData] = useState<IElement[]>(currentChildren);
     const previousData = useRef<IElement[]>();
     previousData.current = currentChildren;
 
@@ -53,8 +49,8 @@ export const useDirectoryContent = (
             .map((e) => e.elementUuid);
         if (childrenToFetchElementsInfos.length > 0) {
             fetchElementsInfos(childrenToFetchElementsInfos)
-                .then((res) => {
-                    res.forEach((e: IElementMetadata) => {
+                .then((res: IElementMetadata[]) => {
+                    res.forEach((e) => {
                         metadata[e.elementUuid] = e;
                     });
                 })
