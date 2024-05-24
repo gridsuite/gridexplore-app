@@ -23,7 +23,7 @@ export const useDirectoryContent = (
     const [childrenMetadata, setChildrenMetadata] = useState<Record<UUID, IElementMetadata>>({});
     const { snackError } = useSnackMessage();
 
-    const [data, setData] = useState<IElement[]>(currentChildren);
+    const [rows, setRows] = useState<IElement[]>(currentChildren);
     const previousData = useRef<IElement[]>();
     previousData.current = currentChildren;
 
@@ -73,8 +73,8 @@ export const useDirectoryContent = (
     }, [handleError, currentChildren, setIsMissingDataAfterDirChange]);
 
     useEffect(() => {
-        setData(currentChildren);
+        setRows(currentChildren);
     }, [currentChildren]);
 
-    return [data, childrenMetadata];
+    return [rows, childrenMetadata];
 };

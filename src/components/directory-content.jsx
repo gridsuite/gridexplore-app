@@ -144,9 +144,10 @@ const DirectoryContent = () => {
 
     const intl = useIntl();
     const gridRef = useRef();
-    const [data, childrenMetadata] = useDirectoryContent(
+    const [rows, childrenMetadata] = useDirectoryContent(
         setIsMissingDataAfterDirChange
     );
+    const [checkedRows, setCheckedRows] = useState([]);
 
     /* Menu states */
     const [mousePosition, setMousePosition] = useState(initialMousePosition);
@@ -426,7 +427,7 @@ const DirectoryContent = () => {
             getLink,
             handleError,
             intl,
-            selectedDirectory,
+            selectedDirectory?.elementUuid,
         ]
     );
 
@@ -440,31 +441,29 @@ const DirectoryContent = () => {
         setIsMissingDataAfterDirChange(true);
     }, [selectedDirectory, setIsMissingDataAfterDirChange]);
 
-    const [checkedElement, setCheckedElement] = useState([]);
-
     const isActiveElementUnchecked = useMemo(
         () =>
             activeElement &&
-            !checkedElement.find(
+            !checkedRows.find(
                 (children) => children.elementUuid === activeElement.elementUuid
             ),
-        [activeElement, checkedElement]
+        [activeElement, checkedRows]
     );
 
     const handleRowSelected = useCallback(() => {
-        setCheckedElement(computeCheckedElements(gridRef, childrenMetadata));
+        setCheckedRows(computeCheckedElements(gridRef, childrenMetadata));
     }, [childrenMetadata]);
 
     //It includes checked rows and the row with its context menu open
     const fullSelection = useMemo(() => {
-        const selection = [...checkedElement];
+        const selection = [...checkedRows];
         if (isActiveElementUnchecked) {
             selection.push(formatMetadata(activeElement, childrenMetadata));
         }
         return selection;
     }, [
         activeElement,
-        checkedElement,
+        checkedRows,
         childrenMetadata,
         isActiveElementUnchecked,
     ]);
@@ -520,10 +519,10 @@ const DirectoryContent = () => {
     const renderTableContent = () => {
         return (
             <>
-                <ContentToolbar selectedElements={checkedElement} />
+                <ContentToolbar selectedElements={checkedRows} />
                 <CustomAGGrid
                     ref={gridRef}
-                    rowData={data}
+                    rowData={rows}
                     getRowId={getRowId}
                     defaultColDef={defaultColumnDefinition}
                     rowSelection="multiple"
@@ -548,7 +547,7 @@ const DirectoryContent = () => {
         }
 
         // If no selection or currentChildren = null (first time) render nothing
-        if (!data || !selectedDirectory) {
+        if (!rows || !selectedDirectory) {
             if (treeData.rootDirectories.length === 0 && treeData.initialized) {
                 return (
                     <NoContentDirectory handleOpenDialog={handleOpenDialog} />
@@ -558,7 +557,7 @@ const DirectoryContent = () => {
         }
 
         // If empty dir then render an appropriate content
-        if (data.length === 0) {
+        if (rows.length === 0) {
             return renderEmptyDirContent();
         }
 
