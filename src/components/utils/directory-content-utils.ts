@@ -19,7 +19,7 @@ import { AgGridReact } from 'ag-grid-react';
 import React from 'react';
 
 export const formatMetadata = (
-    data: any,
+    data: IElementMetadata,
     childrenMetadata: Record<UUID, IElementMetadata>
 ) => ({
     ...data,
@@ -34,7 +34,7 @@ export const computeCheckedElements = (
     return (
         gridRef.current?.api
             ?.getSelectedRows()
-            .map((row) => formatMetadata(row, childrenMetadata)) ?? []
+            .map((row: IElementMetadata) => formatMetadata(row, childrenMetadata)) ?? []
     );
 };
 

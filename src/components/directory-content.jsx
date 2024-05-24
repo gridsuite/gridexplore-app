@@ -63,15 +63,6 @@ const styles = {
         textDecoration: 'none',
     }),
     grid: { height: 500, width: '100%' },
-    overflow: {
-        whiteSpace: 'pre',
-        textOverflow: 'ellipsis',
-        overflow: 'hidden',
-    },
-    checkboxes: {
-        width: '100%',
-        justifyContent: 'center',
-    },
     circularProgressContainer: {
         overflow: 'hidden',
         display: 'flex',
