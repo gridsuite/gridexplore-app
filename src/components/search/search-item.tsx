@@ -53,7 +53,8 @@ export const HighlightedText: FunctionComponent<HighlightedTextProps> = ({
     text,
     highlight,
 }) => {
-    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+    const escapedHighlight = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const parts = text.split(new RegExp(`(${escapedHighlight})`, 'gi'));
     return (
         <span>
             {parts.map((part, i) =>
