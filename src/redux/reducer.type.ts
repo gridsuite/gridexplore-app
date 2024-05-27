@@ -33,7 +33,7 @@ export interface IElement {
     owner: string;
     subdirectoriesCount: number;
     creationDate: string;
-    f: string;
+    lastModificationDate: string;
     lastModifiedBy: string;
     children: any[];
     parentUuid: null | UUID;
