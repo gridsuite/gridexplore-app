@@ -63,7 +63,7 @@ const initialState = {
     selectedFile: null,
     uploadingElements: {},
     directoryUpdated: { force: 0, eventData: {} },
-    treeData: { mapData: {}, rootDirectories: [], initialized: false },
+    treeData: { mapData: {}, rootDirectories: [] },
     selectionForCopy: {
         sourceItemUuid: null,
         typeItem: null,

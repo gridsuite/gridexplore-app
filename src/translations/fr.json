@@ -17,7 +17,6 @@
   "private": "privé",
   "public": "public",
   "emptyDir": "Dossier vide",
-  "createFirstDir": "Créer votre premier dossier",
   "ID": "ID",
   "createNewStudy": "Créer une étude",
   "studyCreationError": "Erreur lors de la création de l'étude: {studyName}",

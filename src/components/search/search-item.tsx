@@ -5,11 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { getFileIcon } from '@gridsuite/commons-ui';
+import { Theme } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import { FunctionComponent } from 'react';
-import { Theme } from '@mui/material';
+import { HighlightedText } from './highlighted-text';
+import { FC } from 'react';
+import { ElementInfos } from './search.type';
+
+interface SearchItemProps {
+    matchingElement: ElementInfos;
+    inputValue: string;
+    [x: string]: any;
+}
 
 const styles = {
     icon: (theme: Theme) => ({
@@ -31,68 +39,27 @@ const styles = {
     }),
 };
 
-interface HighlightedTextProps {
-    text: string;
-    highlight: string;
-}
-
-interface SearchItemProps {
-    matchingElement: matchingElementProps;
-    inputValue: string;
-}
-
-interface matchingElementProps {
-    id: string;
-    name: string;
-    type: string;
-    pathName: string[];
-    pathUuid: string[];
-}
-
-export const HighlightedText: FunctionComponent<HighlightedTextProps> = ({
-    text,
-    highlight,
-}) => {
-    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
-    return (
-        <span>
-            {parts.map((part, i) =>
-                part.toLowerCase() === highlight.toLowerCase() ? (
-                    <span key={i} style={{ fontWeight: 'bold' }}>
-                        {part}
-                    </span>
-                ) : (
-                    part
-                )
-            )}
-        </span>
-    );
-};
-
-export const SearchItem: FunctionComponent<SearchItemProps> = ({
-    matchingElement,
-    inputValue,
-    ...othersProps
-}) => {
+const SearchItem: FC<SearchItemProps> = (props) => {
+    const { matchingElement, inputValue, ...othersProps } = props;
     return (
         <li {...othersProps}>
-            <>
-                <span>{getFileIcon(matchingElement.type, styles.icon)}</span>
-                <Grid container>
-                    <Grid item xs={11} sx={styles.grid}>
-                        <HighlightedText
-                            text={matchingElement.name}
-                            highlight={inputValue}
-                        />
-                    </Grid>
-                    <Grid item sx={styles.grid2}>
-                        <Typography>
-                            <FormattedMessage id="path" />
-                            {matchingElement.pathName?.join(' / ')}
-                        </Typography>
-                    </Grid>
+            <span>{getFileIcon(matchingElement.type, styles.icon)}</span>
+            <Grid container>
+                <Grid item xs={11} sx={styles.grid}>
+                    <HighlightedText
+                        text={matchingElement.name}
+                        highlight={inputValue}
+                    />
                 </Grid>
-            </>
+                <Grid item sx={styles.grid2}>
+                    <Typography>
+                        <FormattedMessage id="path" />
+                        {matchingElement.pathName?.join(' / ')}
+                    </Typography>
+                </Grid>
+            </Grid>
         </li>
     );
 };
+
+export default SearchItem;

@@ -32,10 +32,12 @@ import {
 import { Box, useTheme } from '@mui/material';
 
 import {
+    createFilter,
     elementExists,
     fetchAppsAndUrls,
     fetchElementsInfos,
     getFilterById,
+    saveFilter,
     fetchDirectoryContent,
     fetchRootFolders,
     updateElement,
@@ -47,7 +49,6 @@ import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu'
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
-import NoContentDirectory from './no-content-directory';
 import { useParameterState } from './dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../utils/config-params';
 import Grid from '@mui/material/Grid';
@@ -95,7 +96,6 @@ const initialMousePosition = {
 };
 
 const DirectoryContent = () => {
-    const treeData = useSelector((state) => state.treeData);
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
     const theme = useTheme();
@@ -485,25 +485,6 @@ const DirectoryContent = () => {
         isActiveElementUnchecked,
     ]);
 
-    const rows = useMemo(
-        () =>
-            currentChildren?.map((child) => ({
-                ...child,
-                type:
-                    childrenMetadata[child.elementUuid] &&
-                    getElementTypeTranslation(
-                        child.type,
-                        childrenMetadata[child.elementUuid].subtype,
-                        childrenMetadata[child.elementUuid].format
-                    ),
-                notClickable: child.type === ElementType.CASE,
-            })),
-        [childrenMetadata, currentChildren, getElementTypeTranslation]
-    );
-    const handleOpenDialog = useCallback(() => {
-        setOpenDialog(constants.DialogsId.ADD_ROOT_DIRECTORY);
-    }, []);
-
     const renderLoadingContent = () => {
         return (
             <Box sx={styles.circularProgressContainer}>
@@ -598,13 +579,9 @@ const DirectoryContent = () => {
             return renderLoadingContent();
         }
 
-        // If no selection or currentChildren = null (first time) render nothing
-        if (!currentChildren || !selectedDirectory) {
-            if (treeData.rootDirectories.length === 0 && treeData.initialized) {
-                return (
-                    <NoContentDirectory handleOpenDialog={handleOpenDialog} />
-                );
-            }
+        // If no selection or data = null (first time) render nothing
+        // TODO : Make a beautiful page here
+        if (!data || !selectedDirectory) {
             return;
         }
 
@@ -686,6 +663,8 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
+                        createfilter={createFilter}
+                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
@@ -702,6 +681,8 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
+                        createfilter={createFilter}
+                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         getFilterById={getFilterById}
                         selectionForCopy={selectionForCopy}
@@ -719,6 +700,8 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
+                        createfilter={createFilter}
+                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         selectionForCopy={selectionForCopy}
                         getFilterById={getFilterById}

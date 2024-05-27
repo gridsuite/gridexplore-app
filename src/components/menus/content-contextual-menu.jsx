@@ -28,6 +28,7 @@ import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialo
 import { DialogsId } from '../../utils/UIconstants';
 
 import {
+    createFilter,
     deleteElements,
     duplicateElement,
     elementExists,
@@ -38,10 +39,7 @@ import {
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
-    fetchDirectoryContent,
-    fetchRootFolders,
-    fetchElementsInfos,
-    fetchPath,
+    saveFilter,
 } from '../../utils/rest-api';
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
@@ -780,13 +778,11 @@ const ContentContextualMenu = (props) => {
                                 activeElement.specificMetadata.equipmentType,
                         }}
                         activeDirectory={activeDirectory}
+                        createfilter={createFilter}
+                        saveFilter={saveFilter}
                         fetchAppsAndUrls={fetchAppsAndUrls}
                         elementExists={elementExists}
                         language={languageLocal}
-                        fetchDirectoryContent={fetchDirectoryContent}
-                        fetchRootFolders={fetchRootFolders}
-                        fetchElementsInfos={fetchElementsInfos}
-                        fetchPath={fetchPath}
                     />
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:

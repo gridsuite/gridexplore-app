@@ -28,8 +28,6 @@ import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
-import { useParameterState } from '../../../parameters-dialog';
-import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -48,7 +46,6 @@ const CriteriaBasedEditionDialog = ({
     name,
     broadcastChannel,
 }) => {
-    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
@@ -133,7 +130,6 @@ const CriteriaBasedEditionDialog = ({
             removeOptional={true}
             disabledSave={!!nameError || isValidating}
             isDataFetching={isFetching}
-            language={languageLocal}
         >
             {!isFetching && <CriteriaBasedEditionForm />}
         </CustomMuiDialog>

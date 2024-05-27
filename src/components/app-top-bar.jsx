@@ -22,7 +22,7 @@ import GridExploreLogoLight from '../images/GridExplore_logo_light.svg?react';
 import GridExploreLogoDark from '../images/GridExplore_logo_dark.svg?react';
 import { setAppsAndUrls } from '../redux/actions';
 import AppPackage from '../../package.json';
-import { SearchBar } from './search/search-bar';
+import SearchBar from './search/search-bar';
 
 const AppTopBar = ({ user, userManager }) => {
     const navigate = useNavigate();

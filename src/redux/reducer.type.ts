@@ -52,8 +52,8 @@ export interface IElementMetadata {
 }
 
 export interface ITreeData {
-    rootDirectories: IDirectory[];
-    mapData: Record<string, IDirectory[]>;
+    rootDirectories: IElement[];
+    mapData: Record<string, IElement>;
 }
 
 export interface ReduxState {
