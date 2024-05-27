@@ -11,11 +11,11 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 import {
-    ElementType,
-    fetchEnv,
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
+  ElementType,
+  fetchEnv,
+  backendFetch,
+  backendFetchJson,
+  backendFetchText, getRequestParamFromList
 } from '@gridsuite/commons-ui';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
@@ -41,12 +41,6 @@ function getToken() {
     const state = store.getState();
     return state.user.id_token;
 }
-
-export const getRequestParamFromList = (params, paramName) => {
-    return new URLSearchParams(
-        params?.length ? params.map((param) => [paramName, param]) : []
-    );
-};
 
 export function connectNotificationsWsUpdateConfig() {
     const webSocketBaseUrl = document.baseURI

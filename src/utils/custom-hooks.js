@@ -6,13 +6,7 @@
  */
 
 import { useEffect, useCallback, useReducer, useState } from 'react';
-
-export const FetchStatus = {
-    IDLE: 'IDLE',
-    FETCHING: 'FETCHING',
-    FETCH_SUCCESS: 'FETCH_SUCCESS',
-    FETCH_ERROR: 'FETCH_ERROR',
-};
+import { FetchStatus } from '@gridsuite/commons-ui';
 
 export const ActionType = {
     START: 'START',
