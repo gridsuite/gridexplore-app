@@ -4,7 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+    Fragment,
+    FunctionComponent,
+    Ref,
+    SyntheticEvent,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import {
     fetchDirectoryContent,
@@ -93,7 +102,7 @@ export const SearchBar = () => {
     const renderOptionItem = useCallback(
         (props: React.HTMLAttributes<HTMLLIElement>, option: ElementInfos) => {
             const matchingElement = elementsFound.find(
-                (element) => element.id === option.id
+                (element: matchingElementProps) => element.id === option.id
             );
             return (
                 matchingElement && (
@@ -131,7 +140,8 @@ export const SearchBar = () => {
             const selectedDirectory =
                 treeDataRef.current?.mapData[elementUuidPath];
 
-            dispatch(setSelectedDirectory(selectedDirectory));
+                dispatch(setSelectedDirectory(selectedDirectory));
+            }
         },
         [dispatch]
     );
@@ -147,8 +157,7 @@ export const SearchBar = () => {
             );
             if (matchingElement !== undefined) {
                 const elementUuidPath = matchingElement?.pathUuid.reverse();
-
-                const promises = elementUuidPath.map((e) => {
+                const promises = elementUuidPath.map((e: string) => {
                     return fetchDirectoryContent(e)
                         .then((res) => {
                             updateMapData(e, res);
@@ -218,5 +227,3 @@ export const SearchBar = () => {
         />
     );
 };
-
-export default SearchBar;
