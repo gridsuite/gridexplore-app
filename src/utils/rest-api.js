@@ -10,7 +10,13 @@ import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
-import { ElementType } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    fetchEnv,
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+} from '@gridsuite/commons-ui';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/user-admin';
@@ -63,78 +69,6 @@ export function connectNotificationsWsUpdateConfig() {
     return reconnectingWebSocket;
 }
 
-function parseError(text) {
-    try {
-        return JSON.parse(text);
-    } catch (err) {
-        return null;
-    }
-}
-
-function handleError(response) {
-    return response.text().then((text) => {
-        const errorName = 'HttpResponseError : ';
-        let error;
-        const errorJson = parseError(text);
-        if (
-            errorJson &&
-            errorJson.status &&
-            errorJson.error &&
-            errorJson.message
-        ) {
-            error = new Error(
-                errorName +
-                    errorJson.status +
-                    ' ' +
-                    errorJson.error +
-                    ', message : ' +
-                    errorJson.message
-            );
-            error.status = errorJson.status;
-        } else {
-            error = new Error(
-                errorName + response.status + ' ' + response.statusText
-            );
-            error.status = response.status;
-        }
-        throw error;
-    });
-}
-
-function prepareRequest(init, token) {
-    if (!(typeof init == 'undefined' || typeof init == 'object')) {
-        throw new TypeError(
-            'Argument 2 of backendFetch is not an object' + typeof init
-        );
-    }
-    const initCopy = Object.assign({}, init);
-    initCopy.headers = new Headers(initCopy.headers || {});
-    const tokenCopy = token ? token : getToken();
-    initCopy.headers.append('Authorization', 'Bearer ' + tokenCopy);
-    return initCopy;
-}
-
-function safeFetch(url, initCopy) {
-    return fetch(url, initCopy).then((response) =>
-        response.ok ? response : handleError(response)
-    );
-}
-
-export function backendFetch(url, init, token) {
-    const initCopy = prepareRequest(init, token);
-    return safeFetch(url, initCopy);
-}
-
-export function backendFetchText(url, init, token) {
-    const initCopy = prepareRequest(init, token);
-    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.text());
-}
-
-export function backendFetchJson(url, init, token) {
-    const initCopy = prepareRequest(init, token);
-    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.json());
-}
-
 const getContingencyUriParamType = (contingencyListType) => {
     switch (contingencyListType) {
         case ContingencyListType.SCRIPT.id:
@@ -181,10 +115,6 @@ export function fetchValidateUser(user) {
                 throw error;
             }
         });
-}
-
-function fetchEnv() {
-    return fetch('env.json').then((res) => res.json());
 }
 
 export function fetchAuthorizationCodeFlowFeatureFlag() {

@@ -9,7 +9,7 @@ import {
     LIGHT_THEME,
     logout,
     TopBar,
-    fetchAppsAndUrls,
+    fetchAppsMetadata,
 } from '@gridsuite/commons-ui';
 import ParametersDialog, {
     useParameterState,
@@ -45,7 +45,7 @@ const AppTopBar = ({ user, userManager }) => {
 
     useEffect(() => {
         if (user !== null) {
-            fetchAppsAndUrls().then((res) => {
+            fetchAppsMetadata().then((res) => {
                 dispatch(setAppsAndUrls(res));
             });
         }
