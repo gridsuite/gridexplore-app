@@ -39,6 +39,7 @@ import {
     USER_VALIDATION_ERROR,
     RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
+    ElementType,
 } from '@gridsuite/commons-ui';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 
@@ -160,7 +161,26 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(TREE_DATA, (state, action) => {
-        state.treeData = action.treeData;
+        // filtering non DIRECTORY elements from action.treeData
+        // used to prevent non DIRECTORY elements from appearing in left menu
+        const filteredTreeDataRootDirectories =
+            action.treeData.rootDirectories.filter(
+                (element) => element.type === ElementType.DIRECTORY
+            );
+
+        // action.treeData.mapData is an object looking like this : {<elementId1>: <element1>, <elementId2>: <element2>}
+        // Object.entries changes it to an array looking like [[elementId1, element1], [elementId2, element2]], in order to make it easier to filter
+        // Object.fromEntries will turn [[elementId1, element1], [elementId2, element2]] back to {<elementId1>: <element1>, <elementId2>: <element2>} which is the initial form
+        const filteredTreeDataMapData = Object.fromEntries(
+            Object.entries(action.treeData.mapData).filter(
+                ([elementId, element]) => element.type === ElementType.DIRECTORY
+            )
+        );
+        state.treeData = {
+            ...action.treeData,
+            rootDirectories: filteredTreeDataRootDirectories,
+            mapData: filteredTreeDataMapData,
+        };
     });
 
     builder.addCase(SELECTION_FOR_COPY, (state, action) => {
