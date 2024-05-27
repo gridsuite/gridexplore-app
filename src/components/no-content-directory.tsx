@@ -15,7 +15,7 @@ const CIRCLE_SIZE = 200;
 
 const stylesIcon = {
     circle: (theme: any) => ({
-        backgroundColor: theme.row.primary,
+        backgroundColor: theme.palette.action.disabled,
     }),
 };
 
@@ -34,7 +34,7 @@ const NoContentDirectory: React.FC<NoContentDirectoryProps> = ({
             marginTop: theme.spacing(20),
         }),
         noContentText: (theme: any) => ({
-            color: theme.row.primary,
+            color: theme.palette.text.disabled,
             textAlign: 'center',
             marginTop: theme.spacing(1),
         }),
