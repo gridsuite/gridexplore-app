@@ -11,11 +11,12 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 import {
-  ElementType,
-  fetchEnv,
-  backendFetch,
-  backendFetchJson,
-  backendFetchText, getRequestParamFromList
+    ElementType,
+    fetchEnv,
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+    getRequestParamFromList,
 } from '@gridsuite/commons-ui';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
