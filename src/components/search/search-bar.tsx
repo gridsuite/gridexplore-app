@@ -20,6 +20,7 @@ import {
     useDebounce,
     useSnackMessage,
     fetchDirectoryContent,
+    ElementAttributes,
 } from '@gridsuite/commons-ui';
 import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,7 +28,7 @@ import { setSelectedDirectory, setTreeData } from '../../redux/actions';
 import { updatedTree } from '../tree-views-container';
 import { useIntl } from 'react-intl';
 import { SearchItem } from './search-item';
-import { IDirectory, ITreeData, ReduxState } from '../../redux/reducer.type';
+import { ITreeData, ReduxState } from '../../redux/reducer.type';
 import { UUID } from 'crypto';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
@@ -114,7 +115,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     );
 
     const updateMapData = useCallback(
-        (nodeId: string, children: IDirectory) => {
+        (nodeId: string, children: ElementAttributes[]) => {
             if (!treeDataRef.current) {
                 return;
             }

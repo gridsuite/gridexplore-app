@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { UUID } from 'crypto';
+import { ElementAttributes } from '@gridsuite/commons-ui';
 
 type UserProfile = {
     sub: string;
@@ -22,30 +23,14 @@ interface IUser {
     expires_at: number;
 }
 
-export interface IDirectory {
-    elementUuid: UUID;
-    elementName: string;
-    type: 'DIRECTORY';
-    accessRights: {
-        isPrivate: boolean;
-    };
-    owner: string;
-    subdirectoriesCount: number;
-    creationDate: string;
-    lastModificationDate: string;
-    lastModifiedBy: string;
-    children: any[];
-    parentUuid: null | UUID;
-}
-
 export interface ITreeData {
-    rootDirectories: IDirectory[];
+    rootDirectories: ElementAttributes[];
     mapData: Record<string, any>;
 }
 
 export interface ReduxState {
     activeDirectory: UUID;
-    selectedDirectory: IDirectory;
+    selectedDirectory: ElementAttributes;
     treeData: ITreeData;
     user: IUser;
 }
