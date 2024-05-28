@@ -74,6 +74,12 @@ const initialState = {
     ...paramsInitialState,
 };
 
+const filterFromObject = (objectToFilter, filterMethod) => {
+    return Object.fromEntries(
+        Object.entries(objectToFilter).filter(filterMethod)
+    );
+};
+
 export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SELECT_THEME, (state, action) => {
         state.theme = action.theme;
@@ -161,6 +167,9 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(TREE_DATA, (state, action) => {
+        //TODO: remove those filters below when this file has been migrated to Typescript
+        // it's only here to prevent regressions due to javascript not checking types
+
         // filtering non DIRECTORY elements from action.treeData
         // used to prevent non DIRECTORY elements from appearing in left menu
         const filteredTreeDataRootDirectories =
@@ -171,11 +180,11 @@ export const reducer = createReducer(initialState, (builder) => {
         // action.treeData.mapData is an object looking like this : {<elementId1>: <element1>, <elementId2>: <element2>}
         // Object.entries changes it to an array looking like [[elementId1, element1], [elementId2, element2]], in order to make it easier to filter
         // Object.fromEntries will turn [[elementId1, element1], [elementId2, element2]] back to {<elementId1>: <element1>, <elementId2>: <element2>} which is the initial form
-        const filteredTreeDataMapData = Object.fromEntries(
-            Object.entries(action.treeData.mapData).filter(
-                ([elementId, element]) => element.type === ElementType.DIRECTORY
-            )
+        const filteredTreeDataMapData = filterFromObject(
+            action.treeData.mapData,
+            ([elementId, element]) => element.type === ElementType.DIRECTORY
         );
+
         state.treeData = {
             ...action.treeData,
             rootDirectories: filteredTreeDataRootDirectories,
