@@ -17,6 +17,7 @@ import {
     backendFetchJson,
     backendFetchText,
     getRequestParamFromList,
+    getUserToken,
 } from '@gridsuite/commons-ui';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
@@ -38,11 +39,6 @@ const PREFIX_FILTERS_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/filter/v1/filters';
 const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
-function getToken() {
-    const state = store.getState();
-    return state.user.id_token;
-}
-
 export function connectNotificationsWsUpdateConfig() {
     const webSocketBaseUrl = document.baseURI
         .replace(/^http:\/\//, 'ws://')
@@ -54,7 +50,7 @@ export function connectNotificationsWsUpdateConfig() {
         APP_NAME;
 
     const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => webSocketUrl + '&access_token=' + getToken()
+        () => webSocketUrl + '&access_token=' + getUserToken()
     );
     reconnectingWebSocket.onopen = function () {
         console.info(
@@ -636,7 +632,7 @@ export function connectNotificationsWsUpdateDirectories() {
         '/notify?updateType=directories';
 
     const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => webSocketUrl + '&access_token=' + getToken()
+        () => webSocketUrl + '&access_token=' + getUserToken()
     );
     reconnectingWebSocket.onopen = function () {
         console.info(
