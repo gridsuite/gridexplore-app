@@ -30,6 +30,7 @@ import { DialogsId } from '../../utils/UIconstants';
 import {
     deleteElements,
     duplicateElement,
+    elementExists,
     moveElementsToDirectory,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,
@@ -774,6 +775,7 @@ const ContentContextualMenu = (props) => {
                                 activeElement.specificMetadata.equipmentType,
                         }}
                         activeDirectory={activeDirectory}
+                        elementExists={elementExists}
                         language={languageLocal}
                     />
                 );

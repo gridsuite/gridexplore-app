@@ -34,7 +34,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { Box, Checkbox } from '@mui/material';
 
-import { getFilterById, updateElement } from '../utils/rest-api';
+import { elementExists, getFilterById, updateElement } from '../utils/rest-api';
 
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
@@ -1054,6 +1054,7 @@ const DirectoryContent = () => {
                         broadcastChannel={broadcastChannel}
                         getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
+                        elementExists={elementExists}
                         language={languageLocal}
                     />
                 );
@@ -1069,6 +1070,7 @@ const DirectoryContent = () => {
                         getFilterById={getFilterById}
                         selectionForCopy={selectionForCopy}
                         activeDirectory={activeDirectory}
+                        elementExists={elementExists}
                         language={languageLocal}
                     />
                 );
@@ -1084,6 +1086,7 @@ const DirectoryContent = () => {
                         selectionForCopy={selectionForCopy}
                         getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
+                        elementExists={elementExists}
                         language={languageLocal}
                     />
                 );

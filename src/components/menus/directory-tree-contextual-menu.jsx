@@ -32,6 +32,7 @@ import {
     insertRootDirectory,
     renameElement,
     updateAccessRights,
+    elementExists,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu from './common-contextual-menu';
@@ -422,6 +423,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         activeDirectory={activeDirectory}
+                        elementExists={elementExists}
                         language={languageLocal}
                     />
                 );

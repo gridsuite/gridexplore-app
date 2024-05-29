@@ -12,6 +12,7 @@ import {
     ElementType,
     FieldConstants,
 } from '@gridsuite/commons-ui';
+import { elementExists } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
 
@@ -79,6 +80,7 @@ const PrefilledNameInput: FunctionComponent<PrefilledNameInputProps> = ({
             name={name}
             label={label}
             elementType={elementType}
+            elementExists={elementExists}
             activeDirectory={activeDirectory}
             autoFocus={!caseFile}
             onManualChangeCallback={() => setModifiedByUser(true)}
