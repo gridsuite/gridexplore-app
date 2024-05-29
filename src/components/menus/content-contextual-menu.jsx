@@ -268,6 +268,7 @@ const ContentContextualMenu = (props) => {
         onClose();
         setOpenDialog(DialogsId.NONE);
         setHideMenu(false);
+        setDeleteError('');
     }, [onClose, setOpenDialog]);
 
     const handleCloseExportDialog = useCallback(() => {
@@ -278,12 +279,14 @@ const ContentContextualMenu = (props) => {
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(
         (elementsUuids) => {
+            setDeleteError('');
             deleteElements(elementsUuids, selectedDirectory.elementUuid)
+                .then(() => handleCloseDialog())
+                //show the error message and don't close the dialog
                 .catch((error) => {
                     setDeleteError(error.message);
                     handleLastError(error.message);
-                })
-                .finally(() => handleCloseDialog());
+                });
         },
         [selectedDirectory?.elementUuid, handleCloseDialog, handleLastError]
     );

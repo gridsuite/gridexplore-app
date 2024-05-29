@@ -278,32 +278,11 @@ export function moveElementsToDirectory(elementsUuids, targetDirectoryUuid) {
     });
 }
 
-export function updateAccessRights(elementUuid, isPrivate) {
-    console.info(
-        'Updating access rights for ' +
-            elementUuid +
-            ' to isPrivate = ' +
-            isPrivate
-    );
-    const updateAccessRightUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${elementUuid}`;
-    return backendFetch(updateAccessRightUrl, {
-        method: 'put',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            accessRights: { isPrivate: isPrivate },
-        }),
-    });
-}
-
 export function updateElement(elementUuid, element) {
     console.info('Updating element info for ' + elementUuid);
-    const updateAccessRightUrl =
+    const updateElementUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${elementUuid}`;
-    return backendFetch(updateAccessRightUrl, {
+    return backendFetch(updateElementUrl, {
         method: 'put',
         headers: {
             Accept: 'application/json',
@@ -313,7 +292,7 @@ export function updateElement(elementUuid, element) {
     });
 }
 
-export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
+export function insertDirectory(directoryName, parentUuid, owner) {
     console.info("Inserting a new folder '%s'", directoryName);
     const insertDirectoryUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
@@ -328,13 +307,12 @@ export function insertDirectory(directoryName, parentUuid, isPrivate, owner) {
             elementUuid: null,
             elementName: directoryName,
             type: 'DIRECTORY',
-            accessRights: { isPrivate: isPrivate },
             owner: owner,
         }),
     });
 }
 
-export function insertRootDirectory(directoryName, isPrivate, owner) {
+export function insertRootDirectory(directoryName, owner) {
     console.info("Inserting a new root folder '%s'", directoryName);
     const insertRootDirectoryUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
@@ -346,7 +324,6 @@ export function insertRootDirectory(directoryName, isPrivate, owner) {
         },
         body: JSON.stringify({
             elementName: directoryName,
-            accessRights: { isPrivate: isPrivate },
             owner: owner,
         }),
     });

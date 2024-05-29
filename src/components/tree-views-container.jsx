@@ -94,16 +94,6 @@ function mapFromRoots(roots) {
     );
 }
 
-function sameRights(a, b) {
-    if (!a && !b) {
-        return true;
-    }
-    if (!a || !b) {
-        return false;
-    }
-    return a.isPrivate === b.isPrivate;
-}
-
 /**
  * Make an updated tree [root_nodes, id_to_node] from previous tree and new {id, children}
  * @param prevRoots previous [root nodes]
@@ -120,7 +110,6 @@ function updatedTree(prevRoots, prevMap, nodeId, children) {
                 return { ...n, children: [], parentUuid: nodeId };
             } else if (
                 n.elementName === pn.elementName &&
-                sameRights(n.accessRights, pn.accessRights) &&
                 n.subdirectoriesCount === pn.subdirectoriesCount &&
                 nodeId === pn.parentUuid
             ) {
@@ -132,7 +121,6 @@ function updatedTree(prevRoots, prevMap, nodeId, children) {
                 return {
                     ...pn,
                     elementName: n.elementName,
-                    accessRights: n.accessRights,
                     subdirectoriesCount: n.subdirectoriesCount,
                     parentUuid: nodeId,
                 };

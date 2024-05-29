@@ -13,14 +13,12 @@ import { useIntl } from 'react-intl';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
-import BuildIcon from '@mui/icons-material/Build';
 import AddIcon from '@mui/icons-material/Add';
 import CreateIcon from '@mui/icons-material/Create';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
 import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
-import AccessRightsDialog from '../dialogs/access-rights-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 
 import { DialogsId } from '../../utils/UIconstants';
@@ -31,7 +29,6 @@ import {
     insertDirectory,
     insertRootDirectory,
     renameElement,
-    updateAccessRights,
     elementExists,
 } from '../../utils/rest-api';
 
@@ -70,6 +67,7 @@ const DirectoryTreeContextualMenu = (props) => {
             onClose(e, nextSelectedDirectoryId);
             setOpenDialog(DialogsId.NONE);
             setHideMenu(false);
+            setDeleteError('');
         },
         [onClose, setOpenDialog]
     );
@@ -96,19 +94,6 @@ const DirectoryTreeContextualMenu = (props) => {
         (response) => handleCloseDialog(null, response?.elementUuid)
     );
 
-    const [updateAccessRightsCB, updateAccessRightsState] = useDeferredFetch(
-        updateAccessRights,
-        () => handleCloseDialog(null, null),
-        (HTTPStatusCode) => {
-            if (HTTPStatusCode === 403) {
-                return intl.formatMessage({
-                    id: 'modifyDirectoryAccessRightsError',
-                });
-            }
-        },
-        undefined,
-        false
-    );
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
 
     const handleError = useCallback(
@@ -197,12 +182,14 @@ const DirectoryTreeContextualMenu = (props) => {
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElement = useCallback(
         (elementsUuid) => {
+            setDeleteError('');
             deleteElement(elementsUuid)
+                .then(() => handleCloseDialog(null, directory?.parentUuid))
                 .catch((error) => {
+                    //show the error message and don't close the dialog
                     setDeleteError(error.message);
                     handleError(error.message);
-                })
-                .finally(() => handleCloseDialog(null, directory?.parentUuid));
+                });
         },
         [handleCloseDialog, directory?.parentUuid, handleError]
     );
@@ -264,13 +251,6 @@ const DirectoryTreeContextualMenu = (props) => {
                         icon: <CreateIcon fontSize="small" />,
                     },
                     {
-                        messageDescriptorId: 'accessRights',
-                        callback: () => {
-                            handleOpenDialog(DialogsId.ACCESS_RIGHTS);
-                        },
-                        icon: <BuildIcon fontSize="small" />,
-                    },
-                    {
                         messageDescriptorId: 'deleteFolder',
                         callback: () => {
                             handleOpenDialog(DialogsId.DELETE_DIRECTORY);
@@ -329,11 +309,10 @@ const DirectoryTreeContextualMenu = (props) => {
                 return (
                     <CreateDirectoryDialog
                         open={true}
-                        onClick={(elementName, isPrivate) =>
+                        onClick={(elementName) =>
                             insertDirectoryCB(
                                 elementName,
                                 directory?.elementUuid,
-                                isPrivate,
                                 userId
                             )
                         }
@@ -349,12 +328,8 @@ const DirectoryTreeContextualMenu = (props) => {
                 return (
                     <CreateDirectoryDialog
                         open={true}
-                        onClick={(elementName, isPrivate) =>
-                            insertRootDirectoryCB(
-                                elementName,
-                                isPrivate,
-                                userId
-                            )
+                        onClick={(elementName) =>
+                            insertRootDirectoryCB(elementName, userId)
                         }
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
@@ -397,24 +372,6 @@ const DirectoryTreeContextualMenu = (props) => {
                         }
                         onClose={handleCloseDialog}
                         error={deleteError}
-                    />
-                );
-            case DialogsId.ACCESS_RIGHTS:
-                return (
-                    <AccessRightsDialog
-                        isPrivate={directory?.accessRights?.isPrivate}
-                        open={true}
-                        onClick={(isPrivate) =>
-                            updateAccessRightsCB(
-                                directory?.elementUuid,
-                                isPrivate
-                            )
-                        }
-                        onClose={handleCloseDialog}
-                        title={intl.formatMessage({
-                            id: 'accessRights',
-                        })}
-                        error={updateAccessRightsState.errorMessage}
                     />
                 );
             case DialogsId.ADD_NEW_FILTER:
