@@ -50,6 +50,7 @@ const ContentToolbar = (props) => {
 
     const handleCloseDialog = useCallback(() => {
         setOpenDialog(DialogsId.NONE);
+        setDeleteError('');
     }, []);
 
     const handleCloseExportDialog = useCallback(() => {
@@ -131,12 +132,14 @@ const ContentToolbar = (props) => {
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(
         (elementsUuids) => {
+            setDeleteError('');
             deleteElements(elementsUuids, selectedDirectory.elementUuid)
+                .then(handleCloseDialog)
                 .catch((error) => {
+                    //show the error message and don't close the dialog
                     setDeleteError(error.message);
                     handleLastError(error.message);
-                })
-                .finally(handleCloseDialog);
+                });
         },
         [selectedDirectory.elementUuid, handleCloseDialog, handleLastError]
     );

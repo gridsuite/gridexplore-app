@@ -26,9 +26,6 @@ export interface IDirectory {
     elementUuid: UUID;
     elementName: string;
     type: 'DIRECTORY';
-    accessRights: {
-        isPrivate: boolean;
-    };
     owner: string;
     subdirectoriesCount: number;
     creationDate: string;
