@@ -5,19 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    DateCellRenderer,
-    DescriptionCellRenderer,
-    NameCellRenderer,
-    TypeCellRenderer,
-    UserCellRenderer,
-} from '../../utils/directory-content-renderers';
 import { IntlShape } from 'react-intl';
 import { UUID } from 'crypto';
 import { IElementMetadata } from '../../redux/reducer.type';
 import { AgGridReact } from 'ag-grid-react';
 import React from 'react';
 import { ColDef } from 'ag-grid-community';
+import { NameCellRenderer } from './renderers/NameCellRenderer';
+import { DescriptionCellRenderer } from './renderers/DescriptionCellRenderer';
+import { TypeCellRenderer } from './renderers/TypeCellRenderer';
+import { UserCellRenderer } from './renderers/UserCellRenderer';
+import { DateCellRenderer } from './renderers/DateCellRenderer';
 
 export const formatMetadata = (
     data: IElementMetadata,
