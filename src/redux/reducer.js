@@ -39,6 +39,7 @@ import {
     USER_VALIDATION_ERROR,
     RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
+    ElementType,
 } from '@gridsuite/commons-ui';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 
@@ -71,6 +72,12 @@ const initialState = {
         specificTypeItem: null,
     },
     ...paramsInitialState,
+};
+
+const filterFromObject = (objectToFilter, filterMethod) => {
+    return Object.fromEntries(
+        Object.entries(objectToFilter).filter(filterMethod)
+    );
 };
 
 export const reducer = createReducer(initialState, (builder) => {
@@ -160,7 +167,29 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(TREE_DATA, (state, action) => {
-        state.treeData = action.treeData;
+        //TODO: remove those filters below when this file has been migrated to Typescript
+        // it's only here to prevent regressions due to javascript not checking types
+
+        // filtering non DIRECTORY elements from action.treeData
+        // used to prevent non DIRECTORY elements from appearing in left menu
+        const filteredTreeDataRootDirectories =
+            action.treeData.rootDirectories.filter(
+                (element) => element.type === ElementType.DIRECTORY
+            );
+
+        // action.treeData.mapData is an object looking like this : {<elementId1>: <element1>, <elementId2>: <element2>}
+        // Object.entries changes it to an array looking like [[elementId1, element1], [elementId2, element2]], in order to make it easier to filter
+        // Object.fromEntries will turn [[elementId1, element1], [elementId2, element2]] back to {<elementId1>: <element1>, <elementId2>: <element2>} which is the initial form
+        const filteredTreeDataMapData = filterFromObject(
+            action.treeData.mapData,
+            ([elementId, element]) => element.type === ElementType.DIRECTORY
+        );
+
+        state.treeData = {
+            ...action.treeData,
+            rootDirectories: filteredTreeDataRootDirectories,
+            mapData: filteredTreeDataMapData,
+        };
     });
 
     builder.addCase(SELECTION_FOR_COPY, (state, action) => {
