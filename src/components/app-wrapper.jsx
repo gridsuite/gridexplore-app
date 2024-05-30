@@ -86,7 +86,6 @@ let lightTheme = createTheme({
         hover: '#8E9C9B',
     },
     aggrid: 'ag-theme-alpine',
-    alternateTheme: 'ag-theme-material',
     agGridBackground: {
         color: 'white',
     },
@@ -95,7 +94,6 @@ let lightTheme = createTheme({
             textTransform: 'none',
         },
     },
-    aggridMaterialColor: '#90caf9 !important',
     aggridHiglightColor: '#8e9c9b !important',
 });
 
