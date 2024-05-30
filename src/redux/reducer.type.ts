@@ -28,9 +28,6 @@ export interface IElement {
     elementName: string;
     description: string;
     type: ElementType;
-    accessRights: {
-        isPrivate: boolean;
-    };
     owner: string;
     subdirectoriesCount: number;
     creationDate: string;
@@ -51,9 +48,14 @@ export interface IElementMetadata {
     };
 }
 
+// IDirectory is exactly an IElement, with a specific type value
+export type IDirectory = IElement & {
+    type: ElementType.DIRECTORY;
+};
+
 export interface ITreeData {
-    rootDirectories: IElement[];
-    mapData: Record<string, any>;
+    rootDirectories: IDirectory[];
+    mapData: Record<string, IDirectory>;
 }
 
 export interface ReduxState {

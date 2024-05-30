@@ -19,14 +19,23 @@ import {
     fetchDirectoryContent,
     searchElementsInfos,
 } from '../../utils/rest-api';
-import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    useDebounce,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory, setTreeData } from '../../redux/actions';
 import { updatedTree } from '../tree-views-container';
 import { useIntl } from 'react-intl';
 import { SearchItem } from './search-item';
-import { IDirectory, ITreeData, ReduxState } from '../../redux/reducer.type';
+import {
+    IDirectory,
+    IElement,
+    ITreeData,
+    ReduxState,
+} from '../../redux/reducer.type';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 
@@ -112,7 +121,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     );
 
     const updateMapData = useCallback(
-        (nodeId: string, children: IDirectory) => {
+        (nodeId: string, children: IDirectory[]) => {
             if (!treeDataRef.current) {
                 return;
             }
@@ -153,8 +162,13 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 const elementUuidPath = matchingElement?.pathUuid.reverse();
                 const promises = elementUuidPath.map((e: string) => {
                     return fetchDirectoryContent(e)
-                        .then((res) => {
-                            updateMapData(e, res);
+                        .then((res: IElement[]) => {
+                            updateMapData(
+                                e,
+                                res.filter(
+                                    (res) => res.type === ElementType.DIRECTORY
+                                ) as IDirectory[]
+                            );
                         })
                         .catch((error) =>
                             snackError({
