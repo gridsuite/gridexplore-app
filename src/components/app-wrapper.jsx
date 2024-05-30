@@ -143,7 +143,6 @@ let darkTheme = createTheme({
         hover: '#545C5B',
     },
     aggrid: 'ag-theme-alpine-dark',
-    alternateTheme: 'ag-theme-material-dark',
     agGridBackground: {
         color: '#383838',
     },
@@ -152,7 +151,6 @@ let darkTheme = createTheme({
             textTransform: 'none',
         },
     },
-    aggridMaterialColor: '#1976d2 !important',
     aggridHiglightColor: '#545c5b !important',
 });
 
