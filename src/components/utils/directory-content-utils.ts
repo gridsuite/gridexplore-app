@@ -17,6 +17,7 @@ import { UUID } from 'crypto';
 import { IElementMetadata } from '../../redux/reducer.type';
 import { AgGridReact } from 'ag-grid-react';
 import React from 'react';
+import { ColDef } from 'ag-grid-community';
 
 export const formatMetadata = (
     data: IElementMetadata,
@@ -50,7 +51,7 @@ export const defaultColumnDefinition = {
 export const getColumnsDefinition = (
     childrenMetadata: Record<UUID, IElementMetadata>,
     intl: IntlShape
-) => [
+): ColDef[] => [
     {
         headerName: intl.formatMessage({
             id: 'elementName',
@@ -70,7 +71,7 @@ export const getColumnsDefinition = (
         }),
         field: 'description',
         cellRenderer: DescriptionCellRenderer,
-        maxWidth: '150',
+        maxWidth: 150,
     },
     {
         headerName: intl.formatMessage({
@@ -89,7 +90,7 @@ export const getColumnsDefinition = (
         }),
         field: 'owner',
         cellRenderer: UserCellRenderer,
-        maxWidth: '150',
+        maxWidth: 150,
     },
     {
         headerName: intl.formatMessage({
@@ -97,7 +98,7 @@ export const getColumnsDefinition = (
         }),
         field: 'creationDate',
         cellRenderer: DateCellRenderer,
-        maxWidth: '150',
+        maxWidth: 150,
         flex: 2,
     },
     {
@@ -106,7 +107,7 @@ export const getColumnsDefinition = (
         }),
         field: 'lastModifiedBy',
         cellRenderer: UserCellRenderer,
-        maxWidth: '150',
+        maxWidth: 150,
     },
     {
         headerName: intl.formatMessage({
@@ -114,7 +115,7 @@ export const getColumnsDefinition = (
         }),
         field: 'lastModificationDate',
         cellRenderer: DateCellRenderer,
-        maxWidth: '150',
+        maxWidth: 150,
         flex: 2,
     },
 ];

@@ -49,11 +49,11 @@ import Grid from '@mui/material/Grid';
 import { useDirectoryContent } from '../hooks/useDirectoryContent';
 import {
     getColumnsDefinition,
-    defaultColumnDefinition,
     computeCheckedElements,
     formatMetadata,
 } from './utils/directory-content-utils.ts';
 import NoContentDirectory from './no-content-directory';
+import { DirectoryContentTable } from './DirectoryContentTable';
 
 const circularProgressSize = '70px';
 
@@ -255,29 +255,29 @@ const DirectoryContent = () => {
         event.stopPropagation();
     };
 
-    const isRowHovered = () => {
-        return !!gridRef.current?.api
+    const getRowHovered = () => {
+        return gridRef.current?.api
             ?.getRenderedNodes()
             .find((node) => node.hovered);
     };
 
     const onCellContextMenu = useCallback(
-        (event) => {
-            if (event.data && event.data.uploading !== null) {
-                if (event.data.type !== 'DIRECTORY') {
+        (event, row) => {
+            if (row.data && row.data.uploading !== null) {
+                if (row.data.type !== 'DIRECTORY') {
                     setActiveElement({
                         hasMetadata:
-                            childrenMetadata[event.data.elementUuid] !==
+                            childrenMetadata[row.data.elementUuid] !==
                             undefined,
                         specificMetadata:
-                            childrenMetadata[event.data.elementUuid]
+                            childrenMetadata[row.data.elementUuid]
                                 ?.specificMetadata,
-                        ...event.data,
+                        ...row.data,
                     });
                 }
                 setMousePosition({
-                    mouseX: event.event.clientX + constants.HORIZONTAL_SHIFT,
-                    mouseY: event.event.clientY + constants.VERTICAL_SHIFT,
+                    mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
+                    mouseY: event.clientY + constants.VERTICAL_SHIFT,
                 });
                 handleOpenContentMenu(event.event);
             }
@@ -287,7 +287,10 @@ const DirectoryContent = () => {
 
     const onContextMenu = useCallback(
         (event) => {
-            if (!isRowHovered()) {
+            const row = getRowHovered();
+            if (row) {
+                onCellContextMenu(event, row);
+            } else {
                 if (selectedDirectory) {
                     dispatch(setActiveDirectory(selectedDirectory.elementUuid));
                 }
@@ -298,7 +301,7 @@ const DirectoryContent = () => {
                 handleOpenDirectoryMenu(event);
             }
         },
-        [dispatch, selectedDirectory]
+        [dispatch, onCellContextMenu, selectedDirectory]
     );
 
     const handleError = useCallback(
@@ -499,42 +502,16 @@ const DirectoryContent = () => {
         );
     };
 
-    const onGridReady = useCallback(({ api }) => {
-        api?.sizeColumnsToFit();
-    }, []);
-
-    const getRowId = useCallback((params) => params.data.elementUuid, []);
-    const getRowStyle = useCallback((cellData) => {
-        const style = { fontSize: '1rem' };
-        if (
-            ![ElementType.CASE, ElementType.PARAMETERS].includes(
-                cellData.data?.type
-            )
-        ) {
-            style.cursor = 'pointer';
-        }
-        return style;
-    }, []);
-
     const renderTableContent = () => {
         return (
             <>
                 <ContentToolbar selectedElements={checkedRows} />
-                <CustomAGGrid
-                    ref={gridRef}
-                    rowData={rows}
-                    getRowId={getRowId}
-                    defaultColDef={defaultColumnDefinition}
-                    rowSelection="multiple"
-                    suppressRowClickSelection
-                    onGridReady={onGridReady}
-                    onCellClicked={handleCellClick}
-                    onCellContextMenu={onCellContextMenu}
-                    onRowSelected={handleRowSelected}
-                    animateRows={true}
-                    columnDefs={getColumnsDefinition(childrenMetadata, intl)}
-                    getRowStyle={getRowStyle}
-                    alternateTheme
+                <DirectoryContentTable
+                    gridRef={gridRef}
+                    rows={rows}
+                    handleRowSelected={handleRowSelected}
+                    handleCellClick={handleCellClick}
+                    colDef={getColumnsDefinition(childrenMetadata, intl)}
                 />
             </>
         );
