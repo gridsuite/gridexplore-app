@@ -8,13 +8,10 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import LockIcon from '@mui/icons-material/Lock';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
-
-import { FormattedMessage } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory } from '../redux/actions';
@@ -176,20 +173,6 @@ const DirectoryTreeView = ({
                             handleContextMenuClick(e, node.elementUuid)
                         }
                     >
-                        {node.accessRights?.isPrivate ? (
-                            <Tooltip
-                                TransitionComponent={Zoom}
-                                disableFocusListener
-                                disableTouchListener
-                                enterDelay={1000}
-                                enterNextDelay={1000}
-                                title={<FormattedMessage id="private" />}
-                                placement="bottom"
-                                arrow
-                            >
-                                <LockIcon sx={styles.icon} />
-                            </Tooltip>
-                        ) : null}
                         <Tooltip
                             TransitionComponent={Zoom}
                             disableFocusListener

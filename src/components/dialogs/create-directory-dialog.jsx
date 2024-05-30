@@ -14,10 +14,6 @@ import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Alert from '@mui/material/Alert';
-import FormControl from '@mui/material/FormControl';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Radio from '@mui/material/Radio';
 import { ElementType } from '@gridsuite/commons-ui';
 import { useNameField } from './field-hook';
 import { CancelButton } from '@gridsuite/commons-ui';
@@ -38,8 +34,6 @@ export const CreateDirectoryDialog = ({
     parentDirectory,
     error,
 }) => {
-    const [isPrivate, setIsPrivate] = React.useState(true);
-
     const [name, nameField, nameError, nameOk] = useNameField({
         label: 'nameProperty',
         autoFocus: true,
@@ -56,11 +50,7 @@ export const CreateDirectoryDialog = ({
     };
 
     const handleClick = () => {
-        onClick(name, isPrivate);
-    };
-
-    const handleChange = (event) => {
-        setIsPrivate(event.target.value);
+        onClick(name);
     };
 
     const canCreate = () => {
@@ -77,26 +67,6 @@ export const CreateDirectoryDialog = ({
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 {nameField}
-                <FormControl>
-                    <RadioGroup
-                        aria-label=""
-                        name="DirectoryAccessRights"
-                        value={isPrivate + ''}
-                        onChange={handleChange}
-                        row
-                    >
-                        <FormControlLabel
-                            value="false"
-                            control={<Radio />}
-                            label={<FormattedMessage id="public" />}
-                        />
-                        <FormControlLabel
-                            value="true"
-                            control={<Radio />}
-                            label={<FormattedMessage id="private" />}
-                        />
-                    </RadioGroup>
-                </FormControl>
                 <br />
                 {nameError && <Alert severity="error">{nameError}</Alert>}
                 {error !== '' && <Alert severity="error">{error}</Alert>}
