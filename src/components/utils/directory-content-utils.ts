@@ -33,7 +33,9 @@ export const computeCheckedElements = (
     return (
         gridRef.current?.api
             ?.getSelectedRows()
-            .map((row: IElementMetadata) => formatMetadata(row, childrenMetadata)) ?? []
+            .map((row: IElementMetadata) =>
+                formatMetadata(row, childrenMetadata)
+            ) ?? []
     );
 };
 

@@ -22,7 +22,6 @@ import {
     ExpertFilterEditionDialog,
     CriteriaBasedFilterEditionDialog,
     DescriptionModificationDialog,
-    CustomAGGrid,
     noSelectionForCopy,
 } from '@gridsuite/commons-ui';
 import { Box } from '@mui/material';
@@ -62,13 +61,14 @@ const styles = {
         color: theme.link.color,
         textDecoration: 'none',
     }),
-    grid: { height: 500, width: '100%' },
     circularProgressContainer: {
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'row',
         flexGrow: '1',
         justifyContent: 'center',
+        textAlign: 'center',
+        marginTop: '100px',
     },
     centeredCircularProgress: {
         alignSelf: 'center',
@@ -442,6 +442,7 @@ const DirectoryContent = () => {
             return;
         }
         setIsMissingDataAfterDirChange(true);
+        setCheckedRows([]);
     }, [selectedDirectory, setIsMissingDataAfterDirChange]);
 
     const isActiveElementUnchecked = useMemo(
@@ -502,21 +503,6 @@ const DirectoryContent = () => {
         );
     };
 
-    const renderTableContent = () => {
-        return (
-            <>
-                <ContentToolbar selectedElements={checkedRows} />
-                <DirectoryContentTable
-                    gridRef={gridRef}
-                    rows={rows}
-                    handleRowSelected={handleRowSelected}
-                    handleCellClick={handleCellClick}
-                    colDef={getColumnsDefinition(childrenMetadata, intl)}
-                />
-            </>
-        );
-    };
-
     const renderContent = () => {
         // Here we wait for Metadata for the folder content
         if (isMissingDataAfterDirChange) {
@@ -539,7 +525,15 @@ const DirectoryContent = () => {
         }
 
         // Finally if we have elements then render the table
-        return renderTableContent();
+        return (
+            <DirectoryContentTable
+                gridRef={gridRef}
+                rows={rows}
+                handleRowSelected={handleRowSelected}
+                handleCellClick={handleCellClick}
+                colDef={getColumnsDefinition(childrenMetadata, intl)}
+            />
+        );
     };
 
     const renderDialog = (name) => {
@@ -662,7 +656,8 @@ const DirectoryContent = () => {
 
     return (
         <>
-            <Grid item xs={12} sx={styles.grid} onContextMenu={onContextMenu}>
+            {rows && <ContentToolbar selectedElements={checkedRows} />}
+            <Grid xs={12} onContextMenu={onContextMenu}>
                 {renderContent()}
             </Grid>
             <div

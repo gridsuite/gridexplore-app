@@ -52,6 +52,14 @@ const styles = {
     tooltip: {
         maxWidth: '1000px',
     },
+    overflow: {
+        display: 'inline-block',
+        whiteSpace: 'pre',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        lineHeight: 'initial',
+        verticalAlign: 'middle',
+    },
 };
 export const NameCellRenderer = ({
     data,
@@ -74,6 +82,7 @@ export const NameCellRenderer = ({
             <OverflowableText
                 text={getDisplayedElementName(data, childrenMetadata, intl)}
                 tooltipSx={styles.tooltip}
+                style={styles.overflow}
             />
         </Box>
     );
