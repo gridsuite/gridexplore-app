@@ -27,9 +27,6 @@ export interface IElement {
     elementUuid: UUID;
     elementName: string;
     type: ElementType;
-    accessRights: {
-        isPrivate: boolean;
-    };
     owner: string;
     subdirectoriesCount: number;
     creationDate: string;
