@@ -36,11 +36,11 @@ const getDisplayedElementName = (
 };
 
 const styles = {
-    tableCell: (theme: Theme) => ({
+    tableCell: {
         fontSize: '1rem',
         display: 'flex',
         alignItems: 'center',
-    }),
+    },
     circularRoot: (theme: Theme) => ({
         marginRight: theme.spacing(1),
     }),
