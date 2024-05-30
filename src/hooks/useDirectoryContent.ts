@@ -20,7 +20,9 @@ export const useDirectoryContent = (
     const currentChildren = useSelector(
         (state: ReduxState) => state.currentChildren
     );
-    const [childrenMetadata, setChildrenMetadata] = useState<Record<UUID, IElementMetadata>>({});
+    const [childrenMetadata, setChildrenMetadata] = useState<
+        Record<UUID, IElementMetadata>
+    >({});
     const { snackError } = useSnackMessage();
 
     const [rows, setRows] = useState<IElement[]>(currentChildren);
