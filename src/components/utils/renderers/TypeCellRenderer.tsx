@@ -59,19 +59,21 @@ export const TypeCellRenderer = ({
     childrenMetadata: Record<UUID, IElementMetadata>;
 }) => {
     const intl = useIntl();
-
     return (
-        <Box sx={{ height: 'inherit' }}>
-            <OverflowableText
-                text={getElementTypeTranslation(
-                    data?.type,
-                    childrenMetadata[data?.elementUuid]?.specificMetadata.type,
-                    childrenMetadata[data?.elementUuid]?.specificMetadata
-                        .format,
-                    intl
-                )}
-                tooltipSx={styles.tooltip}
-            />
-        </Box>
+        childrenMetadata[data?.elementUuid] && (
+            <Box sx={{ height: 'inherit' }}>
+                <OverflowableText
+                    text={getElementTypeTranslation(
+                        data?.type,
+                        childrenMetadata[data?.elementUuid]?.specificMetadata
+                            .type,
+                        childrenMetadata[data?.elementUuid]?.specificMetadata
+                            .format,
+                        intl
+                    )}
+                    tooltipSx={styles.tooltip}
+                />
+            </Box>
+        )
     );
 };

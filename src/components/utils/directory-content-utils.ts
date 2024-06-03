@@ -7,10 +7,10 @@
 
 import { IntlShape } from 'react-intl';
 import { UUID } from 'crypto';
-import { IElementMetadata } from '../../redux/reducer.type';
+import { IElement, IElementMetadata } from '../../redux/reducer.type';
 import { AgGridReact } from 'ag-grid-react';
 import React from 'react';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, IRowNode } from 'ag-grid-community';
 import { NameCellRenderer } from './renderers/NameCellRenderer';
 import { DescriptionCellRenderer } from './renderers/DescriptionCellRenderer';
 import { TypeCellRenderer } from './renderers/TypeCellRenderer';
@@ -38,6 +38,13 @@ export const computeCheckedElements = (
             ) ?? []
     );
 };
+
+export const isRowUnchecked = (row: IRowNode, checkedRows: IElement[]) =>
+    checkedRows?.length &&
+    row.data?.elementUuid &&
+    !checkedRows.find(
+        (checkedRow) => checkedRow.elementUuid === row.data.elementUuid
+    );
 
 export const defaultColumnDefinition = {
     sortable: true,

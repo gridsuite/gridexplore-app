@@ -50,7 +50,8 @@ import {
     getColumnsDefinition,
     computeCheckedElements,
     formatMetadata,
-} from './utils/directory-content-utils.ts';
+    isRowUnchecked,
+} from './utils/directory-content-utils';
 import NoContentDirectory from './no-content-directory';
 import { DirectoryContentTable } from './DirectoryContentTable';
 
@@ -238,7 +239,7 @@ const DirectoryContent = () => {
 
     const handleOpenContentMenu = (event) => {
         setOpenContentMenu(true);
-        event.stopPropagation();
+        event?.stopPropagation();
     };
 
     const handleCloseContentMenu = useCallback(() => {
@@ -254,6 +255,16 @@ const DirectoryContent = () => {
         setOpenDirectoryMenu(true);
         event.stopPropagation();
     };
+
+    /* User interactions */
+    const contextualMixPolicies = useMemo(
+        () => ({
+            BIG: 'GoogleMicrosoft', // if !selectedUuids.has(selected.Uuid) deselects selectedUuids
+            ALL: 'All', // union of activeElement.Uuid and selectedUuids (currently implemented)
+        }),
+        []
+    );
+    const contextualMixPolicy = contextualMixPolicies.ALL;
 
     const getRowHovered = () => {
         return gridRef.current?.api
@@ -274,6 +285,30 @@ const DirectoryContent = () => {
                                 ?.specificMetadata,
                         ...row.data,
                     });
+                    if (contextualMixPolicy === contextualMixPolicies.BIG) {
+                        // If some elements were already selected and the active element is not in them, we deselect the already selected elements.
+                        if (isRowUnchecked(row, checkedRows)) {
+                            setCheckedRows([]);
+                            gridRef.current?.api.deselectAll();
+                        }
+                    } else {
+                        // If some elements were already selected, we add the active element to the selected list if not already in it.
+                        if (isRowUnchecked(row, checkedRows)) {
+                            setCheckedRows((prevCheckedRows) => [
+                                ...prevCheckedRows,
+                                formatMetadata(row.data, childrenMetadata),
+                            ]);
+                            gridRef.current?.api.setNodesSelected({
+                                nodes: [
+                                    ...gridRef.current?.api.getSelectedNodes(),
+                                    gridRef.current?.api.getRowNode(
+                                        row.data.elementUuid
+                                    ),
+                                ],
+                                newValue: true,
+                            });
+                        }
+                    }
                 }
                 setMousePosition({
                     mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
@@ -282,7 +317,12 @@ const DirectoryContent = () => {
                 handleOpenContentMenu(event.event);
             }
         },
-        [childrenMetadata]
+        [
+            checkedRows,
+            childrenMetadata,
+            contextualMixPolicies.BIG,
+            contextualMixPolicy,
+        ]
     );
 
     const onContextMenu = useCallback(
