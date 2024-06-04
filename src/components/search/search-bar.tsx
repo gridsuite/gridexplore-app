@@ -21,6 +21,7 @@ import {
     useSnackMessage,
     fetchDirectoryContent,
     ElementAttributes,
+    ElementType,
 } from '@gridsuite/commons-ui';
 import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -36,7 +37,7 @@ export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 interface matchingElementProps {
     id: string;
     name: string;
-    type: string;
+    type: ElementType;
     pathName: string[];
     pathUuid: string[];
 }
