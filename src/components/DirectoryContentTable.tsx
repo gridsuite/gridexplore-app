@@ -11,9 +11,10 @@ import { AgGridReact } from 'ag-grid-react';
 import { IElement } from '../redux/reducer.type';
 import { GetRowIdParams } from 'ag-grid-community/dist/types/core/interfaces/iCallbackParams';
 import { ColDef, GridReadyEvent, RowClassParams } from 'ag-grid-community';
+import { RefObject } from 'react';
 
 interface DirectoryContentTableProps {
-    gridRef: React.ForwardedRef<AgGridReact<IElement>>;
+    gridRef: RefObject<AgGridReact<IElement>>;
     rows: IElement[];
     handleRowSelected: () => void;
     handleCellClick: () => void;
@@ -24,8 +25,7 @@ const onGridReady = ({ api }: GridReadyEvent<IElement>) => {
     api?.sizeColumnsToFit();
 };
 
-const getRowId = (params: GetRowIdParams<IElement>): string =>
-    params.data?.elementUuid;
+const getRowId = (params: GetRowIdParams<IElement>) => params.data?.elementUuid;
 
 const getRowStyle = (cellData: RowClassParams<IElement>) => {
     const style: Record<string, string> = { fontSize: '1rem' };
@@ -60,6 +60,7 @@ export const DirectoryContentTable = ({
             rowSelection="multiple"
             suppressRowClickSelection
             onGridReady={onGridReady}
+            onCellContextMenu={(e) => console.log('HMA', e)}
             onCellClicked={handleCellClick}
             onRowSelected={handleRowSelected}
             animateRows={true}

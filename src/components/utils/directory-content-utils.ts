@@ -10,7 +10,7 @@ import { UUID } from 'crypto';
 import { IElement, IElementMetadata } from '../../redux/reducer.type';
 import { AgGridReact } from 'ag-grid-react';
 import React from 'react';
-import { ColDef, IRowNode } from 'ag-grid-community';
+import { ColDef } from 'ag-grid-community';
 import { NameCellRenderer } from './renderers/name-cell-renderer';
 import { DescriptionCellRenderer } from './renderers/description-cell-renderer';
 import { TypeCellRenderer } from './renderers/type-cell-renderer';
@@ -39,11 +39,11 @@ export const computeCheckedElements = (
     );
 };
 
-export const isRowUnchecked = (row: IRowNode, checkedRows: IElement[]) =>
+export const isRowUnchecked = (row: IElement, checkedRows: IElement[]) =>
     checkedRows?.length &&
-    row.data?.elementUuid &&
+    row?.elementUuid &&
     !checkedRows.find(
-        (checkedRow) => checkedRow.elementUuid === row.data.elementUuid
+        (checkedRow) => checkedRow.elementUuid === row.elementUuid
     );
 
 export const defaultColumnDefinition = {

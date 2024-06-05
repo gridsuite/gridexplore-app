@@ -287,26 +287,15 @@ const DirectoryContent = () => {
                     });
                     if (contextualMixPolicy === contextualMixPolicies.BIG) {
                         // If some elements were already selected and the active element is not in them, we deselect the already selected elements.
-                        if (isRowUnchecked(row, checkedRows)) {
-                            setCheckedRows([]);
+                        if (isRowUnchecked(row.data, checkedRows)) {
                             gridRef.current?.api.deselectAll();
                         }
                     } else {
                         // If some elements were already selected, we add the active element to the selected list if not already in it.
-                        if (isRowUnchecked(row, checkedRows)) {
-                            setCheckedRows((prevCheckedRows) => [
-                                ...prevCheckedRows,
-                                formatMetadata(row.data, childrenMetadata),
-                            ]);
-                            gridRef.current?.api.setNodesSelected({
-                                nodes: [
-                                    ...gridRef.current?.api.getSelectedNodes(),
-                                    gridRef.current?.api.getRowNode(
-                                        row.data.elementUuid
-                                    ),
-                                ],
-                                newValue: true,
-                            });
+                        if (isRowUnchecked(row.data, checkedRows)) {
+                            gridRef.current?.api
+                                .getRowNode(row.data.elementUuid)
+                                .setSelected(true);
                         }
                     }
                 }
