@@ -16,6 +16,7 @@ import { RefObject } from 'react';
 interface DirectoryContentTableProps {
     gridRef: RefObject<AgGridReact<IElement>>;
     rows: IElement[];
+    handleCellContextualMenu: () => void;
     handleRowSelected: () => void;
     handleCellClick: () => void;
     colDef: ColDef[];
@@ -47,6 +48,7 @@ const getRowStyle = (cellData: RowClassParams<IElement>) => {
 export const DirectoryContentTable = ({
     gridRef,
     rows,
+    handleCellContextualMenu,
     handleRowSelected,
     handleCellClick,
     colDef,
@@ -60,7 +62,7 @@ export const DirectoryContentTable = ({
             rowSelection="multiple"
             suppressRowClickSelection
             onGridReady={onGridReady}
-            onCellContextMenu={(e) => console.log('HMA', e)}
+            onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
             onRowSelected={handleRowSelected}
             animateRows={true}

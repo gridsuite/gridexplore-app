@@ -53,7 +53,7 @@ import {
     isRowUnchecked,
 } from './utils/directory-content-utils';
 import NoContentDirectory from './no-content-directory';
-import { DirectoryContentTable } from './DirectoryContentTable';
+import { DirectoryContentTable } from './directory-content-table';
 
 const circularProgressSize = '70px';
 
@@ -266,42 +266,36 @@ const DirectoryContent = () => {
     );
     const contextualMixPolicy = contextualMixPolicies.ALL;
 
-    const getRowHovered = () => {
-        return gridRef.current?.api
-            ?.getRenderedNodes()
-            .find((node) => node.hovered);
-    };
-
     const onCellContextMenu = useCallback(
-        (event, row) => {
-            if (row.data && row.data.uploading !== null) {
-                if (row.data.type !== 'DIRECTORY') {
+        (event) => {
+            if (event.data && event.data.uploading !== null) {
+                if (event.data.type !== 'DIRECTORY') {
                     setActiveElement({
                         hasMetadata:
-                            childrenMetadata[row.data.elementUuid] !==
+                            childrenMetadata[event.data.elementUuid] !==
                             undefined,
                         specificMetadata:
-                            childrenMetadata[row.data.elementUuid]
+                            childrenMetadata[event.data.elementUuid]
                                 ?.specificMetadata,
-                        ...row.data,
+                        ...event.data,
                     });
                     if (contextualMixPolicy === contextualMixPolicies.BIG) {
                         // If some elements were already selected and the active element is not in them, we deselect the already selected elements.
-                        if (isRowUnchecked(row.data, checkedRows)) {
+                        if (isRowUnchecked(event.data, checkedRows)) {
                             gridRef.current?.api.deselectAll();
                         }
                     } else {
                         // If some elements were already selected, we add the active element to the selected list if not already in it.
-                        if (isRowUnchecked(row.data, checkedRows)) {
+                        if (isRowUnchecked(event.data, checkedRows)) {
                             gridRef.current?.api
-                                .getRowNode(row.data.elementUuid)
+                                .getRowNode(event.data.elementUuid)
                                 .setSelected(true);
                         }
                     }
                 }
                 setMousePosition({
-                    mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
-                    mouseY: event.clientY + constants.VERTICAL_SHIFT,
+                    mouseX: event.event.clientX + constants.HORIZONTAL_SHIFT,
+                    mouseY: event.event.clientY + constants.VERTICAL_SHIFT,
                 });
                 handleOpenContentMenu(event.event);
             }
@@ -316,10 +310,8 @@ const DirectoryContent = () => {
 
     const onContextMenu = useCallback(
         (event) => {
-            const row = getRowHovered();
-            if (row) {
-                onCellContextMenu(event, row);
-            } else {
+            const isRow = !!event.target.closest('.ag-cell');
+            if (!isRow) {
                 if (selectedDirectory) {
                     dispatch(setActiveDirectory(selectedDirectory.elementUuid));
                 }
@@ -330,7 +322,7 @@ const DirectoryContent = () => {
                 handleOpenDirectoryMenu(event);
             }
         },
-        [dispatch, onCellContextMenu, selectedDirectory]
+        [dispatch, selectedDirectory]
     );
 
     const handleError = useCallback(
@@ -558,6 +550,7 @@ const DirectoryContent = () => {
             <DirectoryContentTable
                 gridRef={gridRef}
                 rows={rows}
+                handleCellContextualMenu={onCellContextMenu}
                 handleRowSelected={handleRowSelected}
                 handleCellClick={handleCellClick}
                 colDef={getColumnsDefinition(childrenMetadata, intl)}
@@ -719,7 +712,6 @@ const DirectoryContent = () => {
                     }
                     broadcastChannel={broadcastChannel}
                 />
-
                 <DirectoryTreeContextualMenu
                     directory={selectedDirectory}
                     open={openDirectoryMenu}
