@@ -11,11 +11,11 @@ import { IElement, IElementMetadata } from '../../redux/reducer.type';
 import { AgGridReact } from 'ag-grid-react';
 import React from 'react';
 import { ColDef, IRowNode } from 'ag-grid-community';
-import { NameCellRenderer } from './renderers/NameCellRenderer';
-import { DescriptionCellRenderer } from './renderers/DescriptionCellRenderer';
-import { TypeCellRenderer } from './renderers/TypeCellRenderer';
-import { UserCellRenderer } from './renderers/UserCellRenderer';
-import { DateCellRenderer } from './renderers/DateCellRenderer';
+import { NameCellRenderer } from './renderers/name-cell-renderer';
+import { DescriptionCellRenderer } from './renderers/description-cell-renderer';
+import { TypeCellRenderer } from './renderers/type-cell-renderer';
+import { UserCellRenderer } from './renderers/user-cell-renderer';
+import { DateCellRenderer } from './renderers/date-cell-renderer';
 
 export const formatMetadata = (
     data: IElementMetadata,
