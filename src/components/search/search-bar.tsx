@@ -21,7 +21,6 @@ import {
     useDebounce,
     useSnackMessage,
     fetchDirectoryContent,
-    ElementAttributes,
 } from '@gridsuite/commons-ui';
 import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
