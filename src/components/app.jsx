@@ -220,8 +220,8 @@ const App = () => {
                     style={{
                         flexGrow: 1,
                         /* autosizer (used in virtual table) can return wrong size
-            (off by 1) and it causes scrollbar to blink
-            * */
+                        (off by 1) and it causes scrollbar to blink
+                        * */
                         overflow: 'hidden',
                         marginTop: '20px',
                     }}
