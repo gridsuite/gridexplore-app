@@ -49,6 +49,11 @@ const styles = {
     tooltip: {
         maxWidth: '1000px',
     },
+    tableCell: {
+        fontSize: '1rem',
+        display: 'flex',
+        alignItems: 'center',
+    },
 };
 
 export const TypeCellRenderer = ({
@@ -61,7 +66,7 @@ export const TypeCellRenderer = ({
     const intl = useIntl();
     return (
         childrenMetadata[data?.elementUuid] && (
-            <Box sx={{ height: 'inherit' }}>
+            <Box sx={styles.tableCell}>
                 <OverflowableText
                     text={getElementTypeTranslation(
                         data?.type,
