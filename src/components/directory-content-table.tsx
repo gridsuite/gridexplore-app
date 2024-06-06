@@ -28,7 +28,7 @@ const onGridReady = ({ api }: GridReadyEvent<IElement>) => {
 
 const getRowId = (params: GetRowIdParams<IElement>) => params.data?.elementUuid;
 
-export const CUSTOM_ROW_CLASS = 'custom-row-class'
+export const CUSTOM_ROW_CLASS = 'custom-row-class';
 
 const getRowStyle = (cellData: RowClassParams<IElement>) => {
     const style: Record<string, string> = { fontSize: '1rem' };
