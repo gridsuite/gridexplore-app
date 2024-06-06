@@ -310,7 +310,7 @@ const DirectoryContent = () => {
 
     const onContextMenu = useCallback(
         (event) => {
-            const isRow = !!event.target.closest('.ag-cell');
+            const isRow = !!event.target.closest('.custom-row-class');
             if (!isRow) {
                 if (selectedDirectory) {
                     dispatch(setActiveDirectory(selectedDirectory.elementUuid));

@@ -68,6 +68,8 @@ export const DirectoryContentTable = ({
             animateRows={true}
             columnDefs={colDef}
             getRowStyle={getRowStyle}
+            //We set a custom className for rows in order to easily determine if a context menu event is happening on a row or not
+            rowClass={'custom-row-class'}
         />
     );
 };
