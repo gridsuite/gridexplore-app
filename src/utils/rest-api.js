@@ -14,6 +14,8 @@ import {
     ElementType,
     getRequestParamFromList,
     fetchEnv,
+    backendFetchJson,
+    backendFetch,
 } from '@gridsuite/commons-ui';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
@@ -118,19 +120,9 @@ function safeFetch(url, initCopy) {
     );
 }
 
-export function backendFetch(url, init, token) {
-    const initCopy = prepareRequest(init, token);
-    return safeFetch(url, initCopy);
-}
-
 export function backendFetchText(url, init, token) {
     const initCopy = prepareRequest(init, token);
     return safeFetch(url, initCopy).then((safeResponse) => safeResponse.text());
-}
-
-export function backendFetchJson(url, init, token) {
-    const initCopy = prepareRequest(init, token);
-    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.json());
 }
 
 const getContingencyUriParamType = (contingencyListType) => {
