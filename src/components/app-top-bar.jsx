@@ -10,13 +10,14 @@ import {
     logout,
     TopBar,
     fetchAppsMetadata,
+    fetchVersion,
 } from '@gridsuite/commons-ui';
 import ParametersDialog, {
     useParameterState,
 } from './dialogs/parameters-dialog';
 import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchVersion, getServersInfos } from '../utils/rest-api';
+import { getServersInfos } from '../utils/rest-api';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import GridExploreLogoLight from '../images/GridExplore_logo_light.svg?react';

@@ -28,6 +28,7 @@ import {
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
+    fetchAuthorizationCodeFlowFeatureFlag,
 } from '@gridsuite/commons-ui';
 
 import { useMatch } from 'react-router-dom';
@@ -35,7 +36,6 @@ import { FormattedMessage } from 'react-intl';
 
 import {
     connectNotificationsWsUpdateConfig,
-    fetchAuthorizationCodeFlowFeatureFlag,
     fetchConfigParameter,
     fetchConfigParameters,
     fetchValidateUser,

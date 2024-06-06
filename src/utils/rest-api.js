@@ -13,9 +13,9 @@ import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 import {
     ElementType,
     getRequestParamFromList,
-    fetchEnv,
     backendFetchJson,
     backendFetch,
+    backendFetchText,
 } from '@gridsuite/commons-ui';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
@@ -63,68 +63,6 @@ export function connectNotificationsWsUpdateConfig() {
     return reconnectingWebSocket;
 }
 
-function parseError(text) {
-    try {
-        return JSON.parse(text);
-    } catch (err) {
-        return null;
-    }
-}
-
-function handleError(response) {
-    return response.text().then((text) => {
-        const errorName = 'HttpResponseError : ';
-        let error;
-        const errorJson = parseError(text);
-        if (
-            errorJson &&
-            errorJson.status &&
-            errorJson.error &&
-            errorJson.message
-        ) {
-            error = new Error(
-                errorName +
-                    errorJson.status +
-                    ' ' +
-                    errorJson.error +
-                    ', message : ' +
-                    errorJson.message
-            );
-            error.status = errorJson.status;
-        } else {
-            error = new Error(
-                errorName + response.status + ' ' + response.statusText
-            );
-            error.status = response.status;
-        }
-        throw error;
-    });
-}
-
-function prepareRequest(init, token) {
-    if (!(typeof init == 'undefined' || typeof init == 'object')) {
-        throw new TypeError(
-            'Argument 2 of backendFetch is not an object' + typeof init
-        );
-    }
-    const initCopy = Object.assign({}, init);
-    initCopy.headers = new Headers(initCopy.headers || {});
-    const tokenCopy = token ? token : getToken();
-    initCopy.headers.append('Authorization', 'Bearer ' + tokenCopy);
-    return initCopy;
-}
-
-function safeFetch(url, initCopy) {
-    return fetch(url, initCopy).then((response) =>
-        response.ok ? response : handleError(response)
-    );
-}
-
-export function backendFetchText(url, init, token) {
-    const initCopy = prepareRequest(init, token);
-    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.text());
-}
-
 const getContingencyUriParamType = (contingencyListType) => {
     switch (contingencyListType) {
         case ContingencyListType.SCRIPT.id:
@@ -170,43 +108,6 @@ export function fetchValidateUser(user) {
             } else {
                 throw error;
             }
-        });
-}
-
-export function fetchAuthorizationCodeFlowFeatureFlag() {
-    console.info(`Fetching authorization code flow feature flag...`);
-    return fetchEnv()
-        .then((res) =>
-            fetch(res.appsMetadataServerUrl + '/authentication.json')
-        )
-        .then((res) => res.json())
-        .then((res) => {
-            console.log(
-                `Authorization code flow is ${
-                    res.authorizationCodeFlowFeatureFlag
-                        ? 'enabled'
-                        : 'disabled'
-                }`
-            );
-            return res.authorizationCodeFlowFeatureFlag;
-        })
-        .catch((error) => {
-            console.error(error);
-            console.warn(
-                `Something wrong happened when retrieving authentication.json: authorization code flow will be disabled`
-            );
-            return false;
-        });
-}
-
-export function fetchVersion() {
-    console.info(`Fetching global metadata...`);
-    return fetchEnv()
-        .then((env) => fetch(env.appsMetadataServerUrl + '/version.json'))
-        .then((response) => response.json())
-        .catch((reason) => {
-            console.error('Error while fetching the version : ' + reason);
-            return reason;
         });
 }
 
