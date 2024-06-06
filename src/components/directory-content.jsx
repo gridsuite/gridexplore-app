@@ -310,6 +310,7 @@ const DirectoryContent = () => {
 
     const onContextMenu = useCallback(
         (event) => {
+            //We check if the context menu was triggered from a row to prevent displaying both the directory and the content context menus
             const isRow = !!event.target.closest(`.${CUSTOM_ROW_CLASS}`);
             if (!isRow) {
                 if (selectedDirectory) {
