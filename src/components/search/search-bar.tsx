@@ -20,8 +20,8 @@ import {
     ElementType,
     useDebounce,
     useSnackMessage,
-  fetchDirectoryContent,
-  ElementAttributes,
+    fetchDirectoryContent,
+    ElementAttributes,
 } from '@gridsuite/commons-ui';
 import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
