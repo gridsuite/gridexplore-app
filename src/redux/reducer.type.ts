@@ -6,7 +6,6 @@
  */
 import { ElementType } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { ElementAttributes } from '@gridsuite/commons-ui';
 
 type UserProfile = {
     sub: string;
@@ -49,7 +48,7 @@ export interface ITreeData {
 
 export interface ReduxState {
     activeDirectory: UUID;
-    selectedDirectory: ElementAttributes;
+    selectedDirectory: IDirectory;
     treeData: ITreeData;
     user: IUser;
 }
