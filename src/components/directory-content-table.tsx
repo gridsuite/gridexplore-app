@@ -28,6 +28,8 @@ const onGridReady = ({ api }: GridReadyEvent<IElement>) => {
 
 const getRowId = (params: GetRowIdParams<IElement>) => params.data?.elementUuid;
 
+export const CUSTOM_ROW_CLASS = 'custom-row-class'
+
 const getRowStyle = (cellData: RowClassParams<IElement>) => {
     const style: Record<string, string> = { fontSize: '1rem' };
     if (
@@ -69,7 +71,7 @@ export const DirectoryContentTable = ({
             columnDefs={colDef}
             getRowStyle={getRowStyle}
             //We set a custom className for rows in order to easily determine if a context menu event is happening on a row or not
-            rowClass={'custom-row-class'}
+            rowClass={CUSTOM_ROW_CLASS}
         />
     );
 };

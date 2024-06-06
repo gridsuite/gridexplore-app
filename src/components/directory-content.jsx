@@ -53,7 +53,7 @@ import {
     isRowUnchecked,
 } from './utils/directory-content-utils';
 import NoContentDirectory from './no-content-directory';
-import { DirectoryContentTable } from './directory-content-table';
+import { DirectoryContentTable, CUSTOM_ROW_CLASS } from './directory-content-table';
 
 const circularProgressSize = '70px';
 
@@ -310,7 +310,7 @@ const DirectoryContent = () => {
 
     const onContextMenu = useCallback(
         (event) => {
-            const isRow = !!event.target.closest('.custom-row-class');
+            const isRow = !!event.target.closest(`.${CUSTOM_ROW_CLASS}`);
             if (!isRow) {
                 if (selectedDirectory) {
                     dispatch(setActiveDirectory(selectedDirectory.elementUuid));
