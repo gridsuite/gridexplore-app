@@ -21,7 +21,6 @@ import {
     useDebounce,
     useSnackMessage,
     fetchDirectoryContent,
-    ElementAttributes,
 } from '@gridsuite/commons-ui';
 import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -157,7 +156,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 const elementUuidPath = matchingElement?.pathUuid.reverse();
                 const promises = elementUuidPath.map((e: string) => {
                     return fetchDirectoryContent(e as UUID)
-                        .then((res: ElementAttributes[]) => {
+                        .then((res) => {
                             updateMapData(
                                 e,
                                 res.filter(
