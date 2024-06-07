@@ -7,7 +7,11 @@
 
 import { useSelector } from 'react-redux';
 import React, { useRef, useEffect, useCallback, useState } from 'react';
-import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ElementAttributes,
+    fetchElementsInfos,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { IElement, ReduxState } from '../redux/reducer.type';
 

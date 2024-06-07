@@ -13,7 +13,7 @@ import {
     ElementType,
     getFileIcon,
     OverflowableText,
-    ElementAttributes
+    ElementAttributes,
 } from '@gridsuite/commons-ui';
 
 const isElementCaseOrStudy = (objectType: ElementType) => {

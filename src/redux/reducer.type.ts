@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { UUID } from 'crypto';
-import { ElementAttributes, ElementType } from '@gridsuite/commons-ui';
+import { ElementType } from '@gridsuite/commons-ui';
 
 type UserProfile = {
     sub: string;
