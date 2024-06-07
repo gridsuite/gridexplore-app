@@ -859,7 +859,7 @@ export function searchElementsInfos(searchTerm) {
     );
 }
 
-//Temporally added here to be deleted once IElementMetadata is added to fetchElementsInfos in commons ui
+//Temporally added here to be deleted once IElementMetadata is added to fetchElementsInfos return type in commons ui
 export function fetchElementsInfos(ids, elementTypes, _equipmentTypes) {
     console.info('Fetching elements metadata ... ');
 
