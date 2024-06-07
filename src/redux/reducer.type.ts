@@ -26,7 +26,7 @@ interface IUser {
 export interface IElement {
     elementUuid: UUID;
     elementName: string;
-    description: string;
+    description?: string;
     type: ElementType;
     owner: string;
     subdirectoriesCount: number;
