@@ -6,31 +6,35 @@
  */
 
 import { defaultColumnDefinition } from './utils/directory-content-utils';
-import { CustomAGGrid, ElementType } from '@gridsuite/commons-ui';
+import {
+    CustomAGGrid,
+    ElementType,
+    ElementAttributes,
+} from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { IElement } from '../redux/reducer.type';
 import { GetRowIdParams } from 'ag-grid-community/dist/types/core/interfaces/iCallbackParams';
 import { ColDef, GridReadyEvent, RowClassParams } from 'ag-grid-community';
 import { RefObject } from 'react';
 
 interface DirectoryContentTableProps {
-    gridRef: RefObject<AgGridReact<IElement>>;
-    rows: IElement[];
+    gridRef: RefObject<AgGridReact<ElementAttributes>>;
+    rows: ElementAttributes[];
     handleCellContextualMenu: () => void;
     handleRowSelected: () => void;
     handleCellClick: () => void;
     colDef: ColDef[];
 }
 
-const onGridReady = ({ api }: GridReadyEvent<IElement>) => {
+const onGridReady = ({ api }: GridReadyEvent<ElementAttributes>) => {
     api?.sizeColumnsToFit();
 };
 
-const getRowId = (params: GetRowIdParams<IElement>) => params.data?.elementUuid;
+const getRowId = (params: GetRowIdParams<ElementAttributes>) =>
+    params.data?.elementUuid;
 
 export const CUSTOM_ROW_CLASS = 'custom-row-class';
 
-const getRowStyle = (cellData: RowClassParams<IElement>) => {
+const getRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
     const style: Record<string, string> = { fontSize: '1rem' };
     if (
         cellData.data &&

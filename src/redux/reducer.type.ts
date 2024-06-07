@@ -23,21 +23,8 @@ interface IUser {
     expires_at: number;
 }
 
-export interface IElement {
-    elementUuid: UUID;
-    elementName: string;
-    type: ElementType;
-    owner: string;
-    subdirectoriesCount: number;
-    creationDate: string;
-    lastModificationDate: string;
-    lastModifiedBy: string;
-    children: any[];
-    parentUuid: null | UUID;
-}
-
 // IDirectory is exactly an IElement, with a specific type value
-export type IDirectory = IElement & {
+export type IDirectory = ElementAttributes & {
     type: ElementType.DIRECTORY;
 };
 

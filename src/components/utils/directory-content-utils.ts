@@ -7,7 +7,6 @@
 
 import { IntlShape } from 'react-intl';
 import { UUID } from 'crypto';
-import { IElement } from '../../redux/reducer.type';
 import { AgGridReact } from 'ag-grid-react';
 import React from 'react';
 import { ColDef } from 'ag-grid-community';
@@ -40,7 +39,10 @@ export const computeCheckedElements = (
     );
 };
 
-export const isRowUnchecked = (row: IElement, checkedRows: IElement[]) =>
+export const isRowUnchecked = (
+    row: ElementAttributes,
+    checkedRows: ElementAttributes[]
+) =>
     checkedRows?.length &&
     row?.elementUuid &&
     !checkedRows.find(
