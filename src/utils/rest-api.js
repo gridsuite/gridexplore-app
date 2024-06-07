@@ -858,23 +858,3 @@ export function searchElementsInfos(searchTerm) {
             urlSearchParams.toString()
     );
 }
-
-//Temporally added here to be deleted once IElementMetadata is added to fetchElementsInfos return type in commons ui
-export function fetchElementsInfos(ids, elementTypes, _equipmentTypes) {
-    console.info('Fetching elements metadata ... ');
-
-    // Add params to Url
-    const tmp = ids?.filter((id) => id);
-    const idsParams = tmp?.length ? tmp.map((id) => ['ids', id]) : [];
-    const elementTypesParams = elementTypes?.length
-        ? elementTypes.map((type) => ['elementTypes', type])
-        : [];
-    const params = [...idsParams, ...elementTypesParams];
-    const urlSearchParams = new URLSearchParams(params).toString();
-
-    const fetchElementsInfosUrl =
-        PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/elements/metadata?' +
-        urlSearchParams;
-    return backendFetchJson(fetchElementsInfosUrl);
-}

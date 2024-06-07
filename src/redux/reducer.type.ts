@@ -26,7 +26,7 @@ interface IUser {
 export interface IElement {
     elementUuid: UUID;
     elementName: string;
-    description?: string;
+    description: string;
     type: ElementType;
     owner: string;
     subdirectoriesCount: number;
@@ -36,14 +36,6 @@ export interface IElement {
     children: any[];
     parentUuid: null | UUID;
     uploading?: boolean;
-}
-
-export interface IElementMetadata extends ElementAttributes {
-    specificMetadata: {
-        type: string;
-        equipmentType: string;
-        format: string | null;
-    };
 }
 
 // IDirectory is exactly an IElement, with a specific type value
