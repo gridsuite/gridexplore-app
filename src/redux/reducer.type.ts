@@ -4,8 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { UUID } from 'crypto';
 import { ElementType } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
 
 type UserProfile = {
     sub: string;
@@ -26,7 +26,6 @@ interface IUser {
 export interface IElement {
     elementUuid: UUID;
     elementName: string;
-    description: string;
     type: ElementType;
     owner: string;
     subdirectoriesCount: number;
@@ -35,7 +34,6 @@ export interface IElement {
     lastModifiedBy: string;
     children: any[];
     parentUuid: null | UUID;
-    uploading?: boolean;
 }
 
 // IDirectory is exactly an IElement, with a specific type value
