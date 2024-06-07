@@ -15,14 +15,12 @@ import {
     useState,
 } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
-import {
-    fetchDirectoryContent,
-    searchElementsInfos,
-} from '../../utils/rest-api';
+import { searchElementsInfos } from '../../utils/rest-api';
 import {
     ElementType,
     useDebounce,
     useSnackMessage,
+    fetchDirectoryContent,
 } from '@gridsuite/commons-ui';
 import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -36,13 +34,14 @@ import {
     ITreeData,
     ReduxState,
 } from '../../redux/reducer.type';
+import { UUID } from 'crypto';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 
 interface matchingElementProps {
     id: string;
     name: string;
-    type: string;
+    type: ElementType;
     pathName: string[];
     pathUuid: string[];
 }
@@ -161,7 +160,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
             if (matchingElement !== undefined) {
                 const elementUuidPath = matchingElement?.pathUuid.reverse();
                 const promises = elementUuidPath.map((e: string) => {
-                    return fetchDirectoryContent(e)
+                    return fetchDirectoryContent(e as UUID)
                         .then((res: IElement[]) => {
                             updateMapData(
                                 e,

@@ -10,8 +10,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import { ElementType } from '@gridsuite/commons-ui';
-import { useDebounce } from '@gridsuite/commons-ui';
+import { ElementType, useDebounce } from '@gridsuite/commons-ui';
 
 const styles = {
     helperText: {
