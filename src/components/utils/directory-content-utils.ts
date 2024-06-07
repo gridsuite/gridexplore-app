@@ -7,7 +7,7 @@
 
 import { IntlShape } from 'react-intl';
 import { UUID } from 'crypto';
-import { IElement, IElementMetadata } from '../../redux/reducer.type';
+import { IElement } from '../../redux/reducer.type';
 import { AgGridReact } from 'ag-grid-react';
 import React from 'react';
 import { ColDef } from 'ag-grid-community';
@@ -16,10 +16,11 @@ import { DescriptionCellRenderer } from './renderers/description-cell-renderer';
 import { TypeCellRenderer } from './renderers/type-cell-renderer';
 import { UserCellRenderer } from './renderers/user-cell-renderer';
 import { DateCellRenderer } from './renderers/date-cell-renderer';
+import type { ElementAttributes } from '@gridsuite/commons-ui';
 
 export const formatMetadata = (
-    data: IElementMetadata,
-    childrenMetadata: Record<UUID, IElementMetadata>
+    data: ElementAttributes,
+    childrenMetadata: Record<UUID, ElementAttributes>
 ) => ({
     ...data,
     subtype: childrenMetadata[data.elementUuid]?.specificMetadata.type,
@@ -28,12 +29,12 @@ export const formatMetadata = (
 
 export const computeCheckedElements = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
-    childrenMetadata: Record<UUID, IElementMetadata>
+    childrenMetadata: Record<UUID, ElementAttributes>
 ) => {
     return (
         gridRef.current?.api
             ?.getSelectedRows()
-            .map((row: IElementMetadata) =>
+            .map((row: ElementAttributes) =>
                 formatMetadata(row, childrenMetadata)
             ) ?? []
     );
@@ -56,7 +57,7 @@ export const defaultColumnDefinition = {
     flex: 1,
 };
 export const getColumnsDefinition = (
-    childrenMetadata: Record<UUID, IElementMetadata>,
+    childrenMetadata: Record<UUID, ElementAttributes>,
     intl: IntlShape
 ): ColDef[] => [
     {

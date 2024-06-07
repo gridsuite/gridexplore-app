@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { IElement, IElementMetadata } from '../../../redux/reducer.type';
+import { IElement } from '../../../redux/reducer.type';
 import { UUID } from 'crypto';
 import { IntlShape, useIntl } from 'react-intl';
 import { Box, Theme } from '@mui/material';
@@ -13,6 +13,7 @@ import {
     ElementType,
     getFileIcon,
     OverflowableText,
+    ElementAttributes
 } from '@gridsuite/commons-ui';
 
 const isElementCaseOrStudy = (objectType: ElementType) => {
@@ -21,7 +22,7 @@ const isElementCaseOrStudy = (objectType: ElementType) => {
 
 const getDisplayedElementName = (
     data: IElement,
-    childrenMetadata: Record<UUID, IElementMetadata>,
+    childrenMetadata: Record<UUID, ElementAttributes>,
     intl: IntlShape
 ) => {
     const { elementName, uploading, elementUuid } = data;
@@ -66,7 +67,7 @@ export const NameCellRenderer = ({
     childrenMetadata,
 }: {
     data: IElement;
-    childrenMetadata: Record<UUID, IElementMetadata>;
+    childrenMetadata: Record<UUID, ElementAttributes>;
 }) => {
     const intl = useIntl();
     return (

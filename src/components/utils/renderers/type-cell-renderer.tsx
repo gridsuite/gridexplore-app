@@ -4,9 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ElementType, OverflowableText } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    OverflowableText,
+    ElementAttributes,
+} from '@gridsuite/commons-ui';
 import { IntlShape, useIntl } from 'react-intl';
-import { IElement, IElementMetadata } from '../../../redux/reducer.type';
+import { IElement } from '../../../redux/reducer.type';
 import { UUID } from 'crypto';
 import { Box } from '@mui/material';
 
@@ -61,7 +65,7 @@ export const TypeCellRenderer = ({
     childrenMetadata,
 }: {
     data: IElement;
-    childrenMetadata: Record<UUID, IElementMetadata>;
+    childrenMetadata: Record<UUID, ElementAttributes>;
 }) => {
     const intl = useIntl();
     return (
