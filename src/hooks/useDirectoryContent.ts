@@ -13,7 +13,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { IElement, ReduxState } from '../redux/reducer.type';
+import { ReduxState } from '../redux/reducer.type';
 
 export const useDirectoryContent = (
     setIsMissingDataAfterDirChange: React.Dispatch<
@@ -27,7 +27,7 @@ export const useDirectoryContent = (
         Record<UUID, ElementAttributes>
     >({});
     const { snackError } = useSnackMessage();
-    const previousData = useRef<IElement[]>();
+    const previousData = useRef<ElementAttributes[]>();
     previousData.current = currentChildren;
 
     const handleError = useCallback(

@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { IElement } from '../../../redux/reducer.type';
 import { UUID } from 'crypto';
 import { IntlShape, useIntl } from 'react-intl';
 import { Box, Theme } from '@mui/material';
@@ -21,7 +20,7 @@ const isElementCaseOrStudy = (objectType: ElementType) => {
 };
 
 const getDisplayedElementName = (
-    data: IElement,
+    data: ElementAttributes,
     childrenMetadata: Record<UUID, ElementAttributes>,
     intl: IntlShape
 ) => {
@@ -66,7 +65,7 @@ export const NameCellRenderer = ({
     data,
     childrenMetadata,
 }: {
-    data: IElement;
+    data: ElementAttributes;
     childrenMetadata: Record<UUID, ElementAttributes>;
 }) => {
     const intl = useIntl();

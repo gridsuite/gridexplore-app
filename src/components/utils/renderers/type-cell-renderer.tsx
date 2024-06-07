@@ -10,7 +10,6 @@ import {
     ElementAttributes,
 } from '@gridsuite/commons-ui';
 import { IntlShape, useIntl } from 'react-intl';
-import { IElement } from '../../../redux/reducer.type';
 import { UUID } from 'crypto';
 import { Box } from '@mui/material';
 
@@ -64,7 +63,7 @@ export const TypeCellRenderer = ({
     data,
     childrenMetadata,
 }: {
-    data: IElement;
+    data: ElementAttributes;
     childrenMetadata: Record<UUID, ElementAttributes>;
 }) => {
     const intl = useIntl();
