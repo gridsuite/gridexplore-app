@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { UUID } from 'crypto';
-import { ElementType } from '@gridsuite/commons-ui';
+import { ElementAttributes, ElementType } from '@gridsuite/commons-ui';
 
 type UserProfile = {
     sub: string;
@@ -38,9 +38,7 @@ export interface IElement {
     uploading?: boolean;
 }
 
-export interface IElementMetadata {
-    elementUuid: UUID;
-    elementName: string;
+export interface IElementMetadata extends ElementAttributes {
     specificMetadata: {
         type: string;
         equipmentType: string;

@@ -8,9 +8,9 @@
 import { useSelector } from 'react-redux';
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { fetchElementsInfos } from '../utils/rest-api';
 import { UUID } from 'crypto';
 import { IElement, IElementMetadata, ReduxState } from '../redux/reducer.type';
+import { fetchElementsInfos } from '../utils/rest-api';
 
 export const useDirectoryContent = (
     setIsMissingDataAfterDirChange: React.Dispatch<
@@ -49,8 +49,8 @@ export const useDirectoryContent = (
             .map((e) => e.elementUuid);
         if (childrenToFetchElementsInfos.length > 0) {
             fetchElementsInfos(childrenToFetchElementsInfos)
-                .then((res: IElementMetadata[]) => {
-                    res.forEach((e) => {
+                .then((res) => {
+                    res.forEach((e: IElementMetadata) => {
                         metadata[e.elementUuid] = e;
                     });
                 })
