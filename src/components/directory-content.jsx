@@ -53,7 +53,10 @@ import {
     isRowUnchecked,
 } from './utils/directory-content-utils';
 import NoContentDirectory from './no-content-directory';
-import { DirectoryContentTable, CUSTOM_ROW_CLASS } from './directory-content-table';
+import {
+    DirectoryContentTable,
+    CUSTOM_ROW_CLASS,
+} from './directory-content-table';
 
 const circularProgressSize = '70px';
 
