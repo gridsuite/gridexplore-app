@@ -182,6 +182,7 @@ const ExplicitNamingForm = () => {
                 fileHeaders: csvFileHeaders,
                 getDataFromCsv: getDataFromCsvFile,
                 csvData: csvInitialData,
+                config: { delimiter: ',' },
             }}
         />
     );
