@@ -73,10 +73,12 @@ export const TypeCellRenderer = ({
                 <OverflowableText
                     text={getElementTypeTranslation(
                         data?.type,
-                        childrenMetadata[data?.elementUuid]?.specificMetadata
-                            .type,
-                        childrenMetadata[data?.elementUuid]?.specificMetadata
-                            .format,
+                        childrenMetadata[
+                            data?.elementUuid
+                        ]?.specificMetadata.type?.toString(),
+                        childrenMetadata[
+                            data?.elementUuid
+                        ]?.specificMetadata.format?.toString(),
                         intl
                     )}
                     tooltipSx={styles.tooltip}
