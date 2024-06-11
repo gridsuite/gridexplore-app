@@ -14,14 +14,6 @@ import {
 // https://mui.com/material-ui/customization/theming/#typescript
 declare module '@mui/material/styles' {
     export * from '@mui/material/styles';
-    interface PaletteExtension {
-        cancelButtonColor: { main: string };
-        tabBackground: string;
-    }
-    export interface Palette extends MuiPalette, Required<PaletteExtension> {}
-    export interface PaletteOptions
-        extends MuiPaletteOptions,
-            Partial<PaletteExtension> {}
 
     interface ThemeExtension {
         row: {
