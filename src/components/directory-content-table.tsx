@@ -6,17 +6,17 @@
  */
 
 import { defaultColumnDefinition } from './utils/directory-content-utils';
-import {
-    CustomAGGrid,
-    ElementType,
-    ElementAttributes,
-} from '@gridsuite/commons-ui';
-import { AgGridReact } from 'ag-grid-react';
+import { CustomAGGrid, ElementAttributes } from '@gridsuite/commons-ui';
+import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import { GetRowIdParams } from 'ag-grid-community/dist/types/core/interfaces/iCallbackParams';
-import { ColDef, GridReadyEvent, RowClassParams } from 'ag-grid-community';
-import { RefObject } from 'react';
+import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
+import { RefObject, useCallback } from 'react';
 
-interface DirectoryContentTableProps {
+interface DirectoryContentTableProps
+    extends Pick<
+        AgGridReactProps<ElementAttributes>,
+        'getRowStyle' | 'onGridReady'
+    > {
     gridRef: RefObject<AgGridReact<ElementAttributes>>;
     rows: ElementAttributes[];
     handleCellContextualMenu: () => void;
@@ -25,7 +25,7 @@ interface DirectoryContentTableProps {
     colDef: ColDef[];
 }
 
-const onGridReady = ({ api }: GridReadyEvent<ElementAttributes>) => {
+const sizeColumnToFit = (api: GridApi<ElementAttributes>) => {
     api?.sizeColumnsToFit();
 };
 
@@ -34,31 +34,24 @@ const getRowId = (params: GetRowIdParams<ElementAttributes>) =>
 
 export const CUSTOM_ROW_CLASS = 'custom-row-class';
 
-const getRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
-    const style: Record<string, string> = { fontSize: '1rem' };
-    if (
-        cellData.data &&
-        ![
-            ElementType.CASE,
-            ElementType.LOADFLOW_PARAMETERS,
-            ElementType.SENSITIVITY_PARAMETERS,
-            ElementType.SECURITY_ANALYSIS_PARAMETERS,
-            ElementType.VOLTAGE_INIT_PARAMETERS,
-        ].includes(cellData.data.type)
-    ) {
-        style.cursor = 'pointer';
-    }
-    return style;
-};
-
 export const DirectoryContentTable = ({
     gridRef,
     rows,
+    getRowStyle,
     handleCellContextualMenu,
     handleRowSelected,
     handleCellClick,
+    onGridReady,
     colDef,
 }: DirectoryContentTableProps) => {
+    const handleGridReady = useCallback(
+        (event: GridReadyEvent<ElementAttributes>) => {
+            sizeColumnToFit(event.api);
+            onGridReady?.(event);
+        },
+        [onGridReady]
+    );
+
     return (
         <CustomAGGrid
             ref={gridRef}
@@ -67,7 +60,7 @@ export const DirectoryContentTable = ({
             defaultColDef={defaultColumnDefinition}
             rowSelection="multiple"
             suppressRowClickSelection
-            onGridReady={onGridReady}
+            onGridReady={handleGridReady}
             onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
             onRowSelected={handleRowSelected}

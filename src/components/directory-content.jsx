@@ -7,7 +7,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
+import {
+    setActiveDirectory,
+    setSearchedElement,
+    setSelectionForCopy,
+} from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import * as constants from '../utils/UIconstants';
@@ -24,7 +28,7 @@ import {
     DescriptionModificationDialog,
     noSelectionForCopy,
 } from '@gridsuite/commons-ui';
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 
 import { elementExists, getFilterById, updateElement } from '../utils/rest-api';
 
@@ -51,6 +55,7 @@ import {
 } from './directory-content-table';
 
 const circularProgressSize = '70px';
+const SEARCH_HIGHLIGHT_DURATION_MS = 4000;
 
 const styles = {
     link: (theme) => ({
@@ -80,9 +85,11 @@ const DirectoryContent = () => {
     const treeData = useSelector((state) => state.treeData);
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
+    const theme = useTheme();
 
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
     const activeDirectory = useSelector((state) => state.activeDirectory);
+    const searchedElement = useSelector((state) => state.searchedElement);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -520,6 +527,43 @@ const DirectoryContent = () => {
         );
     };
 
+    const onGridReady = useCallback(
+        ({ api }) => {
+            // if there is a searched element, we scroll to it, style it for SEARCH_HIGHTLIGHT_DURATION, then remove it from searchedElement to go back to previous style
+            if (!searchedElement) {
+                return;
+            }
+            const searchedElementRow = api.getRowNode(searchedElement.id);
+            if (searchedElementRow) {
+                api.ensureIndexVisible(searchedElementRow.rowIndex, 'top');
+                setTimeout(() => {
+                    dispatch(setSearchedElement(null));
+                }, SEARCH_HIGHLIGHT_DURATION_MS);
+            }
+        },
+        [searchedElement, dispatch]
+    );
+
+    const getRowStyle = (cellData) => {
+        const style = { fontSize: '1rem' };
+        if (
+            cellData.data &&
+            ![
+                ElementType.CASE,
+                ElementType.LOADFLOW_PARAMETERS,
+                ElementType.SENSITIVITY_PARAMETERS,
+                ElementType.SECURITY_ANALYSIS_PARAMETERS,
+                ElementType.VOLTAGE_INIT_PARAMETERS,
+            ].includes(cellData.data.type)
+        ) {
+            style.cursor = 'pointer';
+        }
+        if (cellData.data.elementUuid === searchedElement?.id) {
+            style.backgroundColor = theme.row.hover;
+        }
+        return style;
+    };
+
     const renderContent = () => {
         // Here we wait for Metadata for the folder content
         if (isMissingDataAfterDirChange) {
@@ -550,6 +594,8 @@ const DirectoryContent = () => {
                 handleRowSelected={handleRowSelected}
                 handleCellClick={handleCellClick}
                 colDef={getColumnsDefinition(childrenMetadata, intl)}
+                getRowStyle={getRowStyle}
+                onGridReady={onGridReady}
             />
         );
     };

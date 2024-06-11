@@ -37,6 +37,7 @@ export interface ReduxState {
     activeDirectory: UUID;
     currentChildren: ElementAttributes[];
     selectedDirectory: ElementAttributes;
+    searchedElement: ElementAttributes;
     treeData: ITreeData;
     user: IUser;
 }

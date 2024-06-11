@@ -24,7 +24,11 @@ import {
 } from '@gridsuite/commons-ui';
 import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDirectory, setTreeData } from '../../redux/actions';
+import {
+    setSearchedElement,
+    setSelectedDirectory,
+    setTreeData,
+} from '../../redux/actions';
 import { updatedTree } from '../tree-views-container';
 import { useIntl } from 'react-intl';
 import { SearchItem } from './search-item';
@@ -175,10 +179,17 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 Promise.all(promises).then(() => {
                     const lastElement = elementUuidPath.pop();
                     handleDispatchDirectory(lastElement);
+                    dispatch(setSearchedElement(data));
                 });
             }
         },
-        [elementsFound, updateMapData, handleDispatchDirectory, snackError]
+        [
+            elementsFound,
+            updateMapData,
+            handleDispatchDirectory,
+            snackError,
+            dispatch,
+        ]
     );
 
     return (
