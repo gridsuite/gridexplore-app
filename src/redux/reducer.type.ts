@@ -48,7 +48,7 @@ export interface ITreeData {
 export interface ReduxState {
     activeDirectory: UUID;
     currentChildren: ElementAttributes[];
-    selectedDirectory: ElementAttributes;
+    selectedDirectory: ElementAttributes | null;
     searchedElement: ElementAttributesES;
     treeData: ITreeData;
     user: IUser;

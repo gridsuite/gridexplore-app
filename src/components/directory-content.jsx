@@ -85,8 +85,6 @@ const DirectoryContent = () => {
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    const [onGridReady, getRowStyle] = useHighlightSearchedElement();
-
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const dispatchSelectionForCopy = useCallback(
@@ -147,6 +145,9 @@ const DirectoryContent = () => {
         setIsMissingDataAfterDirChange
     );
     const [checkedRows, setCheckedRows] = useState([]);
+    const [onGridReady, getRowStyle] = useHighlightSearchedElement(
+        gridRef?.current?.api
+    );
 
     /* Menu states */
     const [mousePosition, setMousePosition] = useState(initialMousePosition);
