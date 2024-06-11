@@ -10,8 +10,8 @@ import { useTheme } from '@mui/material';
 import { GridReadyEvent, RowClassParams, RowStyle } from 'ag-grid-community';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSearchedElement } from 'redux/actions';
-import { ReduxState } from 'redux/reducer.type';
+import { setSearchedElement } from '../../redux/actions';
+import { ReduxState } from '../../redux/reducer.type';
 
 const SEARCH_HIGHLIGHT_DURATION_MS = 4000;
 
