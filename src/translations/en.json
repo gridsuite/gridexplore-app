@@ -296,5 +296,8 @@
   "property": "Property",
   "substationProperty": "Substation property",
   "substationProperty1": "Substation property 1",
-  "substationProperty2": "Substation property 2"
+  "substationProperty2": "Substation property 2",
+  "voltageLevelProperty": "Voltage level property",
+  "voltageLevelProperty1": "Voltage level property 1",
+  "voltageLevelProperty2": "Voltage level property 2"
 }

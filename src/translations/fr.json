@@ -296,5 +296,8 @@
   "property": "Propriété",
   "substationProperty": "Propriété site",
   "substationProperty1": "Propriété site 1",
-  "substationProperty2": "Propriété site 2"
+  "substationProperty2": "Propriété site 2",
+  "voltageLevelProperty": "Propriété poste",
+  "voltageLevelProperty1": "Propriété poste 1",
+  "voltageLevelProperty2": "Propriété poste 2"
 }
