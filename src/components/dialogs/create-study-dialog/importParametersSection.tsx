@@ -27,7 +27,7 @@ const ImportParametersSection: FunctionComponent = () => {
 
     const handleParamsChange = (
         paramName: string,
-        value: string | string[] | boolean,
+        value: unknown,
         isEdit: boolean
     ): void => {
         if (!isEdit) {

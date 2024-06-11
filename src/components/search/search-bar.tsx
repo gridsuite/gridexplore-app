@@ -5,29 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { FunctionComponent, RefObject, useCallback, useRef } from 'react';
-import {
-    fetchDirectoryContent,
-    searchElementsInfos,
-} from '../../utils/rest-api';
+import { searchElementsInfos } from '../../utils/rest-api';
 import {
     ElementSearchInput,
     ElementType,
     useElementSearch,
     useSnackMessage,
+    fetchDirectoryContent,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory, setTreeData } from '../../redux/actions';
 import { updatedTree } from '../tree-views-container';
 import { MatchingElementProps, SearchItem } from './search-item';
-import {
-    IDirectory,
-    IElement,
-    ITreeData,
-    ReduxState,
-} from '../../redux/reducer.type';
+import { IDirectory, ITreeData, ReduxState } from '../../redux/reducer.type';
 import { RenderElementProps } from '@gridsuite/commons-ui/dist/components/ElementSearchDialog/element-search-input';
 import { TextFieldProps } from '@mui/material';
 import { SearchRenderInput } from './search-render-input';
+import { UUID } from 'crypto';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 
@@ -110,8 +104,8 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
             if (matchingElement !== undefined) {
                 const elementUuidPath = matchingElement?.pathUuid.reverse();
                 const promises = elementUuidPath.map((e: string) => {
-                    return fetchDirectoryContent(e)
-                        .then((res: IElement[]) => {
+                    return fetchDirectoryContent(e as UUID)
+                        .then((res) => {
                             updateMapData(
                                 e,
                                 res.filter(
