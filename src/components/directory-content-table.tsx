@@ -6,10 +6,19 @@
  */
 
 import { defaultColumnDefinition } from './utils/directory-content-utils';
-import { CustomAGGrid, ElementAttributes } from '@gridsuite/commons-ui';
+import {
+    CustomAGGrid,
+    ElementAttributes,
+    ElementType,
+} from '@gridsuite/commons-ui';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import { GetRowIdParams } from 'ag-grid-community/dist/types/core/interfaces/iCallbackParams';
-import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
+import {
+    ColDef,
+    GridApi,
+    GridReadyEvent,
+    RowClassParams,
+} from 'ag-grid-community';
 import { RefObject, useCallback } from 'react';
 
 interface DirectoryContentTableProps
@@ -34,6 +43,23 @@ const getRowId = (params: GetRowIdParams<ElementAttributes>) =>
 
 export const CUSTOM_ROW_CLASS = 'custom-row-class';
 
+const getClickableRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
+    const style: Record<string, string> = { fontSize: '1rem' };
+    if (
+        cellData.data &&
+        ![
+            ElementType.CASE,
+            ElementType.LOADFLOW_PARAMETERS,
+            ElementType.SENSITIVITY_PARAMETERS,
+            ElementType.SECURITY_ANALYSIS_PARAMETERS,
+            ElementType.VOLTAGE_INIT_PARAMETERS,
+        ].includes(cellData.data.type)
+    ) {
+        style.cursor = 'pointer';
+    }
+    return style;
+};
+
 export const DirectoryContentTable = ({
     gridRef,
     rows,
@@ -52,6 +78,13 @@ export const DirectoryContentTable = ({
         [onGridReady]
     );
 
+    const getCustomRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
+        return {
+            ...getClickableRowStyle(cellData),
+            ...getRowStyle?.(cellData),
+        };
+    };
+
     return (
         <CustomAGGrid
             ref={gridRef}
@@ -66,7 +99,7 @@ export const DirectoryContentTable = ({
             onRowSelected={handleRowSelected}
             animateRows={true}
             columnDefs={colDef}
-            getRowStyle={getRowStyle}
+            getRowStyle={getCustomRowStyle}
             //We set a custom className for rows in order to easily determine if a context menu event is happening on a row or not
             rowClass={CUSTOM_ROW_CLASS}
         />
