@@ -29,7 +29,10 @@ export const useHighlightSearchedElement = () => {
                 return;
             }
             const searchedElementRow = api.getRowNode(searchedElement.id);
-            if (searchedElementRow?.rowIndex) {
+            if (
+                searchedElementRow?.rowIndex != null &&
+                searchedElementRow?.rowIndex >= 0
+            ) {
                 api.ensureIndexVisible(searchedElementRow.rowIndex, 'top');
                 setTimeout(() => {
                     dispatch(setSearchedElement(null));
