@@ -156,8 +156,8 @@
   "nominalVoltage1": "Nominal Voltage 1",
   "nominalVoltage2": "Nominal Voltage 2",
   "nominalVoltage3": "Nominal Voltage 3",
-  "nominalVoltage1Or": "Nominal Voltage 1 (kV)",
-  "nominalVoltage2Ex": "Nominal Voltage 2 (kV)",
+  "nominalVoltage1KV": "Nominal Voltage 1 (kV)",
+  "nominalVoltage2KV": "Nominal Voltage 2 (kV)",
   "voltageLevelId1": "Voltage level ID 1",
   "voltageLevelId2": "Voltage level ID 2",
   "terminal1Connected": "Connected 1",
@@ -280,8 +280,8 @@
   "Undefined": "Undefined",
   "Auxiliary": "Auxiliary",
   "Fictitious": "Fictitious",
-  "ratedVoltage1Or": "Rated Voltage 1 (kV)",
-  "ratedVoltage2Ex": "Rated Voltage 2 (kV)",
+  "ratedVoltage1KV": "Rated Voltage 1 (kV)",
+  "ratedVoltage2KV": "Rated Voltage 2 (kV)",
   "hasRatioTapChanger": "Ratio tap changer exists",
   "hasPhaseTapChanger" : "Phase tap changer exists",
   "Voltage": "Voltage",
@@ -296,5 +296,8 @@
   "property": "Property",
   "substationProperty": "Substation property",
   "substationProperty1": "Substation property 1",
-  "substationProperty2": "Substation property 2"
+  "substationProperty2": "Substation property 2",
+  "voltageLevelProperty": "Voltage level property",
+  "voltageLevelProperty1": "Voltage level property 1",
+  "voltageLevelProperty2": "Voltage level property 2"
 }
