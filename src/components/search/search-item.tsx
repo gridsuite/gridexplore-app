@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import { FunctionComponent } from 'react';
 import { Theme } from '@mui/material';
+import { ElementAttributesES } from 'redux/reducer.type';
 
 const styles = {
     icon: (theme: Theme) => ({
@@ -37,16 +38,8 @@ interface HighlightedTextProps {
 }
 
 interface SearchItemProps {
-    matchingElement: matchingElementProps;
+    matchingElement: ElementAttributesES;
     inputValue: string;
-}
-
-interface matchingElementProps {
-    id: string;
-    name: string;
-    type: ElementType;
-    pathName: string[];
-    pathUuid: string[];
 }
 
 export const HighlightedText: FunctionComponent<HighlightedTextProps> = ({

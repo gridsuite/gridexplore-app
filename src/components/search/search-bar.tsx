@@ -32,18 +32,15 @@ import {
 import { updatedTree } from '../tree-views-container';
 import { useIntl } from 'react-intl';
 import { SearchItem } from './search-item';
-import { IDirectory, ITreeData, ReduxState } from '../../redux/reducer.type';
+import {
+    ElementAttributesES,
+    IDirectory,
+    ITreeData,
+    ReduxState,
+} from '../../redux/reducer.type';
 import { UUID } from 'crypto';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
-
-interface matchingElementProps {
-    id: string;
-    name: string;
-    type: ElementType;
-    pathName: string[];
-    pathUuid: string[];
-}
 
 interface SearchBarProps {
     inputRef: Ref<any>;
@@ -52,7 +49,7 @@ interface SearchBarProps {
 export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
-    const [elementsFound, setElementsFound] = useState<matchingElementProps[]>(
+    const [elementsFound, setElementsFound] = useState<ElementAttributesES[]>(
         []
     );
     const [inputValue, onInputChange] = useState('');
@@ -103,9 +100,9 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     }, [elementsFound]);
 
     const renderOptionItem = useCallback(
-        (props: any, option: matchingElementProps) => {
+        (props: any, option: ElementAttributesES) => {
             const matchingElement = elementsFound.find(
-                (element: matchingElementProps) => element.id === option.id
+                (element: ElementAttributesES) => element.id === option.id
             );
             return (
                 <SearchItem
@@ -152,9 +149,9 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     );
 
     const handleMatchingElement = useCallback(
-        (event: SyntheticEvent, data: matchingElementProps | string | null) => {
+        (event: SyntheticEvent, data: ElementAttributesES | string | null) => {
             const matchingElement = elementsFound.find(
-                (element: matchingElementProps) => element === data
+                (element: ElementAttributesES) => element === data
             );
             if (matchingElement !== undefined) {
                 const elementUuidPath = matchingElement?.pathUuid.reverse();
