@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { getFileIcon } from '@gridsuite/commons-ui';
+import { ElementType, getFileIcon } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
@@ -44,7 +44,7 @@ interface SearchItemProps {
 interface matchingElementProps {
     id: string;
     name: string;
-    type: string;
+    type: ElementType;
     pathName: string[];
     pathUuid: string[];
 }
@@ -53,7 +53,8 @@ export const HighlightedText: FunctionComponent<HighlightedTextProps> = ({
     text,
     highlight,
 }) => {
-    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+    const escapedHighlight = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const parts = text.split(new RegExp(`(${escapedHighlight})`, 'gi'));
     return (
         <span>
             {parts.map((part, i) =>
