@@ -544,25 +544,28 @@ const DirectoryContent = () => {
         [searchedElement, dispatch]
     );
 
-    const getRowStyle = (cellData) => {
-        const style = { fontSize: '1rem' };
-        if (
-            cellData.data &&
-            ![
-                ElementType.CASE,
-                ElementType.LOADFLOW_PARAMETERS,
-                ElementType.SENSITIVITY_PARAMETERS,
-                ElementType.SECURITY_ANALYSIS_PARAMETERS,
-                ElementType.VOLTAGE_INIT_PARAMETERS,
-            ].includes(cellData.data.type)
-        ) {
-            style.cursor = 'pointer';
-        }
-        if (cellData.data.elementUuid === searchedElement?.id) {
-            style.backgroundColor = theme.row.hover;
-        }
-        return style;
-    };
+    const getRowStyle = useCallback(
+        (cellData) => {
+            const style = { fontSize: '1rem' };
+            if (
+                cellData.data &&
+                ![
+                    ElementType.CASE,
+                    ElementType.LOADFLOW_PARAMETERS,
+                    ElementType.SENSITIVITY_PARAMETERS,
+                    ElementType.SECURITY_ANALYSIS_PARAMETERS,
+                    ElementType.VOLTAGE_INIT_PARAMETERS,
+                ].includes(cellData.data.type)
+            ) {
+                style.cursor = 'pointer';
+            }
+            if (cellData.data.elementUuid === searchedElement?.id) {
+                style.backgroundColor = theme.row.hover;
+            }
+            return style;
+        },
+        [searchedElement?.id, theme.row.hover]
+    );
 
     const renderContent = () => {
         // Here we wait for Metadata for the folder content
