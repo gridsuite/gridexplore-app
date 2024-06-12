@@ -299,5 +299,7 @@
   "substationProperty2": "Propriété site 2",
   "voltageLevelProperty": "Propriété poste",
   "voltageLevelProperty1": "Propriété poste 1",
-  "voltageLevelProperty2": "Propriété poste 2"
+  "voltageLevelProperty2": "Propriété poste 2",
+  "pathRetrievingError": "Une erreur est survenue lors de la récupération du chemin de l'élement"
+
 }
