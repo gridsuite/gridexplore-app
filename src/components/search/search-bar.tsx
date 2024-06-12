@@ -172,10 +172,16 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                         );
                 });
 
-                Promise.all(promises).then(() => {
-                    const lastElement = elementUuidPath.pop();
-                    handleDispatchDirectory(lastElement);
-                });
+                // executes Promises sequentially to update mapData in order
+                promises
+                    .reduce(
+                        (promise, func) => promise.then(() => func),
+                        Promise.resolve()
+                    )
+                    .then(() => {
+                        const lastElement = elementUuidPath.pop();
+                        handleDispatchDirectory(lastElement);
+                    });
             }
         },
         [elementsFound, updateMapData, handleDispatchDirectory, snackError]
