@@ -154,7 +154,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 (element: ElementAttributesES) => element === data
             );
             if (matchingElement !== undefined) {
-                const elementUuidPath = matchingElement?.pathUuid.reverse();
+                const elementUuidPath = matchingElement?.pathUuid;
                 const promises = elementUuidPath.map((e: string) => {
                     return fetchDirectoryContent(e as UUID)
                         .then((res) => {
