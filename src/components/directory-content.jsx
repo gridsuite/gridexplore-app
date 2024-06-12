@@ -668,7 +668,12 @@ const DirectoryContent = () => {
 
     return (
         <>
-            {rows && <ContentToolbar selectedElements={checkedRows} />}
+            {rows && (
+                <ContentToolbar
+                    selectedElements={checkedRows}
+                    onContextMenu={onContextMenu}
+                />
+            )}
             <Grid xs={12} onContextMenu={onContextMenu}>
                 {renderContent()}
             </Grid>
