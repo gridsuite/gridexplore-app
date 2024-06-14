@@ -6,38 +6,33 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-
 import { useDispatch, useSelector } from 'react-redux';
-
 import {
     Navigate,
     Route,
     Routes,
-    useNavigate,
     useLocation,
+    useMatch,
+    useNavigate,
 } from 'react-router-dom';
-
 import {
     selectComputedLanguage,
     selectLanguage,
     selectTheme,
 } from '../redux/actions';
-
 import {
     AuthenticationRouter,
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
-
-import { useMatch } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
-
 import {
     connectNotificationsWsUpdateConfig,
-    fetchAuthorizationCodeFlowFeatureFlag,
     fetchConfigParameter,
     fetchConfigParameters,
+    fetchIdpSettings,
     fetchValidateUser,
 } from '../utils/rest-api';
 import {
@@ -47,7 +42,6 @@ import {
     PARAM_THEME,
 } from '../utils/config-params';
 import { getComputedLanguage } from '../utils/language';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import AppTopBar from './app-top-bar';
 import Grid from '@mui/material/Grid';
 import TreeViewsContainer from './tree-views-container';
@@ -149,23 +143,23 @@ const App = () => {
     );
 
     useEffect(() => {
-        fetchAuthorizationCodeFlowFeatureFlag()
-            .then((authorizationCodeFlowEnabled) => {
-                return initializeAuthenticationProd(
-                    dispatch,
-                    initialMatchSilentRenewCallbackUrl != null,
-                    fetch('idpSettings.json'),
-                    fetchValidateUser,
-                    authorizationCodeFlowEnabled,
-                    initialMatchSigninCallbackUrl != null
-                );
-            })
-            .then((userManager) => {
-                setUserManager({ instance: userManager, error: null });
-            })
-            .catch(function (error) {
+        // need subfunction when async as suggested by rule react-hooks/exhaustive-deps
+        (async function initializeAuthentication() {
+            try {
+                setUserManager({
+                    instance: await initializeAuthenticationProd(
+                        dispatch,
+                        initialMatchSilentRenewCallbackUrl != null,
+                        fetchIdpSettings,
+                        fetchValidateUser,
+                        initialMatchSigninCallbackUrl != null
+                    ),
+                    error: null,
+                });
+            } catch (error) {
                 setUserManager({ instance: null, error: error.message });
-            });
+            }
+        })();
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
     }, [
         initialMatchSilentRenewCallbackUrl,
@@ -219,9 +213,7 @@ const App = () => {
                 <div
                     style={{
                         flexGrow: 1,
-                        /* autosizer (used in virtual table) can return wrong size
-                        (off by 1) and it causes scrollbar to blink
-                        * */
+                        // autosizer (used in virtual table) can return wrong size (off by 1) and it causes scrollbar to blink
                         overflow: 'hidden',
                         marginTop: '20px',
                     }}
