@@ -13,7 +13,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { GetRowIdParams } from 'ag-grid-community/dist/types/core/interfaces/iCallbackParams';
-import { ColDef, GridReadyEvent, RowClassParams } from 'ag-grid-community';
+import { ColDef, RowClassParams } from 'ag-grid-community';
 import { RefObject } from 'react';
 
 interface DirectoryContentTableProps {
