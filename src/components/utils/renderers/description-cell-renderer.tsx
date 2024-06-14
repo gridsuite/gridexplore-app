@@ -45,7 +45,13 @@ export const DescriptionCellRenderer = ({
         <CreateIcon />
     );
     return (
-        <Box sx={{ display: 'inline-flex', verticalAlign: 'middle' }}>
+        <Box
+            sx={{
+                display: 'inline-flex',
+                verticalAlign: 'middle',
+                cursor: 'pointer',
+            }}
+        >
             {icon}
         </Box>
     );
