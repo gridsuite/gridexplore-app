@@ -223,8 +223,10 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                     error.status === 403 &&
                     error.message.includes(HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE)
                 ) {
+                    let limit = error.message.split(/[: ]+/).pop();
                     snackError({
                         messageId: 'maxElementExceededError',
+                        messageValues: { limit: limit },
                     });
                 } else {
                     snackError({

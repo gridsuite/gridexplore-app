@@ -235,8 +235,10 @@ const ContentContextualMenu = (props) => {
                                 HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE
                             )
                         ) {
+                            let limit = error.message.split(/[: ]+/).pop();
                             snackError({
                                 messageId: 'maxElementExceededError',
+                                messageValues: { limit: limit },
                             });
                         } else {
                             handleDuplicateError(error.message);

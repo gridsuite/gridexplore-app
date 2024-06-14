@@ -21,7 +21,7 @@
   "ID": "ID",
   "createNewStudy": "Create a study",
   "studyCreationError": "Error when creating study: {studyName}",
-  "maxElementExceededError": "You have reached your user quota for cases and studies, therefore you cannot import further cases or create further studies for now. Please delete old cases or studies in order to go below the limit of elements",
+  "maxElementExceededError": "You have reached your user quota for cases and studies, therefore you cannot import further cases or create further studies for now. Please delete old cases or studies in order to go below the limit of {limit} elements",
   "directoryUpdateWarning": "Could not update subs (and content) of: {directoryUuid}",
   "renameElement": "Rename the element",
   "renameElementMsg": "Element new name",

@@ -99,8 +99,10 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
                     err.status === 403 &&
                     err.message.includes(HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE)
                 ) {
+                    let limit = err.message.split(/[: ]+/).pop();
                     snackError({
                         messageId: 'maxElementExceededError',
+                        messageValues: { limit: limit },
                     });
                 } else if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                     snackError({
