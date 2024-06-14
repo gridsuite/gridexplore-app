@@ -25,10 +25,6 @@ interface DirectoryContentTableProps {
     colDef: ColDef[];
 }
 
-const onGridReady = ({ api }: GridReadyEvent<ElementAttributes>) => {
-    api?.sizeColumnsToFit();
-};
-
 const getRowId = (params: GetRowIdParams<ElementAttributes>) =>
     params.data?.elementUuid;
 
@@ -67,7 +63,6 @@ export const DirectoryContentTable = ({
             defaultColDef={defaultColumnDefinition}
             rowSelection="multiple"
             suppressRowClickSelection
-            onGridReady={onGridReady}
             onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
             onRowSelected={handleRowSelected}

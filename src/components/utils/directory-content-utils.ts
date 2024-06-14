@@ -81,7 +81,7 @@ export const getColumnsDefinition = (
         }),
         field: 'description',
         cellRenderer: DescriptionCellRenderer,
-        maxWidth: 150,
+        flex: 1.1,
     },
     {
         headerName: intl.formatMessage({
@@ -100,7 +100,7 @@ export const getColumnsDefinition = (
         }),
         field: 'owner',
         cellRenderer: UserCellRenderer,
-        maxWidth: 150,
+        flex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -108,7 +108,6 @@ export const getColumnsDefinition = (
         }),
         field: 'creationDate',
         cellRenderer: DateCellRenderer,
-        maxWidth: 150,
         flex: 2,
     },
     {
@@ -117,7 +116,7 @@ export const getColumnsDefinition = (
         }),
         field: 'lastModifiedBy',
         cellRenderer: UserCellRenderer,
-        maxWidth: 150,
+        flex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -125,7 +124,6 @@ export const getColumnsDefinition = (
         }),
         field: 'lastModificationDate',
         cellRenderer: DateCellRenderer,
-        maxWidth: 150,
         flex: 2,
     },
 ];
