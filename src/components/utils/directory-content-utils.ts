@@ -56,7 +56,8 @@ export const defaultColumnDefinition = {
     wrapHeaderText: true,
     autoHeaderHeight: true,
     suppressMovable: true,
-    flex: 1,
+    comparator: (valueA: string, valueB: string) =>
+        valueA.toLowerCase().localeCompare(valueB.toLowerCase()),
 };
 export const getColumnsDefinition = (
     childrenMetadata: Record<UUID, ElementAttributes>,
