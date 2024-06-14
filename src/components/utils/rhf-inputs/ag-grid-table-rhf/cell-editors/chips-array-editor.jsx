@@ -8,7 +8,10 @@
 import { forwardRef } from 'react';
 import TableCellWrapper from './table-cell-wrapper';
 import { useFormContext } from 'react-hook-form';
-import { FieldConstants, MultipleAutocompleteInput } from '@gridsuite/commons-ui';
+import {
+    FieldConstants,
+    MultipleAutocompleteInput,
+} from '@gridsuite/commons-ui';
 
 const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     const { name, node, colDef } = props;
