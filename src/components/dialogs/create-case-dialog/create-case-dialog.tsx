@@ -8,7 +8,10 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createCase } from '../../../utils/rest-api';
-import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
+import {
+    HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE,
+    HTTP_UNPROCESSABLE_ENTITY_STATUS,
+} from '../../../utils/UIconstants';
 import { Grid } from '@mui/material';
 import {
     addUploadingElement,
@@ -92,7 +95,14 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
         })
             .then(onClose)
             .catch((err) => {
-                if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
+                if (
+                    err.status === 403 &&
+                    err.message.includes(HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE)
+                ) {
+                    snackError({
+                        messageId: 'maxElementExceededError',
+                    });
+                } else if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                     snackError({
                         messageId: 'invalidFormatOrName',
                         headerId: 'caseCreationError',

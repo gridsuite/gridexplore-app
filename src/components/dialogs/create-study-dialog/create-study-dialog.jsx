@@ -16,6 +16,7 @@ import {
 } from '../../../utils/rest-api';
 import {
     HTTP_CONNECTION_FAILED_MESSAGE,
+    HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE,
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
 } from '../../../utils/UIconstants';
 import {
@@ -218,13 +219,22 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 onClose();
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'studyCreationError',
-                    headerValues: {
-                        studyName,
-                    },
-                });
+                if (
+                    error.status === 403 &&
+                    error.message.includes(HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE)
+                ) {
+                    snackError({
+                        messageId: 'maxElementExceededError',
+                    });
+                } else {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'studyCreationError',
+                        headerValues: {
+                            studyName,
+                        },
+                    });
+                }
             })
             .finally(() => {
                 setValue(FieldConstants.CASE_UUID, null);

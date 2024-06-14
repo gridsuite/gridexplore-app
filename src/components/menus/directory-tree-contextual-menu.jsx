@@ -21,7 +21,10 @@ import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 
-import { DialogsId } from '../../utils/UIconstants';
+import {
+    DialogsId,
+    HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE,
+} from '../../utils/UIconstants';
 
 import {
     deleteElement,
@@ -141,7 +144,18 @@ const DirectoryTreeContextualMenu = (props) => {
                         selectionForCopy.typeItem,
                         undefined
                     ).catch((error) => {
-                        handlePasteError(error);
+                        if (
+                            error.status === 403 &&
+                            error.message.includes(
+                                HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE
+                            )
+                        ) {
+                            snackError({
+                                messageId: 'maxElementExceededError',
+                            });
+                        } else {
+                            handlePasteError(error);
+                        }
                     });
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:

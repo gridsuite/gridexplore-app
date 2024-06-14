@@ -25,7 +25,10 @@ import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
 
-import { DialogsId } from '../../utils/UIconstants';
+import {
+    DialogsId,
+    HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE,
+} from '../../utils/UIconstants';
 
 import {
     deleteElements,
@@ -226,7 +229,18 @@ const ContentContextualMenu = (props) => {
                         undefined,
                         activeElement.type
                     ).catch((error) => {
-                        handleDuplicateError(error.message);
+                        if (
+                            error.status === 403 &&
+                            error.message.includes(
+                                HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE
+                            )
+                        ) {
+                            snackError({
+                                messageId: 'maxElementExceededError',
+                            });
+                        } else {
+                            handleDuplicateError(error.message);
+                        }
                     });
                     break;
                 case ElementType.CONTINGENCY_LIST:
