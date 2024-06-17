@@ -87,7 +87,7 @@ let lightTheme = createTheme({
     },
     aggrid: {
         theme: 'ag-theme-alpine',
-        highlightColor: '#8e9c9b',
+        highlightColor: '#E8E8E8',
     },
     agGridBackground: {
         color: 'white',
@@ -144,7 +144,7 @@ let darkTheme = createTheme({
     },
     aggrid: {
         theme: 'ag-theme-alpine-dark',
-        highlightColor: '#545c5b',
+        highlightColor: '#272727',
     },
     agGridBackground: {
         color: '#383838',
