@@ -47,6 +47,7 @@ export const useHighlightSearchedElement = () => {
             const style: RowStyle = { fontSize: '1rem' };
             if (cellData?.data?.elementUuid === searchedElement?.id) {
                 style.backgroundColor = theme.row.hover;
+                style['animation'] = `blink 4s`; // the "blink" keyframes is defined in commons-ui in custom-aggrid.style.ts
             }
             return style;
         },
