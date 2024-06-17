@@ -12,8 +12,12 @@ import {
     ElementAttributes,
 } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { GetRowIdParams } from 'ag-grid-community/dist/types/core/interfaces/iCallbackParams';
-import { ColDef, RowClassParams } from 'ag-grid-community';
+import {
+    ColDef,
+    RowClassParams,
+    AgGridEvent,
+    GetRowIdParams,
+} from 'ag-grid-community';
 import { RefObject } from 'react';
 
 interface DirectoryContentTableProps {
@@ -27,6 +31,9 @@ interface DirectoryContentTableProps {
 
 const getRowId = (params: GetRowIdParams<ElementAttributes>) =>
     params.data?.elementUuid;
+
+const recomputeOverFlowableCells = ({ api }: AgGridEvent) =>
+    api.refreshCells({ force: true, columns: ['elementName', 'type'] });
 
 export const CUSTOM_ROW_CLASS = 'custom-row-class';
 
@@ -66,6 +73,7 @@ export const DirectoryContentTable = ({
             onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
             onRowSelected={handleRowSelected}
+            onGridSizeChanged={recomputeOverFlowableCells}
             animateRows={true}
             columnDefs={colDef}
             getRowStyle={getRowStyle}
