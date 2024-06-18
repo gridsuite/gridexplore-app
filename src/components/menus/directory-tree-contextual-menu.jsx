@@ -21,10 +21,7 @@ import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 
-import {
-    DialogsId,
-    HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE,
-} from '../../utils/UIconstants';
+import { DialogsId } from '../../utils/UIconstants';
 
 import {
     deleteElement,
@@ -46,6 +43,7 @@ import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
+import { handleMaxElementsExceededError } from '../utils/rest-errors';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
@@ -144,20 +142,10 @@ const DirectoryTreeContextualMenu = (props) => {
                         selectionForCopy.typeItem,
                         undefined
                     ).catch((error) => {
-                        if (
-                            error.status === 403 &&
-                            error.message.includes(
-                                HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE
-                            )
-                        ) {
-                            let limit = error.message.split(/[: ]+/).pop();
-                            snackError({
-                                messageId: 'maxElementExceededError',
-                                messageValues: { limit: limit },
-                            });
-                        } else {
-                            handlePasteError(error);
+                        if (handleMaxElementsExceededError(error, snackError)) {
+                            return;
                         }
+                        handlePasteError(error);
                     });
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:

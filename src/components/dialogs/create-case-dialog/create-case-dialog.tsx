@@ -8,10 +8,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createCase } from '../../../utils/rest-api';
-import {
-    HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE,
-    HTTP_UNPROCESSABLE_ENTITY_STATUS,
-} from '../../../utils/UIconstants';
+import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import { Grid } from '@mui/material';
 import {
     addUploadingElement,
@@ -37,6 +34,7 @@ import {
     keyGenerator,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
+import { handleMaxElementsExceededError } from '../../utils/rest-errors';
 
 interface IFormData {
     [FieldConstants.CASE_NAME]: string;
@@ -95,15 +93,8 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
         })
             .then(onClose)
             .catch((err) => {
-                if (
-                    err.status === 403 &&
-                    err.message.includes(HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE)
-                ) {
-                    let limit = err.message.split(/[: ]+/).pop();
-                    snackError({
-                        messageId: 'maxElementExceededError',
-                        messageValues: { limit: limit },
-                    });
+                if (handleMaxElementsExceededError(err, snackError)) {
+                    return;
                 } else if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                     snackError({
                         messageId: 'invalidFormatOrName',

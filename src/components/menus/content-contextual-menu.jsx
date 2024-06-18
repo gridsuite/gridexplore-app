@@ -25,10 +25,7 @@ import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
 
-import {
-    DialogsId,
-    HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE,
-} from '../../utils/UIconstants';
+import { DialogsId } from '../../utils/UIconstants';
 
 import {
     deleteElements,
@@ -61,6 +58,7 @@ import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
+import { handleMaxElementsExceededError } from '../utils/rest-errors';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -229,20 +227,10 @@ const ContentContextualMenu = (props) => {
                         undefined,
                         activeElement.type
                     ).catch((error) => {
-                        if (
-                            error.status === 403 &&
-                            error.message.includes(
-                                HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE
-                            )
-                        ) {
-                            let limit = error.message.split(/[: ]+/).pop();
-                            snackError({
-                                messageId: 'maxElementExceededError',
-                                messageValues: { limit: limit },
-                            });
-                        } else {
-                            handleDuplicateError(error.message);
+                        if (handleMaxElementsExceededError(error, snackError)) {
+                            return;
                         }
+                        handleDuplicateError(error.message);
                     });
                     break;
                 case ElementType.CONTINGENCY_LIST:

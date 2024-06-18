@@ -16,7 +16,6 @@ import {
 } from '../../../utils/rest-api';
 import {
     HTTP_CONNECTION_FAILED_MESSAGE,
-    HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE,
     HTTP_UNPROCESSABLE_ENTITY_STATUS,
 } from '../../../utils/UIconstants';
 import {
@@ -44,6 +43,7 @@ import {
 } from './create-study-dialog-utils';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import PrefilledNameInput from '../commons/prefilled-name-input';
+import { handleMaxElementsExceededError } from '../../utils/rest-errors';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -219,24 +219,16 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 onClose();
             })
             .catch((error) => {
-                if (
-                    error.status === 403 &&
-                    error.message.includes(HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE)
-                ) {
-                    let limit = error.message.split(/[: ]+/).pop();
-                    snackError({
-                        messageId: 'maxElementExceededError',
-                        messageValues: { limit: limit },
-                    });
-                } else {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'studyCreationError',
-                        headerValues: {
-                            studyName,
-                        },
-                    });
+                if (handleMaxElementsExceededError(error, snackError)) {
+                    return;
                 }
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'studyCreationError',
+                    headerValues: {
+                        studyName,
+                    },
+                });
             })
             .finally(() => {
                 setValue(FieldConstants.CASE_UUID, null);
