@@ -58,6 +58,9 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const treeData = useSelector((state: ReduxState) => state.treeData);
     const treeDataRef = useRef<ITreeData>();
     const intl = useIntl();
+    const selectedDirectory = useSelector(
+        (state: ReduxState) => state.selectedDirectory
+    );
     treeDataRef.current = treeData;
     const searchMatchingEquipments = useCallback(
         (searchTerm: string) => {
@@ -175,13 +178,16 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
 
                 Promise.all(promises).then(() => {
                     const lastElement = elementUuidPath.pop();
-                    handleDispatchDirectory(lastElement);
                     dispatch(setSearchedElement(data));
+                    if (lastElement !== selectedDirectory?.elementUuid) {
+                        handleDispatchDirectory(lastElement);
+                    }
                 });
             }
         },
         [
             elementsFound,
+            selectedDirectory?.elementUuid,
             updateMapData,
             handleDispatchDirectory,
             snackError,

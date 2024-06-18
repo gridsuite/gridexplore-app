@@ -6,23 +6,28 @@
  */
 
 import { ElementAttributes } from '@gridsuite/commons-ui';
-import { GridReadyEvent, RowClassParams, RowStyle } from 'ag-grid-community';
-import { useCallback, useRef } from 'react';
+import {
+    GridApi,
+    GridReadyEvent,
+    RowClassParams,
+    RowStyle,
+} from 'ag-grid-community';
+import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSearchedElement } from '../../redux/actions';
 import { ReduxState } from '../../redux/reducer.type';
 
 const SEARCH_HIGHLIGHT_DURATION_MS = 4000;
 
-export const useHighlightSearchedElement = () => {
+export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
     const searchedElement = useSelector(
         (state: ReduxState) => state.searchedElement
     );
     const dispatch = useDispatch();
     const timeout = useRef<ReturnType<typeof setTimeout>>();
 
-    const onGridReady = useCallback(
-        ({ api }: GridReadyEvent<ElementAttributes>) => {
+    const highlightElement = useCallback(
+        (api: GridApi) => {
             // if there is a searched element, we scroll to it, style it for SEARCH_HIGHTLIGHT_DURATION, then remove it from searchedElement to go back to previous style
             if (!searchedElement) {
                 return;
@@ -41,6 +46,19 @@ export const useHighlightSearchedElement = () => {
         },
         [searchedElement, dispatch]
     );
+
+    const onGridReady = useCallback(
+        ({ api }: GridReadyEvent<ElementAttributes>) => {
+            highlightElement(api);
+        },
+        [highlightElement]
+    );
+
+    useEffect(() => {
+        if (gridApi) {
+            highlightElement(gridApi);
+        }
+    }, [highlightElement, gridApi]);
 
     const getRowStyle = useCallback(
         (cellData: RowClassParams<ElementAttributes, any>) => {
