@@ -18,6 +18,7 @@ import {
     CustomAgGridTable,
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
 } from '@gridsuite/commons-ui';
+import { RECORD_SEP, UNIT_SEP } from 'papaparse';
 
 export const getExplicitNamingSchema = (id) => {
     return {
@@ -182,7 +183,9 @@ const ExplicitNamingForm = () => {
                 fileHeaders: csvFileHeaders,
                 getDataFromCsv: getDataFromCsvFile,
                 csvData: csvInitialData,
-                config: { delimiter: ',' },
+                config: {
+                    delimitersToGuess: [',', '	', ';', RECORD_SEP, UNIT_SEP],
+                },
             }}
         />
     );
