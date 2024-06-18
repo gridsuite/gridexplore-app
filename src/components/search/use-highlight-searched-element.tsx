@@ -6,9 +6,8 @@
  */
 
 import { ElementAttributes } from '@gridsuite/commons-ui';
-import { useTheme } from '@mui/material';
 import { GridReadyEvent, RowClassParams, RowStyle } from 'ag-grid-community';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSearchedElement } from '../../redux/actions';
 import { ReduxState } from '../../redux/reducer.type';
@@ -20,7 +19,7 @@ export const useHighlightSearchedElement = () => {
         (state: ReduxState) => state.searchedElement
     );
     const dispatch = useDispatch();
-    const theme = useTheme();
+    const timeout = useRef<ReturnType<typeof setTimeout>>();
 
     const onGridReady = useCallback(
         ({ api }: GridReadyEvent<ElementAttributes>) => {
@@ -34,7 +33,8 @@ export const useHighlightSearchedElement = () => {
                 searchedElementRow?.rowIndex >= 0
             ) {
                 api.ensureIndexVisible(searchedElementRow.rowIndex, 'top');
-                setTimeout(() => {
+                clearTimeout(timeout.current);
+                timeout.current = setTimeout(() => {
                     dispatch(setSearchedElement(null));
                 }, SEARCH_HIGHLIGHT_DURATION_MS);
             }
@@ -46,12 +46,12 @@ export const useHighlightSearchedElement = () => {
         (cellData: RowClassParams<ElementAttributes, any>) => {
             const style: RowStyle = { fontSize: '1rem' };
             if (cellData?.data?.elementUuid === searchedElement?.id) {
-                style.backgroundColor = theme.row.hover;
-                style['animation'] = `blink 4s`; // the "blink" keyframes is defined in commons-ui in custom-aggrid.style.ts
+                // keyframe "highlighted-element" has to be defined in css containing highlighted element
+                style['animation'] = `highlighted-element 4s`;
             }
             return style;
         },
-        [searchedElement?.id, theme.row.hover]
+        [searchedElement?.id]
     );
 
     return [onGridReady, getRowStyle];

@@ -70,6 +70,16 @@ const styles = {
     centeredCircularProgress: {
         alignSelf: 'center',
     },
+    highlightedElementAnimation: (theme) => ({
+        '@keyframes highlighted-element': {
+            'from, 24%': {
+                backgroundColor: 'inherit',
+            },
+            '12%, 36%, to': {
+                backgroundColor: theme.row.hover,
+            },
+        },
+    }),
 };
 
 const initialMousePosition = {
@@ -683,7 +693,11 @@ const DirectoryContent = () => {
                     />
                 )
             }
-            <Grid xs={12} onContextMenu={onContextMenu}>
+            <Grid
+                sx={styles.highlightedElementAnimation}
+                xs={12}
+                onContextMenu={onContextMenu}
+            >
                 {renderContent()}
             </Grid>
             <div
