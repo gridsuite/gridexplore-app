@@ -148,37 +148,36 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     );
 
     const handleMatchingElement = useCallback(
-        (event: SyntheticEvent, data: matchingElementProps | string | null) => {
+        async (
+            event: SyntheticEvent,
+            data: matchingElementProps | string | null
+        ) => {
             const matchingElement = elementsFound.find(
                 (element: matchingElementProps) => element === data
             );
             if (matchingElement !== undefined) {
                 const elementUuidPath = matchingElement?.pathUuid;
-                const promises = elementUuidPath.map((e: string) => {
-                    return fetchDirectoryContent(e as UUID)
-                        .then((res) => {
-                            updateMapData(
-                                e,
-                                res.filter(
-                                    (res) => res.type === ElementType.DIRECTORY
-                                ) as IDirectory[]
-                            );
-                        })
-                        .catch((error) =>
-                            snackError({
-                                messageTxt: error.message,
-                                headerId: 'pathRetrievingError',
-                            })
+                try {
+                    for (const uuid of elementUuidPath) {
+                        const res = await fetchDirectoryContent(uuid as UUID);
+                        updateMapData(
+                            uuid,
+                            res.filter(
+                                (res) => res.type === ElementType.DIRECTORY
+                            ) as IDirectory[]
                         );
-                });
-
-                Promise.all(promises).then(() => {
-                    const lastElement = elementUuidPath.pop();
-                    handleDispatchDirectory(lastElement);
-                });
+                    }
+                } catch (error: any) {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'pathRetrievingError',
+                    });
+                }
+                const lastElement = elementUuidPath.pop();
+                handleDispatchDirectory(lastElement);
             }
         },
-        [elementsFound, updateMapData, handleDispatchDirectory, snackError]
+        [elementsFound, handleDispatchDirectory, updateMapData, snackError]
     );
 
     return (
