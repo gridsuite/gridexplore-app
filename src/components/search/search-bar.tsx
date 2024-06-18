@@ -57,12 +57,15 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const treeData = useSelector((state: ReduxState) => state.treeData);
     const treeDataRef = useRef<ITreeData>();
     const intl = useIntl();
+    const selectedDirectory = useSelector((state) => state.selectedDirectory);
+
+    console.log('debug', 'selectedDirectory', selectedDirectory);
     treeDataRef.current = treeData;
     const searchMatchingEquipments = useCallback(
         (searchTerm: string) => {
             lastSearchTermRef.current = searchTerm;
             searchTerm &&
-                searchElementsInfos(searchTerm)
+                searchElementsInfos(searchTerm, selectedDirectory?.elementUuid)
                     .then((infos) => {
                         if (infos.length) {
                             setElementsFound(infos);
@@ -77,7 +80,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                         });
                     });
         },
-        [snackError]
+        [selectedDirectory?.elementUuid, snackError]
     );
 
     const debouncedSearchMatchingElements = useDebounce(
