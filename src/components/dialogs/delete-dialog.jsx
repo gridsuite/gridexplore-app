@@ -50,12 +50,12 @@ const DeleteDialog = ({
     const openRef = useRef(null);
 
     useEffect(() => {
-        if (open && !openRef.current) {
+        if ((open && !openRef.current) || error !== '') {
             setItemState(items);
             setLoadingState(false);
         }
         openRef.current = open;
-    }, [open, items]);
+    }, [open, items, error]);
 
     const handleClose = (_, reasonOfClose) => {
         if (

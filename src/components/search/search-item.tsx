@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { getFileIcon } from '@gridsuite/commons-ui';
+import { ElementType, getFileIcon } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
@@ -37,14 +37,14 @@ interface HighlightedTextProps {
 }
 
 interface SearchItemProps {
-    matchingElement: matchingElementProps;
+    matchingElement: MatchingElementProps;
     inputValue: string;
 }
 
-interface matchingElementProps {
+export interface MatchingElementProps {
     id: string;
     name: string;
-    type: string;
+    type: ElementType;
     pathName: string[];
     pathUuid: string[];
 }
@@ -53,7 +53,8 @@ export const HighlightedText: FunctionComponent<HighlightedTextProps> = ({
     text,
     highlight,
 }) => {
-    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+    const escapedHighlight = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const parts = text.split(new RegExp(`(${escapedHighlight})`, 'gi'));
     return (
         <span>
             {parts.map((part, i) =>
@@ -76,23 +77,21 @@ export const SearchItem: FunctionComponent<SearchItemProps> = ({
 }) => {
     return (
         <li {...othersProps}>
-            <>
-                <span>{getFileIcon(matchingElement.type, styles.icon)}</span>
-                <Grid container>
-                    <Grid item xs={11} sx={styles.grid}>
-                        <HighlightedText
-                            text={matchingElement.name}
-                            highlight={inputValue}
-                        />
-                    </Grid>
-                    <Grid item sx={styles.grid2}>
-                        <Typography>
-                            <FormattedMessage id="path" />
-                            {matchingElement.pathName?.join(' / ')}
-                        </Typography>
-                    </Grid>
+            <span>{getFileIcon(matchingElement.type, styles.icon)}</span>
+            <Grid container>
+                <Grid item xs={11} sx={styles.grid}>
+                    <HighlightedText
+                        text={matchingElement.name}
+                        highlight={inputValue}
+                    />
                 </Grid>
-            </>
+                <Grid item sx={styles.grid2}>
+                    <Typography>
+                        <FormattedMessage id="path" />
+                        {matchingElement.pathName?.join(' / ')}
+                    </Typography>
+                </Grid>
+            </Grid>
         </li>
     );
 };
