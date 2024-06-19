@@ -20,7 +20,7 @@ import { MatchingElementProps, SearchItem } from './search-item';
 import { IDirectory, ITreeData, ReduxState } from '../../redux/reducer.type';
 import { RenderElementProps } from '@gridsuite/commons-ui/dist/components/ElementSearchDialog/element-search-input';
 import { TextFieldProps } from '@mui/material';
-import { SearchRenderInput } from './search-render-input';
+import { SearchBarRenderInput } from './search-bar-render-input';
 import { UUID } from 'crypto';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
@@ -141,7 +141,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
             searchTerm={searchTerm}
             loading={isLoading}
             renderInput={(value, params) => (
-                <SearchRenderInput inputRef={inputRef} {...params} />
+                <SearchBarRenderInput inputRef={inputRef} {...params} />
             )}
         />
     );
