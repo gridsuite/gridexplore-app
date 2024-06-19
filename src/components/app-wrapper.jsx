@@ -38,6 +38,8 @@ import {
     element_search_en,
     filter_fr,
     filter_en,
+    filter_expert_fr,
+    filter_expert_en,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -196,6 +198,7 @@ const messages = {
         ...directory_items_input_en,
         ...element_search_en,
         ...filter_en,
+        ...filter_expert_en,
         ...messages_plugins_en, // keep it at the end to allow translation overwritting
     },
     fr: {
@@ -215,6 +218,7 @@ const messages = {
         ...aggrid_locale_fr, // Only the french locale is needed
         ...directory_items_input_fr,
         ...filter_fr,
+        ...filter_expert_fr,
         ...messages_plugins_fr, // keep it at the end to allow translation overwritting
     },
 };
