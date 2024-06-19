@@ -668,7 +668,16 @@ const DirectoryContent = () => {
 
     return (
         <>
-            {rows && <ContentToolbar selectedElements={checkedRows} />}
+            {
+                //ContentToolbar needs to be outside the DirectoryContentTable container otherwise it
+                //creates a visual offset rendering the last elements of a full table inaccessible
+                rows && (
+                    <ContentToolbar
+                        selectedElements={checkedRows}
+                        onContextMenu={onContextMenu}
+                    />
+                )
+            }
             <Grid xs={12} onContextMenu={onContextMenu}>
                 {renderContent()}
             </Grid>

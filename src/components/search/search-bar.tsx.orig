@@ -97,7 +97,14 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     );
 
     const handleMatchingElement = useCallback(
-        async (data: MatchingElementProps | string | null) => {
+<<<<<<< HEAD
+        (data: MatchingElementProps) => {
+=======
+        async (
+            event: SyntheticEvent,
+            data: matchingElementProps | string | null
+        ) => {
+>>>>>>> origin/main
             const matchingElement = elementsFound.find(
                 (element: MatchingElementProps) => element === data
             );
