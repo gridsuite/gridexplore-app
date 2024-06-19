@@ -205,7 +205,7 @@
   "invalidFormatOrName": "Format ou nom du fichier importé non valide",
   "parameterLoadingProblem": "Problème de chargement des paramètres",
   "changeOperatorMessage": "L'opérateur sera modifié et s'appliquera sur toutes les règles déjà créées dans le groupe.",
-  "changeTypeMessage": "Le {type} sera modifié et la précédente {configuration} sera perdue.",
+  "changeTypeMessage": "Le type d'ouvrage sera modifié et la configuration actuelle sera perdue.",
   "keepCSVDataMessage": "Voulez-vous remplacer la liste existante ou y ajouter les nouvelles données ?",
   "add": "Ajouter",
   "replace": "Remplacer",
