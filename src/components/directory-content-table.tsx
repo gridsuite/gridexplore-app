@@ -17,9 +17,8 @@ import {
     RowClassParams,
     AgGridEvent,
     GetRowIdParams,
-    GridReadyEvent,
 } from 'ag-grid-community';
-import { RefObject, useCallback } from 'react';
+import { RefObject } from 'react';
 
 interface DirectoryContentTableProps
     extends Pick<
@@ -69,13 +68,6 @@ export const DirectoryContentTable = ({
     onGridReady,
     colDef,
 }: DirectoryContentTableProps) => {
-    const handleGridReady = useCallback(
-        (event: GridReadyEvent<ElementAttributes>) => {
-            onGridReady?.(event);
-        },
-        [onGridReady]
-    );
-
     const getCustomRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
         return {
             ...getClickableRowStyle(cellData),
@@ -91,7 +83,7 @@ export const DirectoryContentTable = ({
             defaultColDef={defaultColumnDefinition}
             rowSelection="multiple"
             suppressRowClickSelection
-            onGridReady={handleGridReady}
+            onGridReady={onGridReady}
             onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
             onRowSelected={handleRowSelected}
