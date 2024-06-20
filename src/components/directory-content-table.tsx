@@ -12,12 +12,12 @@ import {
     ElementType,
 } from '@gridsuite/commons-ui';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
-import { GetRowIdParams } from 'ag-grid-community/dist/types/core/interfaces/iCallbackParams';
 import {
     ColDef,
-    GridApi,
-    GridReadyEvent,
     RowClassParams,
+    AgGridEvent,
+    GetRowIdParams,
+    GridReadyEvent,
 } from 'ag-grid-community';
 import { RefObject, useCallback } from 'react';
 
@@ -34,12 +34,11 @@ interface DirectoryContentTableProps
     colDef: ColDef[];
 }
 
-const sizeColumnToFit = (api: GridApi<ElementAttributes>) => {
-    api?.sizeColumnsToFit();
-};
-
 const getRowId = (params: GetRowIdParams<ElementAttributes>) =>
     params.data?.elementUuid;
+
+const recomputeOverFlowableCells = ({ api }: AgGridEvent) =>
+    api.refreshCells({ force: true, columns: ['elementName', 'type'] });
 
 export const CUSTOM_ROW_CLASS = 'custom-row-class';
 
@@ -72,7 +71,6 @@ export const DirectoryContentTable = ({
 }: DirectoryContentTableProps) => {
     const handleGridReady = useCallback(
         (event: GridReadyEvent<ElementAttributes>) => {
-            sizeColumnToFit(event.api);
             onGridReady?.(event);
         },
         [onGridReady]
@@ -97,6 +95,7 @@ export const DirectoryContentTable = ({
             onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
             onRowSelected={handleRowSelected}
+            onGridSizeChanged={recomputeOverFlowableCells}
             animateRows={true}
             columnDefs={colDef}
             getRowStyle={getCustomRowStyle}
