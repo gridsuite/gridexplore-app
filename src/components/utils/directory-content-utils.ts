@@ -9,10 +9,13 @@ import { IntlShape } from 'react-intl';
 import { UUID } from 'crypto';
 import { AgGridReact } from 'ag-grid-react';
 import React from 'react';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, IRowNode } from 'ag-grid-community';
 import { NameCellRenderer } from './renderers/name-cell-renderer';
 import { DescriptionCellRenderer } from './renderers/description-cell-renderer';
-import { TypeCellRenderer } from './renderers/type-cell-renderer';
+import {
+    TypeCellRenderer,
+    getElementTypeTranslation,
+} from './renderers/type-cell-renderer';
 import { UserCellRenderer } from './renderers/user-cell-renderer';
 import { DateCellRenderer } from './renderers/date-cell-renderer';
 import type { ElementAttributes } from '@gridsuite/commons-ui';
@@ -83,6 +86,7 @@ export const getColumnsDefinition = (
         field: 'description',
         cellRenderer: DescriptionCellRenderer,
         flex: 1.1,
+        sortable: false,
     },
     {
         headerName: intl.formatMessage({
@@ -94,6 +98,39 @@ export const getColumnsDefinition = (
             childrenMetadata: childrenMetadata,
         },
         flex: 2,
+        comparator: (
+            valueA: string,
+            valueB: string,
+            nodeA: IRowNode<ElementAttributes>,
+            nodeB: IRowNode<ElementAttributes>
+        ) => {
+            const getTranslatedOrOriginalValue = (
+                node: IRowNode<ElementAttributes>
+            ): string => {
+                const { type, elementUuid } = node.data ?? {};
+                if (!type) {
+                    return '';
+                }
+
+                const metaData = elementUuid
+                    ? childrenMetadata[elementUuid]?.specificMetadata
+                    : null;
+                const subtype = metaData?.type?.toString() ?? null;
+                const formatCase = metaData?.format?.toString() ?? null;
+
+                return getElementTypeTranslation(
+                    type,
+                    subtype,
+                    formatCase,
+                    intl
+                );
+            };
+
+            const translatedA = getTranslatedOrOriginalValue(nodeA);
+            const translatedB = getTranslatedOrOriginalValue(nodeB);
+
+            return translatedA.localeCompare(translatedB);
+        },
     },
     {
         headerName: intl.formatMessage({
