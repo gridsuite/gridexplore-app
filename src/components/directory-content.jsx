@@ -694,6 +694,7 @@ const DirectoryContent = () => {
                 )
             }
             <Grid
+                item
                 sx={styles.highlightedElementAnimation}
                 xs={12}
                 onContextMenu={onContextMenu}
