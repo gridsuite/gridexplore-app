@@ -34,6 +34,7 @@ import {
     keyGenerator,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
+import { handleMaxElementsExceededError } from '../../utils/rest-errors';
 
 interface IFormData {
     [FieldConstants.CASE_NAME]: string;
@@ -92,7 +93,9 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
         })
             .then(onClose)
             .catch((err) => {
-                if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
+                if (handleMaxElementsExceededError(err, snackError)) {
+                    return;
+                } else if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                     snackError({
                         messageId: 'invalidFormatOrName',
                         headerId: 'caseCreationError',

@@ -35,3 +35,4 @@ export const DialogsId = {
 };
 export const HTTP_UNPROCESSABLE_ENTITY_STATUS = 422;
 export const HTTP_CONNECTION_FAILED_MESSAGE = 'failed: Connection refused';
+export const HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE = 'MAX_ELEMENTS_EXCEEDED';
