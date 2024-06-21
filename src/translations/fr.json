@@ -224,7 +224,7 @@
   "download.message.studies": "études",
   "download.message.others": "autres",
   "download.error": "Une erreur est survenue lors de l'export de la situation {caseName}",
-  "MODIFICATION": "Modification",
+  "MODIFICATION": "Modification composée",
   "descriptionModificationError": "Erreur lors de la modification de la description",
   "descriptionLimitError": "La description dépasse la limite de caractères",
   "All": "Tous",
