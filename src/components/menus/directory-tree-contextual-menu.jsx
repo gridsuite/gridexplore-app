@@ -29,10 +29,6 @@ import {
     insertDirectory,
     insertRootDirectory,
     renameElement,
-    fetchDirectoryContent,
-    fetchRootFolders,
-    fetchAppsAndUrls,
-    fetchElementsInfos,
     elementExists,
 } from '../../utils/rest-api';
 
@@ -384,12 +380,8 @@ const DirectoryTreeContextualMenu = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         activeDirectory={activeDirectory}
-                        fetchAppsAndUrls={fetchAppsAndUrls}
                         elementExists={elementExists}
                         language={languageLocal}
-                        fetchDirectoryContent={fetchDirectoryContent}
-                        fetchRootFolders={fetchRootFolders}
-                        fetchElementsInfos={fetchElementsInfos}
                     />
                 );
             case DialogsId.ADD_NEW_CASE:

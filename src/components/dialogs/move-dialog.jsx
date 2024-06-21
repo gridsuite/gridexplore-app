@@ -10,11 +10,6 @@ import PropTypes from 'prop-types';
 import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ElementType } from '@gridsuite/commons-ui';
-import {
-    fetchDirectoryContent,
-    fetchElementsInfos,
-    fetchRootFolders,
-} from '../../utils/rest-api';
 
 const MoveDialog = ({ open, onClose, items }) => {
     const intl = useIntl();
@@ -38,9 +33,6 @@ const MoveDialog = ({ open, onClose, items }) => {
                 id: 'moveItemTitle',
             })}
             contentText={intl.formatMessage({ id: 'moveItemContentText' })}
-            fetchDirectoryContent={fetchDirectoryContent}
-            fetchRootFolders={fetchRootFolders}
-            fetchElementsInfos={fetchElementsInfos}
         />
     );
 };
