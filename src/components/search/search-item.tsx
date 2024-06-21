@@ -37,11 +37,11 @@ interface HighlightedTextProps {
 }
 
 interface SearchItemProps {
-    matchingElement: matchingElementProps;
+    matchingElement: MatchingElementProps;
     inputValue: string;
 }
 
-interface matchingElementProps {
+export interface MatchingElementProps {
     id: string;
     name: string;
     type: ElementType;
@@ -77,23 +77,21 @@ export const SearchItem: FunctionComponent<SearchItemProps> = ({
 }) => {
     return (
         <li {...othersProps}>
-            <>
-                <span>{getFileIcon(matchingElement.type, styles.icon)}</span>
-                <Grid container>
-                    <Grid item xs={11} sx={styles.grid}>
-                        <HighlightedText
-                            text={matchingElement.name}
-                            highlight={inputValue}
-                        />
-                    </Grid>
-                    <Grid item sx={styles.grid2}>
-                        <Typography>
-                            <FormattedMessage id="path" />
-                            {matchingElement.pathName?.join(' / ')}
-                        </Typography>
-                    </Grid>
+            <span>{getFileIcon(matchingElement.type, styles.icon)}</span>
+            <Grid container>
+                <Grid item xs={11} sx={styles.grid}>
+                    <HighlightedText
+                        text={matchingElement.name}
+                        highlight={inputValue}
+                    />
                 </Grid>
-            </>
+                <Grid item sx={styles.grid2}>
+                    <Typography>
+                        <FormattedMessage id="path" />
+                        {matchingElement.pathName?.join(' / ')}
+                    </Typography>
+                </Grid>
+            </Grid>
         </li>
     );
 };
