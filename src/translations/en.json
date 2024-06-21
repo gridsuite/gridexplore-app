@@ -260,7 +260,7 @@
   "vlNominalVoltage": "Voltage level nominal voltage (kV)",
   "lowVoltageLimit": "Low voltage limit (kV)",
   "highVoltageLimit": "High voltage limit (kV)",
-  "MODIFICATION": "Modification",
+  "MODIFICATION": "Modification composite",
   "descriptionModificationError": "An error when modifying the description",
   "descriptionLimitError": "Description exceeds character limit",
   "selectFilterDialogTitle": "Choose a filter",

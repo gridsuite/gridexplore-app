@@ -498,13 +498,7 @@ const DirectoryContent = () => {
                     });
                     break;
                 case ElementType.MODIFICATION:
-                    translatedType =
-                        intl.formatMessage({ id: type }) +
-                        ' (' +
-                        intl.formatMessage({
-                            id: 'network_modifications.' + subtype,
-                        }) +
-                        ')';
+                    translatedType = intl.formatMessage({ id: type });
                     break;
                 default:
                     translatedType = intl.formatMessage({ id: type });

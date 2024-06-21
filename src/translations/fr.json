@@ -260,7 +260,7 @@
   "vlNominalVoltage": "Tension nominale poste (kV)",
   "lowVoltageLimit": "Limite tension basse (kV)",
   "highVoltageLimit": "Limite tension haute (kV)",
-  "MODIFICATION": "Modification",
+  "MODIFICATION": "Modification composée",
   "descriptionModificationError": "Erreur lors de la modification de la description",
   "descriptionLimitError": "La description dépasse la limite de caractères",
   "selectFilterDialogTitle": "Choisir un filtre",

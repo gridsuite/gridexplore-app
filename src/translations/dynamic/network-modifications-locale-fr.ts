@@ -52,6 +52,7 @@ const network_modifications_locale_fr = {
         'Initialisation du plan de tension',
     'network_modifications.TABULAR_MODIFICATION': 'Modification tabulaire',
     'network_modifications.BY_FORMULA_MODIFICATION': 'Modification par formule',
+    'network_modifications.COMPOSITE_MODIFICATION': 'Modification composée',
 };
 
 export default network_modifications_locale_fr;

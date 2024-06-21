@@ -50,6 +50,7 @@ const network_modifications_locale_en = {
         'Voltage profile initialization',
     'network_modifications.TABULAR_MODIFICATION': 'Tabular modification',
     'network_modifications.BY_FORMULA_MODIFICATION': 'By formula modification',
+    'network_modifications.COMPOSITE_MODIFICATION': 'Composite modification',
 };
 
 export default network_modifications_locale_en;
