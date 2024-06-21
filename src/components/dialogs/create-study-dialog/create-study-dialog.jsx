@@ -43,6 +43,7 @@ import {
 } from './create-study-dialog-utils';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import PrefilledNameInput from '../commons/prefilled-name-input';
+import { handleMaxElementsExceededError } from '../../utils/rest-errors';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -218,6 +219,9 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
                 onClose();
             })
             .catch((error) => {
+                if (handleMaxElementsExceededError(error, snackError)) {
+                    return;
+                }
                 snackError({
                     messageTxt: error.message,
                     headerId: 'studyCreationError',

@@ -43,6 +43,7 @@ import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
+import { handleMaxElementsExceededError } from '../utils/rest-errors';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
@@ -141,6 +142,9 @@ const DirectoryTreeContextualMenu = (props) => {
                         selectionForCopy.typeItem,
                         undefined
                     ).catch((error) => {
+                        if (handleMaxElementsExceededError(error, snackError)) {
+                            return;
+                        }
                         handlePasteError(error);
                     });
                     break;
