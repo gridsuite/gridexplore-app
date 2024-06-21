@@ -13,7 +13,7 @@ import { IntlShape, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
 import { Box } from '@mui/material';
 
-const getElementTypeTranslation = (
+export const getElementTypeTranslation = (
     type: ElementType,
     subtype: string | null,
     formatCase: string | null,
