@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSearchedElement } from '../../redux/actions';
 import { ReduxState } from '../../redux/reducer.type';
 
-const SEARCH_HIGHLIGHT_DURATION_MS = 4000;
+const SEARCH_HIGHLIGHT_DURATION_S = 4;
 
 export const useHighlightSearchedElement = () => {
     const searchedElement = useSelector(
@@ -36,7 +36,7 @@ export const useHighlightSearchedElement = () => {
                 clearTimeout(timeout.current);
                 timeout.current = setTimeout(() => {
                     dispatch(setSearchedElement(null));
-                }, SEARCH_HIGHLIGHT_DURATION_MS);
+                }, SEARCH_HIGHLIGHT_DURATION_S * 1000);
             }
         },
         [searchedElement, dispatch]
@@ -47,7 +47,9 @@ export const useHighlightSearchedElement = () => {
             const style: RowStyle = { fontSize: '1rem' };
             if (cellData?.data?.elementUuid === searchedElement?.id) {
                 // keyframe "highlighted-element" has to be defined in css containing highlighted element
-                style['animation'] = `highlighted-element 4s`;
+                style[
+                    'animation'
+                ] = `highlighted-element ${SEARCH_HIGHLIGHT_DURATION_S}s`;
             }
             return style;
         },
