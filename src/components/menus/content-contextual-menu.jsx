@@ -58,6 +58,7 @@ import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
+import { handleMaxElementsExceededError } from '../utils/rest-errors';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -226,6 +227,9 @@ const ContentContextualMenu = (props) => {
                         undefined,
                         activeElement.type
                     ).catch((error) => {
+                        if (handleMaxElementsExceededError(error, snackError)) {
+                            return;
+                        }
                         handleDuplicateError(error.message);
                     });
                     break;
