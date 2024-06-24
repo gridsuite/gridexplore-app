@@ -4,12 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ElementType, getFileIcon } from '@gridsuite/commons-ui';
+import { getFileIcon } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import { FunctionComponent } from 'react';
 import { Theme } from '@mui/material';
+import { ElementAttributesES } from 'redux/reducer.type';
 
 const styles = {
     icon: (theme: Theme) => ({
@@ -37,16 +38,8 @@ interface HighlightedTextProps {
 }
 
 interface SearchItemProps {
-    matchingElement: MatchingElementProps;
+    matchingElement: ElementAttributesES;
     inputValue: string;
-}
-
-export interface MatchingElementProps {
-    id: string;
-    name: string;
-    type: ElementType;
-    pathName: string[];
-    pathUuid: string[];
 }
 
 export const HighlightedText: FunctionComponent<HighlightedTextProps> = ({
