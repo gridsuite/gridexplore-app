@@ -83,6 +83,7 @@
   "SECURITY_ANALYSIS_PARAMETERS": "Paramètres (Analyse de sécurité)",
   "SENSITIVITY_PARAMETERS": "Paramètres (Analyse de sensibilité)",
   "LOADFLOW_PARAMETERS": "Paramètres (Calcul de répartition)",
+  "SHORT_CIRCUIT_PARAMETERS": "Paramètres (Analyse de court-circuit)",
   "contingencyList.criteriaBased": "Par critères",
   "contingencyList.script": "Script",
   "contingencyList.explicitNaming": "Par nommage",
