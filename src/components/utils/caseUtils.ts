@@ -11,21 +11,30 @@ import {
     getCaseOriginalName,
 } from '../../utils/rest-api';
 import { useIntl } from 'react-intl';
-import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ElementAttributes,
+    ElementType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 
-const downloadCases = async (uuids: string[]) => {
-    for (const uuid of uuids) {
-        const result = await downloadCase(uuid);
-        let name = await getCaseOriginalName(uuid);
+const downloadCases = async (selectedCases: ElementAttributes[]) => {
+    for (const selectedCase of selectedCases) {
+        const result = await downloadCase(selectedCase.elementUuid);
+        let caseOriginalName = await getCaseOriginalName(
+            selectedCase.elementUuid
+        );
+        let caseFormat =
+            typeof caseOriginalName === 'string'
+                ? caseOriginalName.split('.').pop()
+                : 'xiidm';
+        let caseName = selectedCase.elementName;
+        const filename = `${caseName}.${caseFormat}`;
         const blob = await result.blob();
         const href = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = href;
-        link.setAttribute(
-            'download',
-            typeof name === 'string' ? name : `${uuid}.xiidm`
-        );
+        link.setAttribute('download', filename);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -65,12 +74,16 @@ export function useDownloadUtils() {
                 .get('Content-Disposition')
                 .split('filename=')[1];
             filename = filename.substring(1, filename.length - 1); // We remove quotes
+            const fileExtension = filename.split('.').pop();
             const blob = await result.blob();
 
             const href = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = href;
-            link.setAttribute('download', filename);
+            link.setAttribute(
+                'download',
+                `${caseElement.elementName}.${fileExtension}`
+            );
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -244,14 +257,15 @@ export function useDownloadUtils() {
     };
 
     const handleDownloadCases = async (selectedElements: any[]) => {
-        const casesUuids = selectedElements
-            .filter((element) => element.type === ElementType.CASE)
-            .map((element) => element.elementUuid);
-        await downloadCases(casesUuids);
-        if (casesUuids.length !== selectedElements.length) {
+        const selectedCases = selectedElements.filter(
+            (element) => element.type === ElementType.CASE
+        );
+
+        await downloadCases(selectedCases);
+        if (selectedCases.length !== selectedElements.length) {
             snackInfo({
                 messageTxt: buildPartialDownloadMessage(
-                    casesUuids.length,
+                    selectedCases.length,
                     selectedElements
                 ),
             });
