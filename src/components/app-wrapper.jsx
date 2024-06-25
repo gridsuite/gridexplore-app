@@ -38,6 +38,8 @@ import {
     element_search_en,
     filter_fr,
     filter_en,
+    filter_expert_fr,
+    filter_expert_en,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -46,8 +48,7 @@ import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import network_modification_locale_en from '../translations/dynamic/network-modifications-locale-en';
 import network_modification_locale_fr from '../translations/dynamic/network-modifications-locale-fr';
-import messages_plugins_en from '../plugins/translations/en.json';
-import messages_plugins_fr from '../plugins/translations/fr.json';
+import messages_plugins from '../plugins/translations';
 import aggrid_locale_fr from '../translations/external/aggrid-locale-fr';
 import backend_locale_fr from '../translations/external/backend-locale-fr';
 import backend_locale_en from '../translations/external/backend-locale-en';
@@ -87,7 +88,7 @@ let lightTheme = createTheme({
     },
     aggrid: {
         theme: 'ag-theme-alpine',
-        highlightColor: '#8e9c9b',
+        highlightColor: '#E8E8E8',
     },
     agGridBackground: {
         color: 'white',
@@ -144,7 +145,7 @@ let darkTheme = createTheme({
     },
     aggrid: {
         theme: 'ag-theme-alpine-dark',
-        highlightColor: '#545c5b',
+        highlightColor: '#272727',
     },
     agGridBackground: {
         color: '#383838',
@@ -196,7 +197,8 @@ const messages = {
         ...directory_items_input_en,
         ...element_search_en,
         ...filter_en,
-        ...messages_plugins_en, // keep it at the end to allow translation overwritting
+        ...filter_expert_en,
+        ...messages_plugins.en, // keep it at the end to allow translation overwritting
     },
     fr: {
         ...messages_fr,
@@ -215,7 +217,8 @@ const messages = {
         ...aggrid_locale_fr, // Only the french locale is needed
         ...directory_items_input_fr,
         ...filter_fr,
-        ...messages_plugins_fr, // keep it at the end to allow translation overwritting
+        ...filter_expert_fr,
+        ...messages_plugins.fr, // keep it at the end to allow translation overwritting
     },
 };
 

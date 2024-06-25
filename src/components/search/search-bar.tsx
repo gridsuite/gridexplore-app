@@ -4,117 +4,71 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    Fragment,
-    FunctionComponent,
-    Ref,
-    SyntheticEvent,
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
-import { Autocomplete, TextField } from '@mui/material';
+import { FunctionComponent, RefObject, useCallback, useRef } from 'react';
 import { searchElementsInfos } from '../../utils/rest-api';
 import {
+    ElementSearchInput,
     ElementType,
-    useDebounce,
+    useElementSearch,
     useSnackMessage,
     fetchDirectoryContent,
 } from '@gridsuite/commons-ui';
-import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDirectory, setTreeData } from '../../redux/actions';
+import {
+    setSearchedElement,
+    setSelectedDirectory,
+    setTreeData,
+} from '../../redux/actions';
 import { updatedTree } from '../tree-views-container';
-import { useIntl } from 'react-intl';
 import { SearchItem } from './search-item';
-import { IDirectory, ITreeData, ReduxState } from '../../redux/reducer.type';
+import {
+    ElementAttributesES,
+    IDirectory,
+    ITreeData,
+    ReduxState,
+} from '../../redux/reducer.type';
+import { RenderElementProps } from '@gridsuite/commons-ui/dist/components/ElementSearchDialog/element-search-input';
+import { TextFieldProps } from '@mui/material';
+import { SearchBarRenderInput } from './search-bar-render-input';
 import { UUID } from 'crypto';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 
-interface matchingElementProps {
-    id: string;
-    name: string;
-    type: ElementType;
-    pathName: string[];
-    pathUuid: string[];
+interface SearchBarProps {
+    inputRef: RefObject<TextFieldProps>;
 }
 
-interface SearchBarProps {
-    inputRef: Ref<any>;
-}
+const fetchElements: (newSearchTerm: string) => Promise<ElementAttributesES[]> =
+    searchElementsInfos;
 
 export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
-    const [elementsFound, setElementsFound] = useState<matchingElementProps[]>(
-        []
-    );
-    const [inputValue, onInputChange] = useState('');
-    const lastSearchTermRef = useRef('');
-    const [loading, setLoading] = useState(false);
     const treeData = useSelector((state: ReduxState) => state.treeData);
     const treeDataRef = useRef<ITreeData>();
-    const intl = useIntl();
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
-
-    console.log('debug', 'selectedDirectory', selectedDirectory);
     treeDataRef.current = treeData;
-    const searchMatchingEquipments = useCallback(
-        (searchTerm: string) => {
-            lastSearchTermRef.current = searchTerm;
-            searchTerm &&
-                searchElementsInfos(searchTerm, selectedDirectory?.elementUuid)
-                    .then((infos) => {
-                        if (infos.length) {
-                            setElementsFound(infos);
-                        } else {
-                            setElementsFound([]);
-                        }
-                    })
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'elementsSearchingError',
-                        });
-                    });
-        },
-        [selectedDirectory?.elementUuid, snackError]
-    );
 
-    const debouncedSearchMatchingElements = useDebounce(
-        searchMatchingEquipments,
-        SEARCH_FETCH_TIMEOUT_MILLIS
-    );
-
-    const handleChangeInput = useCallback(
-        (searchTerm: string) => {
-            onInputChange(searchTerm);
-            searchTerm && setLoading(true);
-            debouncedSearchMatchingElements(searchTerm);
-        },
-        [debouncedSearchMatchingElements]
-    );
-
-    useEffect(() => {
-        elementsFound !== undefined && setLoading(false);
-    }, [elementsFound]);
+    const { elementsFound, isLoading, searchTerm, updateSearchTerm } =
+        useElementSearch({
+            fetchElements,
+        });
 
     const renderOptionItem = useCallback(
-        (props: any, option: matchingElementProps) => {
+        (props: RenderElementProps<ElementAttributesES>) => {
+            const { element, inputValue } = props;
             const matchingElement = elementsFound.find(
-                (element: matchingElementProps) => element.id === option.id
-            );
+                (e) => e.id === element.id
+            )!;
             return (
                 <SearchItem
+                    {...props}
+                    key={element.id}
                     matchingElement={matchingElement}
                     inputValue={inputValue}
-                    {...props}
                 />
             );
         },
-        [elementsFound, inputValue]
+        [elementsFound]
     );
 
     const updateMapData = useCallback(
@@ -151,12 +105,9 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     );
 
     const handleMatchingElement = useCallback(
-        async (
-            event: SyntheticEvent,
-            data: matchingElementProps | string | null
-        ) => {
+        async (data: ElementAttributesES | string | null) => {
             const matchingElement = elementsFound.find(
-                (element: matchingElementProps) => element === data
+                (element: ElementAttributesES) => element === data
             );
             if (matchingElement !== undefined) {
                 const elementUuidPath = matchingElement?.pathUuid;
@@ -178,63 +129,35 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 }
                 const lastElement = elementUuidPath.pop();
                 handleDispatchDirectory(lastElement);
+                dispatch(setSearchedElement(data));
             }
         },
-        [elementsFound, handleDispatchDirectory, updateMapData, snackError]
+        [
+            elementsFound,
+            handleDispatchDirectory,
+            updateMapData,
+            snackError,
+            dispatch,
+        ]
     );
 
     return (
-        <>
-            <Autocomplete
-                sx={{ width: '50%', marginLeft: '14%' }}
-                freeSolo
-                size="small"
-                disableClearable={false}
-                forcePopupIcon={false}
-                clearOnBlur
-                autoHighlight={true}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                inputValue={inputValue}
-                onInputChange={(_, data) => handleChangeInput(data)}
-                onChange={handleMatchingElement}
-                getOptionKey={(option) => {
-                    if (typeof option === 'string') {
-                        return option;
-                    } else {
-                        return option.id;
-                    }
-                }}
-                options={loading ? [] : elementsFound}
-                getOptionLabel={(option) => {
-                    if (typeof option === 'string') {
-                        return inputValue;
-                    } else {
-                        return option.name;
-                    }
-                }}
-                loading={loading}
-                renderOption={renderOptionItem}
-                renderInput={(params) => (
-                    <TextField
-                        autoFocus={true}
-                        {...params}
-                        inputRef={inputRef}
-                        placeholder={intl.formatMessage({
-                            id: 'searchPlaceholder',
-                        })}
-                        variant="outlined"
-                        InputProps={{
-                            ...params.InputProps,
-                            startAdornment: (
-                                <Fragment>
-                                    <Search />
-                                    {params.InputProps.startAdornment}
-                                </Fragment>
-                            ),
-                        }}
-                    />
-                )}
-            />
-        </>
+        <ElementSearchInput
+            sx={{ width: '50%', marginLeft: '14%' }}
+            size="small"
+            elementsFound={elementsFound}
+            getOptionLabel={(element) => element.name}
+            isOptionEqualToValue={(element1, element2) =>
+                element1.id === element2.id
+            }
+            onSearchTermChange={updateSearchTerm}
+            onSelectionChange={handleMatchingElement}
+            renderElement={renderOptionItem}
+            searchTerm={searchTerm}
+            loading={isLoading}
+            renderInput={(value, params) => (
+                <SearchBarRenderInput inputRef={inputRef} {...params} />
+            )}
+        />
     );
 };

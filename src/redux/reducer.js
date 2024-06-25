@@ -29,6 +29,7 @@ import {
     DIRECTORY_UPDATED,
     TREE_DATA,
     SELECTION_FOR_COPY,
+    SEARCHED_ELEMENT,
 } from './actions';
 
 import {
@@ -53,6 +54,7 @@ const initialState = {
     currentChildren: null,
     selectedDirectory: null,
     activeDirectory: null,
+    searchedElement: null,
     currentPath: [],
     user: null,
     signInCallbackError: null,
@@ -136,6 +138,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(ACTIVE_DIRECTORY, (state, action) => {
         state.activeDirectory = action.activeDirectory;
+    });
+
+    builder.addCase(SEARCHED_ELEMENT, (state, action) => {
+        state.searchedElement = action.searchedElement;
     });
 
     builder.addCase(CURRENT_PATH, (state, action) => {

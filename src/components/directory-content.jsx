@@ -49,6 +49,7 @@ import {
     DirectoryContentTable,
     CUSTOM_ROW_CLASS,
 } from './directory-content-table';
+import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
 
 const circularProgressSize = '70px';
 
@@ -69,6 +70,16 @@ const styles = {
     centeredCircularProgress: {
         alignSelf: 'center',
     },
+    highlightedElementAnimation: (theme) => ({
+        '@keyframes highlighted-element': {
+            'from, 24%': {
+                backgroundColor: 'inherit',
+            },
+            '12%, 36%, to': {
+                backgroundColor: theme.row.hover,
+            },
+        },
+    }),
 };
 
 const initialMousePosition = {
@@ -83,6 +94,8 @@ const DirectoryContent = () => {
 
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
     const activeDirectory = useSelector((state) => state.activeDirectory);
+
+    const [onGridReady, getRowStyle] = useHighlightSearchedElement();
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -550,6 +563,8 @@ const DirectoryContent = () => {
                 handleRowSelected={handleRowSelected}
                 handleCellClick={handleCellClick}
                 colDef={getColumnsDefinition(childrenMetadata, intl)}
+                getRowStyle={getRowStyle}
+                onGridReady={onGridReady}
             />
         );
     };
@@ -678,7 +693,12 @@ const DirectoryContent = () => {
                     />
                 )
             }
-            <Grid xs={12} onContextMenu={onContextMenu}>
+            <Grid
+                item
+                sx={styles.highlightedElementAnimation}
+                xs={12}
+                onContextMenu={onContextMenu}
+            >
                 {renderContent()}
             </Grid>
             <div

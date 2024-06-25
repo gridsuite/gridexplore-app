@@ -8,15 +8,23 @@
 import { defaultColumnDefinition } from './utils/directory-content-utils';
 import {
     CustomAGGrid,
-    ElementType,
     ElementAttributes,
+    ElementType,
 } from '@gridsuite/commons-ui';
-import { AgGridReact } from 'ag-grid-react';
-import { GetRowIdParams } from 'ag-grid-community/dist/types/core/interfaces/iCallbackParams';
-import { ColDef, GridReadyEvent, RowClassParams } from 'ag-grid-community';
+import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
+import {
+    ColDef,
+    RowClassParams,
+    AgGridEvent,
+    GetRowIdParams,
+} from 'ag-grid-community';
 import { RefObject } from 'react';
 
-interface DirectoryContentTableProps {
+interface DirectoryContentTableProps
+    extends Pick<
+        AgGridReactProps<ElementAttributes>,
+        'getRowStyle' | 'onGridReady'
+    > {
     gridRef: RefObject<AgGridReact<ElementAttributes>>;
     rows: ElementAttributes[];
     handleCellContextualMenu: () => void;
@@ -25,16 +33,15 @@ interface DirectoryContentTableProps {
     colDef: ColDef[];
 }
 
-const onGridReady = ({ api }: GridReadyEvent<ElementAttributes>) => {
-    api?.sizeColumnsToFit();
-};
-
 const getRowId = (params: GetRowIdParams<ElementAttributes>) =>
     params.data?.elementUuid;
 
+const recomputeOverFlowableCells = ({ api }: AgGridEvent) =>
+    api.refreshCells({ force: true, columns: ['elementName', 'type'] });
+
 export const CUSTOM_ROW_CLASS = 'custom-row-class';
 
-const getRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
+const getClickableRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
     const style: Record<string, string> = { fontSize: '1rem' };
     if (
         cellData.data &&
@@ -54,11 +61,20 @@ const getRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
 export const DirectoryContentTable = ({
     gridRef,
     rows,
+    getRowStyle,
     handleCellContextualMenu,
     handleRowSelected,
     handleCellClick,
+    onGridReady,
     colDef,
 }: DirectoryContentTableProps) => {
+    const getCustomRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
+        return {
+            ...getClickableRowStyle(cellData),
+            ...getRowStyle?.(cellData),
+        };
+    };
+
     return (
         <CustomAGGrid
             ref={gridRef}
@@ -71,9 +87,10 @@ export const DirectoryContentTable = ({
             onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
             onRowSelected={handleRowSelected}
+            onGridSizeChanged={recomputeOverFlowableCells}
             animateRows={true}
             columnDefs={colDef}
-            getRowStyle={getRowStyle}
+            getRowStyle={getCustomRowStyle}
             //We set a custom className for rows in order to easily determine if a context menu event is happening on a row or not
             rowClass={CUSTOM_ROW_CLASS}
         />
