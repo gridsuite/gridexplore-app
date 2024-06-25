@@ -46,6 +46,9 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const { snackError } = useSnackMessage();
     const treeData = useSelector((state: ReduxState) => state.treeData);
     const treeDataRef = useRef<ITreeData>();
+    const selectedDirectory = useSelector(
+        (state: ReduxState) => state.selectedDirectory
+    );
     treeDataRef.current = treeData;
 
     const { elementsFound, isLoading, searchTerm, updateSearchTerm } =
@@ -128,11 +131,15 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                     });
                 }
                 const lastElement = elementUuidPath.pop();
-                handleDispatchDirectory(lastElement);
+
                 dispatch(setSearchedElement(data));
+                if (lastElement !== selectedDirectory?.elementUuid) {
+                    handleDispatchDirectory(lastElement);
+                }
             }
         },
         [
+            selectedDirectory?.elementUuid,
             elementsFound,
             handleDispatchDirectory,
             updateMapData,
