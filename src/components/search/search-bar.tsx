@@ -14,10 +14,19 @@ import {
     fetchDirectoryContent,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDirectory, setTreeData } from '../../redux/actions';
+import {
+    setSearchedElement,
+    setSelectedDirectory,
+    setTreeData,
+} from '../../redux/actions';
 import { updatedTree } from '../tree-views-container';
-import { MatchingElementProps, SearchItem } from './search-item';
-import { IDirectory, ITreeData, ReduxState } from '../../redux/reducer.type';
+import { SearchItem } from './search-item';
+import {
+    ElementAttributesES,
+    IDirectory,
+    ITreeData,
+    ReduxState,
+} from '../../redux/reducer.type';
 import { RenderElementProps } from '@gridsuite/commons-ui/dist/components/ElementSearchDialog/element-search-input';
 import { TextFieldProps } from '@mui/material';
 import { SearchBarRenderInput } from './search-bar-render-input';
@@ -29,9 +38,8 @@ interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
 }
 
-const fetchElements: (
-    newSearchTerm: string
-) => Promise<MatchingElementProps[]> = searchElementsInfos;
+const fetchElements: (newSearchTerm: string) => Promise<ElementAttributesES[]> =
+    searchElementsInfos;
 
 export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const dispatch = useDispatch();
@@ -46,7 +54,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
         });
 
     const renderOptionItem = useCallback(
-        (props: RenderElementProps<MatchingElementProps>) => {
+        (props: RenderElementProps<ElementAttributesES>) => {
             const { element, inputValue } = props;
             const matchingElement = elementsFound.find(
                 (e) => e.id === element.id
@@ -97,9 +105,9 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     );
 
     const handleMatchingElement = useCallback(
-        async (data: MatchingElementProps | string | null) => {
+        async (data: ElementAttributesES | string | null) => {
             const matchingElement = elementsFound.find(
-                (element: MatchingElementProps) => element === data
+                (element: ElementAttributesES) => element === data
             );
             if (matchingElement !== undefined) {
                 const elementUuidPath = matchingElement?.pathUuid;
@@ -121,9 +129,16 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 }
                 const lastElement = elementUuidPath.pop();
                 handleDispatchDirectory(lastElement);
+                dispatch(setSearchedElement(data));
             }
         },
-        [elementsFound, handleDispatchDirectory, updateMapData, snackError]
+        [
+            elementsFound,
+            handleDispatchDirectory,
+            updateMapData,
+            snackError,
+            dispatch,
+        ]
     );
 
     return (
