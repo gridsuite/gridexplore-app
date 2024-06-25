@@ -43,7 +43,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const { snackError } = useSnackMessage();
     const treeData = useSelector((state: ReduxState) => state.treeData);
     const treeDataRef = useRef<ITreeData>();
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const selectedDirectory = useSelector((state: ReduxState) => state.selectedDirectory);
     treeDataRef.current = treeData;
 
     const fetchElements: (
