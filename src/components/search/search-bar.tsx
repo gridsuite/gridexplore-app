@@ -38,15 +38,21 @@ interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
 }
 
-const fetchElements: (newSearchTerm: string) => Promise<ElementAttributesES[]> =
-    searchElementsInfos;
-
 export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const treeData = useSelector((state: ReduxState) => state.treeData);
     const treeDataRef = useRef<ITreeData>();
+    const selectedDirectory = useSelector((state) => state.selectedDirectory);
     treeDataRef.current = treeData;
+
+    const fetchElements: (
+        newSearchTerm: string
+    ) => Promise<ElementAttributesES[]> = useCallback(
+        (newSearchTerm) =>
+            searchElementsInfos(newSearchTerm, selectedDirectory?.elementUuid),
+        [selectedDirectory?.elementUuid]
+    );
 
     const { elementsFound, isLoading, searchTerm, updateSearchTerm } =
         useElementSearch({
