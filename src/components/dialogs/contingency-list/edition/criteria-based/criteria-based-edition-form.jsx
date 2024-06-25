@@ -15,9 +15,12 @@ import {
     CONTINGENCY_LIST_EQUIPMENTS,
     FieldConstants,
 } from '@gridsuite/commons-ui';
+import { elementExists } from 'utils/rest-api';
+import { useSelector } from 'react-redux';
 
 const CriteriaBasedEditionForm = () => {
     const emptyValues = getCriteriaBasedFormData();
+    const activeDirectory = useSelector((state) => state.activeDirectory);
     return (
         <Grid container spacing={2} marginTop={'auto'}>
             <Grid item xs={12}>
@@ -25,6 +28,8 @@ const CriteriaBasedEditionForm = () => {
                     name={FieldConstants.NAME}
                     label={'nameProperty'}
                     elementType={ElementType.CONTINGENCY_LIST}
+                    activeDirectory={activeDirectory}
+                    elementExists={elementExists}
                 />
             </Grid>
             <CriteriaBasedForm
