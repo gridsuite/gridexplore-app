@@ -225,7 +225,7 @@
   "download.message.studies": "studies",
   "download.message.others": "others",
   "download.error": "An error occurred while exporting case {caseName}",
-  "MODIFICATION": "Modification",
+  "MODIFICATION": "Composite modification",
   "descriptionModificationError": "An error when modifying the description",
   "descriptionLimitError": "Description exceeds character limit",
   "All": "All",
