@@ -51,6 +51,7 @@ const getClickableRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
             ElementType.SENSITIVITY_PARAMETERS,
             ElementType.SECURITY_ANALYSIS_PARAMETERS,
             ElementType.VOLTAGE_INIT_PARAMETERS,
+            ElementType.SHORT_CIRCUIT_PARAMETERS,
         ].includes(cellData.data.type)
     ) {
         style.cursor = 'pointer';
