@@ -281,6 +281,11 @@ const DirectoryContent = () => {
         (event) => {
             if (event.data && event.data.uploading !== null) {
                 if (event.data.type !== 'DIRECTORY') {
+                    if (selectedDirectory) {
+                        dispatch(
+                            setActiveDirectory(selectedDirectory.elementUuid)
+                        );
+                    }
                     setActiveElement({
                         hasMetadata:
                             childrenMetadata[event.data.elementUuid] !==
@@ -316,6 +321,8 @@ const DirectoryContent = () => {
             childrenMetadata,
             contextualMixPolicies.BIG,
             contextualMixPolicy,
+            dispatch,
+            selectedDirectory,
         ]
     );
 

@@ -152,6 +152,7 @@ const DirectoryTreeContextualMenu = (props) => {
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
+                case ElementType.SHORT_CIRCUIT_PARAMETERS:
                     duplicateElement(
                         selectionForCopy.sourceItemUuid,
                         directoryUuid,
