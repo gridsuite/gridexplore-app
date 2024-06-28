@@ -16,7 +16,9 @@ import {
     CustomMuiDialog,
     FieldConstants,
 } from '@gridsuite/commons-ui';
-import { getNameCandidate } from 'utils/rest-api';
+import { elementExists, getNameCandidate } from 'utils/rest-api';
+import { useSelector } from 'react-redux';
+import { ReduxState } from 'redux/reducer.type';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -79,6 +81,10 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
 
     const nameError = errors[FieldConstants.NAME];
     const isValidating = errors.root?.isValidating;
+
+    const activeDirectory = useSelector(
+        (state: ReduxState) => state.activeDirectory
+    );
 
     const onSubmit = (data: FormData) => {
         onValidate(id, data[FieldConstants.NAME]);
@@ -143,6 +149,8 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
                             label={'nameProperty'}
                             elementType={ElementType.CONTINGENCY_LIST}
                             autoFocus
+                            activeDirectory={activeDirectory}
+                            elementExists={elementExists}
                         />
                     )}
                 </Grid>
