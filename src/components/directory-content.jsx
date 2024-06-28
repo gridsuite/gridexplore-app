@@ -95,7 +95,11 @@ const DirectoryContent = () => {
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    const [onGridReady, getRowStyle] = useHighlightSearchedElement();
+    const gridRef = useRef();
+
+    const [onGridReady, getRowStyle] = useHighlightSearchedElement(
+        gridRef?.current?.api
+    );
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -152,7 +156,6 @@ const DirectoryContent = () => {
         useState(true);
 
     const intl = useIntl();
-    const gridRef = useRef();
     const [rows, childrenMetadata] = useDirectoryContent(
         setIsMissingDataAfterDirChange
     );
