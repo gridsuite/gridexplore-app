@@ -132,6 +132,7 @@ const ContentToolbar = (props) => {
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(
         (elementsUuids) => {
+            console.log(' selectedDirectory 123: ');
             setDeleteError('');
             deleteElements(elementsUuids, selectedDirectory.elementUuid)
                 .then(handleCloseDialog)
@@ -141,7 +142,7 @@ const ContentToolbar = (props) => {
                     handleLastError(error.message);
                 });
         },
-        [selectedDirectory.elementUuid, handleCloseDialog, handleLastError]
+        [selectedDirectory?.elementUuid, handleCloseDialog, handleLastError]
     );
 
     const items = useMemo(() => {
