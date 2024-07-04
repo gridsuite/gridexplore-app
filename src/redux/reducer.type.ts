@@ -28,6 +28,18 @@ export type IDirectory = ElementAttributes & {
     type: ElementType.DIRECTORY;
 };
 
+export interface ElementAttributesES {
+    id: UUID;
+    name: string;
+    parentId: UUID;
+    type: ElementType;
+    owner: string;
+    subdirectoriesCount: number;
+    lastModificationDate: string;
+    pathName: string[];
+    pathUuid: UUID[];
+}
+
 export interface ITreeData {
     rootDirectories: IDirectory[];
     mapData: Record<string, IDirectory>;
@@ -37,6 +49,7 @@ export interface ReduxState {
     activeDirectory: UUID;
     currentChildren: ElementAttributes[];
     selectedDirectory: ElementAttributes;
+    searchedElement: ElementAttributesES;
     treeData: ITreeData;
     user: IUser;
 }

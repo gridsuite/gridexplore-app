@@ -13,8 +13,11 @@ import {
     UniqueNameInput,
     FieldConstants,
 } from '@gridsuite/commons-ui';
+import { useSelector } from 'react-redux';
+import { elementExists } from 'utils/rest-api';
 
 const ExplicitNamingEditionForm = () => {
+    const activeDirectory = useSelector((state) => state.activeDirectory);
     return (
         <Grid container spacing={2} marginTop={'auto'}>
             <Grid item xs={12}>
@@ -22,6 +25,8 @@ const ExplicitNamingEditionForm = () => {
                     name={FieldConstants.NAME}
                     label={'nameProperty'}
                     elementType={ElementType.CONTINGENCY_LIST}
+                    activeDirectory={activeDirectory}
+                    elementExists={elementExists}
                 />
             </Grid>
             <ExplicitNamingForm />

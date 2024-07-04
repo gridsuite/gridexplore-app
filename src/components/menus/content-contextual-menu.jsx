@@ -58,6 +58,7 @@ import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
+import { handleMaxElementsExceededError } from '../utils/rest-errors';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -127,7 +128,7 @@ const ContentContextualMenu = (props) => {
         descriptionItem,
         sourceItemUuid,
         parentDirectoryUuid,
-        sprecificTypeItem
+        specificTypeItem
     ) {
         dispatchSelectionForCopy(
             typeItem,
@@ -135,7 +136,7 @@ const ContentContextualMenu = (props) => {
             descriptionItem,
             sourceItemUuid,
             parentDirectoryUuid,
-            sprecificTypeItem
+            specificTypeItem
         );
         broadcastChannel.postMessage({
             typeItem: typeItem,
@@ -143,7 +144,7 @@ const ContentContextualMenu = (props) => {
             descriptionItem: descriptionItem,
             sourceItemUuid: sourceItemUuid,
             parentDirectoryUuid: parentDirectoryUuid,
-            specificTypeItem: sprecificTypeItem,
+            specificTypeItem: specificTypeItem,
         });
 
         handleCloseDialog();
@@ -172,6 +173,7 @@ const ContentContextualMenu = (props) => {
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
+                case ElementType.SHORT_CIRCUIT_PARAMETERS:
                     console.info(
                         activeElement.type +
                             ' with uuid ' +
@@ -226,6 +228,9 @@ const ContentContextualMenu = (props) => {
                         undefined,
                         activeElement.type
                     ).catch((error) => {
+                        if (handleMaxElementsExceededError(error, snackError)) {
+                            return;
+                        }
                         handleDuplicateError(error.message);
                     });
                     break;
@@ -243,6 +248,7 @@ const ContentContextualMenu = (props) => {
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
+                case ElementType.SHORT_CIRCUIT_PARAMETERS:
                     duplicateElement(
                         activeElement.elementUuid,
                         undefined,
@@ -441,6 +447,8 @@ const ContentContextualMenu = (props) => {
                     ElementType.SECURITY_ANALYSIS_PARAMETERS ||
                 selectedElements[0].type ===
                     ElementType.SENSITIVITY_PARAMETERS ||
+                selectedElements[0].type ===
+                    ElementType.SHORT_CIRCUIT_PARAMETERS ||
                 selectedElements[0].type === ElementType.LOADFLOW_PARAMETERS)
         );
     }, [selectedElements]);
