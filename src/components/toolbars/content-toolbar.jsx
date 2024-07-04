@@ -132,7 +132,6 @@ const ContentToolbar = (props) => {
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(
         (elementsUuids) => {
-            console.log(' selectedDirectory 123: ');
             setDeleteError('');
             deleteElements(elementsUuids, selectedDirectory.elementUuid)
                 .then(handleCloseDialog)
