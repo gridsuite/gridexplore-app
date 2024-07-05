@@ -13,7 +13,7 @@ import { IntlShape, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
 import { Box } from '@mui/material';
 
-const getElementTypeTranslation = (
+export const getElementTypeTranslation = (
     type: ElementType,
     subtype: string | null,
     formatCase: string | null,
@@ -28,13 +28,7 @@ const getElementTypeTranslation = (
             });
             break;
         case ElementType.MODIFICATION:
-            translatedType =
-                intl.formatMessage({ id: type }) +
-                ' (' +
-                intl.formatMessage({
-                    id: 'network_modifications.' + subtype,
-                }) +
-                ')';
+            translatedType = intl.formatMessage({ id: type });
             break;
         default:
             translatedType = type ? intl.formatMessage({ id: type }) : '';

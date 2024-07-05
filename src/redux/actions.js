@@ -110,3 +110,12 @@ export function setTreeData(treeData) {
         treeData: treeData,
     };
 }
+
+export const SEARCHED_ELEMENT = 'SEARCHED_ELEMENT';
+
+export function setSearchedElement(searchedElement) {
+    return {
+        type: SEARCHED_ELEMENT,
+        searchedElement: searchedElement,
+    };
+}
