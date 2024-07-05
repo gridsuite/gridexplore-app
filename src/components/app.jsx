@@ -213,7 +213,9 @@ const App = () => {
                 <div
                     style={{
                         flexGrow: 1,
-                        // autosizer (used in virtual table) can return wrong size (off by 1) and it causes scrollbar to blink
+                        /* autosizer (used in virtual table) can return wrong size
+                        (off by 1) and it causes scrollbar to blink
+                        * */
                         overflow: 'hidden',
                         marginTop: '20px',
                     }}
@@ -223,34 +225,39 @@ const App = () => {
                             <Route
                                 path="/"
                                 element={
-                                    <Grid container style={{ height: '100%' }}>
+                                    <>
                                         <Grid
-                                            item
-                                            xs={12}
-                                            sm={3}
-                                            style={{
-                                                borderRight:
-                                                    '1px solid rgba(81, 81, 81, 1)',
-                                                height: '100%',
-                                                overflow: 'auto',
-                                                display: 'flex',
-                                            }}
+                                            container
+                                            style={{ height: '100%' }}
                                         >
-                                            <TreeViewsContainer />
-                                        </Grid>
-                                        <Grid item xs={12} sm={9}>
-                                            <div
+                                            <Grid
+                                                item
+                                                xs={12}
+                                                sm={3}
                                                 style={{
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
+                                                    borderRight:
+                                                        '1px solid rgba(81, 81, 81, 1)',
                                                     height: '100%',
+                                                    overflow: 'auto',
+                                                    display: 'flex',
                                                 }}
                                             >
-                                                <DirectoryBreadcrumbs />
-                                                <DirectoryContent />
-                                            </div>
+                                                <TreeViewsContainer />
+                                            </Grid>
+                                            <Grid item xs={12} sm={9}>
+                                                <div
+                                                    style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        height: '100%',
+                                                    }}
+                                                >
+                                                    <DirectoryBreadcrumbs />
+                                                    <DirectoryContent />
+                                                </div>
+                                            </Grid>
                                         </Grid>
-                                    </Grid>
+                                    </>
                                 }
                             />
                             <Route
