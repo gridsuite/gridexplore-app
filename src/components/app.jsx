@@ -223,39 +223,34 @@ const App = () => {
                             <Route
                                 path="/"
                                 element={
-                                    <>
+                                    <Grid container style={{ height: '100%' }}>
                                         <Grid
-                                            container
-                                            style={{ height: '100%' }}
+                                            item
+                                            xs={12}
+                                            sm={3}
+                                            style={{
+                                                borderRight:
+                                                    '1px solid rgba(81, 81, 81, 1)',
+                                                height: '100%',
+                                                overflow: 'auto',
+                                                display: 'flex',
+                                            }}
                                         >
-                                            <Grid
-                                                item
-                                                xs={12}
-                                                sm={3}
+                                            <TreeViewsContainer />
+                                        </Grid>
+                                        <Grid item xs={12} sm={9}>
+                                            <div
                                                 style={{
-                                                    borderRight:
-                                                        '1px solid rgba(81, 81, 81, 1)',
-                                                    height: '100%',
-                                                    overflow: 'auto',
                                                     display: 'flex',
+                                                    flexDirection: 'column',
+                                                    height: '100%',
                                                 }}
                                             >
-                                                <TreeViewsContainer />
-                                            </Grid>
-                                            <Grid item xs={12} sm={9}>
-                                                <div
-                                                    style={{
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
-                                                        height: '100%',
-                                                    }}
-                                                >
-                                                    <DirectoryBreadcrumbs />
-                                                    <DirectoryContent />
-                                                </div>
-                                            </Grid>
+                                                <DirectoryBreadcrumbs />
+                                                <DirectoryContent />
+                                            </div>
                                         </Grid>
-                                    </>
+                                    </Grid>
                                 }
                             />
                             <Route
