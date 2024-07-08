@@ -131,10 +131,10 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                         }}
                     >
                         {Object.keys(formats).map((formatKey) => (
-                                <MenuItem key={formatKey} value={formatKey}>
-                                    {formatKey}
-                                </MenuItem>
-                            ))}
+                            <MenuItem key={formatKey} value={formatKey}>
+                                {formatKey}
+                            </MenuItem>
+                        ))}
                     </Select>
                     <Stack
                         marginTop="0.7em"
