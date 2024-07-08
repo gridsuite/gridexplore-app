@@ -130,17 +130,11 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                             id: 'select-format',
                         }}
                     >
-                        {Object.keys(formats)
-                            .filter(
-                                (format) =>
-                                    // Hide the CGMES item while waiting for the Fix of getIdentifiable on the back end
-                                    format !== 'CGMES'
-                            )
-                            .map((formatKey) => (
-                                <MenuItem key={formatKey} value={formatKey}>
-                                    {formatKey}
-                                </MenuItem>
-                            ))}
+                        {Object.keys(formats).map((formatKey) => (
+                            <MenuItem key={formatKey} value={formatKey}>
+                                {formatKey}
+                            </MenuItem>
+                        ))}
                     </Select>
                     <Stack
                         marginTop="0.7em"
