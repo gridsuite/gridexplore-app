@@ -141,7 +141,7 @@ const ContentToolbar = (props) => {
                     handleLastError(error.message);
                 });
         },
-        [selectedDirectory.elementUuid, handleCloseDialog, handleLastError]
+        [selectedDirectory?.elementUuid, handleCloseDialog, handleLastError]
     );
 
     const items = useMemo(() => {
