@@ -95,7 +95,11 @@ const DirectoryContent = () => {
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
-    const [onGridReady, getRowStyle] = useHighlightSearchedElement();
+    const gridRef = useRef();
+
+    const [onGridReady, getRowStyle] = useHighlightSearchedElement(
+        gridRef?.current?.api
+    );
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -152,7 +156,6 @@ const DirectoryContent = () => {
         useState(true);
 
     const intl = useIntl();
-    const gridRef = useRef();
     const [rows, childrenMetadata] = useDirectoryContent(
         setIsMissingDataAfterDirChange
     );
@@ -278,6 +281,11 @@ const DirectoryContent = () => {
         (event) => {
             if (event.data && event.data.uploading !== null) {
                 if (event.data.type !== 'DIRECTORY') {
+                    if (selectedDirectory) {
+                        dispatch(
+                            setActiveDirectory(selectedDirectory.elementUuid)
+                        );
+                    }
                     setActiveElement({
                         hasMetadata:
                             childrenMetadata[event.data.elementUuid] !==
@@ -313,6 +321,8 @@ const DirectoryContent = () => {
             childrenMetadata,
             contextualMixPolicies.BIG,
             contextualMixPolicy,
+            dispatch,
+            selectedDirectory,
         ]
     );
 

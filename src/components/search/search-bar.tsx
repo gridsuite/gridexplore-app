@@ -136,11 +136,15 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                     });
                 }
                 const lastElement = elementUuidPath.pop();
-                handleDispatchDirectory(lastElement);
+
                 dispatch(setSearchedElement(data));
+                if (lastElement !== selectedDirectory?.elementUuid) {
+                    handleDispatchDirectory(lastElement);
+                }
             }
         },
         [
+            selectedDirectory?.elementUuid,
             elementsFound,
             handleDispatchDirectory,
             updateMapData,
