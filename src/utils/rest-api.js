@@ -823,13 +823,14 @@ export const getExportFormats = () => {
     return backendFetchJson(url);
 };
 
-export function searchElementsInfos(searchTerm) {
+export function searchElementsInfos(searchTerm, currentDirectoryUuid) {
     console.info(
         "Fetching elements infos matching with '%s' term ... ",
         searchTerm
     );
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
+    urlSearchParams.append('directoryUuid', currentDirectoryUuid);
     return backendFetchJson(
         PREFIX_DIRECTORY_SERVER_QUERIES +
             '/v1/elements/indexation-infos?' +
