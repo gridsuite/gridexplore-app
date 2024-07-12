@@ -25,28 +25,15 @@ import {
     ElementAttributesES,
     IDirectory,
     ITreeData,
+    PagenableElementsAttributesES,
     ReduxState,
 } from '../../redux/reducer.type';
 import { RenderElementProps } from '@gridsuite/commons-ui/dist/components/ElementSearchDialog/element-search-input';
-import { TextFieldProps } from '@mui/material';
+import { Paper, TextFieldProps, Typography } from '@mui/material';
 import { SearchBarRenderInput } from './search-bar-render-input';
 import { UUID } from 'crypto';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
-
-const zeroUuid = '00000000-0000-0000-0000-000000000000';
-// dummy ElementAttributesES to create an option that will be used to display "results are not exhaustive as the last option"
-const notExhaustiveOption: ElementAttributesES = {
-    id: zeroUuid,
-    lastModificationDate: '',
-    name: 'random-name',
-    owner: 'random-owner',
-    parentId: zeroUuid,
-    pathName: [],
-    pathUuid: [],
-    subdirectoriesCount: 0,
-    type: ElementType.STUDY,
-};
 
 interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
@@ -54,6 +41,9 @@ interface SearchBarProps {
 
 const fetchElements: (newSearchTerm: string) => Promise<ElementAttributesES[]> =
     searchElementsInfos;
+const fetchElementsPaginable: (
+    newSearchTerm: string
+) => Promise<PagenableElementsAttributesES> = searchElementsInfos;
 
 export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const dispatch = useDispatch();
@@ -65,22 +55,17 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     );
     treeDataRef.current = treeData;
 
-    const { elementsFound, isLoading, searchTerm, updateSearchTerm } =
+    const { elementsFound, isLoading, searchTerm, updateSearchTerm, totalElements } =
         useElementSearch({
-            fetchElements,
+            fetchElements: fetchElementsPaginable,
         });
 
-    const test =
-        elementsFound.length >= 10
-            ? elementsFound.concat([notExhaustiveOption])
-            : [];
+    console.log('debug', "total", totalElements);
 
     const renderOptionItem = useCallback(
         (props: RenderElementProps<ElementAttributesES>) => {
             const { element, inputValue } = props;
-            if (element === notExhaustiveOption) {
-                return 'Seuls les 10 premiers résultats sont affichés';
-            }
+
             const matchingElement = elementsFound.find(
                 (e) => e.id === element.id
             )!;
@@ -160,21 +145,14 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 }
             }
         },
-        [
-            selectedDirectory?.elementUuid,
-            elementsFound,
-            handleDispatchDirectory,
-            updateMapData,
-            snackError,
-            dispatch,
-        ]
+        [selectedDirectory?.elementUuid, handleDispatchDirectory, updateMapData, snackError, dispatch, elementsFound]
     );
 
     return (
         <ElementSearchInput
             sx={{ width: '50%', marginLeft: '14%' }}
             size="small"
-            elementsFound={test}
+            elementsFound={elementsFound}
             getOptionLabel={(element) => element.name}
             isOptionEqualToValue={(element1, element2) =>
                 element1.id === element2.id
@@ -184,10 +162,21 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
             renderElement={renderOptionItem}
             searchTerm={searchTerm}
             loading={isLoading}
-            getOptionDisabled={(option) => option === notExhaustiveOption}
             renderInput={(value, params) => (
                 <SearchBarRenderInput inputRef={inputRef} {...params} />
             )}
+            PaperComponent={
+                ({ children, ...other }) => {
+                    return (
+                            <Paper {...other}>
+                                <div>
+                                    Showing <span>{elementsFound.length}</span> of {totalElements} results
+                                </div>
+                                {children}
+                            </Paper>
+                    );
+                }
+            }
         />
     );
 };

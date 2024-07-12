@@ -28,6 +28,23 @@ export type IDirectory = ElementAttributes & {
     type: ElementType.DIRECTORY;
 };
 
+export interface PagenableElementsAttributesES {
+    content: ElementAttributesES[];
+    totalPages: number;
+    totalElements: number;
+    last: boolean;
+    size: number;
+    number: number;
+    sort: {
+        sorted: boolean;
+        unsorted: boolean;
+        empty: boolean;
+    };
+    first: boolean;
+    numberOfElements: number;
+    empty: boolean;
+}
+
 export interface ElementAttributesES {
     id: UUID;
     name: string;
