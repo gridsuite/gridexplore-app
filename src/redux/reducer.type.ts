@@ -28,6 +28,18 @@ export type IDirectory = ElementAttributes & {
     type: ElementType.DIRECTORY;
 };
 
+
+export interface ElementAttributesES {
+    id: UUID;
+    name: string;
+    parentId: UUID;
+    type: ElementType;
+    owner: string;
+    subdirectoriesCount: number;
+    lastModificationDate: string;
+    pathName: string[];
+    pathUuid: UUID[];
+}
 export interface PagenableElementsAttributesES {
     content: ElementAttributesES[];
     totalPages: number;
@@ -45,17 +57,6 @@ export interface PagenableElementsAttributesES {
     empty: boolean;
 }
 
-export interface ElementAttributesES {
-    id: UUID;
-    name: string;
-    parentId: UUID;
-    type: ElementType;
-    owner: string;
-    subdirectoriesCount: number;
-    lastModificationDate: string;
-    pathName: string[];
-    pathUuid: UUID[];
-}
 
 export interface ITreeData {
     rootDirectories: IDirectory[];

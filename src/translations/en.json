@@ -64,6 +64,7 @@
   "createNewStudyFromImportedCase": "Create study",
   "showSelectDirectoryDialog": "Change folder",
   "selectDirectoryDialogTitle": "Pick a folder",
+  "showingSearchResults": "Showing {nbElementsShown} of results {nbElementsTotal}",
   "confirmDirectoryDialog": "Confirm",
   "insertNewDirectoryDialogTitle": "Create folder",
   "insertNewRootDirectoryDialogTitle": "Create root folder",

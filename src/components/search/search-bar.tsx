@@ -32,6 +32,8 @@ import { RenderElementProps } from '@gridsuite/commons-ui/dist/components/Elemen
 import { Paper, TextFieldProps, Typography } from '@mui/material';
 import { SearchBarRenderInput } from './search-bar-render-input';
 import { UUID } from 'crypto';
+import { useTheme } from '@mui/material';
+import { useIntl } from 'react-intl';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 
@@ -39,8 +41,6 @@ interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
 }
 
-const fetchElements: (newSearchTerm: string) => Promise<ElementAttributesES[]> =
-    searchElementsInfos;
 const fetchElementsPaginable: (
     newSearchTerm: string
 ) => Promise<PagenableElementsAttributesES> = searchElementsInfos;
@@ -49,25 +49,30 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const treeData = useSelector((state: ReduxState) => state.treeData);
+    const theme = useTheme();
+    const intl = useIntl();
     const treeDataRef = useRef<ITreeData>();
     const selectedDirectory = useSelector(
         (state: ReduxState) => state.selectedDirectory
     );
     treeDataRef.current = treeData;
 
-    const { elementsFound, isLoading, searchTerm, updateSearchTerm, totalElements } =
-        useElementSearch({
-            fetchElements: fetchElementsPaginable,
-        });
-
-    console.log('debug', "total", totalElements);
+    const {
+        elementsFound,
+        isLoading,
+        searchTerm,
+        updateSearchTerm,
+        totalElements,
+    } = useElementSearch({
+        fetchElements: fetchElementsPaginable,
+    });
 
     const renderOptionItem = useCallback(
         (props: RenderElementProps<ElementAttributesES>) => {
             const { element, inputValue } = props;
 
-            const matchingElement = elementsFound.find(
-                (e) => e.id === element.id
+            const matchingElement: ElementAttributesES = elementsFound.find(
+                (e: ElementAttributesES) => e.id === element.id
             )!;
             return (
                 <SearchItem
@@ -116,9 +121,8 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
 
     const handleMatchingElement = useCallback(
         async (data: ElementAttributesES | string | null) => {
-            const matchingElement = elementsFound.find(
-                (element: ElementAttributesES) => element === data
-            );
+            const matchingElement: ElementAttributesES | undefined =
+                elementsFound.find((element) => element === data);
             if (matchingElement !== undefined) {
                 const elementUuidPath = matchingElement?.pathUuid;
                 try {
@@ -145,38 +149,66 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 }
             }
         },
-        [selectedDirectory?.elementUuid, handleDispatchDirectory, updateMapData, snackError, dispatch, elementsFound]
+        [
+            selectedDirectory?.elementUuid,
+            handleDispatchDirectory,
+            updateMapData,
+            snackError,
+            dispatch,
+            elementsFound,
+        ]
     );
 
     return (
         <ElementSearchInput
             sx={{ width: '50%', marginLeft: '14%' }}
             size="small"
-            elementsFound={elementsFound}
-            getOptionLabel={(element) => element.name}
-            isOptionEqualToValue={(element1, element2) =>
-                element1.id === element2.id
-            }
+            elementsFound={elementsFound as ElementAttributesES[]}
+            getOptionLabel={(element: ElementAttributesES) => element.name}
+            isOptionEqualToValue={(
+                element1: ElementAttributesES,
+                element2: ElementAttributesES
+            ) => element1.id === element2.id}
             onSearchTermChange={updateSearchTerm}
             onSelectionChange={handleMatchingElement}
             renderElement={renderOptionItem}
             searchTerm={searchTerm}
             loading={isLoading}
-            renderInput={(value, params) => (
+            renderInput={(_value: any, params) => (
                 <SearchBarRenderInput inputRef={inputRef} {...params} />
             )}
-            PaperComponent={
-                ({ children, ...other }) => {
-                    return (
-                            <Paper {...other}>
-                                <div>
-                                    Showing <span>{elementsFound.length}</span> of {totalElements} results
-                                </div>
-                                {children}
-                            </Paper>
-                    );
-                }
-            }
+            PaperComponent={({
+                children,
+                ...other
+            }: {
+                children: React.ReactNode;
+            }) => {
+                return (
+                    <Paper {...other}>
+                        <Typography
+                            variant="body1"
+                            style={{
+                                color: theme.palette.info.main,
+                                marginTop: theme.spacing(1),
+                                marginBottom: theme.spacing(1),
+                                marginLeft: theme.spacing(2),
+                            }}
+                        >
+                            {intl
+                                .formatMessage(
+                                    { id: 'showingSearchResults' },
+                                    {
+                                        nbElementsShown:
+                                            elementsFound.length as number,
+                                        nbElementsTotal: totalElements,
+                                    }
+                                )
+                                .toString()}
+                        </Typography>
+                        {children}
+                    </Paper>
+                );
+            }}
         />
     );
 };
