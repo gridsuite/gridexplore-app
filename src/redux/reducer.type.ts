@@ -4,7 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ElementAttributes, ElementType } from '@gridsuite/commons-ui';
+import {
+    ElementAttributes,
+    ElementType,
+    Paginated,
+} from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 
 type UserProfile = {
@@ -28,7 +32,6 @@ export type IDirectory = ElementAttributes & {
     type: ElementType.DIRECTORY;
 };
 
-
 export interface ElementAttributesES {
     id: UUID;
     name: string;
@@ -40,8 +43,8 @@ export interface ElementAttributesES {
     pathName: string[];
     pathUuid: UUID[];
 }
-export interface PagenableElementsAttributesES {
-    content: ElementAttributesES[];
+export interface PageableElementsAttributesES
+    extends Paginated<ElementAttributesES> {
     totalPages: number;
     totalElements: number;
     last: boolean;
@@ -56,7 +59,6 @@ export interface PagenableElementsAttributesES {
     numberOfElements: number;
     empty: boolean;
 }
-
 
 export interface ITreeData {
     rootDirectories: IDirectory[];

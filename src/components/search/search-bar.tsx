@@ -25,7 +25,7 @@ import {
     ElementAttributesES,
     IDirectory,
     ITreeData,
-    PagenableElementsAttributesES,
+    PageableElementsAttributesES,
     ReduxState,
 } from '../../redux/reducer.type';
 import { RenderElementProps } from '@gridsuite/commons-ui/dist/components/ElementSearchDialog/element-search-input';
@@ -41,9 +41,9 @@ interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
 }
 
-const fetchElementsPaginable: (
+const fetchElementsPageable: (
     newSearchTerm: string
-) => Promise<PagenableElementsAttributesES> = searchElementsInfos;
+) => Promise<PageableElementsAttributesES> = searchElementsInfos;
 
 export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const dispatch = useDispatch();
@@ -64,7 +64,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
         updateSearchTerm,
         totalElements,
     } = useElementSearch({
-        fetchElements: fetchElementsPaginable,
+        fetchElements: fetchElementsPageable,
     });
 
     const renderOptionItem = useCallback(
