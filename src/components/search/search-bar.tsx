@@ -57,6 +57,13 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     );
     treeDataRef.current = treeData;
 
+    const fetchElementsPageable: (
+        newSearchTerm: string
+    ) => Promise<PageableElementsAttributesES> = useCallback(
+        (newSearchTerm) =>
+            searchElementsInfos(newSearchTerm, selectedDirectory?.elementUuid),
+        [selectedDirectory?.elementUuid]
+    );
     const {
         elementsFound,
         isLoading,
