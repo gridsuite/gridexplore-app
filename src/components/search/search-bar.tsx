@@ -41,10 +41,6 @@ interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
 }
 
-const fetchElementsPageable: (
-    newSearchTerm: string
-) => Promise<PageableElementsAttributesES> = searchElementsInfos;
-
 export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
