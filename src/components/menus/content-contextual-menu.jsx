@@ -64,6 +64,7 @@ const ContentContextualMenu = (props) => {
     const {
         activeElement,
         selectedElements,
+        onUpdateSelectedElements,
         open,
         onClose,
         openDialog,
@@ -350,6 +351,14 @@ const ContentContextualMenu = (props) => {
                     nameItem: elementName[1],
                 });
             }
+            //update selected elements if element is renamed
+            const updatedSelectedElements = selectedElements.map((element) => {
+                if (element.elementUuid === elementName[0]) {
+                    return { ...element, elementName: elementName[1] };
+                }
+                return element;
+            });
+            onUpdateSelectedElements(updatedSelectedElements);
 
             handleCloseDialog();
         },
@@ -818,6 +827,7 @@ const ContentContextualMenu = (props) => {
 };
 
 ContentContextualMenu.propTypes = {
+    onUpdateSelectedElements: PropTypes.func,
     onClose: PropTypes.func,
 };
 
