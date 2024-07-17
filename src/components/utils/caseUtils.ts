@@ -56,7 +56,7 @@ export function useDownloadUtils() {
         });
 
     const exportCase = async (
-        caseElement: any,
+        caseElement: ElementAttributes,
         format: string,
         formatParameters: {
             [parameterName: string]: any;
@@ -66,6 +66,7 @@ export function useDownloadUtils() {
         try {
             const result = await fetchConvertedCase(
                 caseElement.elementUuid,
+                caseElement.elementName,
                 format,
                 formatParameters,
                 abortController
@@ -73,17 +74,13 @@ export function useDownloadUtils() {
             let filename = result.headers
                 .get('Content-Disposition')
                 .split('filename=')[1];
-            filename = filename.substring(1, filename.length - 1); // We remove quotes
-            const fileExtension = filename.split('.').pop();
+
             const blob = await result.blob();
 
             const href = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = href;
-            link.setAttribute(
-                'download',
-                `${caseElement.elementName}.${fileExtension}`
-            );
+            link.setAttribute('download', `${filename}`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
