@@ -18,7 +18,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { elementExists, getNameCandidate } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -83,7 +83,7 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
     const isValidating = errors.root?.isValidating;
 
     const activeDirectory = useSelector(
-        (state: ReduxState) => state.activeDirectory
+        (state: AppState) => state.activeDirectory
     );
 
     const onSubmit = (data: FormData) => {

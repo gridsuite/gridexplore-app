@@ -13,7 +13,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { ReduxState } from '../redux/reducer.type';
+import { AppState } from '../redux/reducer';
 
 export const useDirectoryContent = (
     setIsMissingDataAfterDirChange: React.Dispatch<
@@ -21,7 +21,7 @@ export const useDirectoryContent = (
     >
 ) => {
     const currentChildren = useSelector(
-        (state: ReduxState) => state.currentChildren
+        (state: AppState) => state.currentChildren
     );
     const [childrenMetadata, setChildrenMetadata] = useState<
         Record<UUID, ElementAttributes>

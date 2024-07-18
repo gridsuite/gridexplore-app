@@ -22,15 +22,16 @@ import {
 import { updatedTree } from '../tree-views-container';
 import { SearchItem } from './search-item';
 import {
+    AppState,
     ElementAttributesES,
     IDirectory,
     ITreeData,
-    ReduxState,
-} from '../../redux/reducer.type';
-import { RenderElementProps } from '@gridsuite/commons-ui/dist/components/ElementSearchDialog/element-search-input';
+} from '../../redux/reducer';
+import { ElementSearchInputProps } from '@gridsuite/commons-ui/dist/components/ElementSearchDialog/element-search-input';
 import { TextFieldProps } from '@mui/material';
 import { SearchBarRenderInput } from './search-bar-render-input';
 import { UUID } from 'crypto';
+import { AppDispatch } from '../../redux/store';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 
@@ -39,12 +40,12 @@ interface SearchBarProps {
 }
 
 export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
-    const treeData = useSelector((state: ReduxState) => state.treeData);
+    const treeData = useSelector((state: AppState) => state.treeData);
     const treeDataRef = useRef<ITreeData>();
     const selectedDirectory = useSelector(
-        (state: ReduxState) => state.selectedDirectory
+        (state: AppState) => state.selectedDirectory
     );
     treeDataRef.current = treeData;
 
@@ -61,8 +62,10 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
             fetchElements,
         });
 
-    const renderOptionItem = useCallback(
-        (props: RenderElementProps<ElementAttributesES>) => {
+    const renderOptionItem = useCallback<
+        ElementSearchInputProps<ElementAttributesES>['renderElement']
+    >(
+        (props) => {
             const { element, inputValue } = props;
             const matchingElement = elementsFound.find(
                 (e) => e.id === element.id
@@ -94,6 +97,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 setTreeData({
                     rootDirectories: newRootDirectories,
                     mapData: newMapData,
+                    initialized: true,
                 })
             );
         },
@@ -112,8 +116,10 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
         [dispatch]
     );
 
-    const handleMatchingElement = useCallback(
-        async (data: ElementAttributesES | string | null) => {
+    const handleMatchingElement = useCallback<
+        ElementSearchInputProps<ElementAttributesES>['onSelectionChange']
+    >(
+        async (data) => {
             const matchingElement = elementsFound.find(
                 (element: ElementAttributesES) => element === data
             );

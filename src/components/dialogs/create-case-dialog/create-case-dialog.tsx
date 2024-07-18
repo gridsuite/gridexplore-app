@@ -21,7 +21,7 @@ import {
     createCaseDialogFormValidationSchema,
     getCreateCaseDialogFormValidationDefaultValues,
 } from './create-case-dialog-utils';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState, UploadingElement } from '../../../redux/reducer';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import {
     CustomMuiDialog,
@@ -35,6 +35,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
+import { AppDispatch } from '../../../redux/store';
 
 interface IFormData {
     [FieldConstants.CASE_NAME]: string;
@@ -51,7 +52,7 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
     onClose,
     open,
 }) => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
 
     const createCaseFormMethods = useForm<IFormData>({
@@ -66,16 +67,17 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
     const isFormValid = isObjectEmpty(errors) && isValid;
 
     const activeDirectory = useSelector(
-        (state: ReduxState) => state.activeDirectory
+        (state: AppState) => state.activeDirectory
     );
-    const userId = useSelector((state: ReduxState) => state.user.profile.sub);
+    const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const handleCreateNewCase = ({
         caseName,
         description,
         caseFile,
     }: IFormData): void => {
-        const uploadingCase = {
+        const uploadingCase: UploadingElement = {
+            // @ts-expect-error: TODO wrong ID here
             id: keyGenerator(),
             elementName: caseName,
             directory: activeDirectory,
