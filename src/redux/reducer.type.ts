@@ -4,11 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    ElementAttributes,
-    ElementType,
-    Paginated,
-} from '@gridsuite/commons-ui';
+import { ElementAttributes, ElementType } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 
 type UserProfile = {
@@ -42,22 +38,6 @@ export interface ElementAttributesES {
     lastModificationDate: string;
     pathName: string[];
     pathUuid: UUID[];
-}
-export interface PageableElementsAttributesES
-    extends Paginated<ElementAttributesES> {
-    totalPages: number;
-    totalElements: number;
-    last: boolean;
-    size: number;
-    number: number;
-    sort: {
-        sorted: boolean;
-        unsorted: boolean;
-        empty: boolean;
-    };
-    first: boolean;
-    numberOfElements: number;
-    empty: boolean;
 }
 
 export interface ITreeData {
