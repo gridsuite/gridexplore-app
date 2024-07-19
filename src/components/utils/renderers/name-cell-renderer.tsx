@@ -19,6 +19,17 @@ const isElementCaseOrStudy = (objectType: ElementType) => {
     return objectType === ElementType.STUDY || objectType === ElementType.CASE;
 };
 
+const creating = (
+    elementUuid: UUID,
+    childrenMetadata: Record<UUID, ElementAttributes>
+) => {
+    return (
+        !childrenMetadata[elementUuid] ||
+        (childrenMetadata[elementUuid].type === ElementType.STUDY &&
+            !childrenMetadata[elementUuid].specificMetadata.caseFormat)
+    );
+};
+
 const getDisplayedElementName = (
     data: ElementAttributes,
     childrenMetadata: Record<UUID, ElementAttributes>,
@@ -29,7 +40,7 @@ const getDisplayedElementName = (
     if (uploading) {
         return elementName + '\n' + formatMessage({ id: 'uploading' });
     }
-    if (!childrenMetadata[elementUuid]) {
+    if (creating(elementUuid, childrenMetadata)) {
         return elementName + '\n' + formatMessage({ id: 'creationInProgress' });
     }
     return childrenMetadata[elementUuid].elementName;
@@ -72,11 +83,11 @@ export const NameCellRenderer = ({
     return (
         <Box sx={styles.tableCell}>
             {/*  Icon */}
-            {!childrenMetadata[data.elementUuid] &&
+            {creating(data.elementUuid, childrenMetadata) &&
                 isElementCaseOrStudy(data.type) && (
                     <CircularProgress size={18} sx={styles.circularRoot} />
                 )}
-            {childrenMetadata[data.elementUuid] &&
+            {!creating(data.elementUuid, childrenMetadata) &&
                 getFileIcon(data.type, styles.icon)}
             {/* Name */}
             <OverflowableText
