@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     Navigate,
@@ -25,6 +25,7 @@ import {
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
+    UserManagerState,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
@@ -47,36 +48,39 @@ import Grid from '@mui/material/Grid';
 import TreeViewsContainer from './tree-views-container';
 import DirectoryContent from './directory-content';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
-
-const noUserManager = { instance: null, error: null };
+import { AppState } from '../redux/reducer';
+import { AppDispatch } from '../redux/store';
 
 const App = () => {
     const { snackError } = useSnackMessage();
 
-    const user = useSelector((state) => state.user);
+    const user = useSelector((state: AppState) => state.user);
 
     const signInCallbackError = useSelector(
-        (state) => state.signInCallbackError
+        (state: AppState) => state.signInCallbackError
     );
     const authenticationRouterError = useSelector(
-        (state) => state.authenticationRouterError
+        (state: AppState) => state.authenticationRouterError
     );
     const showAuthenticationRouterLogin = useSelector(
-        (state) => state.showAuthenticationRouterLogin
+        (state: AppState) => state.showAuthenticationRouterLogin
     );
 
-    const [userManager, setUserManager] = useState(noUserManager);
+    const [userManager, setUserManager] = useState<UserManagerState>({
+        instance: null,
+        error: null,
+    });
 
     const navigate = useNavigate();
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
 
     const location = useLocation();
 
     const updateParams = useCallback(
-        (params) => {
+        (params: any) => {
             console.debug('received UI parameters : ', params);
-            params.forEach((param) => {
+            params.forEach((param: any) => {
                 switch (param.name) {
                     case PARAM_THEME:
                         dispatch(selectTheme(param.value));
@@ -156,7 +160,7 @@ const App = () => {
                     ),
                     error: null,
                 });
-            } catch (error) {
+            } catch (error: any) {
                 setUserManager({ instance: null, error: error.message });
             }
         })();
@@ -208,7 +212,7 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
-            <AppTopBar user={user} userManager={userManager} />
+            <AppTopBar userManagerInstance={userManager.instance} />
             <CardErrorBoundary>
                 <div
                     style={{
