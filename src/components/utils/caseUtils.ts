@@ -74,7 +74,7 @@ export function useDownloadUtils() {
             let filename = result.headers
                 .get('Content-Disposition')
                 .split('filename=')[1];
-
+            filename = filename.substring(1, filename.length - 1); // We remove quotes
             const blob = await result.blob();
 
             const href = window.URL.createObjectURL(blob);

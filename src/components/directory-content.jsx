@@ -494,14 +494,6 @@ const DirectoryContent = () => {
         [activeElement, checkedRows]
     );
 
-    // Define the callback function to update the selected elements
-    const handleUpdateSelectedElements = useCallback(
-        (newSelectedElements) => {
-            setCheckedRows(newSelectedElements); // Update the state as necessary
-        },
-        [setCheckedRows]
-    );
-
     const handleRowSelected = useCallback(() => {
         setCheckedRows(computeCheckedElements(gridRef, childrenMetadata));
     }, [childrenMetadata]);
@@ -733,7 +725,7 @@ const DirectoryContent = () => {
                 <ContentContextualMenu
                     activeElement={activeElement}
                     selectedElements={fullSelection}
-                    onUpdateSelectedElements={handleUpdateSelectedElements}
+                    onUpdateSelectedElements={setCheckedRows}
                     open={openContentMenu}
                     openDialog={openDialog}
                     setOpenDialog={setOpenDialog}
