@@ -219,7 +219,7 @@ export function deleteElement(elementUuid) {
 
 export function deleteElements(elementUuids, activeDirectory) {
     console.info('Deleting elements : %s', elementUuids);
-    const idsParams = getRequestParamFromList(elementUuids, 'ids').toString();
+    const idsParams = getRequestParamFromList('ids', elementUuids).toString();
     return backendFetch(
         PREFIX_EXPLORE_SERVER_QUERIES +
             `/v1/explore/elements/` +
