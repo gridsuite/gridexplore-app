@@ -236,8 +236,8 @@ export function moveElementsToDirectory(elementsUuids, targetDirectoryUuid) {
     console.info('Moving elements to directory %s', targetDirectoryUuid);
 
     const fetchParams =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/elements?targetDirectoryUuid=${targetDirectoryUuid}`;
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        `/v1/explore/elements?targetDirectoryUuid=${targetDirectoryUuid}`;
     return backendFetch(fetchParams, {
         method: 'put',
         headers: {
@@ -251,7 +251,7 @@ export function moveElementsToDirectory(elementsUuids, targetDirectoryUuid) {
 export function updateElement(elementUuid, element) {
     console.info('Updating element info for ' + elementUuid);
     const updateElementUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${elementUuid}`;
+        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/${elementUuid}`;
     return backendFetch(updateElementUrl, {
         method: 'put',
         headers: {
@@ -302,7 +302,7 @@ export function insertRootDirectory(directoryName, owner) {
 export function renameElement(elementUuid, newElementName) {
     console.info('Renaming element ' + elementUuid);
     const renameElementUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/elements/${elementUuid}`;
+        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/${elementUuid}`;
     console.debug(renameElementUrl);
     return backendFetch(renameElementUrl, {
         method: 'put',
