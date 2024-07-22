@@ -64,6 +64,7 @@ const ContentContextualMenu = (props) => {
     const {
         activeElement,
         selectedElements,
+        onUpdateSelectedElements,
         open,
         onClose,
         openDialog,
@@ -336,20 +337,28 @@ const ContentContextualMenu = (props) => {
 
     const [renameCB, renameState] = useDeferredFetch(
         renameElement,
-        (elementUuid, elementName) => {
+        (elementUuid, renamedElement) => {
             // if copied element is renamed
-            if (selectionForCopy.sourceItemUuid === elementName[0]) {
+            if (selectionForCopy.sourceItemUuid === renamedElement[0]) {
                 dispatch(
                     setSelectionForCopy({
                         ...selectionForCopy,
-                        nameItem: elementName[1],
+                        nameItem: renamedElement[1],
                     })
                 );
                 broadcastChannel.postMessage({
                     ...selectionForCopy,
-                    nameItem: elementName[1],
+                    nameItem: renamedElement[1],
                 });
             }
+            //update selected elements if element is renamed
+            const updatedSelectedElements = selectedElements.map((element) => {
+                if (element.elementUuid === renamedElement[0]) {
+                    return { ...element, elementName: renamedElement[1] };
+                }
+                return element;
+            });
+            onUpdateSelectedElements(updatedSelectedElements);
 
             handleCloseDialog();
         },
@@ -818,6 +827,7 @@ const ContentContextualMenu = (props) => {
 };
 
 ContentContextualMenu.propTypes = {
+    onUpdateSelectedElements: PropTypes.func,
     onClose: PropTypes.func,
 };
 
