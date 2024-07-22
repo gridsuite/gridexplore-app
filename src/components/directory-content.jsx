@@ -725,6 +725,7 @@ const DirectoryContent = () => {
                 <ContentContextualMenu
                     activeElement={activeElement}
                     selectedElements={fullSelection}
+                    onUpdateSelectedElements={setCheckedRows}
                     open={openContentMenu}
                     openDialog={openDialog}
                     setOpenDialog={setOpenDialog}

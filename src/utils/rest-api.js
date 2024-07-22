@@ -769,12 +769,13 @@ export function deleteCase(caseUuid) {
 
 export const fetchConvertedCase = (
     caseUuid,
+    fileName,
     format,
     formatParameters,
     abortController
 ) =>
     backendFetch(
-        `${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}?format=${format}`,
+        `${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}?format=${format}&fileName=${fileName}`,
         {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
