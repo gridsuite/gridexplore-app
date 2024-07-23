@@ -59,6 +59,7 @@
   "createNewStudyFromImportedCase": "Créer étude",
   "showSelectDirectoryDialog": "Modifier dossier",
   "selectDirectoryDialogTitle": "Choisir un dossier",
+  "showingSearchResults": "Affichage de {nbElementsShown} résultats sur un total de {nbElementsTotal}",
   "confirmDirectoryDialog": "Valider",
   "createFolder": "Créer un dossier",
   "createRootFolder": "Créer un dossier racine",
@@ -222,5 +223,7 @@
   "path": "emplacement : ",
   "searchPlaceholder": "Rechercher des éléments (ex.: étude, filtre...)",
   "elementsSearchingError": "Une erreur s'est produite lors de la recherche des éléments",
-  "pathRetrievingError": "Une erreur est survenue lors de la récupération du chemin de l'élement"
+  "pathRetrievingError": "Une erreur est survenue lors de la récupération du chemin de l'élement",
+  "grid.ariaUnchecked": "Non sélectionné",
+  "grid.ariaRowToggleSelection": "grid.ariaRowToggleSelection"
 }
