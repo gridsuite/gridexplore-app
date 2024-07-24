@@ -27,7 +27,6 @@ import {
     IDirectory,
     ITreeData,
 } from '../../redux/reducer';
-import { ElementSearchInputProps } from '@gridsuite/commons-ui/dist/components/ElementSearchDialog/element-search-input';
 import { TextFieldProps } from '@mui/material';
 import { SearchBarRenderInput } from './search-bar-render-input';
 import { UUID } from 'crypto';
@@ -38,6 +37,9 @@ export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
 }
+
+//TODO remove when ElementSearchInputProps is exported in commons-ui
+type ElementSearchInputProps<T> = Parameters<typeof ElementSearchInput<T>>[0];
 
 export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const dispatch = useDispatch<AppDispatch>();
