@@ -214,6 +214,7 @@
   "replace": "Replace",
   "download.button": "Download",
   "download.stopped": "Download stopped. Only part of the files were downloaded.",
+  "download.fileName": "File name",
   "download.export.button": "Convert",
   "download.exportFormat": "Export format",
   "download.message.downloadedCase": "A case has been downloaded",

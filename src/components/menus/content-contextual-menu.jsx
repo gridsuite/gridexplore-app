@@ -699,6 +699,7 @@ const ContentContextualMenu = (props) => {
             case DialogsId.EXPORT:
                 return (
                     <ExportCaseDialog
+                        selectedElements={selectedElements}
                         onClose={handleCloseExportDialog}
                         onExport={(format, formatParameters, fileName) =>
                             handleConvertCases(
