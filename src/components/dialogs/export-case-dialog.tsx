@@ -19,9 +19,10 @@ import {
     MenuItem,
     Select,
     Stack,
+    TextField,
     Typography,
 } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { getExportFormats } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
@@ -47,13 +48,20 @@ type FormatParameters = {
 
 interface ExportCaseDialogProps {
     onClose: () => void;
-    onExport: (format: string, parameters: FormatParameters) => Promise<void>;
+    onExport: (
+        format: string,
+        parameters: FormatParameters,
+        fileName: string
+    ) => Promise<void>;
 }
 
 const ExportCaseDialog = (props: ExportCaseDialogProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [formats, setFormats] = useState<ExportFormats>([]);
     const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
+    const [fileName, setFileName] = useState<string>(
+        'TODO : Rèrécupérer le nom du fichier exporté ici !'
+    );
     const [expanded, setExpanded] = useState<boolean>(false);
     const [currentParameters, setCurrentParameters] =
         useState<FormatParameters>({});
@@ -93,9 +101,9 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
 
     const handleExport = useCallback(async () => {
         setLoading(true);
-        await props.onExport(selectedFormat!, currentParameters);
+        await props.onExport(selectedFormat!, currentParameters, fileName); // envoyer ici fileName
         props.onClose();
-    }, [currentParameters, props, selectedFormat]);
+    }, [currentParameters, props, selectedFormat, fileName]);
 
     return (
         <Dialog
@@ -109,6 +117,15 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                 {intl.formatMessage({ id: 'download.export.button' })}
             </DialogTitle>
             <DialogContent>
+                // TODO : afficher seulement si sélection de +ieurs situs ??
+                <TextField
+                    key="key"
+                    margin="dense"
+                    id="key"
+                    value={fileName}
+                    style={{ width: '100%' }}
+                    onChange={(event: any) => setFileName(event.target.value)}
+                />
                 <FormControl fullWidth size="small">
                     <InputLabel
                         id="select-format-label"
@@ -194,7 +211,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                 <Button
                     onClick={handleExport}
                     variant="outlined"
-                    disabled={loading || !selectedFormat}
+                    disabled={loading || !selectedFormat || !fileName}
                 >
                     <FormattedMessage id="download.export.button" />
                 </Button>

@@ -61,7 +61,8 @@ export function useDownloadUtils() {
         formatParameters: {
             [parameterName: string]: any;
         },
-        abortController: AbortController
+        abortController: AbortController,
+        fileName: string
     ): Promise<void> => {
         try {
             const result = await fetchConvertedCase(
@@ -71,16 +72,18 @@ export function useDownloadUtils() {
                 formatParameters,
                 abortController
             );
-            let filename = result.headers
-                .get('Content-Disposition')
-                .split('filename=')[1];
-            filename = filename.substring(1, filename.length - 1); // We remove quotes
+            if (fileName === undefined || fileName === '') {
+                fileName = result.headers
+                    .get('Content-Disposition')
+                    .split('filename=')[1];
+                fileName = fileName.substring(1, fileName.length - 1); // We remove quotes
+            }
             const blob = await result.blob();
 
             const href = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = href;
-            link.setAttribute('download', `${filename}`);
+            link.setAttribute('download', `${fileName}`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -213,7 +216,8 @@ export function useDownloadUtils() {
         format: string,
         formatParameters: {
             [parameterName: string]: any;
-        }
+        },
+        fileName: string
     ) => {
         const cases = selectedElements.filter(
             (element) => element.type === ElementType.CASE
@@ -225,7 +229,13 @@ export function useDownloadUtils() {
             setAbortController(controller);
 
             for (const c of cases) {
-                await exportCase(c, format, formatParameters, controller);
+                await exportCase(
+                    c,
+                    format,
+                    formatParameters,
+                    controller,
+                    fileName
+                );
             }
         } catch (error: any) {
             if (error.name === 'AbortError') {
