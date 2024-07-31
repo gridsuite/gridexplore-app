@@ -9,10 +9,10 @@ import { searchElementsInfos } from '../../utils/rest-api';
 import {
     ElementSearchInput,
     ElementType,
-    useElementSearch,
-    useSnackMessage,
     fetchDirectoryContent,
     Paginated,
+    useElementSearch,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -23,14 +23,14 @@ import {
 import { updatedTree } from '../tree-views-container';
 import { SearchItem } from './search-item';
 import {
+    AppState,
     ElementAttributesES,
     IDirectory,
     ITreeData,
-    ReduxState,
-} from '../../redux/reducer.type';
-import { RenderElementProps } from '@gridsuite/commons-ui/dist/components/ElementSearchDialog/element-search-input';
+} from '../../redux/reducer';
 import { TextFieldProps } from '@mui/material';
 import { SearchBarRenderInput } from './search-bar-render-input';
+import { AppDispatch } from '../../redux/store';
 import { SearchBarPaperDisplayedElementWarning } from './search-bar-displayed-element-warning';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
@@ -39,13 +39,16 @@ interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
 }
 
+//TODO remove when ElementSearchInputProps is exported in commons-ui
+type ElementSearchInputProps<T> = Parameters<typeof ElementSearchInput<T>>[0];
+
 export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
-    const treeData = useSelector((state: ReduxState) => state.treeData);
+    const treeData = useSelector((state: AppState) => state.treeData);
     const treeDataRef = useRef<ITreeData>();
     const selectedDirectory = useSelector(
-        (state: ReduxState) => state.selectedDirectory
+        (state: AppState) => state.selectedDirectory
     );
     treeDataRef.current = treeData;
 
@@ -66,8 +69,10 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
         fetchElements: fetchElementsPageable,
     });
 
-    const renderOptionItem = useCallback(
-        (props: RenderElementProps<ElementAttributesES>) => {
+    const renderOptionItem = useCallback<
+        ElementSearchInputProps<ElementAttributesES>['renderElement']
+    >(
+        (props) => {
             const { element, inputValue } = props;
 
             const matchingElement = elementsFound.find(
@@ -100,6 +105,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 setTreeData({
                     rootDirectories: newRootDirectories,
                     mapData: newMapData,
+                    initialized: true,
                 })
             );
         },
@@ -118,8 +124,10 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
         [dispatch]
     );
 
-    const handleMatchingElement = useCallback(
-        async (data: ElementAttributesES | string | null) => {
+    const handleMatchingElement = useCallback<
+        ElementSearchInputProps<ElementAttributesES>['onSelectionChange']
+    >(
+        async (data) => {
             const matchingElement = elementsFound.find(
                 (element) => element === data
             );

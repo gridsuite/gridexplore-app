@@ -14,7 +14,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { elementExists } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 
 interface PrefilledNameInputProps {
     label: string;
@@ -45,7 +45,7 @@ const PrefilledNameInput: FunctionComponent<PrefilledNameInputProps> = ({
     const apiCallErrorMessage = errors.root?.apiCall?.message;
 
     const activeDirectory = useSelector(
-        (state: ReduxState) => state.activeDirectory
+        (state: AppState) => state.activeDirectory
     );
 
     useEffect(() => {

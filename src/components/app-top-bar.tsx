@@ -6,10 +6,12 @@
  */
 import React, { useEffect, useRef, useState } from 'react';
 import {
+    GridSuiteModule,
+    fetchAppsMetadata,
     LIGHT_THEME,
     logout,
     TopBar,
-    fetchAppsMetadata,
+    UserManagerState,
 } from '@gridsuite/commons-ui';
 import ParametersDialog, {
     useParameterState,
@@ -24,15 +26,23 @@ import GridExploreLogoDark from '../images/GridExplore_logo_dark.svg?react';
 import { setAppsAndUrls } from '../redux/actions';
 import AppPackage from '../../package.json';
 import { SearchBar } from './search/search-bar';
+import { AppState } from '../redux/reducer';
+import { AppDispatch } from '../redux/store';
 
-const AppTopBar = ({ user, userManager }) => {
+type AppTopBarProps = {
+    userManagerInstance: UserManagerState['instance'];
+};
+
+export default function AppTopBar({ userManagerInstance }: AppTopBarProps) {
     const navigate = useNavigate();
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
 
-    const appsAndUrls = useSelector((state) => state.appsAndUrls);
+    const user = useSelector((state: AppState) => state.user);
 
-    const theme = useSelector((state) => state[PARAM_THEME]);
+    const appsAndUrls = useSelector((state: AppState) => state.appsAndUrls);
+
+    const theme = useSelector((state: AppState) => state[PARAM_THEME]);
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
@@ -41,7 +51,7 @@ const AppTopBar = ({ user, userManager }) => {
 
     const [showParameters, setShowParameters] = useState(false);
 
-    const searchInputRef = useRef(null);
+    const searchInputRef = useRef<any | null>(null);
 
     useEffect(() => {
         if (user !== null) {
@@ -53,14 +63,14 @@ const AppTopBar = ({ user, userManager }) => {
 
     useEffect(() => {
         if (user) {
-            const openSearch = (e) => {
+            const openSearch = (e: DocumentEventMap['keydown']) => {
                 if (
                     e.ctrlKey &&
                     e.shiftKey &&
                     (e.key === 'F' || e.key === 'f')
                 ) {
                     e.preventDefault();
-                    searchInputRef.current.focus();
+                    searchInputRef.current?.focus();
                 }
             };
             document.addEventListener('keydown', openSearch);
@@ -82,9 +92,9 @@ const AppTopBar = ({ user, userManager }) => {
                 }
                 appVersion={AppPackage.version}
                 appLicense={AppPackage.license}
-                onLogoutClick={() => logout(dispatch, userManager.instance)}
+                onLogoutClick={() => logout(dispatch, userManagerInstance)}
                 onLogoClick={() => navigate('/', { replace: true })}
-                user={user}
+                user={user ?? undefined}
                 appsAndUrls={appsAndUrls}
                 onThemeClick={handleChangeTheme}
                 theme={themeLocal}
@@ -93,7 +103,9 @@ const AppTopBar = ({ user, userManager }) => {
                 globalVersionPromise={() =>
                     fetchVersion().then((res) => res?.deployVersion)
                 }
-                additionalModulesPromise={getServersInfos}
+                additionalModulesPromise={
+                    getServersInfos as () => Promise<GridSuiteModule[]>
+                }
             >
                 {user && <SearchBar inputRef={searchInputRef} />}
             </TopBar>
@@ -103,11 +115,9 @@ const AppTopBar = ({ user, userManager }) => {
             />
         </>
     );
-};
+}
 
 AppTopBar.propTypes = {
     user: PropTypes.object,
-    userManager: PropTypes.object.isRequired,
+    userManager: PropTypes.object,
 };
-
-export default AppTopBar;
