@@ -102,6 +102,7 @@ const import_parameters_en = {
         'Cgmes dangling line boundary node',
     'iidm.import.xml.extensions.cgmesLineBoundaryNode':
         'Cgmes line boundary node',
+    'iidm.import.xml.extensions.cgmesMetadataModels': 'Cgmes models metadata',
     'iidm.import.xml.extensions.cgmesSshMetadata': 'Cgmes ssh metadata',
     'iidm.import.xml.extensions.cgmesSvMetadata': 'Cgmes sv metadata',
     'iidm.import.xml.extensions.cgmesTapChangers': 'Cgmes tap changers',
@@ -176,6 +177,7 @@ const import_parameters_en = {
         'Voltage level short circuits',
     'iidm.import.xml.extensions.voltagePerReactivePowerControl':
         'Voltage per reactive power control',
+    'iidm.import.xml.extensions.voltageRegulation': 'Voltage regulation',
     'iidm.import.xml.extensions.xnode': 'Xnode',
 };
 

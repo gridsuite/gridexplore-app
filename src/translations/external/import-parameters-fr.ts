@@ -112,6 +112,8 @@ const import_parameters_fr = {
         'Code EIC des lignes frontières (ligne non mergée)',
     'iidm.import.xml.extensions.cgmesLineBoundaryNode':
         'Code EIC des lignes frontières (ligne complète)',
+    'iidm.import.xml.extensions.cgmesMetadataModels':
+        'Cgmes - Métadonnées du modèle',
     'iidm.import.xml.extensions.cgmesSshMetadata': 'Cgmes - ssh métadonnées',
     'iidm.import.xml.extensions.cgmesSvMetadata': 'Cgmes - sv métadonnées',
     'iidm.import.xml.extensions.cgmesTapChangers':
@@ -196,6 +198,7 @@ const import_parameters_fr = {
         'Données de court-circuit des postes (Version IIDM 1.0)',
     'iidm.import.xml.extensions.voltagePerReactivePowerControl':
         'Contrôle de la tension par le réactif',
+    'iidm.import.xml.extensions.voltageRegulation': 'Réglage de tension',
     'iidm.import.xml.extensions.xnode': 'Code Xnode',
 };
 
