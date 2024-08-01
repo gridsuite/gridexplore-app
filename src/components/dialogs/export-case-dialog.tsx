@@ -22,7 +22,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getExportFormats } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
@@ -107,7 +107,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
 
     const handleExport = useCallback(async () => {
         setLoading(true);
-        await props.onExport(selectedFormat!, currentParameters, fileName); // envoyer ici fileName
+        await props.onExport(selectedFormat!, currentParameters, fileName);
         props.onClose();
     }, [currentParameters, props, selectedFormat, fileName]);
 
@@ -123,7 +123,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                 {intl.formatMessage({ id: 'download.export.button' })}
             </DialogTitle>
             <DialogContent>
-                {oneFileMode ? (
+                {oneFileMode && (
                     <TextField
                         key="fileName"
                         margin="dense"
@@ -136,8 +136,6 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                             setFileName(event.target.value)
                         }
                     />
-                ) : (
-                    ''
                 )}
                 <FormControl fullWidth size="small">
                     <InputLabel
