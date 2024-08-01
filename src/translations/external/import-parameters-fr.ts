@@ -113,7 +113,7 @@ const import_parameters_fr = {
     'iidm.import.xml.extensions.cgmesLineBoundaryNode':
         'Code EIC des lignes frontières (ligne complète)',
     'iidm.import.xml.extensions.cgmesMetadataModels':
-        'Cgmes - Métadonnées du modèle',
+        'Cgmes - Métadonnées des modèles',
     'iidm.import.xml.extensions.cgmesSshMetadata': 'Cgmes - ssh métadonnées',
     'iidm.import.xml.extensions.cgmesSvMetadata': 'Cgmes - sv métadonnées',
     'iidm.import.xml.extensions.cgmesTapChangers':
