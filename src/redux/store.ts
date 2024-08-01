@@ -4,12 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { legacy_createStore as createStore } from 'redux';
-import { reducer } from './reducer';
+import { legacy_createStore as createStore, Store } from 'redux';
+import { Actions, AppState, reducer } from './reducer';
 import { setCommonStore } from '@gridsuite/commons-ui';
 
-export const store = createStore(reducer);
+export const store: Store<AppState, Actions> = createStore(reducer);
 setCommonStore(store);
+export type AppDispatch = typeof store.dispatch;
 
 // to avoid to reset the state with HMR
 // https://redux.js.org/usage/configuring-your-store#hot-reloading

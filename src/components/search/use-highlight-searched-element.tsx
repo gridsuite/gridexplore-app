@@ -15,15 +15,16 @@ import {
 import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSearchedElement } from '../../redux/actions';
-import { ReduxState } from '../../redux/reducer.type';
+import { AppState } from '../../redux/reducer';
+import { AppDispatch } from '../../redux/store';
 
 const SEARCH_HIGHLIGHT_DURATION_S = 4;
 
 export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
     const searchedElement = useSelector(
-        (state: ReduxState) => state.searchedElement
+        (state: AppState) => state.searchedElement
     );
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const timeout = useRef<ReturnType<typeof setTimeout>>();
 
     const highlightElement = useCallback(
