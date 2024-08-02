@@ -7,7 +7,7 @@
 import { useForm } from 'react-hook-form';
 import { Box, Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { useCallback, useEffect } from 'react';
+import { FunctionComponent, useCallback, useEffect } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
 import {
     createStudy,
@@ -29,6 +29,8 @@ import {
     isObjectEmpty,
     keyGenerator,
     ModifyElementSelection,
+    ElementAttributes,
+    Parameter,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
@@ -38,16 +40,21 @@ import {
     setActiveDirectory,
 } from '../../../redux/actions';
 import {
+    CreateStudyDialogFormValues,
     createStudyDialogFormValidationSchema,
     getCreateStudyDialogFormDefaultValues,
 } from './create-study-dialog-utils';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
+import { AppState, UploadingElement } from 'redux/reducer';
+import { UUID } from 'crypto';
 
 const STRING_LIST = 'STRING_LIST';
 
-function customizeCurrentParameters(params) {
+function customizeCurrentParameters(
+    params: Parameter[]
+): Record<string, string> {
     return params.reduce((obj, parameter) => {
         // we check if the parameter is for extensions. If so, we select all possible values by default.
         // the only way for the moment to check if the parameter is for extension, is by checking his name.
@@ -59,38 +66,54 @@ function customizeCurrentParameters(params) {
             obj[parameter.name] = parameter.possibleValues.toString();
         }
         return obj;
-    }, {});
+    }, {} as Record<string, string>);
 }
 
-function formatCaseImportParameters(params) {
+function formatCaseImportParameters(params: Parameter[]): Parameter[] {
     // sort possible values alphabetically to display select options sorted
     return params?.map((parameter) => {
-        parameter.possibleValues = parameter.possibleValues?.sort((a, b) =>
-            a.localeCompare(b)
+        parameter.possibleValues = parameter.possibleValues?.sort(
+            (a: any, b: any) => a.localeCompare(b)
         );
         return parameter;
     });
 }
 
-const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
+interface CreateStudyDialogProps {
+    open: boolean;
+    onClose: () => void;
+    providedExistingCase?: ElementAttributes;
+}
+
+const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({
+    open,
+    onClose,
+    providedExistingCase,
+}) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
-    const activeDirectory = useSelector((state) => state.activeDirectory);
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const userId = useSelector((state) => state.user.profile.sub);
+    const activeDirectory = useSelector(
+        (state: AppState) => state.activeDirectory
+    );
+    const selectedDirectory = useSelector(
+        (state: AppState) => state.selectedDirectory
+    );
+    const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const { elementUuid, elementName } = providedExistingCase || {};
 
-    const createStudyFormMethods = useForm({
+    const createStudyFormMethods = useForm<CreateStudyDialogFormValues>({
         defaultValues: getCreateStudyDialogFormDefaultValues({
             directory: activeDirectory,
             studyName: elementName,
             caseFile: providedExistingCase,
             caseUuid: elementUuid,
         }),
-        resolver: yupResolver(createStudyDialogFormValidationSchema),
+        resolver: yupResolver<CreateStudyDialogFormValues>(
+            createStudyDialogFormValidationSchema
+        ),
     });
 
     const {
@@ -104,7 +127,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     // callbacks
     const handleApiCallError = useCallback(
-        (error) => {
+        (error: any) => {
             if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                 setError(`root.${FieldConstants.API_CALL}`, {
                     type: 'invalidFormatOrName',
@@ -128,7 +151,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     );
 
     const getCurrentCaseImportParams = useCallback(
-        (uuid) => {
+        (uuid: string) => {
             getCaseImportParameters(uuid)
                 .then((result) => {
                     const formattedParams = formatCaseImportParameters(
@@ -177,7 +200,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         description,
         currentParameters,
         directory,
-    }) => {
+    }: CreateStudyDialogFormValues) => {
         if (!caseUuid && !providedExistingCase?.elementUuid) {
             setError(FieldConstants.CASE_NAME, {
                 type: 'custom',
@@ -194,10 +217,10 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         }
         const caseFormat = getValues(FieldConstants.CASE_FORMAT);
 
-        const uploadingStudy = {
-            id: keyGenerator(),
+        const uploadingStudy: UploadingElement = {
+            id: keyGenerator()(),
             elementName: studyName,
-            directory,
+            directory: directory as UUID,
             type: ElementType.STUDY,
             owner: userId,
             lastModifiedBy: userId,

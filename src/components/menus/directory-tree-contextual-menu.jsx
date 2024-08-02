@@ -41,7 +41,7 @@ import {
 } from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
-import { useParameterState } from '../dialogs/parameters-dialog';
+import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 

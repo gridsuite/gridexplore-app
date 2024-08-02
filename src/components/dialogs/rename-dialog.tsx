@@ -1,10 +1,9 @@
 /**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -12,11 +11,24 @@ import Alert from '@mui/material/Alert';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
-import PropTypes from 'prop-types';
 import { useNameField } from './field-hook';
 import { useSelector } from 'react-redux';
 import { ElementType } from '@gridsuite/commons-ui';
 import { CancelButton } from '@gridsuite/commons-ui';
+import { FunctionComponent } from 'react';
+import { AppState } from 'redux/reducer';
+
+interface RenameDialogProps {
+    open: boolean;
+    onClose: () => void;
+    onClick: (newName: string) => void;
+    title: string;
+    message: string;
+    currentName: string;
+    type: ElementType;
+    error?: string;
+    parentDirectory?: string;
+}
 
 /**
  * Dialog to rename an element
@@ -28,7 +40,7 @@ import { CancelButton } from '@gridsuite/commons-ui';
  * @param {String} currentName Name before renaming
  * @param {String} error Error message
  */
-const RenameDialog = ({
+const RenameDialog: FunctionComponent<RenameDialogProps> = ({
     open,
     onClose,
     onClick,
@@ -39,7 +51,9 @@ const RenameDialog = ({
     error,
     parentDirectory,
 }) => {
-    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const activeDirectory = useSelector(
+        (state: AppState) => state.activeDirectory
+    );
     const intl = useIntl();
 
     const [newName, newNameField, newNameError, newNameOk] = useNameField({
@@ -103,18 +117,6 @@ const RenameDialog = ({
             </DialogActions>
         </Dialog>
     );
-};
-
-RenameDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onClick: PropTypes.func.isRequired,
-    title: PropTypes.string.isRequired,
-    message: PropTypes.string.isRequired,
-    error: PropTypes.string.isRequired,
-    currentName: PropTypes.string,
-    tye: PropTypes.string,
-    parentDirectory: PropTypes.string,
 };
 
 export default RenameDialog;

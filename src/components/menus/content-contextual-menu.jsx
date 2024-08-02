@@ -56,7 +56,7 @@ import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setSelectionForCopy } from '../../redux/actions';
-import { useParameterState } from '../dialogs/parameters-dialog';
+import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 
@@ -693,7 +693,7 @@ const ContentContextualMenu = (props) => {
                             }
                             handleCloseDialog();
                         }}
-                        items={selectedElements}
+                        itemsCount={selectedElements.length}
                     />
                 );
             case DialogsId.EXPORT:
