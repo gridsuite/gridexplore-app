@@ -236,12 +236,14 @@ const ContentToolbar = (props) => {
             case DialogsId.EXPORT:
                 return (
                     <ExportCaseDialog
+                        selectedElements={selectedElements}
                         onClose={handleCloseExportDialog}
-                        onExport={(format, formatParameters) =>
+                        onExport={(format, formatParameters, fileName) =>
                             handleConvertCases(
                                 selectedElements,
                                 format,
-                                formatParameters
+                                formatParameters,
+                                fileName
                             )
                         }
                     />

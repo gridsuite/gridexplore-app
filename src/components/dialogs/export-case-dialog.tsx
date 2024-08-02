@@ -19,13 +19,15 @@ import {
     MenuItem,
     Select,
     Stack,
+    TextField,
     Typography,
 } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getExportFormats } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { CancelButton, FlatParameters } from '@gridsuite/commons-ui';
+import { ElementAttributes } from '@gridsuite/commons-ui/dist/utils/types';
 
 type ExportFormats =
     | {
@@ -46,14 +48,26 @@ type FormatParameters = {
 };
 
 interface ExportCaseDialogProps {
+    selectedElements: ElementAttributes[];
     onClose: () => void;
-    onExport: (format: string, parameters: FormatParameters) => Promise<void>;
+    onExport: (
+        format: string,
+        parameters: FormatParameters,
+        fileName: string
+    ) => Promise<void>;
 }
 
 const ExportCaseDialog = (props: ExportCaseDialogProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [formats, setFormats] = useState<ExportFormats>([]);
     const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
+    const oneFileMode: boolean = useMemo(
+        () => props.selectedElements.length === 1,
+        [props]
+    );
+    const [fileName, setFileName] = useState<string>(
+        oneFileMode ? props.selectedElements[0].elementName : ''
+    );
     const [expanded, setExpanded] = useState<boolean>(false);
     const [currentParameters, setCurrentParameters] =
         useState<FormatParameters>({});
@@ -93,9 +107,9 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
 
     const handleExport = useCallback(async () => {
         setLoading(true);
-        await props.onExport(selectedFormat!, currentParameters);
+        await props.onExport(selectedFormat!, currentParameters, fileName);
         props.onClose();
-    }, [currentParameters, props, selectedFormat]);
+    }, [currentParameters, props, selectedFormat, fileName]);
 
     return (
         <Dialog
@@ -109,6 +123,20 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                 {intl.formatMessage({ id: 'download.export.button' })}
             </DialogTitle>
             <DialogContent>
+                {oneFileMode && (
+                    <TextField
+                        key="fileName"
+                        margin="dense"
+                        label={<FormattedMessage id="download.fileName" />}
+                        variant="filled"
+                        id="fileName"
+                        value={fileName}
+                        style={{ width: '100%' }}
+                        onChange={(event: any) =>
+                            setFileName(event.target.value)
+                        }
+                    />
+                )}
                 <FormControl fullWidth size="small">
                     <InputLabel
                         id="select-format-label"
@@ -201,6 +229,10 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
             </DialogActions>
         </Dialog>
     );
+};
+
+ExportCaseDialog.defaultProps = {
+    selectedElements: [],
 };
 
 export default ExportCaseDialog;

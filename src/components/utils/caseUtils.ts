@@ -61,26 +61,31 @@ export function useDownloadUtils() {
         formatParameters: {
             [parameterName: string]: any;
         },
-        abortController: AbortController
+        abortController: AbortController,
+        fileName: string
     ): Promise<void> => {
         try {
+            // if no fileName is provided, the case name will be used
+            const autoName: boolean = fileName === undefined || fileName === '';
             const result = await fetchConvertedCase(
                 caseElement.elementUuid,
-                caseElement.elementName,
+                autoName ? caseElement.elementName : fileName,
                 format,
                 formatParameters,
                 abortController
             );
-            let filename = result.headers
+
+            fileName = result.headers
                 .get('Content-Disposition')
                 .split('filename=')[1];
-            filename = filename.substring(1, filename.length - 1); // We remove quotes
+            fileName = fileName.substring(1, fileName.length - 1); // We remove quotes
+
             const blob = await result.blob();
 
             const href = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = href;
-            link.setAttribute('download', `${filename}`);
+            link.setAttribute('download', `${fileName}`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -209,14 +214,15 @@ export function useDownloadUtils() {
 
     // downloads converted files one after another. The downloading may be interrupted midterm with a few files downloaded already.
     const handleConvertCases = async (
-        selectedElements: any[],
+        selectedElements: ElementAttributes[],
         format: string,
         formatParameters: {
             [parameterName: string]: any;
-        }
+        },
+        fileName: string
     ) => {
-        const cases = selectedElements.filter(
-            (element) => element.type === ElementType.CASE
+        const cases: ElementAttributes[] = selectedElements.filter(
+            (element: ElementAttributes) => element.type === ElementType.CASE
         );
         let message: string = '';
 
@@ -225,7 +231,13 @@ export function useDownloadUtils() {
             setAbortController(controller);
 
             for (const c of cases) {
-                await exportCase(c, format, formatParameters, controller);
+                await exportCase(
+                    c,
+                    format,
+                    formatParameters,
+                    controller,
+                    fileName
+                );
             }
         } catch (error: any) {
             if (error.name === 'AbortError') {
