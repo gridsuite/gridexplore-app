@@ -5,10 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    DEFAULT_CELL_PADDING,
-    MuiVirtualizedTable,
-} from '@gridsuite/commons-ui';
+import { DEFAULT_CELL_PADDING, MuiVirtualizedTable } from '@gridsuite/commons-ui';
 import { styled } from '@mui/material';
 
 const PREFIX = 'MuiVirtualizedTable';
@@ -36,8 +33,7 @@ const VirtualizedTable = styled(MuiVirtualizedTable)(({ theme }) => ({
         // https://github.com/bvaughn/react-virtualized/issues/454
         '& .ReactVirtualized__Table__headerRow': {
             flip: false,
-            paddingRight:
-                theme.direction === 'rtl' ? '0 !important' : undefined,
+            paddingRight: theme.direction === 'rtl' ? '0 !important' : undefined,
         },
         '& .ReactVirtualized__Table__Grid': {
             outline: 'none',

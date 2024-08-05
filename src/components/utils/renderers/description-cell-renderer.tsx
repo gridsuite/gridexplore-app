@@ -22,11 +22,7 @@ const styles = {
     },
 };
 
-export const DescriptionCellRenderer = ({
-    data,
-}: {
-    data: ElementAttributes;
-}) => {
+export const DescriptionCellRenderer = ({ data }: { data: ElementAttributes }) => {
     const description = data.description;
     const descriptionLines = description?.split('\n');
     if (descriptionLines?.length > 3) {
@@ -35,10 +31,7 @@ export const DescriptionCellRenderer = ({
     const tooltip = descriptionLines?.join('\n');
 
     const icon = description ? (
-        <Tooltip
-            title={<Box children={tooltip} sx={styles.descriptionTooltip} />}
-            placement="right"
-        >
+        <Tooltip title={<Box children={tooltip} sx={styles.descriptionTooltip} />} placement="right">
             <StickyNote2OutlinedIcon />
         </Tooltip>
     ) : (

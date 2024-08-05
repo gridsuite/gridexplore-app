@@ -10,31 +10,18 @@ import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
-import {
-    ElementType,
-    getRequestParamFromList,
-    fetchEnv,
-    backendFetchJson,
-    backendFetch,
-} from '@gridsuite/commons-ui';
+import { ElementType, getRequestParamFromList, fetchEnv, backendFetchJson, backendFetch } from '@gridsuite/commons-ui';
 
-const PREFIX_USER_ADMIN_SERVER_QUERIES =
-    import.meta.env.VITE_API_GATEWAY + '/user-admin';
-const PREFIX_CONFIG_NOTIFICATION_WS =
-    import.meta.env.VITE_WS_GATEWAY + '/config-notification';
+const PREFIX_USER_ADMIN_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/user-admin';
+const PREFIX_CONFIG_NOTIFICATION_WS = import.meta.env.VITE_WS_GATEWAY + '/config-notification';
 const PREFIX_CONFIG_QUERIES = import.meta.env.VITE_API_GATEWAY + '/config';
-const PREFIX_DIRECTORY_SERVER_QUERIES =
-    import.meta.env.VITE_API_GATEWAY + '/directory';
-const PREFIX_EXPLORE_SERVER_QUERIES =
-    import.meta.env.VITE_API_GATEWAY + '/explore';
+const PREFIX_DIRECTORY_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/directory';
+const PREFIX_EXPLORE_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/explore';
 const PREFIX_ACTIONS_QUERIES = import.meta.env.VITE_API_GATEWAY + '/actions';
 const PREFIX_CASE_QUERIES = import.meta.env.VITE_API_GATEWAY + '/case';
-const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES =
-    import.meta.env.VITE_API_GATEWAY + '/network-conversion';
-const PREFIX_NOTIFICATION_WS =
-    import.meta.env.VITE_WS_GATEWAY + '/directory-notification';
-const PREFIX_FILTERS_QUERIES =
-    import.meta.env.VITE_API_GATEWAY + '/filter/v1/filters';
+const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-conversion';
+const PREFIX_NOTIFICATION_WS = import.meta.env.VITE_WS_GATEWAY + '/directory-notification';
+const PREFIX_FILTERS_QUERIES = import.meta.env.VITE_API_GATEWAY + '/filter/v1/filters';
 const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
 function getToken() {
@@ -43,22 +30,12 @@ function getToken() {
 }
 
 export function connectNotificationsWsUpdateConfig() {
-    const webSocketBaseUrl = document.baseURI
-        .replace(/^http:\/\//, 'ws://')
-        .replace(/^https:\/\//, 'wss://');
-    const webSocketUrl =
-        webSocketBaseUrl +
-        PREFIX_CONFIG_NOTIFICATION_WS +
-        '/notify?appName=' +
-        APP_NAME;
+    const webSocketBaseUrl = document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
+    const webSocketUrl = webSocketBaseUrl + PREFIX_CONFIG_NOTIFICATION_WS + '/notify?appName=' + APP_NAME;
 
-    const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => webSocketUrl + '&access_token=' + getToken()
-    );
+    const reconnectingWebSocket = new ReconnectingWebSocket(() => webSocketUrl + '&access_token=' + getToken());
     reconnectingWebSocket.onopen = function () {
-        console.info(
-            'Connected Websocket update config ui ' + webSocketUrl + ' ...'
-        );
+        console.info('Connected Websocket update config ui ' + webSocketUrl + ' ...');
     };
     return reconnectingWebSocket;
 }
@@ -76,25 +53,13 @@ function handleError(response) {
         const errorName = 'HttpResponseError : ';
         let error;
         const errorJson = parseError(text);
-        if (
-            errorJson &&
-            errorJson.status &&
-            errorJson.error &&
-            errorJson.message
-        ) {
+        if (errorJson && errorJson.status && errorJson.error && errorJson.message) {
             error = new Error(
-                errorName +
-                    errorJson.status +
-                    ' ' +
-                    errorJson.error +
-                    ', message : ' +
-                    errorJson.message
+                errorName + errorJson.status + ' ' + errorJson.error + ', message : ' + errorJson.message
             );
             error.status = errorJson.status;
         } else {
-            error = new Error(
-                errorName + response.status + ' ' + response.statusText
-            );
+            error = new Error(errorName + response.status + ' ' + response.statusText);
             error.status = response.status;
         }
         throw error;
@@ -103,9 +68,7 @@ function handleError(response) {
 
 function prepareRequest(init, token) {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
-        throw new TypeError(
-            'Argument 2 of backendFetch is not an object' + typeof init
-        );
+        throw new TypeError('Argument 2 of backendFetch is not an object' + typeof init);
     }
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
@@ -115,9 +78,7 @@ function prepareRequest(init, token) {
 }
 
 function safeFetch(url, initCopy) {
-    return fetch(url, initCopy).then((response) =>
-        response.ok ? response : handleError(response)
-    );
+    return fetch(url, initCopy).then((response) => (response.ok ? response : handleError(response)));
 }
 
 export function backendFetchText(url, init, token) {
@@ -141,16 +102,11 @@ const getContingencyUriParamType = (contingencyListType) => {
 export function fetchValidateUser(user) {
     const sub = user?.profile?.sub;
     if (!sub) {
-        return Promise.reject(
-            new Error(
-                'Error : Fetching access for missing user.profile.sub : ' + user
-            )
-        );
+        return Promise.reject(new Error('Error : Fetching access for missing user.profile.sub : ' + user));
     }
 
     console.info(`Fetching access for user...`);
-    const CheckAccessUrl =
-        PREFIX_USER_ADMIN_SERVER_QUERIES + `/v1/users/${sub}`;
+    const CheckAccessUrl = PREFIX_USER_ADMIN_SERVER_QUERIES + `/v1/users/${sub}`;
     console.debug(CheckAccessUrl);
 
     return backendFetch(
@@ -190,28 +146,20 @@ export function fetchVersion() {
 
 export function fetchConfigParameters(appName) {
     console.info('Fetching UI configuration params for app : ' + appName);
-    const fetchParams =
-        PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters`;
+    const fetchParams = PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters`;
     return backendFetchJson(fetchParams);
 }
 
 export function fetchConfigParameter(name) {
     const appName = getAppName(name);
-    console.info(
-        "Fetching UI config parameter '%s' for app '%s' ",
-        name,
-        appName
-    );
-    const fetchParams =
-        PREFIX_CONFIG_QUERIES +
-        `/v1/applications/${appName}/parameters/${name}`;
+    console.info("Fetching UI config parameter '%s' for app '%s' ", name, appName);
+    const fetchParams = PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters/${name}`;
     return backendFetchJson(fetchParams);
 }
 
 export function deleteElement(elementUuid) {
     console.info("Deleting element %s'", elementUuid);
-    const fetchParams =
-        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/${elementUuid}`;
+    const fetchParams = PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/${elementUuid}`;
     return backendFetch(fetchParams, {
         method: 'delete',
     });
@@ -220,24 +168,16 @@ export function deleteElement(elementUuid) {
 export function deleteElements(elementUuids, activeDirectory) {
     console.info('Deleting elements : %s', elementUuids);
     const idsParams = getRequestParamFromList('ids', elementUuids).toString();
-    return backendFetch(
-        PREFIX_EXPLORE_SERVER_QUERIES +
-            `/v1/explore/elements/` +
-            activeDirectory +
-            '?' +
-            idsParams,
-        {
-            method: 'delete',
-        }
-    );
+    return backendFetch(PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/` + activeDirectory + '?' + idsParams, {
+        method: 'delete',
+    });
 }
 
 export function moveElementsToDirectory(elementsUuids, targetDirectoryUuid) {
     console.info('Moving elements to directory %s', targetDirectoryUuid);
 
     const fetchParams =
-        PREFIX_EXPLORE_SERVER_QUERIES +
-        `/v1/explore/elements?targetDirectoryUuid=${targetDirectoryUuid}`;
+        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements?targetDirectoryUuid=${targetDirectoryUuid}`;
     return backendFetch(fetchParams, {
         method: 'put',
         headers: {
@@ -250,8 +190,7 @@ export function moveElementsToDirectory(elementsUuids, targetDirectoryUuid) {
 
 export function updateElement(elementUuid, element) {
     console.info('Updating element info for ' + elementUuid);
-    const updateElementUrl =
-        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/${elementUuid}`;
+    const updateElementUrl = PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/${elementUuid}`;
     return backendFetch(updateElementUrl, {
         method: 'put',
         headers: {
@@ -264,9 +203,7 @@ export function updateElement(elementUuid, element) {
 
 export function insertDirectory(directoryName, parentUuid, owner) {
     console.info("Inserting a new folder '%s'", directoryName);
-    const insertDirectoryUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${parentUuid}/elements`;
+    const insertDirectoryUrl = PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${parentUuid}/elements`;
     return backendFetchJson(insertDirectoryUrl, {
         method: 'POST',
         headers: {
@@ -284,8 +221,7 @@ export function insertDirectory(directoryName, parentUuid, owner) {
 
 export function insertRootDirectory(directoryName, owner) {
     console.info("Inserting a new root folder '%s'", directoryName);
-    const insertRootDirectoryUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
+    const insertRootDirectoryUrl = PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
     return backendFetchJson(insertRootDirectoryUrl, {
         method: 'POST',
         headers: {
@@ -301,8 +237,7 @@ export function insertRootDirectory(directoryName, owner) {
 
 export function renameElement(elementUuid, newElementName) {
     console.info('Renaming element ' + elementUuid);
-    const renameElementUrl =
-        PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/${elementUuid}`;
+    const renameElementUrl = PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/${elementUuid}`;
     console.debug(renameElementUrl);
     return backendFetch(renameElementUrl, {
         method: 'put',
@@ -318,16 +253,9 @@ export function renameElement(elementUuid, newElementName) {
 
 export function updateConfigParameter(name, value) {
     const appName = getAppName(name);
-    console.info(
-        "Updating config parameter '%s=%s' for app '%s' ",
-        name,
-        value,
-        appName
-    );
+    console.info("Updating config parameter '%s=%s' for app '%s' ", name, value, appName);
     const updateParams =
-        PREFIX_CONFIG_QUERIES +
-        `/v1/applications/${appName}/parameters/${name}?value=` +
-        encodeURIComponent(value);
+        PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters/${name}?value=` + encodeURIComponent(value);
     return backendFetch(updateParams, { method: 'put' });
 }
 
@@ -404,12 +332,7 @@ const getDuplicateEndpoint = (type) => {
     }
 };
 
-export function duplicateElement(
-    sourceCaseUuid,
-    parentDirectoryUuid,
-    type,
-    specificType
-) {
+export function duplicateElement(sourceCaseUuid, parentDirectoryUuid, type, specificType) {
     console.info('Duplicating an element of type ' + type + ' ...');
     let queryParams = new URLSearchParams();
     queryParams.append('duplicateFrom', sourceCaseUuid);
@@ -419,10 +342,7 @@ export function duplicateElement(
     if (specificType) {
         queryParams.append('type', specificType);
     }
-    const url =
-        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${getDuplicateEndpoint(
-            type
-        )}?` + queryParams.toString();
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${getDuplicateEndpoint(type)}?` + queryParams.toString();
 
     console.debug(url);
 
@@ -437,11 +357,9 @@ export function elementExists(directoryUuid, elementName, type) {
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${directoryUuid}/elements/${elementNameEncoded}/types/${type}`;
     console.debug(existsElementUrl);
-    return backendFetch(existsElementUrl, { method: 'head' }).then(
-        (response) => {
-            return response.status !== 204; // HTTP 204 : No-content
-        }
-    );
+    return backendFetch(existsElementUrl, { method: 'head' }).then((response) => {
+        return response.status !== 204; // HTTP 204 : No-content
+    });
 }
 
 export function getNameCandidate(directoryUuid, elementName, type) {
@@ -462,11 +380,9 @@ export function rootDirectoryExists(directoryName) {
 
     console.debug(existsRootDirectoryUrl);
 
-    return backendFetch(existsRootDirectoryUrl, { method: 'head' }).then(
-        (response) => {
-            return response.status !== 204; // HTTP 204 : No-content
-        }
-    );
+    return backendFetch(existsRootDirectoryUrl, { method: 'head' }).then((response) => {
+        return response.status !== 204; // HTTP 204 : No-content
+    });
 }
 
 export function createContingencyList(
@@ -504,12 +420,7 @@ export function createContingencyList(
  * @returns {Promise<Response>}
  */
 export function getContingencyList(type, id) {
-    let url =
-        PREFIX_ACTIONS_QUERIES +
-        '/v1' +
-        getContingencyUriParamType(type) +
-        '/' +
-        id;
+    let url = PREFIX_ACTIONS_QUERIES + '/v1' + getContingencyUriParamType(type) + '/' + id;
 
     return backendFetchJson(url);
 }
@@ -523,17 +434,10 @@ export function saveCriteriaBasedContingencyList(id, form) {
     const { name, equipmentType, criteriaBased } = form;
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
-    urlSearchParams.append(
-        'contingencyListType',
-        ContingencyListType.CRITERIA_BASED.id
-    );
+    urlSearchParams.append('contingencyListType', ContingencyListType.CRITERIA_BASED.id);
 
     const url =
-        PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/contingency-lists/' +
-        id +
-        '?' +
-        urlSearchParams.toString();
+        PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/contingency-lists/' + id + '?' + urlSearchParams.toString();
 
     return backendFetch(url, {
         method: 'put',
@@ -541,10 +445,7 @@ export function saveCriteriaBasedContingencyList(id, form) {
         body: JSON.stringify({
             ...criteriaBased,
             equipmentType,
-            nominalVoltage1:
-                criteriaBased.nominalVoltage1 === ''
-                    ? -1
-                    : criteriaBased.nominalVoltage1,
+            nominalVoltage1: criteriaBased.nominalVoltage1 === '' ? -1 : criteriaBased.nominalVoltage1,
         }),
     });
 }
@@ -556,10 +457,7 @@ export function saveCriteriaBasedContingencyList(id, form) {
 export function saveScriptContingencyList(scriptContingencyList, name) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
-    urlSearchParams.append(
-        'contingencyListType',
-        ContingencyListType.SCRIPT.id
-    );
+    urlSearchParams.append('contingencyListType', ContingencyListType.SCRIPT.id);
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/contingency-lists/' +
@@ -577,16 +475,10 @@ export function saveScriptContingencyList(scriptContingencyList, name) {
  * Saves an explicit naming contingency list
  * @returns {Promise<Response>}
  */
-export function saveExplicitNamingContingencyList(
-    explicitNamingContingencyList,
-    name
-) {
+export function saveExplicitNamingContingencyList(explicitNamingContingencyList, name) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
-    urlSearchParams.append(
-        'contingencyListType',
-        ContingencyListType.EXPLICIT_NAMING.id
-    );
+    urlSearchParams.append('contingencyListType', ContingencyListType.EXPLICIT_NAMING.id);
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/contingency-lists/' +
@@ -627,11 +519,7 @@ export function replaceFormContingencyListWithScript(id, parentDirectoryUuid) {
  * Save new script contingency list from form contingency list
  * @returns {Promise<Response>}
  */
-export function newScriptFromFiltersContingencyList(
-    id,
-    newName,
-    parentDirectoryUuid
-) {
+export function newScriptFromFiltersContingencyList(id, newName, parentDirectoryUuid) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
@@ -656,21 +544,12 @@ export function newScriptFromFiltersContingencyList(
  * @returns {ReconnectingWebSocket}
  */
 export function connectNotificationsWsUpdateDirectories() {
-    const webSocketBaseUrl = document.baseURI
-        .replace(/^http:\/\//, 'ws://')
-        .replace(/^https:\/\//, 'wss://');
-    const webSocketUrl =
-        webSocketBaseUrl +
-        PREFIX_NOTIFICATION_WS +
-        '/notify?updateType=directories';
+    const webSocketBaseUrl = document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
+    const webSocketUrl = webSocketBaseUrl + PREFIX_NOTIFICATION_WS + '/notify?updateType=directories';
 
-    const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => webSocketUrl + '&access_token=' + getToken()
-    );
+    const reconnectingWebSocket = new ReconnectingWebSocket(() => webSocketUrl + '&access_token=' + getToken());
     reconnectingWebSocket.onopen = function () {
-        console.info(
-            'Connected Websocket update studies ' + webSocketUrl + ' ...'
-        );
+        console.info('Connected Websocket update studies ' + webSocketUrl + ' ...');
     };
     return reconnectingWebSocket;
 }
@@ -680,9 +559,7 @@ export function connectNotificationsWsUpdateDirectories() {
  * @returns {Promise<Response>}
  */
 export function getFilters() {
-    return backendFetchJson(PREFIX_FILTERS_QUERIES).then((res) =>
-        res.sort((a, b) => a.name.localeCompare(b.name))
-    );
+    return backendFetchJson(PREFIX_FILTERS_QUERIES).then((res) => res.sort((a, b) => a.name.localeCompare(b.name)));
 }
 
 /**
@@ -739,10 +616,7 @@ export function newScriptFromFilter(id, newName, parentDirectoryUuid) {
 export function getCaseImportParameters(caseUuid) {
     console.info(`get import parameters for case '${caseUuid}' ...`);
     const getExportFormatsUrl =
-        PREFIX_NETWORK_CONVERSION_SERVER_QUERIES +
-        '/v1/cases/' +
-        caseUuid +
-        '/import-parameters';
+        PREFIX_NETWORK_CONVERSION_SERVER_QUERIES + '/v1/cases/' + caseUuid + '/import-parameters';
     console.debug(getExportFormatsUrl);
     return backendFetchJson(getExportFormatsUrl);
 }
@@ -767,22 +641,13 @@ export function deleteCase(caseUuid) {
     });
 }
 
-export const fetchConvertedCase = (
-    caseUuid,
-    fileName,
-    format,
-    formatParameters,
-    abortController
-) =>
-    backendFetch(
-        `${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}?format=${format}&fileName=${fileName}`,
-        {
-            method: 'post',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formatParameters),
-            signal: abortController.signal,
-        }
-    );
+export const fetchConvertedCase = (caseUuid, fileName, format, formatParameters, abortController) =>
+    backendFetch(`${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}?format=${format}&fileName=${fileName}`, {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formatParameters),
+        signal: abortController.signal,
+    });
 
 export const downloadCase = (caseUuid) =>
     backendFetch(`${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}`, {
@@ -809,9 +674,7 @@ export function getCaseOriginalName(caseUuid) {
 
 export function getServersInfos() {
     console.info('get backend servers informations');
-    return backendFetchJson(
-        PREFIX_STUDY_QUERIES + '/v1/servers/about?view=explore'
-    ).catch((reason) => {
+    return backendFetchJson(PREFIX_STUDY_QUERIES + '/v1/servers/about?view=explore').catch((reason) => {
         console.error('Error while fetching the servers infos : ' + reason);
         return reason;
     });
@@ -825,16 +688,11 @@ export const getExportFormats = () => {
 };
 
 export function searchElementsInfos(searchTerm, currentDirectoryUuid) {
-    console.info(
-        "Fetching elements infos matching with '%s' term ... ",
-        searchTerm
-    );
+    console.info("Fetching elements infos matching with '%s' term ... ", searchTerm);
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
     urlSearchParams.append('directoryUuid', currentDirectoryUuid);
     return backendFetchJson(
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-            '/v1/elements/indexation-infos?' +
-            urlSearchParams.toString()
+        PREFIX_DIRECTORY_SERVER_QUERIES + '/v1/elements/indexation-infos?' + urlSearchParams.toString()
     );
 }

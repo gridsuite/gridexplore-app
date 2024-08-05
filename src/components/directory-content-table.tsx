@@ -6,25 +6,12 @@
  */
 
 import { defaultColumnDefinition } from './utils/directory-content-utils';
-import {
-    CustomAGGrid,
-    ElementAttributes,
-    ElementType,
-} from '@gridsuite/commons-ui';
+import { CustomAGGrid, ElementAttributes, ElementType } from '@gridsuite/commons-ui';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
-import {
-    ColDef,
-    RowClassParams,
-    AgGridEvent,
-    GetRowIdParams,
-} from 'ag-grid-community';
+import { ColDef, RowClassParams, AgGridEvent, GetRowIdParams } from 'ag-grid-community';
 import { RefObject, useCallback } from 'react';
 
-interface DirectoryContentTableProps
-    extends Pick<
-        AgGridReactProps<ElementAttributes>,
-        'getRowStyle' | 'onGridReady'
-    > {
+interface DirectoryContentTableProps extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
     gridRef: RefObject<AgGridReact<ElementAttributes>>;
     rows: ElementAttributes[];
     handleCellContextualMenu: () => void;
@@ -33,8 +20,7 @@ interface DirectoryContentTableProps
     colDef: ColDef[];
 }
 
-const getRowId = (params: GetRowIdParams<ElementAttributes>) =>
-    params.data?.elementUuid;
+const getRowId = (params: GetRowIdParams<ElementAttributes>) => params.data?.elementUuid;
 
 const recomputeOverFlowableCells = ({ api }: AgGridEvent) =>
     api.refreshCells({ force: true, columns: ['elementName', 'type'] });

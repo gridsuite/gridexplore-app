@@ -14,7 +14,5 @@ export const PARAM_LANGUAGE = 'language';
 const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE]);
 
 export function getAppName(paramName) {
-    return COMMON_CONFIG_PARAMS_NAMES.has(paramName)
-        ? COMMON_APP_NAME
-        : APP_NAME;
+    return COMMON_CONFIG_PARAMS_NAMES.has(paramName) ? COMMON_APP_NAME : APP_NAME;
 }

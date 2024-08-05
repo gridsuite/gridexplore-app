@@ -30,10 +30,7 @@ export const UserCellRenderer = ({ value }: { value: string }) => {
     return (
         <Box>
             <Tooltip title={value} placement="right">
-                <Chip
-                    sx={styles.chip}
-                    label={abbreviationFromUserName(value)}
-                />
+                <Chip sx={styles.chip} label={abbreviationFromUserName(value)} />
             </Tooltip>
         </Box>
     );
