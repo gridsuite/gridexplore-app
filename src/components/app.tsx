@@ -7,19 +7,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    Navigate,
-    Route,
-    Routes,
-    useLocation,
-    useMatch,
-    useNavigate,
-} from 'react-router-dom';
-import {
-    selectComputedLanguage,
-    selectLanguage,
-    selectTheme,
-} from '../redux/actions';
+import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
+import { selectComputedLanguage, selectLanguage, selectTheme } from '../redux/actions';
 import {
     AuthenticationRouter,
     CardErrorBoundary,
@@ -36,12 +25,7 @@ import {
     fetchIdpSettings,
     fetchValidateUser,
 } from '../utils/rest-api';
-import {
-    APP_NAME,
-    COMMON_APP_NAME,
-    PARAM_LANGUAGE,
-    PARAM_THEME,
-} from '../utils/config-params';
+import { APP_NAME, COMMON_APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import Grid from '@mui/material/Grid';
@@ -56,15 +40,9 @@ const App = () => {
 
     const user = useSelector((state: AppState) => state.user);
 
-    const signInCallbackError = useSelector(
-        (state: AppState) => state.signInCallbackError
-    );
-    const authenticationRouterError = useSelector(
-        (state: AppState) => state.authenticationRouterError
-    );
-    const showAuthenticationRouterLogin = useSelector(
-        (state: AppState) => state.showAuthenticationRouterLogin
-    );
+    const signInCallbackError = useSelector((state: AppState) => state.signInCallbackError);
+    const authenticationRouterError = useSelector((state: AppState) => state.authenticationRouterError);
+    const showAuthenticationRouterLogin = useSelector((state: AppState) => state.showAuthenticationRouterLogin);
 
     const [userManager, setUserManager] = useState<UserManagerState>({
         instance: null,
@@ -87,11 +65,7 @@ const App = () => {
                         break;
                     case PARAM_LANGUAGE:
                         dispatch(selectLanguage(param.value));
-                        dispatch(
-                            selectComputedLanguage(
-                                getComputedLanguage(param.value)
-                            )
-                        );
+                        dispatch(selectComputedLanguage(getComputedLanguage(param.value)));
                         break;
                     default:
                 }
@@ -165,11 +139,7 @@ const App = () => {
             }
         })();
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
-    }, [
-        initialMatchSilentRenewCallbackUrl,
-        dispatch,
-        initialMatchSigninCallbackUrl,
-    ]);
+    }, [initialMatchSilentRenewCallbackUrl, dispatch, initialMatchSigninCallbackUrl]);
 
     useEffect(() => {
         if (user !== null) {
@@ -196,13 +166,7 @@ const App = () => {
                 ws.close();
             };
         }
-    }, [
-        user,
-        dispatch,
-        updateParams,
-        snackError,
-        connectNotificationsUpdateConfig,
-    ]);
+    }, [user, dispatch, updateParams, snackError, connectNotificationsUpdateConfig]);
 
     return (
         <div
@@ -230,17 +194,13 @@ const App = () => {
                                 path="/"
                                 element={
                                     <>
-                                        <Grid
-                                            container
-                                            style={{ height: '100%' }}
-                                        >
+                                        <Grid container style={{ height: '100%' }}>
                                             <Grid
                                                 item
                                                 xs={12}
                                                 sm={3}
                                                 style={{
-                                                    borderRight:
-                                                        '1px solid rgba(81, 81, 81, 1)',
+                                                    borderRight: '1px solid rgba(81, 81, 81, 1)',
                                                     height: '100%',
                                                     overflow: 'auto',
                                                     display: 'flex',
@@ -266,21 +226,11 @@ const App = () => {
                             />
                             <Route
                                 path="/sign-in-callback"
-                                element={
-                                    <Navigate
-                                        replace
-                                        to={getPreLoginPath() || '/'}
-                                    />
-                                }
+                                element={<Navigate replace to={getPreLoginPath() || '/'} />}
                             />
                             <Route
                                 path="/logout-callback"
-                                element={
-                                    <h1>
-                                        Error: logout failed; you are still
-                                        logged in.
-                                    </h1>
-                                }
+                                element={<h1>Error: logout failed; you are still logged in.</h1>}
                             />
                             <Route
                                 path="*"
@@ -295,12 +245,8 @@ const App = () => {
                         <AuthenticationRouter
                             userManager={userManager}
                             signInCallbackError={signInCallbackError}
-                            authenticationRouterError={
-                                authenticationRouterError
-                            }
-                            showAuthenticationRouterLogin={
-                                showAuthenticationRouterLogin
-                            }
+                            authenticationRouterError={authenticationRouterError}
+                            showAuthenticationRouterLogin={showAuthenticationRouterLogin}
                             dispatch={dispatch}
                             navigate={navigate}
                             location={location}

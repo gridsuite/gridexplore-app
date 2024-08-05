@@ -9,15 +9,8 @@ import { Box, Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useCallback, useEffect } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
-import {
-    createStudy,
-    deleteCase,
-    getCaseImportParameters,
-} from '../../../utils/rest-api';
-import {
-    HTTP_CONNECTION_FAILED_MESSAGE,
-    HTTP_UNPROCESSABLE_ENTITY_STATUS,
-} from '../../../utils/UIconstants';
+import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
+import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import {
     useSnackMessage,
     ErrorInput,
@@ -32,11 +25,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
-import {
-    addUploadingElement,
-    removeUploadingElement,
-    setActiveDirectory,
-} from '../../../redux/actions';
+import { addUploadingElement, removeUploadingElement, setActiveDirectory } from '../../../redux/actions';
 import {
     createStudyDialogFormValidationSchema,
     getCreateStudyDialogFormDefaultValues,
@@ -52,10 +41,7 @@ function customizeCurrentParameters(params) {
         // we check if the parameter is for extensions. If so, we select all possible values by default.
         // the only way for the moment to check if the parameter is for extension, is by checking his name.
         //TODO: implement a cleaner way to determine the extensions field
-        if (
-            parameter.type === STRING_LIST &&
-            parameter.name?.endsWith('extensions')
-        ) {
+        if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
             obj[parameter.name] = parameter.possibleValues.toString();
         }
         return obj;
@@ -65,9 +51,7 @@ function customizeCurrentParameters(params) {
 function formatCaseImportParameters(params) {
     // sort possible values alphabetically to display select options sorted
     return params?.map((parameter) => {
-        parameter.possibleValues = parameter.possibleValues?.sort((a, b) =>
-            a.localeCompare(b)
-        );
+        parameter.possibleValues = parameter.possibleValues?.sort((a, b) => a.localeCompare(b));
         return parameter;
     });
 }
@@ -131,21 +115,12 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         (uuid) => {
             getCaseImportParameters(uuid)
                 .then((result) => {
-                    const formattedParams = formatCaseImportParameters(
-                        result.parameters
-                    );
-                    setValue(
-                        FieldConstants.CURRENT_PARAMETERS,
-                        customizeCurrentParameters(formattedParams)
-                    );
+                    const formattedParams = formatCaseImportParameters(result.parameters);
+                    setValue(FieldConstants.CURRENT_PARAMETERS, customizeCurrentParameters(formattedParams));
 
-                    setValue(
-                        FieldConstants.FORMATTED_CASE_PARAMETERS,
-                        formattedParams,
-                        {
-                            shouldDirty: true,
-                        }
-                    );
+                    setValue(FieldConstants.FORMATTED_CASE_PARAMETERS, formattedParams, {
+                        shouldDirty: true,
+                    });
                     setValue(FieldConstants.CASE_FORMAT, result.formatName);
                 })
                 .catch(() => {
@@ -171,13 +146,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         }
     };
 
-    const handleCreateNewStudy = ({
-        caseUuid,
-        studyName,
-        description,
-        currentParameters,
-        directory,
-    }) => {
+    const handleCreateNewStudy = ({ caseUuid, studyName, description, currentParameters, directory }) => {
         if (!caseUuid && !providedExistingCase?.elementUuid) {
             setError(FieldConstants.CASE_NAME, {
                 type: 'custom',
@@ -294,14 +263,8 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             )}
             <ImportParametersSection />
             <Grid pt={1}>
-                <ErrorInput
-                    name={FieldConstants.API_CALL}
-                    InputField={FieldErrorAlert}
-                />
-                <ErrorInput
-                    name={FieldConstants.CASE_FILE}
-                    InputField={FieldErrorAlert}
-                />
+                <ErrorInput name={FieldConstants.API_CALL} InputField={FieldErrorAlert} />
+                <ErrorInput name={FieldConstants.CASE_FILE} InputField={FieldErrorAlert} />
             </Grid>
         </CustomMuiDialog>
     );

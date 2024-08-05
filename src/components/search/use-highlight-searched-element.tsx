@@ -6,12 +6,7 @@
  */
 
 import { ElementAttributes } from '@gridsuite/commons-ui';
-import {
-    GridApi,
-    GridReadyEvent,
-    RowClassParams,
-    RowStyle,
-} from 'ag-grid-community';
+import { GridApi, GridReadyEvent, RowClassParams, RowStyle } from 'ag-grid-community';
 import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSearchedElement } from '../../redux/actions';
@@ -21,9 +16,7 @@ import { AppDispatch } from '../../redux/store';
 const SEARCH_HIGHLIGHT_DURATION_S = 4;
 
 export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
-    const searchedElement = useSelector(
-        (state: AppState) => state.searchedElement
-    );
+    const searchedElement = useSelector((state: AppState) => state.searchedElement);
     const dispatch = useDispatch<AppDispatch>();
     const timeout = useRef<ReturnType<typeof setTimeout>>();
 
@@ -34,10 +27,7 @@ export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
                 return;
             }
             const searchedElementRow = api.getRowNode(searchedElement.id);
-            if (
-                searchedElementRow?.rowIndex != null &&
-                searchedElementRow?.rowIndex >= 0
-            ) {
+            if (searchedElementRow?.rowIndex != null && searchedElementRow?.rowIndex >= 0) {
                 api.ensureIndexVisible(searchedElementRow.rowIndex, 'top');
                 clearTimeout(timeout.current);
                 timeout.current = setTimeout(() => {
@@ -66,9 +56,7 @@ export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
             const style: RowStyle = { fontSize: '1rem' };
             if (cellData?.data?.elementUuid === searchedElement?.id) {
                 // keyframe "highlighted-element" has to be defined in css containing highlighted element
-                style[
-                    'animation'
-                ] = `highlighted-element ${SEARCH_HIGHLIGHT_DURATION_S}s`;
+                style['animation'] = `highlighted-element ${SEARCH_HIGHLIGHT_DURATION_S}s`;
             }
             return style;
         },

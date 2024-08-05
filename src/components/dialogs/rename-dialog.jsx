@@ -28,17 +28,7 @@ import { CancelButton } from '@gridsuite/commons-ui';
  * @param {String} currentName Name before renaming
  * @param {String} error Error message
  */
-const RenameDialog = ({
-    open,
-    onClose,
-    onClick,
-    title,
-    message,
-    currentName,
-    type,
-    error,
-    parentDirectory,
-}) => {
+const RenameDialog = ({ open, onClose, onClick, title, message, currentName, type, error, parentDirectory }) => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const intl = useIntl();
 
@@ -48,8 +38,7 @@ const RenameDialog = ({
         active: open,
         defaultValue: currentName,
         // if current element is directory, activeDirectory is current element
-        parentDirectoryId:
-            type === ElementType.DIRECTORY ? parentDirectory : activeDirectory,
+        parentDirectoryId: type === ElementType.DIRECTORY ? parentDirectory : activeDirectory,
         elementType: type,
         alreadyExistingErrorMessage: intl.formatMessage({
             id: 'nameAlreadyUsed',
@@ -59,9 +48,7 @@ const RenameDialog = ({
 
     const handleClick = () => {
         if (currentName !== newName) {
-            console.debug(
-                'Request for renaming : ' + currentName + ' => ' + newName
-            );
+            console.debug('Request for renaming : ' + currentName + ' => ' + newName);
             onClick(newName);
         } else {
             handleClose();
@@ -77,12 +64,7 @@ const RenameDialog = ({
     };
 
     return (
-        <Dialog
-            fullWidth={true}
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-title-rename"
-        >
+        <Dialog fullWidth={true} open={open} onClose={handleClose} aria-labelledby="dialog-title-rename">
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 {newNameField}
@@ -93,11 +75,7 @@ const RenameDialog = ({
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button
-                    onClick={handleClick}
-                    disabled={!canRename()}
-                    variant="outlined"
-                >
+                <Button onClick={handleClick} disabled={!canRename()} variant="outlined">
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>

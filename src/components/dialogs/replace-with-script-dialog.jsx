@@ -34,18 +34,11 @@ const ReplaceWithScriptDialog = ({ id, open, onClose, onClick, title }) => {
     };
 
     return (
-        <Dialog
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-title-replace-with-script"
-        >
+        <Dialog open={open} onClose={handleClose} aria-labelledby="dialog-title-replace-with-script">
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    <FormattedMessage
-                        id="alertBeforeReplaceWithScript"
-                        values={{ br: <br /> }}
-                    />
+                    <FormattedMessage id="alertBeforeReplaceWithScript" values={{ br: <br /> }} />
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

@@ -118,11 +118,7 @@ const ParametersDialog = ({ showParameters, hideParameters }) => {
                     </TabPanel>
 
                     <Grid item xs={12}>
-                        <Button
-                            onClick={hideParameters}
-                            variant="contained"
-                            sx={styles.button}
-                        >
+                        <Button onClick={hideParameters} variant="contained" sx={styles.button}>
                             <FormattedMessage id="close" />
                         </Button>
                     </Grid>

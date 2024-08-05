@@ -19,14 +19,7 @@ const styles = {
     },
 };
 
-export const useTextValue = ({
-    label,
-    id = label,
-    defaultValue = '',
-    adornment,
-    triggerReset,
-    ...formProps
-}) => {
+export const useTextValue = ({ label, id = label, defaultValue = '', adornment, triggerReset, ...formProps }) => {
     const [value, setValue] = useState(defaultValue);
     const [hasChanged, setHasChanged] = useState(false);
 
@@ -132,12 +125,7 @@ export const useNameField = ({
                     });
             }
         },
-        [
-            props.defaultValue,
-            alreadyExistingErrorMessage,
-            intl,
-            doesElementExist,
-        ]
+        [props.defaultValue, alreadyExistingErrorMessage, intl, doesElementExist]
     );
 
     const debouncedUpdateValidity = useDebounce(updateValidity, 700);
@@ -185,10 +173,7 @@ export const useNameField = ({
         name,
         field,
         error,
-        name !== props.defaultValue &&
-            name.replace(/ /g, '') !== '' &&
-            !error &&
-            !checking,
+        name !== props.defaultValue && name.replace(/ /g, '') !== '' && !error && !checking,
         setName,
         touched,
     ];

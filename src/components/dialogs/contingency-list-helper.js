@@ -7,24 +7,20 @@
 import { FieldConstants } from '@gridsuite/commons-ui';
 
 export const prepareContingencyListForBackend = (id, contingencyList) => {
-    const identifiersList = contingencyList[FieldConstants.EQUIPMENT_TABLE].map(
-        (contingency) => {
-            const identifierList = contingency[
-                FieldConstants.EQUIPMENT_IDS
-            ].map((identifier) => {
-                return {
-                    type: 'ID_BASED',
-                    identifier: identifier,
-                };
-            });
-
+    const identifiersList = contingencyList[FieldConstants.EQUIPMENT_TABLE].map((contingency) => {
+        const identifierList = contingency[FieldConstants.EQUIPMENT_IDS].map((identifier) => {
             return {
-                type: 'LIST',
-                contingencyId: contingency[FieldConstants.CONTINGENCY_NAME],
-                identifierList: identifierList,
+                type: 'ID_BASED',
+                identifier: identifier,
             };
-        }
-    );
+        });
+
+        return {
+            type: 'LIST',
+            contingencyId: contingency[FieldConstants.CONTINGENCY_NAME],
+            identifierList: identifierList,
+        };
+    });
 
     return {
         id: id,

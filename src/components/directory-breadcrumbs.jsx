@@ -83,58 +83,36 @@ const DirectoryBreadcrumbs = () => {
 
     /* Handle Rendering */
     const renderBreadCrumbsLinks = () => {
-        if (
-            selectedDirectory !== null &&
-            currentPath !== null &&
-            currentPath.length > 1
-        ) {
-            return currentPath
-                .slice(0, currentPath.length - 1)
-                .map((dir, index) => (
-                    <Link
-                        sx={styles.link}
-                        key={dir.elementUuid}
-                        href="/"
-                        onClick={(event) => handleSelect(event, dir)}
-                        onDragStart={(event) => {
-                            event.preventDefault();
-                        }}
-                        underline="hover"
-                    >
-                        <Tooltip title={dir.elementName}>
-                            <Box sx={styles.limitTextSize}>
-                                {index === 0 ? (
-                                    <FolderOpenIcon sx={styles.icon} />
-                                ) : null}
-                                {dir.elementName}
-                            </Box>
-                        </Tooltip>
-                    </Link>
-                ));
+        if (selectedDirectory !== null && currentPath !== null && currentPath.length > 1) {
+            return currentPath.slice(0, currentPath.length - 1).map((dir, index) => (
+                <Link
+                    sx={styles.link}
+                    key={dir.elementUuid}
+                    href="/"
+                    onClick={(event) => handleSelect(event, dir)}
+                    onDragStart={(event) => {
+                        event.preventDefault();
+                    }}
+                    underline="hover"
+                >
+                    <Tooltip title={dir.elementName}>
+                        <Box sx={styles.limitTextSize}>
+                            {index === 0 ? <FolderOpenIcon sx={styles.icon} /> : null}
+                            {dir.elementName}
+                        </Box>
+                    </Tooltip>
+                </Link>
+            ));
         }
     };
 
     const renderBreadCrumbsTypography = () => {
-        if (
-            selectedDirectory !== null &&
-            currentPath !== null &&
-            currentPath.length > 0
-        ) {
+        if (selectedDirectory !== null && currentPath !== null && currentPath.length > 0) {
             return (
-                <Tooltip
-                    title={currentPath[currentPath.length - 1].elementName}
-                >
+                <Tooltip title={currentPath[currentPath.length - 1].elementName}>
                     <Box sx={styles.directory}>
-                        <Typography
-                            sx={mergeSx(
-                                styles.selectedLabel,
-                                styles.limitTextSize
-                            )}
-                            color="textPrimary"
-                        >
-                            {currentPath.length === 1 && (
-                                <FolderOpenIcon sx={styles.icon} />
-                            )}
+                        <Typography sx={mergeSx(styles.selectedLabel, styles.limitTextSize)} color="textPrimary">
+                            {currentPath.length === 1 && <FolderOpenIcon sx={styles.icon} />}
                             {currentPath[currentPath.length - 1].elementName}
                         </Typography>
                     </Box>
@@ -145,17 +123,12 @@ const DirectoryBreadcrumbs = () => {
 
     return (
         <>
-            {selectedDirectory !== null &&
-                currentPath !== null &&
-                currentPath.length > 0 && (
-                    <Breadcrumbs
-                        aria-label="breadcrumb"
-                        sx={styles.breadcrumbs}
-                    >
-                        {renderBreadCrumbsLinks()}
-                        {renderBreadCrumbsTypography()}
-                    </Breadcrumbs>
-                )}
+            {selectedDirectory !== null && currentPath !== null && currentPath.length > 0 && (
+                <Breadcrumbs aria-label="breadcrumb" sx={styles.breadcrumbs}>
+                    {renderBreadCrumbsLinks()}
+                    {renderBreadCrumbsTypography()}
+                </Breadcrumbs>
+            )}
         </>
     );
 };

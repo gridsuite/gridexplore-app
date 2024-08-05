@@ -13,9 +13,7 @@ import {
     TopBar,
     UserManagerState,
 } from '@gridsuite/commons-ui';
-import ParametersDialog, {
-    useParameterState,
-} from './dialogs/parameters-dialog';
+import ParametersDialog, { useParameterState } from './dialogs/parameters-dialog';
 import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchVersion, getServersInfos } from '../utils/rest-api';
@@ -46,8 +44,7 @@ export default function AppTopBar({ userManagerInstance }: AppTopBarProps) {
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
-    const [languageLocal, handleChangeLanguage] =
-        useParameterState(PARAM_LANGUAGE);
+    const [languageLocal, handleChangeLanguage] = useParameterState(PARAM_LANGUAGE);
 
     const [showParameters, setShowParameters] = useState(false);
 
@@ -64,11 +61,7 @@ export default function AppTopBar({ userManagerInstance }: AppTopBarProps) {
     useEffect(() => {
         if (user) {
             const openSearch = (e: DocumentEventMap['keydown']) => {
-                if (
-                    e.ctrlKey &&
-                    e.shiftKey &&
-                    (e.key === 'F' || e.key === 'f')
-                ) {
+                if (e.ctrlKey && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
                     e.preventDefault();
                     searchInputRef.current?.focus();
                 }
@@ -83,13 +76,7 @@ export default function AppTopBar({ userManagerInstance }: AppTopBarProps) {
             <TopBar
                 appName={APP_NAME}
                 appColor="#3DABE2"
-                appLogo={
-                    theme === LIGHT_THEME ? (
-                        <GridExploreLogoLight />
-                    ) : (
-                        <GridExploreLogoDark />
-                    )
-                }
+                appLogo={theme === LIGHT_THEME ? <GridExploreLogoLight /> : <GridExploreLogoDark />}
                 appVersion={AppPackage.version}
                 appLicense={AppPackage.license}
                 onLogoutClick={() => logout(dispatch, userManagerInstance)}
@@ -100,19 +87,12 @@ export default function AppTopBar({ userManagerInstance }: AppTopBarProps) {
                 theme={themeLocal}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
-                globalVersionPromise={() =>
-                    fetchVersion().then((res) => res?.deployVersion)
-                }
-                additionalModulesPromise={
-                    getServersInfos as () => Promise<GridSuiteModule[]>
-                }
+                globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
+                additionalModulesPromise={getServersInfos as () => Promise<GridSuiteModule[]>}
             >
                 {user && <SearchBar inputRef={searchInputRef} />}
             </TopBar>
-            <ParametersDialog
-                showParameters={showParameters}
-                hideParameters={() => setShowParameters(false)}
-            />
+            <ParametersDialog showParameters={showParameters} hideParameters={() => setShowParameters(false)} />
         </>
     );
 }

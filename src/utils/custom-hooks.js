@@ -191,10 +191,7 @@ export const useMultipleDeferredFetch = (
                     public: {
                         ...lastState.public,
                         data: lastState.public.data.concat([action.payload]),
-                        paramsOnSuccess:
-                            lastState.public.paramsOnSuccess.concat([
-                                action.context,
-                            ]),
+                        paramsOnSuccess: lastState.public.paramsOnSuccess.concat([action.context]),
                     },
                     counter: lastState.counter + 1,
                 };
@@ -202,12 +199,8 @@ export const useMultipleDeferredFetch = (
                 return {
                     public: {
                         ...lastState.public,
-                        errorMessage: lastState.public.errorMessage.concat([
-                            action.payload,
-                        ]),
-                        paramsOnError: lastState.public.paramsOnError.concat([
-                            action.context,
-                        ]),
+                        errorMessage: lastState.public.errorMessage.concat([action.payload]),
+                        paramsOnError: lastState.public.paramsOnError.concat([action.context]),
                     },
                     counter: lastState.counter + 1,
                 };
@@ -254,13 +247,7 @@ export const useMultipleDeferredFetch = (
         });
     }, []);
 
-    const [fetchCB] = useDeferredFetch(
-        fetchFunction,
-        onInstanceSuccess,
-        errorToString,
-        onInstanceError,
-        hasResult
-    );
+    const [fetchCB] = useDeferredFetch(fetchFunction, onInstanceSuccess, errorToString, onInstanceError, hasResult);
 
     const fetchCallback = useCallback(
         (cbParamsList) => {
@@ -280,11 +267,7 @@ export const useMultipleDeferredFetch = (
                     type: ActionType.ERROR,
                 });
                 if (onError) {
-                    onError(
-                        state.public.errorMessage,
-                        paramList,
-                        state.public.paramsOnError
-                    );
+                    onError(state.public.errorMessage, paramList, state.public.paramsOnError);
                 }
             } else {
                 dispatch({

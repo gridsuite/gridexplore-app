@@ -6,21 +6,13 @@
  */
 
 import { useSelector } from 'react-redux';
-import {
-    useSnackMessage,
-    CustomMuiDialog,
-    getCriteriaBasedSchema,
-    FieldConstants,
-} from '@gridsuite/commons-ui';
+import { useSnackMessage, CustomMuiDialog, getCriteriaBasedSchema, FieldConstants } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { createContingencyList } from '../../../../utils/rest-api';
 import React from 'react';
 import ContingencyListCreationForm from './contingency-list-creation-form';
-import {
-    getContingencyListEmptyFormData,
-    getFormContent,
-} from '../contingency-list-utils';
+import { getContingencyListEmptyFormData, getFormContent } from '../contingency-list-utils';
 import yup from '../../../utils/yup-config';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form';
 import { ContingencyListType } from '../../../../utils/elementType';
@@ -29,18 +21,14 @@ import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
-    [FieldConstants.DESCRIPTION]: yup
-        .string()
-        .max(500, 'descriptionLimitError'),
+    [FieldConstants.DESCRIPTION]: yup.string().max(500, 'descriptionLimitError'),
     [FieldConstants.CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
     [FieldConstants.SCRIPT]: yup.string().nullable(),
-    [FieldConstants.EQUIPMENT_TYPE]: yup
-        .string()
-        .when([FieldConstants.CONTINGENCY_LIST_TYPE], {
-            is: ContingencyListType.CRITERIA_BASED.id,
-            then: (schema) => schema.required(),
-            otherwise: (schema) => schema.nullable(),
-        }),
+    [FieldConstants.EQUIPMENT_TYPE]: yup.string().when([FieldConstants.CONTINGENCY_LIST_TYPE], {
+        is: ContingencyListType.CRITERIA_BASED.id,
+        then: (schema) => schema.required(),
+        otherwise: (schema) => schema.nullable(),
+    }),
     ...getExplicitNamingSchema(FieldConstants.EQUIPMENT_TABLE),
     ...getCriteriaBasedSchema(),
 });
