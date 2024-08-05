@@ -8,10 +8,7 @@
 import { ContingencyListType } from '../../../utils/elementType';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { v4 as uuid4 } from 'uuid';
-import {
-    getCriteriaBasedFormData,
-    FieldConstants,
-} from '@gridsuite/commons-ui';
+import { getCriteriaBasedFormData, FieldConstants } from '@gridsuite/commons-ui';
 
 export const makeDefaultRowData = () => ({
     [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
@@ -19,18 +16,13 @@ export const makeDefaultRowData = () => ({
     [FieldConstants.EQUIPMENT_IDS]: [],
 });
 
-export const makeDefaultTableRows = () => [
-    makeDefaultRowData(),
-    makeDefaultRowData(),
-    makeDefaultRowData(),
-];
+export const makeDefaultTableRows = () => [makeDefaultRowData(), makeDefaultRowData(), makeDefaultRowData()];
 
 export const getContingencyListEmptyFormData = (name = '') => ({
     [FieldConstants.NAME]: name,
     [FieldConstants.DESCRIPTION]: '',
     [FieldConstants.EQUIPMENT_TABLE]: makeDefaultTableRows(),
-    [FieldConstants.CONTINGENCY_LIST_TYPE]:
-        ContingencyListType.CRITERIA_BASED.id,
+    [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [FieldConstants.SCRIPT]: '',
     [FieldConstants.EQUIPMENT_TYPE]: null,
     ...getCriteriaBasedFormData(),
@@ -39,8 +31,7 @@ export const getContingencyListEmptyFormData = (name = '') => ({
 export const getCriteriaBasedFormDataFromFetchedElement = (response, name) => {
     return {
         [FieldConstants.NAME]: name,
-        [FieldConstants.CONTINGENCY_LIST_TYPE]:
-            ContingencyListType.CRITERIA_BASED.id,
+        [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
         [FieldConstants.EQUIPMENT_TYPE]: response.equipmentType,
         ...getCriteriaBasedFormData(response),
     };
@@ -49,21 +40,14 @@ export const getCriteriaBasedFormDataFromFetchedElement = (response, name) => {
 export const getExplicitNamingFormDataFromFetchedElement = (response) => {
     let result;
     if (response.identifierContingencyList?.identifiers?.length) {
-        result = response.identifierContingencyList?.identifiers?.map(
-            (identifiers) => {
-                return {
-                    [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
-                    [FieldConstants.CONTINGENCY_LIST_TYPE]:
-                        ContingencyListType.EXPLICIT_NAMING.id,
-                    [FieldConstants.CONTINGENCY_NAME]:
-                        identifiers.contingencyId,
-                    [FieldConstants.EQUIPMENT_IDS]:
-                        identifiers.identifierList.map(
-                            (identifier) => identifier.identifier
-                        ),
-                };
-            }
-        );
+        result = response.identifierContingencyList?.identifiers?.map((identifiers) => {
+            return {
+                [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+                [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.EXPLICIT_NAMING.id,
+                [FieldConstants.CONTINGENCY_NAME]: identifiers.contingencyId,
+                [FieldConstants.EQUIPMENT_IDS]: identifiers.identifierList.map((identifier) => identifier.identifier),
+            };
+        });
     } else {
         result = makeDefaultTableRows();
     }
@@ -82,25 +66,18 @@ export const getScriptFormDataFromFetchedElement = (response) => {
 export const getFormContent = (contingencyListId, contingencyList) => {
     switch (contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE]) {
         case ContingencyListType.EXPLICIT_NAMING.id: {
-            return prepareContingencyListForBackend(
-                contingencyListId,
-                contingencyList
-            );
+            return prepareContingencyListForBackend(contingencyListId, contingencyList);
         }
         case ContingencyListType.CRITERIA_BASED.id: {
-            const criteriaBaseForm =
-                contingencyList[FieldConstants.CRITERIA_BASED];
+            const criteriaBaseForm = contingencyList[FieldConstants.CRITERIA_BASED];
             return {
                 equipmentType: contingencyList[FieldConstants.EQUIPMENT_TYPE],
                 countries: criteriaBaseForm[FieldConstants.COUNTRIES],
                 countries1: criteriaBaseForm[FieldConstants.COUNTRIES_1],
                 countries2: criteriaBaseForm[FieldConstants.COUNTRIES_2],
-                nominalVoltage:
-                    criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE],
-                nominalVoltage1:
-                    criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE_1],
-                nominalVoltage2:
-                    criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE_2],
+                nominalVoltage: criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE],
+                nominalVoltage1: criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE_1],
+                nominalVoltage2: criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE_2],
             };
         }
         case ContingencyListType.SCRIPT.id: {
@@ -108,9 +85,7 @@ export const getFormContent = (contingencyListId, contingencyList) => {
         }
         default: {
             console.info(
-                "Unknown contingency list type '" +
-                    contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE] +
-                    "'"
+                "Unknown contingency list type '" + contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE] + "'"
             );
             return null;
         }

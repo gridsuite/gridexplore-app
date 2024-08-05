@@ -12,18 +12,12 @@ import React from 'react';
 import { ColDef, IRowNode } from 'ag-grid-community';
 import { NameCellRenderer } from './renderers/name-cell-renderer';
 import { DescriptionCellRenderer } from './renderers/description-cell-renderer';
-import {
-    TypeCellRenderer,
-    getElementTypeTranslation,
-} from './renderers/type-cell-renderer';
+import { TypeCellRenderer, getElementTypeTranslation } from './renderers/type-cell-renderer';
 import { UserCellRenderer } from './renderers/user-cell-renderer';
 import { DateCellRenderer } from './renderers/date-cell-renderer';
 import type { ElementAttributes } from '@gridsuite/commons-ui';
 
-export const formatMetadata = (
-    data: ElementAttributes,
-    childrenMetadata: Record<UUID, ElementAttributes>
-) => ({
+export const formatMetadata = (data: ElementAttributes, childrenMetadata: Record<UUID, ElementAttributes>) => ({
     ...data,
     subtype: childrenMetadata[data.elementUuid]?.specificMetadata.type,
     hasMetadata: !!childrenMetadata[data.elementUuid],
@@ -36,21 +30,14 @@ export const computeCheckedElements = (
     return (
         gridRef.current?.api
             ?.getSelectedRows()
-            .map((row: ElementAttributes) =>
-                formatMetadata(row, childrenMetadata)
-            ) ?? []
+            .map((row: ElementAttributes) => formatMetadata(row, childrenMetadata)) ?? []
     );
 };
 
-export const isRowUnchecked = (
-    row: ElementAttributes,
-    checkedRows: ElementAttributes[]
-) =>
+export const isRowUnchecked = (row: ElementAttributes, checkedRows: ElementAttributes[]) =>
     checkedRows?.length &&
     row?.elementUuid &&
-    !checkedRows.find(
-        (checkedRow) => checkedRow.elementUuid === row.elementUuid
-    );
+    !checkedRows.find((checkedRow) => checkedRow.elementUuid === row.elementUuid);
 
 export const defaultColumnDefinition = {
     sortable: true,
@@ -59,13 +46,9 @@ export const defaultColumnDefinition = {
     wrapHeaderText: true,
     autoHeaderHeight: true,
     suppressMovable: true,
-    comparator: (valueA: string, valueB: string) =>
-        valueA.toLowerCase().localeCompare(valueB.toLowerCase()),
+    comparator: (valueA: string, valueB: string) => valueA.toLowerCase().localeCompare(valueB.toLowerCase()),
 };
-export const getColumnsDefinition = (
-    childrenMetadata: Record<UUID, ElementAttributes>,
-    intl: IntlShape
-): ColDef[] => [
+export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttributes>, intl: IntlShape): ColDef[] => [
     {
         headerName: intl.formatMessage({
             id: 'elementName',
@@ -104,26 +87,17 @@ export const getColumnsDefinition = (
             nodeA: IRowNode<ElementAttributes>,
             nodeB: IRowNode<ElementAttributes>
         ) => {
-            const getTranslatedOrOriginalValue = (
-                node: IRowNode<ElementAttributes>
-            ): string => {
+            const getTranslatedOrOriginalValue = (node: IRowNode<ElementAttributes>): string => {
                 const { type, elementUuid } = node.data ?? {};
                 if (!type) {
                     return '';
                 }
 
-                const metaData = elementUuid
-                    ? childrenMetadata[elementUuid]?.specificMetadata
-                    : null;
+                const metaData = elementUuid ? childrenMetadata[elementUuid]?.specificMetadata : null;
                 const subtype = metaData?.type?.toString() ?? null;
                 const formatCase = metaData?.format?.toString() ?? null;
 
-                return getElementTypeTranslation(
-                    type,
-                    subtype,
-                    formatCase,
-                    intl
-                );
+                return getElementTypeTranslation(type, subtype, formatCase, intl);
             };
 
             const translatedA = getTranslatedOrOriginalValue(nodeA);

@@ -40,17 +40,10 @@ import {
 } from '../../utils/rest-api';
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
-import {
-    ElementType,
-    useSnackMessage,
-    FilterCreationDialog,
-} from '@gridsuite/commons-ui';
+import { ElementType, useSnackMessage, FilterCreationDialog } from '@gridsuite/commons-ui';
 
 import CommonContextualMenu from './common-contextual-menu';
-import {
-    useDeferredFetch,
-    useMultipleDeferredFetch,
-} from '../../utils/custom-hooks';
+import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
 import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
@@ -82,8 +75,7 @@ const ContentContextualMenu = (props) => {
 
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
-    const { handleDownloadCases, handleConvertCases, stopCasesExports } =
-        useDownloadUtils();
+    const { handleDownloadCases, handleConvertCases, stopCasesExports } = useDownloadUtils();
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -101,14 +93,7 @@ const ContentContextualMenu = (props) => {
         setOpenDialog(dialogId);
     };
     const dispatchSelectionForCopy = useCallback(
-        (
-            typeItem,
-            nameItem,
-            descriptionItem,
-            sourceItemUuid,
-            parentDirectoryUuid,
-            specificType
-        ) => {
+        (typeItem, nameItem, descriptionItem, sourceItemUuid, parentDirectoryUuid, specificType) => {
             dispatch(
                 setSelectionForCopy({
                     sourceItemUuid: sourceItemUuid,
@@ -123,14 +108,7 @@ const ContentContextualMenu = (props) => {
         [dispatch]
     );
 
-    function copyElement(
-        typeItem,
-        nameItem,
-        descriptionItem,
-        sourceItemUuid,
-        parentDirectoryUuid,
-        specificTypeItem
-    ) {
+    function copyElement(typeItem, nameItem, descriptionItem, sourceItemUuid, parentDirectoryUuid, specificTypeItem) {
         dispatchSelectionForCopy(
             typeItem,
             nameItem,
@@ -211,9 +189,7 @@ const ContentContextualMenu = (props) => {
                     break;
 
                 default:
-                    handleLastError(
-                        intl.formatMessage({ id: 'unsupportedItem' })
-                    );
+                    handleLastError(intl.formatMessage({ id: 'unsupportedItem' }));
             }
         }
     };
@@ -224,11 +200,7 @@ const ContentContextualMenu = (props) => {
                 case ElementType.STUDY:
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
-                    duplicateElement(
-                        activeElement.elementUuid,
-                        undefined,
-                        activeElement.type
-                    ).catch((error) => {
+                    duplicateElement(activeElement.elementUuid, undefined, activeElement.type).catch((error) => {
                         if (handleMaxElementsExceededError(error, snackError)) {
                             return;
                         }
@@ -424,20 +396,13 @@ const ContentContextualMenu = (props) => {
     }, [isUserAllowed, noCreationInProgress]);
 
     const allowsRename = useCallback(() => {
-        return (
-            selectedElements.length === 1 &&
-            isUserAllowed() &&
-            selectedElements[0].hasMetadata
-        );
+        return selectedElements.length === 1 && isUserAllowed() && selectedElements[0].hasMetadata;
     }, [isUserAllowed, selectedElements]);
 
     const allowsMove = useCallback(() => {
         return (
-            selectedElements.every(
-                (element) =>
-                    element.type !== ElementType.DIRECTORY &&
-                    element.hasMetadata
-            ) && isUserAllowed()
+            selectedElements.every((element) => element.type !== ElementType.DIRECTORY && element.hasMetadata) &&
+            isUserAllowed()
         );
     }, [isUserAllowed, selectedElements]);
 
@@ -450,14 +415,10 @@ const ContentContextualMenu = (props) => {
                 selectedElements[0].type === ElementType.CONTINGENCY_LIST ||
                 selectedElements[0].type === ElementType.FILTER ||
                 selectedElements[0].type === ElementType.MODIFICATION ||
-                selectedElements[0].type ===
-                    ElementType.VOLTAGE_INIT_PARAMETERS ||
-                selectedElements[0].type ===
-                    ElementType.SECURITY_ANALYSIS_PARAMETERS ||
-                selectedElements[0].type ===
-                    ElementType.SENSITIVITY_PARAMETERS ||
-                selectedElements[0].type ===
-                    ElementType.SHORT_CIRCUIT_PARAMETERS ||
+                selectedElements[0].type === ElementType.VOLTAGE_INIT_PARAMETERS ||
+                selectedElements[0].type === ElementType.SECURITY_ANALYSIS_PARAMETERS ||
+                selectedElements[0].type === ElementType.SENSITIVITY_PARAMETERS ||
+                selectedElements[0].type === ElementType.SHORT_CIRCUIT_PARAMETERS ||
                 selectedElements[0].type === ElementType.LOADFLOW_PARAMETERS)
         );
     }, [selectedElements]);
@@ -474,8 +435,7 @@ const ContentContextualMenu = (props) => {
         return (
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype ===
-                ContingencyListType.CRITERIA_BASED.id
+            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id
         );
     }, [selectedElements]);
 
@@ -483,8 +443,7 @@ const ContentContextualMenu = (props) => {
         return (
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype ===
-                ContingencyListType.CRITERIA_BASED.id &&
+            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id &&
             isUserAllowed()
         );
     }, [isUserAllowed, selectedElements]);
@@ -500,11 +459,7 @@ const ContentContextualMenu = (props) => {
 
     const allowsDownloadCase = useCallback(() => {
         //if selectedElements contains at least one case
-        return (
-            selectedElements.some(
-                (element) => element.type === ElementType.CASE
-            ) && noCreationInProgress()
-        );
+        return selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
 
     const buildMenu = () => {
@@ -578,9 +533,7 @@ const ContentContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'copyToScript',
                 callback: () => {
-                    handleOpenDialog(
-                        DialogsId.COPY_FILTER_TO_SCRIPT_CONTINGENCY
-                    );
+                    handleOpenDialog(DialogsId.COPY_FILTER_TO_SCRIPT_CONTINGENCY);
                 },
                 icon: <FileCopyIcon fontSize="small" />,
             });
@@ -606,9 +559,7 @@ const ContentContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'replaceWithScript',
                 callback: () => {
-                    handleOpenDialog(
-                        DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY
-                    );
+                    handleOpenDialog(DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY);
                 },
                 icon: <InsertDriveFileIcon fontSize="small" />,
             });
@@ -618,9 +569,7 @@ const ContentContextualMenu = (props) => {
             menuItems.push({
                 messageDescriptorId: 'convertFilterIntoExplicitNaming',
                 callback: () => {
-                    handleOpenDialog(
-                        DialogsId.CONVERT_TO_EXPLICIT_NAMING_FILTER
-                    );
+                    handleOpenDialog(DialogsId.CONVERT_TO_EXPLICIT_NAMING_FILTER);
                 },
                 icon: <InsertDriveFileIcon fontSize="small" />,
             });
@@ -628,9 +577,7 @@ const ContentContextualMenu = (props) => {
 
         if (menuItems.length === 0) {
             menuItems.push({
-                messageDescriptorId: noCreationInProgress()
-                    ? 'notElementCreator'
-                    : 'elementCreationInProgress',
+                messageDescriptorId: noCreationInProgress() ? 'notElementCreator' : 'elementCreationInProgress',
                 icon: <DoNotDisturbAltIcon fontSize="small" />,
                 disabled: true,
             });
@@ -646,14 +593,10 @@ const ContentContextualMenu = (props) => {
                     <RenameDialog
                         open={true}
                         onClose={handleCloseDialog}
-                        onClick={(elementName) =>
-                            renameCB(activeElement?.elementUuid, elementName)
-                        }
+                        onClick={(elementName) => renameCB(activeElement?.elementUuid, elementName)}
                         title={intl.formatMessage({ id: 'renameElement' })}
                         message={'renameElementMsg'}
-                        currentName={
-                            activeElement ? activeElement.elementName : ''
-                        }
+                        currentName={activeElement ? activeElement.elementName : ''}
                         type={activeElement ? activeElement.type : ''}
                         error={renameState.errorMessage}
                     />
@@ -663,15 +606,9 @@ const ContentContextualMenu = (props) => {
                     <DeleteDialog
                         open={true}
                         onClose={handleCloseDialog}
-                        onClick={() =>
-                            handleDeleteElements(
-                                selectedElements.map((e) => e.elementUuid)
-                            )
-                        }
+                        onClick={() => handleDeleteElements(selectedElements.map((e) => e.elementUuid))}
                         items={selectedElements}
-                        multipleDeleteFormatMessageId={
-                            'deleteMultipleItemsDialogMessage'
-                        }
+                        multipleDeleteFormatMessageId={'deleteMultipleItemsDialogMessage'}
                         simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
                         error={deleteError}
                     />
@@ -682,14 +619,7 @@ const ContentContextualMenu = (props) => {
                         open={true}
                         onClose={(selectedDir) => {
                             if (selectedDir.length > 0) {
-                                moveCB([
-                                    [
-                                        selectedElements.map(
-                                            (element) => element.elementUuid
-                                        ),
-                                        selectedDir[0].id,
-                                    ],
-                                ]);
+                                moveCB([[selectedElements.map((element) => element.elementUuid), selectedDir[0].id]]);
                             }
                             handleCloseDialog();
                         }}
@@ -701,11 +631,7 @@ const ContentContextualMenu = (props) => {
                     <ExportCaseDialog
                         onClose={handleCloseExportDialog}
                         onExport={(format, formatParameters) =>
-                            handleConvertCases(
-                                selectedElements,
-                                format,
-                                formatParameters
-                            )
+                            handleConvertCases(selectedElements, format, formatParameters)
                         }
                     />
                 );
@@ -715,12 +641,7 @@ const ContentContextualMenu = (props) => {
                         id={activeElement ? activeElement.elementUuid : ''}
                         open={true}
                         onClose={handleCloseDialog}
-                        onClick={(id) =>
-                            replaceFormContingencyListWithScriptCB(
-                                id,
-                                selectedDirectory?.elementUuid
-                            )
-                        }
+                        onClick={(id) => replaceFormContingencyListWithScriptCB(id, selectedDirectory?.elementUuid)}
                         onError={handleLastError}
                         title={intl.formatMessage({ id: 'replaceList' })}
                     />
@@ -732,15 +653,9 @@ const ContentContextualMenu = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         onValidate={(id, newName) =>
-                            newScriptFromFiltersContingencyListCB(
-                                id,
-                                newName,
-                                selectedDirectory?.elementUuid
-                            )
+                            newScriptFromFiltersContingencyListCB(id, newName, selectedDirectory?.elementUuid)
                         }
-                        currentName={
-                            activeElement ? activeElement.elementName : ''
-                        }
+                        currentName={activeElement ? activeElement.elementName : ''}
                         title={'copyToScriptList'}
                         directoryUuid={selectedDirectory?.elementUuid}
                         elementType={activeElement?.type}
@@ -753,12 +668,7 @@ const ContentContextualMenu = (props) => {
                         id={activeElement ? activeElement.elementUuid : ''}
                         open={true}
                         onClose={handleCloseDialog}
-                        onClick={(id) =>
-                            FiltersReplaceWithScriptCB(
-                                id,
-                                selectedDirectory?.elementUuid
-                            )
-                        }
+                        onClick={(id) => FiltersReplaceWithScriptCB(id, selectedDirectory?.elementUuid)}
                         title={intl.formatMessage({ id: 'replaceList' })}
                     />
                 );
@@ -768,16 +678,8 @@ const ContentContextualMenu = (props) => {
                         id={activeElement ? activeElement.elementUuid : ''}
                         open={true}
                         onClose={handleCloseDialog}
-                        onValidate={(id, newName) =>
-                            newScriptFromFilterCB(
-                                id,
-                                newName,
-                                selectedDirectory?.elementUuid
-                            )
-                        }
-                        currentName={
-                            activeElement ? activeElement.elementName : ''
-                        }
+                        onValidate={(id, newName) => newScriptFromFilterCB(id, newName, selectedDirectory?.elementUuid)}
+                        currentName={activeElement ? activeElement.elementName : ''}
                         title={'copyToScriptList'}
                         directoryUuid={selectedDirectory?.elementUuid}
                         elementType={activeElement?.type}
@@ -791,8 +693,7 @@ const ContentContextualMenu = (props) => {
                         onClose={handleCloseDialog}
                         sourceFilterForExplicitNamingConversion={{
                             id: activeElement.elementUuid,
-                            equipmentType:
-                                activeElement.specificMetadata.equipmentType,
+                            equipmentType: activeElement.specificMetadata.equipmentType,
                         }}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
@@ -801,11 +702,7 @@ const ContentContextualMenu = (props) => {
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:
                 return (
-                    <CreateStudyDialog
-                        open={true}
-                        onClose={handleCloseDialog}
-                        providedExistingCase={activeElement}
-                    />
+                    <CreateStudyDialog open={true} onClose={handleCloseDialog} providedExistingCase={activeElement} />
                 );
             default:
                 return null;
@@ -814,12 +711,7 @@ const ContentContextualMenu = (props) => {
     return (
         <>
             {open && (
-                <CommonContextualMenu
-                    {...others}
-                    menuItems={buildMenu()}
-                    open={open && !hideMenu}
-                    onClose={onClose}
-                />
+                <CommonContextualMenu {...others} menuItems={buildMenu()} open={open && !hideMenu} onClose={onClose} />
             )}
             {renderDialog()}
         </>

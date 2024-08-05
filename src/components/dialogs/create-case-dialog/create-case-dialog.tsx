@@ -10,10 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createCase } from '../../../utils/rest-api';
 import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import { Grid } from '@mui/material';
-import {
-    addUploadingElement,
-    removeUploadingElement,
-} from '../../../redux/actions';
+import { addUploadingElement, removeUploadingElement } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
@@ -48,10 +45,7 @@ interface CreateCaseDialogProps {
     open: boolean;
 }
 
-const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
-    onClose,
-    open,
-}) => {
+const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onClose, open }) => {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
 
@@ -66,16 +60,10 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
 
     const isFormValid = isObjectEmpty(errors) && isValid;
 
-    const activeDirectory = useSelector(
-        (state: AppState) => state.activeDirectory
-    );
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
-    const handleCreateNewCase = ({
-        caseName,
-        description,
-        caseFile,
-    }: IFormData): void => {
+    const handleCreateNewCase = ({ caseName, description, caseFile }: IFormData): void => {
         const uploadingCase: UploadingElement = {
             // @ts-expect-error: TODO wrong ID here
             id: keyGenerator(),
@@ -144,10 +132,7 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({
                     />
                 </Grid>
             </Grid>
-            <ErrorInput
-                name={FieldConstants.CASE_FILE}
-                InputField={FieldErrorAlert}
-            />
+            <ErrorInput name={FieldConstants.CASE_FILE} InputField={FieldErrorAlert} />
             <UploadNewCase />
         </CustomMuiDialog>
     );

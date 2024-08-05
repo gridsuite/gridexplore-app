@@ -58,11 +58,7 @@ const DeleteDialog = ({
     }, [open, items, error]);
 
     const handleClose = (_, reasonOfClose) => {
-        if (
-            reasonOfClose &&
-            reasonOfClose === 'backdropClick' &&
-            loadingState
-        ) {
+        if (reasonOfClose && reasonOfClose === 'backdropClick' && loadingState) {
             return;
         }
         onClose();
@@ -90,20 +86,10 @@ const DeleteDialog = ({
                   verticalAlign: 'middle',
                   display: 'inline-block',
               };
-        return (
-            <OverflowableText
-                text={items[0].elementName}
-                style={style}
-                tooltipSx={styles.tooltip}
-            />
-        );
+        return <OverflowableText text={items[0].elementName} style={style} tooltipSx={styles.tooltip} />;
     };
 
-    const buildItemsToDeleteGrid = (
-        items,
-        multipleDeleteFormatMessageId,
-        simpleDeleteFormatMessageId
-    ) => {
+    const buildItemsToDeleteGrid = (items, multipleDeleteFormatMessageId, simpleDeleteFormatMessageId) => {
         return (
             items &&
             (items.length > 1 ? (
@@ -125,12 +111,7 @@ const DeleteDialog = ({
                                     id: simpleDeleteFormatMessageId,
                                 },
                                 {
-                                    itemName: (
-                                        <span>
-                                            {items.length === 1 &&
-                                                renderElement(items)}
-                                        </span>
-                                    ),
+                                    itemName: <span>{items.length === 1 && renderElement(items)}</span>,
                                 }
                             )}
                         </span>
@@ -140,32 +121,16 @@ const DeleteDialog = ({
         );
     };
     return (
-        <Dialog
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-title-delete"
-        >
-            <DialogTitle style={{ display: 'flex' }}>
-                {buildTitle()}
-            </DialogTitle>
+        <Dialog open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
+            <DialogTitle style={{ display: 'flex' }}>{buildTitle()}</DialogTitle>
             <DialogContent>
-                {buildItemsToDeleteGrid(
-                    itemsState,
-                    multipleDeleteFormatMessageId,
-                    simpleDeleteFormatMessageId
-                )}
+                {buildItemsToDeleteGrid(itemsState, multipleDeleteFormatMessageId, simpleDeleteFormatMessageId)}
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} disabled={loadingState} />
-                <Button
-                    onClick={handleClick}
-                    variant="outlined"
-                    disabled={loadingState}
-                >
-                    {(loadingState && <CircularProgress size={24} />) || (
-                        <FormattedMessage id="delete" />
-                    )}
+                <Button onClick={handleClick} variant="outlined" disabled={loadingState}>
+                    {(loadingState && <CircularProgress size={24} />) || <FormattedMessage id="delete" />}
                 </Button>
             </DialogActions>
         </Dialog>

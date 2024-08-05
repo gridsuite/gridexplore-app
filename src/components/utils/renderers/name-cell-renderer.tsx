@@ -8,12 +8,7 @@ import { UUID } from 'crypto';
 import { IntlShape, useIntl } from 'react-intl';
 import { Box, Theme } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import {
-    ElementType,
-    getFileIcon,
-    OverflowableText,
-    ElementAttributes,
-} from '@gridsuite/commons-ui';
+import { ElementType, getFileIcon, OverflowableText, ElementAttributes } from '@gridsuite/commons-ui';
 
 const isElementCaseOrStudy = (objectType: ElementType) => {
     return objectType === ElementType.STUDY || objectType === ElementType.CASE;
@@ -72,12 +67,10 @@ export const NameCellRenderer = ({
     return (
         <Box sx={styles.tableCell}>
             {/*  Icon */}
-            {!childrenMetadata[data.elementUuid] &&
-                isElementCaseOrStudy(data.type) && (
-                    <CircularProgress size={18} sx={styles.circularRoot} />
-                )}
-            {childrenMetadata[data.elementUuid] &&
-                getFileIcon(data.type, styles.icon)}
+            {!childrenMetadata[data.elementUuid] && isElementCaseOrStudy(data.type) && (
+                <CircularProgress size={18} sx={styles.circularRoot} />
+            )}
+            {childrenMetadata[data.elementUuid] && getFileIcon(data.type, styles.icon)}
             {/* Name */}
             <OverflowableText
                 text={getDisplayedElementName(data, childrenMetadata, intl)}

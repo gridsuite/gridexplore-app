@@ -14,20 +14,9 @@ import { TreeItem, useTreeItem } from '@mui/x-tree-view';
 import { mergeSx } from '@gridsuite/commons-ui';
 
 const CustomContent = React.forwardRef(function CustomContent(props, ref) {
-    const {
-        className,
-        styles,
-        label,
-        nodeId,
-        icon: iconProp,
-        expansionIcon,
-        displayIcon,
-        onExpand,
-        onSelect,
-    } = props;
+    const { className, styles, label, nodeId, icon: iconProp, expansionIcon, displayIcon, onExpand, onSelect } = props;
 
-    const { disabled, expanded, selected, focused, preventSelection } =
-        useTreeItem(nodeId);
+    const { disabled, expanded, selected, focused, preventSelection } = useTreeItem(nodeId);
 
     const icon = iconProp || expansionIcon || displayIcon;
 
@@ -61,11 +50,7 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
             <Box onClick={handleExpansionClick} sx={styles.iconContainer}>
                 {icon}
             </Box>
-            <Typography
-                onClick={handleSelectionClick}
-                component="div"
-                sx={styles.label}
-            >
+            <Typography onClick={handleSelectionClick} component="div" sx={styles.label}>
                 {label}
             </Typography>
         </Box>
@@ -113,8 +98,6 @@ CustomContent.propTypes = {
     onSelect: PropTypes.func,
 };
 
-const CustomTreeItem = (props) => (
-    <TreeItem ContentComponent={CustomContent} {...props} />
-);
+const CustomTreeItem = (props) => <TreeItem ContentComponent={CustomContent} {...props} />;
 
 export default CustomTreeItem;

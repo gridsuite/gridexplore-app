@@ -18,12 +18,7 @@ import CsvDownloader from 'react-csv-downloader';
 import Alert from '@mui/material/Alert';
 import PropTypes from 'prop-types';
 import { DialogContentText } from '@mui/material';
-import {
-    ElementType,
-    CancelButton,
-    Generator,
-    Load,
-} from '@gridsuite/commons-ui';
+import { ElementType, CancelButton, Generator, Load } from '@gridsuite/commons-ui';
 
 const CsvImportFilterCreationDialog = ({
     onClose,
@@ -43,22 +38,13 @@ const CsvImportFilterCreationDialog = ({
     const buildHeader = () => {
         // TODO This is temporary : should be refactored to remove the business logic.
         if (formType === ElementType.FILTER) {
-            if (
-                equipmentType === Generator.type ||
-                equipmentType === Load.type
-            ) {
-                return [
-                    intl.formatMessage({ id: 'equipmentID' }),
-                    intl.formatMessage({ id: 'distributionKey' }),
-                ];
+            if (equipmentType === Generator.type || equipmentType === Load.type) {
+                return [intl.formatMessage({ id: 'equipmentID' }), intl.formatMessage({ id: 'distributionKey' })];
             } else {
                 return [intl.formatMessage({ id: 'equipmentID' })];
             }
         } else if (formType === ElementType.CONTINGENCY_LIST) {
-            return [
-                intl.formatMessage({ id: 'elementName' }),
-                intl.formatMessage({ id: 'equipments' }),
-            ];
+            return [intl.formatMessage({ id: 'elementName' }), intl.formatMessage({ id: 'equipments' })];
         }
     };
     const fileHeaders = buildHeader();
@@ -92,9 +78,7 @@ const CsvImportFilterCreationDialog = ({
         // validate the headers
         for (let i = 0; i < fileHeaders.length; i++) {
             if (fileHeaders[i] !== '' && rows[0][i] !== fileHeaders[i]) {
-                setCreateFilterErr(
-                    intl.formatMessage({ id: 'wrongCsvHeadersError' })
-                );
+                setCreateFilterErr(intl.formatMessage({ id: 'wrongCsvHeadersError' }));
                 return false;
             }
         }
@@ -139,13 +123,7 @@ const CsvImportFilterCreationDialog = ({
         // We check if there are values in the table
         const isValuesInTable = tableValues.some(
             (line) =>
-                line &&
-                Object.values(line).some(
-                    (e) =>
-                        e !== undefined &&
-                        e !== null &&
-                        String(e).trim().length > 0
-                )
+                line && Object.values(line).some((e) => e !== undefined && e !== null && String(e).trim().length > 0)
         );
 
         if (isValuesInTable) {
@@ -172,30 +150,17 @@ const CsvImportFilterCreationDialog = ({
     const renderConfirmationCsvData = () => {
         return (
             <div>
-                <Dialog
-                    open={isConfirmationPopupOpen}
-                    aria-labelledby="dialog-confirmation-csv-data"
-                >
-                    <DialogTitle id={'dialog-confirmation-csv-data'}>
-                        {'Confirmation'}
-                    </DialogTitle>
+                <Dialog open={isConfirmationPopupOpen} aria-labelledby="dialog-confirmation-csv-data">
+                    <DialogTitle id={'dialog-confirmation-csv-data'}>{'Confirmation'}</DialogTitle>
                     <DialogContent>
-                        <DialogContentText>
-                            {intl.formatMessage({ id: 'keepCSVDataMessage' })}
-                        </DialogContentText>
+                        <DialogContentText>{intl.formatMessage({ id: 'keepCSVDataMessage' })}</DialogContentText>
                     </DialogContent>
                     <DialogActions>
                         <CancelButton onClick={handleCancelDialog} />
-                        <Button
-                            onClick={() => handleReplacePopupConfirmation()}
-                            variant="outlined"
-                        >
+                        <Button onClick={() => handleReplacePopupConfirmation()} variant="outlined">
                             <FormattedMessage id="replace" />
                         </Button>
-                        <Button
-                            onClick={() => handleAddPopupConfirmation()}
-                            variant="outlined"
-                        >
+                        <Button onClick={() => handleAddPopupConfirmation()} variant="outlined">
                             <FormattedMessage id="add" />
                         </Button>
                     </DialogActions>
@@ -238,10 +203,7 @@ const CsvImportFilterCreationDialog = ({
                                     {({ getRootProps, acceptedFile }) => (
                                         <>
                                             <Grid item>
-                                                <Button
-                                                    {...getRootProps()}
-                                                    variant={'contained'}
-                                                >
+                                                <Button {...getRootProps()} variant={'contained'}>
                                                     <FormattedMessage id="UploadCSV" />
                                                 </Button>
                                                 <span
@@ -262,9 +224,7 @@ const CsvImportFilterCreationDialog = ({
                                 </CSVReader>
                             </Grid>
                         </Grid>
-                        {createFilterErr !== '' && (
-                            <Alert severity="error">{createFilterErr}</Alert>
-                        )}
+                        {createFilterErr !== '' && <Alert severity="error">{createFilterErr}</Alert>}
                     </div>
                 </DialogContent>
                 <DialogActions>

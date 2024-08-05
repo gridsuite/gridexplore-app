@@ -7,12 +7,7 @@
 
 import App from './app';
 import { useMemo } from 'react';
-import {
-    createTheme,
-    responsiveFontSizes,
-    StyledEngineProvider,
-    ThemeProvider,
-} from '@mui/material/styles';
+import { createTheme, responsiveFontSizes, StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { enUS as MuiCoreEnUS, frFR as MuiCoreFrFR } from '@mui/material/locale';
 import {
     card_error_boundary_en,
@@ -226,21 +221,12 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
 const basename = new URL(document.querySelector('base')!.href).pathname;
 
 const AppWrapperWithRedux = () => {
-    const computedLanguage = useSelector(
-        (state: AppState) => state.computedLanguage
-    );
+    const computedLanguage = useSelector((state: AppState) => state.computedLanguage);
     const theme = useSelector((state: AppState) => state[PARAM_THEME]);
-    const themeCompiled = useMemo(
-        () => getMuiTheme(theme, computedLanguage),
-        [computedLanguage, theme]
-    );
+    const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
 
     return (
-        <IntlProvider
-            locale={computedLanguage}
-            defaultLocale={LANG_ENGLISH}
-            messages={messages[computedLanguage]}
-        >
+        <IntlProvider locale={computedLanguage} defaultLocale={LANG_ENGLISH} messages={messages[computedLanguage]}>
             <BrowserRouter basename={basename}>
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={themeCompiled}>

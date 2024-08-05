@@ -26,14 +26,7 @@ import { CancelButton } from '@gridsuite/commons-ui';
  * @param {String} title Title of the dialog
  * @param {String} message Message of the dialog
  */
-export const CreateDirectoryDialog = ({
-    open,
-    onClose,
-    onClick,
-    title,
-    parentDirectory,
-    error,
-}) => {
+export const CreateDirectoryDialog = ({ open, onClose, onClick, title, parentDirectory, error }) => {
     const [name, nameField, nameError, nameOk] = useNameField({
         label: 'nameProperty',
         autoFocus: true,
@@ -58,12 +51,7 @@ export const CreateDirectoryDialog = ({
     };
 
     return (
-        <Dialog
-            fullWidth={true}
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-title-delete"
-        >
+        <Dialog fullWidth={true} open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 {nameField}
@@ -73,11 +61,7 @@ export const CreateDirectoryDialog = ({
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button
-                    disabled={!canCreate()}
-                    onClick={handleClick}
-                    variant="outlined"
-                >
+                <Button disabled={!canCreate()} onClick={handleClick} variant="outlined">
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
