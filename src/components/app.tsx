@@ -142,7 +142,7 @@ const App = () => {
     }, [initialMatchSilentRenewCallbackUrl, dispatch, initialMatchSigninCallbackUrl]);
 
     useEffect(() => {
-        if (user !== null) {
+        if (user !== undefined) {
             fetchConfigParameters(COMMON_APP_NAME)
                 .then((params) => updateParams(params))
                 .catch((error) =>
@@ -188,7 +188,7 @@ const App = () => {
                         marginTop: '20px',
                     }}
                 >
-                    {user !== null ? (
+                    {user !== undefined ? (
                         <Routes>
                             <Route
                                 path="/"

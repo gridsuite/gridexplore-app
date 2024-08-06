@@ -6,11 +6,13 @@
  */
 import { legacy_createStore as createStore, Store } from 'redux';
 import { Actions, AppState, reducer } from './reducer';
-import { setCommonStore } from '@gridsuite/commons-ui';
+import { initCommonServices } from '@gridsuite/commons-ui';
+import { APP_NAME, PARAM_LANGUAGE } from '../utils/config-params';
 
 export const store: Store<AppState, Actions> = createStore(reducer);
-setCommonStore(store);
 export type AppDispatch = typeof store.dispatch;
+
+initCommonServices(APP_NAME, () => store.getState().user ?? undefined);
 
 // to avoid to reset the state with HMR
 // https://redux.js.org/usage/configuring-your-store#hot-reloading

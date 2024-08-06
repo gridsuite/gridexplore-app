@@ -6,7 +6,6 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-
 import {
     getLocalStorageComputedLanguage,
     getLocalStorageLanguage,
@@ -14,7 +13,6 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './local-storage';
-
 import {
     ACTIVE_DIRECTORY,
     ActiveDirectoryAction,
@@ -46,13 +44,11 @@ import {
     TREE_DATA,
     TreeDataAction,
 } from './actions';
-
 import {
+    AppMetadata,
     AuthenticationActions,
     AuthenticationRouterErrorAction,
     AuthenticationRouterErrorState,
-    CommonMetadata,
-    CommonStoreState,
     ElementAttributes,
     ElementType,
     GsLang,
@@ -74,6 +70,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { UUID } from 'crypto';
+import { User } from 'oidc-client';
 
 // IDirectory is exactly an IElement, with a specific type value
 export type IDirectory = ElementAttributes & {
@@ -108,7 +105,8 @@ export type UploadingElement = {
     uploading: boolean;
 };
 
-export interface AppState extends CommonStoreState {
+export interface AppState {
+    user: User | undefined;
     [PARAM_THEME]: GsTheme;
     [PARAM_LANGUAGE]: GsLang;
     computedLanguage: GsLangUser;
@@ -118,7 +116,7 @@ export interface AppState extends CommonStoreState {
     authenticationRouterError: AuthenticationRouterErrorState | null;
     showAuthenticationRouterLogin: boolean;
 
-    appsAndUrls: CommonMetadata[];
+    appsAndUrls: AppMetadata[];
     activeDirectory?: UUID;
     currentChildren?: ElementAttributes[];
     selectedDirectory: ElementAttributes | null;
@@ -140,7 +138,7 @@ export interface AppState extends CommonStoreState {
 
 const initialState: AppState = {
     // authentication
-    user: null,
+    user: undefined,
     signInCallbackError: null,
     authenticationRouterError: null,
     showAuthenticationRouterLogin: false,

@@ -51,7 +51,7 @@ export default function AppTopBar({ userManagerInstance }: AppTopBarProps) {
     const searchInputRef = useRef<any | null>(null);
 
     useEffect(() => {
-        if (user !== null) {
+        if (user !== undefined) {
             fetchAppsMetadata().then((res) => {
                 dispatch(setAppsAndUrls(res));
             });

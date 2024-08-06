@@ -254,7 +254,7 @@ const TreeViewsContainer = () => {
 
     /* rootDirectories initialization */
     useEffect(() => {
-        if (user != null) {
+        if (user != undefined) {
             updateRootDirectories();
         }
     }, [user, updateRootDirectories]);
