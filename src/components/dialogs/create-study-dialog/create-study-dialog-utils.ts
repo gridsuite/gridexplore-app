@@ -6,11 +6,7 @@
  */
 
 import yup from '../../utils/yup-config';
-import {
-    ElementAttributes,
-    FieldConstants,
-    Parameter,
-} from '@gridsuite/commons-ui';
+import { ElementAttributes, FieldConstants, Parameter } from '@gridsuite/commons-ui';
 
 export const getCreateStudyDialogFormDefaultValues = ({
     directory = '',
@@ -38,20 +34,11 @@ export const getCreateStudyDialogFormDefaultValues = ({
 
 export const createStudyDialogFormValidationSchema = yup.object().shape({
     [FieldConstants.STUDY_NAME]: yup.string().trim().required('nameEmpty'),
-    [FieldConstants.FORMATTED_CASE_PARAMETERS]: yup
-        .mixed<Parameter[]>()
-        .required(),
-    [FieldConstants.DESCRIPTION]: yup
-        .string()
-        .max(500, 'descriptionLimitError'),
-    [FieldConstants.CURRENT_PARAMETERS]: yup
-        .mixed<Record<string, string>>()
-        .required(),
+    [FieldConstants.FORMATTED_CASE_PARAMETERS]: yup.mixed<Parameter[]>().required(),
+    [FieldConstants.DESCRIPTION]: yup.string().max(500, 'descriptionLimitError'),
+    [FieldConstants.CURRENT_PARAMETERS]: yup.mixed<Record<string, string>>().required(),
     [FieldConstants.CASE_UUID]: yup.string().nullable().required(),
-    [FieldConstants.CASE_FILE]: yup
-        .mixed<ElementAttributes>()
-        .nullable()
-        .required(),
+    [FieldConstants.CASE_FILE]: yup.mixed<ElementAttributes>().nullable().required(),
     [FieldConstants.DIRECTORY]: yup.string().required(),
     [FieldConstants.CASE_FORMAT]: yup.string().optional(),
     [FieldConstants.CASE_NAME]: yup.string().optional(),

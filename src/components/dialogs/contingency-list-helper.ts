@@ -40,12 +40,8 @@ export const prepareContingencyListForBackend = (
     id: string,
     contingencyList: ContingencyList
 ): PrepareContingencyListForBackend => {
-    const identifiersList: IdentifierList[] = contingencyList[
-        FieldConstants.EQUIPMENT_TABLE
-    ].map((contingency) => {
-        const identifierList: Identifier[] = contingency[
-            FieldConstants.EQUIPMENT_IDS
-        ].map((identifier) => {
+    const identifiersList: IdentifierList[] = contingencyList[FieldConstants.EQUIPMENT_TABLE].map((contingency) => {
+        const identifierList: Identifier[] = contingency[FieldConstants.EQUIPMENT_IDS].map((identifier) => {
             return {
                 type: 'ID_BASED',
                 identifier: identifier,

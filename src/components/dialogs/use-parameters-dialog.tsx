@@ -16,15 +16,12 @@ import { AppState } from 'redux/reducer';
 
 type ParamName = typeof PARAM_THEME | typeof PARAM_LANGUAGE;
 
-export function useParameterState(
-    paramName: ParamName
-): [string, (value: string) => void] {
+export function useParameterState(paramName: ParamName): [string, (value: string) => void] {
     const { snackError } = useSnackMessage();
 
     const paramGlobalState = useSelector((state: AppState) => state[paramName]);
 
-    const [paramLocalState, setParamLocalState] =
-        useState<string>(paramGlobalState);
+    const [paramLocalState, setParamLocalState] = useState<string>(paramGlobalState);
 
     useEffect(() => {
         setParamLocalState(paramGlobalState);

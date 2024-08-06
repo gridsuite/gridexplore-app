@@ -8,12 +8,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
-import {
-    CircularProgress,
-    InputAdornment,
-    TextField,
-    TextFieldProps,
-} from '@mui/material';
+import { CircularProgress, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { ElementType, useDebounce } from '@gridsuite/commons-ui';
 
@@ -24,8 +19,7 @@ const styles = {
     },
 };
 
-interface UseTextValueProps
-    extends Omit<TextFieldProps, 'label' | 'defaultValue'> {
+interface UseTextValueProps extends Omit<TextFieldProps, 'label' | 'defaultValue'> {
     label: string;
     id?: string;
     defaultValue?: string;
@@ -38,22 +32,14 @@ export const useTextValue = ({
     defaultValue = '',
     adornment,
     ...formProps
-}: UseTextValueProps): [
-    string,
-    React.ReactNode,
-    (value: string) => void,
-    boolean
-] => {
+}: UseTextValueProps): [string, React.ReactNode, (value: string) => void, boolean] => {
     const [value, setValue] = useState(defaultValue);
     const [hasChanged, setHasChanged] = useState(false);
 
-    const handleChangeValue = useCallback(
-        (event: React.ChangeEvent<HTMLInputElement>) => {
-            setValue(event.target.value);
-            setHasChanged(true);
-        },
-        []
-    );
+    const handleChangeValue = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setValue(event.target.value);
+        setHasChanged(true);
+    }, []);
 
     const field = useMemo(
         () => (
@@ -95,14 +81,7 @@ export const useNameField = ({
     active,
     alreadyExistingErrorMessage,
     ...props
-}: UseNameFieldProps): [
-    string,
-    React.ReactNode,
-    string | undefined,
-    boolean,
-    (value: string) => void,
-    boolean
-] => {
+}: UseNameFieldProps): [string, React.ReactNode, string | undefined, boolean, (value: string) => void, boolean] => {
     const [error, setError] = useState<string | undefined>();
     const intl = useIntl();
     const [checking, setChecking] = useState<boolean | undefined>(undefined);
@@ -165,12 +144,7 @@ export const useNameField = ({
                     });
             }
         },
-        [
-            props.defaultValue,
-            alreadyExistingErrorMessage,
-            intl,
-            doesElementExist,
-        ]
+        [props.defaultValue, alreadyExistingErrorMessage, intl, doesElementExist]
     );
 
     const debouncedUpdateValidity = useDebounce(updateValidity, 700);
@@ -213,10 +187,7 @@ export const useNameField = ({
         name,
         field,
         error,
-        name !== props.defaultValue &&
-            name.replace(/ /g, '') !== '' &&
-            !error &&
-            !checking,
+        name !== props.defaultValue && name.replace(/ /g, '') !== '' && !error && !checking,
         setName,
         touched,
     ];

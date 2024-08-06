@@ -16,11 +16,7 @@ interface MoveDialogProps {
     itemsCount: number;
 }
 
-const MoveDialog: FunctionComponent<MoveDialogProps> = ({
-    open,
-    onClose,
-    itemsCount,
-}) => {
+const MoveDialog: FunctionComponent<MoveDialogProps> = ({ open, onClose, itemsCount }) => {
     const intl = useIntl();
 
     return (

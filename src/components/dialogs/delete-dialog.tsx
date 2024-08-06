@@ -11,20 +11,10 @@ import Alert from '@mui/material/Alert';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    FunctionComponent,
-    SyntheticEvent,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import { FunctionComponent, SyntheticEvent, useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress';
-import {
-    CancelButton,
-    ElementAttributes,
-    OverflowableText,
-} from '@gridsuite/commons-ui';
+import { CancelButton, ElementAttributes, OverflowableText } from '@gridsuite/commons-ui';
 
 interface DeleteDialogProps {
     open: boolean;
@@ -76,11 +66,7 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
     }, [open, items, error]);
 
     const handleClose = (_: SyntheticEvent, reasonOfClose?: string) => {
-        if (
-            reasonOfClose &&
-            reasonOfClose === 'backdropClick' &&
-            loadingState
-        ) {
+        if (reasonOfClose && reasonOfClose === 'backdropClick' && loadingState) {
             return;
         }
         onClose();
@@ -108,13 +94,7 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
                   verticalAlign: 'middle',
                   display: 'inline-block',
               };
-        return (
-            <OverflowableText
-                text={items[0].elementName}
-                style={style}
-                tooltipSx={styles.tooltip}
-            />
-        );
+        return <OverflowableText text={items[0].elementName} style={style} tooltipSx={styles.tooltip} />;
     };
 
     const buildItemsToDeleteGrid = (
@@ -143,12 +123,7 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
                                     id: simpleDeleteFormatMessageId,
                                 },
                                 {
-                                    itemName: (
-                                        <span>
-                                            {items.length === 1 &&
-                                                renderElement(items)}
-                                        </span>
-                                    ),
+                                    itemName: <span>{items.length === 1 && renderElement(items)}</span>,
                                 }
                             )}
                         </span>
@@ -158,32 +133,16 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
         );
     };
     return (
-        <Dialog
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-title-delete"
-        >
-            <DialogTitle style={{ display: 'flex' }}>
-                {buildTitle()}
-            </DialogTitle>
+        <Dialog open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
+            <DialogTitle style={{ display: 'flex' }}>{buildTitle()}</DialogTitle>
             <DialogContent>
-                {buildItemsToDeleteGrid(
-                    itemsState,
-                    multipleDeleteFormatMessageId,
-                    simpleDeleteFormatMessageId
-                )}
+                {buildItemsToDeleteGrid(itemsState, multipleDeleteFormatMessageId, simpleDeleteFormatMessageId)}
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} disabled={loadingState} />
-                <Button
-                    onClick={handleClick}
-                    variant="outlined"
-                    disabled={loadingState}
-                >
-                    {(loadingState && <CircularProgress size={24} />) || (
-                        <FormattedMessage id="delete" />
-                    )}
+                <Button onClick={handleClick} variant="outlined" disabled={loadingState}>
+                    {(loadingState && <CircularProgress size={24} />) || <FormattedMessage id="delete" />}
                 </Button>
             </DialogActions>
         </Dialog>

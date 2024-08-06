@@ -9,15 +9,8 @@ import { Box, Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { FunctionComponent, useCallback, useEffect } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
-import {
-    createStudy,
-    deleteCase,
-    getCaseImportParameters,
-} from '../../../utils/rest-api';
-import {
-    HTTP_CONNECTION_FAILED_MESSAGE,
-    HTTP_UNPROCESSABLE_ENTITY_STATUS,
-} from '../../../utils/UIconstants';
+import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
+import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import {
     useSnackMessage,
     ErrorInput,
@@ -34,11 +27,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
-import {
-    addUploadingElement,
-    removeUploadingElement,
-    setActiveDirectory,
-} from '../../../redux/actions';
+import { addUploadingElement, removeUploadingElement, setActiveDirectory } from '../../../redux/actions';
 import {
     CreateStudyDialogFormValues,
     createStudyDialogFormValidationSchema,
@@ -52,17 +41,12 @@ import { UUID } from 'crypto';
 
 const STRING_LIST = 'STRING_LIST';
 
-function customizeCurrentParameters(
-    params: Parameter[]
-): Record<string, string> {
+function customizeCurrentParameters(params: Parameter[]): Record<string, string> {
     return params.reduce((obj, parameter) => {
         // we check if the parameter is for extensions. If so, we select all possible values by default.
         // the only way for the moment to check if the parameter is for extension, is by checking his name.
         //TODO: implement a cleaner way to determine the extensions field
-        if (
-            parameter.type === STRING_LIST &&
-            parameter.name?.endsWith('extensions')
-        ) {
+        if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
             obj[parameter.name] = parameter.possibleValues.toString();
         }
         return obj;
@@ -72,9 +56,7 @@ function customizeCurrentParameters(
 function formatCaseImportParameters(params: Parameter[]): Parameter[] {
     // sort possible values alphabetically to display select options sorted
     return params?.map((parameter) => {
-        parameter.possibleValues = parameter.possibleValues?.sort(
-            (a: any, b: any) => a.localeCompare(b)
-        );
+        parameter.possibleValues = parameter.possibleValues?.sort((a: any, b: any) => a.localeCompare(b));
         return parameter;
     });
 }
@@ -85,21 +67,13 @@ interface CreateStudyDialogProps {
     providedExistingCase?: ElementAttributes;
 }
 
-const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({
-    open,
-    onClose,
-    providedExistingCase,
-}) => {
+const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, onClose, providedExistingCase }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
-    const activeDirectory = useSelector(
-        (state: AppState) => state.activeDirectory
-    );
-    const selectedDirectory = useSelector(
-        (state: AppState) => state.selectedDirectory
-    );
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
+    const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const { elementUuid, elementName } = providedExistingCase || {};
@@ -111,9 +85,7 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({
             caseFile: providedExistingCase,
             caseUuid: elementUuid,
         }),
-        resolver: yupResolver<CreateStudyDialogFormValues>(
-            createStudyDialogFormValidationSchema
-        ),
+        resolver: yupResolver<CreateStudyDialogFormValues>(createStudyDialogFormValidationSchema),
     });
 
     const {
@@ -154,21 +126,12 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({
         (uuid: string) => {
             getCaseImportParameters(uuid)
                 .then((result) => {
-                    const formattedParams = formatCaseImportParameters(
-                        result.parameters
-                    );
-                    setValue(
-                        FieldConstants.CURRENT_PARAMETERS,
-                        customizeCurrentParameters(formattedParams)
-                    );
+                    const formattedParams = formatCaseImportParameters(result.parameters);
+                    setValue(FieldConstants.CURRENT_PARAMETERS, customizeCurrentParameters(formattedParams));
 
-                    setValue(
-                        FieldConstants.FORMATTED_CASE_PARAMETERS,
-                        formattedParams,
-                        {
-                            shouldDirty: true,
-                        }
-                    );
+                    setValue(FieldConstants.FORMATTED_CASE_PARAMETERS, formattedParams, {
+                        shouldDirty: true,
+                    });
                     setValue(FieldConstants.CASE_FORMAT, result.formatName);
                 })
                 .catch(() => {
@@ -317,14 +280,8 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({
             )}
             <ImportParametersSection />
             <Grid pt={1}>
-                <ErrorInput
-                    name={FieldConstants.API_CALL}
-                    InputField={FieldErrorAlert}
-                />
-                <ErrorInput
-                    name={FieldConstants.CASE_FILE}
-                    InputField={FieldErrorAlert}
-                />
+                <ErrorInput name={FieldConstants.API_CALL} InputField={FieldErrorAlert} />
+                <ErrorInput name={FieldConstants.CASE_FILE} InputField={FieldErrorAlert} />
             </Grid>
         </CustomMuiDialog>
     );

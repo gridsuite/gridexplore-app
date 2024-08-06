@@ -30,9 +30,13 @@ interface ReplaceWithScriptDialogProps {
  * @param onClick Function to call to perform rename
  * @param title Title of the dialog
  */
-const ReplaceWithScriptDialog: FunctionComponent<
-    ReplaceWithScriptDialogProps
-> = ({ id, open, onClose, onClick, title }) => {
+const ReplaceWithScriptDialog: FunctionComponent<ReplaceWithScriptDialogProps> = ({
+    id,
+    open,
+    onClose,
+    onClick,
+    title,
+}) => {
     const handleClose = (): void => {
         onClose();
     };
