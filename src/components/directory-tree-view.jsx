@@ -72,12 +72,7 @@ const styles = {
     }),
 };
 
-const DirectoryTreeView = ({
-    treeViewUuid,
-    mapData,
-    onContextMenu,
-    onDirectoryUpdate,
-}) => {
+const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUpdate }) => {
     const dispatch = useDispatch();
 
     const [expanded, setExpanded] = React.useState([]);
@@ -95,12 +90,8 @@ const DirectoryTreeView = ({
         (inIds, outIds = []) => {
             let prevAsSet = new Set(expandedRef.current);
             // if on both side : no-op
-            let inIdsSet = new Set(
-                inIds.filter((id) => !outIds.includes(id) && !prevAsSet.has(id))
-            );
-            let outIdsSet = new Set(
-                outIds.filter((id) => !inIds.includes(id) && prevAsSet.has(id))
-            );
+            let inIdsSet = new Set(inIds.filter((id) => !outIds.includes(id) && !prevAsSet.has(id)));
+            let outIdsSet = new Set(outIds.filter((id) => !inIds.includes(id) && prevAsSet.has(id)));
 
             if (inIdsSet.size > 0 || outIdsSet.size > 0) {
                 let purged = [...prevAsSet].filter((id) => !outIdsSet.has(id));
@@ -169,9 +160,7 @@ const DirectoryTreeView = ({
                 label={
                     <Box
                         sx={styles.treeItemLabelRoot}
-                        onContextMenu={(e) =>
-                            handleContextMenuClick(e, node.elementUuid)
-                        }
+                        onContextMenu={(e) => handleContextMenuClick(e, node.elementUuid)}
                     >
                         <Tooltip
                             TransitionComponent={Zoom}
@@ -200,19 +189,13 @@ const DirectoryTreeView = ({
                         iconContainer: styles.treeItemIconContainer,
                     },
                 }}
-                endIcon={
-                    node.subdirectoriesCount > 0 ? (
-                        <ChevronRightIcon sx={styles.icon} />
-                    ) : null
-                }
+                endIcon={node.subdirectoriesCount > 0 ? <ChevronRightIcon sx={styles.icon} /> : null}
                 sx={{
                     content: styles.treeItemContent,
                 }}
             >
                 {Array.isArray(node.children)
-                    ? node.children.map((child) =>
-                          renderTree(mapDataRef.current[child.elementUuid])
-                      )
+                    ? node.children.map((child) => renderTree(mapDataRef.current[child.elementUuid]))
                     : null}
             </CustomTreeItem>
         );
@@ -225,9 +208,7 @@ const DirectoryTreeView = ({
                 defaultCollapseIcon={<ExpandMoreIcon sx={styles.icon} />}
                 defaultExpandIcon={<ChevronRightIcon sx={styles.icon} />}
                 expanded={expanded}
-                selected={
-                    selectedDirectory ? selectedDirectory.elementUuid : null
-                }
+                selected={selectedDirectory ? selectedDirectory.elementUuid : null}
             >
                 {renderTree(mapDataRef.current[treeViewUuid])}
             </TreeView>

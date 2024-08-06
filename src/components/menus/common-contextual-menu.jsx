@@ -31,13 +31,7 @@ const StyledMenu = styled((props) => <Menu elevation={0} {...props} />)({
 const CommonContextualMenu = (props) => {
     const { menuItems, ...others } = props;
 
-    function makeMenuItem(
-        key,
-        messageDescriptorId,
-        callback,
-        icon = <EditIcon fontSize="small" />,
-        disabled = false
-    ) {
+    function makeMenuItem(key, messageDescriptorId, callback, icon = <EditIcon fontSize="small" />, disabled = false) {
         return (
             <MenuItem
                 key={key}
@@ -53,9 +47,7 @@ const CommonContextualMenu = (props) => {
                 >
                     {icon}
                 </ListItemIcon>
-                <ListItemText
-                    primary={<FormattedMessage id={messageDescriptorId} />}
-                />
+                <ListItemText primary={<FormattedMessage id={messageDescriptorId} />} />
             </MenuItem>
         );
     }

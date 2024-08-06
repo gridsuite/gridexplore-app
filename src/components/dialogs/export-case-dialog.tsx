@@ -55,8 +55,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
     const [formats, setFormats] = useState<ExportFormats>([]);
     const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
     const [expanded, setExpanded] = useState<boolean>(false);
-    const [currentParameters, setCurrentParameters] =
-        useState<FormatParameters>({});
+    const [currentParameters, setCurrentParameters] = useState<FormatParameters>({});
 
     const intl = useIntl();
 
@@ -67,10 +66,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
             //TODO to be removed when extensions param default value corrected in backend to include all possible values
             Object.values(fetchedFormats).forEach((format) =>
                 format.parameters.forEach((param) => {
-                    if (
-                        param.type === 'STRING_LIST' &&
-                        param.name.endsWith('extensions')
-                    ) {
+                    if (param.type === 'STRING_LIST' && param.name.endsWith('extensions')) {
                         param.defaultValue = param.possibleValues;
                     }
                 })
@@ -79,17 +75,14 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
         });
     }, []);
 
-    const handleParameterChange = useCallback(
-        (name: string, value: any, isEdit: boolean) => {
-            if (!isEdit) {
-                setCurrentParameters((prevParameters) => ({
-                    ...prevParameters,
-                    [name]: value,
-                }));
-            }
-        },
-        []
-    );
+    const handleParameterChange = useCallback((name: string, value: any, isEdit: boolean) => {
+        if (!isEdit) {
+            setCurrentParameters((prevParameters) => ({
+                ...prevParameters,
+                [name]: value,
+            }));
+        }
+    }, []);
 
     const handleExport = useCallback(async () => {
         setLoading(true);
@@ -98,23 +91,11 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
     }, [currentParameters, props, selectedFormat]);
 
     return (
-        <Dialog
-            open
-            fullWidth
-            maxWidth="sm"
-            onClose={props.onClose}
-            aria-labelledby="dialog-title-export-case"
-        >
-            <DialogTitle>
-                {intl.formatMessage({ id: 'download.export.button' })}
-            </DialogTitle>
+        <Dialog open fullWidth maxWidth="sm" onClose={props.onClose} aria-labelledby="dialog-title-export-case">
+            <DialogTitle>{intl.formatMessage({ id: 'download.export.button' })}</DialogTitle>
             <DialogContent>
                 <FormControl fullWidth size="small">
-                    <InputLabel
-                        id="select-format-label"
-                        variant="filled"
-                        margin="dense"
-                    >
+                    <InputLabel id="select-format-label" variant="filled" margin="dense">
                         <FormattedMessage id="download.exportFormat" />
                     </InputLabel>
                     <Select
@@ -122,9 +103,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                         label={<FormattedMessage id="download.exportFormat" />}
                         variant="filled"
                         id="controlled-select-format"
-                        onChange={(event) =>
-                            setSelectedFormat(event.target.value)
-                        }
+                        onChange={(event) => setSelectedFormat(event.target.value)}
                         defaultValue=""
                         inputProps={{
                             id: 'select-format',
@@ -136,44 +115,27 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                             </MenuItem>
                         ))}
                     </Select>
-                    <Stack
-                        marginTop="0.7em"
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
-                    >
+                    <Stack marginTop="0.7em" direction="row" justifyContent="space-between" alignItems="center">
                         <Typography
                             component="span"
-                            color={
-                                selectedFormat ? 'text.main' : 'text.disabled'
-                            }
+                            color={selectedFormat ? 'text.main' : 'text.disabled'}
                             style={{ fontWeight: 'bold' }}
                         >
                             <FormattedMessage id="parameters" />
                         </Typography>
-                        <IconButton
-                            onClick={() =>
-                                setExpanded((prevState) => !prevState)
-                            }
-                            disabled={!selectedFormat}
-                        >
+                        <IconButton onClick={() => setExpanded((prevState) => !prevState)} disabled={!selectedFormat}>
                             {expanded ? <ExpandLess /> : <ExpandMore />}
                         </IconButton>
                     </Stack>
                 </FormControl>
                 <Collapse in={expanded}>
                     <FlatParameters
-                        paramsAsArray={
-                            selectedFormat
-                                ? (formats as any)[selectedFormat].parameters
-                                : []
-                        }
+                        paramsAsArray={selectedFormat ? (formats as any)[selectedFormat].parameters : []}
                         initValues={currentParameters}
                         onChange={handleParameterChange}
                         variant="standard"
                         selectionWithDialog={(params: any) =>
-                            !!params?.possibleValues?.length &&
-                            params.possibleValues.length > 10
+                            !!params?.possibleValues?.length && params.possibleValues.length > 10
                         }
                     />
                 </Collapse>
@@ -191,11 +153,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={props.onClose} />
-                <Button
-                    onClick={handleExport}
-                    variant="outlined"
-                    disabled={loading || !selectedFormat}
-                >
+                <Button onClick={handleExport} variant="outlined" disabled={loading || !selectedFormat}>
                     <FormattedMessage id="download.export.button" />
                 </Button>
             </DialogActions>

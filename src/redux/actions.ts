@@ -44,15 +44,11 @@ export function selectLanguage(language: AppState['language']): LanguageAction {
 }
 
 export const SELECT_COMPUTED_LANGUAGE = 'SELECT_COMPUTED_LANGUAGE';
-export type ComputedLanguageAction = Readonly<
-    Action<typeof SELECT_COMPUTED_LANGUAGE>
-> & {
+export type ComputedLanguageAction = Readonly<Action<typeof SELECT_COMPUTED_LANGUAGE>> & {
     computedLanguage: AppState['computedLanguage'];
 };
 
-export function selectComputedLanguage(
-    computedLanguage: AppState['computedLanguage']
-): ComputedLanguageAction {
+export function selectComputedLanguage(computedLanguage: AppState['computedLanguage']): ComputedLanguageAction {
     return {
         type: SELECT_COMPUTED_LANGUAGE,
         computedLanguage: computedLanguage,
@@ -60,14 +56,10 @@ export function selectComputedLanguage(
 }
 
 export const CURRENT_CHILDREN = 'CURRENT_CHILDREN';
-export type CurrentChildrenAction = Readonly<
-    Action<typeof CURRENT_CHILDREN>
-> & {
+export type CurrentChildrenAction = Readonly<Action<typeof CURRENT_CHILDREN>> & {
     currentChildren: AppState['currentChildren'];
 };
-export function setCurrentChildren(
-    currentChildren: AppState['currentChildren']
-): CurrentChildrenAction {
+export function setCurrentChildren(currentChildren: AppState['currentChildren']): CurrentChildrenAction {
     return {
         type: CURRENT_CHILDREN,
         currentChildren: currentChildren,
@@ -75,15 +67,11 @@ export function setCurrentChildren(
 }
 
 export const SELECT_DIRECTORY = 'SELECT_DIRECTORY';
-export type SelectDirectoryAction = Readonly<
-    Action<typeof SELECT_DIRECTORY>
-> & {
+export type SelectDirectoryAction = Readonly<Action<typeof SELECT_DIRECTORY>> & {
     selectedDirectory: AppState['selectedDirectory'];
 };
 
-export function setSelectedDirectory(
-    selectedDirectory: AppState['selectedDirectory']
-): SelectDirectoryAction {
+export function setSelectedDirectory(selectedDirectory: AppState['selectedDirectory']): SelectDirectoryAction {
     return {
         type: SELECT_DIRECTORY,
         selectedDirectory: selectedDirectory,
@@ -91,12 +79,10 @@ export function setSelectedDirectory(
 }
 
 export const ACTIVE_DIRECTORY = 'ACTIVE_DIRECTORY';
-export type ActiveDirectoryAction = Readonly<
-    Action<typeof ACTIVE_DIRECTORY>
-> & { activeDirectory: AppState['activeDirectory'] };
-export function setActiveDirectory(
-    activeDirectory: AppState['activeDirectory']
-): ActiveDirectoryAction {
+export type ActiveDirectoryAction = Readonly<Action<typeof ACTIVE_DIRECTORY>> & {
+    activeDirectory: AppState['activeDirectory'];
+};
+export function setActiveDirectory(activeDirectory: AppState['activeDirectory']): ActiveDirectoryAction {
     return {
         type: ACTIVE_DIRECTORY,
         activeDirectory: activeDirectory,
@@ -104,12 +90,10 @@ export function setActiveDirectory(
 }
 
 export const SELECTION_FOR_COPY = 'SELECTION_FOR_COPY';
-export type SelectionForCopyAction = Readonly<
-    Action<typeof SELECTION_FOR_COPY>
-> & { selectionForCopy: AppState['selectionForCopy'] };
-export function setSelectionForCopy(
-    selectionForCopy: AppState['selectionForCopy']
-): SelectionForCopyAction {
+export type SelectionForCopyAction = Readonly<Action<typeof SELECTION_FOR_COPY>> & {
+    selectionForCopy: AppState['selectionForCopy'];
+};
+export function setSelectionForCopy(selectionForCopy: AppState['selectionForCopy']): SelectionForCopyAction {
     return {
         type: SELECTION_FOR_COPY,
         selectionForCopy: selectionForCopy,
@@ -121,9 +105,7 @@ export type CurrentPathAction = Readonly<Action<typeof CURRENT_PATH>> & {
     currentPath: AppState['currentPath'];
 };
 
-export function setCurrentPath(
-    path: AppState['currentPath']
-): CurrentPathAction {
+export function setCurrentPath(path: AppState['currentPath']): CurrentPathAction {
     return {
         type: CURRENT_PATH,
         currentPath: path,
@@ -131,13 +113,11 @@ export function setCurrentPath(
 }
 
 export const SET_APPS_AND_URLS = 'SET_APPS_AND_URLS';
-export type SetAppsAndUrlsAction = Readonly<
-    Action<typeof SET_APPS_AND_URLS>
-> & { appsAndUrls: AppState['appsAndUrls'] };
+export type SetAppsAndUrlsAction = Readonly<Action<typeof SET_APPS_AND_URLS>> & {
+    appsAndUrls: AppState['appsAndUrls'];
+};
 
-export function setAppsAndUrls(
-    appsAndUrls: AppState['appsAndUrls']
-): SetAppsAndUrlsAction {
+export function setAppsAndUrls(appsAndUrls: AppState['appsAndUrls']): SetAppsAndUrlsAction {
     return {
         type: SET_APPS_AND_URLS,
         appsAndUrls: appsAndUrls,
@@ -145,9 +125,9 @@ export function setAppsAndUrls(
 }
 
 export const ADD_UPLOADING_ELEMENT = 'ADD_UPLOADING_ELEMENT';
-export type AddUploadingElementAction = Readonly<
-    Action<typeof ADD_UPLOADING_ELEMENT>
-> & { uploadingElement: AppState['uploadingElements'][number] };
+export type AddUploadingElementAction = Readonly<Action<typeof ADD_UPLOADING_ELEMENT>> & {
+    uploadingElement: AppState['uploadingElements'][number];
+};
 
 export function addUploadingElement(
     uploadingElement: AppState['uploadingElements'][number]
@@ -156,9 +136,9 @@ export function addUploadingElement(
 }
 
 export const REMOVE_UPLOADING_ELEMENT = 'REMOVE_UPLOADING_ELEMENT';
-export type RemoveUploadingElementAction = Readonly<
-    Action<typeof REMOVE_UPLOADING_ELEMENT>
-> & { uploadingElement: AppState['uploadingElements'][number] };
+export type RemoveUploadingElementAction = Readonly<Action<typeof REMOVE_UPLOADING_ELEMENT>> & {
+    uploadingElement: AppState['uploadingElements'][number];
+};
 
 export function removeUploadingElement(
     uploadingElement: AppState['uploadingElements'][number]
@@ -170,13 +150,11 @@ export function removeUploadingElement(
 }
 
 export const DIRECTORY_UPDATED = 'DIRECTORY_UPDATED';
-export type DirectoryUpdatedAction = Readonly<
-    Action<typeof DIRECTORY_UPDATED>
-> & { eventData: AppState['directoryUpdated']['eventData'] };
+export type DirectoryUpdatedAction = Readonly<Action<typeof DIRECTORY_UPDATED>> & {
+    eventData: AppState['directoryUpdated']['eventData'];
+};
 
-export function directoryUpdated(
-    eventData: AppState['directoryUpdated']['eventData']
-): DirectoryUpdatedAction {
+export function directoryUpdated(eventData: AppState['directoryUpdated']['eventData']): DirectoryUpdatedAction {
     return { type: DIRECTORY_UPDATED, eventData };
 }
 
@@ -193,13 +171,11 @@ export function setTreeData(treeData: AppState['treeData']): TreeDataAction {
 }
 
 export const SEARCHED_ELEMENT = 'SEARCHED_ELEMENT';
-export type SearchedElementAction = Readonly<
-    Action<typeof SEARCHED_ELEMENT>
-> & { searchedElement: AppState['searchedElement'] };
+export type SearchedElementAction = Readonly<Action<typeof SEARCHED_ELEMENT>> & {
+    searchedElement: AppState['searchedElement'];
+};
 
-export function setSearchedElement(
-    searchedElement: AppState['searchedElement']
-): SearchedElementAction {
+export function setSearchedElement(searchedElement: AppState['searchedElement']): SearchedElementAction {
     return {
         type: SEARCHED_ELEMENT,
         searchedElement: searchedElement,

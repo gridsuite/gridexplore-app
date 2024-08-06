@@ -44,9 +44,7 @@ export type EquipmentType = {
     [Type in Equipment['type']]: Type;
 }[Equipment['type']];
 
-export const mapEquipmentTypeForPredefinedProperties = (
-    type: EquipmentType
-): string | undefined => {
+export const mapEquipmentTypeForPredefinedProperties = (type: EquipmentType): string | undefined => {
     switch (type) {
         case 'SUBSTATION':
             return 'substation';

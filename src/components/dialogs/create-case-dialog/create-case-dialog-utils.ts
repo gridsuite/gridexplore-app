@@ -16,8 +16,6 @@ export const getCreateCaseDialogFormValidationDefaultValues = () => ({
 
 export const createCaseDialogFormValidationSchema = yup.object().shape({
     [FieldConstants.CASE_NAME]: yup.string().trim().required('nameEmpty'),
-    [FieldConstants.DESCRIPTION]: yup
-        .string()
-        .max(500, 'descriptionLimitError'),
+    [FieldConstants.DESCRIPTION]: yup.string().max(500, 'descriptionLimitError'),
     [FieldConstants.CASE_FILE]: yup.mixed<File>().nullable().required(),
 });

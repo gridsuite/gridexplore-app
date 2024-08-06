@@ -21,9 +21,7 @@ export const DateCellRenderer = ({ value }: { value: string }) => {
             hour12: false,
         }).format(dateValue);
         const displayedDate =
-            intl.locale === 'en'
-                ? dateValue.toISOString().substring(0, 10)
-                : dateValue.toLocaleDateString(intl.locale);
+            intl.locale === 'en' ? dateValue.toISOString().substring(0, 10) : dateValue.toLocaleDateString(intl.locale);
         const cellText = todayStart === cellMidnight ? time : displayedDate;
         const fullDate = new Intl.DateTimeFormat(intl.locale, {
             dateStyle: 'long',

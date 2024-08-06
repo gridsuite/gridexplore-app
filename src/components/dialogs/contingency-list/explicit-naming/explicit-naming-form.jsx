@@ -12,12 +12,7 @@ import { makeDefaultRowData } from '../contingency-list-utils';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { ContingencyListType } from 'utils/elementType';
 import { v4 as uuid4 } from 'uuid';
-import {
-    FieldConstants,
-    gridItem,
-    CustomAgGridTable,
-    ROW_DRAGGING_SELECTION_COLUMN_DEF,
-} from '@gridsuite/commons-ui';
+import { FieldConstants, gridItem, CustomAgGridTable, ROW_DRAGGING_SELECTION_COLUMN_DEF } from '@gridsuite/commons-ui';
 
 export const getExplicitNamingSchema = (id) => {
     return {
@@ -26,17 +21,11 @@ export const getExplicitNamingSchema = (id) => {
             .of(
                 yup.object().shape({
                     [FieldConstants.CONTINGENCY_NAME]: yup.string().nullable(),
-                    [FieldConstants.EQUIPMENT_IDS]: yup
-                        .array()
-                        .of(yup.string().nullable()),
+                    [FieldConstants.EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
                 })
             )
             // we remove empty lines
-            .compact(
-                (row) =>
-                    !row[FieldConstants.CONTINGENCY_NAME] &&
-                    !row[FieldConstants.EQUIPMENT_IDS]?.length
-            )
+            .compact((row) => !row[FieldConstants.CONTINGENCY_NAME] && !row[FieldConstants.EQUIPMENT_IDS]?.length)
             .when([FieldConstants.CONTINGENCY_LIST_TYPE], {
                 is: ContingencyListType.EXPLICIT_NAMING.id,
                 then: (schema) => getExplicitNamingConditionSchema(schema),
@@ -50,16 +39,10 @@ export const getExplicitNamingEditSchema = (id) => {
         .of(
             yup.object().shape({
                 [FieldConstants.CONTINGENCY_NAME]: yup.string().nullable(),
-                [FieldConstants.EQUIPMENT_IDS]: yup
-                    .array()
-                    .of(yup.string().nullable()),
+                [FieldConstants.EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
             })
         ) // we remove empty lines
-        .compact(
-            (row) =>
-                !row[FieldConstants.CONTINGENCY_NAME] &&
-                !row[FieldConstants.EQUIPMENT_IDS]?.length
-        );
+        .compact((row) => !row[FieldConstants.CONTINGENCY_NAME] && !row[FieldConstants.EQUIPMENT_IDS]?.length);
 
     return {
         [id]: getExplicitNamingConditionSchema(schema),
@@ -69,24 +52,12 @@ export const getExplicitNamingEditSchema = (id) => {
 const getExplicitNamingConditionSchema = (schema) => {
     return schema
         .min(1, 'contingencyTableContainAtLeastOneRowError')
-        .test(
-            'rowWithoutName',
-            'contingencyTablePartiallyDefinedError',
-            (array) => {
-                return !array.some(
-                    (row) => !row[FieldConstants.CONTINGENCY_NAME]?.trim()
-                );
-            }
-        )
-        .test(
-            'rowWithoutEquipments',
-            'contingencyTablePartiallyDefinedError',
-            (array) => {
-                return !array.some(
-                    (row) => !row[FieldConstants.EQUIPMENT_IDS]?.length
-                );
-            }
-        );
+        .test('rowWithoutName', 'contingencyTablePartiallyDefinedError', (array) => {
+            return !array.some((row) => !row[FieldConstants.CONTINGENCY_NAME]?.trim());
+        })
+        .test('rowWithoutEquipments', 'contingencyTablePartiallyDefinedError', (array) => {
+            return !array.some((row) => !row[FieldConstants.EQUIPMENT_IDS]?.length);
+        });
 };
 
 const suppressKeyboardEvent = (params) => {
@@ -141,10 +112,7 @@ const ExplicitNamingForm = () => {
     }, []);
 
     const csvFileHeaders = useMemo(
-        () => [
-            intl.formatMessage({ id: 'elementName' }),
-            intl.formatMessage({ id: 'equipments' }),
-        ],
+        () => [intl.formatMessage({ id: 'elementName' }), intl.formatMessage({ id: 'equipments' })],
         [intl]
     );
 

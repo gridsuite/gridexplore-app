@@ -18,9 +18,12 @@ interface AdvancedParameterButtonProps {
     disabled?: boolean;
 }
 
-const AdvancedParameterButton: React.FunctionComponent<
-    AdvancedParameterButtonProps
-> = ({ showOpenIcon, label, onClick, disabled = false }) => {
+const AdvancedParameterButton: React.FunctionComponent<AdvancedParameterButtonProps> = ({
+    showOpenIcon,
+    label,
+    onClick,
+    disabled = false,
+}) => {
     return (
         <Grid item xs={12} sx={{ marginTop: '30px', marginBottom: '10px' }}>
             <Button

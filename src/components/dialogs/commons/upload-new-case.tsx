@@ -11,10 +11,7 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
-import {
-    createCaseWithoutDirectoryElementCreation,
-    deleteCase,
-} from '../../../utils/rest-api';
+import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
 import { FieldConstants } from '@gridsuite/commons-ui';
 
 interface UploadNewCaseProps {
@@ -73,14 +70,10 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                     setCaseFileLoading(true);
                     createCaseWithoutDirectoryElementCreation(currentFile)
                         .then((newCaseUuid) => {
-                            const prevCaseUuid = getValues(
-                                FieldConstants.CASE_UUID
-                            );
+                            const prevCaseUuid = getValues(FieldConstants.CASE_UUID);
 
                             if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
-                                deleteCase(prevCaseUuid).catch(
-                                    handleApiCallError
-                                );
+                                deleteCase(prevCaseUuid).catch(handleApiCallError);
                             }
 
                             onCaseUuidChange(newCaseUuid);
@@ -97,17 +90,10 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                     const caseName = getValues(FieldConstants.CASE_NAME);
                     if (caseFileName && !caseName) {
                         clearErrors(FieldConstants.CASE_NAME);
-                        setValue(
-                            FieldConstants.CASE_NAME,
-                            caseFileName.substring(
-                                0,
-                                caseFileName.indexOf('.')
-                            ),
-                            {
-                                shouldDirty: true,
-                                shouldValidate: true,
-                            }
-                        );
+                        setValue(FieldConstants.CASE_NAME, caseFileName.substring(0, caseFileName.indexOf('.')), {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                        });
                     }
                 }
             } else {
@@ -133,13 +119,7 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
             <Grid item>
                 <Button variant="contained" color="primary" component="label">
                     <FormattedMessage id="uploadCase" />
-                    <Input
-                        ref={ref}
-                        type="file"
-                        name="file"
-                        onChange={onChange}
-                        sx={{ display: 'none' }}
-                    />
+                    <Input ref={ref} type="file" name="file" onChange={onChange} sx={{ display: 'none' }} />
                 </Button>
             </Grid>
             <Grid item sx={{ fontWeight: 'bold' }}>

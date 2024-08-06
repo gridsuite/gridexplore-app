@@ -25,11 +25,7 @@ const ImportParametersSection: FunctionComponent = () => {
         name: FieldConstants.FORMATTED_CASE_PARAMETERS,
     });
 
-    const handleParamsChange = (
-        paramName: string,
-        value: unknown,
-        isEdit: boolean
-    ): void => {
+    const handleParamsChange = (paramName: string, value: unknown, isEdit: boolean): void => {
         if (!isEdit) {
             onChange({
                 ...currentParameters,
@@ -62,9 +58,7 @@ const ImportParametersSection: FunctionComponent = () => {
                         initValues={currentParameters}
                         onChange={handleParamsChange}
                         variant="standard"
-                        selectionWithDialog={(param: any) =>
-                            param.possibleValues?.length > 10
-                        }
+                        selectionWithDialog={(param: any) => param.possibleValues?.length > 10}
                     />
                 )}
             </Box>

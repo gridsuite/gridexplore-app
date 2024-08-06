@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Search } from '@mui/icons-material';
-import {
-    AutocompleteRenderInputParams,
-    TextField,
-    TextFieldProps,
-} from '@mui/material';
+import { AutocompleteRenderInputParams, TextField, TextFieldProps } from '@mui/material';
 import { RefObject } from 'react';
 import { useIntl } from 'react-intl';
 
