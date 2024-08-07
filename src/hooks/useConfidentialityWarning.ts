@@ -9,8 +9,7 @@ import { useEffect, useState } from 'react';
 import { fetchEnv } from '@gridsuite/commons-ui';
 
 export const useConfidentialityWarning = () => {
-    const [confidentialityWarning, setConfidentialityWarning] =
-        useState<string>();
+    const [confidentialityWarning, setConfidentialityWarning] = useState<string>();
 
     useEffect(() => {
         fetchEnv().then((res) => {
