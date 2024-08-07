@@ -6,7 +6,6 @@
  */
 
 import { Grid } from '@mui/material';
-import React from 'react';
 import {
     UniqueNameInput,
     ElementType,
@@ -17,10 +16,11 @@ import {
 } from '@gridsuite/commons-ui';
 import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 
 const CriteriaBasedEditionForm = () => {
-    const emptyValues = getCriteriaBasedFormData();
-    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const emptyValues = getCriteriaBasedFormData({}, {});
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
         <Grid container spacing={2} marginTop={'auto'}>
             <Grid item xs={12}>
