@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
@@ -40,11 +40,12 @@ import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { setSelectedDirectory } from 'redux/actions';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } = props;
     const userId = useSelector((state) => state.user.profile.sub);
-
+    const dispatch = useDispatch();
     const intl = useIntl();
 
     const [hideMenu, setHideMenu] = useState(false);
@@ -70,7 +71,15 @@ const DirectoryTreeContextualMenu = (props) => {
 
     const [renameCB, renameState] = useDeferredFetch(
         renameElement,
-        () => handleCloseDialog(null, null),
+        (elementUuid, renamedElement) => {
+            dispatch(
+                setSelectedDirectory({
+                    ...directory,
+                    elementName: renamedElement[1],
+                })
+            );
+            handleCloseDialog(null, null);
+        },
         (HTTPStatusCode) => {
             if (HTTPStatusCode === 403) {
                 return intl.formatMessage({ id: 'renameDirectoryError' });
