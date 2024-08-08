@@ -8,12 +8,11 @@
 import { Paper, Theme, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-type SearchBarPaperDisplayedElementWarningProps =
-    React.HTMLAttributes<HTMLElement> & {
-        elementFoundLength: number;
-        elementFoundTotal: number;
-        isLoading: boolean;
-    };
+type SearchBarPaperDisplayedElementWarningProps = React.HTMLAttributes<HTMLElement> & {
+    elementFoundLength: number;
+    elementFoundTotal: number;
+    isLoading: boolean;
+};
 
 const styles = {
     displayedElementWarning: (theme: Theme) => ({
@@ -24,20 +23,11 @@ const styles = {
     }),
 };
 
-export const SearchBarPaperDisplayedElementWarning = (
-    props: SearchBarPaperDisplayedElementWarningProps
-) => {
-    const {
-        elementFoundLength,
-        elementFoundTotal,
-        isLoading,
-        children,
-        ...other
-    } = props;
+export const SearchBarPaperDisplayedElementWarning = (props: SearchBarPaperDisplayedElementWarningProps) => {
+    const { elementFoundLength, elementFoundTotal, isLoading, children, ...other } = props;
     const intl = useIntl();
 
-    const shouldDisplayWarning =
-        !isLoading && elementFoundLength < elementFoundTotal;
+    const shouldDisplayWarning = !isLoading && elementFoundLength < elementFoundTotal;
 
     return (
         <Paper {...other}>

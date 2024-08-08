@@ -6,42 +6,43 @@
  */
 
 import App from './app';
-import React from 'react';
+import { useMemo } from 'react';
+import { createTheme, responsiveFontSizes, StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
+import { enUS as MuiCoreEnUS, frFR as MuiCoreFrFR } from '@mui/material/locale';
 import {
-    createTheme,
-    ThemeProvider,
-    StyledEngineProvider,
-} from '@mui/material/styles';
-import {
+    card_error_boundary_en,
+    card_error_boundary_fr,
     CardErrorBoundary,
+    common_button_en,
+    common_button_fr,
+    directory_items_input_en,
+    directory_items_input_fr,
+    element_search_en,
+    element_search_fr,
+    filter_en,
+    filter_expert_en,
+    filter_expert_fr,
+    filter_fr,
+    flat_parameters_en,
+    flat_parameters_fr,
+    GsLangUser,
+    GsTheme,
+    LANG_ENGLISH,
+    LANG_FRENCH,
     LIGHT_THEME,
     login_en,
     login_fr,
-    SnackbarProvider,
-    top_bar_en,
-    top_bar_fr,
-    table_fr,
-    table_en,
-    treeview_finder_fr,
-    treeview_finder_en,
-    card_error_boundary_fr,
-    card_error_boundary_en,
-    flat_parameters_en,
-    flat_parameters_fr,
     multiple_selection_dialog_en,
     multiple_selection_dialog_fr,
-    common_button_en,
-    common_button_fr,
-    directory_items_input_fr,
-    directory_items_input_en,
-    element_search_fr,
-    element_search_en,
-    filter_fr,
-    filter_en,
-    filter_expert_fr,
-    filter_expert_en,
+    SnackbarProvider,
+    table_en,
+    table_fr,
+    top_bar_en,
+    top_bar_fr,
+    treeview_finder_en,
+    treeview_finder_fr,
 } from '@gridsuite/commons-ui';
-import { IntlProvider } from 'react-intl';
+import { IntlConfig, IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
@@ -57,8 +58,10 @@ import import_parameters_fr from '../translations/external/import-parameters-fr'
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
+import { AppState } from '../redux/reducer';
+import { Theme } from '@mui/material';
 
-let lightTheme = createTheme({
+const lightTheme = createTheme({
     palette: {
         mode: 'light',
     },
@@ -100,22 +103,7 @@ let lightTheme = createTheme({
     },
 });
 
-lightTheme = createTheme(lightTheme, {
-    palette: {
-        cancelButtonColor: {
-            main: lightTheme.palette.text.secondary,
-        },
-    },
-    components: {
-        CancelButton: {
-            defaultProps: {
-                color: 'cancelButtonColor',
-            },
-        },
-    },
-});
-
-let darkTheme = createTheme({
+const darkTheme = createTheme({
     palette: {
         mode: 'dark',
     },
@@ -157,30 +145,38 @@ let darkTheme = createTheme({
     },
 });
 
-darkTheme = createTheme(darkTheme, {
-    palette: {
-        cancelButtonColor: {
-            main: darkTheme.palette.text.secondary,
-        },
-    },
-    components: {
-        CancelButton: {
-            defaultProps: {
-                color: 'cancelButtonColor',
+// no other way to copy style: https://mui.com/material-ui/customization/theming/#api
+function createThemeWithComponents(baseTheme: Theme, ...args: object[]) {
+    return createTheme(
+        baseTheme,
+        {
+            palette: {
+                cancelButtonColor: {
+                    main: baseTheme.palette.text.secondary,
+                },
+            },
+            components: {
+                CancelButton: {
+                    defaultProps: {
+                        color: 'cancelButtonColor',
+                    },
+                },
             },
         },
-    },
-});
+        ...args
+    );
+}
 
-const getMuiTheme = (theme) => {
-    if (theme === LIGHT_THEME) {
-        return lightTheme;
-    } else {
-        return darkTheme;
-    }
-};
+function getMuiTheme(theme: GsTheme, locale: GsLangUser) {
+    return responsiveFontSizes(
+        createThemeWithComponents(
+            theme === LIGHT_THEME ? lightTheme : darkTheme,
+            locale === LANG_FRENCH ? MuiCoreFrFR : MuiCoreEnUS // MUI core translations
+        )
+    );
+}
 
-const messages = {
+const messages: Record<GsLangUser, IntlConfig['messages']> = {
     en: {
         ...messages_en,
         ...network_modification_locale_en,
@@ -198,7 +194,7 @@ const messages = {
         ...element_search_en,
         ...filter_en,
         ...filter_expert_en,
-        ...messages_plugins.en, // keep it at the end to allow translation overwritting
+        ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
         ...messages_fr,
@@ -214,29 +210,26 @@ const messages = {
         ...common_button_fr,
         ...backend_locale_fr,
         ...element_search_fr,
-        ...aggrid_locale_fr, // Only the french locale is needed
+        ...aggrid_locale_fr, // Only the French locale is needed
         ...directory_items_input_fr,
         ...filter_fr,
         ...filter_expert_fr,
-        ...messages_plugins.fr, // keep it at the end to allow translation overwritting
+        ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
 
-const basename = new URL(document.querySelector('base').href).pathname;
+const basename = new URL(document.querySelector('base')!.href).pathname;
 
 const AppWrapperWithRedux = () => {
-    const computedLanguage = useSelector((state) => state.computedLanguage);
-
-    const theme = useSelector((state) => state[PARAM_THEME]);
+    const computedLanguage = useSelector((state: AppState) => state.computedLanguage);
+    const theme = useSelector((state: AppState) => state[PARAM_THEME]);
+    const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
 
     return (
-        <IntlProvider
-            locale={computedLanguage}
-            messages={messages[computedLanguage]}
-        >
+        <IntlProvider locale={computedLanguage} defaultLocale={LANG_ENGLISH} messages={messages[computedLanguage]}>
             <BrowserRouter basename={basename}>
                 <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={getMuiTheme(theme)}>
+                    <ThemeProvider theme={themeCompiled}>
                         <SnackbarProvider hideIconVariant={false}>
                             <CssBaseline />
                             <CardErrorBoundary>

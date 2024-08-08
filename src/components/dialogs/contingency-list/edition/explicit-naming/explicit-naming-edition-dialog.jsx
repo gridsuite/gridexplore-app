@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    useSnackMessage,
-    CustomMuiDialog,
-    FieldConstants,
-} from '@gridsuite/commons-ui';
+import { useSnackMessage, CustomMuiDialog, FieldConstants } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
@@ -18,10 +14,7 @@ import {
     getContingencyListEmptyFormData,
     getExplicitNamingFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
-import {
-    getContingencyList,
-    saveExplicitNamingContingencyList,
-} from 'utils/rest-api';
+import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
 import yup from 'components/utils/yup-config';
 import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-form';
 import ExplicitNamingEditionForm from './explicit-naming-edition-form';
@@ -71,10 +64,7 @@ const ExplicitNamingEditionDialog = ({
             getContingencyList(contingencyListType, contingencyListId)
                 .then((response) => {
                     if (response) {
-                        const formData =
-                            getExplicitNamingFormDataFromFetchedElement(
-                                response
-                            );
+                        const formData = getExplicitNamingFormDataFromFetchedElement(response);
                         reset({ ...formData, [FieldConstants.NAME]: name });
                     }
                 })
@@ -94,14 +84,8 @@ const ExplicitNamingEditionDialog = ({
     };
 
     const editContingencyList = (contingencyListId, contingencyList) => {
-        const equipments = prepareContingencyListForBackend(
-            contingencyListId,
-            contingencyList
-        );
-        return saveExplicitNamingContingencyList(
-            equipments,
-            contingencyList[FieldConstants.NAME]
-        );
+        const equipments = prepareContingencyListForBackend(contingencyListId, contingencyList);
+        return saveExplicitNamingContingencyList(equipments, contingencyList[FieldConstants.NAME]);
     };
 
     const onSubmit = (contingencyList) => {

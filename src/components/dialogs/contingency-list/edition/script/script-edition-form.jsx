@@ -8,11 +8,7 @@
 import { Grid } from '@mui/material';
 import React from 'react';
 import ScriptInputForm from '../../script/script-input-form';
-import {
-    UniqueNameInput,
-    ElementType,
-    FieldConstants,
-} from '@gridsuite/commons-ui';
+import { UniqueNameInput, ElementType, FieldConstants } from '@gridsuite/commons-ui';
 import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 

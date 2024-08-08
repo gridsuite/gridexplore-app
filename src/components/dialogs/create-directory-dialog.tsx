@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -11,12 +11,20 @@ import { FormattedMessage } from 'react-intl';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import PropTypes from 'prop-types';
-import React from 'react';
 import Alert from '@mui/material/Alert';
 import { ElementType } from '@gridsuite/commons-ui';
 import { useNameField } from './field-hook';
 import { CancelButton } from '@gridsuite/commons-ui';
+import { FunctionComponent } from 'react';
+
+interface CreateDirectoryDialogProps {
+    open: boolean;
+    onClose: () => void;
+    onClick: (newName: string) => void;
+    title: string;
+    parentDirectory: string;
+    error: string;
+}
 
 /**
  * Dialog to create a directory
@@ -26,7 +34,7 @@ import { CancelButton } from '@gridsuite/commons-ui';
  * @param {String} title Title of the dialog
  * @param {String} message Message of the dialog
  */
-export const CreateDirectoryDialog = ({
+export const CreateDirectoryDialog: FunctionComponent<CreateDirectoryDialogProps> = ({
     open,
     onClose,
     onClick,
@@ -58,12 +66,7 @@ export const CreateDirectoryDialog = ({
     };
 
     return (
-        <Dialog
-            fullWidth={true}
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-title-delete"
-        >
+        <Dialog fullWidth={true} open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 {nameField}
@@ -73,24 +76,11 @@ export const CreateDirectoryDialog = ({
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button
-                    disabled={!canCreate()}
-                    onClick={handleClick}
-                    variant="outlined"
-                >
+                <Button disabled={!canCreate()} onClick={handleClick} variant="outlined">
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
         </Dialog>
     );
 };
-
-CreateDirectoryDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onClick: PropTypes.func.isRequired,
-    title: PropTypes.string.isRequired,
-    error: PropTypes.string.isRequired,
-};
-
 export default CreateDirectoryDialog;

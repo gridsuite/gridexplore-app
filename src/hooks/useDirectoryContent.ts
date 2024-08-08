@@ -7,25 +7,13 @@
 
 import { useSelector } from 'react-redux';
 import React, { useRef, useEffect, useCallback, useState } from 'react';
-import {
-    ElementAttributes,
-    fetchElementsInfos,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { ReduxState } from '../redux/reducer.type';
+import { AppState } from '../redux/reducer';
 
-export const useDirectoryContent = (
-    setIsMissingDataAfterDirChange: React.Dispatch<
-        React.SetStateAction<boolean>
-    >
-) => {
-    const currentChildren = useSelector(
-        (state: ReduxState) => state.currentChildren
-    );
-    const [childrenMetadata, setChildrenMetadata] = useState<
-        Record<UUID, ElementAttributes>
-    >({});
+export const useDirectoryContent = (setIsMissingDataAfterDirChange: React.Dispatch<React.SetStateAction<boolean>>) => {
+    const currentChildren = useSelector((state: AppState) => state.currentChildren);
+    const [childrenMetadata, setChildrenMetadata] = useState<Record<UUID, ElementAttributes>>({});
     const { snackError } = useSnackMessage();
     const previousData = useRef<ElementAttributes[]>();
     previousData.current = currentChildren;
@@ -58,10 +46,7 @@ export const useDirectoryContent = (
                     });
                 })
                 .catch((error) => {
-                    if (
-                        previousData.current &&
-                        Object.keys(previousData.current).length === 0
-                    ) {
+                    if (previousData.current && Object.keys(previousData.current).length === 0) {
                         handleError(error.message);
                     }
                 })

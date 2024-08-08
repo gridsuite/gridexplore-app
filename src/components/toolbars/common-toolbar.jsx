@@ -29,27 +29,12 @@ const styles = {
 const CommonToolbar = (props) => {
     const { items, ...others } = props;
 
-    function makeToolbarButton(
-        key,
-        tooltipTextId,
-        callback,
-        disabledItem,
-        icon = <EditIcon fontSize="small" />
-    ) {
+    function makeToolbarButton(key, tooltipTextId, callback, disabledItem, icon = <EditIcon fontSize="small" />) {
         return (
-            <Tooltip
-                title={<FormattedMessage id={tooltipTextId} />}
-                key={key}
-                placement="right"
-            >
+            <Tooltip title={<FormattedMessage id={tooltipTextId} />} key={key} placement="right">
                 {/* to make tooltips works with disabled buttons, add a simple wrapper span */}
                 <span>
-                    <IconButton
-                        sx={styles.icon}
-                        onClick={() => callback()}
-                        size="large"
-                        disabled={disabledItem}
-                    >
+                    <IconButton sx={styles.icon} onClick={() => callback()} size="large" disabled={disabledItem}>
                         {icon}
                     </IconButton>
                 </span>
@@ -60,13 +45,7 @@ const CommonToolbar = (props) => {
     return (
         <Toolbar {...others}>
             {items.map((item, index) => {
-                return makeToolbarButton(
-                    index,
-                    item.tooltipTextId,
-                    item.callback,
-                    item.disabled,
-                    item.icon
-                );
+                return makeToolbarButton(index, item.tooltipTextId, item.callback, item.disabled, item.icon);
             })}
         </Toolbar>
     );

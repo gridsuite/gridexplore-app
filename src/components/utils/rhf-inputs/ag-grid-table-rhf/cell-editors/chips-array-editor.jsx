@@ -8,10 +8,7 @@
 import { forwardRef } from 'react';
 import TableCellWrapper from './table-cell-wrapper';
 import { useFormContext } from 'react-hook-form';
-import {
-    FieldConstants,
-    MultipleAutocompleteInput,
-} from '@gridsuite/commons-ui';
+import { FieldConstants, MultipleAutocompleteInput } from '@gridsuite/commons-ui';
 
 const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
     const { name, node, colDef } = props;
@@ -19,9 +16,7 @@ const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
 
     const getIndexInFormData = (nodeData) => {
         return getValues(name).findIndex(
-            (row) =>
-                row[FieldConstants.AG_GRID_ROW_UUID] ===
-                nodeData[FieldConstants.AG_GRID_ROW_UUID]
+            (row) => row[FieldConstants.AG_GRID_ROW_UUID] === nodeData[FieldConstants.AG_GRID_ROW_UUID]
         );
     };
 

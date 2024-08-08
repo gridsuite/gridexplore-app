@@ -9,28 +9,19 @@ import { searchElementsInfos } from '../../utils/rest-api';
 import {
     ElementSearchInput,
     ElementType,
-    useElementSearch,
-    useSnackMessage,
     fetchDirectoryContent,
     Paginated,
+    useElementSearch,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    setSearchedElement,
-    setSelectedDirectory,
-    setTreeData,
-} from '../../redux/actions';
+import { setSearchedElement, setSelectedDirectory, setTreeData } from '../../redux/actions';
 import { updatedTree } from '../tree-views-container';
 import { SearchItem } from './search-item';
-import {
-    ElementAttributesES,
-    IDirectory,
-    ITreeData,
-    ReduxState,
-} from '../../redux/reducer.type';
-import { RenderElementProps } from '@gridsuite/commons-ui/dist/components/ElementSearchDialog/element-search-input';
+import { AppState, ElementAttributesES, IDirectory, ITreeData } from '../../redux/reducer';
 import { TextFieldProps } from '@mui/material';
 import { SearchBarRenderInput } from './search-bar-render-input';
+import { AppDispatch } from '../../redux/store';
 import { SearchBarPaperDisplayedElementWarning } from './search-bar-displayed-element-warning';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
@@ -39,48 +30,31 @@ interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
 }
 
+//TODO remove when ElementSearchInputProps is exported in commons-ui
+type ElementSearchInputProps<T> = Parameters<typeof ElementSearchInput<T>>[0];
+
 export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
-    const treeData = useSelector((state: ReduxState) => state.treeData);
+    const treeData = useSelector((state: AppState) => state.treeData);
     const treeDataRef = useRef<ITreeData>();
-    const selectedDirectory = useSelector(
-        (state: ReduxState) => state.selectedDirectory
-    );
+    const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     treeDataRef.current = treeData;
 
-    const fetchElementsPageable: (
-        newSearchTerm: string
-    ) => Promise<Paginated<ElementAttributesES>> = useCallback(
-        (newSearchTerm) =>
-            searchElementsInfos(newSearchTerm, selectedDirectory?.elementUuid),
+    const fetchElementsPageable: (newSearchTerm: string) => Promise<Paginated<ElementAttributesES>> = useCallback(
+        (newSearchTerm) => searchElementsInfos(newSearchTerm, selectedDirectory?.elementUuid),
         [selectedDirectory?.elementUuid]
     );
-    const {
-        elementsFound,
-        isLoading,
-        searchTerm,
-        updateSearchTerm,
-        totalElements,
-    } = useElementSearch({
+    const { elementsFound, isLoading, searchTerm, updateSearchTerm, totalElements } = useElementSearch({
         fetchElements: fetchElementsPageable,
     });
 
-    const renderOptionItem = useCallback(
-        (props: RenderElementProps<ElementAttributesES>) => {
+    const renderOptionItem = useCallback<ElementSearchInputProps<ElementAttributesES>['renderElement']>(
+        (props) => {
             const { element, inputValue } = props;
 
-            const matchingElement = elementsFound.find(
-                (e) => e.id === element.id
-            )!;
-            return (
-                <SearchItem
-                    {...props}
-                    key={element.id}
-                    matchingElement={matchingElement}
-                    inputValue={inputValue}
-                />
-            );
+            const matchingElement = elementsFound.find((e) => e.id === element.id)!;
+            return <SearchItem {...props} key={element.id} matchingElement={matchingElement} inputValue={inputValue} />;
         },
         [elementsFound]
     );
@@ -100,6 +74,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 setTreeData({
                     rootDirectories: newRootDirectories,
                     mapData: newMapData,
+                    initialized: true,
                 })
             );
         },
@@ -109,8 +84,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const handleDispatchDirectory = useCallback(
         (elementUuidPath: string | undefined) => {
             if (treeDataRef.current && elementUuidPath !== undefined) {
-                const selectedDirectory =
-                    treeDataRef.current.mapData[elementUuidPath];
+                const selectedDirectory = treeDataRef.current.mapData[elementUuidPath];
 
                 dispatch(setSelectedDirectory(selectedDirectory));
             }
@@ -118,22 +92,15 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
         [dispatch]
     );
 
-    const handleMatchingElement = useCallback(
-        async (data: ElementAttributesES | string | null) => {
-            const matchingElement = elementsFound.find(
-                (element) => element === data
-            );
+    const handleMatchingElement = useCallback<ElementSearchInputProps<ElementAttributesES>['onSelectionChange']>(
+        async (data) => {
+            const matchingElement = elementsFound.find((element) => element === data);
             if (matchingElement !== undefined) {
                 const elementUuidPath = matchingElement?.pathUuid;
                 try {
                     for (const uuid of elementUuidPath) {
                         const res = await fetchDirectoryContent(uuid);
-                        updateMapData(
-                            uuid,
-                            res.filter(
-                                (res) => res.type === ElementType.DIRECTORY
-                            ) as IDirectory[]
-                        );
+                        updateMapData(uuid, res.filter((res) => res.type === ElementType.DIRECTORY) as IDirectory[]);
                     }
                 } catch (error: any) {
                     snackError({
@@ -149,14 +116,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 }
             }
         },
-        [
-            selectedDirectory?.elementUuid,
-            handleDispatchDirectory,
-            updateMapData,
-            snackError,
-            dispatch,
-            elementsFound,
-        ]
+        [selectedDirectory?.elementUuid, handleDispatchDirectory, updateMapData, snackError, dispatch, elementsFound]
     );
 
     return (
@@ -165,17 +125,13 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
             size="small"
             elementsFound={elementsFound}
             getOptionLabel={(element) => element.name}
-            isOptionEqualToValue={(element1, element2) =>
-                element1.id === element2.id
-            }
+            isOptionEqualToValue={(element1, element2) => element1.id === element2.id}
             onSearchTermChange={updateSearchTerm}
             onSelectionChange={handleMatchingElement}
             renderElement={renderOptionItem}
             searchTerm={searchTerm}
             loading={isLoading}
-            renderInput={(_value, params) => (
-                <SearchBarRenderInput inputRef={inputRef} {...params} />
-            )}
+            renderInput={(_value, params) => <SearchBarRenderInput inputRef={inputRef} {...params} />}
             PaperComponent={(props) => (
                 <SearchBarPaperDisplayedElementWarning
                     elementFoundLength={elementsFound.length}

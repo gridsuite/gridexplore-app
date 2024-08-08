@@ -8,11 +8,7 @@
 import { Grid } from '@mui/material';
 import React from 'react';
 import ExplicitNamingForm from '../../explicit-naming/explicit-naming-form';
-import {
-    ElementType,
-    UniqueNameInput,
-    FieldConstants,
-} from '@gridsuite/commons-ui';
+import { ElementType, UniqueNameInput, FieldConstants } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { elementExists } from 'utils/rest-api';
 

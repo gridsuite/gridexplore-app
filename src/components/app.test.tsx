@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-// app.test.js
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
@@ -15,15 +14,11 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import App from './app';
 import { store } from '../redux/store';
-import {
-    createTheme,
-    ThemeProvider,
-    StyledEngineProvider,
-} from '@mui/material/styles';
+import { createTheme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { SnackbarProvider } from '@gridsuite/commons-ui';
 import CssBaseline from '@mui/material/CssBaseline';
 
-let container = null;
+let container: HTMLDivElement | null = null;
 beforeEach(() => {
     // setup a DOM element as a render target
     container = document.createElement('div');
@@ -32,12 +27,12 @@ beforeEach(() => {
 
 afterEach(() => {
     // cleanup on exiting
-    container.remove();
+    container?.remove();
     container = null;
 });
 
 it('renders', async () => {
-    const root = createRoot(container);
+    const root = createRoot(container!);
     await act(async () =>
         root.render(
             <IntlProvider locale="en">
@@ -57,7 +52,7 @@ it('renders', async () => {
         )
     );
 
-    expect(container.textContent).toContain('GridExplore');
+    expect(container?.textContent).toContain('GridExplore');
     act(() => {
         root.unmount();
     });
