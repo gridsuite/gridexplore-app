@@ -26,8 +26,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getExportFormats } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import { CancelButton, FlatParameters } from '@gridsuite/commons-ui';
-import { ElementAttributes } from '@gridsuite/commons-ui/dist/utils/types';
+import {
+    CancelButton,
+    ElementAttributes,
+    FlatParameters,
+} from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
 
 type ExportFormats =
     | {
@@ -51,23 +55,45 @@ interface ExportCaseDialogProps {
     selectedElements: ElementAttributes[];
     onClose: () => void;
     onExport: (
+        selectedElements: ElementAttributes[],
         format: string,
         parameters: FormatParameters,
-        fileName: string
+        caseUuidFileNameMap?: Map<UUID, string>
     ) => Promise<void>;
 }
 
-const ExportCaseDialog = (props: ExportCaseDialogProps) => {
+const ExportCaseDialog = ({
+    selectedElements,
+    onClose,
+    onExport,
+}: ExportCaseDialogProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [formats, setFormats] = useState<ExportFormats>([]);
     const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
-    const oneFileMode: boolean = useMemo(
-        () => props.selectedElements.length === 1,
-        [props]
+
+    // a Map between case uuid and file name to export, by default all cases take file name as elementName
+    const [caseUuidFileNameMap] = useState<Map<UUID, string>>(() => {
+        const fileNameMap = new Map<UUID, string>();
+        selectedElements.forEach((elem) => {
+            fileNameMap.set(elem.elementUuid, elem.elementName);
+        });
+        return fileNameMap;
+    });
+
+    // support file name editing if exporting only one file
+    const oneFileMode = useMemo<boolean>(
+        () => selectedElements.length === 1,
+        [selectedElements]
     );
     const [fileName, setFileName] = useState<string>(
-        oneFileMode ? props.selectedElements[0].elementName : ''
+        () => selectedElements[0].elementName
     );
+
+    // use to update file name of fist case in file name map
+    useEffect(() => {
+        caseUuidFileNameMap.set(selectedElements[0].elementUuid, fileName);
+    }, [fileName, caseUuidFileNameMap, selectedElements]);
+
     const [expanded, setExpanded] = useState<boolean>(false);
     const [currentParameters, setCurrentParameters] =
         useState<FormatParameters>({});
@@ -107,16 +133,28 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
 
     const handleExport = useCallback(async () => {
         setLoading(true);
-        await props.onExport(selectedFormat!, currentParameters, fileName);
-        props.onClose();
-    }, [currentParameters, props, selectedFormat, fileName]);
+        await onExport(
+            selectedElements,
+            selectedFormat!,
+            currentParameters,
+            caseUuidFileNameMap
+        );
+        onClose();
+    }, [
+        onExport,
+        onClose,
+        selectedElements,
+        selectedFormat,
+        currentParameters,
+        caseUuidFileNameMap,
+    ]);
 
     return (
         <Dialog
             open
             fullWidth
             maxWidth="sm"
-            onClose={props.onClose}
+            onClose={onClose}
             aria-labelledby="dialog-title-export-case"
         >
             <DialogTitle>
@@ -131,10 +169,8 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                         variant="filled"
                         id="fileName"
                         value={fileName}
-                        style={{ width: '100%' }}
-                        onChange={(event: any) =>
-                            setFileName(event.target.value)
-                        }
+                        sx={{ width: '100%', marginBottom: 1 }}
+                        onChange={(event) => setFileName(event.target.value)}
                     />
                 )}
                 <FormControl fullWidth size="small">
@@ -175,7 +211,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                             color={
                                 selectedFormat ? 'text.main' : 'text.disabled'
                             }
-                            style={{ fontWeight: 'bold' }}
+                            sx={{ fontWeight: 'bold' }}
                         >
                             <FormattedMessage id="parameters" />
                         </Typography>
@@ -218,21 +254,17 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
                 )}
             </DialogContent>
             <DialogActions>
-                <CancelButton onClick={props.onClose} />
+                <CancelButton onClick={onClose} />
                 <Button
                     onClick={handleExport}
                     variant="outlined"
-                    disabled={loading || !selectedFormat}
+                    disabled={loading || !selectedFormat || !fileName}
                 >
                     <FormattedMessage id="download.export.button" />
                 </Button>
             </DialogActions>
         </Dialog>
     );
-};
-
-ExportCaseDialog.defaultProps = {
-    selectedElements: [],
 };
 
 export default ExportCaseDialog;

@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
@@ -42,8 +42,8 @@ import {
 import { ContingencyListType, FilterType } from '../../utils/elementType';
 import {
     ElementType,
-    useSnackMessage,
     FilterCreationDialog,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 
 import CommonContextualMenu from './common-contextual-menu';
@@ -701,14 +701,7 @@ const ContentContextualMenu = (props) => {
                     <ExportCaseDialog
                         selectedElements={selectedElements}
                         onClose={handleCloseExportDialog}
-                        onExport={(format, formatParameters, fileName) =>
-                            handleConvertCases(
-                                selectedElements,
-                                format,
-                                formatParameters,
-                                fileName
-                            )
-                        }
+                        onExport={handleConvertCases}
                     />
                 );
             case DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY:
