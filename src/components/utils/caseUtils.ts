@@ -17,6 +17,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
+import { UUID } from 'crypto';
 
 const downloadCases = async (selectedCases: ElementAttributes[]) => {
     for (const selectedCase of selectedCases) {
@@ -62,30 +63,32 @@ export function useDownloadUtils() {
             [parameterName: string]: any;
         },
         abortController: AbortController,
-        fileName: string
+        fileName?: string
     ): Promise<void> => {
         try {
-            // if no fileName is provided, the case name will be used
-            const autoName: boolean = fileName === undefined || fileName === '';
             const result = await fetchConvertedCase(
                 caseElement.elementUuid,
-                autoName ? caseElement.elementName : fileName,
+                fileName || caseElement.elementName, // if no fileName is provided or empty, the case name will be used
                 format,
                 formatParameters,
                 abortController
             );
 
-            fileName = result.headers
+            let downloadFileName = result.headers
                 .get('Content-Disposition')
                 .split('filename=')[1];
-            fileName = fileName.substring(1, fileName.length - 1); // We remove quotes
+            // We remove quotes
+            downloadFileName = downloadFileName.substring(
+                1,
+                downloadFileName.length - 1
+            );
 
             const blob = await result.blob();
 
             const href = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = href;
-            link.setAttribute('download', `${fileName}`);
+            link.setAttribute('download', `${downloadFileName}`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -219,7 +222,7 @@ export function useDownloadUtils() {
         formatParameters: {
             [parameterName: string]: any;
         },
-        fileName: string
+        caseUuidFileNameMap?: Map<UUID, string>
     ) => {
         const cases: ElementAttributes[] = selectedElements.filter(
             (element: ElementAttributes) => element.type === ElementType.CASE
@@ -236,7 +239,7 @@ export function useDownloadUtils() {
                     format,
                     formatParameters,
                     controller,
-                    fileName
+                    caseUuidFileNameMap?.get(c.elementUuid)
                 );
             }
         } catch (error: any) {
