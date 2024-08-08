@@ -40,7 +40,7 @@ import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
-import { setSelectedDirectory } from 'redux/actions';
+import { setSelectedDirectory } from '../../redux/actions';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } = props;
