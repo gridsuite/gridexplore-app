@@ -6,16 +6,14 @@
  */
 
 import { Grid } from '@mui/material';
-import React from 'react';
 import {
-    UniqueNameInput,
-    ElementType,
-    CriteriaBasedForm,
-    getCriteriaBasedFormData,
     CONTINGENCY_LIST_EQUIPMENTS,
+    CriteriaBasedForm,
+    ElementType,
     FieldConstants,
+    getCriteriaBasedFormData,
+    UniqueNameInput,
 } from '@gridsuite/commons-ui';
-import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 
 const CriteriaBasedEditionForm = () => {
@@ -29,7 +27,6 @@ const CriteriaBasedEditionForm = () => {
                     label={'nameProperty'}
                     elementType={ElementType.CONTINGENCY_LIST}
                     activeDirectory={activeDirectory}
-                    elementExists={elementExists}
                 />
             </Grid>
             <CriteriaBasedForm

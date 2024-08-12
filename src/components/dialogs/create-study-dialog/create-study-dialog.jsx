@@ -9,19 +9,18 @@ import { Box, Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useCallback, useEffect } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
-import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
 import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import {
-    useSnackMessage,
-    ErrorInput,
-    FieldErrorAlert,
-    ExpandingTextField,
-    ElementType,
     CustomMuiDialog,
+    ElementType,
+    ErrorInput,
+    ExpandingTextField,
     FieldConstants,
+    FieldErrorAlert,
     isObjectEmpty,
     keyGenerator,
     ModifyElementSelection,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
@@ -33,6 +32,7 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
+import { caseSrv, exploreSrv, networkConversionSrv } from '../../../services';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -113,7 +113,8 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
 
     const getCurrentCaseImportParams = useCallback(
         (uuid) => {
-            getCaseImportParameters(uuid)
+            networkConversionSrv
+                .getCaseImportParameters(uuid)
                 .then((result) => {
                     const formattedParams = formatCaseImportParameters(result.parameters);
                     setValue(FieldConstants.CURRENT_PARAMETERS, customizeCurrentParameters(formattedParams));
@@ -142,7 +143,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
         const caseUuid = getValues(FieldConstants.CASE_UUID);
         // if we cancel case creation, we need to delete the associated newly created case (if we created one)
         if (caseUuid && !providedExistingCase) {
-            deleteCase(caseUuid).catch(handleApiCallError);
+            caseSrv.deleteCase(caseUuid).catch(handleApiCallError);
         }
     };
 
@@ -174,15 +175,16 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             caseFormat,
         };
 
-        createStudy(
-            studyName,
-            description,
-            caseUuid,
-            !!providedExistingCase,
-            directory,
-            currentParameters ? JSON.stringify(currentParameters) : '',
-            caseFormat
-        )
+        exploreSrv
+            .createStudy(
+                studyName,
+                description,
+                caseUuid,
+                !!providedExistingCase,
+                directory,
+                currentParameters ? JSON.stringify(currentParameters) : '',
+                caseFormat
+            )
             .then(() => {
                 dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
                 onClose();

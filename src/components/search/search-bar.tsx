@@ -5,15 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { FunctionComponent, RefObject, useCallback, useRef } from 'react';
-import { searchElementsInfos } from '../../utils/rest-api';
-import {
-    ElementSearchInput,
-    ElementType,
-    fetchDirectoryContent,
-    Paginated,
-    useElementSearch,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { ElementSearchInput, ElementType, Paginated, useElementSearch, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSearchedElement, setSelectedDirectory, setTreeData } from '../../redux/actions';
 import { updatedTree } from '../tree-views-container';
@@ -23,6 +15,7 @@ import { TextFieldProps } from '@mui/material';
 import { SearchBarRenderInput } from './search-bar-render-input';
 import { AppDispatch } from '../../redux/store';
 import { SearchBarPaperDisplayedElementWarning } from './search-bar-displayed-element-warning';
+import { directorySrv } from '../../services';
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 
@@ -42,7 +35,8 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     treeDataRef.current = treeData;
 
     const fetchElementsPageable: (newSearchTerm: string) => Promise<Paginated<ElementAttributesES>> = useCallback(
-        (newSearchTerm) => searchElementsInfos(newSearchTerm, selectedDirectory?.elementUuid),
+        // @ts-expect-error TODO: manage null elementUuid case
+        (newSearchTerm) => directorySrv.searchElementsInfos(newSearchTerm, selectedDirectory?.elementUuid),
         [selectedDirectory?.elementUuid]
     );
     const { elementsFound, isLoading, searchTerm, updateSearchTerm, totalElements } = useElementSearch({
@@ -99,7 +93,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
                 const elementUuidPath = matchingElement?.pathUuid;
                 try {
                     for (const uuid of elementUuidPath) {
-                        const res = await fetchDirectoryContent(uuid);
+                        const res = await directorySrv.fetchDirectoryContent(uuid);
                         updateMapData(uuid, res.filter((res) => res.type === ElementType.DIRECTORY) as IDirectory[]);
                     }
                 } catch (error: any) {

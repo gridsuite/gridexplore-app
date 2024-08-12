@@ -5,53 +5,40 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useCallback, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-
-import FileCopyIcon from '@mui/icons-material/FileCopy';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
-import PhotoLibrary from '@mui/icons-material/PhotoLibrary';
-import ContentCopy from '@mui/icons-material/ContentCopy';
-import CopyAllIcon from '@mui/icons-material/CopyAll';
-import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
-
+import {
+    ContentCopy,
+    CopyAll as CopyAllIcon,
+    Delete as DeleteIcon,
+    DoNotDisturbAlt as DoNotDisturbAltIcon,
+    DownloadForOffline,
+    DriveFileMove as DriveFileMoveIcon,
+    FileCopy as FileCopyIcon,
+    FileDownload,
+    InsertDriveFile as InsertDriveFileIcon,
+    PhotoLibrary,
+} from '@mui/icons-material';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
-
 import { DialogsId } from '../../utils/UIconstants';
-
-import {
-    deleteElements,
-    duplicateElement,
-    elementExists,
-    moveElementsToDirectory,
-    newScriptFromFilter,
-    newScriptFromFiltersContingencyList,
-    renameElement,
-    replaceFiltersWithScript,
-    replaceFormContingencyListWithScript,
-} from '../../utils/rest-api';
-
 import { ContingencyListType, FilterType } from '../../utils/elementType';
-import { ElementType, useSnackMessage, FilterCreationDialog } from '@gridsuite/commons-ui';
-
+import { ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
-import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { exploreSrv } from '../../services';
 
 const ContentContextualMenu = (props) => {
     const {
@@ -200,36 +187,42 @@ const ContentContextualMenu = (props) => {
                 case ElementType.STUDY:
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
-                    duplicateElement(activeElement.elementUuid, undefined, activeElement.type).catch((error) => {
-                        if (handleMaxElementsExceededError(error, snackError)) {
-                            return;
-                        }
-                        handleDuplicateError(error.message);
-                    });
+                    exploreSrv
+                        .duplicateElement(activeElement.elementUuid, undefined, activeElement.type)
+                        .catch((error) => {
+                            if (handleMaxElementsExceededError(error, snackError)) {
+                                return;
+                            }
+                            handleDuplicateError(error.message);
+                        });
                     break;
                 case ElementType.CONTINGENCY_LIST:
-                    duplicateElement(
-                        activeElement.elementUuid,
-                        undefined,
-                        activeElement.type,
-                        selectedElements[0].specificMetadata.type
-                    ).catch((error) => {
-                        handleDuplicateError(error.message);
-                    });
+                    exploreSrv
+                        .duplicateElement(
+                            activeElement.elementUuid,
+                            undefined,
+                            activeElement.type,
+                            selectedElements[0].specificMetadata.type
+                        )
+                        .catch((error) => {
+                            handleDuplicateError(error.message);
+                        });
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
-                    duplicateElement(
-                        activeElement.elementUuid,
-                        undefined,
-                        ElementType.PARAMETERS,
-                        activeElement.type
-                    ).catch((error) => {
-                        handleDuplicateError(error.message);
-                    });
+                    exploreSrv
+                        .duplicateElement(
+                            activeElement.elementUuid,
+                            undefined,
+                            ElementType.PARAMETERS,
+                            activeElement.type
+                        )
+                        .catch((error) => {
+                            handleDuplicateError(error.message);
+                        });
                     break;
                 default: {
                     handleLastError(
@@ -259,8 +252,9 @@ const ContentContextualMenu = (props) => {
     const handleDeleteElements = useCallback(
         (elementsUuids) => {
             setDeleteError('');
-            deleteElements(elementsUuids, selectedDirectory.elementUuid)
-                .then(() => handleCloseDialog())
+            exploreSrv
+                .deleteElements(elementsUuids, selectedDirectory.elementUuid)
+                .then(handleCloseDialog)
                 //show the error message and don't close the dialog
                 .catch((error) => {
                     setDeleteError(error.message);
@@ -300,7 +294,7 @@ const ContentContextualMenu = (props) => {
     );
 
     const [moveCB] = useMultipleDeferredFetch(
-        moveElementsToDirectory,
+        exploreSrv.moveElementsToDirectory,
         undefined,
         moveElementErrorToString,
         moveElementOnError,
@@ -308,7 +302,7 @@ const ContentContextualMenu = (props) => {
     );
 
     const [renameCB, renameState] = useDeferredFetch(
-        renameElement,
+        exploreSrv.renameElement,
         (elementUuid, renamedElement) => {
             // if copied element is renamed
             if (selectionForCopy.sourceItemUuid === renamedElement[0]) {
@@ -349,7 +343,7 @@ const ContentContextualMenu = (props) => {
     );
 
     const [FiltersReplaceWithScriptCB] = useDeferredFetch(
-        replaceFiltersWithScript,
+        exploreSrv.replaceFiltersWithScript,
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -357,7 +351,7 @@ const ContentContextualMenu = (props) => {
     );
 
     const [newScriptFromFiltersContingencyListCB] = useDeferredFetch(
-        newScriptFromFiltersContingencyList,
+        exploreSrv.newScriptFromFiltersContingencyList,
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -365,7 +359,7 @@ const ContentContextualMenu = (props) => {
     );
 
     const [replaceFormContingencyListWithScriptCB] = useDeferredFetch(
-        replaceFormContingencyListWithScript,
+        exploreSrv.replaceFormContingencyListWithScript,
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -373,7 +367,7 @@ const ContentContextualMenu = (props) => {
     );
 
     const [newScriptFromFilterCB] = useDeferredFetch(
-        newScriptFromFilter,
+        exploreSrv.newScriptFromFilter,
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -696,7 +690,6 @@ const ContentContextualMenu = (props) => {
                             equipmentType: activeElement.specificMetadata.equipmentType,
                         }}
                         activeDirectory={activeDirectory}
-                        elementExists={elementExists}
                         language={languageLocal}
                     />
                 );

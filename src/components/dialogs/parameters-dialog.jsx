@@ -5,12 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
-
+import { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-
 import { useSelector } from 'react-redux';
-
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -21,9 +18,8 @@ import Grid from '@mui/material/Grid';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
-
-import { updateConfigParameter } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { configSrv } from '../../services';
 
 const styles = {
     title: (theme) => ({
@@ -51,7 +47,7 @@ export function useParameterState(paramName) {
     const handleChangeParamLocalState = useCallback(
         (value) => {
             setParamLocalState(value);
-            updateConfigParameter(paramName, value).catch((error) => {
+            configSrv.updateConfigParameter(paramName, value).catch((error) => {
                 setParamLocalState(paramGlobalState);
                 snackError({
                     messageTxt: error.message,

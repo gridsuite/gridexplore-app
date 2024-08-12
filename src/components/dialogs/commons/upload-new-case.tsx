@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
-import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
+import { caseSrv } from '../../../services';
 import { FieldConstants } from '@gridsuite/commons-ui';
 
 interface UploadNewCaseProps {
@@ -68,12 +68,13 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                 if (isNewStudyCreation) {
                     // Create new case
                     setCaseFileLoading(true);
-                    createCaseWithoutDirectoryElementCreation(currentFile)
+                    caseSrv
+                        .createCaseWithoutDirectoryElementCreation(currentFile)
                         .then((newCaseUuid) => {
                             const prevCaseUuid = getValues(FieldConstants.CASE_UUID);
 
                             if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
-                                deleteCase(prevCaseUuid).catch(handleApiCallError);
+                                caseSrv.deleteCase(prevCaseUuid).catch(handleApiCallError);
                             }
 
                             onCaseUuidChange(newCaseUuid);

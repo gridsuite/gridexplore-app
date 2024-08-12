@@ -5,16 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, CustomMuiDialog, getCriteriaBasedSchema, FieldConstants } from '@gridsuite/commons-ui';
+import { CustomMuiDialog, FieldConstants, getCriteriaBasedSchema, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     getContingencyListEmptyFormData,
     getCriteriaBasedFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
-import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
 import yup from 'components/utils/yup-config';
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,6 +20,7 @@ import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
 import { useParameterState } from '../../../parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
+import { actionsSrv, exploreSrv } from '../../../../../services';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -61,7 +60,8 @@ const CriteriaBasedEditionDialog = ({
     useEffect(() => {
         if (contingencyListId) {
             setIsFetching(true);
-            getContingencyList(contingencyListType, contingencyListId)
+            actionsSrv
+                .getContingencyList(contingencyListType, contingencyListId)
                 .then((response) => {
                     if (response) {
                         const formData = getCriteriaBasedFormDataFromFetchedElement(response, name);
@@ -84,7 +84,7 @@ const CriteriaBasedEditionDialog = ({
     };
 
     const editContingencyList = (contingencyListId, contingencyList) => {
-        return saveCriteriaBasedContingencyList(contingencyListId, contingencyList);
+        return exploreSrv.saveCriteriaBasedContingencyList(contingencyListId, contingencyList);
     };
 
     const onSubmit = (contingencyList) => {

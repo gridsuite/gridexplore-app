@@ -22,24 +22,10 @@ import {
     Typography,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { getExportFormats } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { CancelButton, FlatParameters } from '@gridsuite/commons-ui';
-
-type ExportFormats =
-    | {
-          [formatName: string]: {
-              formatName: string;
-              parameters: {
-                  name: string;
-                  type: string;
-                  defaultValue: any;
-                  possibleValues: any;
-              }[];
-          };
-      }
-    | [];
+import { ExportFormats, networkConversionSrv } from '../../services';
 
 type FormatParameters = {
     [parameterName: string]: any;
@@ -60,7 +46,7 @@ const ExportCaseDialog = (props: ExportCaseDialogProps) => {
     const intl = useIntl();
 
     useEffect(() => {
-        getExportFormats().then((fetchedFormats: ExportFormats) => {
+        networkConversionSrv.getExportFormats().then((fetchedFormats: ExportFormats) => {
             // we check if the param is for extension, if it is, we select all possible values by default.
             // the only way for the moment to check if the param is for extension, is by checking his type is name.
             //TODO to be removed when extensions param default value corrected in backend to include all possible values

@@ -9,8 +9,6 @@ import { useSelector } from 'react-redux';
 import { useSnackMessage, CustomMuiDialog, getCriteriaBasedSchema, FieldConstants } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import { createContingencyList } from '../../../../utils/rest-api';
-import React from 'react';
 import ContingencyListCreationForm from './contingency-list-creation-form';
 import { getContingencyListEmptyFormData, getFormContent } from '../contingency-list-utils';
 import yup from '../../../utils/yup-config';
@@ -18,6 +16,7 @@ import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form
 import { ContingencyListType } from '../../../../utils/elementType';
 import { useParameterState } from '../../parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
+import { exploreSrv } from '../../../../services';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -61,13 +60,14 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
 
     const onSubmit = (data) => {
         const formContent = getFormContent(null, data);
-        createContingencyList(
-            data[FieldConstants.CONTINGENCY_LIST_TYPE],
-            data[FieldConstants.NAME],
-            data[FieldConstants.DESCRIPTION],
-            formContent,
-            activeDirectory
-        )
+        exploreSrv
+            .createContingencyList(
+                data[FieldConstants.CONTINGENCY_LIST_TYPE],
+                data[FieldConstants.NAME],
+                data[FieldConstants.DESCRIPTION],
+                formContent,
+                activeDirectory
+            )
             .then(() => closeAndClear())
             .catch((error) => {
                 snackError({

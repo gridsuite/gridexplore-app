@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     directoryUpdated,
@@ -15,15 +15,12 @@ import {
     setSelectedDirectory,
     setTreeData,
 } from '../redux/actions';
-
-import { connectNotificationsWsUpdateDirectories } from '../utils/rest-api';
+import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import DirectoryTreeView from './directory-tree-view';
-import { useSnackMessage, fetchDirectoryContent, fetchRootFolders, ElementType } from '@gridsuite/commons-ui';
 import { notificationType } from '../utils/notificationType';
-
 import * as constants from '../utils/UIconstants';
-// Menu
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
+import { directoryNotificationSrv, directorySrv } from '../services';
 
 const initialMousePosition = {
     mouseX: null,
@@ -181,7 +178,7 @@ const TreeViewsContainer = () => {
     /**
      * Contextual Menus
      */
-    const [openDirectoryMenu, setOpenDirectoryMenu] = React.useState(false);
+    const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
 
     const treeData = useSelector((state) => state.treeData);
 
@@ -209,7 +206,7 @@ const TreeViewsContainer = () => {
     };
 
     /* Menu states */
-    const [mousePosition, setMousePosition] = React.useState(initialMousePosition);
+    const [mousePosition, setMousePosition] = useState(initialMousePosition);
 
     /* User interactions */
     const onContextMenu = useCallback(
@@ -231,7 +228,8 @@ const TreeViewsContainer = () => {
 
     /* RootDirectories management */
     const updateRootDirectories = useCallback(() => {
-        fetchRootFolders()
+        directorySrv
+            .fetchRootFolders()
             .then((data) => {
                 let [nrs, mdr] = updatedTree(
                     treeDataRef.current.rootDirectories,
@@ -254,7 +252,7 @@ const TreeViewsContainer = () => {
 
     /* rootDirectories initialization */
     useEffect(() => {
-        if (user != undefined) {
+        if (user !== undefined) {
             updateRootDirectories();
         }
     }, [user, updateRootDirectories]);
@@ -357,7 +355,8 @@ const TreeViewsContainer = () => {
 
     const updateDirectoryTreeAndContent = useCallback(
         (nodeId) => {
-            fetchDirectoryContent(nodeId)
+            directorySrv
+                .fetchDirectoryContent(nodeId)
                 .then((childrenToBeInserted) => {
                     // update directory Content
                     updateCurrentChildren(childrenToBeInserted);
@@ -394,7 +393,8 @@ const TreeViewsContainer = () => {
                 return;
             }
 
-            fetchDirectoryContent(nodeId)
+            directorySrv
+                .fetchDirectoryContent(nodeId)
                 .then((childrenToBeInserted) => {
                     // Update Tree Map data
                     updateMapData(nodeId, childrenToBeInserted);
@@ -423,7 +423,7 @@ const TreeViewsContainer = () => {
 
     useEffect(() => {
         // create ws at mount event
-        wsRef.current = connectNotificationsWsUpdateDirectories();
+        wsRef.current = directoryNotificationSrv.connectNotificationsWsUpdateDirectories();
 
         wsRef.current.onclose = function () {
             console.error('Unexpected Notification WebSocket closed');

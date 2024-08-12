@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { ElementType, useDebounce } from '@gridsuite/commons-ui';
+import { directorySrv } from '../../services';
 
 const styles = {
     helperText: {
@@ -71,8 +71,8 @@ export const useNameField = ({
     const doesElementExist = useCallback(
         (name) =>
             elementType === ElementType.DIRECTORY && !parentDirectoryId
-                ? rootDirectoryExists(name)
-                : elementExists(parentDirectoryId, name, elementType),
+                ? directorySrv.rootDirectoryExists(name)
+                : directorySrv.elementExists(parentDirectoryId, name, elementType),
         [elementType, parentDirectoryId]
     );
 
