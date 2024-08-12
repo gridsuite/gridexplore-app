@@ -161,6 +161,7 @@
     "FreeProps": "Propriétés de l'ouvrage",
     "SubstationFreeProps": "Propriétés du site de l'ouvrage",
     "AddFreePropCrit": "Ajouter un filtrage par propriété",
+    "AddDescription": "Ajouter une description (optionnel)",
     "PropertyName": "Nom de la propriété",
     "PropertyValues": "Valeurs de la propriété",
     "PropertyValues1": "Valeurs de la propriété 1",

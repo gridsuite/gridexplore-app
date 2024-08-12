@@ -22,9 +22,9 @@ import { AppState, UploadingElement } from '../../../redux/reducer';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import {
     CustomMuiDialog,
+    DescriptionField,
     ElementType,
     ErrorInput,
-    ExpandingTextField,
     FieldConstants,
     FieldErrorAlert,
     isObjectEmpty,
@@ -124,12 +124,7 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
                     />
                 </Grid>
                 <Grid item>
-                    <ExpandingTextField
-                        name={FieldConstants.DESCRIPTION}
-                        label={'descriptionProperty'}
-                        minRows={3}
-                        rows={5}
-                    />
+                    <DescriptionField />
                 </Grid>
             </Grid>
             <ErrorInput name={FieldConstants.CASE_FILE} InputField={FieldErrorAlert} />

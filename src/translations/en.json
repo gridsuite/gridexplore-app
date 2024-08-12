@@ -162,6 +162,7 @@
     "FreeProps": "Equipment properties",
     "SubstationFreeProps": "Equipment substation properties",
     "AddFreePropCrit": "Add a filtering by property",
+    "AddDescription": "Add a description (optional)",
     "PropertyName": "Property name",
     "PropertyValues": "Property values",
     "PropertyValues1": "Property values 1",
