@@ -11,15 +11,15 @@ import {
     getCriteriaBasedSchema,
     PARAM_LANGUAGE,
     useSnackMessage,
+    yup,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
 import {
     getContingencyListEmptyFormData,
     getCriteriaBasedFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
-import yup from 'components/utils/yup-config';
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { noSelectionForCopy } from 'utils/constants';

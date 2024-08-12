@@ -12,12 +12,12 @@ import {
     getCriteriaBasedSchema,
     PARAM_LANGUAGE,
     useSnackMessage,
+    yup,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import ContingencyListCreationForm from './contingency-list-creation-form';
 import { getContingencyListEmptyFormData, getFormContent } from '../contingency-list-utils';
-import yup from '../../../utils/yup-config';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { useParameterState } from '../../parameters-dialog';

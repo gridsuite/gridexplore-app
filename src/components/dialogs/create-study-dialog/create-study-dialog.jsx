@@ -29,7 +29,7 @@ import {
     createStudyDialogFormValidationSchema,
     getCreateStudyDialogFormDefaultValues,
 } from './create-study-dialog-utils';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
 import { caseSrv, exploreSrv, networkConversionSrv } from '../../../services';

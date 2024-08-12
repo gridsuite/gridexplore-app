@@ -6,11 +6,10 @@
  */
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
-import yup from 'components/utils/yup-config';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CircularProgress, Grid } from '@mui/material';
-import { CustomMuiDialog, ElementType, FieldConstants, UniqueNameInput } from '@gridsuite/commons-ui';
+import { CustomMuiDialog, ElementType, FieldConstants, UniqueNameInput, yup } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { UUID } from 'crypto';
 import { AppState } from '../../redux/reducer';
