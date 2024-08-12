@@ -6,13 +6,13 @@
  */
 
 import { useSelector } from 'react-redux';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 import { ElementAttributes, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { AppState } from '../redux/reducer';
 import { exploreSrv } from '../services';
 
-export const useDirectoryContent = (setIsMissingDataAfterDirChange: React.Dispatch<React.SetStateAction<boolean>>) => {
+export const useDirectoryContent = (setIsMissingDataAfterDirChange: Dispatch<SetStateAction<boolean>>) => {
     const currentChildren = useSelector((state: AppState) => state.currentChildren);
     const [childrenMetadata, setChildrenMetadata] = useState<Record<UUID, ElementAttributes>>({});
     const { snackError } = useSnackMessage();

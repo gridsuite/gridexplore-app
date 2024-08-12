@@ -32,6 +32,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
 import { AppDispatch } from '../../../redux/store';
+import { FunctionComponent } from 'react';
 
 interface IFormData {
     [FieldConstants.CASE_NAME]: string;
@@ -44,7 +45,7 @@ interface CreateCaseDialogProps {
     open: boolean;
 }
 
-const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onClose, open }) => {
+const CreateCaseDialog: FunctionComponent<CreateCaseDialogProps> = ({ onClose, open }) => {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
 

@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CircularProgress, InputAdornment, TextField } from '@mui/material';
-import CheckIcon from '@mui/icons-material/Check';
+import { Check as CheckIcon } from '@mui/icons-material';
 import { ElementType, useDebounce } from '@gridsuite/commons-ui';
 import { directorySrv } from '../../services';
 

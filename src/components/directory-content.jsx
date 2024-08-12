@@ -11,7 +11,7 @@ import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
 import * as constants from '../utils/UIconstants';
 import { Box, CircularProgress, Grid } from '@mui/material';
-import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
+import { FolderOpenRounded as FolderOpenRoundedIcon } from '@mui/icons-material';
 import { ContingencyListType, FilterType } from '../utils/elementType';
 import {
     CriteriaBasedFilterEditionDialog,

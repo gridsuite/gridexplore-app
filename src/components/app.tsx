@@ -21,7 +21,7 @@ import { FormattedMessage } from 'react-intl';
 import { APP_NAME, COMMON_APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
-import Grid from '@mui/material/Grid';
+import { Grid } from '@mui/material';
 import TreeViewsContainer from './tree-views-container';
 import DirectoryContent from './directory-content';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';

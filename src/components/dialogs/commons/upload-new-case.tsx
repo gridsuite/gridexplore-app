@@ -5,14 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState } from 'react';
+import { ChangeEvent, FunctionComponent, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import { Grid, Input } from '@mui/material';
+import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
-import { caseSrv } from '../../../services';
 import { FieldConstants } from '@gridsuite/commons-ui';
+import { caseSrv } from '../../../services';
 
 interface UploadNewCaseProps {
     isNewStudyCreation?: boolean;
@@ -23,7 +21,7 @@ interface UploadNewCaseProps {
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
 
-const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
+const UploadNewCase: FunctionComponent<UploadNewCaseProps> = ({
     isNewStudyCreation = false,
     getCurrentCaseImportParams,
     handleApiCallError,
@@ -49,7 +47,7 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
     const caseFile = value as File;
     const { name: caseFileName } = caseFile || {};
 
-    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
 
         clearErrors(FieldConstants.CASE_FILE);
