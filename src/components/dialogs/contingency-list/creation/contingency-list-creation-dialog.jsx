@@ -16,7 +16,7 @@ import { getContingencyListEmptyFormData, getFormContent } from '../contingency-
 import yup from '../../../utils/yup-config';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form';
 import { ContingencyListType } from '../../../../utils/elementType';
-import { useParameterState } from '../../parameters-dialog';
+import { useParameterState } from '../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 
 const schema = yup.object().shape({
