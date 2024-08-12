@@ -24,7 +24,7 @@ import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
-import { useParameterState } from '../../../parameters-dialog';
+import { useParameterState } from '../../../use-parameters-dialog';
 import { actionsSrv, exploreSrv } from '../../../../../services';
 
 const schema = yup.object().shape({

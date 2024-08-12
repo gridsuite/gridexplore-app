@@ -10,11 +10,12 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
 import { FieldConstants } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
 import { caseSrv } from '../../../services';
 
 interface UploadNewCaseProps {
     isNewStudyCreation?: boolean;
-    getCurrentCaseImportParams?: (uuid: string) => void;
+    getCurrentCaseImportParams?: (uuid: UUID) => void;
     handleApiCallError?: ErrorCallback;
 }
 

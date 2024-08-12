@@ -36,7 +36,7 @@ import MoveDialog from '../dialogs/move-dialog';
 import { useDownloadUtils } from '../utils/caseUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setSelectionForCopy } from '../../redux/actions';
-import { useParameterState } from '../dialogs/parameters-dialog';
+import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 import { exploreSrv } from '../../services';
 
@@ -617,7 +617,7 @@ const ContentContextualMenu = (props) => {
                             }
                             handleCloseDialog();
                         }}
-                        items={selectedElements}
+                        itemsCount={selectedElements.length}
                     />
                 );
             case DialogsId.EXPORT:

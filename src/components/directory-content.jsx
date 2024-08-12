@@ -29,7 +29,7 @@ import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu'
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
-import { useParameterState } from './dialogs/parameters-dialog';
+import { useParameterState } from './dialogs/use-parameters-dialog';
 import { useDirectoryContent } from '../hooks/useDirectoryContent';
 import {
     computeCheckedElements,

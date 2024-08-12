@@ -20,7 +20,7 @@ import ContingencyListCreationForm from './contingency-list-creation-form';
 import { getContingencyListEmptyFormData, getFormContent } from '../contingency-list-utils';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form';
 import { ContingencyListType } from '../../../../utils/elementType';
-import { useParameterState } from '../../parameters-dialog';
+import { useParameterState } from '../../use-parameters-dialog';
 import { exploreSrv } from '../../../../services';
 
 const schema = yup.object().shape({

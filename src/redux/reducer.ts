@@ -103,6 +103,7 @@ export type UploadingElement = {
     owner?: string;
     lastModifiedBy?: string;
     uploading: boolean;
+    caseFormat?: string;
 };
 
 export interface AppState {

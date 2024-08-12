@@ -1,15 +1,16 @@
 /*
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright © 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { CircularProgress, InputAdornment, TextField } from '@mui/material';
-import { Check as CheckIcon } from '@mui/icons-material';
+import { CircularProgress, InputAdornment, TextField, TextFieldProps } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
 import { ElementType, useDebounce } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
 import { directorySrv } from '../../services';
 
 const styles = {
@@ -19,11 +20,24 @@ const styles = {
     },
 };
 
-export const useTextValue = ({ label, id = label, defaultValue = '', adornment, triggerReset, ...formProps }) => {
+interface UseTextValueProps extends Omit<TextFieldProps, 'label' | 'defaultValue'> {
+    label: string;
+    id?: string;
+    defaultValue?: string;
+    adornment?: ReactNode;
+}
+
+export const useTextValue = ({
+    label,
+    id = label,
+    defaultValue = '',
+    adornment,
+    ...formProps
+}: UseTextValueProps): [string, ReactNode, (value: string) => void, boolean] => {
     const [value, setValue] = useState(defaultValue);
     const [hasChanged, setHasChanged] = useState(false);
 
-    const handleChangeValue = useCallback((event) => {
+    const handleChangeValue = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         setValue(event.target.value);
         setHasChanged(true);
     }, []);
@@ -50,34 +64,47 @@ export const useTextValue = ({ label, id = label, defaultValue = '', adornment, 
         [id, label, value, handleChangeValue, formProps, adornment]
     );
 
-    useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
+    useEffect(() => setValue(defaultValue), [defaultValue]);
 
     return [value, field, setValue, hasChanged];
 };
+
+async function doesElementInDirExist(elementType: ElementType, parentDirectoryId: UUID | undefined, name: string) {
+    // if element is a root directory, we need to make a specific api rest call (elementType is directory, and no parent element)
+    if (elementType === ElementType.DIRECTORY && parentDirectoryId === undefined) {
+        return directorySrv.rootDirectoryExists(name);
+    } else if (parentDirectoryId !== undefined) {
+        return directorySrv.elementExists(parentDirectoryId, name, elementType);
+    } else {
+        return false;
+    }
+}
+
+interface UseNameFieldProps extends UseTextValueProps {
+    parentDirectoryId?: UUID;
+    elementType: ElementType;
+    active: boolean;
+    alreadyExistingErrorMessage?: string;
+}
 
 export const useNameField = ({
     parentDirectoryId,
     elementType,
     active,
-    triggerReset,
     alreadyExistingErrorMessage,
     ...props
-}) => {
-    const [error, setError] = useState();
+}: Readonly<UseNameFieldProps>): [string, ReactNode, string | undefined, boolean, (value: string) => void, boolean] => {
+    const [error, setError] = useState<string | undefined>();
     const intl = useIntl();
-    const [checking, setChecking] = useState(undefined);
+    const [checking, setChecking] = useState<boolean | undefined>(undefined);
 
-    // if element is a root directory, we need to make a specific api rest call (elementType is directory, and no parent element)
     const doesElementExist = useCallback(
-        (name) =>
-            elementType === ElementType.DIRECTORY && !parentDirectoryId
-                ? directorySrv.rootDirectoryExists(name)
-                : directorySrv.elementExists(parentDirectoryId, name, elementType),
+        (name: string) => doesElementInDirExist(elementType, parentDirectoryId, name),
         [elementType, parentDirectoryId]
     );
 
     const updateValidity = useCallback(
-        (name, touched) => {
+        (name: string, touched: boolean) => {
             const nameFormatted = name.replace(/ /g, '');
             if (nameFormatted === '' && touched) {
                 setError(intl.formatMessage({ id: 'nameEmpty' }));
@@ -91,11 +118,10 @@ export const useNameField = ({
 
             if (nameFormatted !== '' && name === props.defaultValue) {
                 setError(
-                    alreadyExistingErrorMessage
-                        ? alreadyExistingErrorMessage
-                        : intl.formatMessage({
-                              id: 'nameAlreadyUsed',
-                          })
+                    alreadyExistingErrorMessage ??
+                        intl.formatMessage({
+                            id: 'nameAlreadyUsed',
+                        })
                 );
                 setChecking(false);
             }
@@ -105,9 +131,8 @@ export const useNameField = ({
                     .then((data) => {
                         setError(
                             data
-                                ? alreadyExistingErrorMessage
-                                    ? alreadyExistingErrorMessage
-                                    : intl.formatMessage({
+                                ? alreadyExistingErrorMessage ??
+                                      intl.formatMessage({
                                           id: 'nameAlreadyUsed',
                                       })
                                 : ''
@@ -151,7 +176,6 @@ export const useNameField = ({
 
     const [name, field, setName, touched] = useTextValue({
         ...props,
-        triggerReset,
         error: !!error,
         adornment: adornment,
     });
@@ -165,10 +189,6 @@ export const useNameField = ({
         debouncedUpdateValidity(name, touched);
     }, [active, props.defaultValue, name, debouncedUpdateValidity, touched]);
 
-    useEffect(() => {
-        setError(undefined);
-        setChecking(undefined);
-    }, [triggerReset]);
     return [
         name,
         field,

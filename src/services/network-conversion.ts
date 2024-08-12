@@ -5,10 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ApiService } from '@gridsuite/commons-ui';
+import { ApiService, Parameter } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { getUser } from '../redux/store';
 
+export type CaseImportParameters = {
+    formatName: string;
+    parameters: Parameter[];
+};
 export type ExportFormats =
     | Record<
           string,
@@ -31,7 +35,7 @@ export default class NetworkConversionSvc extends ApiService {
 
     public async getCaseImportParameters(caseUuid: UUID) {
         console.debug(`get import parameters for case '${caseUuid}' ...`);
-        return this.backendFetchJson(`${this.getPrefix(1)}/cases/${caseUuid}/import-parameters`);
+        return this.backendFetchJson<CaseImportParameters>(`${this.getPrefix(1)}/cases/${caseUuid}/import-parameters`);
     }
 
     public async getExportFormats() {

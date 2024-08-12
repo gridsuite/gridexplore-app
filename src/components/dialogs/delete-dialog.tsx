@@ -11,12 +11,20 @@ import Alert from '@mui/material/Alert';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
-import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress';
-import { CancelButton, OverflowableText } from '@gridsuite/commons-ui';
+import { CancelButton, ElementAttributes, OverflowableText } from '@gridsuite/commons-ui';
 
+interface DeleteDialogProps {
+    open: boolean;
+    onClose: () => void;
+    onClick: () => void;
+    items: ElementAttributes[];
+    multipleDeleteFormatMessageId: string;
+    simpleDeleteFormatMessageId: string;
+    error: string;
+}
 /**
  * Dialog to delete an element
  * @param {Boolean} open Is the dialog open ?
@@ -32,7 +40,7 @@ const styles = {
         maxWidth: '1000px',
     },
 };
-const DeleteDialog = ({
+const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
     open,
     onClose,
     onClick,
@@ -43,21 +51,21 @@ const DeleteDialog = ({
 }) => {
     const intl = useIntl();
 
-    const [itemsState, setItemState] = useState([]);
+    const [itemsState, setItemsState] = useState<ElementAttributes[]>([]);
 
     const [loadingState, setLoadingState] = useState(false);
 
-    const openRef = useRef(null);
+    const openRef = useRef<boolean | null>(null);
 
     useEffect(() => {
         if ((open && !openRef.current) || error !== '') {
-            setItemState(items);
+            setItemsState(items);
             setLoadingState(false);
         }
         openRef.current = open;
     }, [open, items, error]);
 
-    const handleClose = (_, reasonOfClose) => {
+    const handleClose = (_: SyntheticEvent, reasonOfClose?: string) => {
         if (reasonOfClose && reasonOfClose === 'backdropClick' && loadingState) {
             return;
         }
@@ -74,7 +82,7 @@ const DeleteDialog = ({
         return intl.formatMessage({ id: 'deleteDialogTitle' });
     };
 
-    const renderElement = (items) => {
+    const renderElement = (items: ElementAttributes[]) => {
         const isBig = items[0].elementName?.length > 72;
 
         const style = isBig
@@ -89,7 +97,11 @@ const DeleteDialog = ({
         return <OverflowableText text={items[0].elementName} style={style} tooltipSx={styles.tooltip} />;
     };
 
-    const buildItemsToDeleteGrid = (items, multipleDeleteFormatMessageId, simpleDeleteFormatMessageId) => {
+    const buildItemsToDeleteGrid = (
+        items: ElementAttributes[],
+        multipleDeleteFormatMessageId: string,
+        simpleDeleteFormatMessageId: string
+    ) => {
         return (
             items &&
             (items.length > 1 ? (
@@ -135,16 +147,6 @@ const DeleteDialog = ({
             </DialogActions>
         </Dialog>
     );
-};
-
-DeleteDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onClick: PropTypes.func.isRequired,
-    items: PropTypes.array.isRequired,
-    multipleDeleteFormatMessageId: PropTypes.string.isRequired,
-    simpleDeleteFormatMessageId: PropTypes.string.isRequired,
-    error: PropTypes.string.isRequired,
 };
 
 export default DeleteDialog;
