@@ -28,7 +28,7 @@ import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
 import { DialogsId } from '../../utils/UIconstants';
 import { ContingencyListType, FilterType } from '../../utils/elementType';
-import { ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementType, FilterCreationDialog, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
@@ -36,7 +36,6 @@ import { useDownloadUtils } from '../utils/caseUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/parameters-dialog';
-import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 import { exploreSrv } from '../../services';
 

@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { LIGHT_THEME, logout, TopBar, UserManagerState } from '@gridsuite/commons-ui';
+import { LIGHT_THEME, logout, PARAM_LANGUAGE, PARAM_THEME, TopBar, UserManagerState } from '@gridsuite/commons-ui';
 import ParametersDialog, { useParameterState } from './dialogs/parameters-dialog';
-import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
+import { APP_NAME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';

@@ -20,6 +20,7 @@ import {
     ExpertFilterEditionDialog,
     ExplicitNamingFilterEditionDialog,
     noSelectionForCopy,
+    PARAM_LANGUAGE,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import ContentContextualMenu from './menus/content-contextual-menu';
@@ -29,7 +30,6 @@ import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/crite
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
 import { useParameterState } from './dialogs/parameters-dialog';
-import { PARAM_LANGUAGE } from '../utils/config-params';
 import { useDirectoryContent } from '../hooks/useDirectoryContent';
 import {
     computeCheckedElements,

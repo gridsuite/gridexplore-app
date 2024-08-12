@@ -12,14 +12,16 @@ import { selectComputedLanguage, selectLanguage, selectTheme } from '../redux/ac
 import {
     AuthenticationRouter,
     CardErrorBoundary,
+    getComputedLanguage,
     getPreLoginPath,
     initializeAuthenticationProd,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
     UserManagerState,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
-import { APP_NAME, COMMON_APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
-import { getComputedLanguage } from '../utils/language';
+import { APP_NAME } from '../utils/config-params';
 import AppTopBar from './app-top-bar';
 import { Grid } from '@mui/material';
 import TreeViewsContainer from './tree-views-container';
@@ -138,7 +140,7 @@ const App = () => {
     useEffect(() => {
         if (user !== undefined) {
             configSrv
-                .fetchConfigParameters(COMMON_APP_NAME)
+                .fetchConfigParameters('common')
                 .then((params) => updateParams(params))
                 .catch((error) =>
                     snackError({

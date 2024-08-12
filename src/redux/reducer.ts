@@ -7,13 +7,6 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import {
-    getLocalStorageComputedLanguage,
-    getLocalStorageLanguage,
-    getLocalStorageTheme,
-    saveLocalStorageLanguage,
-    saveLocalStorageTheme,
-} from './local-storage';
-import {
     ACTIVE_DIRECTORY,
     ActiveDirectoryAction,
     ADD_UPLOADING_ELEMENT,
@@ -51,12 +44,19 @@ import {
     AuthenticationRouterErrorState,
     ElementAttributes,
     ElementType,
+    getLocalStorageComputedLanguage,
+    getLocalStorageLanguage,
+    getLocalStorageTheme,
     GsLang,
     GsLangUser,
     GsTheme,
     LOGOUT_ERROR,
     LogoutErrorAction,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
     RESET_AUTHENTICATION_ROUTER_ERROR,
+    saveLocalStorageLanguage,
+    saveLocalStorageTheme,
     SHOW_AUTH_INFO_LOGIN,
     ShowAuthenticationRouterLoginAction,
     SIGNIN_CALLBACK_ERROR,
@@ -68,7 +68,7 @@ import {
     UserAction,
     UserValidationErrorAction,
 } from '@gridsuite/commons-ui';
-import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
+import { APP_NAME } from '../utils/config-params';
 import { UUID } from 'crypto';
 import { User } from 'oidc-client';
 
@@ -144,9 +144,9 @@ const initialState: AppState = {
     showAuthenticationRouterLogin: false,
 
     // params
-    computedLanguage: getLocalStorageComputedLanguage(),
-    [PARAM_THEME]: getLocalStorageTheme(),
-    [PARAM_LANGUAGE]: getLocalStorageLanguage(),
+    computedLanguage: getLocalStorageComputedLanguage(APP_NAME),
+    [PARAM_THEME]: getLocalStorageTheme(APP_NAME),
+    [PARAM_LANGUAGE]: getLocalStorageLanguage(APP_NAME),
 
     currentChildren: undefined,
     selectedDirectory: null,
@@ -181,12 +181,12 @@ function filterFromObject<K extends string | number | symbol, V>(
 export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SELECT_THEME, (state, action: ThemeAction) => {
         state.theme = action.theme;
-        saveLocalStorageTheme(state.theme);
+        saveLocalStorageTheme(APP_NAME, state.theme);
     });
 
     builder.addCase(SELECT_LANGUAGE, (state, action: LanguageAction) => {
         state.language = action.language;
-        saveLocalStorageLanguage(state.language);
+        saveLocalStorageLanguage(APP_NAME, state.language);
     });
 
     builder.addCase(USER, (state, action: UserAction) => {

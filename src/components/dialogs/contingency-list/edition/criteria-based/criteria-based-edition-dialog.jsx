@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomMuiDialog, FieldConstants, getCriteriaBasedSchema, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomMuiDialog,
+    FieldConstants,
+    getCriteriaBasedSchema,
+    PARAM_LANGUAGE,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { useEffect, useState } from 'react';
@@ -19,7 +25,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
 import { useParameterState } from '../../../parameters-dialog';
-import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
 import { actionsSrv, exploreSrv } from '../../../../../services';
 
 const schema = yup.object().shape({
