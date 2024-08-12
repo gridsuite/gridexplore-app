@@ -34,6 +34,7 @@ import {
     login_fr,
     multiple_selection_dialog_en,
     multiple_selection_dialog_fr,
+    PARAM_THEME,
     SnackbarProvider,
     table_en,
     table_fr,
@@ -57,7 +58,6 @@ import import_parameters_en from '../translations/external/import-parameters-en'
 import import_parameters_fr from '../translations/external/import-parameters-fr';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
-import { PARAM_THEME } from '../utils/config-params';
 import { AppState } from '../redux/reducer';
 import { Theme } from '@mui/material';
 

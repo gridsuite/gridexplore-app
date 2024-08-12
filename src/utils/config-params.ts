@@ -5,8 +5,4 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const notificationType = {
-    DELETE_DIRECTORY: 'DELETE_DIRECTORY',
-    ADD_DIRECTORY: 'ADD_DIRECTORY',
-    UPDATE_DIRECTORY: 'UPDATE_DIRECTORY',
-};
+export const APP_NAME = 'Explore';

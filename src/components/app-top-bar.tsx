@@ -4,20 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useEffect, useRef } from 'react';
-import {
-    GridSuiteModule,
-    fetchAppsMetadata,
-    LIGHT_THEME,
-    logout,
-    TopBar,
-    UserManagerState,
-    GsTheme,
-    GsLang,
-} from '@gridsuite/commons-ui';
-import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
+import { useCallback, useEffect, useRef } from 'react';
+import { LIGHT_THEME, logout, PARAM_LANGUAGE, PARAM_THEME, TopBar, UserManagerState } from '@gridsuite/commons-ui';
+import { APP_NAME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchVersion, getServersInfos } from '../utils/rest-api';
 import { useNavigate } from 'react-router-dom';
 import GridExploreLogoLight from '../images/GridExplore_logo_light.svg?react';
 import GridExploreLogoDark from '../images/GridExplore_logo_dark.svg?react';
@@ -26,16 +16,21 @@ import AppPackage from '../../package.json';
 import { SearchBar } from './search/search-bar';
 import { AppState } from '../redux/reducer';
 import { AppDispatch } from '../redux/store';
+import { appsMetadataSrv } from '../services';
 import { useParameterState } from './dialogs/use-parameters-dialog';
 
 type AppTopBarProps = {
     userManagerInstance: UserManagerState['instance'];
 };
 
-export default function AppTopBar({ userManagerInstance }: AppTopBarProps) {
+export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarProps>) {
     const navigate = useNavigate();
 
+    const onLogoClick = useCallback(() => navigate('/', { replace: true }), [navigate]);
+
     const dispatch = useDispatch<AppDispatch>();
+
+    const onLogoutClick = useCallback(() => logout(dispatch, userManagerInstance), [dispatch, userManagerInstance]);
 
     const user = useSelector((state: AppState) => state.user);
 
@@ -50,8 +45,8 @@ export default function AppTopBar({ userManagerInstance }: AppTopBarProps) {
     const searchInputRef = useRef<any | null>(null);
 
     useEffect(() => {
-        if (user !== null) {
-            fetchAppsMetadata().then((res) => {
+        if (user !== undefined) {
+            appsMetadataSrv.fetchAppsMetadata().then((res) => {
                 dispatch(setAppsAndUrls(res));
             });
         }
@@ -70,6 +65,11 @@ export default function AppTopBar({ userManagerInstance }: AppTopBarProps) {
         }
     }, [user]);
 
+    const globalVersionFetcher = useCallback(
+        () => appsMetadataSrv.fetchVersion().then((res) => res?.deployVersion ?? '<?>'),
+        []
+    );
+
     return (
         <TopBar
             appName={APP_NAME}
@@ -77,16 +77,16 @@ export default function AppTopBar({ userManagerInstance }: AppTopBarProps) {
             appLogo={theme === LIGHT_THEME ? <GridExploreLogoLight /> : <GridExploreLogoDark />}
             appVersion={AppPackage.version}
             appLicense={AppPackage.license}
-            onLogoutClick={() => logout(dispatch, userManagerInstance)}
-            onLogoClick={() => navigate('/', { replace: true })}
-            user={user ?? undefined}
+            onLogoutClick={onLogoutClick}
+            onLogoClick={onLogoClick}
+            user={user}
             appsAndUrls={appsAndUrls}
             onThemeClick={handleChangeTheme}
-            theme={themeLocal as GsTheme}
+            theme={themeLocal}
             onLanguageClick={handleChangeLanguage}
-            language={languageLocal as GsLang}
-            globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
-            additionalModulesPromise={getServersInfos as () => Promise<GridSuiteModule[]>}
+            language={languageLocal}
+            globalVersionPromise={globalVersionFetcher}
+            additionalModulesPromise={'explore'}
         >
             {user && <SearchBar inputRef={searchInputRef} />}
         </TopBar>

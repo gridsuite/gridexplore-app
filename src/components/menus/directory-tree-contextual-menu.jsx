@@ -5,41 +5,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-
-import DeleteIcon from '@mui/icons-material/Delete';
-import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
-import AddIcon from '@mui/icons-material/Add';
-import CreateIcon from '@mui/icons-material/Create';
-import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import {
+    Add as AddIcon,
+    ContentPaste as ContentPasteIcon,
+    Create as CreateIcon,
+    CreateNewFolder as CreateNewFolderIcon,
+    Delete as DeleteIcon,
+    FolderSpecial as FolderSpecialIcon,
+} from '@mui/icons-material';
 import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
 import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
-
 import { DialogsId } from '../../utils/UIconstants';
-
-import {
-    deleteElement,
-    duplicateElement,
-    insertDirectory,
-    insertRootDirectory,
-    renameElement,
-    elementExists,
-} from '../../utils/rest-api';
-
 import CommonContextualMenu from './common-contextual-menu';
-import { useDeferredFetch } from '../../utils/custom-hooks';
-import { ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
+import useDeferredFetch from '../../hooks/useDeferredFetch';
+import { ElementType, FilterCreationDialog, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
-import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { directorySrv, exploreSrv } from '../../services';
 
 const DirectoryTreeContextualMenu = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } = props;
@@ -69,7 +59,7 @@ const DirectoryTreeContextualMenu = (props) => {
     );
 
     const [renameCB, renameState] = useDeferredFetch(
-        renameElement,
+        exploreSrv.renameElement,
         () => handleCloseDialog(null, null),
         (HTTPStatusCode) => {
             if (HTTPStatusCode === 403) {
@@ -80,12 +70,13 @@ const DirectoryTreeContextualMenu = (props) => {
         false
     );
 
-    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, (response) =>
+    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(directorySrv.insertDirectory, (response) =>
         handleCloseDialog(null, response?.elementUuid)
     );
 
-    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(insertRootDirectory, (response) =>
-        handleCloseDialog(null, response?.elementUuid)
+    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(
+        directorySrv.insertRootDirectory,
+        (response) => handleCloseDialog(null, response?.elementUuid)
     );
 
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
@@ -123,41 +114,47 @@ const DirectoryTreeContextualMenu = (props) => {
                 case ElementType.STUDY:
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
-                    duplicateElement(
-                        selectionForCopy.sourceItemUuid,
-                        directoryUuid,
-                        selectionForCopy.typeItem,
-                        undefined
-                    ).catch((error) => {
-                        if (handleMaxElementsExceededError(error, snackError)) {
-                            return;
-                        }
-                        handlePasteError(error);
-                    });
+                    exploreSrv
+                        .duplicateElement(
+                            selectionForCopy.sourceItemUuid,
+                            directoryUuid,
+                            selectionForCopy.typeItem,
+                            undefined
+                        )
+                        .catch((error) => {
+                            if (handleMaxElementsExceededError(error, snackError)) {
+                                return;
+                            }
+                            handlePasteError(error);
+                        });
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
-                    duplicateElement(
-                        selectionForCopy.sourceItemUuid,
-                        directoryUuid,
-                        ElementType.PARAMETERS,
-                        selectionForCopy.typeItem
-                    ).catch((error) => {
-                        handlePasteError(error);
-                    });
+                    exploreSrv
+                        .duplicateElement(
+                            selectionForCopy.sourceItemUuid,
+                            directoryUuid,
+                            ElementType.PARAMETERS,
+                            selectionForCopy.typeItem
+                        )
+                        .catch((error) => {
+                            handlePasteError(error);
+                        });
                     break;
                 case ElementType.CONTINGENCY_LIST:
-                    duplicateElement(
-                        selectionForCopy.sourceItemUuid,
-                        directoryUuid,
-                        selectionForCopy.typeItem,
-                        selectionForCopy.specificType
-                    ).catch((error) => {
-                        handlePasteError(error);
-                    });
+                    exploreSrv
+                        .duplicateElement(
+                            selectionForCopy.sourceItemUuid,
+                            directoryUuid,
+                            selectionForCopy.typeItem,
+                            selectionForCopy.specificType
+                        )
+                        .catch((error) => {
+                            handlePasteError(error);
+                        });
                     break;
                 default:
                     handleError(
@@ -175,7 +172,8 @@ const DirectoryTreeContextualMenu = (props) => {
     const handleDeleteElement = useCallback(
         (elementsUuid) => {
             setDeleteError('');
-            deleteElement(elementsUuid)
+            exploreSrv
+                .deleteElement(elementsUuid)
                 .then(() => handleCloseDialog(null, directory?.parentUuid))
                 .catch((error) => {
                     //show the error message and don't close the dialog
@@ -354,7 +352,6 @@ const DirectoryTreeContextualMenu = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         activeDirectory={activeDirectory}
-                        elementExists={elementExists}
                         language={languageLocal}
                     />
                 );

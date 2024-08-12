@@ -4,16 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
-import yup from 'components/utils/yup-config';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CircularProgress, Grid } from '@mui/material';
-import { UniqueNameInput, ElementType, CustomMuiDialog, FieldConstants } from '@gridsuite/commons-ui';
-import { elementExists, getNameCandidate } from 'utils/rest-api';
+import { CustomMuiDialog, ElementType, FieldConstants, UniqueNameInput, yup } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { UUID } from 'crypto';
+import { AppState } from '../../redux/reducer';
+import { directorySrv } from '../../services';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -30,7 +30,7 @@ interface CopyToScriptDialogProps {
     onValidate: (...args: any[]) => void;
     currentName: string;
     title: string;
-    directoryUuid: string;
+    directoryUuid: UUID;
     elementType: ElementType;
     handleError: (...args: any[]) => void;
 }
@@ -51,7 +51,7 @@ interface FormData {
  * @param elementType Type of the element to copy
  * @param handleError Function to call to handle error
  */
-const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
+const CopyToScriptDialog: FunctionComponent<CopyToScriptDialogProps> = ({
     id,
     open,
     onClose,
@@ -100,7 +100,8 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
 
     useEffect(() => {
         setLoading(true);
-        getNameCandidate(directoryUuid, currentName, elementType)
+        directorySrv
+            .getNameCandidate(directoryUuid, currentName, elementType)
             .then((newName) => {
                 let generatedName: string = newName || '';
                 setValue(FieldConstants.NAME, generatedName, {
@@ -137,7 +138,6 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
                             elementType={ElementType.CONTINGENCY_LIST}
                             autoFocus
                             activeDirectory={activeDirectory}
-                            elementExists={elementExists}
                         />
                     )}
                 </Grid>

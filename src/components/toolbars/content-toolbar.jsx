@@ -9,20 +9,21 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-
-import { deleteElements, moveElementsToDirectory } from '../../utils/rest-api';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
+import {
+    Delete as DeleteIcon,
+    DriveFileMove as DriveFileMoveIcon,
+    DownloadForOffline,
+    FileDownload,
+} from '@mui/icons-material';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar from './common-toolbar';
-import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import useMultipleDeferredFetch from '../../hooks/useMultipleDeferredFetch';
+import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
-import { ElementType } from '@gridsuite/commons-ui';
-import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { DialogsId } from '../../utils/UIconstants';
+import { exploreSrv } from '../../services';
 
 const ContentToolbar = (props) => {
     const { selectedElements, ...others } = props;
@@ -87,7 +88,7 @@ const ContentToolbar = (props) => {
     );
 
     const [moveCB] = useMultipleDeferredFetch(
-        moveElementsToDirectory,
+        exploreSrv.moveElementsToDirectory,
         undefined,
         moveElementErrorToString,
         moveElementOnError,
@@ -121,7 +122,8 @@ const ContentToolbar = (props) => {
     const handleDeleteElements = useCallback(
         (elementsUuids) => {
             setDeleteError('');
-            deleteElements(elementsUuids, selectedDirectory.elementUuid)
+            exploreSrv
+                .deleteElements(elementsUuids, selectedDirectory.elementUuid)
                 .then(handleCloseDialog)
                 .catch((error) => {
                     //show the error message and don't close the dialog

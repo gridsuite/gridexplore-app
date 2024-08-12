@@ -13,10 +13,10 @@ import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useNameField } from './field-hook';
 import { useSelector } from 'react-redux';
-import { ElementType } from '@gridsuite/commons-ui';
-import { CancelButton } from '@gridsuite/commons-ui';
+import { CancelButton, ElementType } from '@gridsuite/commons-ui';
 import { FunctionComponent } from 'react';
 import { AppState } from 'redux/reducer';
+import { UUID } from 'crypto';
 
 interface RenameDialogProps {
     open: boolean;
@@ -27,7 +27,7 @@ interface RenameDialogProps {
     currentName: string;
     type: ElementType;
     error?: string;
-    parentDirectory?: string;
+    parentDirectory?: UUID;
 }
 
 /**

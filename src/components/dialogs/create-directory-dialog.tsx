@@ -5,24 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import { FormattedMessage } from 'react-intl';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Alert from '@mui/material/Alert';
-import { ElementType } from '@gridsuite/commons-ui';
-import { useNameField } from './field-hook';
-import { CancelButton } from '@gridsuite/commons-ui';
 import { FunctionComponent } from 'react';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { FormattedMessage } from 'react-intl';
+import { CancelButton, ElementType } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
+import { useNameField } from './field-hook';
 
 interface CreateDirectoryDialogProps {
     open: boolean;
     onClose: () => void;
     onClick: (newName: string) => void;
     title: string;
-    parentDirectory: string;
+    parentDirectory: UUID;
     error: string;
 }
 

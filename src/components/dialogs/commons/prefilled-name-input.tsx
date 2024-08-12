@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { UniqueNameInput, ElementType, FieldConstants } from '@gridsuite/commons-ui';
-import { elementExists } from '../../../utils/rest-api';
+import { ElementType, FieldConstants, UniqueNameInput } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 
@@ -57,7 +56,6 @@ const PrefilledNameInput: FunctionComponent<PrefilledNameInputProps> = ({ label,
             name={name}
             label={label}
             elementType={elementType}
-            elementExists={elementExists}
             activeDirectory={activeDirectory}
             autoFocus={!caseFile}
             onManualChangeCallback={() => setModifiedByUser(true)}

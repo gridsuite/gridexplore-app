@@ -12,28 +12,24 @@ import { selectComputedLanguage, selectLanguage, selectTheme } from '../redux/ac
 import {
     AuthenticationRouter,
     CardErrorBoundary,
+    getComputedLanguage,
     getPreLoginPath,
     initializeAuthenticationProd,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
     UserManagerState,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
-import {
-    connectNotificationsWsUpdateConfig,
-    fetchConfigParameter,
-    fetchConfigParameters,
-    fetchIdpSettings,
-    fetchValidateUser,
-} from '../utils/rest-api';
-import { APP_NAME, COMMON_APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
-import { getComputedLanguage } from '../utils/language';
+import { APP_NAME } from '../utils/config-params';
 import AppTopBar from './app-top-bar';
-import Grid from '@mui/material/Grid';
+import { Grid } from '@mui/material';
 import TreeViewsContainer from './tree-views-container';
 import DirectoryContent from './directory-content';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
 import { AppState } from '../redux/reducer';
 import { AppDispatch } from '../redux/store';
+import { appLocalSrv, configNotificationSrv, configSrv, userAdminSrv } from '../services';
 
 const App = () => {
     const { snackError } = useSnackMessage();
@@ -86,14 +82,14 @@ const App = () => {
     });
 
     const connectNotificationsUpdateConfig = useCallback(() => {
-        const ws = connectNotificationsWsUpdateConfig();
-
+        const ws = configNotificationSrv.connectNotificationsWsUpdateConfig(APP_NAME);
         ws.onmessage = function (event) {
             let eventData = JSON.parse(event.data);
             if (eventData.headers && eventData.headers['parameterName']) {
-                fetchConfigParameter(eventData.headers['parameterName'])
-                    .then((param) => updateParams([param]))
-                    .catch((error) =>
+                configSrv
+                    .fetchConfigParameter(eventData.headers['parameterName'])
+                    .then((param: any) => updateParams([param]))
+                    .catch((error: any) =>
                         snackError({
                             messageTxt: error.message,
                             headerId: 'paramsRetrievingError',
@@ -128,8 +124,8 @@ const App = () => {
                     instance: await initializeAuthenticationProd(
                         dispatch,
                         initialMatchSilentRenewCallbackUrl != null,
-                        fetchIdpSettings,
-                        fetchValidateUser,
+                        appLocalSrv.fetchIdpSettings,
+                        userAdminSrv.fetchValidateUser,
                         initialMatchSigninCallbackUrl != null
                     ),
                     error: null,
@@ -142,8 +138,9 @@ const App = () => {
     }, [initialMatchSilentRenewCallbackUrl, dispatch, initialMatchSigninCallbackUrl]);
 
     useEffect(() => {
-        if (user !== null) {
-            fetchConfigParameters(COMMON_APP_NAME)
+        if (user !== undefined) {
+            configSrv
+                .fetchConfigParameters('common')
                 .then((params) => updateParams(params))
                 .catch((error) =>
                     snackError({
@@ -152,7 +149,8 @@ const App = () => {
                     })
                 );
 
-            fetchConfigParameters(APP_NAME)
+            configSrv
+                .fetchConfigParameters(APP_NAME)
                 .then((params) => updateParams(params))
                 .catch((error) =>
                     snackError({
@@ -188,7 +186,7 @@ const App = () => {
                         marginTop: '20px',
                     }}
                 >
-                    {user !== null ? (
+                    {user !== undefined ? (
                         <Routes>
                             <Route
                                 path="/"

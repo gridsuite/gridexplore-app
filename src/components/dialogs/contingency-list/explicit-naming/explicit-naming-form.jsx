@@ -7,12 +7,17 @@
 
 import { useIntl } from 'react-intl';
 import React, { useCallback, useMemo } from 'react';
-import yup from '../../../utils/yup-config';
 import { makeDefaultRowData } from '../contingency-list-utils';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { ContingencyListType } from 'utils/elementType';
 import { v4 as uuid4 } from 'uuid';
-import { FieldConstants, gridItem, CustomAgGridTable, ROW_DRAGGING_SELECTION_COLUMN_DEF } from '@gridsuite/commons-ui';
+import {
+    CustomAgGridTable,
+    FieldConstants,
+    gridItem,
+    ROW_DRAGGING_SELECTION_COLUMN_DEF,
+    yup,
+} from '@gridsuite/commons-ui';
 
 export const getExplicitNamingSchema = (id) => {
     return {

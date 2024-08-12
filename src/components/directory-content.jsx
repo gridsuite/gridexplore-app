@@ -9,25 +9,20 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
-
 import * as constants from '../utils/UIconstants';
-import CircularProgress from '@mui/material/CircularProgress';
-import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
-
+import { Box, CircularProgress, Grid } from '@mui/material';
+import { FolderOpenRounded as FolderOpenRoundedIcon } from '@mui/icons-material';
 import { ContingencyListType, FilterType } from '../utils/elementType';
 import {
-    ElementType,
-    useSnackMessage,
-    ExplicitNamingFilterEditionDialog,
-    ExpertFilterEditionDialog,
     CriteriaBasedFilterEditionDialog,
     DescriptionModificationDialog,
+    ElementType,
+    ExpertFilterEditionDialog,
+    ExplicitNamingFilterEditionDialog,
     noSelectionForCopy,
+    PARAM_LANGUAGE,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Box } from '@mui/material';
-
-import { elementExists, getFilterById, updateElement } from '../utils/rest-api';
-
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
@@ -35,17 +30,15 @@ import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/crite
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
 import { useParameterState } from './dialogs/use-parameters-dialog';
-import { PARAM_LANGUAGE } from '../utils/config-params';
-import Grid from '@mui/material/Grid';
 import { useDirectoryContent } from '../hooks/useDirectoryContent';
 import {
-    getColumnsDefinition,
     computeCheckedElements,
     formatMetadata,
+    getColumnsDefinition,
     isRowUnchecked,
 } from './utils/directory-content-utils';
 import NoContentDirectory from './no-content-directory';
-import { DirectoryContentTable, CUSTOM_ROW_CLASS } from './directory-content-table';
+import { CUSTOM_ROW_CLASS, DirectoryContentTable } from './directory-content-table';
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
 
 const circularProgressSize = '70px';
@@ -485,7 +478,6 @@ const DirectoryContent = () => {
                         setActiveElement(null);
                         setOpenDescModificationDialog(false);
                     }}
-                    updateElement={updateElement}
                 />
             );
         }
@@ -537,9 +529,7 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
-                        getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
-                        elementExists={elementExists}
                         language={languageLocal}
                     />
                 );
@@ -552,10 +542,8 @@ const DirectoryContent = () => {
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
-                        getFilterById={getFilterById}
                         selectionForCopy={selectionForCopy}
                         activeDirectory={activeDirectory}
-                        elementExists={elementExists}
                         language={languageLocal}
                     />
                 );
@@ -569,9 +557,7 @@ const DirectoryContent = () => {
                         name={name}
                         broadcastChannel={broadcastChannel}
                         selectionForCopy={selectionForCopy}
-                        getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
-                        elementExists={elementExists}
                         language={languageLocal}
                     />
                 );

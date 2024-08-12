@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+/*
+ * Copyright © 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -9,35 +9,35 @@ import { Box, Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { FunctionComponent, useCallback, useEffect } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
-import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
 import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import {
-    useSnackMessage,
-    ErrorInput,
-    FieldErrorAlert,
-    ExpandingTextField,
-    ElementType,
     CustomMuiDialog,
+    ElementAttributes,
+    ElementType,
+    ErrorInput,
+    ExpandingTextField,
     FieldConstants,
+    FieldErrorAlert,
     isObjectEmpty,
     keyGenerator,
     ModifyElementSelection,
-    ElementAttributes,
     Parameter,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
 import { addUploadingElement, removeUploadingElement, setActiveDirectory } from '../../../redux/actions';
 import {
-    CreateStudyDialogFormValues,
     createStudyDialogFormValidationSchema,
+    CreateStudyDialogFormValues,
     getCreateStudyDialogFormDefaultValues,
 } from './create-study-dialog-utils';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
 import { AppState, UploadingElement } from 'redux/reducer';
 import { UUID } from 'crypto';
+import { caseSrv, exploreSrv, networkConversionSrv } from '../../../services';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -123,8 +123,9 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
     );
 
     const getCurrentCaseImportParams = useCallback(
-        (uuid: string) => {
-            getCaseImportParameters(uuid)
+        (uuid: UUID) => {
+            networkConversionSrv
+                .getCaseImportParameters(uuid)
                 .then((result) => {
                     const formattedParams = formatCaseImportParameters(result.parameters);
                     setValue(FieldConstants.CURRENT_PARAMETERS, customizeCurrentParameters(formattedParams));
@@ -153,7 +154,7 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
         const caseUuid = getValues(FieldConstants.CASE_UUID);
         // if we cancel case creation, we need to delete the associated newly created case (if we created one)
         if (caseUuid && !providedExistingCase) {
-            deleteCase(caseUuid).catch(handleApiCallError);
+            caseSrv.deleteCase(caseUuid).catch(handleApiCallError);
         }
     };
 
@@ -191,15 +192,17 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
             caseFormat,
         };
 
-        createStudy(
-            studyName,
-            description,
-            caseUuid,
-            !!providedExistingCase,
-            directory,
-            currentParameters ? JSON.stringify(currentParameters) : '',
-            caseFormat
-        )
+        exploreSrv
+            .createStudy(
+                studyName,
+                // @ts-expect-error TODO: manage nullable description case
+                description,
+                caseUuid,
+                !!providedExistingCase,
+                directory,
+                currentParameters ? JSON.stringify(currentParameters) : '',
+                caseFormat
+            )
             .then(() => {
                 dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
                 onClose();

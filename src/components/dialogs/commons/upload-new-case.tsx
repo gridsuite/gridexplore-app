@@ -5,25 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import { ChangeEvent, FunctionComponent, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import { Grid, Input } from '@mui/material';
+import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
-import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
 import { FieldConstants } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
+import { caseSrv } from '../../../services';
 
 interface UploadNewCaseProps {
     isNewStudyCreation?: boolean;
-    getCurrentCaseImportParams?: (uuid: string) => void;
+    getCurrentCaseImportParams?: (uuid: UUID) => void;
     handleApiCallError?: ErrorCallback;
 }
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
 
-const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
+const UploadNewCase: FunctionComponent<UploadNewCaseProps> = ({
     isNewStudyCreation = false,
     getCurrentCaseImportParams,
     handleApiCallError,
@@ -49,7 +48,7 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
     const caseFile = value as File;
     const { name: caseFileName } = caseFile || {};
 
-    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
 
         clearErrors(FieldConstants.CASE_FILE);
@@ -68,12 +67,13 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                 if (isNewStudyCreation) {
                     // Create new case
                     setCaseFileLoading(true);
-                    createCaseWithoutDirectoryElementCreation(currentFile)
+                    caseSrv
+                        .createCaseWithoutDirectoryElementCreation(currentFile)
                         .then((newCaseUuid) => {
                             const prevCaseUuid = getValues(FieldConstants.CASE_UUID);
 
                             if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
-                                deleteCase(prevCaseUuid).catch(handleApiCallError);
+                                caseSrv.deleteCase(prevCaseUuid).catch(handleApiCallError);
                             }
 
                             onCaseUuidChange(newCaseUuid);

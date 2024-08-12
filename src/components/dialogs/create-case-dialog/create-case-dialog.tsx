@@ -5,15 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createCase } from '../../../utils/rest-api';
+import { exploreSrv } from '../../../services';
 import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import { Grid } from '@mui/material';
 import { addUploadingElement, removeUploadingElement } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
     createCaseDialogFormValidationSchema,
     getCreateCaseDialogFormValidationDefaultValues,
@@ -33,6 +32,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
 import { AppDispatch } from '../../../redux/store';
+import { FunctionComponent } from 'react';
 
 interface IFormData {
     [FieldConstants.CASE_NAME]: string;
@@ -45,7 +45,7 @@ interface CreateCaseDialogProps {
     open: boolean;
 }
 
-const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onClose, open }) => {
+const CreateCaseDialog: FunctionComponent<CreateCaseDialogProps> = ({ onClose, open }) => {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
 
@@ -75,14 +75,11 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
             uploading: true,
         };
 
-        createCase({
-            name: caseName,
-            description,
-            file: caseFile,
-            parentDirectoryUuid: activeDirectory,
-        })
+        exploreSrv
+            // @ts-expect-error TODO: description can't be null with rest call
+            .createCase(caseName, description, caseFile, activeDirectory)
             .then(onClose)
-            .catch((err) => {
+            .catch((err: any) => {
                 if (handleMaxElementsExceededError(err, snackError)) {
                     return;
                 } else if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {

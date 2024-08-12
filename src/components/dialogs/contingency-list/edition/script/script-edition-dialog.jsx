@@ -5,18 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, CustomMuiDialog, FieldConstants } from '@gridsuite/commons-ui';
+import { CustomMuiDialog, FieldConstants, useSnackMessage, yup } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-
-import React, { useEffect, useState } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useEffect, useState } from 'react';
 import { getContingencyListEmptyFormData, getScriptFormDataFromFetchedElement } from '../../contingency-list-utils';
-import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
-import yup from 'components/utils/yup-config';
 import ScriptEditionForm from './script-edition-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
+import { actionsSrv, exploreSrv } from '../../../../../services';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -56,7 +54,8 @@ const ScriptEditionDialog = ({
     useEffect(() => {
         if (contingencyListId) {
             setIsFetching(true);
-            getContingencyList(contingencyListType, contingencyListId)
+            actionsSrv
+                .getContingencyList(contingencyListType, contingencyListId)
                 .then((response) => {
                     if (response) {
                         const formData = getScriptFormDataFromFetchedElement(response);
@@ -83,7 +82,7 @@ const ScriptEditionDialog = ({
             id: contingencyListId,
             script: contingencyList[FieldConstants.SCRIPT],
         };
-        return saveScriptContingencyList(newScript, contingencyList[FieldConstants.NAME]);
+        return exploreSrv.saveScriptContingencyList(newScript, contingencyList[FieldConstants.NAME]);
     };
     const onSubmit = (contingencyList) => {
         editContingencyList(contingencyListId, contingencyList)

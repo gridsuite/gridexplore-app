@@ -1,16 +1,17 @@
 /*
- * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * Copyright © 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { ElementType, useDebounce } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
+import { directorySrv } from '../../services';
 
 const styles = {
     helperText: {
@@ -23,7 +24,7 @@ interface UseTextValueProps extends Omit<TextFieldProps, 'label' | 'defaultValue
     label: string;
     id?: string;
     defaultValue?: string;
-    adornment?: React.ReactNode;
+    adornment?: ReactNode;
 }
 
 export const useTextValue = ({
@@ -32,11 +33,11 @@ export const useTextValue = ({
     defaultValue = '',
     adornment,
     ...formProps
-}: UseTextValueProps): [string, React.ReactNode, (value: string) => void, boolean] => {
+}: UseTextValueProps): [string, ReactNode, (value: string) => void, boolean] => {
     const [value, setValue] = useState(defaultValue);
     const [hasChanged, setHasChanged] = useState(false);
 
-    const handleChangeValue = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeValue = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         setValue(event.target.value);
         setHasChanged(true);
     }, []);
@@ -68,8 +69,19 @@ export const useTextValue = ({
     return [value, field, setValue, hasChanged];
 };
 
+async function doesElementInDirExist(elementType: ElementType, parentDirectoryId: UUID | undefined, name: string) {
+    // if element is a root directory, we need to make a specific api rest call (elementType is directory, and no parent element)
+    if (elementType === ElementType.DIRECTORY && parentDirectoryId === undefined) {
+        return directorySrv.rootDirectoryExists(name);
+    } else if (parentDirectoryId !== undefined) {
+        return directorySrv.elementExists(parentDirectoryId, name, elementType);
+    } else {
+        return false;
+    }
+}
+
 interface UseNameFieldProps extends UseTextValueProps {
-    parentDirectoryId?: string;
+    parentDirectoryId?: UUID;
     elementType: ElementType;
     active: boolean;
     alreadyExistingErrorMessage?: string;
@@ -81,17 +93,13 @@ export const useNameField = ({
     active,
     alreadyExistingErrorMessage,
     ...props
-}: UseNameFieldProps): [string, React.ReactNode, string | undefined, boolean, (value: string) => void, boolean] => {
+}: Readonly<UseNameFieldProps>): [string, ReactNode, string | undefined, boolean, (value: string) => void, boolean] => {
     const [error, setError] = useState<string | undefined>();
     const intl = useIntl();
     const [checking, setChecking] = useState<boolean | undefined>(undefined);
 
-    // if element is a root directory, we need to make a specific api rest call (elementType is directory, and no parent element)
     const doesElementExist = useCallback(
-        (name: string) =>
-            elementType === ElementType.DIRECTORY && !parentDirectoryId
-                ? rootDirectoryExists(name)
-                : elementExists(parentDirectoryId, name, elementType),
+        (name: string) => doesElementInDirExist(elementType, parentDirectoryId, name),
         [elementType, parentDirectoryId]
     );
 
@@ -110,11 +118,10 @@ export const useNameField = ({
 
             if (nameFormatted !== '' && name === props.defaultValue) {
                 setError(
-                    alreadyExistingErrorMessage
-                        ? alreadyExistingErrorMessage
-                        : intl.formatMessage({
-                              id: 'nameAlreadyUsed',
-                          })
+                    alreadyExistingErrorMessage ??
+                        intl.formatMessage({
+                            id: 'nameAlreadyUsed',
+                        })
                 );
                 setChecking(false);
             }
@@ -124,9 +131,8 @@ export const useNameField = ({
                     .then((data) => {
                         setError(
                             data
-                                ? alreadyExistingErrorMessage
-                                    ? alreadyExistingErrorMessage
-                                    : intl.formatMessage({
+                                ? alreadyExistingErrorMessage ??
+                                      intl.formatMessage({
                                           id: 'nameAlreadyUsed',
                                       })
                                 : ''

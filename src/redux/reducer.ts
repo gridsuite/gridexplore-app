@@ -6,15 +6,6 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-
-import {
-    getLocalStorageComputedLanguage,
-    getLocalStorageLanguage,
-    getLocalStorageTheme,
-    saveLocalStorageLanguage,
-    saveLocalStorageTheme,
-} from './local-storage';
-
 import {
     ACTIVE_DIRECTORY,
     ActiveDirectoryAction,
@@ -46,21 +37,26 @@ import {
     TREE_DATA,
     TreeDataAction,
 } from './actions';
-
 import {
+    AppMetadata,
     AuthenticationActions,
     AuthenticationRouterErrorAction,
     AuthenticationRouterErrorState,
-    CommonMetadata,
-    CommonStoreState,
     ElementAttributes,
     ElementType,
+    getLocalStorageComputedLanguage,
+    getLocalStorageLanguage,
+    getLocalStorageTheme,
     GsLang,
     GsLangUser,
     GsTheme,
     LOGOUT_ERROR,
     LogoutErrorAction,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
     RESET_AUTHENTICATION_ROUTER_ERROR,
+    saveLocalStorageLanguage,
+    saveLocalStorageTheme,
     SHOW_AUTH_INFO_LOGIN,
     ShowAuthenticationRouterLoginAction,
     SIGNIN_CALLBACK_ERROR,
@@ -72,8 +68,9 @@ import {
     UserAction,
     UserValidationErrorAction,
 } from '@gridsuite/commons-ui';
-import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
+import { APP_NAME } from '../utils/config-params';
 import { UUID } from 'crypto';
+import { User } from 'oidc-client';
 
 // IDirectory is exactly an IElement, with a specific type value
 export type IDirectory = ElementAttributes & {
@@ -109,7 +106,8 @@ export type UploadingElement = {
     caseFormat?: string;
 };
 
-export interface AppState extends CommonStoreState {
+export interface AppState {
+    user: User | undefined;
     [PARAM_THEME]: GsTheme;
     [PARAM_LANGUAGE]: GsLang;
     computedLanguage: GsLangUser;
@@ -119,7 +117,7 @@ export interface AppState extends CommonStoreState {
     authenticationRouterError: AuthenticationRouterErrorState | null;
     showAuthenticationRouterLogin: boolean;
 
-    appsAndUrls: CommonMetadata[];
+    appsAndUrls: AppMetadata[];
     activeDirectory?: UUID;
     currentChildren?: ElementAttributes[];
     selectedDirectory: ElementAttributes | null;
@@ -141,15 +139,15 @@ export interface AppState extends CommonStoreState {
 
 const initialState: AppState = {
     // authentication
-    user: null,
+    user: undefined,
     signInCallbackError: null,
     authenticationRouterError: null,
     showAuthenticationRouterLogin: false,
 
     // params
-    computedLanguage: getLocalStorageComputedLanguage(),
-    [PARAM_THEME]: getLocalStorageTheme(),
-    [PARAM_LANGUAGE]: getLocalStorageLanguage(),
+    computedLanguage: getLocalStorageComputedLanguage(APP_NAME),
+    [PARAM_THEME]: getLocalStorageTheme(APP_NAME),
+    [PARAM_LANGUAGE]: getLocalStorageLanguage(APP_NAME),
 
     currentChildren: undefined,
     selectedDirectory: null,
@@ -184,12 +182,12 @@ function filterFromObject<K extends string | number | symbol, V>(
 export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SELECT_THEME, (state, action: ThemeAction) => {
         state.theme = action.theme;
-        saveLocalStorageTheme(state.theme);
+        saveLocalStorageTheme(APP_NAME, state.theme);
     });
 
     builder.addCase(SELECT_LANGUAGE, (state, action: LanguageAction) => {
         state.language = action.language;
-        saveLocalStorageLanguage(state.language);
+        saveLocalStorageLanguage(APP_NAME, state.language);
     });
 
     builder.addCase(USER, (state, action: UserAction) => {

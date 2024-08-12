@@ -5,19 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { downloadCase, fetchConvertedCase, getCaseOriginalName } from '../../utils/rest-api';
 import { useIntl } from 'react-intl';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
+import { caseSrv } from '../../services';
 
 const downloadCases = async (selectedCases: ElementAttributes[]) => {
     for (const selectedCase of selectedCases) {
-        const result = await downloadCase(selectedCase.elementUuid);
-        let caseOriginalName = await getCaseOriginalName(selectedCase.elementUuid);
+        let caseOriginalName = await caseSrv.getCaseOriginalName(selectedCase.elementUuid);
         let caseFormat = typeof caseOriginalName === 'string' ? caseOriginalName.split('.').pop() : 'xiidm';
         let caseName = selectedCase.elementName;
         const filename = `${caseName}.${caseFormat}`;
-        const blob = await result.blob();
+        const blob = await caseSrv.downloadCase(selectedCase.elementUuid);
         const href = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = href;
@@ -50,17 +49,17 @@ export function useDownloadUtils() {
         abortController: AbortController
     ): Promise<void> => {
         try {
-            const result = await fetchConvertedCase(
+            const result = await caseSrv.fetchConvertedCase(
                 caseElement.elementUuid,
                 caseElement.elementName,
                 format,
                 formatParameters,
                 abortController
             );
+            // @ts-expect-error TODO: manage nullable field case
             let filename = result.headers.get('Content-Disposition').split('filename=')[1];
             filename = filename.substring(1, filename.length - 1); // We remove quotes
             const blob = await result.blob();
-
             const href = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = href;

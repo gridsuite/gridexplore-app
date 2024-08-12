@@ -6,12 +6,13 @@
  */
 
 import { useSelector } from 'react-redux';
-import React, { useRef, useEffect, useCallback, useState } from 'react';
-import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
+import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
+import { ElementAttributes, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { AppState } from '../redux/reducer';
+import { exploreSrv } from '../services';
 
-export const useDirectoryContent = (setIsMissingDataAfterDirChange: React.Dispatch<React.SetStateAction<boolean>>) => {
+export const useDirectoryContent = (setIsMissingDataAfterDirChange: Dispatch<SetStateAction<boolean>>) => {
     const currentChildren = useSelector((state: AppState) => state.currentChildren);
     const [childrenMetadata, setChildrenMetadata] = useState<Record<UUID, ElementAttributes>>({});
     const { snackError } = useSnackMessage();
@@ -39,7 +40,8 @@ export const useDirectoryContent = (setIsMissingDataAfterDirChange: React.Dispat
             .filter((e) => !e.uploading)
             .map((e) => e.elementUuid);
         if (childrenToFetchElementsInfos.length > 0) {
-            fetchElementsInfos(childrenToFetchElementsInfos)
+            exploreSrv
+                .fetchElementsInfos(childrenToFetchElementsInfos)
                 .then((res) => {
                     res.forEach((e) => {
                         metadata[e.elementUuid] = e;

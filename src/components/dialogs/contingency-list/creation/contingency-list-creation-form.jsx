@@ -6,24 +6,22 @@
  */
 
 import {
-    RadioInput,
-    getCriteriaBasedFormData,
     CONTINGENCY_LIST_EQUIPMENTS,
     CriteriaBasedForm,
-    FieldConstants,
-    UniqueNameInput,
-    ExpandingTextField,
     ElementType,
+    ExpandingTextField,
+    FieldConstants,
+    getCriteriaBasedFormData,
     gridItem,
+    RadioInput,
+    UniqueNameInput,
 } from '@gridsuite/commons-ui';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { Box, Grid } from '@mui/material';
-import React from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import ScriptInputForm from '../script/script-input-form';
 import { useSelector } from 'react-redux';
-import { elementExists } from '../../../../utils/rest-api';
 
 const ContingencyListCreationForm = () => {
     const { setValue } = useFormContext();
@@ -57,7 +55,6 @@ const ContingencyListCreationForm = () => {
                     elementType={ElementType.CONTINGENCY_LIST}
                     autoFocus
                     activeDirectory={activeDirectory}
-                    elementExists={elementExists}
                 />
             </Grid>
             <Grid item xs={12}>

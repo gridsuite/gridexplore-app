@@ -6,10 +6,8 @@
  */
 
 import { Grid } from '@mui/material';
-import React from 'react';
 import ScriptInputForm from '../../script/script-input-form';
-import { UniqueNameInput, ElementType, FieldConstants } from '@gridsuite/commons-ui';
-import { elementExists } from 'utils/rest-api';
+import { ElementType, FieldConstants, UniqueNameInput } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 
 const ScriptEditionForm = () => {
@@ -22,7 +20,6 @@ const ScriptEditionForm = () => {
                     label={'nameProperty'}
                     elementType={ElementType.CONTINGENCY_LIST}
                     activeDirectory={activeDirectory}
-                    elementExists={elementExists}
                 />
             </Grid>
             <ScriptInputForm name={FieldConstants.SCRIPT} />
