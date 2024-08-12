@@ -23,7 +23,7 @@ import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 import { DialogsId } from '../../utils/UIconstants';
 import CommonContextualMenu from './common-contextual-menu';
-import { useDeferredFetch } from '../../utils/custom-hooks';
+import useDeferredFetch from '../../hooks/useDeferredFetch';
 import { ElementType, FilterCreationDialog, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';

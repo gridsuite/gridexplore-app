@@ -32,6 +32,7 @@
         "react-window": "^1.8.10",
         "reconnecting-websocket": "^4.4.0",
         "redux": "^5.0.1",
+        "type-fest": "^4.24.0",
         "typeface-roboto": "^1.1.13",
         "uuid": "^9.0.1",
         "yup": "^1.4.0"

@@ -17,7 +17,7 @@ import {
 } from '@mui/icons-material';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar from './common-toolbar';
-import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
+import useMultipleDeferredFetch from '../../hooks/useMultipleDeferredFetch';
 import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { useDownloadUtils } from '../utils/caseUtils';
