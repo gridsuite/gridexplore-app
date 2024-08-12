@@ -23,9 +23,7 @@ interface NoContentDirectoryProps {
     handleOpenDialog: () => void;
 }
 
-const NoContentDirectory: React.FC<NoContentDirectoryProps> = ({
-    handleOpenDialog,
-}) => {
+const NoContentDirectory: React.FC<NoContentDirectoryProps> = ({ handleOpenDialog }) => {
     const styles = {
         noContentContainer: (theme: any) => ({
             display: 'flex',
@@ -55,11 +53,7 @@ const NoContentDirectory: React.FC<NoContentDirectoryProps> = ({
                 <h1>
                     <FormattedMessage id={'createFirstDir'} />
                 </h1>
-                <Button
-                    variant="contained"
-                    sx={styles.noContentButton}
-                    onClick={handleOpenDialog}
-                >
+                <Button variant="contained" sx={styles.noContentButton} onClick={handleOpenDialog}>
                     <FormattedMessage id={'createFolder'} />
                 </Button>
             </Box>

@@ -10,12 +10,7 @@ import yup from 'components/utils/yup-config';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CircularProgress, Grid } from '@mui/material';
-import {
-    UniqueNameInput,
-    ElementType,
-    CustomMuiDialog,
-    FieldConstants,
-} from '@gridsuite/commons-ui';
+import { UniqueNameInput, ElementType, CustomMuiDialog, FieldConstants } from '@gridsuite/commons-ui';
 import { elementExists, getNameCandidate } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -82,9 +77,7 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
     const nameError = errors[FieldConstants.NAME];
     const isValidating = errors.root?.isValidating;
 
-    const activeDirectory = useSelector(
-        (state: AppState) => state.activeDirectory
-    );
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
 
     const onSubmit = (data: FormData) => {
         onValidate(id, data[FieldConstants.NAME]);
@@ -120,13 +113,7 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
             .finally(() => {
                 setLoading(false);
             });
-    }, [
-        handleGenerateNameError,
-        setValue,
-        currentName,
-        elementType,
-        directoryUuid,
-    ]);
+    }, [handleGenerateNameError, setValue, currentName, elementType, directoryUuid]);
 
     return (
         <CustomMuiDialog

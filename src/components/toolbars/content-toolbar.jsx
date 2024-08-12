@@ -29,8 +29,7 @@ const ContentToolbar = (props) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const { handleDownloadCases, handleConvertCases, stopCasesExports } =
-        useDownloadUtils();
+    const { handleDownloadCases, handleConvertCases, stopCasesExports } = useDownloadUtils();
 
     const [openDialog, setOpenDialog] = useState(null);
 
@@ -100,31 +99,20 @@ const ContentToolbar = (props) => {
         [selectedElements, userId]
     );
 
-    const noCreationInProgress = useMemo(
-        () => selectedElements.every((el) => el.hasMetadata),
-        [selectedElements]
-    );
+    const noCreationInProgress = useMemo(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
 
-    const allowsDelete = useMemo(
-        () => isUserAllowed && noCreationInProgress,
-        [isUserAllowed, noCreationInProgress]
-    );
+    const allowsDelete = useMemo(() => isUserAllowed && noCreationInProgress, [isUserAllowed, noCreationInProgress]);
 
     const allowsMove = useMemo(
         () =>
-            selectedElements.every(
-                (element) => element.type !== ElementType.DIRECTORY
-            ) &&
+            selectedElements.every((element) => element.type !== ElementType.DIRECTORY) &&
             isUserAllowed &&
             noCreationInProgress,
         [isUserAllowed, selectedElements, noCreationInProgress]
     );
 
     const allowsDownloadExportCases = useMemo(
-        () =>
-            selectedElements.some(
-                (element) => element.type === ElementType.CASE
-            ) && noCreationInProgress,
+        () => selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress,
         [selectedElements, noCreationInProgress]
     );
 
@@ -146,10 +134,7 @@ const ContentToolbar = (props) => {
     const items = useMemo(() => {
         const toolbarItems = [];
 
-        if (
-            selectedElements.length &&
-            (allowsDelete || allowsMove || allowsDownloadExportCases)
-        ) {
+        if (selectedElements.length && (allowsDelete || allowsMove || allowsDownloadExportCases)) {
             toolbarItems.push(
                 {
                     tooltipTextId: 'delete',
@@ -171,26 +156,18 @@ const ContentToolbar = (props) => {
                     tooltipTextId: 'download.button',
                     callback: () => handleDownloadCases(selectedElements),
                     icon: <FileDownload fontSize="small" />,
-                    disabled:
-                        !selectedElements.length || !allowsDownloadExportCases,
+                    disabled: !selectedElements.length || !allowsDownloadExportCases,
                 },
                 {
                     tooltipTextId: 'download.export.button',
                     callback: () => handleOpenDialog(DialogsId.EXPORT),
                     icon: <DownloadForOffline fontSize="small" />,
-                    disabled:
-                        !selectedElements.length || !allowsDownloadExportCases,
+                    disabled: !selectedElements.length || !allowsDownloadExportCases,
                 }
             );
         }
         return toolbarItems;
-    }, [
-        allowsDelete,
-        allowsDownloadExportCases,
-        allowsMove,
-        handleDownloadCases,
-        selectedElements,
-    ]);
+    }, [allowsDelete, allowsDownloadExportCases, allowsMove, handleDownloadCases, selectedElements]);
 
     const renderDialog = () => {
         switch (openDialog) {
@@ -199,15 +176,9 @@ const ContentToolbar = (props) => {
                     <DeleteDialog
                         open={true}
                         onClose={handleCloseDialog}
-                        onClick={() =>
-                            handleDeleteElements(
-                                selectedElements.map((e) => e.elementUuid)
-                            )
-                        }
+                        onClick={() => handleDeleteElements(selectedElements.map((e) => e.elementUuid))}
                         items={selectedElements}
-                        multipleDeleteFormatMessageId={
-                            'deleteMultipleItemsDialogMessage'
-                        }
+                        multipleDeleteFormatMessageId={'deleteMultipleItemsDialogMessage'}
                         simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
                         error={deleteError}
                     />
@@ -218,18 +189,11 @@ const ContentToolbar = (props) => {
                         open={true}
                         onClose={(selectedDir) => {
                             if (selectedDir.length > 0) {
-                                moveCB([
-                                    [
-                                        selectedElements.map(
-                                            (element) => element.elementUuid
-                                        ),
-                                        selectedDir[0].id,
-                                    ],
-                                ]);
+                                moveCB([[selectedElements.map((element) => element.elementUuid), selectedDir[0].id]]);
                             }
                             handleCloseDialog();
                         }}
-                        items={selectedElements}
+                        itemsCount={selectedElements.length}
                     />
                 );
             case DialogsId.EXPORT:

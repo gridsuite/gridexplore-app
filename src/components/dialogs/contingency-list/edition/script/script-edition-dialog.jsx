@@ -5,19 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    useSnackMessage,
-    CustomMuiDialog,
-    FieldConstants,
-} from '@gridsuite/commons-ui';
+import { useSnackMessage, CustomMuiDialog, FieldConstants } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
 import React, { useEffect, useState } from 'react';
-import {
-    getContingencyListEmptyFormData,
-    getScriptFormDataFromFetchedElement,
-} from '../../contingency-list-utils';
+import { getContingencyListEmptyFormData, getScriptFormDataFromFetchedElement } from '../../contingency-list-utils';
 import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
 import yup from 'components/utils/yup-config';
 import ScriptEditionForm from './script-edition-form';
@@ -66,8 +59,7 @@ const ScriptEditionDialog = ({
             getContingencyList(contingencyListType, contingencyListId)
                 .then((response) => {
                     if (response) {
-                        const formData =
-                            getScriptFormDataFromFetchedElement(response);
+                        const formData = getScriptFormDataFromFetchedElement(response);
                         reset({ ...formData, [FieldConstants.NAME]: name });
                     }
                 })
@@ -91,10 +83,7 @@ const ScriptEditionDialog = ({
             id: contingencyListId,
             script: contingencyList[FieldConstants.SCRIPT],
         };
-        return saveScriptContingencyList(
-            newScript,
-            contingencyList[FieldConstants.NAME]
-        );
+        return saveScriptContingencyList(newScript, contingencyList[FieldConstants.NAME]);
     };
     const onSubmit = (contingencyList) => {
         editContingencyList(contingencyListId, contingencyList)

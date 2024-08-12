@@ -11,9 +11,16 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
-import PropTypes from 'prop-types';
-import React from 'react';
 import { CancelButton } from '@gridsuite/commons-ui';
+import { FunctionComponent } from 'react';
+
+interface ReplaceWithScriptDialogProps {
+    id: string;
+    open: boolean;
+    onClose: () => void;
+    onClick: (id: string) => void;
+    title: string;
+}
 
 /**
  * Dialog to replace a filters contingency list with a script contingency list or a filter with a script
@@ -21,31 +28,29 @@ import { CancelButton } from '@gridsuite/commons-ui';
  * @param open Is the dialog open ?
  * @param onClose Event to close the dialog
  * @param onClick Function to call to perform rename
- * @param onError handle errors
  * @param title Title of the dialog
  */
-const ReplaceWithScriptDialog = ({ id, open, onClose, onClick, title }) => {
-    const handleClose = () => {
+const ReplaceWithScriptDialog: FunctionComponent<ReplaceWithScriptDialogProps> = ({
+    id,
+    open,
+    onClose,
+    onClick,
+    title,
+}) => {
+    const handleClose = (): void => {
         onClose();
     };
 
-    const handleClick = () => {
+    const handleClick = (): void => {
         onClick(id);
     };
 
     return (
-        <Dialog
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-title-replace-with-script"
-        >
+        <Dialog open={open} onClose={handleClose} aria-labelledby="dialog-title-replace-with-script">
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    <FormattedMessage
-                        id="alertBeforeReplaceWithScript"
-                        values={{ br: <br /> }}
-                    />
+                    <FormattedMessage id="alertBeforeReplaceWithScript" values={{ br: <br /> }} />
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -56,14 +61,6 @@ const ReplaceWithScriptDialog = ({ id, open, onClose, onClick, title }) => {
             </DialogActions>
         </Dialog>
     );
-};
-
-ReplaceWithScriptDialog.propTypes = {
-    id: PropTypes.string.isRequired,
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onClick: PropTypes.func.isRequired,
-    title: PropTypes.string.isRequired,
 };
 
 export default ReplaceWithScriptDialog;

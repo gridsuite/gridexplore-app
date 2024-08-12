@@ -7,11 +7,7 @@
 
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import {
-    UniqueNameInput,
-    ElementType,
-    FieldConstants,
-} from '@gridsuite/commons-ui';
+import { UniqueNameInput, ElementType, FieldConstants } from '@gridsuite/commons-ui';
 import { elementExists } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
@@ -26,11 +22,7 @@ interface PrefilledNameInputProps {
  * Input component that automatically fill the field when a case is uploaded
  * Used for CreateCaseDialog and CreateStudyDialog
  */
-const PrefilledNameInput: FunctionComponent<PrefilledNameInputProps> = ({
-    label,
-    name,
-    elementType,
-}) => {
+const PrefilledNameInput: FunctionComponent<PrefilledNameInputProps> = ({ label, name, elementType }) => {
     const {
         setValue,
         clearErrors,
@@ -44,18 +36,11 @@ const PrefilledNameInput: FunctionComponent<PrefilledNameInputProps> = ({
     const caseFileErrorMessage = errors.caseFile?.message;
     const apiCallErrorMessage = errors.root?.apiCall?.message;
 
-    const activeDirectory = useSelector(
-        (state: AppState) => state.activeDirectory
-    );
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
 
     useEffect(() => {
         // we replace the name only if some conditions are respected
-        if (
-            caseFile &&
-            !modifiedByUser &&
-            !apiCallErrorMessage &&
-            !caseFileErrorMessage
-        ) {
+        if (caseFile && !modifiedByUser && !apiCallErrorMessage && !caseFileErrorMessage) {
             const { name: caseName } = caseFile;
 
             if (caseName) {
@@ -65,15 +50,7 @@ const PrefilledNameInput: FunctionComponent<PrefilledNameInputProps> = ({
                 });
             }
         }
-    }, [
-        caseFile,
-        modifiedByUser,
-        apiCallErrorMessage,
-        caseFileErrorMessage,
-        setValue,
-        clearErrors,
-        name,
-    ]);
+    }, [caseFile, modifiedByUser, apiCallErrorMessage, caseFileErrorMessage, setValue, clearErrors, name]);
 
     return (
         <UniqueNameInput

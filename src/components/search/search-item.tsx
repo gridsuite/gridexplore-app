@@ -42,10 +42,7 @@ interface SearchItemProps {
     inputValue: string;
 }
 
-export const HighlightedText: FunctionComponent<HighlightedTextProps> = ({
-    text,
-    highlight,
-}) => {
+export const HighlightedText: FunctionComponent<HighlightedTextProps> = ({ text, highlight }) => {
     const escapedHighlight = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const parts = text.split(new RegExp(`(${escapedHighlight})`, 'gi'));
     return (
@@ -63,20 +60,13 @@ export const HighlightedText: FunctionComponent<HighlightedTextProps> = ({
     );
 };
 
-export const SearchItem: FunctionComponent<SearchItemProps> = ({
-    matchingElement,
-    inputValue,
-    ...othersProps
-}) => {
+export const SearchItem: FunctionComponent<SearchItemProps> = ({ matchingElement, inputValue, ...othersProps }) => {
     return (
         <li {...othersProps}>
             <span>{getFileIcon(matchingElement.type, styles.icon)}</span>
             <Grid container>
                 <Grid item xs={11} sx={styles.grid}>
-                    <HighlightedText
-                        text={matchingElement.name}
-                        highlight={inputValue}
-                    />
+                    <HighlightedText text={matchingElement.name} highlight={inputValue} />
                 </Grid>
                 <Grid item sx={styles.grid2}>
                     <Typography>

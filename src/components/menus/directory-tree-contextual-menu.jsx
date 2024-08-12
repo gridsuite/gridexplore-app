@@ -34,20 +34,15 @@ import {
 
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
-import {
-    ElementType,
-    FilterCreationDialog,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
-import { useParameterState } from '../dialogs/parameters-dialog';
+import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 
 const DirectoryTreeContextualMenu = (props) => {
-    const { directory, open, onClose, openDialog, setOpenDialog, ...others } =
-        props;
+    const { directory, open, onClose, openDialog, setOpenDialog, ...others } = props;
     const userId = useSelector((state) => state.user.profile.sub);
 
     const intl = useIntl();
@@ -85,14 +80,12 @@ const DirectoryTreeContextualMenu = (props) => {
         false
     );
 
-    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(
-        insertDirectory,
-        (response) => handleCloseDialog(null, response?.elementUuid)
+    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, (response) =>
+        handleCloseDialog(null, response?.elementUuid)
     );
 
-    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(
-        insertRootDirectory,
-        (response) => handleCloseDialog(null, response?.elementUuid)
+    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(insertRootDirectory, (response) =>
+        handleCloseDialog(null, response?.elementUuid)
     );
 
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
@@ -113,9 +106,7 @@ const DirectoryTreeContextualMenu = (props) => {
                 id: 'elementPasteFailed404',
             });
         } else {
-            msg =
-                intl.formatMessage({ id: 'elementPasteFailed' }) +
-                error?.message;
+            msg = intl.formatMessage({ id: 'elementPasteFailed' }) + error?.message;
         }
         return handleError(msg);
     };
@@ -125,11 +116,7 @@ const DirectoryTreeContextualMenu = (props) => {
             handleError(intl.formatMessage({ id: 'elementPasteFailed404' }));
             handleCloseDialog(null);
         } else {
-            console.info(
-                'Pasting element %s into directory %s',
-                selectionForCopy.nameItem,
-                directoryUuid
-            );
+            console.info('Pasting element %s into directory %s', selectionForCopy.nameItem, directoryUuid);
 
             switch (selectionForCopy.typeItem) {
                 case ElementType.CASE:
@@ -299,9 +286,7 @@ const DirectoryTreeContextualMenu = (props) => {
     const renderDialog = () => {
         switch (openDialog) {
             case DialogsId.ADD_NEW_STUDY:
-                return (
-                    <CreateStudyForm open={true} onClose={handleCloseDialog} />
-                );
+                return <CreateStudyForm open={true} onClose={handleCloseDialog} />;
             case DialogsId.ADD_NEW_CONTINGENCY_LIST:
                 return (
                     <ContingencyListCreationDialog
@@ -314,13 +299,7 @@ const DirectoryTreeContextualMenu = (props) => {
                 return (
                     <CreateDirectoryDialog
                         open={true}
-                        onClick={(elementName) =>
-                            insertDirectoryCB(
-                                elementName,
-                                directory?.elementUuid,
-                                userId
-                            )
-                        }
+                        onClick={(elementName) => insertDirectoryCB(elementName, directory?.elementUuid, userId)}
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
                             id: 'insertNewDirectoryDialogTitle',
@@ -333,9 +312,7 @@ const DirectoryTreeContextualMenu = (props) => {
                 return (
                     <CreateDirectoryDialog
                         open={true}
-                        onClick={(elementName) =>
-                            insertRootDirectoryCB(elementName, userId)
-                        }
+                        onClick={(elementName) => insertRootDirectoryCB(elementName, userId)}
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
                             id: 'insertNewRootDirectoryDialogTitle',
@@ -349,9 +326,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         message={'renameElementMsg'}
                         currentName={directory?.elementName}
                         open={true}
-                        onClick={(newName) =>
-                            renameCB(directory?.elementUuid, newName)
-                        }
+                        onClick={(newName) => renameCB(directory?.elementUuid, newName)}
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
                             id: 'renameDirectoryDialogTitle',
@@ -365,16 +340,10 @@ const DirectoryTreeContextualMenu = (props) => {
                 return (
                     <DeleteDialog
                         items={directory ? [directory] : []}
-                        multipleDeleteFormatMessageId={
-                            'deleteMultipleDirectoriesDialogMessage'
-                        }
-                        simpleDeleteFormatMessageId={
-                            'deleteDirectoryDialogMessage'
-                        }
+                        multipleDeleteFormatMessageId={'deleteMultipleDirectoriesDialogMessage'}
+                        simpleDeleteFormatMessageId={'deleteDirectoryDialogMessage'}
                         open={true}
-                        onClick={() =>
-                            handleDeleteElement(directory?.elementUuid)
-                        }
+                        onClick={() => handleDeleteElement(directory?.elementUuid)}
                         onClose={handleCloseDialog}
                         error={deleteError}
                     />
@@ -390,9 +359,7 @@ const DirectoryTreeContextualMenu = (props) => {
                     />
                 );
             case DialogsId.ADD_NEW_CASE:
-                return (
-                    <CreateCaseDialog open={true} onClose={handleCloseDialog} />
-                );
+                return <CreateCaseDialog open={true} onClose={handleCloseDialog} />;
             default:
                 return null;
         }
@@ -400,12 +367,7 @@ const DirectoryTreeContextualMenu = (props) => {
     return (
         <>
             {open && (
-                <CommonContextualMenu
-                    {...others}
-                    menuItems={buildMenu()}
-                    open={open && !hideMenu}
-                    onClose={onClose}
-                />
+                <CommonContextualMenu {...others} menuItems={buildMenu()} open={open && !hideMenu} onClose={onClose} />
             )}
             {renderDialog()}
         </>
