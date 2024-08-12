@@ -22,6 +22,7 @@ import {
     isObjectEmpty,
     keyGenerator,
     ModifyElementSelection,
+    useConfidentialityWarning,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
@@ -33,7 +34,6 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
-import { useConfidentialityWarning } from '../../../hooks/useConfidentialityWarning';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -61,7 +61,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
-    const confidentialityWarning = useConfidentialityWarning();
+    const confidentialityWarningKey = useConfidentialityWarning();
 
     const activeDirectory = useSelector((state) => state.activeDirectory);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -229,7 +229,7 @@ const CreateStudyDialog = ({ open, onClose, providedExistingCase }) => {
             onSave={handleCreateNewStudy}
             onCancel={handleDeleteCase}
             disabledSave={!isFormValid}
-            confirmationMessage={confidentialityWarning}
+            confirmationMessageKey={confidentialityWarningKey}
         >
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>

@@ -29,11 +29,11 @@ import {
     FieldErrorAlert,
     isObjectEmpty,
     keyGenerator,
+    useConfidentialityWarning,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
 import { AppDispatch } from '../../../redux/store';
-import { useConfidentialityWarning } from '../../../hooks/useConfidentialityWarning';
 
 interface IFormData {
     [FieldConstants.CASE_NAME]: string;
@@ -49,7 +49,7 @@ interface CreateCaseDialogProps {
 const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onClose, open }) => {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
-    const confidentialityWarning = useConfidentialityWarning();
+    const confidentialityWarningKey = useConfidentialityWarning();
 
     const createCaseFormMethods = useForm<IFormData>({
         defaultValues: getCreateCaseDialogFormValidationDefaultValues(),
@@ -116,7 +116,7 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
             onClose={onClose}
             onSave={handleCreateNewCase}
             disabledSave={!isFormValid}
-            confirmationMessage={confidentialityWarning}
+            confirmationMessageKey={confidentialityWarningKey}
         >
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>
