@@ -1,17 +1,22 @@
 /*
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
 import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ElementType } from '@gridsuite/commons-ui';
+import { FunctionComponent } from 'react';
 
-const MoveDialog = ({ open, onClose, items }) => {
+interface MoveDialogProps {
+    open: boolean;
+    onClose: () => void;
+    itemsCount: number;
+}
+
+const MoveDialog: FunctionComponent<MoveDialogProps> = ({ open, onClose, itemsCount }) => {
     const intl = useIntl();
 
     return (
@@ -26,7 +31,7 @@ const MoveDialog = ({ open, onClose, items }) => {
                     id: 'moveItemValidate',
                 },
                 {
-                    nbElements: items.length,
+                    nbElements: itemsCount,
                 }
             )}
             title={intl.formatMessage({
@@ -35,12 +40,6 @@ const MoveDialog = ({ open, onClose, items }) => {
             contentText={intl.formatMessage({ id: 'moveItemContentText' })}
         />
     );
-};
-
-MoveDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    items: PropTypes.array.isRequired,
 };
 
 export default MoveDialog;

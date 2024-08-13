@@ -197,7 +197,7 @@ const ContentToolbar = (props) => {
                             }
                             handleCloseDialog();
                         }}
-                        items={selectedElements}
+                        itemsCount={selectedElements.length}
                     />
                 );
             case DialogsId.EXPORT:

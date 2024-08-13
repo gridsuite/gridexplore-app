@@ -1,14 +1,14 @@
 /*
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
-import { CircularProgress, InputAdornment, TextField } from '@mui/material';
+import { CircularProgress, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { ElementType, useDebounce } from '@gridsuite/commons-ui';
 
@@ -19,11 +19,24 @@ const styles = {
     },
 };
 
-export const useTextValue = ({ label, id = label, defaultValue = '', adornment, triggerReset, ...formProps }) => {
+interface UseTextValueProps extends Omit<TextFieldProps, 'label' | 'defaultValue'> {
+    label: string;
+    id?: string;
+    defaultValue?: string;
+    adornment?: React.ReactNode;
+}
+
+export const useTextValue = ({
+    label,
+    id = label,
+    defaultValue = '',
+    adornment,
+    ...formProps
+}: UseTextValueProps): [string, React.ReactNode, (value: string) => void, boolean] => {
     const [value, setValue] = useState(defaultValue);
     const [hasChanged, setHasChanged] = useState(false);
 
-    const handleChangeValue = useCallback((event) => {
+    const handleChangeValue = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setValue(event.target.value);
         setHasChanged(true);
     }, []);
@@ -50,26 +63,32 @@ export const useTextValue = ({ label, id = label, defaultValue = '', adornment, 
         [id, label, value, handleChangeValue, formProps, adornment]
     );
 
-    useEffect(() => setValue(defaultValue), [triggerReset, defaultValue]);
+    useEffect(() => setValue(defaultValue), [defaultValue]);
 
     return [value, field, setValue, hasChanged];
 };
+
+interface UseNameFieldProps extends UseTextValueProps {
+    parentDirectoryId?: string;
+    elementType: ElementType;
+    active: boolean;
+    alreadyExistingErrorMessage?: string;
+}
 
 export const useNameField = ({
     parentDirectoryId,
     elementType,
     active,
-    triggerReset,
     alreadyExistingErrorMessage,
     ...props
-}) => {
-    const [error, setError] = useState();
+}: UseNameFieldProps): [string, React.ReactNode, string | undefined, boolean, (value: string) => void, boolean] => {
+    const [error, setError] = useState<string | undefined>();
     const intl = useIntl();
-    const [checking, setChecking] = useState(undefined);
+    const [checking, setChecking] = useState<boolean | undefined>(undefined);
 
     // if element is a root directory, we need to make a specific api rest call (elementType is directory, and no parent element)
     const doesElementExist = useCallback(
-        (name) =>
+        (name: string) =>
             elementType === ElementType.DIRECTORY && !parentDirectoryId
                 ? rootDirectoryExists(name)
                 : elementExists(parentDirectoryId, name, elementType),
@@ -77,7 +96,7 @@ export const useNameField = ({
     );
 
     const updateValidity = useCallback(
-        (name, touched) => {
+        (name: string, touched: boolean) => {
             const nameFormatted = name.replace(/ /g, '');
             if (nameFormatted === '' && touched) {
                 setError(intl.formatMessage({ id: 'nameEmpty' }));
@@ -151,7 +170,6 @@ export const useNameField = ({
 
     const [name, field, setName, touched] = useTextValue({
         ...props,
-        triggerReset,
         error: !!error,
         adornment: adornment,
     });
@@ -165,10 +183,6 @@ export const useNameField = ({
         debouncedUpdateValidity(name, touched);
     }, [active, props.defaultValue, name, debouncedUpdateValidity, touched]);
 
-    useEffect(() => {
-        setError(undefined);
-        setChecking(undefined);
-    }, [triggerReset]);
     return [
         name,
         field,
