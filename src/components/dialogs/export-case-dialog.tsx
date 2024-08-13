@@ -63,7 +63,8 @@ const ExportCaseDialog = ({ selectedElements, onClose, onExport }: ExportCaseDia
     const [formats, setFormats] = useState<ExportFormats>([]);
     const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
 
-    // a Map between case uuid and file name to export, by default all cases take file name as elementName
+    // a Map between case uuid and file name to export
+    // by default all cases take elementName as file name
     const [caseUuidFileNameMap] = useState<Map<UUID, string>>(() => {
         const fileNameMap = new Map<UUID, string>();
         selectedElements.forEach((elem) => {
@@ -74,9 +75,9 @@ const ExportCaseDialog = ({ selectedElements, onClose, onExport }: ExportCaseDia
 
     // support file name editing if exporting only one file
     const oneFileMode = useMemo<boolean>(() => selectedElements.length === 1, [selectedElements]);
-    const [fileName, setFileName] = useState<string>(() => selectedElements[0].elementName);
+    const [fileName, setFileName] = useState<string>(() => selectedElements[0]?.elementName);
 
-    // use to update file name of fist case in file name map
+    // updates file name of fist case in file name map
     useEffect(() => {
         caseUuidFileNameMap.set(selectedElements[0].elementUuid, fileName);
     }, [fileName, caseUuidFileNameMap, selectedElements]);
