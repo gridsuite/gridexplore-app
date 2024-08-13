@@ -102,7 +102,10 @@ const ContentToolbar = (props) => {
 
     const noCreationInProgress = useMemo(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
 
-    const allowsDelete = useMemo(() => isUserAllowed && noCreationInProgress, [isUserAllowed, noCreationInProgress]);
+    const allowsDelete = useMemo(
+        () => isUserAllowed && selectedElements.every((el) => el.elementUuid != null),
+        [isUserAllowed, selectedElements]
+    );
 
     const allowsMove = useMemo(
         () =>

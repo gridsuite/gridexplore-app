@@ -392,8 +392,8 @@ const ContentContextualMenu = (props) => {
     }, [selectedElements, userId]);
 
     const allowsDelete = useCallback(() => {
-        return isUserAllowed() && noCreationInProgress();
-    }, [isUserAllowed, noCreationInProgress]);
+        return isUserAllowed() && selectedElements.every((el) => el.elementUuid != null);
+    }, [isUserAllowed, selectedElements]);
 
     const allowsRename = useCallback(() => {
         return selectedElements.length === 1 && isUserAllowed() && selectedElements[0].hasMetadata;
