@@ -87,7 +87,7 @@ const lightTheme = createTheme({
     row: {
         primary: '#E8E8E8',
         secondary: '#F4F4F4',
-        hover: '#CFDFFB',
+        hover: '#8E9C9B',
     },
     aggrid: {
         theme: 'ag-theme-alpine',
