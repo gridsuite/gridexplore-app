@@ -6,14 +6,19 @@
  */
 
 import yup from '../../utils/yup-config';
-import { FieldConstants } from '@gridsuite/commons-ui';
+import { ElementAttributes, FieldConstants, Parameter } from '@gridsuite/commons-ui';
 
 export const getCreateStudyDialogFormDefaultValues = ({
     directory = '',
     studyName = '',
     caseFile = null,
     caseUuid = '',
-}) => {
+}: {
+    directory?: string;
+    studyName?: string;
+    caseFile?: ElementAttributes | null;
+    caseUuid?: string;
+}): CreateStudyDialogFormValues => {
     return {
         [FieldConstants.STUDY_NAME]: studyName,
         [FieldConstants.DESCRIPTION]: '',
@@ -23,16 +28,30 @@ export const getCreateStudyDialogFormDefaultValues = ({
         [FieldConstants.CURRENT_PARAMETERS]: {},
         [FieldConstants.DIRECTORY]: directory,
         [FieldConstants.CASE_FORMAT]: '',
+        [FieldConstants.CASE_NAME]: '',
     };
 };
 
 export const createStudyDialogFormValidationSchema = yup.object().shape({
     [FieldConstants.STUDY_NAME]: yup.string().trim().required('nameEmpty'),
-    [FieldConstants.FORMATTED_CASE_PARAMETERS]: yup.mixed().required(),
+    [FieldConstants.FORMATTED_CASE_PARAMETERS]: yup.mixed<Parameter[]>().required(),
     [FieldConstants.DESCRIPTION]: yup.string().max(500, 'descriptionLimitError'),
-    [FieldConstants.CURRENT_PARAMETERS]: yup.mixed().required(),
-    [FieldConstants.CASE_UUID]: yup.string().required(),
-    [FieldConstants.CASE_FILE]: yup.mixed().nullable().required(),
+    [FieldConstants.CURRENT_PARAMETERS]: yup.mixed<Record<string, string>>().required(),
+    [FieldConstants.CASE_UUID]: yup.string().nullable().required(),
+    [FieldConstants.CASE_FILE]: yup.mixed<ElementAttributes>().nullable().required(),
     [FieldConstants.DIRECTORY]: yup.string().required(),
     [FieldConstants.CASE_FORMAT]: yup.string().optional(),
+    [FieldConstants.CASE_NAME]: yup.string().optional(),
 });
+
+export interface CreateStudyDialogFormValues {
+    [FieldConstants.STUDY_NAME]: string;
+    [FieldConstants.DESCRIPTION]?: string;
+    [FieldConstants.CASE_FILE]: ElementAttributes | null;
+    [FieldConstants.CASE_UUID]: string | null;
+    [FieldConstants.FORMATTED_CASE_PARAMETERS]: Parameter[];
+    [FieldConstants.CURRENT_PARAMETERS]: Record<string, string>;
+    [FieldConstants.DIRECTORY]: string;
+    [FieldConstants.CASE_FORMAT]?: string;
+    [FieldConstants.CASE_NAME]?: string;
+}

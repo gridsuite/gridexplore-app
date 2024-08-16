@@ -21,7 +21,7 @@ import {
 import yup from '../../../utils/yup-config';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form';
 import { ContingencyListType } from '../../../../utils/elementType';
-import { useParameterState } from '../../parameters-dialog';
+import { useParameterState } from '../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 import { AppState } from 'redux/reducer';
 
