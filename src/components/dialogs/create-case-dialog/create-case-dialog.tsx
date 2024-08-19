@@ -29,6 +29,7 @@ import {
     FieldErrorAlert,
     isObjectEmpty,
     keyGenerator,
+    useConfidentialityWarning,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
@@ -48,6 +49,7 @@ interface CreateCaseDialogProps {
 const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onClose, open }) => {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
+    const confidentialityWarningKey = useConfidentialityWarning();
 
     const createCaseFormMethods = useForm<IFormData>({
         defaultValues: getCreateCaseDialogFormValidationDefaultValues(),
@@ -114,6 +116,7 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
             onClose={onClose}
             onSave={handleCreateNewCase}
             disabledSave={!isFormValid}
+            confirmationMessageKey={confidentialityWarningKey}
         >
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>

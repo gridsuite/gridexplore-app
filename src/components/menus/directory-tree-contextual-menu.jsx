@@ -42,7 +42,7 @@ import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 
 const DirectoryTreeContextualMenu = (props) => {
-    const { directory, open, onClose, openDialog, setOpenDialog, ...others } = props;
+    const { directory, open, onClose, openDialog, setOpenDialog, isEmptyDirectory, ...others } = props;
     const userId = useSelector((state) => state.user.profile.sub);
 
     const intl = useIntl();
@@ -233,7 +233,7 @@ const DirectoryTreeContextualMenu = (props) => {
 
             menuItems.push({ isDivider: true });
 
-            if (isAllowed()) {
+            if (isAllowed() && !isEmptyDirectory) {
                 menuItems.push(
                     {
                         messageDescriptorId: 'renameFolder',
@@ -252,17 +252,19 @@ const DirectoryTreeContextualMenu = (props) => {
                     { isDivider: true }
                 );
             }
-            menuItems.push(
-                {
-                    messageDescriptorId: 'paste',
-                    callback: () => {
-                        pasteElement(directory?.elementUuid, selectionForCopy);
+            if (!isEmptyDirectory) {
+                menuItems.push(
+                    {
+                        messageDescriptorId: 'paste',
+                        callback: () => {
+                            pasteElement(directory?.elementUuid, selectionForCopy);
+                        },
+                        icon: <ContentPasteIcon fontSize="small" />,
+                        disabled: !selectionForCopy.sourceItemUuid,
                     },
-                    icon: <ContentPasteIcon fontSize="small" />,
-                    disabled: !selectionForCopy.sourceItemUuid,
-                },
-                { isDivider: true }
-            );
+                    { isDivider: true }
+                );
+            }
             menuItems.push({
                 messageDescriptorId: 'createFolder',
                 callback: () => {
