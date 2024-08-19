@@ -50,8 +50,8 @@ export interface ContingencyListFormData {
     [FieldConstants.NAME]: string;
     [FieldConstants.DESCRIPTION]?: string;
     [FieldConstants.EQUIPMENT_TABLE]?: {
-        [FieldConstants.CONTINGENCY_NAME]?: string | null | undefined;
-        [FieldConstants.EQUIPMENT_IDS]?: (string | null | undefined)[] | undefined;
+        [FieldConstants.CONTINGENCY_NAME]?: string | null;
+        [FieldConstants.EQUIPMENT_IDS]?: (string | null | undefined)[];
     }[];
     [FieldConstants.CONTINGENCY_LIST_TYPE]?: string | null;
     [FieldConstants.SCRIPT]?: string | null;
