@@ -6,30 +6,47 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 
 import EditIcon from '@mui/icons-material/Edit';
 
 import IconButton from '@mui/material/IconButton';
-import { Toolbar, Tooltip } from '@mui/material';
+import { Theme, Toolbar, Tooltip } from '@mui/material';
 
 const styles = {
-    icon: (theme) => ({
+    icon: (theme: Theme) => ({
         marginRight: theme.spacing(1),
         width: '18px',
         height: '18px',
     }),
 };
 
+interface ToolbarItem {
+    tooltipTextId: string;
+    callback: () => void;
+    disabled: boolean;
+    icon?: React.ReactNode;
+}
+
+interface CommonToolbarProps {
+    items: ToolbarItem[];
+    [key: string]: any;
+}
+
 /**
  * Generic CommonToolbar
  * @param {Array} items Action items to add in the toolbar as buttons
  */
-const CommonToolbar = (props) => {
+const CommonToolbar = (props: CommonToolbarProps) => {
     const { items, ...others } = props;
 
-    function makeToolbarButton(key, tooltipTextId, callback, disabledItem, icon = <EditIcon fontSize="small" />) {
+    function makeToolbarButton(
+        key: number,
+        tooltipTextId: string,
+        callback: () => void,
+        disabledItem: boolean,
+        icon: React.ReactNode = <EditIcon fontSize="small" />
+    ) {
         return (
             <Tooltip title={<FormattedMessage id={tooltipTextId} />} key={key} placement="right">
                 {/* to make tooltips works with disabled buttons, add a simple wrapper span */}
@@ -49,10 +66,6 @@ const CommonToolbar = (props) => {
             })}
         </Toolbar>
     );
-};
-
-CommonToolbar.propTypes = {
-    items: PropTypes.array,
 };
 
 export default CommonToolbar;

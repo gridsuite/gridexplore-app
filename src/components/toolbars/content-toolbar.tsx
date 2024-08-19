@@ -23,19 +23,26 @@ import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { DialogsId } from '../../utils/UIconstants';
+import { AppState } from 'redux/reducer';
+import * as constants from '../../utils/UIconstants';
 
-const ContentToolbar = (props) => {
+interface ContentToolbarProps {
+    selectedElements: any[];
+    [key: string]: any;
+}
+
+const ContentToolbar = (props: ContentToolbarProps) => {
     const { selectedElements, ...others } = props;
-    const userId = useSelector((state) => state.user.profile.sub);
+    const userId = useSelector((state: AppState) => state.user?.profile.sub);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const { handleDownloadCases, handleConvertCases, stopCasesExports } = useDownloadUtils();
 
-    const [openDialog, setOpenDialog] = useState(null);
+    const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
 
     const handleLastError = useCallback(
-        (message) => {
+        (message: string) => {
             snackError({
                 messageTxt: message,
             });
@@ -43,7 +50,7 @@ const ContentToolbar = (props) => {
         [snackError]
     );
 
-    const handleOpenDialog = (DialogId) => {
+    const handleOpenDialog = (DialogId: string) => {
         setOpenDialog(DialogId);
     };
 
@@ -58,7 +65,7 @@ const ContentToolbar = (props) => {
     }, [handleCloseDialog, stopCasesExports]);
 
     const moveElementErrorToString = useCallback(
-        (HTTPStatusCode) => {
+        (HTTPStatusCode: number) => {
             if (HTTPStatusCode === 403) {
                 return intl.formatMessage({
                     id: 'moveElementNotAllowedError',
@@ -71,7 +78,7 @@ const ContentToolbar = (props) => {
     );
 
     const moveElementOnError = useCallback(
-        (errorMessages, params, paramsOnErrors) => {
+        (errorMessages: string[], params: any, paramsOnErrors: string[]) => {
             let msg = intl.formatMessage(
                 { id: 'moveElementsFailure' },
                 {
@@ -119,9 +126,9 @@ const ContentToolbar = (props) => {
 
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(
-        (elementsUuids) => {
+        (elementsUuids: string[]) => {
             setDeleteError('');
-            deleteElements(elementsUuids, selectedDirectory.elementUuid)
+            deleteElements(elementsUuids, selectedDirectory?.elementUuid)
                 .then(handleCloseDialog)
                 .catch((error) => {
                     //show the error message and don't close the dialog

@@ -6,37 +6,53 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 
 import EditIcon from '@mui/icons-material/Edit';
 
-import Menu from '@mui/material/Menu';
+import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import { styled } from '@mui/material';
 
-const StyledMenu = styled((props) => <Menu elevation={0} {...props} />)({
+const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} />)({
     '.MuiMenu-paper': {
         border: '1px solid #d3d4d5',
     },
 });
 
-/**
- * Generic Contextual Menu View
- * @param {Array} menuItems Action items to add in the Menu as MenuItems
- */
-const CommonContextualMenu = (props) => {
+interface MenuItemType {
+    isDivider?: boolean;
+    messageDescriptorId?: string;
+    callback?: () => void;
+    icon?: React.ReactNode;
+    disabled?: boolean;
+}
+
+interface CommonContextualMenuProps {
+    onClose?: (e?: any, nextSelectedDirectoryId?: string | null) => void;
+    open: boolean;
+    position?: { top: number; left: number };
+    menuItems?: MenuItemType[];
+}
+
+const CommonContextualMenu: React.FC<CommonContextualMenuProps> = (props) => {
     const { menuItems, ...others } = props;
 
-    function makeMenuItem(key, messageDescriptorId, callback, icon = <EditIcon fontSize="small" />, disabled = false) {
+    function makeMenuItem(
+        key: number,
+        messageDescriptorId?: string,
+        callback?: () => void,
+        icon: React.ReactNode = <EditIcon fontSize="small" />,
+        disabled: boolean = false
+    ) {
         return (
             <MenuItem
                 key={key}
                 onClick={() => {
-                    callback();
+                    callback?.();
                 }}
                 disabled={disabled}
             >
@@ -54,7 +70,7 @@ const CommonContextualMenu = (props) => {
 
     return (
         <StyledMenu keepMounted {...others}>
-            {menuItems.map((menuItem, index) => {
+            {menuItems?.map((menuItem, index) => {
                 if (menuItem.isDivider) {
                     return <Divider key={index} />;
                 } else {
@@ -69,12 +85,6 @@ const CommonContextualMenu = (props) => {
             })}
         </StyledMenu>
     );
-};
-
-CommonContextualMenu.propTypes = {
-    handleCloseMenu: PropTypes.func,
-    position: PropTypes.object,
-    menuItems: PropTypes.array,
 };
 
 export default CommonContextualMenu;

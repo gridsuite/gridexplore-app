@@ -30,7 +30,7 @@ interface CopyToScriptDialogProps {
     onValidate: (...args: any[]) => void;
     currentName: string;
     title: string;
-    directoryUuid: string;
+    directoryUuid?: string;
     elementType: ElementType;
     handleError: (...args: any[]) => void;
 }

@@ -7,7 +7,6 @@
 
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -41,25 +40,34 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 
-const DirectoryTreeContextualMenu = (props) => {
+interface DirectoryTreeContextualMenuProps {
+    directory: any;
+    open: boolean;
+    onClose: (e: any, nextSelectedDirectoryId?: string | null) => void;
+    openDialog: string;
+    setOpenDialog: (dialogId: string) => void;
+    [key: string]: any;
+}
+
+const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } = props;
-    const userId = useSelector((state) => state.user.profile.sub);
+    const userId = useSelector((state: any) => state.user.profile.sub);
 
     const intl = useIntl();
 
     const [hideMenu, setHideMenu] = useState(false);
     const { snackError } = useSnackMessage();
-    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const activeDirectory = useSelector((state: any) => state.activeDirectory);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
-    const handleOpenDialog = (dialogId) => {
+    const handleOpenDialog = (dialogId: string) => {
         setHideMenu(true);
         setOpenDialog(dialogId);
     };
 
     const handleCloseDialog = useCallback(
-        (e, nextSelectedDirectoryId = null) => {
+        (e: any, nextSelectedDirectoryId: string | null = null) => {
             onClose(e, nextSelectedDirectoryId);
             setOpenDialog(DialogsId.NONE);
             setHideMenu(false);
@@ -71,7 +79,7 @@ const DirectoryTreeContextualMenu = (props) => {
     const [renameCB, renameState] = useDeferredFetch(
         renameElement,
         () => handleCloseDialog(null, null),
-        (HTTPStatusCode) => {
+        (HTTPStatusCode: number) => {
             if (HTTPStatusCode === 403) {
                 return intl.formatMessage({ id: 'renameDirectoryError' });
             }
@@ -80,18 +88,18 @@ const DirectoryTreeContextualMenu = (props) => {
         false
     );
 
-    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, (response) =>
+    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, (response: any) =>
         handleCloseDialog(null, response?.elementUuid)
     );
 
-    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(insertRootDirectory, (response) =>
+    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(insertRootDirectory, (response: any) =>
         handleCloseDialog(null, response?.elementUuid)
     );
 
-    const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const selectionForCopy = useSelector((state: any) => state.selectionForCopy);
 
     const handleError = useCallback(
-        (message) => {
+        (message: string) => {
             snackError({
                 messageTxt: message,
             });
@@ -99,7 +107,7 @@ const DirectoryTreeContextualMenu = (props) => {
         [snackError]
     );
 
-    const handlePasteError = (error) => {
+    const handlePasteError = (error: any) => {
         let msg;
         if (error.status === 404) {
             msg = intl.formatMessage({
@@ -111,7 +119,7 @@ const DirectoryTreeContextualMenu = (props) => {
         return handleError(msg);
     };
 
-    function pasteElement(directoryUuid, selectionForCopy) {
+    function pasteElement(directoryUuid: string, selectionForCopy: any) {
         if (!selectionForCopy.sourceItemUuid) {
             handleError(intl.formatMessage({ id: 'elementPasteFailed404' }));
             handleCloseDialog(null);
@@ -128,7 +136,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         directoryUuid,
                         selectionForCopy.typeItem,
                         undefined
-                    ).catch((error) => {
+                    ).catch((error: any) => {
                         if (handleMaxElementsExceededError(error, snackError)) {
                             return;
                         }
@@ -145,7 +153,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         directoryUuid,
                         ElementType.PARAMETERS,
                         selectionForCopy.typeItem
-                    ).catch((error) => {
+                    ).catch((error: any) => {
                         handlePasteError(error);
                     });
                     break;
@@ -155,7 +163,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         directoryUuid,
                         selectionForCopy.typeItem,
                         selectionForCopy.specificType
-                    ).catch((error) => {
+                    ).catch((error: any) => {
                         handlePasteError(error);
                     });
                     break;
@@ -173,11 +181,11 @@ const DirectoryTreeContextualMenu = (props) => {
 
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElement = useCallback(
-        (elementsUuid) => {
+        (elementsUuid: string) => {
             setDeleteError('');
             deleteElement(elementsUuid)
                 .then(() => handleCloseDialog(null, directory?.parentUuid))
-                .catch((error) => {
+                .catch((error: any) => {
                     //show the error message and don't close the dialog
                     setDeleteError(error.message);
                     handleError(error.message);
@@ -197,7 +205,7 @@ const DirectoryTreeContextualMenu = (props) => {
 
     const buildMenu = () => {
         // build menuItems here
-        let menuItems = [];
+        let menuItems: any[] = [];
 
         if (!showMenuFromEmptyZone()) {
             menuItems.push(
@@ -299,7 +307,9 @@ const DirectoryTreeContextualMenu = (props) => {
                 return (
                     <CreateDirectoryDialog
                         open={true}
-                        onClick={(elementName) => insertDirectoryCB(elementName, directory?.elementUuid, userId)}
+                        onClick={(elementName: string) =>
+                            insertDirectoryCB(elementName, directory?.elementUuid, userId)
+                        }
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
                             id: 'insertNewDirectoryDialogTitle',
@@ -312,7 +322,7 @@ const DirectoryTreeContextualMenu = (props) => {
                 return (
                     <CreateDirectoryDialog
                         open={true}
-                        onClick={(elementName) => insertRootDirectoryCB(elementName, userId)}
+                        onClick={(elementName: string) => insertRootDirectoryCB(elementName, userId)}
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
                             id: 'insertNewRootDirectoryDialogTitle',
@@ -326,7 +336,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         message={'renameElementMsg'}
                         currentName={directory?.elementName}
                         open={true}
-                        onClick={(newName) => renameCB(directory?.elementUuid, newName)}
+                        onClick={(newName: string) => renameCB(directory?.elementUuid, newName)}
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
                             id: 'renameDirectoryDialogTitle',
@@ -372,10 +382,6 @@ const DirectoryTreeContextualMenu = (props) => {
             {renderDialog()}
         </>
     );
-};
-
-DirectoryTreeContextualMenu.propTypes = {
-    onClose: PropTypes.func,
 };
 
 export default DirectoryTreeContextualMenu;

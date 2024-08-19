@@ -18,7 +18,7 @@ import { CancelButton, ElementAttributes, OverflowableText } from '@gridsuite/co
 
 interface DeleteDialogProps {
     open: boolean;
-    onClose: () => void;
+    onClose: (e?: any, nextSelectedDirectoryId?: string | null) => void;
     onClick: () => void;
     items: ElementAttributes[];
     multipleDeleteFormatMessageId: string;

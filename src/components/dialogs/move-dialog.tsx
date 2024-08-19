@@ -12,7 +12,7 @@ import { FunctionComponent } from 'react';
 
 interface MoveDialogProps {
     open: boolean;
-    onClose: () => void;
+    onClose: (selectedDir: any) => void;
     itemsCount: number;
 }
 

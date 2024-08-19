@@ -7,20 +7,48 @@
 
 import { useEffect, useCallback, useReducer, useState } from 'react';
 
-export const FetchStatus = {
-    IDLE: 'IDLE',
-    FETCHING: 'FETCHING',
-    FETCH_SUCCESS: 'FETCH_SUCCESS',
-    FETCH_ERROR: 'FETCH_ERROR',
-};
+export enum FetchStatus {
+    IDLE = 'IDLE',
+    FETCHING = 'FETCHING',
+    FETCH_SUCCESS = 'FETCH_SUCCESS',
+    FETCH_ERROR = 'FETCH_ERROR',
+}
 
-export const ActionType = {
-    START: 'START',
-    ERROR: 'ERROR',
-    SUCCESS: 'SUCCESS',
-    ADD_ERROR: 'ADD_ERROR', // Use by multipleDeferredFetch when one request respond with error
-    ADD_SUCCESS: 'ADD_SUCCESS', // Use by multipleDeferredFetch when one request respond with success
-};
+export enum ActionType {
+    START = 'START',
+    ERROR = 'ERROR',
+    SUCCESS = 'SUCCESS',
+    ADD_ERROR = 'ADD_ERROR', // Use by multipleDeferredFetch when one request respond with error
+    ADD_SUCCESS = 'ADD_SUCCESS', // Use by multipleDeferredFetch when one request respond with success
+}
+
+interface FetchState<T> {
+    status: FetchStatus;
+    errorMessage: string;
+    data: T | null;
+}
+
+interface Action<T> {
+    type: ActionType;
+    payload?: T;
+}
+
+interface MultipleFetchState<T> {
+    public: {
+        status: FetchStatus;
+        errorMessage: string[];
+        paramsOnError: any[];
+        data: T[];
+        paramsOnSuccess: any[];
+    };
+    counter: number;
+}
+
+interface MultipleAction<T> {
+    type: ActionType;
+    payload?: T;
+    context?: any;
+}
 
 /**
  * This custom hook manage a fetch workflow and return a unique callback to defer process execution when needed.
@@ -38,20 +66,20 @@ export const ActionType = {
  *          {String} state.errorMessage error message of the request
  *          {Object} state.data The JSON results of the request (see hasResult)
  */
-export const useDeferredFetch = (
-    fetchFunction,
-    onSuccess,
-    errorToString = undefined,
-    onError = undefined,
-    hasResult = true
-) => {
-    const initialState = {
+export const useDeferredFetch = <T>(
+    fetchFunction: (...args: any[]) => Promise<T>,
+    onSuccess?: (data: T, args: any[]) => void,
+    errorToString?: (status: number) => string | undefined,
+    onError?: (errorMessage: string, args: any[]) => void,
+    hasResult: boolean = true
+): [(...args: any[]) => void, FetchState<T>] => {
+    const initialState: FetchState<T> = {
         status: FetchStatus.IDLE,
         errorMessage: '',
         data: null,
     };
 
-    const [state, dispatch] = useReducer((lastState, action) => {
+    const [state, dispatch] = useReducer((lastState: FetchState<T>, action: Action<T>) => {
         switch (action.type) {
             case ActionType.START:
                 return { ...initialState, status: FetchStatus.FETCHING };
@@ -59,13 +87,13 @@ export const useDeferredFetch = (
                 return {
                     ...initialState,
                     status: FetchStatus.FETCH_SUCCESS,
-                    data: action.payload,
+                    data: action.payload || null,
                 };
             case ActionType.ERROR:
                 return {
                     ...initialState,
                     status: FetchStatus.FETCH_ERROR,
-                    errorMessage: action.payload,
+                    errorMessage: action.payload as unknown as string,
                 };
             default:
                 return lastState;
@@ -73,7 +101,7 @@ export const useDeferredFetch = (
     }, initialState);
 
     const handleError = useCallback(
-        (error, paramsOnError) => {
+        (error: any, paramsOnError: any[]) => {
             const defaultErrorMessage = error.message;
             let errorMessage = defaultErrorMessage;
             if (error && errorToString) {
@@ -94,11 +122,10 @@ export const useDeferredFetch = (
     );
 
     const fetchData = useCallback(
-        async (...args) => {
+        async (...args: any[]) => {
             dispatch({ type: ActionType.START });
             try {
-                // Params resolution
-                const response = await fetchFunction.apply(null, args);
+                const response = await fetchFunction(...args);
 
                 if (hasResult) {
                     const data = response;
@@ -114,12 +141,11 @@ export const useDeferredFetch = (
                         type: ActionType.SUCCESS,
                     });
                     if (onSuccess) {
-                        onSuccess(null, args);
+                        onSuccess(null as unknown as T, args);
                     }
                 }
-            } catch (error) {
+            } catch (error: any) {
                 if (!error.status) {
-                    // an http error
                     handleError(null, args);
                     throw error;
                 } else {
@@ -131,7 +157,7 @@ export const useDeferredFetch = (
     );
 
     const fetchCallback = useCallback(
-        (...args) => {
+        (...args: any[]) => {
             fetchData(...args);
         },
         [fetchData]
@@ -158,14 +184,14 @@ export const useDeferredFetch = (
  *          {Array} state.paramsOnError The parameters used when requests set have failed
  *          {Array} state.data The results array of each request (see hasResult)
  */
-export const useMultipleDeferredFetch = (
-    fetchFunction,
-    onSuccess,
-    errorToString = undefined,
-    onError = undefined,
-    hasResult = true
-) => {
-    const initialState = {
+export const useMultipleDeferredFetch = <T>(
+    fetchFunction: (...args: any[]) => Promise<T>,
+    onSuccess?: (data: T[]) => void,
+    errorToString?: (status: number) => string | undefined,
+    onError?: (errorMessages: string[], params: any[], paramsOnError: any[]) => void,
+    hasResult: boolean = true
+): [(cbParamsList: any[][]) => void] => {
+    const initialState: MultipleFetchState<T> = {
         public: {
             status: FetchStatus.IDLE,
             errorMessage: [],
@@ -176,7 +202,7 @@ export const useMultipleDeferredFetch = (
         counter: 0,
     };
 
-    const [state, dispatch] = useReducer((lastState, action) => {
+    const [state, dispatch] = useReducer((lastState: MultipleFetchState<T>, action: MultipleAction<T>) => {
         switch (action.type) {
             case ActionType.START:
                 return {
@@ -190,7 +216,7 @@ export const useMultipleDeferredFetch = (
                 return {
                     public: {
                         ...lastState.public,
-                        data: lastState.public.data.concat([action.payload]),
+                        data: lastState.public.data.concat([action.payload as T]),
                         paramsOnSuccess: lastState.public.paramsOnSuccess.concat([action.context]),
                     },
                     counter: lastState.counter + 1,
@@ -199,7 +225,7 @@ export const useMultipleDeferredFetch = (
                 return {
                     public: {
                         ...lastState.public,
-                        errorMessage: lastState.public.errorMessage.concat([action.payload]),
+                        errorMessage: lastState.public.errorMessage.concat([action.payload as unknown as string]),
                         paramsOnError: lastState.public.paramsOnError.concat([action.context]),
                     },
                     counter: lastState.counter + 1,
@@ -227,9 +253,9 @@ export const useMultipleDeferredFetch = (
         }
     }, initialState);
 
-    const [paramList, setParamList] = useState([]);
+    const [paramList, setParamList] = useState<any[][]>([]);
 
-    const onInstanceSuccess = useCallback((data, paramsOnSuccess) => {
+    const onInstanceSuccess = useCallback((data: T, paramsOnSuccess: any[]) => {
         dispatch({
             type: ActionType.ADD_SUCCESS,
             payload: data,
@@ -237,12 +263,10 @@ export const useMultipleDeferredFetch = (
         });
     }, []);
 
-    const onInstanceError = useCallback((errorMessage, paramsOnError) => {
-        // counter now stored in reducer to avoid counter and state being updated not simultenaously,
-        // causing useEffect to be triggered once for each change, which would cause an expected behaviour
+    const onInstanceError = useCallback((errorMessage: string, paramsOnError: any[]) => {
         dispatch({
             type: ActionType.ADD_ERROR,
-            payload: errorMessage,
+            payload: errorMessage as T,
             context: paramsOnError,
         });
     }, []);
@@ -250,7 +274,7 @@ export const useMultipleDeferredFetch = (
     const [fetchCB] = useDeferredFetch(fetchFunction, onInstanceSuccess, errorToString, onInstanceError, hasResult);
 
     const fetchCallback = useCallback(
-        (cbParamsList) => {
+        (cbParamsList: any[][]) => {
             dispatch({ type: ActionType.START });
             setParamList(cbParamsList);
             for (let params of cbParamsList) {
