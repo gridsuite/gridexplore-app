@@ -226,5 +226,7 @@
     "elementsSearchingError": "Une erreur s'est produite lors de la recherche des éléments",
     "pathRetrievingError": "Une erreur est survenue lors de la récupération du chemin de l'élement",
     "grid.ariaUnchecked": "Non sélectionné",
-    "grid.ariaRowToggleSelection": "grid.ariaRowToggleSelection"
+    "grid.ariaRowToggleSelection": "grid.ariaRowToggleSelection",
+    "emptyDirContent": "Votre dossier est vide",
+    "createElement": "AJOUTER UN ELEMENT"
 }

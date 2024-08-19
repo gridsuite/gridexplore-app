@@ -225,5 +225,8 @@
     "path": "path : ",
     "searchPlaceholder": "Search elements (ex.: case, filter...)",
     "elementsSearchingError": "An error occurred while searching the elements",
-    "pathRetrievingError": "An error occurred while retrieving element path"
+    "pathRetrievingError": "An error occurred while retrieving element path",
+    "emptyDirContent": "Your directory is empty",
+    "createElement": "ADD AN ELEMENT"
+
 }

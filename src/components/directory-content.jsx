@@ -8,11 +8,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 
 import * as constants from '../utils/UIconstants';
 import CircularProgress from '@mui/material/CircularProgress';
-import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
 
 import { ContingencyListType, FilterType } from '../utils/elementType';
 import {
@@ -47,6 +46,7 @@ import {
 import NoContentDirectory from './no-content-directory';
 import { DirectoryContentTable, CUSTOM_ROW_CLASS } from './directory-content-table';
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
+import EmptyDirectory from './empty-directory';
 
 const circularProgressSize = '70px';
 
@@ -97,6 +97,7 @@ const DirectoryContent = () => {
     const [onGridReady, getRowStyle] = useHighlightSearchedElement(gridRef?.current?.api);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
+    const selectedTheme = useSelector((state) => state.theme);
 
     const dispatchSelectionForCopy = useCallback(
         (typeItem, nameItem, descriptionItem, sourceItemUuid, parentDirectoryUuid, specificTypeItem) => {
@@ -426,19 +427,22 @@ const DirectoryContent = () => {
             </Box>
         );
     };
+    const handleDialog = useCallback(
+        (mouseEvent) => {
+            //set the contextualMenu position
+            setMousePosition({
+                mouseX: mouseEvent.clientX + constants.HORIZONTAL_SHIFT,
+                mouseY: mouseEvent.clientY + constants.VERTICAL_SHIFT,
+            });
+            setOpenDirectoryMenu(true);
+            if (selectedDirectory) {
+                dispatch(setActiveDirectory(selectedDirectory.elementUuid));
+            }
+        },
+        [dispatch, selectedDirectory]
+    );
 
-    const renderEmptyDirContent = () => {
-        return (
-            <>
-                <div style={{ textAlign: 'center', marginTop: '100px' }}>
-                    <FolderOpenRoundedIcon style={{ width: '100px', height: '100px' }} />
-                    <h1>
-                        <FormattedMessage id={'emptyDir'} />
-                    </h1>
-                </div>
-            </>
-        );
-    };
+    const renderEmptyDirContent = () => <EmptyDirectory openDialog={handleDialog} theme={selectedTheme} />;
 
     const renderContent = () => {
         // Here we wait for Metadata for the folder content
@@ -632,6 +636,7 @@ const DirectoryContent = () => {
                               }
                             : undefined
                     }
+                    isEmptyDirectory={rows?.length === 0}
                 />
             </div>
             {renderDialog(elementName)}
