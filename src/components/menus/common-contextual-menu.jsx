@@ -54,7 +54,7 @@ const CommonContextualMenu = (props) => {
 
     return (
         <StyledMenu keepMounted {...others}>
-            {menuItems.map((menuItem, index) => {
+            {menuItems?.map((menuItem, index) => {
                 if (menuItem.isDivider) {
                     return <Divider key={index} />;
                 } else {

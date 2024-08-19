@@ -24,6 +24,7 @@ import {
     ElementAttributes,
     Parameter,
     DescriptionField,
+    useConfidentialityWarning,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
@@ -71,6 +72,7 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
+    const confidentialityWarningKey = useConfidentialityWarning();
 
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
@@ -244,6 +246,7 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
             onSave={handleCreateNewStudy}
             onCancel={handleDeleteCase}
             disabledSave={!isFormValid}
+            confirmationMessageKey={confidentialityWarningKey}
         >
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>

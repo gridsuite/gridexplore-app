@@ -20,6 +20,7 @@
     "createFirstDir": "Create your first directory",
     "ID": "ID",
     "createNewStudy": "Create a study",
+    "confidentialityDataWarning": "You are going to import data, we remind you to please check if there is any confidential data",
     "studyCreationError": "Error when creating study: {studyName}",
     "maxElementExceededError": "You have reached your user quota for cases and studies, therefore you cannot import further cases or create further studies for now. Please delete old cases or studies in order to go below the limit of {limit} elements",
     "directoryUpdateWarning": "Could not update subs (and content) of: {directoryUuid}",
@@ -225,5 +226,8 @@
     "path": "path : ",
     "searchPlaceholder": "Search elements (ex.: case, filter...)",
     "elementsSearchingError": "An error occurred while searching the elements",
-    "pathRetrievingError": "An error occurred while retrieving element path"
+    "pathRetrievingError": "An error occurred while retrieving element path",
+    "emptyDirContent": "Your directory is empty",
+    "createElement": "ADD AN ELEMENT"
+
 }
