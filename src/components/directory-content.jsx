@@ -427,23 +427,22 @@ const DirectoryContent = () => {
             </Box>
         );
     };
-
-    const renderEmptyDirContent = () => (
-        <EmptyDirectory
-            openDialog={(mouseEvent) => {
-                //set the contextualMenu position
-                setMousePosition({
-                    mouseX: mouseEvent.clientX + constants.HORIZONTAL_SHIFT,
-                    mouseY: mouseEvent.clientY + constants.VERTICAL_SHIFT,
-                });
-                setOpenDirectoryMenu(true);
-                if (selectedDirectory) {
-                    dispatch(setActiveDirectory(selectedDirectory.elementUuid));
-                }
-            }}
-            theme={selectedTheme}
-        />
+    const handleDialog = useCallback(
+        (mouseEvent) => {
+            //set the contextualMenu position
+            setMousePosition({
+                mouseX: mouseEvent.clientX + constants.HORIZONTAL_SHIFT,
+                mouseY: mouseEvent.clientY + constants.VERTICAL_SHIFT,
+            });
+            setOpenDirectoryMenu(true);
+            if (selectedDirectory) {
+                dispatch(setActiveDirectory(selectedDirectory.elementUuid));
+            }
+        },
+        [dispatch, selectedDirectory]
     );
+
+    const renderEmptyDirContent = () => <EmptyDirectory openDialog={handleDialog} theme={selectedTheme} />;
 
     const renderContent = () => {
         // Here we wait for Metadata for the folder content
