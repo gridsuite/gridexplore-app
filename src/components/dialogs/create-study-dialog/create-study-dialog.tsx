@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useForm } from 'react-hook-form';
-import { Box, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { FunctionComponent, useCallback, useEffect } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
@@ -15,7 +15,6 @@ import {
     useSnackMessage,
     ErrorInput,
     FieldErrorAlert,
-    ExpandingTextField,
     ElementType,
     CustomMuiDialog,
     FieldConstants,
@@ -24,6 +23,7 @@ import {
     ModifyElementSelection,
     ElementAttributes,
     Parameter,
+    DescriptionField,
     useConfidentialityWarning,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
@@ -257,14 +257,7 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
                     />
                 </Grid>
                 <Grid item>
-                    <Box>
-                        <ExpandingTextField
-                            name={FieldConstants.DESCRIPTION}
-                            label={'descriptionProperty'}
-                            minRows={3}
-                            rows={5}
-                        />
-                    </Box>
+                    <DescriptionField />
                 </Grid>
             </Grid>
             {providedExistingCase ? (
