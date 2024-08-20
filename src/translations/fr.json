@@ -20,6 +20,7 @@
     "createFirstDir": "Créer votre premier dossier",
     "ID": "ID",
     "createNewStudy": "Créer une étude",
+    "confidentialityDataWarning": "Vous allez importer des données, veuillez vérifier qu'il n'y a pas de données confidentielles",
     "studyCreationError": "Erreur lors de la création de l'étude: {studyName}",
     "maxElementExceededError": "Vous avez atteint votre quota utilisateur en termes de situations et d'études, vous ne pouvez donc plus importer des situations ou créer des études pour le moment. Merci de supprimer des situations ou études anciennes afin de redescendre sous le seuil de {limit} éléments.",
     "renameElement": "Renommer l'élément",
@@ -161,6 +162,7 @@
     "FreeProps": "Propriétés de l'ouvrage",
     "SubstationFreeProps": "Propriétés du site de l'ouvrage",
     "AddFreePropCrit": "Ajouter un filtrage par propriété",
+    "AddDescription": "Ajouter une description (optionnel)",
     "PropertyName": "Nom de la propriété",
     "PropertyValues": "Valeurs de la propriété",
     "PropertyValues1": "Valeurs de la propriété 1",
@@ -226,5 +228,7 @@
     "elementsSearchingError": "Une erreur s'est produite lors de la recherche des éléments",
     "pathRetrievingError": "Une erreur est survenue lors de la récupération du chemin de l'élement",
     "grid.ariaUnchecked": "Non sélectionné",
-    "grid.ariaRowToggleSelection": "grid.ariaRowToggleSelection"
+    "grid.ariaRowToggleSelection": "grid.ariaRowToggleSelection",
+    "emptyDirContent": "Votre dossier est vide",
+    "createElement": "AJOUTER UN ELEMENT"
 }
