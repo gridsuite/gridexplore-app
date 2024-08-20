@@ -603,12 +603,7 @@ const DirectoryContent = () => {
                 rows?.length > 0 && (
                     <div style={{ ...styles.toolBarContainer }}>
                         <ContentToolbar selectedElements={checkedRows} onContextMenu={onContextMenu} />
-                        <Button
-                            variant="contained"
-                            endIcon={<AddIcon />}
-                            sx={styles.button}
-                            onClick={handleDialog}
-                        >
+                        <Button variant="contained" endIcon={<AddIcon />} sx={styles.button} onClick={handleDialog}>
                             <FormattedMessage id={'createElement'} />
                         </Button>
                     </div>
