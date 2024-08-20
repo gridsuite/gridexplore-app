@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useForm } from 'react-hook-form';
-import { Box, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { FunctionComponent, useCallback, useEffect } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
@@ -15,7 +15,6 @@ import {
     useSnackMessage,
     ErrorInput,
     FieldErrorAlert,
-    ExpandingTextField,
     ElementType,
     CustomMuiDialog,
     FieldConstants,
@@ -24,6 +23,8 @@ import {
     ModifyElementSelection,
     ElementAttributes,
     Parameter,
+    DescriptionField,
+    useConfidentialityWarning,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
@@ -71,6 +72,7 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
+    const confidentialityWarningKey = useConfidentialityWarning();
 
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
@@ -244,6 +246,7 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
             onSave={handleCreateNewStudy}
             onCancel={handleDeleteCase}
             disabledSave={!isFormValid}
+            confirmationMessageKey={confidentialityWarningKey}
         >
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>
@@ -254,14 +257,7 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
                     />
                 </Grid>
                 <Grid item>
-                    <Box>
-                        <ExpandingTextField
-                            name={FieldConstants.DESCRIPTION}
-                            label={'descriptionProperty'}
-                            minRows={3}
-                            rows={5}
-                        />
-                    </Box>
+                    <DescriptionField />
                 </Grid>
             </Grid>
             {providedExistingCase ? (
