@@ -100,7 +100,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
         handleCloseDialog(null, response?.elementUuid)
     );
 
-    const selectionForCopy = useSelector((state: any) => state.selectionForCopy);
+    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
 
     const handleError = useCallback(
         (message: string) => {
