@@ -16,9 +16,8 @@ import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar from './common-toolbar';
 import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
-import { ElementType } from '@gridsuite/commons-ui';
 import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
@@ -207,10 +206,9 @@ const ContentToolbar = (props: ContentToolbarProps) => {
             case DialogsId.EXPORT:
                 return (
                     <ExportCaseDialog
+                        selectedElements={selectedElements}
                         onClose={handleCloseExportDialog}
-                        onExport={(format, formatParameters) =>
-                            handleConvertCases(selectedElements, format, formatParameters)
-                        }
+                        onExport={handleConvertCases}
                     />
                 );
             default:

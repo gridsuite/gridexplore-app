@@ -9,6 +9,7 @@ import { downloadCase, fetchConvertedCase, getCaseOriginalName } from '../../uti
 import { useIntl } from 'react-intl';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
+import { UUID } from 'crypto';
 
 const downloadCases = async (selectedCases: ElementAttributes[]) => {
     for (const selectedCase of selectedCases) {
@@ -47,24 +48,28 @@ export function useDownloadUtils() {
         formatParameters: {
             [parameterName: string]: any;
         },
-        abortController: AbortController
+        abortController: AbortController,
+        fileName?: string
     ): Promise<void> => {
         try {
             const result = await fetchConvertedCase(
                 caseElement.elementUuid,
-                caseElement.elementName,
+                fileName || caseElement.elementName, // if no fileName is provided or empty, the case name will be used
                 format,
                 formatParameters,
                 abortController
             );
-            let filename = result.headers.get('Content-Disposition').split('filename=')[1];
-            filename = filename.substring(1, filename.length - 1); // We remove quotes
+
+            let downloadFileName = result.headers.get('Content-Disposition').split('filename=')[1];
+            // We remove quotes
+            downloadFileName = downloadFileName.substring(1, downloadFileName.length - 1);
+
             const blob = await result.blob();
 
             const href = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = href;
-            link.setAttribute('download', `${filename}`);
+            link.setAttribute('download', `${downloadFileName}`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -186,13 +191,16 @@ export function useDownloadUtils() {
 
     // downloads converted files one after another. The downloading may be interrupted midterm with a few files downloaded already.
     const handleConvertCases = async (
-        selectedElements: any[],
+        selectedElements: ElementAttributes[],
         format: string,
         formatParameters: {
             [parameterName: string]: any;
-        }
+        },
+        caseUuidFileNameMap?: Map<UUID, string>
     ) => {
-        const cases = selectedElements.filter((element) => element.type === ElementType.CASE);
+        const cases: ElementAttributes[] = selectedElements.filter(
+            (element: ElementAttributes) => element.type === ElementType.CASE
+        );
         let message: string = '';
 
         try {
@@ -200,7 +208,7 @@ export function useDownloadUtils() {
             setAbortController(controller);
 
             for (const c of cases) {
-                await exportCase(c, format, formatParameters, controller);
+                await exportCase(c, format, formatParameters, controller, caseUuidFileNameMap?.get(c.elementUuid));
             }
         } catch (error: any) {
             if (error.name === 'AbortError') {

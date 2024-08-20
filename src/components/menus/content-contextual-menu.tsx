@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
@@ -658,10 +658,9 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
             case DialogsId.EXPORT:
                 return (
                     <ExportCaseDialog
+                        selectedElements={selectedElements}
                         onClose={handleCloseExportDialog}
-                        onExport={(format, formatParameters) =>
-                            handleConvertCases(selectedElements, format, formatParameters)
-                        }
+                        onExport={handleConvertCases}
                     />
                 );
             case DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY:

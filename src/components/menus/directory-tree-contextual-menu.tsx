@@ -48,12 +48,13 @@ interface DirectoryTreeContextualMenuProps {
     onClose: (e: any, nextSelectedDirectoryId?: string | null) => void;
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
+    isEmptyDirectory: boolean;
     anchorReference?: PopoverReference;
     anchorPosition?: PopoverPosition;
 }
 
 const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = (props) => {
-    const { directory, open, onClose, openDialog, setOpenDialog, ...others } = props;
+    const { directory, open, onClose, openDialog, setOpenDialog, isEmptyDirectory, ...others } = props;
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const intl = useIntl();
@@ -244,7 +245,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
 
             menuItems.push({ isDivider: true });
 
-            if (isAllowed()) {
+            if (isAllowed() && !isEmptyDirectory) {
                 menuItems.push(
                     {
                         messageDescriptorId: 'renameFolder',
@@ -263,17 +264,19 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                     { isDivider: true }
                 );
             }
-            menuItems.push(
-                {
-                    messageDescriptorId: 'paste',
-                    callback: () => {
-                        pasteElement(directory?.elementUuid, selectionForCopy);
+            if (!isEmptyDirectory) {
+                menuItems.push(
+                    {
+                        messageDescriptorId: 'paste',
+                        callback: () => {
+                            pasteElement(directory?.elementUuid, selectionForCopy);
+                        },
+                        icon: <ContentPasteIcon fontSize="small" />,
+                        disabled: !selectionForCopy.sourceItemUuid,
                     },
-                    icon: <ContentPasteIcon fontSize="small" />,
-                    disabled: !selectionForCopy.sourceItemUuid,
-                },
-                { isDivider: true }
-            );
+                    { isDivider: true }
+                );
+            }
             menuItems.push({
                 messageDescriptorId: 'createFolder',
                 callback: () => {

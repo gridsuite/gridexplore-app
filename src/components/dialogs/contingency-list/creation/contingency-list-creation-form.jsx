@@ -12,19 +12,17 @@ import {
     CriteriaBasedForm,
     FieldConstants,
     UniqueNameInput,
-    ExpandingTextField,
+    DescriptionField,
     ElementType,
     gridItem,
 } from '@gridsuite/commons-ui';
 import { ContingencyListType } from '../../../../utils/elementType';
-import { Box, Grid } from '@mui/material';
-import React from 'react';
+import { Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import ScriptInputForm from '../script/script-input-form';
 import { useSelector } from 'react-redux';
 import { elementExists } from '../../../../utils/rest-api';
-
 const ContingencyListCreationForm = () => {
     const { setValue } = useFormContext();
 
@@ -61,14 +59,7 @@ const ContingencyListCreationForm = () => {
                 />
             </Grid>
             <Grid item xs={12}>
-                <Box>
-                    <ExpandingTextField
-                        name={FieldConstants.DESCRIPTION}
-                        label={'descriptionProperty'}
-                        minRows={3}
-                        rows={5}
-                    />
-                </Box>
+                <DescriptionField />
             </Grid>
             <Grid container item>
                 {gridItem(contingencyListTypeField, 12)}
