@@ -607,18 +607,7 @@ const DirectoryContent = () => {
                             variant="contained"
                             endIcon={<AddIcon />}
                             sx={styles.button}
-                            onClick={(mouseEvent) => {
-                                //set the contextualMenu position
-                                setMousePosition({
-                                    mouseX: mouseEvent.clientX + constants.HORIZONTAL_SHIFT,
-                                    mouseY: mouseEvent.clientY + constants.VERTICAL_SHIFT,
-                                });
-
-                                setOpenDirectoryMenu(true);
-                                if (selectedDirectory) {
-                                    dispatch(setActiveDirectory(selectedDirectory.elementUuid));
-                                }
-                            }}
+                            onClick={handleDialog}
                         >
                             <FormattedMessage id={'createElement'} />
                         </Button>
