@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DirectoryItemSelector } from '@gridsuite/commons-ui';
+import { DirectoryItemSelector, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ElementType } from '@gridsuite/commons-ui';
 import { FunctionComponent } from 'react';
 
 interface MoveDialogProps {
     open: boolean;
-    onClose: (selectedDir: any) => void;
+    onClose: (selectedDir: TreeViewFinderNodeProps[]) => void;
     itemsCount: number;
 }
 

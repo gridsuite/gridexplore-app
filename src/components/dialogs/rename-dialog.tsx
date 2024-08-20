@@ -27,7 +27,7 @@ interface RenameDialogProps {
     currentName: string;
     type: ElementType;
     error?: string;
-    parentDirectory?: string;
+    parentDirectory?: string | null;
 }
 
 /**

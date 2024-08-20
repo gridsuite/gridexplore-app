@@ -31,33 +31,36 @@ import {
     elementExists,
 } from '../../utils/rest-api';
 
-import CommonContextualMenu from './common-contextual-menu';
+import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
-import { ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementAttributes, ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { PopoverPosition, PopoverReference } from '@mui/material';
+import { AppState } from 'redux/reducer';
 
 interface DirectoryTreeContextualMenuProps {
-    directory: any;
+    directory: ElementAttributes;
     open: boolean;
     onClose: (e: any, nextSelectedDirectoryId?: string | null) => void;
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
-    [key: string]: any;
+    anchorReference?: PopoverReference;
+    anchorPosition?: PopoverPosition;
 }
 
 const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, ...others } = props;
-    const userId = useSelector((state: any) => state.user.profile.sub);
+    const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const intl = useIntl();
 
     const [hideMenu, setHideMenu] = useState(false);
     const { snackError } = useSnackMessage();
-    const activeDirectory = useSelector((state: any) => state.activeDirectory);
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -205,7 +208,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
 
     const buildMenu = () => {
         // build menuItems here
-        let menuItems: any[] = [];
+        let menuItems: MenuItemType[] = [];
 
         if (!showMenuFromEmptyZone()) {
             menuItems.push(

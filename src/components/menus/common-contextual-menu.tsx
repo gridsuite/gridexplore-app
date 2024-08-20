@@ -15,7 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
-import { styled } from '@mui/material';
+import { PopoverPosition, PopoverReference, styled } from '@mui/material';
 
 const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} />)({
     '.MuiMenu-paper': {
@@ -23,7 +23,7 @@ const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} /
     },
 });
 
-interface MenuItemType {
+export interface MenuItemType {
     isDivider?: boolean;
     messageDescriptorId?: string;
     callback?: () => void;
@@ -34,7 +34,8 @@ interface MenuItemType {
 interface CommonContextualMenuProps {
     onClose?: (e?: any, nextSelectedDirectoryId?: string | null) => void;
     open: boolean;
-    position?: { top: number; left: number };
+    anchorReference?: PopoverReference;
+    anchorPosition?: PopoverPosition;
     menuItems?: MenuItemType[];
 }
 

@@ -40,7 +40,7 @@ import {
 } from '../../utils/rest-api';
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
-import { ElementType, useSnackMessage, FilterCreationDialog } from '@gridsuite/commons-ui';
+import { ElementType, useSnackMessage, FilterCreationDialog, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
@@ -53,6 +53,7 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 import { AppState } from 'redux/reducer';
+import { PopoverPosition, PopoverReference } from '@mui/material';
 
 interface ContentContextualMenuProps {
     activeElement: any;
@@ -63,7 +64,8 @@ interface ContentContextualMenuProps {
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
     broadcastChannel: BroadcastChannel;
-    [key: string]: any;
+    anchorReference?: PopoverReference;
+    anchorPosition?: PopoverPosition;
 }
 
 const ContentContextualMenu = (props: ContentContextualMenuProps) => {
@@ -644,7 +646,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                 return (
                     <MoveDialog
                         open={true}
-                        onClose={(selectedDir: any) => {
+                        onClose={(selectedDir: TreeViewFinderNodeProps[]) => {
                             if (selectedDir.length > 0) {
                                 moveCB([[selectedElements.map((element) => element.elementUuid), selectedDir[0].id]]);
                             }

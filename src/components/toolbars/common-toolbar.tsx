@@ -30,7 +30,6 @@ interface ToolbarItem {
 
 interface CommonToolbarProps {
     items: ToolbarItem[];
-    [key: string]: any;
 }
 
 /**
