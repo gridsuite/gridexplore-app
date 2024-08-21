@@ -91,7 +91,7 @@ const lightTheme = createTheme({
     },
     aggrid: {
         theme: 'ag-theme-alpine',
-        highlightColor: '#E8E8E8',
+        highlightColor: '#CFDFFB',
     },
     agGridBackground: {
         color: 'white',
@@ -133,7 +133,7 @@ const darkTheme = createTheme({
     },
     aggrid: {
         theme: 'ag-theme-alpine-dark',
-        highlightColor: '#272727',
+        highlightColor: '#1F3B5B',
     },
     agGridBackground: {
         color: '#383838',

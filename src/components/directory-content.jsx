@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import * as constants from '../utils/UIconstants';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -23,7 +23,7 @@ import {
     DescriptionModificationDialog,
     noSelectionForCopy,
 } from '@gridsuite/commons-ui';
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 
 import { elementExists, getFilterById, updateElement } from '../utils/rest-api';
 
@@ -47,6 +47,7 @@ import NoContentDirectory from './no-content-directory';
 import { DirectoryContentTable, CUSTOM_ROW_CLASS } from './directory-content-table';
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
 import EmptyDirectory from './empty-directory';
+import AddIcon from '@mui/icons-material/Add';
 
 const circularProgressSize = '70px';
 
@@ -77,6 +78,16 @@ const styles = {
             },
         },
     }),
+    button: (theme) => ({
+        marginRight: theme.spacing(9),
+        borderRadius: '20px',
+    }),
+    toolBarContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
 };
 
 const initialMousePosition = {
@@ -589,7 +600,14 @@ const DirectoryContent = () => {
             {
                 //ContentToolbar needs to be outside the DirectoryContentTable container otherwise it
                 //creates a visual offset rendering the last elements of a full table inaccessible
-                rows && <ContentToolbar selectedElements={checkedRows} onContextMenu={onContextMenu} />
+                rows?.length > 0 && (
+                    <div style={{ ...styles.toolBarContainer }}>
+                        <ContentToolbar selectedElements={checkedRows} onContextMenu={onContextMenu} />
+                        <Button variant="contained" endIcon={<AddIcon />} sx={styles.button} onClick={handleDialog}>
+                            <FormattedMessage id={'createElement'} />
+                        </Button>
+                    </div>
+                )
             }
             <Grid item sx={styles.highlightedElementAnimation} xs={12} onContextMenu={onContextMenu}>
                 {renderContent()}
