@@ -22,13 +22,14 @@ import { AppState, UploadingElement } from '../../../redux/reducer';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import {
     CustomMuiDialog,
+    DescriptionField,
     ElementType,
     ErrorInput,
-    ExpandingTextField,
     FieldConstants,
     FieldErrorAlert,
     isObjectEmpty,
     keyGenerator,
+    useConfidentialityWarning,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
@@ -48,6 +49,7 @@ interface CreateCaseDialogProps {
 const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onClose, open }) => {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
+    const confidentialityWarningKey = useConfidentialityWarning();
 
     const createCaseFormMethods = useForm<IFormData>({
         defaultValues: getCreateCaseDialogFormValidationDefaultValues(),
@@ -114,6 +116,7 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
             onClose={onClose}
             onSave={handleCreateNewCase}
             disabledSave={!isFormValid}
+            confirmationMessageKey={confidentialityWarningKey}
         >
             <Grid container spacing={2} marginTop={'auto'} direction="column">
                 <Grid item>
@@ -124,12 +127,7 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
                     />
                 </Grid>
                 <Grid item>
-                    <ExpandingTextField
-                        name={FieldConstants.DESCRIPTION}
-                        label={'descriptionProperty'}
-                        minRows={3}
-                        rows={5}
-                    />
+                    <DescriptionField />
                 </Grid>
             </Grid>
             <ErrorInput name={FieldConstants.CASE_FILE} InputField={FieldErrorAlert} />
