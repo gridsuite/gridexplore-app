@@ -10,14 +10,20 @@ import { useSnackMessage, CustomMuiDialog, getCriteriaBasedSchema, FieldConstant
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { createContingencyList } from '../../../../utils/rest-api';
-import React from 'react';
+import { FunctionComponent, SyntheticEvent } from 'react';
 import ContingencyListCreationForm from './contingency-list-creation-form';
-import { getContingencyListEmptyFormData, getFormContent } from '../contingency-list-utils';
+import {
+    ContingencyListFormData,
+    ContingencyListFormDataWithRequiredCriteria,
+    getContingencyListEmptyFormData,
+    getFormContent,
+} from '../contingency-list-utils';
 import yup from '../../../utils/yup-config';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { useParameterState } from '../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
+import { AppState } from 'redux/reducer';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -30,20 +36,30 @@ const schema = yup.object().shape({
         otherwise: (schema) => schema.nullable(),
     }),
     ...getExplicitNamingSchema(FieldConstants.EQUIPMENT_TABLE),
-    ...getCriteriaBasedSchema(),
+    ...getCriteriaBasedSchema({}),
 });
 
 const emptyFormData = getContingencyListEmptyFormData();
 
-const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
-    const activeDirectory = useSelector((state) => state.activeDirectory);
+interface ContingencyListCreationDialogProps {
+    onClose: (event?: SyntheticEvent) => void;
+    open: boolean;
+    titleId: string;
+}
+
+const ContingencyListCreationDialog: FunctionComponent<ContingencyListCreationDialogProps> = ({
+    onClose,
+    open,
+    titleId,
+}) => {
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const { snackError } = useSnackMessage();
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
-    const methods = useForm({
+    const methods = useForm<ContingencyListFormData>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver<ContingencyListFormData>(schema),
     });
 
     const {
@@ -54,13 +70,13 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
     const nameError = errors[FieldConstants.NAME];
     const isValidating = errors.root?.isValidating;
 
-    const closeAndClear = (event) => {
+    const closeAndClear = (event?: SyntheticEvent) => {
         reset(emptyFormData);
         onClose(event);
     };
 
-    const onSubmit = (data) => {
-        const formContent = getFormContent(null, data);
+    const onSubmit = (data: ContingencyListFormData) => {
+        const formContent = getFormContent(null, data as ContingencyListFormDataWithRequiredCriteria);
         createContingencyList(
             data[FieldConstants.CONTINGENCY_LIST_TYPE],
             data[FieldConstants.NAME],
@@ -86,7 +102,7 @@ const ContingencyListCreationDialog = ({ onClose, open, titleId }) => {
             formMethods={methods}
             titleId={titleId}
             removeOptional={true}
-            disabledSave={!!nameError || isValidating}
+            disabledSave={Boolean(nameError || isValidating)}
             language={languageLocal}
         >
             <ContingencyListCreationForm />
