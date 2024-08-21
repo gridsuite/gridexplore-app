@@ -102,7 +102,7 @@ const ContingencyListCreationDialog: FunctionComponent<ContingencyListCreationDi
             formMethods={methods}
             titleId={titleId}
             removeOptional={true}
-            disabledSave={Boolean(nameError) || Boolean(isValidating)}
+            disabledSave={Boolean(nameError || isValidating)}
             language={languageLocal}
         >
             <ContingencyListCreationForm />
