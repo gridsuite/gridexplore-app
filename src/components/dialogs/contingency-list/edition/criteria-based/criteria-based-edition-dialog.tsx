@@ -9,8 +9,9 @@ import { useSnackMessage, CustomMuiDialog, getCriteriaBasedSchema, FieldConstant
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
-import React, { useEffect, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
 import {
+    CriteriaBasedData,
     getContingencyListEmptyFormData,
     getCriteriaBasedFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
@@ -22,16 +23,32 @@ import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
 import { useParameterState } from '../../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
+import { AppState } from 'redux/reducer';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().required(),
-    ...getCriteriaBasedSchema(),
+    ...getCriteriaBasedSchema(null),
 });
 
-const emptyFormData = (name) => getContingencyListEmptyFormData(name);
+const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
 
-const CriteriaBasedEditionDialog = ({
+interface CriteriaBasedEditionFormData {
+    [FieldConstants.NAME]: string;
+    [FieldConstants.EQUIPMENT_TYPE]?: string | null;
+    [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
+}
+
+interface CriteriaBasedEditionDialogProps {
+    contingencyListId: string;
+    contingencyListType: string;
+    open: boolean;
+    onClose: (event?: SyntheticEvent) => void;
+    titleId: string;
+    name: string;
+    broadcastChannel: BroadcastChannel;
+}
+const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogProps> = ({
     contingencyListId,
     contingencyListType,
     open,
@@ -43,11 +60,11 @@ const CriteriaBasedEditionDialog = ({
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
-    const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
     const dispatch = useDispatch();
-    const methods = useForm({
+    const methods = useForm<CriteriaBasedEditionFormData>({
         defaultValues: emptyFormData(name),
-        resolver: yupResolver(schema),
+        resolver: yupResolver<CriteriaBasedEditionFormData>(schema),
     });
 
     const {
@@ -78,16 +95,16 @@ const CriteriaBasedEditionDialog = ({
         }
     }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
-    const closeAndClear = (event) => {
+    const closeAndClear = (event?: SyntheticEvent) => {
         reset(emptyFormData());
         onClose(event);
     };
 
-    const editContingencyList = (contingencyListId, contingencyList) => {
+    const editContingencyList = (contingencyListId: string, contingencyList: CriteriaBasedEditionFormData) => {
         return saveCriteriaBasedContingencyList(contingencyListId, contingencyList);
     };
 
-    const onSubmit = (contingencyList) => {
+    const onSubmit = (contingencyList: CriteriaBasedEditionFormData) => {
         editContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === contingencyListId) {
@@ -116,7 +133,7 @@ const CriteriaBasedEditionDialog = ({
             formMethods={methods}
             titleId={titleId}
             removeOptional={true}
-            disabledSave={!!nameError || isValidating}
+            disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
             language={languageLocal}
         >

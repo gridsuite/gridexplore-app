@@ -6,14 +6,14 @@
  */
 
 import { Grid } from '@mui/material';
-import React from 'react';
 import ExplicitNamingForm from '../../explicit-naming/explicit-naming-form';
 import { ElementType, UniqueNameInput, FieldConstants } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { elementExists } from 'utils/rest-api';
+import { AppState } from 'redux/reducer';
 
 const ExplicitNamingEditionForm = () => {
-    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
         <Grid container spacing={2} marginTop={'auto'}>
             <Grid item xs={12}>

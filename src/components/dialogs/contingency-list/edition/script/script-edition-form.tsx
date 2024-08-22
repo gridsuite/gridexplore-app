@@ -6,14 +6,14 @@
  */
 
 import { Grid } from '@mui/material';
-import React from 'react';
 import ScriptInputForm from '../../script/script-input-form';
 import { UniqueNameInput, ElementType, FieldConstants } from '@gridsuite/commons-ui';
 import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 
 const ScriptEditionForm = () => {
-    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
         <Grid container spacing={2} marginTop={'auto'}>
             <Grid item xs={12}>
@@ -25,7 +25,7 @@ const ScriptEditionForm = () => {
                     elementExists={elementExists}
                 />
             </Grid>
-            <ScriptInputForm name={FieldConstants.SCRIPT} />
+            <ScriptInputForm />
         </Grid>
     );
 };

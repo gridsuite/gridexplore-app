@@ -23,17 +23,20 @@ import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import ScriptInputForm from '../script/script-input-form';
 import { useSelector } from 'react-redux';
 import { elementExists } from '../../../../utils/rest-api';
-const ContingencyListCreationForm = () => {
+import { ChangeEvent, FunctionComponent } from 'react';
+import { AppState } from 'redux/reducer';
+
+const ContingencyListCreationForm: FunctionComponent = () => {
     const { setValue } = useFormContext();
 
     const watchContingencyListType = useWatch({
         name: FieldConstants.CONTINGENCY_LIST_TYPE,
     });
 
-    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
 
     // We do this because setValue don't set the field dirty
-    const handleChange = (_event, value) => {
+    const handleChange = (_event: ChangeEvent<HTMLInputElement>, value: string) => {
         setValue(FieldConstants.CONTINGENCY_LIST_TYPE, value);
     };
 
@@ -45,7 +48,7 @@ const ContingencyListCreationForm = () => {
         />
     );
 
-    const emptyValues = getCriteriaBasedFormData();
+    const emptyValues = getCriteriaBasedFormData({}, {});
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -71,9 +74,7 @@ const ContingencyListCreationForm = () => {
                 />
             )}
             {watchContingencyListType === ContingencyListType.EXPLICIT_NAMING.id && <ExplicitNamingForm />}
-            {watchContingencyListType === ContingencyListType.SCRIPT.id && (
-                <ScriptInputForm name={FieldConstants.SCRIPT} />
-            )}
+            {watchContingencyListType === ContingencyListType.SCRIPT.id && <ScriptInputForm />}
         </Grid>
     );
 };
