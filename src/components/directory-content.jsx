@@ -438,22 +438,37 @@ const DirectoryContent = () => {
             </Box>
         );
     };
+
+    const handleMousePosition = useCallback((coordinates, isEmpty) => {
+        if (isEmpty) {
+            return {
+                mouseX: coordinates.right,
+                mouseY: coordinates.top + 25 * constants.VERTICAL_SHIFT,
+            };
+        } else {
+            return {
+                mouseX: coordinates.left,
+                mouseY: coordinates.bottom,
+            };
+        }
+    }, []);
+
     const handleDialog = useCallback(
-        (mouseEvent) => {
+        (mouseEvent, isEmpty) => {
+            const coordinates = mouseEvent.target.getBoundingClientRect();
             //set the contextualMenu position
-            setMousePosition({
-                mouseX: mouseEvent.clientX + constants.HORIZONTAL_SHIFT,
-                mouseY: mouseEvent.clientY + constants.VERTICAL_SHIFT,
-            });
+            setMousePosition(handleMousePosition(coordinates, isEmpty));
             setOpenDirectoryMenu(true);
             if (selectedDirectory) {
                 dispatch(setActiveDirectory(selectedDirectory.elementUuid));
             }
         },
-        [dispatch, selectedDirectory]
+        [dispatch, selectedDirectory, handleMousePosition]
     );
 
-    const renderEmptyDirContent = () => <EmptyDirectory openDialog={handleDialog} theme={selectedTheme} />;
+    const renderEmptyDirContent = () => (
+        <EmptyDirectory openDialog={(mouseEvent) => handleDialog(mouseEvent, true)} theme={selectedTheme} />
+    );
 
     const renderContent = () => {
         // Here we wait for Metadata for the folder content
@@ -603,7 +618,12 @@ const DirectoryContent = () => {
                 rows?.length > 0 && (
                     <div style={{ ...styles.toolBarContainer }}>
                         <ContentToolbar selectedElements={checkedRows} onContextMenu={onContextMenu} />
-                        <Button variant="contained" endIcon={<AddIcon />} sx={styles.button} onClick={handleDialog}>
+                        <Button
+                            variant="contained"
+                            endIcon={<AddIcon />}
+                            sx={styles.button}
+                            onClick={(mouseEvent) => handleDialog(mouseEvent, false)}
+                        >
                             <FormattedMessage id={'createElement'} />
                         </Button>
                     </div>
