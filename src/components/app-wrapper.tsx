@@ -129,7 +129,7 @@ const darkTheme = createTheme({
     row: {
         primary: '#272727',
         secondary: '#323232',
-        hover: '#545C5B',
+        hover: '#1F3B5B',
     },
     aggrid: {
         theme: 'ag-theme-alpine-dark',

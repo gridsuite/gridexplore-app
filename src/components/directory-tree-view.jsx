@@ -18,6 +18,7 @@ import { setSelectedDirectory } from '../redux/actions';
 import CustomTreeItem from './custom-tree-item';
 import { Box } from '@mui/material';
 import { TreeView } from '@mui/x-tree-view';
+import { green } from '@mui/material/colors';
 
 const styles = {
     treeViewRoot: (theme) => ({
@@ -69,6 +70,10 @@ const styles = {
         marginRight: theme.spacing(1),
         width: '18px',
         height: '18px',
+    }),
+    treeItemFocused: (theme) => ({
+        backgroundColor: green,
+        fontWeight: 'bold',
     }),
 };
 
@@ -124,6 +129,8 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
     }
 
     function handleLabelClick(nodeId) {
+        console.log('on select');
+//TODO: modify here
         if (selectedDirectory?.elementUuid !== nodeId) {
             dispatch(setSelectedDirectory(mapDataRef.current[nodeId]));
         }
@@ -134,10 +141,14 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
     }
 
     function handleIconClick(nodeId) {
+        console.log('handleIconClick');
         onDirectoryUpdate(nodeId, expandedRef.current.includes(nodeId));
         toggleDirectories([nodeId]);
     }
 
+    function handlePlusClick(event,nodeId) {
+        handleContextMenuClick(event, nodeId)
+    }
     useEffect(() => {
         if (currentPath.length === 0) {
             return;
@@ -188,6 +199,8 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
                         label: styles.treeItemLabel,
                         iconContainer: styles.treeItemIconContainer,
                     },
+                    onClick:handlePlusClick
+
                 }}
                 endIcon={node.subdirectoriesCount > 0 ? <ChevronRightIcon sx={styles.icon} /> : null}
                 sx={{
