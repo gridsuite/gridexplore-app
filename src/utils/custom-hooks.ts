@@ -37,9 +37,9 @@ interface MultipleFetchState<T> {
     public: {
         status: FetchStatus;
         errorMessage: string[];
-        paramsOnError: any[];
+        paramsOnError: unknown[];
         data: T[];
-        paramsOnSuccess: any[];
+        paramsOnSuccess: unknown[];
     };
     counter: number;
 }
@@ -47,7 +47,7 @@ interface MultipleFetchState<T> {
 interface MultipleAction<T> {
     type: ActionType;
     payload?: T;
-    context?: any;
+    context?: unknown;
 }
 
 /**
@@ -67,12 +67,12 @@ interface MultipleAction<T> {
  *          {Object} state.data The JSON results of the request (see hasResult)
  */
 export const useDeferredFetch = <T>(
-    fetchFunction: (...args: any[]) => Promise<T>,
-    onSuccess?: (data: T, args: any[]) => void,
+    fetchFunction: (...args: unknown[]) => Promise<T>,
+    onSuccess?: (data: T, args: unknown[]) => void,
     errorToString?: (status: number) => string | undefined,
-    onError?: (errorMessage: string, args: any[]) => void,
+    onError?: (errorMessage: string, args: unknown[]) => void,
     hasResult: boolean = true
-): [(...args: any[]) => void, FetchState<T>] => {
+): [(...args: unknown[]) => void, FetchState<T>] => {
     const initialState: FetchState<T> = {
         status: FetchStatus.IDLE,
         errorMessage: '',
@@ -101,7 +101,7 @@ export const useDeferredFetch = <T>(
     }, initialState);
 
     const handleError = useCallback(
-        (error: any, paramsOnError: any[]) => {
+        (error: any, paramsOnError: unknown[]) => {
             const defaultErrorMessage = error.message;
             let errorMessage = defaultErrorMessage;
             if (error && errorToString) {
@@ -122,7 +122,7 @@ export const useDeferredFetch = <T>(
     );
 
     const fetchData = useCallback(
-        async (...args: any[]) => {
+        async (...args: unknown[]) => {
             dispatch({ type: ActionType.START });
             try {
                 const response = await fetchFunction(...args);
@@ -157,7 +157,7 @@ export const useDeferredFetch = <T>(
     );
 
     const fetchCallback = useCallback(
-        (...args: any[]) => {
+        (...args: unknown[]) => {
             fetchData(...args);
         },
         [fetchData]
@@ -185,12 +185,12 @@ export const useDeferredFetch = <T>(
  *          {Array} state.data The results array of each request (see hasResult)
  */
 export const useMultipleDeferredFetch = <T>(
-    fetchFunction: (...args: any[]) => Promise<T>,
+    fetchFunction: (...args: unknown[]) => Promise<T>,
     onSuccess?: (data: T[]) => void,
     errorToString?: (status: number) => string | undefined,
-    onError?: (errorMessages: string[], params: any[], paramsOnError: any[]) => void,
+    onError?: (errorMessages: string[], params: unknown[], paramsOnError: unknown[]) => void,
     hasResult: boolean = true
-): [(cbParamsList: any[][]) => void] => {
+): [(cbParamsList: unknown[][]) => void] => {
     const initialState: MultipleFetchState<T> = {
         public: {
             status: FetchStatus.IDLE,
@@ -253,9 +253,9 @@ export const useMultipleDeferredFetch = <T>(
         }
     }, initialState);
 
-    const [paramList, setParamList] = useState<any[][]>([]);
+    const [paramList, setParamList] = useState<unknown[][]>([]);
 
-    const onInstanceSuccess = useCallback((data: T, paramsOnSuccess: any[]) => {
+    const onInstanceSuccess = useCallback((data: T, paramsOnSuccess: unknown[]) => {
         dispatch({
             type: ActionType.ADD_SUCCESS,
             payload: data,
@@ -263,7 +263,7 @@ export const useMultipleDeferredFetch = <T>(
         });
     }, []);
 
-    const onInstanceError = useCallback((errorMessage: string, paramsOnError: any[]) => {
+    const onInstanceError = useCallback((errorMessage: string, paramsOnError: unknown[]) => {
         dispatch({
             type: ActionType.ADD_ERROR,
             payload: errorMessage as T,
@@ -274,7 +274,7 @@ export const useMultipleDeferredFetch = <T>(
     const [fetchCB] = useDeferredFetch(fetchFunction, onInstanceSuccess, errorToString, onInstanceError, hasResult);
 
     const fetchCallback = useCallback(
-        (cbParamsList: any[][]) => {
+        (cbParamsList: unknown[][]) => {
             dispatch({ type: ActionType.START });
             setParamList(cbParamsList);
             for (let params of cbParamsList) {

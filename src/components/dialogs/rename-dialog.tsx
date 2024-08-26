@@ -20,7 +20,7 @@ import { AppState } from 'redux/reducer';
 
 interface RenameDialogProps {
     open: boolean;
-    onClose: (e?: any, nextSelectedDirectoryId?: string | null) => void;
+    onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     onClick: (newName: string) => void;
     title: string;
     message: string;
