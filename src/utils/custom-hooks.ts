@@ -264,6 +264,8 @@ export const useMultipleDeferredFetch = <T>(
     }, []);
 
     const onInstanceError = useCallback((errorMessage: string, paramsOnError: unknown[]) => {
+        // counter now stored in reducer to avoid counter and state being updated not simultenaously,
+        // causing useEffect to be triggered once for each change, which would cause an expected behaviour
         dispatch({
             type: ActionType.ADD_ERROR,
             payload: errorMessage as T,
