@@ -10,6 +10,60 @@ import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { v4 as uuid4 } from 'uuid';
 import { getCriteriaBasedFormData, FieldConstants } from '@gridsuite/commons-ui';
 
+interface Identifier {
+    type: 'ID_BASED';
+    identifier: string;
+}
+
+interface IdentifierList {
+    type: 'LIST';
+    contingencyId: string;
+    identifierList: Identifier[];
+}
+
+export interface ExplicitNamingScript {
+    script: string;
+    metadata?: Record<string, unknown>;
+    id?: string;
+    type?: string;
+    modificationDate?: string;
+}
+
+interface RangeInputData {
+    [FieldConstants.OPERATION_TYPE]: string;
+    [FieldConstants.VALUE_1]: number | null;
+    [FieldConstants.VALUE_2]: number | null;
+}
+
+export interface CriteriaBasedData {
+    [FieldConstants.COUNTRIES]?: string[];
+    [FieldConstants.COUNTRIES_1]?: string[];
+    [FieldConstants.COUNTRIES_2]?: string[];
+    [FieldConstants.NOMINAL_VOLTAGE]?: RangeInputData | null;
+    [FieldConstants.NOMINAL_VOLTAGE_1]?: RangeInputData | null;
+    [FieldConstants.NOMINAL_VOLTAGE_2]?: RangeInputData | null;
+    [FieldConstants.NOMINAL_VOLTAGE_3]?: RangeInputData | null;
+    [key: string]: any;
+}
+
+export interface ContingencyListFormData {
+    [FieldConstants.NAME]: string;
+    [FieldConstants.DESCRIPTION]?: string;
+    [FieldConstants.EQUIPMENT_TABLE]?: {
+        [FieldConstants.CONTINGENCY_NAME]?: string | null;
+        [FieldConstants.EQUIPMENT_IDS]?: (string | null | undefined)[];
+    }[];
+    [FieldConstants.CONTINGENCY_LIST_TYPE]?: string | null;
+    [FieldConstants.SCRIPT]?: string | null;
+    [FieldConstants.EQUIPMENT_TYPE]?: string | null;
+    [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
+}
+
+export interface ContingencyListFormDataWithRequiredCriteria
+    extends Omit<ContingencyListFormData, FieldConstants.CRITERIA_BASED> {
+    [FieldConstants.CRITERIA_BASED]: CriteriaBasedData;
+}
+
 export const makeDefaultRowData = () => ({
     [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
     [FieldConstants.CONTINGENCY_NAME]: '',
@@ -25,22 +79,22 @@ export const getContingencyListEmptyFormData = (name = '') => ({
     [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [FieldConstants.SCRIPT]: '',
     [FieldConstants.EQUIPMENT_TYPE]: null,
-    ...getCriteriaBasedFormData(),
+    ...getCriteriaBasedFormData({}, {}),
 });
 
-export const getCriteriaBasedFormDataFromFetchedElement = (response, name) => {
+export const getCriteriaBasedFormDataFromFetchedElement = (response: any, name: string) => {
     return {
         [FieldConstants.NAME]: name,
         [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
         [FieldConstants.EQUIPMENT_TYPE]: response.equipmentType,
-        ...getCriteriaBasedFormData(response),
+        ...getCriteriaBasedFormData(response, {}),
     };
 };
 
-export const getExplicitNamingFormDataFromFetchedElement = (response) => {
+export const getExplicitNamingFormDataFromFetchedElement = (response: any) => {
     let result;
     if (response.identifierContingencyList?.identifiers?.length) {
-        result = response.identifierContingencyList?.identifiers?.map((identifiers) => {
+        result = response.identifierContingencyList?.identifiers?.map((identifiers: IdentifierList) => {
             return {
                 [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
                 [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.EXPLICIT_NAMING.id,
@@ -57,13 +111,16 @@ export const getExplicitNamingFormDataFromFetchedElement = (response) => {
     };
 };
 
-export const getScriptFormDataFromFetchedElement = (response) => {
+export const getScriptFormDataFromFetchedElement = (response: any) => {
     return {
         [FieldConstants.SCRIPT]: response.script,
     };
 };
 
-export const getFormContent = (contingencyListId, contingencyList) => {
+export const getFormContent = (
+    contingencyListId: string | null,
+    contingencyList: ContingencyListFormDataWithRequiredCriteria
+) => {
     switch (contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE]) {
         case ContingencyListType.EXPLICIT_NAMING.id: {
             return prepareContingencyListForBackend(contingencyListId, contingencyList);

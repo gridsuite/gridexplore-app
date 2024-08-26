@@ -9,30 +9,41 @@ import { useSnackMessage, CustomMuiDialog, FieldConstants } from '@gridsuite/com
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
-import React, { useEffect, useState } from 'react';
-import {
-    getContingencyListEmptyFormData,
-    getExplicitNamingFormDataFromFetchedElement,
-} from '../../contingency-list-utils';
-import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
+import React, { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
+import { getContingencyListEmptyFormData, getScriptFormDataFromFetchedElement } from '../../contingency-list-utils';
+import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
 import yup from 'components/utils/yup-config';
-import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-form';
-import ExplicitNamingEditionForm from './explicit-naming-edition-form';
-import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
+import ScriptEditionForm from './script-edition-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
+import { AppState } from 'redux/reducer';
+
+interface ScriptEditionFormData {
+    [FieldConstants.NAME]: string;
+    [FieldConstants.SCRIPT]?: string | null;
+    [FieldConstants.EQUIPMENT_TYPE]?: string | null;
+}
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().nullable(),
-    [FieldConstants.EQUIPMENT_TABLE]: yup.string().nullable(),
-    ...getExplicitNamingEditSchema(FieldConstants.EQUIPMENT_TABLE),
+    [FieldConstants.SCRIPT]: yup.string().nullable(),
 });
 
-const emptyFormData = (name) => getContingencyListEmptyFormData(name);
+const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
 
-const ExplicitNamingEditionDialog = ({
+interface ScriptEditionDialogProps {
+    contingencyListId: string;
+    contingencyListType: string;
+    open: boolean;
+    onClose: (event?: React.SyntheticEvent) => void;
+    titleId: string;
+    name: string;
+    broadcastChannel: BroadcastChannel;
+}
+
+const ScriptEditionDialog: FunctionComponent<ScriptEditionDialogProps> = ({
     contingencyListId,
     contingencyListType,
     open,
@@ -43,8 +54,9 @@ const ExplicitNamingEditionDialog = ({
 }) => {
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
-    const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
     const dispatch = useDispatch();
+
     const methods = useForm({
         defaultValues: emptyFormData(name),
         resolver: yupResolver(schema),
@@ -64,7 +76,7 @@ const ExplicitNamingEditionDialog = ({
             getContingencyList(contingencyListType, contingencyListId)
                 .then((response) => {
                     if (response) {
-                        const formData = getExplicitNamingFormDataFromFetchedElement(response);
+                        const formData = getScriptFormDataFromFetchedElement(response);
                         reset({ ...formData, [FieldConstants.NAME]: name });
                     }
                 })
@@ -78,17 +90,19 @@ const ExplicitNamingEditionDialog = ({
         }
     }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
-    const closeAndClear = (event) => {
+    const closeAndClear = (event?: SyntheticEvent) => {
         reset(emptyFormData());
         onClose(event);
     };
 
-    const editContingencyList = (contingencyListId, contingencyList) => {
-        const equipments = prepareContingencyListForBackend(contingencyListId, contingencyList);
-        return saveExplicitNamingContingencyList(equipments, contingencyList[FieldConstants.NAME]);
+    const editContingencyList = (contingencyListId: string, contingencyList: ScriptEditionFormData) => {
+        const newScript = {
+            id: contingencyListId,
+            script: contingencyList[FieldConstants.SCRIPT],
+        };
+        return saveScriptContingencyList(newScript, contingencyList[FieldConstants.NAME]);
     };
-
-    const onSubmit = (contingencyList) => {
+    const onSubmit = (contingencyList: ScriptEditionFormData) => {
         editContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === contingencyListId) {
@@ -117,12 +131,12 @@ const ExplicitNamingEditionDialog = ({
             formMethods={methods}
             titleId={titleId}
             removeOptional={true}
-            disabledSave={!!nameError || isValidating}
+            disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
         >
-            {!isFetching && <ExplicitNamingEditionForm />}
+            {!isFetching && <ScriptEditionForm />}
         </CustomMuiDialog>
     );
 };
 
-export default ExplicitNamingEditionDialog;
+export default ScriptEditionDialog;

@@ -15,8 +15,8 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import PhotoLibrary from '@mui/icons-material/PhotoLibrary';
-import ContentCopy from '@mui/icons-material/ContentCopy';
-import CopyAllIcon from '@mui/icons-material/CopyAll';
+import FileCopyTwoToneIcon from '@mui/icons-material/FileCopyTwoTone';
+import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
 
 import RenameDialog from '../dialogs/rename-dialog';
@@ -427,8 +427,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     }, [selectedElements, userId]);
 
     const allowsDelete = useCallback(() => {
-        return isUserAllowed() && noCreationInProgress();
-    }, [isUserAllowed, noCreationInProgress]);
+        return isUserAllowed() && selectedElements.every((el) => el.elementUuid != null);
+    }, [isUserAllowed, selectedElements]);
 
     const allowsRename = useCallback(() => {
         return selectedElements.length === 1 && isUserAllowed() && selectedElements[0].hasMetadata;
@@ -541,14 +541,14 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                 callback: () => {
                     duplicateItem();
                 },
-                icon: <ContentCopy fontSize="small" />,
+                icon: <FileCopyTwoToneIcon fontSize="small" />,
             });
             menuItems.push({
                 messageDescriptorId: 'copy',
                 callback: () => {
                     copyItem();
                 },
-                icon: <CopyAllIcon fontSize="small" />,
+                icon: <ContentCopyRoundedIcon fontSize="small" />,
             });
         }
 

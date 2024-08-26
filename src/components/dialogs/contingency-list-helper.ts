@@ -8,25 +8,25 @@ import { FieldConstants } from '@gridsuite/commons-ui';
 
 interface ContingencyList {
     [FieldConstants.NAME]: string;
-    [FieldConstants.EQUIPMENT_TABLE]: Array<{
-        [FieldConstants.CONTINGENCY_NAME]: string;
-        [FieldConstants.EQUIPMENT_IDS]: string[];
-    }>;
+    [FieldConstants.EQUIPMENT_TABLE]?: {
+        [FieldConstants.CONTINGENCY_NAME]?: string | null | undefined;
+        [FieldConstants.EQUIPMENT_IDS]?: (string | null | undefined)[] | undefined;
+    }[];
 }
 
 interface Identifier {
     type: 'ID_BASED';
-    identifier: string;
+    identifier?: string | null;
 }
 
 interface IdentifierList {
     type: 'LIST';
     contingencyId: string;
-    identifierList: Identifier[];
+    identifierList?: Identifier[];
 }
 
 interface PrepareContingencyListForBackend {
-    id: string;
+    id: string | null;
     identifierContingencyList: {
         type: 'identifier';
         version: string;
@@ -37,23 +37,25 @@ interface PrepareContingencyListForBackend {
 }
 
 export const prepareContingencyListForBackend = (
-    id: string,
+    id: string | null,
     contingencyList: ContingencyList
 ): PrepareContingencyListForBackend => {
-    const identifiersList: IdentifierList[] = contingencyList[FieldConstants.EQUIPMENT_TABLE].map((contingency) => {
-        const identifierList: Identifier[] = contingency[FieldConstants.EQUIPMENT_IDS].map((identifier) => {
-            return {
-                type: 'ID_BASED',
-                identifier: identifier,
-            };
-        });
+    const identifiersList: IdentifierList[] =
+        contingencyList[FieldConstants.EQUIPMENT_TABLE]?.map((contingency) => {
+            const identifierList: Identifier[] =
+                contingency[FieldConstants.EQUIPMENT_IDS]?.map((identifier) => {
+                    return {
+                        type: 'ID_BASED',
+                        identifier: identifier ?? null,
+                    };
+                }) ?? [];
 
-        return {
-            type: 'LIST',
-            contingencyId: contingency[FieldConstants.CONTINGENCY_NAME],
-            identifierList: identifierList,
-        };
-    });
+            return {
+                type: 'LIST',
+                contingencyId: contingency[FieldConstants.CONTINGENCY_NAME] ?? '',
+                identifierList: identifierList,
+            };
+        }) ?? [];
 
     return {
         id: id,

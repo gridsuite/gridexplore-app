@@ -6,15 +6,16 @@
  */
 
 import { useIntl } from 'react-intl';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import yup from '../../../utils/yup-config';
 import { makeDefaultRowData } from '../contingency-list-utils';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { ContingencyListType } from 'utils/elementType';
 import { v4 as uuid4 } from 'uuid';
 import { FieldConstants, gridItem, CustomAgGridTable, ROW_DRAGGING_SELECTION_COLUMN_DEF } from '@gridsuite/commons-ui';
+import { SuppressKeyboardEventParams } from 'ag-grid-community';
 
-export const getExplicitNamingSchema = (id) => {
+export const getExplicitNamingSchema = (id: FieldConstants.EQUIPMENT_TABLE) => {
     return {
         [id]: yup
             .array()
@@ -33,7 +34,7 @@ export const getExplicitNamingSchema = (id) => {
     };
 };
 
-export const getExplicitNamingEditSchema = (id) => {
+export const getExplicitNamingEditSchema = (id: string) => {
     const schema = yup
         .array()
         .of(
@@ -49,18 +50,18 @@ export const getExplicitNamingEditSchema = (id) => {
     };
 };
 
-const getExplicitNamingConditionSchema = (schema) => {
+const getExplicitNamingConditionSchema = (schema: yup.ArraySchema<any, any, any, any>) => {
     return schema
         .min(1, 'contingencyTableContainAtLeastOneRowError')
         .test('rowWithoutName', 'contingencyTablePartiallyDefinedError', (array) => {
-            return !array.some((row) => !row[FieldConstants.CONTINGENCY_NAME]?.trim());
+            return !array.some((row: any) => !row[FieldConstants.CONTINGENCY_NAME]?.trim());
         })
         .test('rowWithoutEquipments', 'contingencyTablePartiallyDefinedError', (array) => {
-            return !array.some((row) => !row[FieldConstants.EQUIPMENT_IDS]?.length);
+            return !array.some((row: any) => !row[FieldConstants.EQUIPMENT_IDS]?.length);
         });
 };
 
-const suppressKeyboardEvent = (params) => {
+const suppressKeyboardEvent = (params: SuppressKeyboardEventParams) => {
     const key = params.event.key;
     return key === 'Enter' || key === 'ArrowLeft' || key === 'ArrowRight';
 };
@@ -79,7 +80,7 @@ const ExplicitNamingForm = () => {
             {
                 headerName: intl.formatMessage({ id: 'equipments' }),
                 field: FieldConstants.EQUIPMENT_IDS,
-                suppressKeyboardEvent: (params) =>
+                suppressKeyboardEvent: (params: SuppressKeyboardEventParams) =>
                     // we suppress the keys that are used by cellRenderer
                     suppressKeyboardEvent(params),
                 autoHeight: true,
@@ -94,7 +95,7 @@ const ExplicitNamingForm = () => {
         ];
     }, [intl]);
 
-    const getDataFromCsvFile = useCallback((csvData) => {
+    const getDataFromCsvFile = useCallback((csvData: string[][]) => {
         if (csvData) {
             return csvData.map((value) => {
                 return {
@@ -151,6 +152,7 @@ const ExplicitNamingForm = () => {
                 getDataFromCsv: getDataFromCsvFile,
                 csvData: csvInitialData,
             }}
+            cssProps={{}}
         />
     );
 

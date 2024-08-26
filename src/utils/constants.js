@@ -5,8 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 export const noSelectionForCopy = {
-    sourceCaseUuid: null,
-    name: null,
-    description: null,
+    sourceItemUuid: null,
+    typeItem: null,
+    nameItem: null,
+    descriptionItem: null,
     parentDirectoryUuid: null,
+    specificTypeItem: null,
 };
