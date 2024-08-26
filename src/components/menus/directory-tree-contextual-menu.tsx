@@ -45,7 +45,7 @@ import { AppState } from 'redux/reducer';
 interface DirectoryTreeContextualMenuProps {
     directory: ElementAttributes;
     open: boolean;
-    onClose: (e: any, nextSelectedDirectoryId?: string | null) => void;
+    onClose: (e: unknown, nextSelectedDirectoryId?: string | null) => void;
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
     isEmptyDirectory: boolean;
@@ -71,7 +71,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     };
 
     const handleCloseDialog = useCallback(
-        (e: any, nextSelectedDirectoryId: string | null = null) => {
+        (e: unknown, nextSelectedDirectoryId: string | null = null) => {
             onClose(e, nextSelectedDirectoryId);
             setOpenDialog(DialogsId.NONE);
             setHideMenu(false);
@@ -92,12 +92,13 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
         false
     );
 
-    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, (response: any) =>
+    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, (response: ElementAttributes) =>
         handleCloseDialog(null, response?.elementUuid)
     );
 
-    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(insertRootDirectory, (response: any) =>
-        handleCloseDialog(null, response?.elementUuid)
+    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(
+        insertRootDirectory,
+        (response: ElementAttributes) => handleCloseDialog(null, response?.elementUuid)
     );
 
     const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);

@@ -40,7 +40,13 @@ import {
 } from '../../utils/rest-api';
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
-import { ElementType, useSnackMessage, FilterCreationDialog, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    useSnackMessage,
+    FilterCreationDialog,
+    TreeViewFinderNodeProps,
+    ElementAttributes,
+} from '@gridsuite/commons-ui';
 
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
@@ -56,9 +62,9 @@ import { AppState } from 'redux/reducer';
 import { PopoverPosition, PopoverReference } from '@mui/material';
 
 interface ContentContextualMenuProps {
-    activeElement: any;
-    selectedElements: any[];
-    onUpdateSelectedElements: (elements: any[]) => void;
+    activeElement: ElementAttributes;
+    selectedElements: ElementAttributes[];
+    onUpdateSelectedElements: (elements: ElementAttributes[]) => void;
     open: boolean;
     onClose: () => void;
     openDialog: string;
@@ -213,7 +219,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         activeElement.description,
                         activeElement.elementUuid,
                         selectedDirectory?.elementUuid,
-                        activeElement.specificMetadata.type
+                        activeElement.specificMetadata.type as unknown as string
                     );
                     break;
 
@@ -313,7 +319,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const moveElementOnError = useCallback(
-        (errorMessages: string[], params: any, paramsOnErrors: string[]) => {
+        (errorMessages: string[], params: unknown, paramsOnErrors: string[]) => {
             let msg = intl.formatMessage(
                 { id: 'moveElementsFailure' },
                 {
@@ -338,7 +344,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
 
     const [renameCB, renameState] = useDeferredFetch(
         renameElement,
-        (elementUuid: string, renamedElement: any) => {
+        (elementUuid: string, renamedElement: any[]) => {
             // if copied element is renamed
             if (selectionForCopy.sourceItemUuid === renamedElement[0]) {
                 dispatch(
@@ -626,7 +632,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         title={intl.formatMessage({ id: 'renameElement' })}
                         message={'renameElementMsg'}
                         currentName={activeElement ? activeElement.elementName : ''}
-                        type={activeElement ? activeElement.type : ''}
+                        type={activeElement ? activeElement.type : ('' as ElementType)}
                         error={renameState.errorMessage}
                     />
                 );
@@ -720,7 +726,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         onClose={handleCloseDialog}
                         sourceFilterForExplicitNamingConversion={{
                             id: activeElement.elementUuid,
-                            equipmentType: activeElement.specificMetadata.equipmentType,
+                            equipmentType: activeElement.specificMetadata.equipmentType as unknown as string,
                         }}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}

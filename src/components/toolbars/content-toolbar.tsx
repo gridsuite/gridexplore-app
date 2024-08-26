@@ -16,7 +16,7 @@ import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar from './common-toolbar';
 import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
-import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
@@ -26,8 +26,8 @@ import { AppState } from 'redux/reducer';
 import * as constants from '../../utils/UIconstants';
 
 interface ContentToolbarProps {
-    selectedElements: any[];
-    [key: string]: any;
+    selectedElements: ElementAttributes[];
+    [key: string]: unknown;
 }
 
 const ContentToolbar = (props: ContentToolbarProps) => {
@@ -77,7 +77,7 @@ const ContentToolbar = (props: ContentToolbarProps) => {
     );
 
     const moveElementOnError = useCallback(
-        (errorMessages: string[], params: any, paramsOnErrors: string[]) => {
+        (errorMessages: string[], params: unknown, paramsOnErrors: string[]) => {
             let msg = intl.formatMessage(
                 { id: 'moveElementsFailure' },
                 {

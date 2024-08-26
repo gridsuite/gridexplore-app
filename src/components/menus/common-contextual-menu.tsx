@@ -32,7 +32,7 @@ export interface MenuItemType {
 }
 
 interface CommonContextualMenuProps {
-    onClose?: (e?: any, nextSelectedDirectoryId?: string | null) => void;
+    onClose?: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     open: boolean;
     anchorReference?: PopoverReference;
     anchorPosition?: PopoverPosition;
