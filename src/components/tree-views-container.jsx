@@ -315,7 +315,7 @@ const TreeViewsContainer = () => {
     const mergeCurrentAndUploading = useCallback(
         (current) => {
             let elementsToMerge = Object.values(uploadingElements).filter(
-                (e) => e.directory === selectedDirectoryRef.current.elementUuid && current[e.elementName] === undefined
+                (e) => e.directory === selectedDirectoryRef.current?.elementUuid && current[e.elementName] === undefined
             );
             if (elementsToMerge != null && elementsToMerge.length > 0) {
                 // We need to filter current array of elements in elementsToMerge to avoid duplicates in the directoryContent component.

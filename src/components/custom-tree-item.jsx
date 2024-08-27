@@ -5,22 +5,39 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
-import { Box } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { TreeItem, useTreeItem } from '@mui/x-tree-view';
 import { mergeSx } from '@gridsuite/commons-ui';
+import AddIcon from '@mui/icons-material/Add';
+import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
+import { useTheme } from '@mui/material/styles';
 
 const CustomContent = React.forwardRef(function CustomContent(props, ref) {
-    const { className, styles, label, nodeId, icon: iconProp, expansionIcon, displayIcon, onExpand, onSelect } = props;
+    const {
+        className,
+        styles,
+        label,
+        nodeId,
+        icon: iconProp,
+        expansionIcon,
+        displayIcon,
+        onExpand,
+        onSelect,
+        onContextMenu,
+    } = props;
+    const theme = useTheme();
 
     const { disabled, expanded, selected, focused, preventSelection } = useTreeItem(nodeId);
-
+    const [hover, setHover] = useState(false);
+    const [addIconClicked, setAddIconClicked] = useState(false);
     const icon = iconProp || expansionIcon || displayIcon;
 
     const handleMouseDown = (event) => {
+        console.log(' im out mouse');
         preventSelection(event);
     };
 
@@ -31,7 +48,20 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
     const handleSelectionClick = (event) => {
         onSelect(nodeId);
     };
+    const handleAddIconClick = (event) => {
+        onContextMenu(event, nodeId);
+        setAddIconClicked(true);
+    };
+    const handleMouseLeave = () => {
+        console.log(' im leaving');
 
+        setHover(false);
+        setAddIconClicked(false);
+    };
+    const handleClose = () => {
+        setHover(false);
+        setAddIconClicked(false);
+    };
     return (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
         <Box
@@ -41,9 +71,12 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
                 expanded && styles.expanded,
                 selected && styles.selected,
                 focused && styles.focused,
-                disabled && styles.disabled
+                disabled && styles.disabled,
+                hover && { backgroundColor: `${theme.aggrid.highlightColor} !important` } // Add hover style with red background color
             )}
             onMouseDown={handleMouseDown}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={handleMouseLeave}
             ref={ref}
         >
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
@@ -53,6 +86,11 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
             <Typography onClick={handleSelectionClick} component="div" sx={styles.label}>
                 {label}
             </Typography>
+            {hover && (
+                <Box onClick={handleAddIconClick} sx={{ marginLeft: 'auto' }}>
+                    {addIconClicked ? <AddBoxOutlinedIcon /> : <AddIcon />}
+                </Box>
+            )}
         </Box>
     );
 });

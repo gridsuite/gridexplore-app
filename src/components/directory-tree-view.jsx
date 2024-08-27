@@ -181,6 +181,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
                 ContentProps={{
                     onExpand: handleIconClick,
                     onSelect: handleLabelClick,
+                    onContextMenu:handleContextMenuClick,
                     styles: {
                         root: styles.treeItemRoot,
                         selected: styles.treeItemSelected,
