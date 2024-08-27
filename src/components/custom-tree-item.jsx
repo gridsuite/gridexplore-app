@@ -98,15 +98,15 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
             </Typography>
             {hover && (
                 <Box onClick={handleAddIconClick} sx={{ marginLeft: 'auto' }}>
-                    {addIconClicked ? <AddBoxOutlinedIcon /> : <AddIcon />}
+                    {isContextMenuOpen ? <AddBoxOutlinedIcon /> : <AddIcon />}
                 </Box>
             )}
-
+{/* 
             {hover && isContextMenuOpen && (
                 <Box onClick={handleAddIconClick} sx={{ marginLeft: 'auto' }}>
                     {addIconClicked ? <AddBoxOutlinedIcon /> : <AddIcon />}
                 </Box>
-            )}
+            )} */}
         </Box>
     );
 });
