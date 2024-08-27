@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
@@ -28,6 +28,7 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
         onExpand,
         onSelect,
         onContextMenu,
+        isContextMenuOpen,
     } = props;
     const theme = useTheme();
 
@@ -62,6 +63,15 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
         setHover(false);
         setAddIconClicked(false);
     };
+
+    useEffect(() => {
+        if (!isContextMenuOpen) {
+            setHover(false);
+        }
+    }, [isContextMenuOpen]);
+
+    console.log('debug', 'isContextMenuOpen', isContextMenuOpen);
+
     return (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
         <Box
@@ -87,6 +97,12 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
                 {label}
             </Typography>
             {hover && (
+                <Box onClick={handleAddIconClick} sx={{ marginLeft: 'auto' }}>
+                    {addIconClicked ? <AddBoxOutlinedIcon /> : <AddIcon />}
+                </Box>
+            )}
+
+            {hover && isContextMenuOpen && (
                 <Box onClick={handleAddIconClick} sx={{ marginLeft: 'auto' }}>
                     {addIconClicked ? <AddBoxOutlinedIcon /> : <AddIcon />}
                 </Box>
@@ -134,6 +150,16 @@ CustomContent.propTypes = {
      * The callback to call when handle Selection Click.
      */
     onSelect: PropTypes.func,
+
+    /**
+     * The callback to call when handle Context Menu Click.
+     */
+    onContextMenu: PropTypes.func,
+
+    /**
+     * Boolean to indicate if the context menu is open.
+     */
+    isContextMenuOpen: PropTypes.bool.isRequired,
 };
 
 const CustomTreeItem = (props) => <TreeItem ContentComponent={CustomContent} {...props} />;

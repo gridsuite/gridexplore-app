@@ -159,6 +159,7 @@ const TreeViewsContainer = () => {
     const dispatch = useDispatch();
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
+    const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
 
     const user = useSelector((state) => state.user);
     const selectedDirectory = useSelector((state) => state.selectedDirectory);
@@ -190,10 +191,12 @@ const TreeViewsContainer = () => {
 
     const handleOpenDirectoryMenu = (event) => {
         setOpenDirectoryMenu(true);
+        setIsContextMenuOpen(true);
         event.stopPropagation();
     };
     const handleCloseDirectoryMenu = (e, nextSelectedDirectoryId = null) => {
         setOpenDirectoryMenu(false);
+        setIsContextMenuOpen(false);
         if (
             nextSelectedDirectoryId !== null &&
             treeDataRef.current.mapData &&
@@ -522,7 +525,7 @@ const TreeViewsContainer = () => {
             return null;
         }
     };
-
+    
     return (
         <>
             <div
@@ -542,6 +545,7 @@ const TreeViewsContainer = () => {
                             mapData={treeDataRef.current.mapData}
                             onContextMenu={onContextMenu}
                             onDirectoryUpdate={updateDirectoryTree}
+                            isContextMenuOpen={isContextMenuOpen}
                         />
                     ))}
             </div>
