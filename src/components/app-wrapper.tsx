@@ -22,8 +22,11 @@ import {
     filter_en,
     filter_expert_en,
     filter_expert_fr,
+    description_en,
     description_fr,
+    equipments_en,
     equipments_fr,
+    csv_en,
     csv_fr,
     filter_fr,
     flat_parameters_en,
@@ -197,6 +200,9 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...element_search_en,
         ...filter_en,
         ...filter_expert_en,
+        ...description_en,
+        ...equipments_en,
+        ...csv_en,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
