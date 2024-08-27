@@ -116,7 +116,6 @@
     "missingEquipmentsIdsError": "ID is required field for all equipments",
     "contingencyTablePartiallyDefinedError": "At least one contingency is partially defined",
     "contingencyTableContainAtLeastOneRowError": "Contingency list should contain at least one contingency ",
-    "emptyFilterError": "Filter should contain at least one equipment",
     "moveItemTitle": "Move element to another folder",
     "moveItemValidate": "{nbElements, plural, =0 {Please select a folder} =1 {Move element} other {Move # elements}}",
     "moveItemContentText": "Please choose a folder",
