@@ -77,13 +77,13 @@ const ContentToolbar = (props: ContentToolbarProps) => {
     );
 
     const moveElementOnError = useCallback(
-        (errorMessages: string[], params: unknown, paramsOnErrors: string[]) => {
+        (errorMessages: string[], params: unknown, paramsOnErrors: unknown[]) => {
             let msg = intl.formatMessage(
                 { id: 'moveElementsFailure' },
                 {
                     pbn: errorMessages.length,
                     stn: paramsOnErrors.length,
-                    problematic: paramsOnErrors.map((p) => p[0]).join(' '),
+                    problematic: paramsOnErrors.map((p) => (p as string[])[0]).join(' '),
                 }
             );
             console.debug(msg);

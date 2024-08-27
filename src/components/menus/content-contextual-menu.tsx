@@ -219,7 +219,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         activeElement.description,
                         activeElement.elementUuid,
                         selectedDirectory?.elementUuid,
-                        activeElement.specificMetadata.type as unknown as string
+                        String(activeElement.specificMetadata.type)
                     );
                     break;
 
@@ -319,13 +319,13 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const moveElementOnError = useCallback(
-        (errorMessages: string[], params: unknown, paramsOnErrors: string[]) => {
+        (errorMessages: string[], params: unknown, paramsOnErrors: unknown[]) => {
             let msg = intl.formatMessage(
                 { id: 'moveElementsFailure' },
                 {
                     pbn: errorMessages.length,
                     stn: paramsOnErrors.length,
-                    problematic: paramsOnErrors.map((p) => p[0]).join(' '),
+                    problematic: paramsOnErrors.map((p) => (p as string[])[0]).join(' '),
                 }
             );
             console.debug(msg);
@@ -726,7 +726,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         onClose={handleCloseDialog}
                         sourceFilterForExplicitNamingConversion={{
                             id: activeElement.elementUuid,
-                            equipmentType: activeElement.specificMetadata.equipmentType as unknown as string,
+                            equipmentType: String(activeElement.specificMetadata.equipmentType),
                         }}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}

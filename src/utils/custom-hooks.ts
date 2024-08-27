@@ -125,7 +125,8 @@ export const useDeferredFetch = <T>(
         async (...args: unknown[]) => {
             dispatch({ type: ActionType.START });
             try {
-                const response = await fetchFunction(...args);
+                // Params resolution
+                const response = await fetchFunction.apply(null, args);
 
                 if (hasResult) {
                     const data = response;
@@ -146,6 +147,7 @@ export const useDeferredFetch = <T>(
                 }
             } catch (error: any) {
                 if (!error.status) {
+                    // an http error
                     handleError(null, args);
                     throw error;
                 } else {
