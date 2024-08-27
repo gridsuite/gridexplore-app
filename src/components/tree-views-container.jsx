@@ -474,6 +474,18 @@ const TreeViewsContainer = () => {
                 ) {
                     dispatch(setSelectedDirectory(null));
                 }
+                if (
+                    notificationTypeH === notificationType.UPDATE_DIRECTORY &&
+                    selectedDirectoryRef.current != null &&
+                    selectedDirectoryRef.current.elementUuid === directoryUuid
+                ) {
+                    dispatch(
+                        setSelectedDirectory({
+                            ...selectedDirectoryRef.current,
+                            elementName: elementName,
+                        })
+                    );
+                }
                 return;
             }
             if (directoryUuid) {
