@@ -5,19 +5,35 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/material';
 import { TreeItem, useTreeItem } from '@mui/x-tree-view';
 import { mergeSx } from '@gridsuite/commons-ui';
+import AddIcon from '@mui/icons-material/Add';
+import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
+import { useTheme } from '@mui/material/styles';
 
 const CustomContent = React.forwardRef(function CustomContent(props, ref) {
-    const { className, styles, label, nodeId, icon: iconProp, expansionIcon, displayIcon, onExpand, onSelect } = props;
+    const {
+        className,
+        styles,
+        label,
+        nodeId,
+        icon: iconProp,
+        expansionIcon,
+        displayIcon,
+        onExpand,
+        onSelect,
+        onContextMenu,
+        isContextMenuOpen,
+    } = props;
+    const theme = useTheme();
 
     const { disabled, expanded, selected, focused, preventSelection } = useTreeItem(nodeId);
-
+    const [hover, setHover] = useState(false);
     const icon = iconProp || expansionIcon || displayIcon;
 
     const handleMouseDown = (event) => {
@@ -31,6 +47,21 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
     const handleSelectionClick = (event) => {
         onSelect(nodeId);
     };
+    const handleAddIconClick = (event) => {
+        // used to open the contextual menu
+        onContextMenu(event, nodeId);
+    };
+
+    const toggleHover = (isHovering) => {
+        setHover(isHovering);
+    };
+
+    useEffect(() => {
+        // we need to remove the hover when  the user clicks outside the contextual menu while it is open.
+        if (!isContextMenuOpen) {
+            setHover(false);
+        }
+    }, [isContextMenuOpen]);
 
     return (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
@@ -41,9 +72,12 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
                 expanded && styles.expanded,
                 selected && styles.selected,
                 focused && styles.focused,
-                disabled && styles.disabled
+                disabled && styles.disabled,
+                hover && { backgroundColor: `${theme.aggrid.highlightColor} !important`, borderRadius: '16px' } // Add hover style with  background color
             )}
             onMouseDown={handleMouseDown}
+            onMouseEnter={() => toggleHover(true)}
+            onMouseLeave={() => toggleHover(false)}
             ref={ref}
         >
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
@@ -53,6 +87,11 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
             <Typography onClick={handleSelectionClick} component="div" sx={styles.label}>
                 {label}
             </Typography>
+            {hover && (
+                <Box onClick={handleAddIconClick} sx={{ marginLeft: 'auto' }}>
+                    {isContextMenuOpen ? <AddBoxOutlinedIcon /> : <AddIcon />}
+                </Box>
+            )}
         </Box>
     );
 });
@@ -96,6 +135,16 @@ CustomContent.propTypes = {
      * The callback to call when handle Selection Click.
      */
     onSelect: PropTypes.func,
+
+    /**
+     * The callback to call when handle Context Menu Click.
+     */
+    onContextMenu: PropTypes.func,
+
+    /**
+     * Boolean to indicate if the context menu is open.
+     */
+    isContextMenuOpen: PropTypes.bool.isRequired,
 };
 
 const CustomTreeItem = (props) => <TreeItem ContentComponent={CustomContent} {...props} />;

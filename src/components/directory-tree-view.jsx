@@ -72,7 +72,7 @@ const styles = {
     }),
 };
 
-const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUpdate }) => {
+const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUpdate, isContextMenuOpen }) => {
     const dispatch = useDispatch();
 
     const [expanded, setExpanded] = React.useState([]);
@@ -181,6 +181,8 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
                 ContentProps={{
                     onExpand: handleIconClick,
                     onSelect: handleLabelClick,
+                    onContextMenu: handleContextMenuClick,
+                    isContextMenuOpen: isContextMenuOpen,
                     styles: {
                         root: styles.treeItemRoot,
                         selected: styles.treeItemSelected,
