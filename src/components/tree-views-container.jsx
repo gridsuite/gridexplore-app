@@ -270,7 +270,7 @@ const TreeViewsContainer = () => {
 
     useEffect(() => {
         updatePath(selectedDirectoryRef.current?.elementUuid);
-    }, [treeData.mapData, updatePath, selectedDirectory]);
+    }, [treeData.mapData, updatePath, selectedDirectory?.elementUuid]);
 
     const insertContent = useCallback(
         (nodeId, childrenToBeInserted) => {
@@ -307,9 +307,17 @@ const TreeViewsContainer = () => {
                 // is deleted by another user
                 // we should select (closest still existing) parent directory
                 dispatch(setSelectedDirectory(treeDataRef.current.mapData[nodeId]));
+            } else {
+                // we must override selectedDirectory because it could be the one to have changed (renamed for example)
+                const updatedSelectedDirectory = newSubdirectories.find(
+                    (n) => n.elementUuid === selectedDirectoryRef.current.elementUuid
+                );
+                if (updatedSelectedDirectory !== undefined) {
+                    dispatch(setSelectedDirectory(updatedSelectedDirectory));
+                }
             }
         },
-        [insertContent, selectedDirectoryRef, dispatch]
+        [insertContent, dispatch]
     );
 
     const mergeCurrentAndUploading = useCallback(
@@ -340,7 +348,7 @@ const TreeViewsContainer = () => {
                 }
             }
         },
-        [uploadingElements, selectedDirectoryRef]
+        [uploadingElements]
     );
 
     /* currentChildren management */
@@ -474,18 +482,6 @@ const TreeViewsContainer = () => {
                 ) {
                     dispatch(setSelectedDirectory(null));
                 }
-                if (
-                    notificationTypeH === notificationType.UPDATE_DIRECTORY &&
-                    selectedDirectoryRef.current != null &&
-                    selectedDirectoryRef.current.elementUuid === directoryUuid
-                ) {
-                    dispatch(
-                        setSelectedDirectory({
-                            ...selectedDirectoryRef.current,
-                            elementName: elementName,
-                        })
-                    );
-                }
                 return;
             }
             if (directoryUuid) {
@@ -521,11 +517,11 @@ const TreeViewsContainer = () => {
 
     /* Handle components synchronization */
     useEffect(() => {
-        if (selectedDirectory) {
+        if (selectedDirectory?.elementUuid) {
             console.debug('useEffect over selectedDirectory', selectedDirectory.elementUuid);
             updateDirectoryTreeAndContent(selectedDirectory.elementUuid);
         }
-    }, [selectedDirectory, updateDirectoryTreeAndContent]);
+    }, [selectedDirectory?.elementUuid, updateDirectoryTreeAndContent]);
 
     const getActiveDirectory = () => {
         if (treeDataRef.current.mapData && treeDataRef.current.mapData[activeDirectory]) {
