@@ -165,6 +165,8 @@ const TreeViewsContainer = () => {
     const activeDirectory = useSelector((state) => state.activeDirectory);
 
     const uploadingElements = useSelector((state) => state.uploadingElements);
+    const uploadingElementsRef = useRef({});
+    uploadingElementsRef.current = uploadingElements;
     const currentChildren = useSelector((state) => state.currentChildren);
     const currentChildrenRef = useRef(currentChildren);
     currentChildrenRef.current = currentChildren;
@@ -312,36 +314,33 @@ const TreeViewsContainer = () => {
         [insertContent, dispatch]
     );
 
-    const mergeCurrentAndUploading = useCallback(
-        (current) => {
-            let elementsToMerge = Object.values(uploadingElements).filter(
-                (e) => e.directory === selectedDirectoryRef.current.elementUuid && current[e.elementName] === undefined
+    const mergeCurrentAndUploading = useCallback((current) => {
+        let elementsToMerge = Object.values(uploadingElementsRef.current).filter(
+            (e) => e.directory === selectedDirectoryRef.current.elementUuid && current[e.elementName] === undefined
+        );
+        if (elementsToMerge != null && elementsToMerge.length > 0) {
+            // We need to filter current array of elements in elementsToMerge to avoid duplicates in the directoryContent component.
+            // An uploading element doesn't have an elementUuid yet, then we filter on element Name and type.
+            const filtredCurrentElements = current.filter(
+                (el) =>
+                    !elementsToMerge.some(
+                        (e) => (e.elementName === el.elementName && e.type === el.type) || e.elementUuid
+                    )
             );
-            if (elementsToMerge != null && elementsToMerge.length > 0) {
-                // We need to filter current array of elements in elementsToMerge to avoid duplicates in the directoryContent component.
-                // An uploading element doesn't have an elementUuid yet, then we filter on element Name and type.
-                const filtredCurrentElements = current.filter(
-                    (el) =>
-                        !elementsToMerge.some(
-                            (e) => (e.elementName === el.elementName && e.type === el.type) || e.elementUuid
-                        )
-                );
 
-                return [...filtredCurrentElements, ...elementsToMerge].sort(function (a, b) {
+            return [...filtredCurrentElements, ...elementsToMerge].sort(function (a, b) {
+                return a.elementName.localeCompare(b.elementName);
+            });
+        } else {
+            if (current == null) {
+                return null;
+            } else {
+                return [...current].sort(function (a, b) {
                     return a.elementName.localeCompare(b.elementName);
                 });
-            } else {
-                if (current == null) {
-                    return null;
-                } else {
-                    return [...current].sort(function (a, b) {
-                        return a.elementName.localeCompare(b.elementName);
-                    });
-                }
             }
-        },
-        [uploadingElements]
-    );
+        }
+    }, []);
 
     /* currentChildren management */
     const updateCurrentChildren = useCallback(
