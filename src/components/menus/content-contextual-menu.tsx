@@ -40,7 +40,14 @@ import {
 } from '../../utils/rest-api';
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
-import { ElementType, useSnackMessage, FilterCreationDialog } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    useSnackMessage,
+    FilterCreationDialog,
+    TreeViewFinderNodeProps,
+    ElementAttributes,
+} from '@gridsuite/commons-ui';
+
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
@@ -51,8 +58,23 @@ import { setSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { AppState } from 'redux/reducer';
+import { PopoverPosition, PopoverReference } from '@mui/material';
 
-const ContentContextualMenu = (props) => {
+interface ContentContextualMenuProps {
+    activeElement: ElementAttributes;
+    selectedElements: ElementAttributes[];
+    onUpdateSelectedElements: (elements: ElementAttributes[]) => void;
+    open: boolean;
+    onClose: () => void;
+    openDialog: string;
+    setOpenDialog: (dialogId: string) => void;
+    broadcastChannel: BroadcastChannel;
+    anchorReference?: PopoverReference;
+    anchorPosition?: PopoverPosition;
+}
+
+const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     const {
         activeElement,
         selectedElements,
@@ -64,22 +86,22 @@ const ContentContextualMenu = (props) => {
         broadcastChannel,
         ...others
     } = props;
-    const userId = useSelector((state) => state.user.profile.sub);
+    const userId = useSelector((state: AppState) => state.user?.profile.sub);
     const intl = useIntl();
     const dispatch = useDispatch();
-    const selectionForCopy = useSelector((state) => state.selectionForCopy);
-    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
 
     const { snackError } = useSnackMessage();
 
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
     const { handleDownloadCases, handleConvertCases, stopCasesExports } = useDownloadUtils();
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const handleLastError = useCallback(
-        (message) => {
+        (message: string) => {
             snackError({
                 messageTxt: message,
             });
@@ -87,12 +109,19 @@ const ContentContextualMenu = (props) => {
         [snackError]
     );
 
-    const handleOpenDialog = (dialogId) => {
+    const handleOpenDialog = (dialogId: string) => {
         setHideMenu(true);
         setOpenDialog(dialogId);
     };
     const dispatchSelectionForCopy = useCallback(
-        (typeItem, nameItem, descriptionItem, sourceItemUuid, parentDirectoryUuid, specificType) => {
+        (
+            typeItem: string,
+            nameItem: string,
+            descriptionItem: string,
+            sourceItemUuid: string,
+            parentDirectoryUuid?: string,
+            specificTypeItem?: string
+        ) => {
             dispatch(
                 setSelectionForCopy({
                     sourceItemUuid: sourceItemUuid,
@@ -100,14 +129,21 @@ const ContentContextualMenu = (props) => {
                     nameItem: nameItem,
                     descriptionItem: descriptionItem,
                     parentDirectoryUuid: parentDirectoryUuid,
-                    specificType,
+                    specificTypeItem,
                 })
             );
         },
         [dispatch]
     );
 
-    function copyElement(typeItem, nameItem, descriptionItem, sourceItemUuid, parentDirectoryUuid, specificTypeItem) {
+    function copyElement(
+        typeItem: string,
+        nameItem: string,
+        descriptionItem: string,
+        sourceItemUuid: string,
+        parentDirectoryUuid?: string,
+        specificTypeItem?: string
+    ) {
         dispatchSelectionForCopy(
             typeItem,
             nameItem,
@@ -128,7 +164,7 @@ const ContentContextualMenu = (props) => {
         handleCloseDialog();
     }
 
-    const handleDuplicateError = (error) => {
+    const handleDuplicateError = (error: string) => {
         return handleLastError(
             intl.formatMessage(
                 { id: 'duplicateElementFailure' },
@@ -157,7 +193,7 @@ const ContentContextualMenu = (props) => {
                             ' with uuid ' +
                             activeElement.elementUuid +
                             ' from directory ' +
-                            selectedDirectory.elementUuid +
+                            selectedDirectory?.elementUuid +
                             ' selected for copy'
                     );
                     copyElement(
@@ -165,7 +201,7 @@ const ContentContextualMenu = (props) => {
                         activeElement.elementName,
                         activeElement.description,
                         activeElement.elementUuid,
-                        selectedDirectory.elementUuid
+                        selectedDirectory?.elementUuid
                     );
                     break;
                 case ElementType.CONTINGENCY_LIST:
@@ -174,7 +210,7 @@ const ContentContextualMenu = (props) => {
                             ' with uuid ' +
                             activeElement.elementUuid +
                             ' from directory ' +
-                            selectedDirectory.elementUuid +
+                            selectedDirectory?.elementUuid +
                             ' selected for copy'
                     );
                     copyElement(
@@ -182,8 +218,8 @@ const ContentContextualMenu = (props) => {
                         activeElement.elementName,
                         activeElement.description,
                         activeElement.elementUuid,
-                        selectedDirectory.elementUuid,
-                        activeElement.specificMetadata.type
+                        selectedDirectory?.elementUuid,
+                        String(activeElement.specificMetadata.type)
                     );
                     break;
 
@@ -256,9 +292,9 @@ const ContentContextualMenu = (props) => {
 
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(
-        (elementsUuids) => {
+        (elementsUuids: string[]) => {
             setDeleteError('');
-            deleteElements(elementsUuids, selectedDirectory.elementUuid)
+            deleteElements(elementsUuids, selectedDirectory?.elementUuid)
                 .then(() => handleCloseDialog())
                 //show the error message and don't close the dialog
                 .catch((error) => {
@@ -270,7 +306,7 @@ const ContentContextualMenu = (props) => {
     );
 
     const moveElementErrorToString = useCallback(
-        (HTTPStatusCode) => {
+        (HTTPStatusCode: number) => {
             if (HTTPStatusCode === 403) {
                 return intl.formatMessage({
                     id: 'moveElementNotAllowedError',
@@ -283,13 +319,13 @@ const ContentContextualMenu = (props) => {
     );
 
     const moveElementOnError = useCallback(
-        (errorMessages, params, paramsOnErrors) => {
+        (errorMessages: string[], params: unknown, paramsOnErrors: unknown[]) => {
             let msg = intl.formatMessage(
                 { id: 'moveElementsFailure' },
                 {
                     pbn: errorMessages.length,
                     stn: paramsOnErrors.length,
-                    problematic: paramsOnErrors.map((p) => p[0]).join(' '),
+                    problematic: paramsOnErrors.map((p) => (p as string[])[0]).join(' '),
                 }
             );
             console.debug(msg);
@@ -308,7 +344,7 @@ const ContentContextualMenu = (props) => {
 
     const [renameCB, renameState] = useDeferredFetch(
         renameElement,
-        (elementUuid, renamedElement) => {
+        (elementUuid: string, renamedElement: any[]) => {
             // if copied element is renamed
             if (selectionForCopy.sourceItemUuid === renamedElement[0]) {
                 dispatch(
@@ -333,7 +369,7 @@ const ContentContextualMenu = (props) => {
 
             handleCloseDialog();
         },
-        (HTTPStatusCode) => {
+        (HTTPStatusCode: number) => {
             if (HTTPStatusCode === 403) {
                 return intl.formatMessage({
                     id: 'renameElementNotAllowedError',
@@ -596,7 +632,7 @@ const ContentContextualMenu = (props) => {
                         title={intl.formatMessage({ id: 'renameElement' })}
                         message={'renameElementMsg'}
                         currentName={activeElement ? activeElement.elementName : ''}
-                        type={activeElement ? activeElement.type : ''}
+                        type={activeElement ? activeElement.type : ('' as ElementType)}
                         error={renameState.errorMessage}
                     />
                 );
@@ -616,7 +652,7 @@ const ContentContextualMenu = (props) => {
                 return (
                     <MoveDialog
                         open={true}
-                        onClose={(selectedDir) => {
+                        onClose={(selectedDir: TreeViewFinderNodeProps[]) => {
                             if (selectedDir.length > 0) {
                                 moveCB([[selectedElements.map((element) => element.elementUuid), selectedDir[0].id]]);
                             }
@@ -640,7 +676,6 @@ const ContentContextualMenu = (props) => {
                         open={true}
                         onClose={handleCloseDialog}
                         onClick={(id) => replaceFormContingencyListWithScriptCB(id, selectedDirectory?.elementUuid)}
-                        onError={handleLastError}
                         title={intl.formatMessage({ id: 'replaceList' })}
                     />
                 );
@@ -691,7 +726,7 @@ const ContentContextualMenu = (props) => {
                         onClose={handleCloseDialog}
                         sourceFilterForExplicitNamingConversion={{
                             id: activeElement.elementUuid,
-                            equipmentType: activeElement.specificMetadata.equipmentType,
+                            equipmentType: String(activeElement.specificMetadata.equipmentType),
                         }}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
