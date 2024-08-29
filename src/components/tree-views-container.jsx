@@ -307,14 +307,6 @@ const TreeViewsContainer = () => {
                 // is deleted by another user
                 // we should select (closest still existing) parent directory
                 dispatch(setSelectedDirectory(treeDataRef.current.mapData[nodeId]));
-            } else {
-                // we must override selectedDirectory because it could be the one to have changed (renamed for example)
-                const updatedSelectedDirectory = newSubdirectories.find(
-                    (n) => n.elementUuid === selectedDirectoryRef.current.elementUuid
-                );
-                if (updatedSelectedDirectory !== undefined) {
-                    dispatch(setSelectedDirectory(updatedSelectedDirectory));
-                }
             }
         },
         [insertContent, dispatch]
