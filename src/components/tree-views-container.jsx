@@ -270,7 +270,7 @@ const TreeViewsContainer = () => {
 
     useEffect(() => {
         updatePath(selectedDirectoryRef.current?.elementUuid);
-    }, [treeData.mapData, updatePath, selectedDirectory]);
+    }, [treeData.mapData, updatePath, selectedDirectory?.elementUuid]);
 
     const insertContent = useCallback(
         (nodeId, childrenToBeInserted) => {
@@ -309,7 +309,7 @@ const TreeViewsContainer = () => {
                 dispatch(setSelectedDirectory(treeDataRef.current.mapData[nodeId]));
             }
         },
-        [insertContent, selectedDirectoryRef, dispatch]
+        [insertContent, dispatch]
     );
 
     const mergeCurrentAndUploading = useCallback(
@@ -340,7 +340,7 @@ const TreeViewsContainer = () => {
                 }
             }
         },
-        [uploadingElements, selectedDirectoryRef]
+        [uploadingElements]
     );
 
     /* currentChildren management */
@@ -509,11 +509,11 @@ const TreeViewsContainer = () => {
 
     /* Handle components synchronization */
     useEffect(() => {
-        if (selectedDirectory) {
+        if (selectedDirectory?.elementUuid) {
             console.debug('useEffect over selectedDirectory', selectedDirectory.elementUuid);
             updateDirectoryTreeAndContent(selectedDirectory.elementUuid);
         }
-    }, [selectedDirectory, updateDirectoryTreeAndContent]);
+    }, [selectedDirectory?.elementUuid, updateDirectoryTreeAndContent]);
 
     const getActiveDirectory = () => {
         if (treeDataRef.current.mapData && treeDataRef.current.mapData[activeDirectory]) {
