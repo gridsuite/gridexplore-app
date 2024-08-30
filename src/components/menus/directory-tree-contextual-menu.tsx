@@ -48,13 +48,13 @@ interface DirectoryTreeContextualMenuProps {
     onClose: (e: unknown, nextSelectedDirectoryId?: string | null) => void;
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
-    hideSomeMenuOptions: boolean;
+    restrictMenuItems: boolean;
     anchorReference?: PopoverReference;
     anchorPosition?: PopoverPosition;
 }
 
 const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = (props) => {
-    const { directory, open, onClose, openDialog, setOpenDialog, hideSomeMenuOptions, ...others } = props;
+    const { directory, open, onClose, openDialog, setOpenDialog, restrictMenuItems, ...others } = props;
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const intl = useIntl();
@@ -246,7 +246,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
 
             menuItems.push({ isDivider: true });
 
-            if (isAllowed() && !hideSomeMenuOptions) {
+            if (isAllowed() && !restrictMenuItems) {
                 menuItems.push(
                     {
                         messageDescriptorId: 'renameFolder',

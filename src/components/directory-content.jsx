@@ -674,7 +674,7 @@ const DirectoryContent = () => {
                               }
                             : undefined
                     }
-                    hideSomeMenuOptions={true}
+                    restrictMenuItems={true}
                 />
             </div>
             {renderDialog(elementName)}
