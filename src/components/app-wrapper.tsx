@@ -55,6 +55,8 @@ import backend_locale_fr from '../translations/external/backend-locale-fr';
 import backend_locale_en from '../translations/external/backend-locale-en';
 import import_parameters_en from '../translations/external/import-parameters-en';
 import import_parameters_fr from '../translations/external/import-parameters-fr';
+import export_parameters_en from '../translations/external/export-parameters-en';
+import export_parameters_fr from '../translations/external/export-parameters-fr';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
@@ -186,6 +188,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...treeview_finder_en,
         ...card_error_boundary_en,
         ...import_parameters_en,
+        ...export_parameters_en,
         ...flat_parameters_en,
         ...multiple_selection_dialog_en,
         ...common_button_en,
@@ -205,6 +208,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...treeview_finder_fr,
         ...card_error_boundary_fr,
         ...import_parameters_fr,
+        ...export_parameters_fr,
         ...flat_parameters_fr,
         ...multiple_selection_dialog_fr,
         ...common_button_fr,
