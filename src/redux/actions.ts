@@ -20,7 +20,7 @@ export type AppActions =
     | CurrentPathAction
     | SetAppsAndUrlsAction
     | AddUploadingElementAction
-    | RemoveUploadingElementAction
+    | SetUploadingElementsAction
     | DirectoryUpdatedAction
     | TreeDataAction
     | SearchedElementAction;
