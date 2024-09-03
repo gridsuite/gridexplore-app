@@ -135,18 +135,13 @@ export function addUploadingElement(
     return { type: ADD_UPLOADING_ELEMENT, uploadingElement: uploadingElement };
 }
 
-export const REMOVE_UPLOADING_ELEMENT = 'REMOVE_UPLOADING_ELEMENT';
-export type RemoveUploadingElementAction = Readonly<Action<typeof REMOVE_UPLOADING_ELEMENT>> & {
-    uploadingElement: AppState['uploadingElements'][number];
+export const SET_UPLOADING_ELEMENTS = 'SET_UPLOADING_ELEMENTS';
+export type SetUploadingElementsAction = Readonly<Action<typeof SET_UPLOADING_ELEMENTS>> & {
+    uploadingElements: AppState['uploadingElements'];
 };
 
-export function removeUploadingElement(
-    uploadingElement: AppState['uploadingElements'][number]
-): RemoveUploadingElementAction {
-    return {
-        type: REMOVE_UPLOADING_ELEMENT,
-        uploadingElement: uploadingElement,
-    };
+export function setUploadingElements(uploadingElements: AppState['uploadingElements']): SetUploadingElementsAction {
+    return { type: SET_UPLOADING_ELEMENTS, uploadingElements: uploadingElements };
 }
 
 export const DIRECTORY_UPDATED = 'DIRECTORY_UPDATED';

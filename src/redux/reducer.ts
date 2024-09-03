@@ -29,8 +29,6 @@ import {
     DIRECTORY_UPDATED,
     DirectoryUpdatedAction,
     LanguageAction,
-    REMOVE_UPLOADING_ELEMENT,
-    RemoveUploadingElementAction,
     SEARCHED_ELEMENT,
     SearchedElementAction,
     SELECT_COMPUTED_LANGUAGE,
@@ -42,6 +40,8 @@ import {
     SelectionForCopyAction,
     SET_APPS_AND_URLS,
     SetAppsAndUrlsAction,
+    SET_UPLOADING_ELEMENTS,
+    SetUploadingElementsAction,
     ThemeAction,
     TREE_DATA,
     TreeDataAction,
@@ -256,10 +256,8 @@ export const reducer = createReducer(initialState, (builder) => {
         };
     });
 
-    builder.addCase(REMOVE_UPLOADING_ELEMENT, (state, action: RemoveUploadingElementAction) => {
-        let newUploadingElements = { ...state.uploadingElements };
-        delete newUploadingElements[action.uploadingElement.id];
-        state.uploadingElements = newUploadingElements;
+    builder.addCase(SET_UPLOADING_ELEMENTS, (state, action: SetUploadingElementsAction) => {
+        state.uploadingElements = action.uploadingElements;
     });
 
     builder.addCase(DIRECTORY_UPDATED, (state, action: DirectoryUpdatedAction) => {

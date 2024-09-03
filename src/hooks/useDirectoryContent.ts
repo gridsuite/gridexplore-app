@@ -6,12 +6,12 @@
  */
 
 import { useSelector } from 'react-redux';
-import React, { useRef, useEffect, useCallback, useState } from 'react';
+import { useRef, useEffect, useCallback, useState } from 'react';
 import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { AppState } from '../redux/reducer';
 
-export const useDirectoryContent = (setIsMissingDataAfterDirChange: React.Dispatch<React.SetStateAction<boolean>>) => {
+export const useDirectoryContent = () => {
     const currentChildren = useSelector((state: AppState) => state.currentChildren);
     const [childrenMetadata, setChildrenMetadata] = useState<Record<UUID, ElementAttributes>>({});
     const { snackError } = useSnackMessage();
@@ -30,35 +30,34 @@ export const useDirectoryContent = (setIsMissingDataAfterDirChange: React.Dispat
     useEffect(() => {
         if (!currentChildren?.length) {
             setChildrenMetadata({});
-            setIsMissingDataAfterDirChange(false);
+            return;
+        }
+
+        // Do not fetch metadata again if we just added a ghost element
+        if (Object.values(currentChildren).some((e) => e.uploading)) {
             return;
         }
 
         let metadata: Record<UUID, ElementAttributes> = {};
-        let childrenToFetchElementsInfos = Object.values(currentChildren)
-            .filter((e) => !e.uploading)
-            .map((e) => e.elementUuid);
+        let childrenToFetchElementsInfos = Object.values(currentChildren).map((e) => e.elementUuid);
         if (childrenToFetchElementsInfos.length > 0) {
             fetchElementsInfos(childrenToFetchElementsInfos)
                 .then((res) => {
-                    res.forEach((e) => {
-                        metadata[e.elementUuid] = e;
-                    });
+                    // discarding request for older directory
+                    if (previousData.current === currentChildren) {
+                        res.forEach((e) => {
+                            metadata[e.elementUuid] = e;
+                        });
+                        setChildrenMetadata(metadata);
+                    }
                 })
                 .catch((error) => {
                     if (previousData.current && Object.keys(previousData.current).length === 0) {
                         handleError(error.message);
                     }
-                })
-                .finally(() => {
-                    // discarding request for older directory
-                    if (previousData.current === currentChildren) {
-                        setChildrenMetadata(metadata);
-                        setIsMissingDataAfterDirChange(false);
-                    }
                 });
         }
-    }, [handleError, currentChildren, setIsMissingDataAfterDirChange]);
+    }, [handleError, currentChildren]);
 
     return [currentChildren, childrenMetadata];
 };
