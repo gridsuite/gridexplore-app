@@ -7,7 +7,6 @@
 
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -32,34 +31,47 @@ import {
     elementExists,
 } from '../../utils/rest-api';
 
-import CommonContextualMenu from './common-contextual-menu';
+import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
-import { ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementAttributes, ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { PopoverPosition, PopoverReference } from '@mui/material';
+import { AppState } from 'redux/reducer';
 
-const DirectoryTreeContextualMenu = (props) => {
-    const { directory, open, onClose, openDialog, setOpenDialog, isEmptyDirectory, ...others } = props;
-    const userId = useSelector((state) => state.user.profile.sub);
+interface DirectoryTreeContextualMenuProps {
+    directory: ElementAttributes;
+    open: boolean;
+    onClose: (e: unknown, nextSelectedDirectoryId?: string | null) => void;
+    openDialog: string;
+    setOpenDialog: (dialogId: string) => void;
+    restrictMenuItems: boolean;
+    anchorReference?: PopoverReference;
+    anchorPosition?: PopoverPosition;
+}
+
+const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = (props) => {
+    const { directory, open, onClose, openDialog, setOpenDialog, restrictMenuItems, ...others } = props;
+    const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const intl = useIntl();
 
     const [hideMenu, setHideMenu] = useState(false);
     const { snackError } = useSnackMessage();
-    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
-    const handleOpenDialog = (dialogId) => {
+    const handleOpenDialog = (dialogId: string) => {
         setHideMenu(true);
         setOpenDialog(dialogId);
     };
 
     const handleCloseDialog = useCallback(
-        (e, nextSelectedDirectoryId = null) => {
+        (e: unknown, nextSelectedDirectoryId: string | null = null) => {
             onClose(e, nextSelectedDirectoryId);
             setOpenDialog(DialogsId.NONE);
             setHideMenu(false);
@@ -71,7 +83,7 @@ const DirectoryTreeContextualMenu = (props) => {
     const [renameCB, renameState] = useDeferredFetch(
         renameElement,
         () => handleCloseDialog(null, null),
-        (HTTPStatusCode) => {
+        (HTTPStatusCode: number) => {
             if (HTTPStatusCode === 403) {
                 return intl.formatMessage({ id: 'renameDirectoryError' });
             }
@@ -80,18 +92,19 @@ const DirectoryTreeContextualMenu = (props) => {
         false
     );
 
-    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, (response) =>
+    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, (response: ElementAttributes) =>
         handleCloseDialog(null, response?.elementUuid)
     );
 
-    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(insertRootDirectory, (response) =>
-        handleCloseDialog(null, response?.elementUuid)
+    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(
+        insertRootDirectory,
+        (response: ElementAttributes) => handleCloseDialog(null, response?.elementUuid)
     );
 
-    const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
 
     const handleError = useCallback(
-        (message) => {
+        (message: string) => {
             snackError({
                 messageTxt: message,
             });
@@ -99,7 +112,7 @@ const DirectoryTreeContextualMenu = (props) => {
         [snackError]
     );
 
-    const handlePasteError = (error) => {
+    const handlePasteError = (error: any) => {
         let msg;
         if (error.status === 404) {
             msg = intl.formatMessage({
@@ -111,7 +124,7 @@ const DirectoryTreeContextualMenu = (props) => {
         return handleError(msg);
     };
 
-    function pasteElement(directoryUuid, selectionForCopy) {
+    function pasteElement(directoryUuid: string, selectionForCopy: any) {
         if (!selectionForCopy.sourceItemUuid) {
             handleError(intl.formatMessage({ id: 'elementPasteFailed404' }));
             handleCloseDialog(null);
@@ -128,7 +141,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         directoryUuid,
                         selectionForCopy.typeItem,
                         undefined
-                    ).catch((error) => {
+                    ).catch((error: any) => {
                         if (handleMaxElementsExceededError(error, snackError)) {
                             return;
                         }
@@ -145,7 +158,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         directoryUuid,
                         ElementType.PARAMETERS,
                         selectionForCopy.typeItem
-                    ).catch((error) => {
+                    ).catch((error: any) => {
                         handlePasteError(error);
                     });
                     break;
@@ -155,7 +168,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         directoryUuid,
                         selectionForCopy.typeItem,
                         selectionForCopy.specificType
-                    ).catch((error) => {
+                    ).catch((error: any) => {
                         handlePasteError(error);
                     });
                     break;
@@ -173,11 +186,11 @@ const DirectoryTreeContextualMenu = (props) => {
 
     const [deleteError, setDeleteError] = useState('');
     const handleDeleteElement = useCallback(
-        (elementsUuid) => {
+        (elementsUuid: string) => {
             setDeleteError('');
             deleteElement(elementsUuid)
                 .then(() => handleCloseDialog(null, directory?.parentUuid))
-                .catch((error) => {
+                .catch((error: any) => {
                     //show the error message and don't close the dialog
                     setDeleteError(error.message);
                     handleError(error.message);
@@ -197,7 +210,7 @@ const DirectoryTreeContextualMenu = (props) => {
 
     const buildMenu = () => {
         // build menuItems here
-        let menuItems = [];
+        let menuItems: MenuItemType[] = [];
 
         if (!showMenuFromEmptyZone()) {
             menuItems.push(
@@ -233,7 +246,7 @@ const DirectoryTreeContextualMenu = (props) => {
 
             menuItems.push({ isDivider: true });
 
-            if (isAllowed() && !isEmptyDirectory) {
+            if (isAllowed() && !restrictMenuItems) {
                 menuItems.push(
                     {
                         messageDescriptorId: 'renameFolder',
@@ -252,19 +265,19 @@ const DirectoryTreeContextualMenu = (props) => {
                     { isDivider: true }
                 );
             }
-            if (!isEmptyDirectory) {
-                menuItems.push(
-                    {
-                        messageDescriptorId: 'paste',
-                        callback: () => {
-                            pasteElement(directory?.elementUuid, selectionForCopy);
-                        },
-                        icon: <ContentPasteIcon fontSize="small" />,
-                        disabled: !selectionForCopy.sourceItemUuid,
+
+            menuItems.push(
+                {
+                    messageDescriptorId: 'paste',
+                    callback: () => {
+                        pasteElement(directory?.elementUuid, selectionForCopy);
                     },
-                    { isDivider: true }
-                );
-            }
+                    icon: <ContentPasteIcon fontSize="small" />,
+                    disabled: !selectionForCopy.sourceItemUuid,
+                },
+                { isDivider: true }
+            );
+
             menuItems.push({
                 messageDescriptorId: 'createFolder',
                 callback: () => {
@@ -301,7 +314,9 @@ const DirectoryTreeContextualMenu = (props) => {
                 return (
                     <CreateDirectoryDialog
                         open={true}
-                        onClick={(elementName) => insertDirectoryCB(elementName, directory?.elementUuid, userId)}
+                        onClick={(elementName: string) =>
+                            insertDirectoryCB(elementName, directory?.elementUuid, userId)
+                        }
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
                             id: 'insertNewDirectoryDialogTitle',
@@ -314,7 +329,7 @@ const DirectoryTreeContextualMenu = (props) => {
                 return (
                     <CreateDirectoryDialog
                         open={true}
-                        onClick={(elementName) => insertRootDirectoryCB(elementName, userId)}
+                        onClick={(elementName: string) => insertRootDirectoryCB(elementName, userId)}
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
                             id: 'insertNewRootDirectoryDialogTitle',
@@ -328,7 +343,7 @@ const DirectoryTreeContextualMenu = (props) => {
                         message={'renameElementMsg'}
                         currentName={directory?.elementName}
                         open={true}
-                        onClick={(newName) => renameCB(directory?.elementUuid, newName)}
+                        onClick={(newName: string) => renameCB(directory?.elementUuid, newName)}
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
                             id: 'renameDirectoryDialogTitle',
@@ -374,10 +389,6 @@ const DirectoryTreeContextualMenu = (props) => {
             {renderDialog()}
         </>
     );
-};
-
-DirectoryTreeContextualMenu.propTypes = {
-    onClose: PropTypes.func,
 };
 
 export default DirectoryTreeContextualMenu;

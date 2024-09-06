@@ -69,7 +69,7 @@ export const useTextValue = ({
 };
 
 interface UseNameFieldProps extends UseTextValueProps {
-    parentDirectoryId?: string;
+    parentDirectoryId?: string | null;
     elementType: ElementType;
     active: boolean;
     alreadyExistingErrorMessage?: string;

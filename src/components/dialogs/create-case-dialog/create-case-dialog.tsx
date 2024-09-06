@@ -42,7 +42,7 @@ interface IFormData {
 }
 
 interface CreateCaseDialogProps {
-    onClose: () => void;
+    onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     open: boolean;
 }
 

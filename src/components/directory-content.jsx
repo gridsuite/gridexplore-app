@@ -266,9 +266,8 @@ const DirectoryContent = () => {
         (event) => {
             if (event.data && event.data.uploading !== null) {
                 if (event.data.type !== 'DIRECTORY') {
-                    if (selectedDirectory) {
-                        dispatch(setActiveDirectory(selectedDirectory.elementUuid));
-                    }
+                    dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
+
                     setActiveElement({
                         hasMetadata: childrenMetadata[event.data.elementUuid] !== undefined,
                         specificMetadata: childrenMetadata[event.data.elementUuid]?.specificMetadata,
@@ -293,7 +292,14 @@ const DirectoryContent = () => {
                 handleOpenContentMenu(event.event);
             }
         },
-        [checkedRows, childrenMetadata, contextualMixPolicies.BIG, contextualMixPolicy, dispatch, selectedDirectory]
+        [
+            checkedRows,
+            childrenMetadata,
+            contextualMixPolicies.BIG,
+            contextualMixPolicy,
+            dispatch,
+            selectedDirectory?.elementUuid,
+        ]
     );
 
     const onContextMenu = useCallback(
@@ -301,9 +307,8 @@ const DirectoryContent = () => {
             //We check if the context menu was triggered from a row to prevent displaying both the directory and the content context menus
             const isRow = !!event.target.closest(`.${CUSTOM_ROW_CLASS}`);
             if (!isRow) {
-                if (selectedDirectory) {
-                    dispatch(setActiveDirectory(selectedDirectory.elementUuid));
-                }
+                dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
+
                 setMousePosition({
                     mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
                     mouseY: event.clientY + constants.VERTICAL_SHIFT,
@@ -311,7 +316,7 @@ const DirectoryContent = () => {
                 handleOpenDirectoryMenu(event);
             }
         },
-        [dispatch, selectedDirectory]
+        [dispatch, selectedDirectory?.elementUuid]
     );
 
     const handleError = useCallback(
@@ -402,12 +407,12 @@ const DirectoryContent = () => {
     const [openDescModificationDialog, setOpenDescModificationDialog] = useState(false);
 
     useEffect(() => {
-        if (!selectedDirectory) {
+        if (!selectedDirectory?.elementUuid) {
             return;
         }
         setIsMissingDataAfterDirChange(true);
         setCheckedRows([]);
-    }, [selectedDirectory, setIsMissingDataAfterDirChange]);
+    }, [selectedDirectory?.elementUuid, setIsMissingDataAfterDirChange]);
 
     const isActiveElementUnchecked = useMemo(
         () => activeElement && !checkedRows.find((children) => children.elementUuid === activeElement.elementUuid),
@@ -459,11 +464,10 @@ const DirectoryContent = () => {
             //set the contextualMenu position
             setMousePosition(handleMousePosition(coordinates, isEmpty));
             setOpenDirectoryMenu(true);
-            if (selectedDirectory) {
-                dispatch(setActiveDirectory(selectedDirectory.elementUuid));
-            }
+
+            dispatch(setActiveDirectory(selectedDirectory.elementUuid));
         },
-        [dispatch, selectedDirectory, handleMousePosition]
+        [dispatch, selectedDirectory?.elementUuid, handleMousePosition]
     );
 
     const renderEmptyDirContent = () => (
@@ -674,7 +678,7 @@ const DirectoryContent = () => {
                               }
                             : undefined
                     }
-                    isEmptyDirectory={rows?.length === 0}
+                    restrictMenuItems={true}
                 />
             </div>
             {renderDialog(elementName)}
