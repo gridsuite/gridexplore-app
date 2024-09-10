@@ -24,17 +24,15 @@ const downloadCases = async (selectedCases: ElementAttributes[]) => {
         let caseOriginalName = await getCaseOriginalName(
             selectedCase.elementUuid
         );
-        let caseFormat =
+        let caseName =
             typeof caseOriginalName === 'string'
-                ? caseOriginalName.split('.').pop()
-                : 'xiidm';
-        let caseName = selectedCase.elementName;
-        const filename = `${caseName}.${caseFormat}`;
+                ? caseOriginalName
+                : `${selectedCase.elementName}.xiidm`;
         const blob = await result.blob();
         const href = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = href;
-        link.setAttribute('download', filename);
+        link.setAttribute('download', `${caseName}`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
