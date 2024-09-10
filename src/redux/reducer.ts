@@ -128,7 +128,7 @@ export interface AppState extends CommonStoreState {
     currentPath: any[];
     selectedFile: unknown | null;
     uploadingElements: Record<string, UploadingElement>;
-    directoryUpdated: { force: number; eventData: Record<string, unknown> };
+    directoryUpdated: { force: number; eventData: Record<string, Record<string, unknown>> };
     selectionForCopy: {
         sourceItemUuid: unknown | null;
         typeItem: unknown | null;

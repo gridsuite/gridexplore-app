@@ -15,11 +15,12 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { emphasize } from '@mui/material/styles/';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import { Box, Tooltip } from '@mui/material';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { Box, Theme, Tooltip } from '@mui/material';
+import { ElementAttributes, mergeSx } from '@gridsuite/commons-ui';
+import { AppState } from '../redux/reducer';
 
 const styles = {
-    link: (theme) => ({
+    link: (theme: any) => ({
         display: 'inline-grid',
         alignItems: 'center',
         textAlign: 'center',
@@ -34,10 +35,10 @@ const styles = {
             textDecoration: 'none',
         },
         '&:active': {
-            backgroundColor: emphasize(theme.row.hover, 0.15),
+            backgroundColor: emphasize(theme.row.hover as string, 0.15),
         },
     }),
-    directory: (theme) => ({
+    directory: (theme: any) => ({
         display: 'inline-grid',
         alignItems: 'center',
         textAlign: 'center',
@@ -51,14 +52,14 @@ const styles = {
     selectedLabel: {
         fontWeight: 'bold',
     },
-    icon: (theme) => ({
+    icon: (theme: Theme) => ({
         marginRight: theme.spacing(1),
         width: theme.spacing(2.25),
         height: theme.spacing(2.25),
         position: 'relative',
         top: theme.spacing(0.5),
     }),
-    breadcrumbs: (theme) => ({
+    breadcrumbs: (theme: Theme) => ({
         padding: theme.spacing(0.5, 0, 0.5),
         marginLeft: theme.spacing(1),
     }),
@@ -72,11 +73,11 @@ const styles = {
 const DirectoryBreadcrumbs = () => {
     const dispatch = useDispatch();
 
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const currentPath = useSelector((state) => state.currentPath);
+    const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
+    const currentPath = useSelector((state: AppState) => state.currentPath);
 
     /* Handle User interactions */
-    const handleSelect = (event, dir) => {
+    const handleSelect = (event: React.MouseEvent<HTMLElement>, dir: ElementAttributes | null) => {
         event.preventDefault();
         dispatch(setSelectedDirectory(dir));
     };
@@ -89,8 +90,8 @@ const DirectoryBreadcrumbs = () => {
                     sx={styles.link}
                     key={dir.elementUuid}
                     href="/"
-                    onClick={(event) => handleSelect(event, dir)}
-                    onDragStart={(event) => {
+                    onClick={(event: React.MouseEvent<HTMLElement>) => handleSelect(event, dir)}
+                    onDragStart={(event: React.MouseEvent<HTMLElement>) => {
                         event.preventDefault();
                     }}
                     underline="hover"

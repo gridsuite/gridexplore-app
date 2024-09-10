@@ -14,9 +14,9 @@ import { RefObject, useCallback } from 'react';
 interface DirectoryContentTableProps extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
     gridRef: RefObject<AgGridReact<ElementAttributes>>;
     rows: ElementAttributes[];
-    handleCellContextualMenu: () => void;
+    handleCellContextualMenu: (event: any) => void;
     handleRowSelected: () => void;
-    handleCellClick: () => void;
+    handleCellClick: (event: any) => void;
     colDef: ColDef[];
 }
 

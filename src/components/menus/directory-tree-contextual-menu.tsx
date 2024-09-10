@@ -43,7 +43,7 @@ import { PopoverPosition, PopoverReference } from '@mui/material';
 import { AppState } from 'redux/reducer';
 
 interface DirectoryTreeContextualMenuProps {
-    directory: ElementAttributes;
+    directory: ElementAttributes | null;
     open: boolean;
     onClose: (e: unknown, nextSelectedDirectoryId?: string | null) => void;
     openDialog: string;
@@ -270,7 +270,9 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 {
                     messageDescriptorId: 'paste',
                     callback: () => {
-                        pasteElement(directory?.elementUuid, selectionForCopy);
+                        if (directory) {
+                            pasteElement(directory.elementUuid, selectionForCopy);
+                        }
                     },
                     icon: <ContentPasteIcon fontSize="small" />,
                     disabled: !selectionForCopy.sourceItemUuid,
@@ -339,19 +341,21 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 );
             case DialogsId.RENAME_DIRECTORY:
                 return (
-                    <RenameDialog
-                        message={'renameElementMsg'}
-                        currentName={directory?.elementName}
-                        open={true}
-                        onClick={(newName: string) => renameCB(directory?.elementUuid, newName)}
-                        onClose={handleCloseDialog}
-                        title={intl.formatMessage({
-                            id: 'renameDirectoryDialogTitle',
-                        })}
-                        error={renameState.errorMessage}
-                        type={ElementType.DIRECTORY}
-                        parentDirectory={directory?.parentUuid}
-                    />
+                    directory && (
+                        <RenameDialog
+                            message={'renameElementMsg'}
+                            currentName={directory.elementName}
+                            open={true}
+                            onClick={(newName: string) => renameCB(directory?.elementUuid, newName)}
+                            onClose={handleCloseDialog}
+                            title={intl.formatMessage({
+                                id: 'renameDirectoryDialogTitle',
+                            })}
+                            error={renameState.errorMessage}
+                            type={ElementType.DIRECTORY}
+                            parentDirectory={directory?.parentUuid}
+                        />
+                    )
                 );
             case DialogsId.DELETE_DIRECTORY:
                 return (
@@ -360,7 +364,11 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         multipleDeleteFormatMessageId={'deleteMultipleDirectoriesDialogMessage'}
                         simpleDeleteFormatMessageId={'deleteDirectoryDialogMessage'}
                         open={true}
-                        onClick={() => handleDeleteElement(directory?.elementUuid)}
+                        onClick={() => {
+                            if (directory) {
+                                handleDeleteElement(directory.elementUuid);
+                            }
+                        }}
                         onClose={handleCloseDialog}
                         error={deleteError}
                     />

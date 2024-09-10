@@ -60,5 +60,5 @@ export const useDirectoryContent = (setIsMissingDataAfterDirChange: React.Dispat
         }
     }, [handleError, currentChildren, setIsMissingDataAfterDirChange]);
 
-    return [currentChildren, childrenMetadata];
+    return [currentChildren, childrenMetadata] as const;
 };

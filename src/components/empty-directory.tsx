@@ -38,7 +38,7 @@ const styles = {
 };
 
 interface EmptyFolderProps {
-    openDialog: () => void;
+    openDialog: (e: React.MouseEvent<HTMLElement>) => void;
     theme: string;
 }
 const EmptyDirectory: React.FC<EmptyFolderProps> = ({ openDialog, theme }) => {

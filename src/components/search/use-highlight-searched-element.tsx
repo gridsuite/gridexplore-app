@@ -52,7 +52,7 @@ export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
     }, [highlightElement, gridApi]);
 
     const getRowStyle = useCallback(
-        (cellData: RowClassParams<ElementAttributes, any>) => {
+        (cellData: RowClassParams<ElementAttributes>) => {
             const style: RowStyle = { fontSize: '1rem' };
             if (cellData?.data?.elementUuid === searchedElement?.id) {
                 // keyframe "highlighted-element" has to be defined in css containing highlighted element
@@ -63,5 +63,5 @@ export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
         [searchedElement?.id]
     );
 
-    return [onGridReady, getRowStyle];
+    return [onGridReady, getRowStyle] as const;
 };

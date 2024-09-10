@@ -17,16 +17,19 @@ import { UserCellRenderer } from './renderers/user-cell-renderer';
 import { DateCellRenderer } from './renderers/date-cell-renderer';
 import type { ElementAttributes } from '@gridsuite/commons-ui';
 
-export const formatMetadata = (data: ElementAttributes, childrenMetadata: Record<UUID, ElementAttributes>) => ({
+export const formatMetadata = (
+    data: ElementAttributes,
+    childrenMetadata: Record<UUID, ElementAttributes>
+): ElementAttributes => ({
     ...data,
-    subtype: childrenMetadata[data.elementUuid]?.specificMetadata.type,
+    subtype: childrenMetadata[data.elementUuid]?.specificMetadata.type as unknown as string,
     hasMetadata: !!childrenMetadata[data.elementUuid],
 });
 
 export const computeCheckedElements = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
     childrenMetadata: Record<UUID, ElementAttributes>
-) => {
+): ElementAttributes[] => {
     return (
         gridRef.current?.api
             ?.getSelectedRows()

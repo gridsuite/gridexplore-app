@@ -40,7 +40,7 @@ interface CriteriaBasedEditionFormData {
 }
 
 interface CriteriaBasedEditionDialogProps {
-    contingencyListId: string;
+    contingencyListId: string | null;
     contingencyListType: string;
     open: boolean;
     onClose: (event?: SyntheticEvent) => void;
@@ -105,23 +105,25 @@ const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogPr
     };
 
     const onSubmit = (contingencyList: CriteriaBasedEditionFormData) => {
-        editContingencyList(contingencyListId, contingencyList)
-            .then(() => {
-                if (selectionForCopy.sourceItemUuid === contingencyListId) {
-                    dispatch(setSelectionForCopy(noSelectionForCopy));
-                    broadcastChannel.postMessage({
-                        noSelectionForCopy,
+        if (contingencyListId) {
+            editContingencyList(contingencyListId, contingencyList)
+                .then(() => {
+                    if (selectionForCopy.sourceItemUuid === contingencyListId) {
+                        dispatch(setSelectionForCopy(noSelectionForCopy));
+                        broadcastChannel.postMessage({
+                            noSelectionForCopy,
+                        });
+                    }
+                    closeAndClear();
+                })
+                .catch((errorMessage) => {
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'contingencyListEditingError',
+                        headerValues: { name },
                     });
-                }
-                closeAndClear();
-            })
-            .catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
-                    headerId: 'contingencyListEditingError',
-                    headerValues: { name },
                 });
-            });
+        }
     };
 
     return (
