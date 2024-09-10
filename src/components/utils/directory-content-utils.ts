@@ -55,7 +55,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
             id: 'elementName',
         }),
         field: 'elementName',
-        pinned:true,
+        pinned: true,
         cellRenderer: NameCellRenderer,
         cellRendererParams: {
             childrenMetadata: childrenMetadata,
