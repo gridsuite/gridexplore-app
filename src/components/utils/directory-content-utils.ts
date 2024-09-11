@@ -48,7 +48,6 @@ export const defaultColumnDefinition = {
     lockPinned: true,
     wrapHeaderText: true,
     autoHeaderHeight: true,
-    suppressMovable: true,
     suppressHorizontalScroll: true,
     comparator: (valueA: string, valueB: string) => valueA.toLowerCase().localeCompare(valueB.toLowerCase()),
 };
