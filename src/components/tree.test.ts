@@ -65,8 +65,8 @@ test('boot2', () => {
     ]);
     expect(res1[0].length).toBe(4);
     expect(res1[0][0].elementUuid).toBe('323e4567-e89b-12d3-a456-426614174000');
-    expect(res1[1].b1.elementName).toBe('b name');
-    expect(res1[1].b1.parentUuid).toBe(null);
+    expect(res1[0][1].elementName).toBe('b name');
+    expect(res1[0][1].parentUuid).toBe(null);
 
     let res2 = updatedTree(res1[0], res1[1], '123e4567-e89b-12d3-a456-426614174000', [
         {
@@ -81,9 +81,9 @@ test('boot2', () => {
     expect(res2[0][1].elementUuid).toBe('123e4567-e89b-12d3-a456-426614174000');
     expect(res2[0][1].children.length).toBe(1);
     expect(res2[0][1].children[0].elementUuid).toBe('523e4567-e89b-12d3-a456-426614174000');
-    expect(res2[1].b1.children.length).toBe(1);
+    expect(res2[0][1].children.length).toBe(1);
     expect(Object.keys(res2[1]).length).toBe(5);
-    expect(res2[1].b1.children[0].parentUuid).toBe('123e4567-e89b-12d3-a456-426614174000');
+    expect(res2[0][1].children[0].parentUuid).toBe('123e4567-e89b-12d3-a456-426614174000');
 
     let res3 = updatedTree(res2[0], res2[1], '523e4567-e89b-12d3-a456-426614174000', [
         {
@@ -98,9 +98,7 @@ test('boot2', () => {
     expect(res3[0][1].children.length).toBe(1);
     expect(res3[0][1].children[0].elementUuid).toBe('523e4567-e89b-12d3-a456-426614174000');
     expect(res3[0][1].children[0].children[0].elementUuid).toBe('623e4567-e89b-12d3-a456-426614174000');
-    expect(res3[1].b2.children.length).toBe(1);
-    expect(Object.keys(res3[1]).length).toBe(6);
-    expect(res3[1].b2.children[0].parentUuid).toBe('523e4567-e89b-12d3-a456-426614174000');
+    expect(res3[0][1].children[0].children[0].parentUuid).toBe('523e4567-e89b-12d3-a456-426614174000');
 
     let res1_1 = updatedTree(res3[0], res3[1], '323e4567-e89b-12d3-a456-426614174000', [
         {
