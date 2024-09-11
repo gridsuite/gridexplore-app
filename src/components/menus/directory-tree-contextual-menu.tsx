@@ -81,7 +81,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     );
 
     const [renameCB, renameState] = useDeferredFetch(
-        renameElement,
+        renameElement as (...args: unknown[]) => Promise<any>,
         () => handleCloseDialog(null, null),
         (HTTPStatusCode: number) => {
             if (HTTPStatusCode === 403) {
@@ -92,12 +92,13 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
         false
     );
 
-    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, (response: ElementAttributes) =>
-        handleCloseDialog(null, response?.elementUuid)
+    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(
+        insertDirectory as (...args: unknown[]) => Promise<any>,
+        (response: ElementAttributes) => handleCloseDialog(null, response?.elementUuid)
     );
 
     const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(
-        insertRootDirectory,
+        insertRootDirectory as (...args: unknown[]) => Promise<any>,
         (response: ElementAttributes) => handleCloseDialog(null, response?.elementUuid)
     );
 

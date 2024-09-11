@@ -12,7 +12,9 @@ import { selectComputedLanguage, selectLanguage, selectTheme } from '../redux/ac
 import {
     AuthenticationRouter,
     CardErrorBoundary,
+    getComputedLanguage,
     getPreLoginPath,
+    GsLangUser,
     initializeAuthenticationProd,
     UserManagerState,
     useSnackMessage,
@@ -26,7 +28,6 @@ import {
     fetchValidateUser,
 } from '../utils/rest-api';
 import { APP_NAME, COMMON_APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
-import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import Grid from '@mui/material/Grid';
 import TreeViewsContainer from './tree-views-container';
@@ -65,7 +66,7 @@ const App = () => {
                         break;
                     case PARAM_LANGUAGE:
                         dispatch(selectLanguage(param.value));
-                        dispatch(selectComputedLanguage(getComputedLanguage(param.value)));
+                        dispatch(selectComputedLanguage(getComputedLanguage(param.value) as GsLangUser));
                         break;
                     default:
                 }

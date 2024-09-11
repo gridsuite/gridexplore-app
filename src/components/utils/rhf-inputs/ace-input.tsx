@@ -12,9 +12,17 @@ import { useSelector } from 'react-redux';
 import 'ace-builds/src-noconflict/mode-groovy';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
+import { AppState } from '../../../redux/reducer';
 
-const AceInput = ({ name, ...props }) => {
-    const selectedTheme = useSelector((state) => state.theme);
+interface AceInputProps {
+    name: string;
+    placeholder: string;
+    fontSize: string;
+    editorProps: any;
+}
+
+const AceInput = ({ name, ...props }: AceInputProps) => {
+    const selectedTheme = useSelector((state: AppState) => state.theme);
     /**
      * Set name of for the Ace Editor : if theme is light set "github theme" else set "clouds_midnight theme"
      * */

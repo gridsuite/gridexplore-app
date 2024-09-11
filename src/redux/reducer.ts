@@ -147,7 +147,7 @@ const initialState: AppState = {
     showAuthenticationRouterLogin: false,
 
     // params
-    computedLanguage: getLocalStorageComputedLanguage(),
+    computedLanguage: getLocalStorageComputedLanguage() as GsLangUser,
     [PARAM_THEME]: getLocalStorageTheme(),
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
 

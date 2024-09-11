@@ -33,6 +33,7 @@
         "reconnecting-websocket": "^4.4.0",
         "redux": "^5.0.1",
         "typeface-roboto": "^1.1.13",
+        "type-fest": "^4.22.1",
         "uuid": "^9.0.1",
         "yup": "^1.4.0"
     },
@@ -83,6 +84,7 @@
         "jest": "^29.7.0",
         "jest-environment-jsdom": "^29.7.0",
         "license-checker": "^25.0.1",
+        "oidc-client": "^1.11.5",
         "prettier": "^2.8.8",
         "ts-node": "^10.9.2",
         "typescript": "5.1.6",

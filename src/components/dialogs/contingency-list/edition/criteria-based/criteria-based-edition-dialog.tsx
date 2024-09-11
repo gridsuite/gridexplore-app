@@ -33,7 +33,7 @@ const schema = yup.object().shape({
 
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
 
-interface CriteriaBasedEditionFormData {
+export interface CriteriaBasedEditionFormData {
     [FieldConstants.NAME]: string;
     [FieldConstants.EQUIPMENT_TYPE]?: string | null;
     [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
