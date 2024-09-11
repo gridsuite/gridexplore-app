@@ -8,24 +8,28 @@
 import { updatedTree } from './tree-views-container';
 import { ElementType } from '@gridsuite/commons-ui';
 
+const otherProperties = {
+    description: 'desc',
+    accessRights: {
+        isPrivate: true,
+    },
+    owner: 'user1',
+    subdirectoriesCount: 0,
+    creationDate: '',
+    lastModificationDate: '',
+    lastModifiedBy: 'user1',
+    children: [],
+    parentUuid: null,
+    specificMetadata: {},
+};
+
 test('boot1', () => {
     let res = updatedTree([], {}, null, [
         {
             elementUuid: '123e4567-e89b-12d3-a456-426614174000',
             elementName: 'aName',
-            description: 'desc',
             type: ElementType.DIRECTORY,
-            accessRights: {
-                isPrivate: true,
-            },
-            owner: 'user1',
-            subdirectoriesCount: 0,
-            creationDate: '',
-            lastModificationDate: '',
-            lastModifiedBy: 'user1',
-            children: [],
-            parentUuid: null,
-            specificMetadata: {},
+            ...otherProperties,
         },
     ]);
     expect(res.length).toBe(2);
@@ -37,70 +41,26 @@ test('boot2', () => {
         {
             elementUuid: '123e4567-e89b-12d3-a456-426614174000',
             elementName: 'b name',
-            description: 'desc',
             type: ElementType.DIRECTORY,
-            accessRights: {
-                isPrivate: true,
-            },
-            owner: 'user1',
-            subdirectoriesCount: 0,
-            creationDate: '',
-            lastModificationDate: '',
-            lastModifiedBy: 'user1',
-            children: [],
-            parentUuid: null,
-            specificMetadata: {},
+            ...otherProperties,
         },
         {
             elementUuid: '223e4567-e89b-12d3-a456-426614174000',
             elementName: 'c name',
-            description: 'desc',
             type: ElementType.DIRECTORY,
-            accessRights: {
-                isPrivate: true,
-            },
-            owner: 'user1',
-            subdirectoriesCount: 0,
-            creationDate: '',
-            lastModificationDate: '',
-            lastModifiedBy: 'user1',
-            children: [],
-            parentUuid: null,
-            specificMetadata: {},
+            ...otherProperties,
         },
         {
             elementUuid: '323e4567-e89b-12d3-a456-426614174000',
             elementName: 'a1 name',
-            description: 'desc',
             type: ElementType.DIRECTORY,
-            accessRights: {
-                isPrivate: true,
-            },
-            owner: 'user1',
-            subdirectoriesCount: 0,
-            creationDate: '',
-            lastModificationDate: '',
-            lastModifiedBy: 'user1',
-            children: [],
-            parentUuid: null,
-            specificMetadata: {},
+            ...otherProperties,
         },
         {
             elementUuid: '423e4567-e89b-12d3-a456-426614174000',
             elementName: 'd name',
-            description: 'desc',
             type: ElementType.DIRECTORY,
-            accessRights: {
-                isPrivate: true,
-            },
-            owner: 'user1',
-            subdirectoriesCount: 0,
-            creationDate: '',
-            lastModificationDate: '',
-            lastModifiedBy: 'user1',
-            children: [],
-            parentUuid: null,
-            specificMetadata: {},
+            ...otherProperties,
         },
     ]);
     expect(res1[0].length).toBe(4);
@@ -112,19 +72,8 @@ test('boot2', () => {
         {
             elementUuid: '523e4567-e89b-12d3-a456-426614174000',
             elementName: 'b2 name',
-            description: 'desc',
             type: ElementType.DIRECTORY,
-            accessRights: {
-                isPrivate: true,
-            },
-            owner: 'user1',
-            subdirectoriesCount: 0,
-            creationDate: '',
-            lastModificationDate: '',
-            lastModifiedBy: 'user1',
-            children: [],
-            parentUuid: null,
-            specificMetadata: {},
+            ...otherProperties,
         },
     ]);
 
@@ -140,19 +89,8 @@ test('boot2', () => {
         {
             elementUuid: '623e4567-e89b-12d3-a456-426614174000',
             elementName: 'b3 name',
-            description: 'desc',
             type: ElementType.DIRECTORY,
-            accessRights: {
-                isPrivate: true,
-            },
-            owner: 'user1',
-            subdirectoriesCount: 0,
-            creationDate: '',
-            lastModificationDate: '',
-            lastModifiedBy: 'user1',
-            children: [],
-            parentUuid: null,
-            specificMetadata: {},
+            ...otherProperties,
         },
     ]);
     expect(res3[0].length).toBe(4);
@@ -168,19 +106,8 @@ test('boot2', () => {
         {
             elementUuid: '723e4567-e89b-12d3-a456-426614174000',
             elementName: 'a2 name',
-            description: 'desc',
             type: ElementType.DIRECTORY,
-            accessRights: {
-                isPrivate: true,
-            },
-            owner: 'user1',
-            subdirectoriesCount: 0,
-            creationDate: '',
-            lastModificationDate: '',
-            lastModifiedBy: 'user1',
-            children: [],
-            parentUuid: null,
-            specificMetadata: {},
+            ...otherProperties,
         },
     ]);
 
@@ -188,36 +115,14 @@ test('boot2', () => {
         {
             elementUuid: '823e4567-e89b-12d3-a456-426614174000',
             elementName: 'e name',
-            description: 'desc',
             type: ElementType.DIRECTORY,
-            accessRights: {
-                isPrivate: true,
-            },
-            owner: 'user1',
-            subdirectoriesCount: 0,
-            creationDate: '',
-            lastModificationDate: '',
-            lastModifiedBy: 'user1',
-            children: [],
-            parentUuid: null,
-            specificMetadata: {},
+            ...otherProperties,
         },
         {
             elementUuid: '323e4567-e89b-12d3-a456-426614174000',
             elementName: 'a1 name',
-            description: 'desc',
             type: ElementType.DIRECTORY,
-            accessRights: {
-                isPrivate: true,
-            },
-            owner: 'user1',
-            subdirectoriesCount: 0,
-            creationDate: '',
-            lastModificationDate: '',
-            lastModifiedBy: 'user1',
-            children: [],
-            parentUuid: null,
-            specificMetadata: {},
+            ...otherProperties,
         },
     ]);
     expect(res4[0].length).toBe(2);

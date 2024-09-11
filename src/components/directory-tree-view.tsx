@@ -15,7 +15,7 @@ import Zoom from '@mui/material/Zoom';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory } from '../redux/actions';
-import CustomTreeItem from './custom-tree-item.js';
+import CustomTreeItem from './custom-tree-item';
 import { Box, Theme } from '@mui/material';
 import { TreeView } from '@mui/x-tree-view';
 import { AppState, IDirectory } from '../redux/reducer';
@@ -213,17 +213,15 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
     };
 
     return (
-        <>
-            <TreeView
-                sx={styles.treeViewRoot}
-                defaultCollapseIcon={<ExpandMoreIcon sx={styles.icon} />}
-                defaultExpandIcon={<ChevronRightIcon sx={styles.icon} />}
-                expanded={expanded}
-                selected={selectedDirectory ? selectedDirectory.elementUuid : null}
-            >
-                {renderTree(mapDataRef.current ? mapDataRef.current[treeViewUuid] : undefined)}
-            </TreeView>
-        </>
+        <TreeView
+            sx={styles.treeViewRoot}
+            defaultCollapseIcon={<ExpandMoreIcon sx={styles.icon} />}
+            defaultExpandIcon={<ChevronRightIcon sx={styles.icon} />}
+            expanded={expanded}
+            selected={selectedDirectory ? selectedDirectory.elementUuid : null}
+        >
+            {renderTree(mapDataRef.current ? mapDataRef.current[treeViewUuid] : undefined)}
+        </TreeView>
     );
 };
 

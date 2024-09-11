@@ -109,9 +109,7 @@ const DirectoryContent = () => {
 
     const gridRef = useRef<AgGridReact | null>(null);
 
-    const [onGridReady, getRowStyle] = useHighlightSearchedElement(
-        gridRef && gridRef?.current ? gridRef?.current?.api : null
-    );
+    const [onGridReady, getRowStyle] = useHighlightSearchedElement(gridRef?.current ? gridRef?.current?.api : null);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const selectedTheme = useSelector((state: AppState) => state.theme);
@@ -293,11 +291,9 @@ const DirectoryContent = () => {
                         if (isRowUnchecked(event.data, checkedRows)) {
                             gridRef.current?.api.deselectAll();
                         }
-                    } else {
+                    } else if (isRowUnchecked(event.data, checkedRows)) {
                         // If some elements were already selected, we add the active element to the selected list if not already in it.
-                        if (isRowUnchecked(event.data, checkedRows)) {
-                            gridRef.current?.api.getRowNode(event.data.elementUuid)?.setSelected(true);
-                        }
+                        gridRef.current?.api.getRowNode(event.data.elementUuid)?.setSelected(true);
                     }
                 }
                 setMousePosition({
@@ -374,47 +370,46 @@ const DirectoryContent = () => {
         (event: any) => {
             if (event.colDef.field === 'description') {
                 handleDescriptionIconClick(event);
-            } else {
-                if (childrenMetadata[event.data.elementUuid] !== undefined) {
-                    setElementName(childrenMetadata[event.data.elementUuid]?.elementName);
-                    const subtype: string = childrenMetadata[event.data.elementUuid].specificMetadata
-                        .type as unknown as string;
-                    /** set active directory on the store because it will be used while editing the contingency name */
-                    dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-                    switch (event.data.type) {
-                        case ElementType.STUDY:
-                            let url = getLink(event.data.elementUuid, event.data.type);
-                            url
-                                ? window.open(url, '_blank')
-                                : handleError(intl.formatMessage({ id: 'getAppLinkError' }, { type: event.data.type }));
-                            break;
-                        case ElementType.CONTINGENCY_LIST:
-                            if (subtype === ContingencyListType.CRITERIA_BASED.id) {
-                                setCurrentFiltersContingencyListId(event.data.elementUuid);
-                                setOpenDialog(subtype);
-                            } else if (subtype === ContingencyListType.SCRIPT.id) {
-                                setCurrentScriptContingencyListId(event.data.elementUuid);
-                                setOpenDialog(subtype);
-                            } else if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
-                                setCurrentExplicitNamingContingencyListId(event.data.elementUuid);
-                                setOpenDialog(subtype);
-                            }
-                            break;
-                        case ElementType.FILTER:
-                            if (subtype === FilterType.EXPLICIT_NAMING.id) {
-                                setCurrentExplicitNamingFilterId(event.data.elementUuid);
-                                setOpenDialog(subtype);
-                            } else if (subtype === FilterType.CRITERIA_BASED.id) {
-                                setCurrentCriteriaBasedFilterId(event.data.elementUuid);
-                                setOpenDialog(subtype);
-                            } else if (subtype === FilterType.EXPERT.id) {
-                                setCurrentExpertFilterId(event.data.elementUuid);
-                                setOpenDialog(subtype);
-                            }
-                            break;
-                        default:
-                            break;
+            } else if (childrenMetadata[event.data.elementUuid] !== undefined) {
+                setElementName(childrenMetadata[event.data.elementUuid]?.elementName);
+                const subtype: string = childrenMetadata[event.data.elementUuid].specificMetadata
+                    .type as unknown as string;
+                /** set active directory on the store because it will be used while editing the contingency name */
+                dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
+                switch (event.data.type) {
+                    case ElementType.STUDY: {
+                        let url = getLink(event.data.elementUuid, event.data.type);
+                        url
+                            ? window.open(url, '_blank')
+                            : handleError(intl.formatMessage({ id: 'getAppLinkError' }, { type: event.data.type }));
+                        break;
                     }
+                    case ElementType.CONTINGENCY_LIST:
+                        if (subtype === ContingencyListType.CRITERIA_BASED.id) {
+                            setCurrentFiltersContingencyListId(event.data.elementUuid);
+                            setOpenDialog(subtype);
+                        } else if (subtype === ContingencyListType.SCRIPT.id) {
+                            setCurrentScriptContingencyListId(event.data.elementUuid);
+                            setOpenDialog(subtype);
+                        } else if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
+                            setCurrentExplicitNamingContingencyListId(event.data.elementUuid);
+                            setOpenDialog(subtype);
+                        }
+                        break;
+                    case ElementType.FILTER:
+                        if (subtype === FilterType.EXPLICIT_NAMING.id) {
+                            setCurrentExplicitNamingFilterId(event.data.elementUuid);
+                            setOpenDialog(subtype);
+                        } else if (subtype === FilterType.CRITERIA_BASED.id) {
+                            setCurrentCriteriaBasedFilterId(event.data.elementUuid);
+                            setOpenDialog(subtype);
+                        } else if (subtype === FilterType.EXPERT.id) {
+                            setCurrentExpertFilterId(event.data.elementUuid);
+                            setOpenDialog(subtype);
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
         },
@@ -480,7 +475,7 @@ const DirectoryContent = () => {
 
     const handleDialog = useCallback(
         (mouseEvent: React.MouseEvent<HTMLElement>, isEmpty: boolean) => {
-            const coordinates: DOMRect = (mouseEvent.target as HTMLElement).getBoundingClientRect() as DOMRect;
+            const coordinates: DOMRect = (mouseEvent.target as HTMLElement).getBoundingClientRect();
             //set the contextualMenu position
             setMousePosition(handleMousePosition(coordinates, isEmpty));
             setOpenDirectoryMenu(true);
