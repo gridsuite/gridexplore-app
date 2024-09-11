@@ -18,7 +18,7 @@ const downloadCases = async (selectedCases: ElementAttributes[]) => {
         let extension =
             typeof caseOriginalName === 'string' && caseOriginalName.includes('.')
                 ? caseOriginalName.substring(caseOriginalName.indexOf('.') + 1)
-                : `xiidm`;
+                : 'xiidm';
         let caseName = selectedCase.elementName;
         const filename = `${caseName}.${extension}`;
         const blob = await result.blob();
