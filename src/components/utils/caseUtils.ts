@@ -5,24 +5,35 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { downloadCase, fetchConvertedCase, getCaseOriginalName } from '../../utils/rest-api';
+import {
+    downloadCase,
+    fetchConvertedCase,
+    getCaseOriginalName,
+} from '../../utils/rest-api';
 import { useIntl } from 'react-intl';
-import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ElementAttributes,
+    ElementType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { UUID } from 'crypto';
 
 const downloadCases = async (selectedCases: ElementAttributes[]) => {
     for (const selectedCase of selectedCases) {
         const result = await downloadCase(selectedCase.elementUuid);
-        let caseOriginalName = await getCaseOriginalName(selectedCase.elementUuid);
-        let caseFormat = typeof caseOriginalName === 'string' ? caseOriginalName.split('.').pop() : 'xiidm';
-        let caseName = selectedCase.elementName;
-        const filename = `${caseName}.${caseFormat}`;
+        let caseOriginalName = await getCaseOriginalName(
+            selectedCase.elementUuid
+        );
+        let caseName =
+            typeof caseOriginalName === 'string'
+                ? caseOriginalName
+                : `${selectedCase.elementName}.xiidm`;
         const blob = await result.blob();
         const href = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = href;
-        link.setAttribute('download', filename);
+        link.setAttribute('download', `${caseName}`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -32,7 +43,8 @@ const downloadCases = async (selectedCases: ElementAttributes[]) => {
 export function useDownloadUtils() {
     const intl = useIntl();
     const { snackError, snackInfo } = useSnackMessage();
-    const capitalizeFirstLetter = (string: string) => `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
+    const capitalizeFirstLetter = (string: string) =>
+        `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
     const [abortController, setAbortController] = useState<AbortController>();
 
     const handleCaseExportError = (caseElement: any, errorMsg: string) =>
@@ -60,9 +72,14 @@ export function useDownloadUtils() {
                 abortController
             );
 
-            let downloadFileName = result.headers.get('Content-Disposition').split('filename=')[1];
+            let downloadFileName = result.headers
+                .get('Content-Disposition')
+                .split('filename=')[1];
             // We remove quotes
-            downloadFileName = downloadFileName.substring(1, downloadFileName.length - 1);
+            downloadFileName = downloadFileName.substring(
+                1,
+                downloadFileName.length - 1
+            );
 
             const blob = await result.blob();
 
@@ -81,7 +98,10 @@ export function useDownloadUtils() {
         }
     };
 
-    const buildPartialDownloadMessage = (numberOfDownloadedCases: number, undownloadableElements: any[]): string => {
+    const buildPartialDownloadMessage = (
+        numberOfDownloadedCases: number,
+        undownloadableElements: any[]
+    ): string => {
         // Building the snackbar message
         let messageFirstLine;
         if (numberOfDownloadedCases === 1) {
@@ -136,7 +156,9 @@ export function useDownloadUtils() {
             // Ensure 'download.message.others' is the last element
             undownloadableSelectedTypes = [
                 ...undownloadableSelectedTypes.filter(
-                    (type) => type !== intl.formatMessage({ id: 'download.message.others' })
+                    (type) =>
+                        type !==
+                        intl.formatMessage({ id: 'download.message.others' })
                 ),
                 intl.formatMessage({ id: 'download.message.others' }),
             ];
@@ -180,7 +202,9 @@ export function useDownloadUtils() {
                 );
                 break;
         }
-        return messageFirstLine + '\n' + capitalizeFirstLetter(messageSecondLine);
+        return (
+            messageFirstLine + '\n' + capitalizeFirstLetter(messageSecondLine)
+        );
     };
 
     const stopCasesExports = useCallback(() => {
@@ -208,7 +232,13 @@ export function useDownloadUtils() {
             setAbortController(controller);
 
             for (const c of cases) {
-                await exportCase(c, format, formatParameters, controller, caseUuidFileNameMap?.get(c.elementUuid));
+                await exportCase(
+                    c,
+                    format,
+                    formatParameters,
+                    controller,
+                    caseUuidFileNameMap?.get(c.elementUuid)
+                );
             }
         } catch (error: any) {
             if (error.name === 'AbortError') {
@@ -219,8 +249,14 @@ export function useDownloadUtils() {
         } finally {
             setAbortController(undefined);
 
-            if (message.length === 0 && cases.length !== selectedElements.length) {
-                message += buildPartialDownloadMessage(cases.length, selectedElements);
+            if (
+                message.length === 0 &&
+                cases.length !== selectedElements.length
+            ) {
+                message += buildPartialDownloadMessage(
+                    cases.length,
+                    selectedElements
+                );
             }
             if (message.length > 0) {
                 snackInfo({
@@ -231,12 +267,17 @@ export function useDownloadUtils() {
     };
 
     const handleDownloadCases = async (selectedElements: any[]) => {
-        const selectedCases = selectedElements.filter((element) => element.type === ElementType.CASE);
+        const selectedCases = selectedElements.filter(
+            (element) => element.type === ElementType.CASE
+        );
 
         await downloadCases(selectedCases);
         if (selectedCases.length !== selectedElements.length) {
             snackInfo({
-                messageTxt: buildPartialDownloadMessage(selectedCases.length, selectedElements),
+                messageTxt: buildPartialDownloadMessage(
+                    selectedCases.length,
+                    selectedElements
+                ),
             });
         }
     };
