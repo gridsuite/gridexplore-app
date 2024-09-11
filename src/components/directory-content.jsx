@@ -678,7 +678,7 @@ const DirectoryContent = () => {
                               }
                             : undefined
                     }
-                    isEmptyDirectory={rows?.length === 0}
+                    restrictMenuItems={true}
                 />
             </div>
             {renderDialog(elementName)}

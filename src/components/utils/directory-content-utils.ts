@@ -41,11 +41,11 @@ export const isRowUnchecked = (row: ElementAttributes, checkedRows: ElementAttri
 
 export const defaultColumnDefinition = {
     sortable: true,
-    resizable: false,
+    resizable: true,
     lockPinned: true,
     wrapHeaderText: true,
     autoHeaderHeight: true,
-    suppressMovable: true,
+    suppressHorizontalScroll: true,
     comparator: (valueA: string, valueB: string) => valueA.toLowerCase().localeCompare(valueB.toLowerCase()),
 };
 export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttributes>, intl: IntlShape): ColDef[] => [
@@ -54,6 +54,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
             id: 'elementName',
         }),
         field: 'elementName',
+        pinned: true,
         cellRenderer: NameCellRenderer,
         cellRendererParams: {
             childrenMetadata: childrenMetadata,
@@ -76,6 +77,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
             id: 'type',
         }),
         field: 'type',
+        sortable: true,
         cellRenderer: TypeCellRenderer,
         cellRendererParams: {
             childrenMetadata: childrenMetadata,
