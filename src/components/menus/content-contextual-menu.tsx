@@ -335,7 +335,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [moveCB] = useMultipleDeferredFetch(
-        moveElementsToDirectory,
+        moveElementsToDirectory as (...args: unknown[]) => Promise<any>,
         undefined,
         moveElementErrorToString,
         moveElementOnError,
@@ -343,7 +343,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [renameCB, renameState] = useDeferredFetch(
-        renameElement,
+        renameElement as (...args: unknown[]) => Promise<any>,
         (elementUuid: string, renamedElement: any[]) => {
             // if copied element is renamed
             if (selectionForCopy.sourceItemUuid === renamedElement[0]) {
@@ -384,7 +384,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [FiltersReplaceWithScriptCB] = useDeferredFetch(
-        replaceFiltersWithScript,
+        replaceFiltersWithScript as (...args: unknown[]) => Promise<any>,
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -392,7 +392,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [newScriptFromFiltersContingencyListCB] = useDeferredFetch(
-        newScriptFromFiltersContingencyList,
+        newScriptFromFiltersContingencyList as (...args: unknown[]) => Promise<any>,
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -400,7 +400,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [replaceFormContingencyListWithScriptCB] = useDeferredFetch(
-        replaceFormContingencyListWithScript,
+        replaceFormContingencyListWithScript as (...args: unknown[]) => Promise<any>,
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -408,7 +408,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [newScriptFromFilterCB] = useDeferredFetch(
-        newScriptFromFilter,
+        newScriptFromFilter as (...args: unknown[]) => Promise<any>,
         handleCloseDialog,
         undefined,
         handleLastError,

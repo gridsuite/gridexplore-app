@@ -93,7 +93,7 @@ const ContentToolbar = (props: ContentToolbarProps) => {
     );
 
     const [moveCB] = useMultipleDeferredFetch(
-        moveElementsToDirectory,
+        moveElementsToDirectory as (...args: unknown[]) => Promise<any>,
         undefined,
         moveElementErrorToString,
         moveElementOnError,

@@ -99,20 +99,22 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
     }, [currentName, handleError, intl]);
 
     useEffect(() => {
-        setLoading(true);
-        getNameCandidate(directoryUuid, currentName, elementType)
-            .then((newName) => {
-                let generatedName: string = newName || '';
-                setValue(FieldConstants.NAME, generatedName, {
-                    shouldDirty: true,
+        if (directoryUuid) {
+            setLoading(true);
+            getNameCandidate(directoryUuid, currentName, elementType)
+                .then((newName) => {
+                    let generatedName: string = newName || '';
+                    setValue(FieldConstants.NAME, generatedName, {
+                        shouldDirty: true,
+                    });
+                })
+                .catch(() => {
+                    handleGenerateNameError();
+                })
+                .finally(() => {
+                    setLoading(false);
                 });
-            })
-            .catch(() => {
-                handleGenerateNameError();
-            })
-            .finally(() => {
-                setLoading(false);
-            });
+        }
     }, [handleGenerateNameError, setValue, currentName, elementType, directoryUuid]);
 
     return (

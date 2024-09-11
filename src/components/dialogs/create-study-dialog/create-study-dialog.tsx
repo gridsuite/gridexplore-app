@@ -193,37 +193,39 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
             caseFormat,
         };
 
-        createStudy(
-            studyName,
-            description,
-            caseUuid,
-            !!providedExistingCase,
-            directory,
-            currentParameters ? JSON.stringify(currentParameters) : '',
-            caseFormat
-        )
-            .then(() => {
-                dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-                onClose();
-            })
-            .catch((error) => {
-                if (handleMaxElementsExceededError(error, snackError)) {
-                    return;
-                }
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'studyCreationError',
-                    headerValues: {
-                        studyName,
-                    },
+        if (caseFormat && caseUuid) {
+            createStudy(
+                studyName,
+                description ?? '',
+                caseUuid,
+                !!providedExistingCase,
+                directory,
+                currentParameters ? JSON.stringify(currentParameters) : '',
+                caseFormat
+            )
+                .then(() => {
+                    dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
+                    onClose();
+                })
+                .catch((error) => {
+                    if (handleMaxElementsExceededError(error, snackError)) {
+                        return;
+                    }
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'studyCreationError',
+                        headerValues: {
+                            studyName,
+                        },
+                    });
+                })
+                .finally(() => {
+                    setValue(FieldConstants.CASE_UUID, null);
+                    dispatch(removeUploadingElement(uploadingStudy));
                 });
-            })
-            .finally(() => {
-                setValue(FieldConstants.CASE_UUID, null);
-                dispatch(removeUploadingElement(uploadingStudy));
-            });
 
-        dispatch(addUploadingElement(uploadingStudy));
+            dispatch(addUploadingElement(uploadingStudy));
+        }
     };
 
     /* Effects */

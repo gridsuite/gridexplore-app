@@ -18,7 +18,6 @@ import {
     backendFetch,
     GsLang,
     GsTheme,
-    ElementAttributes,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../redux/reducer';
 import { LiteralUnion } from 'type-fest';
@@ -27,6 +26,7 @@ import { User } from 'oidc-client';
 import { UUID } from 'crypto';
 import { CriteriaBasedEditionFormData } from '../components/dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
+import { Script } from '../components/dialogs/contingency-list/edition/script/script-edition-dialog';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/user-admin';
 const PREFIX_CONFIG_NOTIFICATION_WS = import.meta.env.VITE_WS_GATEWAY + '/config-notification';
@@ -58,6 +58,8 @@ type RequestInitExt = RequestInit & {
 export type Token = string;
 export type Url = string | URL;
 export type InitRequest = HttpMethod | Partial<RequestInitExt>;
+
+type ElementUUID = string | UUID;
 
 export interface ErrorWithStatus extends Error {
     status?: number;
@@ -125,7 +127,7 @@ export function backendFetchText(url: Url, init: InitRequest) {
     return safeFetch(url, initCopy).then((safeResponse) => safeResponse.text());
 }
 
-const getContingencyUriParamType = (contingencyListType: string) => {
+const getContingencyUriParamType = (contingencyListType: string | null | undefined) => {
     switch (contingencyListType) {
         case ContingencyListType.SCRIPT.id:
             return CONTINGENCY_ENDPOINTS.SCRIPT_CONTINGENCY_LISTS;
@@ -211,7 +213,7 @@ export function fetchConfigParameter(name: string) {
     }) as Promise<ConfigParameters>;
 }
 
-export function deleteElement(elementUuid: string | UUID) {
+export function deleteElement(elementUuid: ElementUUID) {
     console.info("Deleting element %s'", elementUuid);
     const fetchParams = PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/${elementUuid}`;
     return backendFetch(fetchParams, {
@@ -219,7 +221,7 @@ export function deleteElement(elementUuid: string | UUID) {
     });
 }
 
-export function deleteElements(elementUuids: UUID[], activeDirectory: UUID) {
+export function deleteElements(elementUuids: ElementUUID[], activeDirectory: ElementUUID | undefined) {
     console.info('Deleting elements : %s', elementUuids);
     const idsParams = getRequestParamFromList('ids', elementUuids).toString();
     return backendFetch(PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/` + activeDirectory + '?' + idsParams, {
@@ -316,9 +318,9 @@ export function updateConfigParameter(name: string, value: string) {
 export function createStudy(
     studyName: string,
     studyDescription: string,
-    caseUuid: string,
+    caseUuid: ElementUUID,
     duplicateCase: boolean,
-    parentDirectoryUuid: string | UUID,
+    parentDirectoryUuid: ElementUUID,
     importParameters: string,
     caseFormat: string
 ) {
@@ -345,7 +347,7 @@ export function createStudy(
     });
 }
 
-export function createCase(name: string, description: string, file: Blob, parentDirectoryUuid: string | UUID) {
+export function createCase(name: string, description: string, file: Blob, parentDirectoryUuid: ElementUUID) {
     console.info('Creating a new case...');
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('description', description);
@@ -387,10 +389,10 @@ const getDuplicateEndpoint = (type: string) => {
 };
 
 export function duplicateElement(
-    sourceCaseUuid: string | UUID,
-    parentDirectoryUuid: string | UUID,
+    sourceCaseUuid: ElementUUID,
+    parentDirectoryUuid: ElementUUID | undefined,
     type: string,
-    specificType: string
+    specificType?: string | object
 ) {
     console.info('Duplicating an element of type ' + type + ' ...');
     let queryParams = new URLSearchParams();
@@ -399,7 +401,7 @@ export function duplicateElement(
         queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
     }
     if (specificType) {
-        queryParams.append('type', specificType);
+        queryParams.append('type', specificType as string);
     }
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${getDuplicateEndpoint(type)}?` + queryParams.toString();
 
@@ -410,7 +412,7 @@ export function duplicateElement(
     });
 }
 
-export function elementExists(directoryUuid: string | UUID, elementName: string, type: string) {
+export function elementExists(directoryUuid: ElementUUID | null | undefined, elementName: string, type: string) {
     const elementNameEncoded = encodeURIComponent(elementName);
     const existsElementUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
@@ -421,7 +423,7 @@ export function elementExists(directoryUuid: string | UUID, elementName: string,
     });
 }
 
-export function getNameCandidate(directoryUuid: string | UUID, elementName: string, type: string) {
+export function getNameCandidate(directoryUuid: ElementUUID, elementName: string, type: string) {
     const nameCandidateUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${directoryUuid}/${elementName}/newNameCandidate?type=${type}`;
@@ -447,11 +449,11 @@ export function rootDirectoryExists(directoryName: string) {
 }
 
 export function createContingencyList(
-    contingencyListType: string,
+    contingencyListType: string | null | undefined,
     contingencyListName: string,
     description: string,
-    formContent: PrepareContingencyListForBackend,
-    parentDirectoryUuid: string | UUID
+    formContent: any,
+    parentDirectoryUuid: ElementUUID
 ) {
     console.info('Creating a new contingency list...');
     let urlSearchParams = new URLSearchParams();
@@ -517,7 +519,7 @@ export function saveCriteriaBasedContingencyList(id: string, form: CriteriaBased
  * Saves a script contingency list
  * @returns {Promise<Response>}
  */
-export function saveScriptContingencyList(scriptContingencyList: { id: string; script: string | null }, name: string) {
+export function saveScriptContingencyList(scriptContingencyList: Script, name: string) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append('contingencyListType', ContingencyListType.SCRIPT.id);
@@ -562,7 +564,7 @@ export function saveExplicitNamingContingencyList(
  * Replace form contingency list with script contingency list
  * @returns {Promise<Response>}
  */
-export function replaceFormContingencyListWithScript(id: string | UUID, parentDirectoryUuid: string | UUID) {
+export function replaceFormContingencyListWithScript(id: ElementUUID, parentDirectoryUuid: ElementUUID) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
@@ -586,9 +588,9 @@ export function replaceFormContingencyListWithScript(id: string | UUID, parentDi
  * @returns {Promise<Response>}
  */
 export function newScriptFromFiltersContingencyList(
-    id: string | UUID,
+    id: ElementUUID,
     newName: string,
-    parentDirectoryUuid: string | UUID
+    parentDirectoryUuid: ElementUUID
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
@@ -637,7 +639,7 @@ export function getFilterById(id: string) {
  * Replace filter with script filter
  * @returns {Promise<Response>}
  */
-export function replaceFiltersWithScript(id: string | UUID, parentDirectoryUuid: string | UUID) {
+export function replaceFiltersWithScript(id: ElementUUID, parentDirectoryUuid: ElementUUID) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
@@ -658,7 +660,7 @@ export function replaceFiltersWithScript(id: string | UUID, parentDirectoryUuid:
  * Save new script from filters
  * @returns {Promise<Response>}
  */
-export function newScriptFromFilter(id: string | UUID, newName: string, parentDirectoryUuid: string | UUID) {
+export function newScriptFromFilter(id: ElementUUID, newName: string, parentDirectoryUuid: ElementUUID) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     const url =
@@ -675,7 +677,7 @@ export function newScriptFromFilter(id: string | UUID, newName: string, parentDi
     });
 }
 
-export function getCaseImportParameters(caseUuid: string | UUID) {
+export function getCaseImportParameters(caseUuid: ElementUUID) {
     console.info(`get import parameters for case '${caseUuid}' ...`);
     const getExportFormatsUrl =
         PREFIX_NETWORK_CONVERSION_SERVER_QUERIES + '/v1/cases/' + caseUuid + '/import-parameters';
@@ -698,7 +700,7 @@ export function createCaseWithoutDirectoryElementCreation(selectedFile: Blob) {
     });
 }
 
-export function deleteCase(caseUuid: string | UUID) {
+export function deleteCase(caseUuid: ElementUUID) {
     const deleteCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases/' + caseUuid;
     return backendFetch(deleteCaseUrl, {
         method: 'delete',
@@ -706,7 +708,7 @@ export function deleteCase(caseUuid: string | UUID) {
 }
 
 export const fetchConvertedCase = (
-    caseUuid: string | UUID,
+    caseUuid: ElementUUID,
     fileName: string,
     format: string,
     formatParameters: unknown,
@@ -719,7 +721,7 @@ export const fetchConvertedCase = (
         signal: abortController.signal,
     });
 
-export const downloadCase = (caseUuid: string | UUID) =>
+export const downloadCase = (caseUuid: ElementUUID) =>
     backendFetch(`${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}`, {
         method: 'get',
         headers: { 'Content-Type': 'application/json' },
@@ -730,7 +732,7 @@ export const downloadCase = (caseUuid: string | UUID) =>
  * @param {string} caseUuid - The UUID of the element.
  * @returns {Promise<string|boolean>} - A promise that resolves to the original name of the case if found, or false if not found.
  */
-export function getCaseOriginalName(caseUuid: string | UUID) {
+export function getCaseOriginalName(caseUuid: ElementUUID) {
     const caseNameUrl = PREFIX_CASE_QUERIES + `/v1/cases/${caseUuid}/name`;
     console.debug(caseNameUrl);
     return backendFetchText(caseNameUrl, { method: 'GET' }).catch((error) => {
@@ -761,11 +763,13 @@ export const getExportFormats = () => {
     });
 };
 
-export function searchElementsInfos(searchTerm: string, currentDirectoryUuid: string | UUID) {
+export function searchElementsInfos(searchTerm: string, currentDirectoryUuid: ElementUUID | undefined) {
     console.info("Fetching elements infos matching with '%s' term ... ", searchTerm);
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
-    urlSearchParams.append('directoryUuid', currentDirectoryUuid);
+    if (currentDirectoryUuid) {
+        urlSearchParams.append('directoryUuid', currentDirectoryUuid);
+    }
     return backendFetchJson(
         PREFIX_DIRECTORY_SERVER_QUERIES + '/v1/elements/indexation-infos?' + urlSearchParams.toString(),
         {

@@ -76,22 +76,24 @@ const ContingencyListCreationDialog: FunctionComponent<ContingencyListCreationDi
     };
 
     const onSubmit = (data: ContingencyListFormData) => {
-        const formContent = getFormContent(null, data as ContingencyListFormDataWithRequiredCriteria);
-        createContingencyList(
-            data[FieldConstants.CONTINGENCY_LIST_TYPE],
-            data[FieldConstants.NAME],
-            data[FieldConstants.DESCRIPTION],
-            formContent,
-            activeDirectory
-        )
-            .then(() => closeAndClear())
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'contingencyListCreationError',
-                    headerValues: { name: data[FieldConstants.NAME] },
+        if (activeDirectory) {
+            const formContent = getFormContent(null, data as ContingencyListFormDataWithRequiredCriteria);
+            createContingencyList(
+                data[FieldConstants.CONTINGENCY_LIST_TYPE],
+                data[FieldConstants.NAME],
+                data[FieldConstants.DESCRIPTION] ?? '',
+                formContent,
+                activeDirectory
+            )
+                .then(() => closeAndClear())
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'contingencyListCreationError',
+                        headerValues: { name: data[FieldConstants.NAME] },
+                    });
                 });
-            });
+        }
     };
     return (
         <CustomMuiDialog

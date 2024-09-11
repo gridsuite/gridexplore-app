@@ -31,6 +31,8 @@ const schema = yup.object().shape({
     [FieldConstants.SCRIPT]: yup.string().nullable(),
 });
 
+export type Script = { id: string; script: string | null | undefined };
+
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
 
 interface ScriptEditionDialogProps {

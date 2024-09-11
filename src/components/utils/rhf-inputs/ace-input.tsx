@@ -18,7 +18,7 @@ interface AceInputProps {
     name: string;
     placeholder: string;
     fontSize: string;
-    editorProps: any;
+    editorProps: Record<string, any>;
 }
 
 const AceInput = ({ name, ...props }: AceInputProps) => {
