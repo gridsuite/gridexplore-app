@@ -21,3 +21,13 @@ export const handleMaxElementsExceededError = (error: CustomError, snackError: F
     }
     return false;
 };
+
+export const handleNameAlreadyExist = (error: CustomError, snackError: Function): boolean => {
+    if (error.status === 409) {
+        snackError({
+            messageTxt: error.message,
+        });
+        return true;
+    }
+    return false;
+};

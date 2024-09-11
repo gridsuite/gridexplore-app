@@ -57,7 +57,7 @@ import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { handleMaxElementsExceededError, handleNameAlreadyExist } from '../utils/rest-errors';
 import { AppState } from 'redux/reducer';
 import { PopoverPosition, PopoverReference } from '@mui/material';
 
@@ -239,6 +239,9 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         if (handleMaxElementsExceededError(error, snackError)) {
                             return;
                         }
+                        if(handleNameAlreadyExist(error, snackError)){
+                            return;
+                        }
                         handleDuplicateError(error.message);
                     });
                     break;
@@ -249,6 +252,9 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         activeElement.type,
                         selectedElements[0].specificMetadata.type
                     ).catch((error) => {
+                        if(handleNameAlreadyExist(error, snackError)){
+                            return;
+                        }
                         handleDuplicateError(error.message);
                     });
                     break;
@@ -263,6 +269,9 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         ElementType.PARAMETERS,
                         activeElement.type
                     ).catch((error) => {
+                        if(handleNameAlreadyExist(error, snackError)){
+                            return;
+                        }
                         handleDuplicateError(error.message);
                     });
                     break;

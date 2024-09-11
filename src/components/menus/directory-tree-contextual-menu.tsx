@@ -38,7 +38,7 @@ import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { handleMaxElementsExceededError, handleNameAlreadyExist } from '../utils/rest-errors';
 import { PopoverPosition, PopoverReference } from '@mui/material';
 import { AppState } from 'redux/reducer';
 
@@ -145,6 +145,9 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         if (handleMaxElementsExceededError(error, snackError)) {
                             return;
                         }
+                        if(handleNameAlreadyExist(error, snackError)){
+                            return;
+                        }
                         handlePasteError(error);
                     });
                     break;
@@ -159,6 +162,9 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         ElementType.PARAMETERS,
                         selectionForCopy.typeItem
                     ).catch((error: any) => {
+                        if(handleNameAlreadyExist(error, snackError)){
+                            return;
+                        }
                         handlePasteError(error);
                     });
                     break;
@@ -169,6 +175,9 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         selectionForCopy.typeItem,
                         selectionForCopy.specificType
                     ).catch((error: any) => {
+                        if(handleNameAlreadyExist(error, snackError)){
+                            return;
+                        }
                         handlePasteError(error);
                     });
                     break;
