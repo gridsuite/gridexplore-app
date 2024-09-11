@@ -144,6 +144,13 @@ export function fetchVersion() {
         });
 }
 
+export function fetchUsersIdentities(elementUuids) {
+    console.info('fetching users identities for elements : %s', elementUuids);
+    const idsParams = getRequestParamFromList('ids', elementUuids).toString();
+    const fetchParams = PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/users-identities?${idsParams}`;
+    return backendFetchJson(fetchParams);
+}
+
 export function fetchConfigParameters(appName) {
     console.info('Fetching UI configuration params for app : ' + appName);
     const fetchParams = PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters`;

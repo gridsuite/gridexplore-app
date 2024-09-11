@@ -6,10 +6,25 @@
  */
 
 import { useSelector } from 'react-redux';
-import React, { useRef, useEffect, useCallback, useState } from 'react';
+import React, { useRef, useEffect, useCallback, useState, useMemo } from 'react';
 import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
+import { fetchUsersIdentities } from '../utils/rest-api';
 import { AppState } from '../redux/reducer';
+
+const getName = (userId, data) => {
+    const firstName = data?.[userId]?.firstName;
+    const lastName = data?.[userId]?.lastName;
+    if (firstName && lastName) {
+        return firstName + ' ' + lastName;
+    } else if (firstName) {
+        return firstName;
+    } else if (lastName) {
+        return lastName;
+    } else {
+        return userId; // fallback to id
+    }
+};
 
 export const useDirectoryContent = (setIsMissingDataAfterDirChange: React.Dispatch<React.SetStateAction<boolean>>) => {
     const currentChildren = useSelector((state: AppState) => state.currentChildren);
@@ -39,9 +54,15 @@ export const useDirectoryContent = (setIsMissingDataAfterDirChange: React.Dispat
             .filter((e) => !e.uploading)
             .map((e) => e.elementUuid);
         if (childrenToFetchElementsInfos.length > 0) {
-            fetchElementsInfos(childrenToFetchElementsInfos)
+            Promise.all([
+                fetchUsersIdentities(childrenToFetchElementsInfos), // TODO cache user identities across elements
+                fetchElementsInfos(childrenToFetchElementsInfos),
+            ])
                 .then((res) => {
-                    res.forEach((e) => {
+                    res[1].forEach((e) => {
+                        // TODO proper typescript modeling instead of monkeypatching e directly
+                        e.ownerName = getName(e.owner, res[0]?.data);
+                        e.lastModifiedByName = getName(e.lastModifiedBy, res[0]?.data);
                         metadata[e.elementUuid] = e;
                     });
                 })
@@ -60,5 +81,17 @@ export const useDirectoryContent = (setIsMissingDataAfterDirChange: React.Dispat
         }
     }, [handleError, currentChildren, setIsMissingDataAfterDirChange]);
 
-    return [currentChildren, childrenMetadata];
+    // TODO remove this when global user identity caching is implemented
+    const currentChildrenWithOwnerNames = useMemo(() => {
+        if (!currentChildren) {
+            return currentChildren;
+        } else {
+            return currentChildren.map((x) => ({
+                ...x,
+                ownerName: childrenMetadata?.[x.elementUuid]?.ownerName,
+                lastModifiedByName: childrenMetadata?.[x.elementUuid]?.lastModifiedByName,
+            }));
+        }
+    }, [currentChildren, childrenMetadata]);
+    return [currentChildrenWithOwnerNames, childrenMetadata];
 };

@@ -110,7 +110,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         headerName: intl.formatMessage({
             id: 'creator',
         }),
-        field: 'owner',
+        field: 'ownerName', //TODO can we fallback to owner if this is missing ?
         cellRenderer: UserCellRenderer,
         flex: 1,
     },
@@ -126,7 +126,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         headerName: intl.formatMessage({
             id: 'modifiedBy',
         }),
-        field: 'lastModifiedBy',
+        field: 'lastModifiedByName', //TODO can we fallback to lastModifiedBy if this is missing ?
         cellRenderer: UserCellRenderer,
         flex: 1,
     },
