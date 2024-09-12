@@ -15,7 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar from './common-toolbar';
-import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
+import { GenericFunction, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { DownloadForOffline, FileDownload } from '@mui/icons-material';
@@ -27,6 +27,7 @@ import * as constants from '../../utils/UIconstants';
 
 interface ContentToolbarProps {
     selectedElements: ElementAttributes[];
+
     [key: string]: unknown;
 }
 
@@ -130,15 +131,17 @@ const ContentToolbar = (props: ContentToolbarProps) => {
     const handleDeleteElements = useCallback(
         (elementsUuids: string[]) => {
             setDeleteError('');
-            deleteElements(elementsUuids, selectedDirectory?.elementUuid)
-                .then(handleCloseDialog)
-                .catch((error) => {
-                    //show the error message and don't close the dialog
-                    setDeleteError(error.message);
-                    handleLastError(error.message);
-                });
+            if (selectedDirectory) {
+                deleteElements(elementsUuids, selectedDirectory.elementUuid)
+                    .then(handleCloseDialog)
+                    .catch((error) => {
+                        //show the error message and don't close the dialog
+                        setDeleteError(error.message);
+                        handleLastError(error.message);
+                    });
+            }
         },
-        [selectedDirectory?.elementUuid, handleCloseDialog, handleLastError]
+        [selectedDirectory, handleCloseDialog, handleLastError]
     );
 
     const items = useMemo(() => {

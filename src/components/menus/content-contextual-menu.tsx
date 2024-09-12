@@ -294,13 +294,15 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     const handleDeleteElements = useCallback(
         (elementsUuids: string[]) => {
             setDeleteError('');
-            deleteElements(elementsUuids, selectedDirectory?.elementUuid)
-                .then(() => handleCloseDialog())
-                //show the error message and don't close the dialog
-                .catch((error) => {
-                    setDeleteError(error.message);
-                    handleLastError(error.message);
-                });
+            if (selectedDirectory) {
+                deleteElements(elementsUuids, selectedDirectory.elementUuid)
+                    .then(() => handleCloseDialog())
+                    //show the error message and don't close the dialog
+                    .catch((error) => {
+                        setDeleteError(error.message);
+                        handleLastError(error.message);
+                    });
+            }
         },
         [selectedDirectory?.elementUuid, handleCloseDialog, handleLastError]
     );

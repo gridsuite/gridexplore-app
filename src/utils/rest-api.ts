@@ -221,7 +221,7 @@ export function deleteElement(elementUuid: ElementUUID) {
     });
 }
 
-export function deleteElements(elementUuids: ElementUUID[], activeDirectory: ElementUUID | undefined) {
+export function deleteElements(elementUuids: ElementUUID[], activeDirectory: ElementUUID) {
     console.info('Deleting elements : %s', elementUuids);
     const idsParams = getRequestParamFromList('ids', elementUuids).toString();
     return backendFetch(PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/` + activeDirectory + '?' + idsParams, {
