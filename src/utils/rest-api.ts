@@ -229,7 +229,7 @@ export function deleteElements(elementUuids: ElementUUID[], activeDirectory: Ele
     });
 }
 
-export function moveElementsToDirectory(elementsUuids: UUID[], targetDirectoryUuid: UUID) {
+export function moveElementsToDirectory(elementsUuids: ElementUUID[], targetDirectoryUuid: ElementUUID) {
     console.info('Moving elements to directory %s', targetDirectoryUuid);
 
     const fetchParams =
@@ -244,7 +244,7 @@ export function moveElementsToDirectory(elementsUuids: UUID[], targetDirectoryUu
     });
 }
 
-export function updateElement(elementUuid: UUID, element: unknown) {
+export function updateElement(elementUuid: ElementUUID, element: unknown) {
     console.info('Updating element info for ' + elementUuid);
     const updateElementUrl = PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/${elementUuid}`;
     return backendFetch(updateElementUrl, {
@@ -257,7 +257,7 @@ export function updateElement(elementUuid: UUID, element: unknown) {
     });
 }
 
-export function insertDirectory(directoryName: string, parentUuid: UUID, owner: string) {
+export function insertDirectory(directoryName: string, parentUuid: ElementUUID, owner: string) {
     console.info("Inserting a new folder '%s'", directoryName);
     const insertDirectoryUrl = PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/directories/${parentUuid}/elements`;
     return backendFetchJson(insertDirectoryUrl, {
@@ -291,7 +291,7 @@ export function insertRootDirectory(directoryName: string, owner: string) {
     });
 }
 
-export function renameElement(elementUuid: UUID, newElementName: string) {
+export function renameElement(elementUuid: ElementUUID, newElementName: string) {
     console.info('Renaming element ' + elementUuid);
     const renameElementUrl = PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/${elementUuid}`;
     console.debug(renameElementUrl);
