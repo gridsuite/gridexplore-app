@@ -304,7 +304,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                     });
             }
         },
-        [selectedDirectory?.elementUuid, handleCloseDialog, handleLastError]
+        [selectedDirectory, handleCloseDialog, handleLastError]
     );
 
     const moveElementErrorToString = useCallback(
