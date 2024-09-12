@@ -292,6 +292,12 @@ export const reducer = createReducer(initialState, (builder) => {
             rootDirectories: filteredTreeDataRootDirectories,
             mapData: filteredTreeDataMapData,
         };
+
+        // we must override selectedDirectory elementName because it could be the one to have changed
+        if (state.selectedDirectory) {
+            state.selectedDirectory.elementName =
+                filteredTreeDataMapData[state.selectedDirectory?.elementUuid].elementName;
+        }
     });
 
     builder.addCase(SELECTION_FOR_COPY, (state, action: SelectionForCopyAction) => {
