@@ -392,7 +392,7 @@ export function duplicateElement(
     sourceCaseUuid: ElementUUID,
     parentDirectoryUuid: ElementUUID | undefined,
     type: string,
-    specificType?: string | object
+    specificType?: string
 ) {
     console.info('Duplicating an element of type ' + type + ' ...');
     let queryParams = new URLSearchParams();
@@ -401,7 +401,7 @@ export function duplicateElement(
         queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
     }
     if (specificType) {
-        queryParams.append('type', specificType as string);
+        queryParams.append('type', specificType);
     }
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${getDuplicateEndpoint(type)}?` + queryParams.toString();
 
