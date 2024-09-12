@@ -49,7 +49,7 @@ import {
 } from '@gridsuite/commons-ui';
 
 import CommonContextualMenu from './common-contextual-menu';
-import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
+import { GenericFunction, useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
 import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
@@ -335,7 +335,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [moveCB] = useMultipleDeferredFetch(
-        moveElementsToDirectory as (...args: unknown[]) => Promise<any>,
+        moveElementsToDirectory as GenericFunction<any>,
         undefined,
         moveElementErrorToString,
         moveElementOnError,
@@ -343,7 +343,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [renameCB, renameState] = useDeferredFetch(
-        renameElement as (...args: unknown[]) => Promise<any>,
+        renameElement as GenericFunction<any>,
         (elementUuid: string, renamedElement: any[]) => {
             // if copied element is renamed
             if (selectionForCopy.sourceItemUuid === renamedElement[0]) {
@@ -384,7 +384,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [FiltersReplaceWithScriptCB] = useDeferredFetch(
-        replaceFiltersWithScript as (...args: unknown[]) => Promise<any>,
+        replaceFiltersWithScript as GenericFunction<any>,
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -392,7 +392,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [newScriptFromFiltersContingencyListCB] = useDeferredFetch(
-        newScriptFromFiltersContingencyList as (...args: unknown[]) => Promise<any>,
+        newScriptFromFiltersContingencyList as GenericFunction<any>,
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -400,7 +400,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [replaceFormContingencyListWithScriptCB] = useDeferredFetch(
-        replaceFormContingencyListWithScript as (...args: unknown[]) => Promise<any>,
+        replaceFormContingencyListWithScript as GenericFunction<any>,
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -408,7 +408,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [newScriptFromFilterCB] = useDeferredFetch(
-        newScriptFromFilter as (...args: unknown[]) => Promise<any>,
+        newScriptFromFilter as GenericFunction<any>,
         handleCloseDialog,
         undefined,
         handleLastError,

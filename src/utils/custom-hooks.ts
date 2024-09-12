@@ -186,8 +186,11 @@ export const useDeferredFetch = <T>(
  *          {Array} state.paramsOnError The parameters used when requests set have failed
  *          {Array} state.data The results array of each request (see hasResult)
  */
+
+export type GenericFunction<T> = (...args: unknown[]) => Promise<T>;
+
 export const useMultipleDeferredFetch = <T>(
-    fetchFunction: (...args: unknown[]) => Promise<T>,
+    fetchFunction: GenericFunction<T>,
     onSuccess?: (data: T[]) => void,
     errorToString?: (status: number) => string | undefined,
     onError?: (errorMessages: string[], params: unknown[], paramsOnError: unknown[]) => void,

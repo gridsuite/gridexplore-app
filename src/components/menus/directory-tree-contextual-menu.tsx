@@ -32,7 +32,7 @@ import {
 } from '../../utils/rest-api';
 
 import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
-import { useDeferredFetch } from '../../utils/custom-hooks';
+import { GenericFunction, useDeferredFetch } from '../../utils/custom-hooks';
 import { ElementAttributes, ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
@@ -81,7 +81,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     );
 
     const [renameCB, renameState] = useDeferredFetch(
-        renameElement as (...args: unknown[]) => Promise<any>,
+        renameElement as GenericFunction<any>,
         () => handleCloseDialog(null, null),
         (HTTPStatusCode: number) => {
             if (HTTPStatusCode === 403) {
@@ -93,12 +93,12 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     );
 
     const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(
-        insertDirectory as (...args: unknown[]) => Promise<any>,
+        insertDirectory as GenericFunction<any>,
         (response: ElementAttributes) => handleCloseDialog(null, response?.elementUuid)
     );
 
     const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(
-        insertRootDirectory as (...args: unknown[]) => Promise<any>,
+        insertRootDirectory as GenericFunction<any>,
         (response: ElementAttributes) => handleCloseDialog(null, response?.elementUuid)
     );
 
