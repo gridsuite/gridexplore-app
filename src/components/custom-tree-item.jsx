@@ -27,8 +27,8 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
         displayIcon,
         onExpand,
         onSelect,
-        onContextMenu,
-        isContextMenuOpen,
+        onAddIconClick,
+        isMenuOpen,
     } = props;
     const theme = useTheme();
 
@@ -48,8 +48,8 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
         onSelect(nodeId);
     };
     const handleAddIconClick = (event) => {
-        // used to open the contextual menu
-        onContextMenu(event, nodeId);
+        // used to open the menu
+        onAddIconClick(event, nodeId);
     };
 
     const toggleHover = (isHovering) => {
@@ -57,11 +57,11 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
     };
 
     useEffect(() => {
-        // we need to remove the hover when  the user clicks outside the contextual menu while it is open.
-        if (!isContextMenuOpen) {
+        // we need to remove the hover when  the user clicks outside the menu while it is open.
+        if (!isMenuOpen) {
             setHover(false);
         }
-    }, [isContextMenuOpen]);
+    }, [isMenuOpen]);
 
     return (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
@@ -87,11 +87,7 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
             <Typography onClick={handleSelectionClick} component="div" sx={styles.label}>
                 {label}
             </Typography>
-            {hover && (
-                <Box onClick={handleAddIconClick} sx={{ marginLeft: 'auto' }}>
-                    {isContextMenuOpen ? <AddBoxOutlinedIcon /> : <AddIcon />}
-                </Box>
-            )}
+            {hover && <Box onClick={handleAddIconClick}>{isMenuOpen ? <AddBoxOutlinedIcon /> : <AddIcon />}</Box>}
         </Box>
     );
 });
@@ -137,14 +133,14 @@ CustomContent.propTypes = {
     onSelect: PropTypes.func,
 
     /**
-     * The callback to call when handle Context Menu Click.
+     * The callback to call when handle the add icon Click.
      */
-    onContextMenu: PropTypes.func,
+    onAddIconClick: PropTypes.func,
 
     /**
-     * Boolean to indicate if the context menu is open.
+     * Boolean to indicate if the menu is open.
      */
-    isContextMenuOpen: PropTypes.bool.isRequired,
+    isMenuOpen: PropTypes.bool.isRequired,
 };
 
 const CustomTreeItem = (props) => <TreeItem ContentComponent={CustomContent} {...props} />;
