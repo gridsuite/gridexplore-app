@@ -590,7 +590,7 @@ const TreeViewsContainer = () => {
                               }
                             : undefined
                     }
-                    restrictMenuItems={true}
+                    restrictMenuItems={false}
                 />
             </div>
         </>
