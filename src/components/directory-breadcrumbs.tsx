@@ -15,12 +15,12 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { emphasize } from '@mui/material/styles/';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import { Box, Theme, Tooltip } from '@mui/material';
+import { Box, SxProps, Theme, Tooltip } from '@mui/material';
 import { ElementAttributes, mergeSx } from '@gridsuite/commons-ui';
 import { AppState } from '../redux/reducer';
 
 const styles = {
-    link: (theme: any) => ({
+    link: (theme: Theme) => ({
         display: 'inline-grid',
         alignItems: 'center',
         textAlign: 'center',
@@ -38,7 +38,7 @@ const styles = {
             backgroundColor: emphasize(theme.row.hover as string, 0.15),
         },
     }),
-    directory: (theme: any) => ({
+    directory: (theme: Theme) => ({
         display: 'inline-grid',
         alignItems: 'center',
         textAlign: 'center',
@@ -87,7 +87,7 @@ const DirectoryBreadcrumbs = () => {
         if (selectedDirectory !== null && currentPath !== null && currentPath.length > 1) {
             return currentPath.slice(0, currentPath.length - 1).map((dir, index) => (
                 <Link
-                    sx={styles.link}
+                    sx={styles.link as SxProps}
                     key={dir.elementUuid}
                     href="/"
                     onClick={(event: React.MouseEvent<HTMLElement>) => handleSelect(event, dir)}
@@ -111,7 +111,7 @@ const DirectoryBreadcrumbs = () => {
         if (selectedDirectory !== null && currentPath !== null && currentPath.length > 0) {
             return (
                 <Tooltip title={currentPath[currentPath.length - 1].elementName}>
-                    <Box sx={styles.directory}>
+                    <Box sx={styles.directory as SxProps}>
                         <Typography sx={mergeSx(styles.selectedLabel, styles.limitTextSize)} color="textPrimary">
                             {currentPath.length === 1 && <FolderOpenIcon sx={styles.icon} />}
                             {currentPath[currentPath.length - 1].elementName}

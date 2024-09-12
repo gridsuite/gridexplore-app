@@ -8,15 +8,22 @@
 import { defaultColumnDefinition } from './utils/directory-content-utils';
 import { CustomAGGrid, ElementAttributes, ElementType } from '@gridsuite/commons-ui';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
-import { ColDef, RowClassParams, AgGridEvent, GetRowIdParams } from 'ag-grid-community';
+import {
+    ColDef,
+    RowClassParams,
+    AgGridEvent,
+    GetRowIdParams,
+    CellContextMenuEvent,
+    CellClickedEvent,
+} from 'ag-grid-community';
 import { RefObject, useCallback } from 'react';
 
 interface DirectoryContentTableProps extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
     gridRef: RefObject<AgGridReact<ElementAttributes>>;
     rows: ElementAttributes[];
-    handleCellContextualMenu: (event: any) => void;
+    handleCellContextualMenu: (event: CellContextMenuEvent) => void;
     handleRowSelected: () => void;
-    handleCellClick: (event: any) => void;
+    handleCellClick: (event: CellClickedEvent) => void;
     colDef: ColDef[];
 }
 

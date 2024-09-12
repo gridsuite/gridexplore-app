@@ -247,7 +247,7 @@ const DirectoryContent = () => {
     const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
     const [openContentMenu, setOpenContentMenu] = useState(false);
 
-    const handleOpenContentMenu = (event: any) => {
+    const handleOpenContentMenu = (event: React.MouseEvent<HTMLDivElement>) => {
         setOpenContentMenu(true);
         event?.stopPropagation();
     };
@@ -261,7 +261,7 @@ const DirectoryContent = () => {
         setOpenDirectoryMenu(false);
     };
 
-    const handleOpenDirectoryMenu = (event: any) => {
+    const handleOpenDirectoryMenu = (event: React.MouseEvent<HTMLDivElement>) => {
         setOpenDirectoryMenu(true);
         event.stopPropagation();
     };
