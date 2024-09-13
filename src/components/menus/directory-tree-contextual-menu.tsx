@@ -29,11 +29,18 @@ import {
     insertRootDirectory,
     renameElement,
     elementExists,
+    moveElementsToDirectory,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
-import { ElementAttributes, ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ElementAttributes,
+    ElementType,
+    FilterCreationDialog,
+    TreeViewFinderNodeProps,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
@@ -41,6 +48,8 @@ import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 import { PopoverPosition, PopoverReference } from '@mui/material';
 import { AppState } from 'redux/reducer';
+import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
+import MoveDialog from '../dialogs/move-dialog';
 
 interface DirectoryTreeContextualMenuProps {
     directory: ElementAttributes;
@@ -278,6 +287,17 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 { isDivider: true }
             );
 
+            menuItems.push(
+                {
+                    messageDescriptorId: 'move',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.MOVE);
+                    },
+                    icon: <DriveFileMoveIcon fontSize="small" />,
+                },
+                { isDivider: true }
+            );
+
             menuItems.push({
                 messageDescriptorId: 'createFolder',
                 callback: () => {
@@ -297,6 +317,20 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
 
         return menuItems;
     };
+
+    const handleMoveDirectory = useCallback(
+        (selectedDir: TreeViewFinderNodeProps[]) => {
+            console.log('testing parent : ', selectedDir[0].id, selectedDir[0]);
+            console.log('testing enfant : ', directory.elementUuid, directory);
+            if (selectedDir.length === 1) {
+                moveElementsToDirectory([directory.elementUuid], selectedDir[0].id).catch((error: any) => {
+                    handleError(error.message);
+                });
+            }
+            handleCloseDialog(null);
+        },
+        [directory, handleCloseDialog, handleError]
+    );
 
     const renderDialog = () => {
         switch (openDialog) {
@@ -377,6 +411,8 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 );
             case DialogsId.ADD_NEW_CASE:
                 return <CreateCaseDialog open={true} onClose={handleCloseDialog} />;
+            case DialogsId.MOVE:
+                return <MoveDialog open={true} onClose={handleMoveDirectory} itemsCount={1} />;
             default:
                 return null;
         }
