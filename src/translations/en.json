@@ -158,6 +158,7 @@
     "elementsSearchingError": "An error occurred while searching the elements",
     "pathRetrievingError": "An error occurred while retrieving element path",
     "emptyDirContent": "Your directory is empty",
-    "createElement": "ADD AN ELEMENT"
+    "createElement": "ADD AN ELEMENT",
+    "CannotMoveRootDirectory": "You cannot move the root directory"
 
 }

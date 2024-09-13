@@ -16,6 +16,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import { PopoverPosition, PopoverReference, styled } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 
 const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} />)({
     '.MuiMenu-paper': {
@@ -29,6 +30,7 @@ export interface MenuItemType {
     callback?: () => void;
     icon?: React.ReactNode;
     disabled?: boolean;
+    tooltip?: string;
 }
 
 interface CommonContextualMenuProps {
@@ -47,25 +49,33 @@ const CommonContextualMenu: React.FC<CommonContextualMenuProps> = (props) => {
         messageDescriptorId?: string,
         callback?: () => void,
         icon: React.ReactNode = <EditIcon fontSize="small" />,
-        disabled: boolean = false
+        disabled: boolean = false,
+        tooltip?: string
     ) {
         return (
-            <MenuItem
-                key={key}
-                onClick={() => {
-                    callback?.();
-                }}
-                disabled={disabled}
-            >
-                <ListItemIcon
-                    style={{
-                        minWidth: '25px',
+            <Tooltip title={tooltip} arrow disableHoverListener={!tooltip}>
+                <MenuItem
+                    key={key}
+                    onClick={() => {
+                        callback?.();
+                    }}
+                    disabled={disabled}
+                    sx={{
+                        '&.Mui-disabled': {
+                            pointerEvents: 'auto', // Allow pointer events even if disabled
+                        },
                     }}
                 >
-                    {icon}
-                </ListItemIcon>
-                <ListItemText primary={<FormattedMessage id={messageDescriptorId} />} />
-            </MenuItem>
+                    <ListItemIcon
+                        style={{
+                            minWidth: '25px',
+                        }}
+                    >
+                        {icon}
+                    </ListItemIcon>
+                    <ListItemText primary={<FormattedMessage id={messageDescriptorId} />} />
+                </MenuItem>
+            </Tooltip>
         );
     }
 
