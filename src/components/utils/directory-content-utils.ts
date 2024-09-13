@@ -46,7 +46,7 @@ export const defaultColumnDefinition = {
     wrapHeaderText: true,
     autoHeaderHeight: true,
     suppressHorizontalScroll: true,
-    comparator: (valueA: string, valueB: string) => {
+    comparator: (valueA: string | null | undefined, valueB: string | null | undefined) => {
         // Need to check because ghost elements (uploading ones) don't have
         // created or modification dates yet
         if (!valueA || !valueB) {
