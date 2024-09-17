@@ -511,6 +511,12 @@ const TreeViewsContainer = () => {
                 if (!treeDataRef.current.rootDirectories.some((n) => n.elementUuid === directoryUuid)) {
                     return;
                 }
+
+                // if it's a deleted root directory then do not continue be cause we don't need
+                // to fetch its content anymore
+                if (notificationTypeH === notificationType.DELETE_DIRECTORY) {
+                    return;
+                }
             }
             if (directoryUuid) {
                 // Remark : It could be a Uuid of a rootDirectory if we need to update it because its content update
