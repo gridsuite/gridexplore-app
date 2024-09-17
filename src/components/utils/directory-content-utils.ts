@@ -41,12 +41,13 @@ export const isRowUnchecked = (row: ElementAttributes, checkedRows: ElementAttri
 
 export const defaultColumnDefinition = {
     sortable: true,
-    resizable: false,
+    resizable: true,
     lockPinned: true,
     wrapHeaderText: true,
     autoHeaderHeight: true,
-    suppressMovable: true,
-    comparator: (valueA: string, valueB: string) => {
+    suppressHorizontalScroll: true,
+    lockVisible: true,
+    comparator: (valueA: string | null | undefined, valueB: string | null | undefined) => {
         // Need to check because ghost elements (uploading ones) don't have
         // created or modification dates yet
         if (!valueA || !valueB) {
@@ -61,6 +62,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
             id: 'elementName',
         }),
         field: 'elementName',
+        pinned: true,
         cellRenderer: NameCellRenderer,
         cellRendererParams: {
             childrenMetadata: childrenMetadata,
@@ -83,6 +85,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
             id: 'type',
         }),
         field: 'type',
+        sortable: true,
         cellRenderer: TypeCellRenderer,
         cellRendererParams: {
             childrenMetadata: childrenMetadata,
