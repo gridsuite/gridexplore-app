@@ -9,7 +9,10 @@ import { defaultColumnDefinition } from './utils/directory-content-utils';
 import { CustomAGGrid, ElementAttributes, ElementType } from '@gridsuite/commons-ui';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import { ColDef, RowClassParams, AgGridEvent, GetRowIdParams } from 'ag-grid-community';
-import { RefObject, useCallback } from 'react';
+import { RefObject, useCallback, useEffect, useState } from 'react';
+import { setReorderedColumns } from 'redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 
 interface DirectoryContentTableProps extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
     gridRef: RefObject<AgGridReact<ElementAttributes>>;
@@ -55,6 +58,7 @@ export const DirectoryContentTable = ({
     onGridReady,
     colDef,
 }: DirectoryContentTableProps) => {
+    const [columnDefs, setColumnDefs] = useState<ColDef[]>(colDef);
     const getCustomRowStyle = useCallback(
         (cellData: RowClassParams<ElementAttributes>) => {
             return {
@@ -64,7 +68,49 @@ export const DirectoryContentTable = ({
         },
         [getRowStyle]
     );
+    const dispatch = useDispatch();
+    const columnOrder = useSelector((state: AppState) => state.reorderedColumns); // Adjust according to your state structure
 
+    // Initialize columnDefs based on columnOrder from Redux
+    useEffect(() => {
+        // Extract column order from colDef if columnOrder from Redux is not available
+        const extractColumnOrder = (columnDefs: ColDef[]): string[] => {
+            return columnDefs.filter((col) => col.field).map((col) => col.field as string);
+        };
+
+        if (!columnOrder || columnOrder.length === 0) {
+            const initialColumnOrder = extractColumnOrder(colDef);
+            dispatch(setReorderedColumns(initialColumnOrder));
+        } else {
+            const orderedColumnDefs = reorderColumns(colDef, columnOrder);
+            setColumnDefs(orderedColumnDefs);
+        }
+    }, [columnOrder, colDef, dispatch]);
+
+    const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): ColDef[] => {
+        const fieldIndexMap = new Map(newFieldOrder?.map((field, index) => [field, index]));
+        return colDef
+            .filter((col) => fieldIndexMap.has(col.field || ''))
+            .sort((a, b) => {
+                const indexA = fieldIndexMap.get(a.field || '') ?? -1;
+                const indexB = fieldIndexMap.get(b.field || '') ?? -1;
+                return indexA - indexB;
+            });
+    };
+
+    // Callback to handle column move
+    const onColumnMoved = useCallback(() => {
+        const extractFieldNames = (currentColumnDefs: ColDef[] | undefined): string[] => {
+            return (currentColumnDefs ?? [])
+                .filter((obj): obj is ColDef => obj && typeof obj === 'object' && 'field' in obj)
+                .map((def) => def.field)
+                .filter((field): field is string => field !== undefined);
+        };
+
+        const currentColumnDefs = gridRef?.current?.api?.getColumnDefs();
+        const fieldNames = extractFieldNames(currentColumnDefs);
+        dispatch(setReorderedColumns(fieldNames)); // Dispatch action to update column order in Redux
+    }, [dispatch, gridRef]);
     return (
         <CustomAGGrid
             ref={gridRef}
@@ -78,8 +124,9 @@ export const DirectoryContentTable = ({
             onCellClicked={handleCellClick}
             onRowSelected={handleRowSelected}
             onGridSizeChanged={recomputeOverFlowableCells}
+            onColumnMoved={onColumnMoved}
             animateRows={true}
-            columnDefs={colDef}
+            columnDefs={columnDefs}
             getRowStyle={getCustomRowStyle}
             //We set a custom className for rows in order to easily determine if a context menu event is happening on a row or not
             rowClass={CUSTOM_ROW_CLASS}
