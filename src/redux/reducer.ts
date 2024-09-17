@@ -31,6 +31,8 @@ import {
     LanguageAction,
     REMOVE_UPLOADING_ELEMENT,
     RemoveUploadingElementAction,
+    REORDERED_COLUMNS,
+    ReorderedColumnsAction,
     SEARCHED_ELEMENT,
     SearchedElementAction,
     SELECT_COMPUTED_LANGUAGE,
