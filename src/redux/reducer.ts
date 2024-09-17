@@ -26,6 +26,7 @@ import {
     CURRENT_PATH,
     CurrentChildrenAction,
     CurrentPathAction,
+    ReorderedColumnsAction,
     DIRECTORY_UPDATED,
     DirectoryUpdatedAction,
     LanguageAction,
@@ -45,6 +46,7 @@ import {
     ThemeAction,
     TREE_DATA,
     TreeDataAction,
+    REORDERED_COLUMNS,
 } from './actions';
 
 import {
@@ -137,6 +139,7 @@ export interface AppState extends CommonStoreState {
         parentDirectoryUuid: unknown | null;
         specificTypeItem: unknown | null;
     };
+    reorderedColumns: string[];
 }
 
 const initialState: AppState = {
@@ -169,6 +172,7 @@ const initialState: AppState = {
         parentDirectoryUuid: null,
         specificTypeItem: null,
     },
+    reorderedColumns: [],
 };
 
 export type Actions = AuthenticationActions | AppActions;
@@ -242,6 +246,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CURRENT_PATH, (state, action: CurrentPathAction) => {
         state.currentPath = action.currentPath;
+    });
+
+    builder.addCase(REORDERED_COLUMNS, (state, action: ReorderedColumnsAction) => {
+        state.reorderedColumns = action.reorderedColumns;
     });
 
     builder.addCase(SET_APPS_AND_URLS, (state, action: SetAppsAndUrlsAction) => {
