@@ -292,7 +292,8 @@ export const reducer = createReducer(initialState, (builder) => {
         };
 
         // we must override selectedDirectory elementName because it could be the one to have changed
-        if (state.selectedDirectory) {
+        // if it's the deleted one then it's not in filteredTreeDataMapData anymore then check
+        if (state.selectedDirectory && filteredTreeDataMapData[state.selectedDirectory?.elementUuid]) {
             state.selectedDirectory.elementName =
                 filteredTreeDataMapData[state.selectedDirectory?.elementUuid].elementName;
         }
