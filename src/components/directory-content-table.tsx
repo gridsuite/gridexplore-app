@@ -10,9 +10,9 @@ import { CustomAGGrid, ElementAttributes, ElementType } from '@gridsuite/commons
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import { ColDef, RowClassParams, AgGridEvent, GetRowIdParams } from 'ag-grid-community';
 import { RefObject, useCallback, useEffect, useState } from 'react';
-import { setReorderedColumns } from 'redux/actions';
+import { setReorderedColumns } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from '../redux/reducer';
 
 interface DirectoryContentTableProps extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
     gridRef: RefObject<AgGridReact<ElementAttributes>>;
