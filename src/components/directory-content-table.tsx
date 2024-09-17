@@ -68,12 +68,20 @@ export const DirectoryContentTable = ({
         },
         [getRowStyle]
     );
+    const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): ColDef[] => {
+        const fieldIndexMap = new Map(newFieldOrder?.map((field, index) => [field, index]));
+        return colDef
+            .filter((col) => fieldIndexMap.has(col.field || ''))
+            .sort((a, b) => {
+                const indexA = fieldIndexMap.get(a.field || '') ?? -1;
+                const indexB = fieldIndexMap.get(b.field || '') ?? -1;
+                return indexA - indexB;
+            });
+    };
     const dispatch = useDispatch();
-    const columnOrder = useSelector((state: AppState) => state.reorderedColumns); // Adjust according to your state structure
+    const columnOrder = useSelector((state: AppState) => state.reorderedColumns);
 
-    // Initialize columnDefs based on columnOrder from Redux
     useEffect(() => {
-        // Extract column order from colDef if columnOrder from Redux is not available
         const extractColumnOrder = (columnDefs: ColDef[]): string[] => {
             return columnDefs.filter((col) => col.field).map((col) => col.field as string);
         };
@@ -87,18 +95,6 @@ export const DirectoryContentTable = ({
         }
     }, [columnOrder, colDef, dispatch]);
 
-    const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): ColDef[] => {
-        const fieldIndexMap = new Map(newFieldOrder?.map((field, index) => [field, index]));
-        return colDef
-            .filter((col) => fieldIndexMap.has(col.field || ''))
-            .sort((a, b) => {
-                const indexA = fieldIndexMap.get(a.field || '') ?? -1;
-                const indexB = fieldIndexMap.get(b.field || '') ?? -1;
-                return indexA - indexB;
-            });
-    };
-
-    // Callback to handle column move
     const onColumnMoved = useCallback(() => {
         const extractFieldNames = (currentColumnDefs: ColDef[] | undefined): string[] => {
             return (currentColumnDefs ?? [])
@@ -109,7 +105,7 @@ export const DirectoryContentTable = ({
 
         const currentColumnDefs = gridRef?.current?.api?.getColumnDefs();
         const fieldNames = extractFieldNames(currentColumnDefs);
-        dispatch(setReorderedColumns(fieldNames)); // Dispatch action to update column order in Redux
+        dispatch(setReorderedColumns(fieldNames));
     }, [dispatch, gridRef]);
     return (
         <CustomAGGrid
