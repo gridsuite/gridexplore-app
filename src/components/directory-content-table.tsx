@@ -48,6 +48,17 @@ const getClickableRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
     return style;
 };
 
+const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): ColDef[] => {
+    const fieldIndexMap = new Map(newFieldOrder?.map((field, index) => [field, index]));
+    return colDef
+        .filter((col) => fieldIndexMap.has(col.field || ''))
+        .sort((a, b) => {
+            const indexA = fieldIndexMap.get(a.field || '') ?? -1;
+            const indexB = fieldIndexMap.get(b.field || '') ?? -1;
+            return indexA - indexB;
+        });
+};
+
 export const DirectoryContentTable = ({
     gridRef,
     rows,
@@ -68,16 +79,7 @@ export const DirectoryContentTable = ({
         },
         [getRowStyle]
     );
-    const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): ColDef[] => {
-        const fieldIndexMap = new Map(newFieldOrder?.map((field, index) => [field, index]));
-        return colDef
-            .filter((col) => fieldIndexMap.has(col.field || ''))
-            .sort((a, b) => {
-                const indexA = fieldIndexMap.get(a.field || '') ?? -1;
-                const indexB = fieldIndexMap.get(b.field || '') ?? -1;
-                return indexA - indexB;
-            });
-    };
+
     const dispatch = useDispatch();
     const columnOrder = useSelector((state: AppState) => state.reorderedColumns);
 
