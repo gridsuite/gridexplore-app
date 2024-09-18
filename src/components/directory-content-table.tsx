@@ -51,10 +51,10 @@ const getClickableRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
 const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): ColDef[] => {
     const fieldIndexMap = new Map(newFieldOrder?.map((field, index) => [field, index]));
     return colDef
-        .filter((col) => fieldIndexMap.has(col.field || ''))
+        .filter((col) => fieldIndexMap.has(col.field ?? ''))
         .sort((a, b) => {
-            const indexA = fieldIndexMap.get(a.field || '') ?? -1;
-            const indexB = fieldIndexMap.get(b.field || '') ?? -1;
+            const indexA = fieldIndexMap.get(a.field ?? '') ?? -1;
+            const indexB = fieldIndexMap.get(b.field ?? '') ?? -1;
             return indexA - indexB;
         });
 };
