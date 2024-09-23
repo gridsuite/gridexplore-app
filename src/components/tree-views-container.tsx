@@ -39,19 +39,10 @@ const initialMousePosition = {
     mouseY: null,
 };
 
-// Node.js (used for tests) version < 11 has no Object.fromEntries
-Object.fromEntries =
-    Object.fromEntries ||
-    ((arr: any) =>
-        arr.reduce((acc: any, [k, v]: any) => {
-            acc[k] = v;
-            return acc;
-        }, {}));
-
 function buildPathToFromMap(nodeId: UUID | undefined, mapDataRef: Record<string, IDirectory> | undefined) {
     let path = [];
     if (mapDataRef && nodeId) {
-        let currentUuid: UUID | null = nodeId;
+        let currentUuid: UUID | null = nodeId ?? null;
         while (currentUuid != null && mapDataRef[currentUuid] !== undefined) {
             path.unshift({ ...mapDataRef[currentUuid] });
             currentUuid = mapDataRef[currentUuid].parentUuid;
@@ -69,10 +60,7 @@ function flattenDownNodes(n: IDirectory, cef: (arg: IDirectory) => any[]): IDire
     return ret;
 }
 
-function refreshedUpNodes(
-    m: Record<string, IDirectory> | undefined,
-    nn: IDirectory | undefined
-): (IDirectory | undefined)[] {
+function refreshedUpNodes(m: Record<string, IDirectory> | undefined, nn: IDirectory | undefined): IDirectory[] {
     if (!nn?.elementUuid) {
         return [];
     }
@@ -254,8 +242,8 @@ const TreeViewsContainer = () => {
         fetchRootFolders([])
             .then((data) => {
                 let [nrs, mdr] = updatedTree(
-                    treeDataRef.current ? treeDataRef.current.rootDirectories : [],
-                    treeDataRef.current ? treeDataRef.current.mapData : {},
+                    treeDataRef.current?.rootDirectories ?? [],
+                    treeDataRef.current?.mapData ?? {},
                     null,
                     data as IDirectory[]
                 );

@@ -22,7 +22,8 @@ export const formatMetadata = (
     childrenMetadata: Record<UUID, ElementAttributes>
 ): ElementAttributes => ({
     ...data,
-    subtype: childrenMetadata[data.elementUuid]?.specificMetadata.type as unknown as string,
+    // @ts-expect-error TODO: "Type `object` is not assignable to type `string`"
+    subtype: childrenMetadata[data.elementUuid]?.specificMetadata.type,
     hasMetadata: !!childrenMetadata[data.elementUuid],
 });
 

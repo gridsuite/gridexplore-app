@@ -114,8 +114,8 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
 
     const toggleDirectories = useCallback(
         (ids: UUID[]) => {
-            let ins: any[] = [];
-            let outs: any[] = [];
+            let ins: UUID[] = [];
+            let outs: UUID[] = [];
             ids.forEach((id) => {
                 if (!expandedRef.current.includes(id)) {
                     ins.push(id);

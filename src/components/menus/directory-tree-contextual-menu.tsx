@@ -341,21 +341,20 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 );
             case DialogsId.RENAME_DIRECTORY:
                 return (
-                    directory && (
-                        <RenameDialog
-                            message={'renameElementMsg'}
-                            currentName={directory.elementName}
-                            open={true}
-                            onClick={(newName: string) => renameCB(directory?.elementUuid, newName)}
-                            onClose={handleCloseDialog}
-                            title={intl.formatMessage({
-                                id: 'renameDirectoryDialogTitle',
-                            })}
-                            error={renameState.errorMessage}
-                            type={ElementType.DIRECTORY}
-                            parentDirectory={directory?.parentUuid}
-                        />
-                    )
+                    <RenameDialog
+                        message={'renameElementMsg'}
+                        // @ts-expect-error TODO: manage null case(s) here
+                        currentName={directory.elementName}
+                        open={true}
+                        onClick={(newName: string) => renameCB(directory?.elementUuid, newName)}
+                        onClose={handleCloseDialog}
+                        title={intl.formatMessage({
+                            id: 'renameDirectoryDialogTitle',
+                        })}
+                        error={renameState.errorMessage}
+                        type={ElementType.DIRECTORY}
+                        parentDirectory={directory?.parentUuid}
+                    />
                 );
             case DialogsId.DELETE_DIRECTORY:
                 return (
@@ -365,9 +364,8 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         simpleDeleteFormatMessageId={'deleteDirectoryDialogMessage'}
                         open={true}
                         onClick={() => {
-                            if (directory) {
-                                handleDeleteElement(directory.elementUuid);
-                            }
+                            // @ts-expect-error TODO: manage undefined case
+                            handleDeleteElement(directory.elementUuid);
                         }}
                         onClose={handleCloseDialog}
                         error={deleteError}
