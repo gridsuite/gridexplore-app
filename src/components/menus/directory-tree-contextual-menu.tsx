@@ -220,7 +220,6 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     const buildMenu = () => {
         // build menuItems here
         let menuItems: MenuItemType[] = [];
-        const isRootDirectory = directory.parentUuid == null;
 
         if (!showMenuFromEmptyZone()) {
             menuItems.push(
@@ -295,8 +294,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         handleOpenDialog(DialogsId.MOVE);
                     },
                     icon: <DriveFileMoveIcon fontSize="small" />,
-                    disabled: isRootDirectory,
-                    tooltip: isRootDirectory ? intl.formatMessage({ id: 'CannotMoveRootDirectory' }) : '',
+                    disabled: directory.parentUuid == null,
                 },
                 { isDivider: true }
             );
