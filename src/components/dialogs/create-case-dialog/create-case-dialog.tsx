@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createCase } from '../../../utils/rest-api';
 import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import { Grid } from '@mui/material';
-import { addUploadingElement, removeUploadingElement } from '../../../redux/actions';
+import { addUploadingElement } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
@@ -100,9 +100,9 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
                         headerValues: { name: caseName },
                     });
                 }
-            })
-            .finally(() => dispatch(removeUploadingElement(uploadingCase)));
-
+            });
+        // the uploadingCase ghost element will be removed when directory
+        // content updated by fetch
         dispatch(addUploadingElement(uploadingCase));
     };
 

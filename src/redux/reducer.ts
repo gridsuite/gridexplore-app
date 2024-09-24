@@ -29,8 +29,6 @@ import {
     DIRECTORY_UPDATED,
     DirectoryUpdatedAction,
     LanguageAction,
-    REMOVE_UPLOADING_ELEMENT,
-    RemoveUploadingElementAction,
     REORDERED_COLUMNS,
     ReorderedColumnsAction,
     SEARCHED_ELEMENT,
@@ -44,6 +42,8 @@ import {
     SelectionForCopyAction,
     SET_APPS_AND_URLS,
     SetAppsAndUrlsAction,
+    SET_UPLOADING_ELEMENTS,
+    SetUploadingElementsAction,
     ThemeAction,
     TREE_DATA,
     TreeDataAction,
@@ -260,10 +260,8 @@ export const reducer = createReducer(initialState, (builder) => {
         };
     });
 
-    builder.addCase(REMOVE_UPLOADING_ELEMENT, (state, action: RemoveUploadingElementAction) => {
-        let newUploadingElements = { ...state.uploadingElements };
-        delete newUploadingElements[action.uploadingElement.id];
-        state.uploadingElements = newUploadingElements;
+    builder.addCase(SET_UPLOADING_ELEMENTS, (state, action: SetUploadingElementsAction) => {
+        state.uploadingElements = action.uploadingElements;
     });
 
     builder.addCase(DIRECTORY_UPDATED, (state, action: DirectoryUpdatedAction) => {
@@ -298,7 +296,8 @@ export const reducer = createReducer(initialState, (builder) => {
         };
 
         // we must override selectedDirectory elementName because it could be the one to have changed
-        if (state.selectedDirectory) {
+        // if it's the deleted one then it's not in filteredTreeDataMapData anymore then check
+        if (state.selectedDirectory && filteredTreeDataMapData[state.selectedDirectory?.elementUuid]) {
             state.selectedDirectory.elementName =
                 filteredTreeDataMapData[state.selectedDirectory?.elementUuid].elementName;
         }
