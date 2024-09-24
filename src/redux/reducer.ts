@@ -29,6 +29,8 @@ import {
     DIRECTORY_UPDATED,
     DirectoryUpdatedAction,
     LanguageAction,
+    REORDERED_COLUMNS,
+    ReorderedColumnsAction,
     SEARCHED_ELEMENT,
     SearchedElementAction,
     SELECT_COMPUTED_LANGUAGE,
@@ -137,6 +139,7 @@ export interface AppState extends CommonStoreState {
         parentDirectoryUuid: unknown | null;
         specificTypeItem: unknown | null;
     };
+    reorderedColumns: string[];
 }
 
 const initialState: AppState = {
@@ -169,6 +172,7 @@ const initialState: AppState = {
         parentDirectoryUuid: null,
         specificTypeItem: null,
     },
+    reorderedColumns: [],
 };
 
 export type Actions = AuthenticationActions | AppActions;
@@ -301,5 +305,9 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SELECTION_FOR_COPY, (state, action: SelectionForCopyAction) => {
         state.selectionForCopy = action.selectionForCopy;
+    });
+
+    builder.addCase(REORDERED_COLUMNS, (state, action: ReorderedColumnsAction) => {
+        state.reorderedColumns = action.reorderedColumns;
     });
 });

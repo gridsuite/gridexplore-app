@@ -23,7 +23,8 @@ export type AppActions =
     | SetUploadingElementsAction
     | DirectoryUpdatedAction
     | TreeDataAction
-    | SearchedElementAction;
+    | SearchedElementAction
+    | ReorderedColumnsAction;
 
 export const SELECT_THEME = 'SELECT_THEME';
 export type ThemeAction = Readonly<Action<typeof SELECT_THEME>> & {
@@ -174,5 +175,17 @@ export function setSearchedElement(searchedElement: AppState['searchedElement'])
     return {
         type: SEARCHED_ELEMENT,
         searchedElement: searchedElement,
+    };
+}
+
+export const REORDERED_COLUMNS = 'REORDERED_COLUMNS';
+export type ReorderedColumnsAction = Readonly<Action<typeof REORDERED_COLUMNS>> & {
+    reorderedColumns: AppState['reorderedColumns'];
+};
+
+export function setReorderedColumns(columns: AppState['reorderedColumns']): ReorderedColumnsAction {
+    return {
+        type: REORDERED_COLUMNS,
+        reorderedColumns: columns,
     };
 }
