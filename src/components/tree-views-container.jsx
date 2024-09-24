@@ -400,7 +400,7 @@ const TreeViewsContainer = () => {
         [updateCurrentChildren, updateMapData]
     );
 
-    // add ghost studies or ghost cases a soon as possible (uploadingElements)
+    // add ghost studies or ghost cases as soon as possible (uploadingElements)
     useEffect(() => {
         if (Object.values(uploadingElements).length > 0) {
             dispatch(setCurrentChildren(mergeCurrentAndUploading(currentChildrenRef.current)));
