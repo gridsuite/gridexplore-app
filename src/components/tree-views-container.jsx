@@ -512,7 +512,7 @@ const TreeViewsContainer = () => {
                     return;
                 }
 
-                // if it's a deleted root directory then do not continue be cause we don't need
+                // if it's a deleted root directory then do not continue because we don't need
                 // to fetch its content anymore
                 if (notificationTypeH === notificationType.DELETE_DIRECTORY) {
                     return;
