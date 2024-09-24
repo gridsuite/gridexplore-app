@@ -20,10 +20,11 @@ export type AppActions =
     | CurrentPathAction
     | SetAppsAndUrlsAction
     | AddUploadingElementAction
-    | RemoveUploadingElementAction
+    | SetUploadingElementsAction
     | DirectoryUpdatedAction
     | TreeDataAction
-    | SearchedElementAction;
+    | SearchedElementAction
+    | ReorderedColumnsAction;
 
 export const SELECT_THEME = 'SELECT_THEME';
 export type ThemeAction = Readonly<Action<typeof SELECT_THEME>> & {
@@ -135,18 +136,13 @@ export function addUploadingElement(
     return { type: ADD_UPLOADING_ELEMENT, uploadingElement: uploadingElement };
 }
 
-export const REMOVE_UPLOADING_ELEMENT = 'REMOVE_UPLOADING_ELEMENT';
-export type RemoveUploadingElementAction = Readonly<Action<typeof REMOVE_UPLOADING_ELEMENT>> & {
-    uploadingElement: AppState['uploadingElements'][number];
+export const SET_UPLOADING_ELEMENTS = 'SET_UPLOADING_ELEMENTS';
+export type SetUploadingElementsAction = Readonly<Action<typeof SET_UPLOADING_ELEMENTS>> & {
+    uploadingElements: AppState['uploadingElements'];
 };
 
-export function removeUploadingElement(
-    uploadingElement: AppState['uploadingElements'][number]
-): RemoveUploadingElementAction {
-    return {
-        type: REMOVE_UPLOADING_ELEMENT,
-        uploadingElement: uploadingElement,
-    };
+export function setUploadingElements(uploadingElements: AppState['uploadingElements']): SetUploadingElementsAction {
+    return { type: SET_UPLOADING_ELEMENTS, uploadingElements: uploadingElements };
 }
 
 export const DIRECTORY_UPDATED = 'DIRECTORY_UPDATED';
@@ -179,5 +175,17 @@ export function setSearchedElement(searchedElement: AppState['searchedElement'])
     return {
         type: SEARCHED_ELEMENT,
         searchedElement: searchedElement,
+    };
+}
+
+export const REORDERED_COLUMNS = 'REORDERED_COLUMNS';
+export type ReorderedColumnsAction = Readonly<Action<typeof REORDERED_COLUMNS>> & {
+    reorderedColumns: AppState['reorderedColumns'];
+};
+
+export function setReorderedColumns(columns: AppState['reorderedColumns']): ReorderedColumnsAction {
+    return {
+        type: REORDERED_COLUMNS,
+        reorderedColumns: columns,
     };
 }
