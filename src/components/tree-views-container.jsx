@@ -320,7 +320,7 @@ const TreeViewsContainer = () => {
             let uploadingElementsInSelectedDirectory = Object.values(uploadingElementsRef.current).filter(
                 (e) => e.directory === selectedDirectoryRef.current.elementUuid && current[e.elementName] === undefined // WTF ?
             );
-            if (uploadingElementsInSelectedDirectory != null && uploadingElementsInSelectedDirectory.length > 0) {
+            if (uploadingElementsInSelectedDirectory?.length > 0) {
                 // Reduce uploadingElementsInSelectedDirectory to get
                 // those to remove from uploadingElements because present in current
                 // and those to keep because it's still ghost elements
