@@ -69,7 +69,7 @@ function refreshedUpNodes(m: Record<string, IDirectory> | undefined, nn: IDirect
         return [nn];
     }
     const parent: IDirectory | undefined = m?.[nn.parentUuid];
-    const nextChildren: any[] = parent ? parent.children.map((c) => (c.elementUuid === nn.elementUuid ? nn : c)) : [];
+    const nextChildren: any[] = parent?.children.map((c) => (c.elementUuid === nn.elementUuid ? nn : c)) ?? [];
     const nextParent: any = { ...parent, children: nextChildren };
     return [nn, ...refreshedUpNodes(m, nextParent)];
 }
@@ -98,7 +98,7 @@ function updatedTree(
     const nextChildren = children
         .sort((a, b) => a.elementName.localeCompare(b.elementName))
         .map((n) => {
-            let pn = prevMap?.[n.elementUuid];
+            let pn = prevMap[n.elementUuid];
             if (!pn) {
                 return { ...n, children: [], parentUuid: nodeId };
             } else if (
@@ -120,7 +120,8 @@ function updatedTree(
             }
         });
 
-    const prevChildren = nodeId && prevMap?.[nodeId].children ? prevMap[nodeId].children : prevRoots;
+    const prevChildren = nodeId ? prevMap[nodeId]?.children : prevRoots;
+
     if (prevChildren?.length === nextChildren.length && prevChildren.every((e, i) => e === nextChildren[i])) {
         return [prevRoots, prevMap];
     }

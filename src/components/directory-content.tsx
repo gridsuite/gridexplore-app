@@ -23,8 +23,8 @@ import {
     DescriptionModificationDialog,
     ElementAttributes,
     StudyMetadata,
+    noSelectionForCopy,
 } from '@gridsuite/commons-ui';
-import { noSelectionForCopy } from 'utils/constants';
 import { Box, Button, SxProps, Theme } from '@mui/material';
 
 import { elementExists, getFilterById, updateElement } from '../utils/rest-api';
@@ -52,6 +52,7 @@ import EmptyDirectory from './empty-directory';
 import AddIcon from '@mui/icons-material/Add';
 import { AppState } from '../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
+import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
 
 const circularProgressSize = '70px';
 
@@ -109,30 +110,14 @@ const DirectoryContent = () => {
 
     const gridRef = useRef<AgGridReact | null>(null);
 
-    const [onGridReady, getRowStyle] = useHighlightSearchedElement(gridRef?.current ? gridRef?.current?.api : null);
+    const [onGridReady, getRowStyle] = useHighlightSearchedElement(gridRef?.current?.api ?? null);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const selectedTheme = useSelector((state: AppState) => state.theme);
 
     const dispatchSelectionForCopy = useCallback(
-        (
-            typeItem: any,
-            nameItem: any,
-            descriptionItem: any,
-            sourceItemUuid: any,
-            parentDirectoryUuid: any,
-            specificTypeItem: any
-        ) => {
-            dispatch(
-                setSelectionForCopy({
-                    sourceItemUuid: sourceItemUuid,
-                    typeItem: typeItem,
-                    nameItem: nameItem,
-                    descriptionItem: descriptionItem,
-                    parentDirectoryUuid: parentDirectoryUuid,
-                    specificTypeItem: specificTypeItem,
-                })
-            );
+        (selection: SelectionForCopy) => {
+            dispatch(setSelectionForCopy(selection));
         },
         [dispatch]
     );
@@ -143,14 +128,14 @@ const DirectoryContent = () => {
             if (JSON.stringify(noSelectionForCopy) === JSON.stringify(event.data)) {
                 dispatch(setSelectionForCopy(noSelectionForCopy));
             } else {
-                dispatchSelectionForCopy(
-                    event.data.typeItem,
-                    event.data.nameItem,
-                    event.data.descriptionItem,
-                    event.data.sourceItemUuid,
-                    event.data.parentDirectoryUuid,
-                    event.data.specificTypeItem
-                );
+                dispatchSelectionForCopy({
+                    typeItem: event.data.typeItem,
+                    nameItem: event.data.nameItem,
+                    descriptionItem: event.data.descriptionItem,
+                    sourceItemUuid: event.data.sourceItemUuid,
+                    parentDirectoryUuid: event.data.parentDirectoryUuid,
+                    specificTypeItem: event.data.specificTypeItem,
+                });
             }
         };
         return broadcast;
@@ -553,6 +538,7 @@ const DirectoryContent = () => {
                     <CriteriaBasedEditionDialog
                         open={true}
                         titleId={'editContingencyList'}
+                        // @ts-expect-error TODO: manage null case(s) here
                         contingencyListId={currentFiltersContingencyListId}
                         contingencyListType={ContingencyListType.CRITERIA_BASED.id}
                         onClose={handleCloseFiltersContingency}
@@ -565,6 +551,7 @@ const DirectoryContent = () => {
                     <ScriptEditionDialog
                         open={true}
                         titleId={'editContingencyList'}
+                        // @ts-expect-error TODO: manage null case(s) here
                         contingencyListId={currentScriptContingencyListId}
                         contingencyListType={ContingencyListType.SCRIPT.id}
                         onClose={handleCloseScriptContingency}
@@ -577,6 +564,7 @@ const DirectoryContent = () => {
                     <ExplicitNamingEditionDialog
                         open={true}
                         titleId={'editContingencyList'}
+                        // @ts-expect-error TODO: manage null case(s) here
                         contingencyListId={currentExplicitNamingContingencyListId}
                         contingencyListType={ContingencyListType.EXPLICIT_NAMING.id}
                         onClose={handleCloseExplicitNamingContingency}
@@ -587,6 +575,7 @@ const DirectoryContent = () => {
             case FilterType.EXPLICIT_NAMING.id:
                 return (
                     <ExplicitNamingFilterEditionDialog
+                        // @ts-expect-error TODO: manage null case(s) here
                         id={currentExplicitNamingFilterId}
                         open={true}
                         onClose={handleCloseExplicitNamingFilterDialog}
@@ -604,6 +593,7 @@ const DirectoryContent = () => {
             case FilterType.CRITERIA_BASED.id:
                 return (
                     <CriteriaBasedFilterEditionDialog
+                        // @ts-expect-error TODO: manage null case(s) here
                         id={currentCriteriaBasedFilterId}
                         open={true}
                         onClose={handleCloseCriteriaBasedFilterDialog}
@@ -621,6 +611,7 @@ const DirectoryContent = () => {
             case FilterType.EXPERT.id:
                 return (
                     <ExpertFilterEditionDialog
+                        // @ts-expect-error TODO: manage null case(s) here
                         id={currentExpertFilterId}
                         open={true}
                         onClose={handleCloseExpertFilterDialog}

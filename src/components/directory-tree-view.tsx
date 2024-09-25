@@ -204,9 +204,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
                 }}
             >
                 {Array.isArray(node.children)
-                    ? node.children.map((child) =>
-                          renderTree(mapDataRef.current ? mapDataRef.current[child.elementUuid] : undefined)
-                      )
+                    ? node.children.map((child) => renderTree(mapDataRef.current?.[child.elementUuid]))
                     : null}
             </CustomTreeItem>
         );
@@ -220,7 +218,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
             expanded={expanded}
             selected={selectedDirectory ? selectedDirectory.elementUuid : null}
         >
-            {renderTree(mapDataRef.current ? mapDataRef.current[treeViewUuid] : undefined)}
+            {renderTree(mapDataRef.current?.[treeViewUuid])}
         </TreeView>
     );
 };

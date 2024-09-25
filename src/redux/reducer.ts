@@ -76,6 +76,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { UUID } from 'crypto';
+import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
 
 // IDirectory is exactly an IElement, with a specific type value
 export type IDirectory = ElementAttributes & {
@@ -131,14 +132,7 @@ export interface AppState extends CommonStoreState {
     selectedFile: unknown | null;
     uploadingElements: Record<string, UploadingElement>;
     directoryUpdated: { force: number; eventData: Record<string, Record<string, unknown>> };
-    selectionForCopy: {
-        sourceItemUuid: unknown | null;
-        typeItem: unknown | null;
-        nameItem: unknown | null;
-        descriptionItem: unknown | null;
-        parentDirectoryUuid: unknown | null;
-        specificTypeItem: unknown | null;
-    };
+    selectionForCopy: SelectionForCopy;
     reorderedColumns: string[];
 }
 

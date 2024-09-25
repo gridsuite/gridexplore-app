@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, CustomMuiDialog, FieldConstants } from '@gridsuite/commons-ui';
+import { useSnackMessage, CustomMuiDialog, FieldConstants, noSelectionForCopy } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
@@ -20,7 +20,6 @@ import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-nami
 import ExplicitNamingEditionForm from './explicit-naming-edition-form';
 import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
 import { useDispatch, useSelector } from 'react-redux';
-import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
 import { AppState } from 'redux/reducer';
 
@@ -42,7 +41,7 @@ const schema = yup.object().shape({
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
 
 interface ExplicitNamingEditionDialogProps {
-    contingencyListId: string | null;
+    contingencyListId: string;
     contingencyListType: string;
     open: boolean;
     onClose: (event?: SyntheticEvent) => void;
@@ -77,23 +76,21 @@ const ExplicitNamingEditionDialog: FunctionComponent<ExplicitNamingEditionDialog
     const isValidating = errors.root?.isValidating;
 
     useEffect(() => {
-        if (contingencyListId) {
-            setIsFetching(true);
-            getContingencyList(contingencyListType, contingencyListId)
-                .then((response) => {
-                    if (response) {
-                        const formData = getExplicitNamingFormDataFromFetchedElement(response);
-                        reset({ ...formData, [FieldConstants.NAME]: name });
-                    }
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'cannotRetrieveContingencyList',
-                    });
-                })
-                .finally(() => setIsFetching(false));
-        }
+        setIsFetching(true);
+        getContingencyList(contingencyListType, contingencyListId)
+            .then((response) => {
+                if (response) {
+                    const formData = getExplicitNamingFormDataFromFetchedElement(response);
+                    reset({ ...formData, [FieldConstants.NAME]: name });
+                }
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'cannotRetrieveContingencyList',
+                });
+            })
+            .finally(() => setIsFetching(false));
     }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
     const closeAndClear = (event?: SyntheticEvent) => {
