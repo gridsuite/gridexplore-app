@@ -15,6 +15,7 @@ import { mergeSx } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import { useTheme } from '@mui/material/styles';
+import { useSelector } from 'react-redux';
 
 const CustomContent = React.forwardRef(function CustomContent(props, ref) {
     const {
@@ -28,11 +29,13 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
         onExpand,
         onSelect,
         onAddIconClick,
-        isMenuOpen,
     } = props;
     const theme = useTheme();
 
     const { disabled, expanded, selected, focused, preventSelection } = useTreeItem(nodeId);
+    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const isMenuOpen = activeDirectory === nodeId;
+
     const [hover, setHover] = useState(false);
     const icon = iconProp || expansionIcon || displayIcon;
 
@@ -52,16 +55,20 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
         onAddIconClick(event, nodeId, 'anchorEl');
     };
 
-    const toggleHover = (isHovering) => {
-        setHover(isHovering);
+    const handleHover = (isHovering) => {
+        if (isMenuOpen) {
+            setHover(true);
+        } else {
+            setHover(isHovering);
+        }
     };
 
     useEffect(() => {
         // we need to remove the hover when  the user clicks outside the menu while it is open.
-        if (!isMenuOpen) {
+        if (!activeDirectory) {
             setHover(false);
         }
-    }, [isMenuOpen]);
+    }, [activeDirectory]);
 
     return (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
@@ -76,8 +83,8 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
                 hover && { backgroundColor: `${theme.aggrid.highlightColor} !important`, borderRadius: '16px' } // Add hover style with  background color
             )}
             onMouseDown={handleMouseDown}
-            onMouseEnter={() => toggleHover(true)}
-            onMouseLeave={() => toggleHover(false)}
+            onMouseEnter={() => handleHover(true)}
+            onMouseLeave={() => handleHover(false)}
             ref={ref}
         >
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
@@ -140,11 +147,6 @@ CustomContent.propTypes = {
      * The callback to call when handle the add icon Click.
      */
     onAddIconClick: PropTypes.func,
-
-    /**
-     * Boolean to indicate if the menu is open.
-     */
-    isMenuOpen: PropTypes.bool.isRequired,
 };
 
 const CustomTreeItem = (props) => <TreeItem ContentComponent={CustomContent} {...props} />;

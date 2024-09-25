@@ -197,6 +197,7 @@ const TreeViewsContainer = () => {
     };
     const handleCloseDirectoryMenu = (e, nextSelectedDirectoryId = null) => {
         setOpenDirectoryMenu(false);
+        dispatch(setActiveDirectory(null));
         if (
             nextSelectedDirectoryId !== null &&
             treeDataRef.current.mapData &&
@@ -587,7 +588,6 @@ const TreeViewsContainer = () => {
                             mapData={treeDataRef.current.mapData}
                             onContextMenu={onContextMenu}
                             onDirectoryUpdate={updateDirectoryTree}
-                            isContextMenuOpen={openDirectoryMenu}
                         />
                     ))}
             </div>
