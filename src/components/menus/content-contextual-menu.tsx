@@ -128,10 +128,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                     typeItem: typeItem,
                     nameItem: nameItem,
                     descriptionItem: descriptionItem,
-                    // @ts-expect-error TODO: manage null case(s) here
-                    parentDirectoryUuid: parentDirectoryUuid,
-                    // @ts-expect-error TODO: manage null case(s) here
-                    specificTypeItem,
+                    parentDirectoryUuid: parentDirectoryUuid ?? null,
+                    specificTypeItem: specificTypeItem ?? null,
                 })
             );
         },
