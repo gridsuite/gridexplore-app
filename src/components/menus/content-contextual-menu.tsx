@@ -247,7 +247,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         activeElement.elementUuid,
                         undefined,
                         activeElement.type,
-                        selectedElements[0].subtype
+                        String(activeElement.specificMetadata.type)
                     ).catch((error) => {
                         handleDuplicateError(error.message);
                     });
