@@ -49,7 +49,7 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
     };
     const handleAddIconClick = (event) => {
         // used to open the menu
-        onAddIconClick(event, nodeId);
+        onAddIconClick(event, nodeId, 'anchorEl');
     };
 
     const toggleHover = (isHovering) => {
@@ -87,7 +87,11 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
             <Typography onClick={handleSelectionClick} component="div" sx={styles.label}>
                 {label}
             </Typography>
-            {hover && <Box onClick={handleAddIconClick}>{isMenuOpen ? <AddBoxOutlinedIcon /> : <AddIcon />}</Box>}
+            {hover && (
+                <Box onClick={handleAddIconClick} sx={{ display: 'flex' }}>
+                    {isMenuOpen ? <AddBoxOutlinedIcon /> : <AddIcon />}
+                </Box>
+            )}
         </Box>
     );
 });
