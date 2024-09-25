@@ -197,6 +197,7 @@ const TreeViewsContainer = () => {
     };
     const handleCloseDirectoryMenu = (e, nextSelectedDirectoryId = null) => {
         setOpenDirectoryMenu(false);
+        dispatch(setActiveDirectory(null));
         if (
             nextSelectedDirectoryId !== null &&
             treeDataRef.current.mapData &&
@@ -213,16 +214,19 @@ const TreeViewsContainer = () => {
 
     /* Menu states */
     const [mousePosition, setMousePosition] = React.useState(initialMousePosition);
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorReference, setAnchorReference] = React.useState('anchorPosition');
 
     /* User interactions */
     const onContextMenu = useCallback(
-        (event, nodeId) => {
+        (event, nodeId, anchorReference) => {
             //to keep the focused style (that is normally lost when opening a contextual menu)
             event.currentTarget.parentNode.classList.add('focused');
             setDOMFocusedDirectory(event.currentTarget.parentNode);
 
             dispatch(setActiveDirectory(nodeId));
-
+            setAnchorReference(anchorReference);
+            setAnchorEl(event.currentTarget);
             setMousePosition({
                 mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
                 mouseY: event.clientY + constants.VERTICAL_SHIFT,
@@ -318,7 +322,7 @@ const TreeViewsContainer = () => {
     const mergeCurrentAndUploading = useCallback(
         (current) => {
             let uploadingElementsInSelectedDirectory = Object.values(uploadingElementsRef.current).filter(
-                (e) => e.directory === selectedDirectoryRef.current.elementUuid
+                (e) => e.directory === selectedDirectoryRef.current.elementUuid && current[e.elementName] === undefined // WTF ?
             );
             if (uploadingElementsInSelectedDirectory?.length > 0) {
                 // Reduce uploadingElementsInSelectedDirectory to get
@@ -574,7 +578,7 @@ const TreeViewsContainer = () => {
                     height: '100%',
                     flexGrow: 1,
                 }}
-                onContextMenu={(e) => onContextMenu(e, null)}
+                onContextMenu={(e) => onContextMenu(e, null, 'anchorPosition')}
             >
                 {treeData.mapData &&
                     treeData.rootDirectories.map((rootDirectory) => (
@@ -601,7 +605,7 @@ const TreeViewsContainer = () => {
                     openDialog={openDialog}
                     setOpenDialog={setOpenDialog}
                     onClose={(e) => handleCloseDirectoryMenu(e, null)}
-                    anchorReference="anchorPosition"
+                    anchorReference={anchorReference}
                     anchorPosition={
                         mousePosition.mouseY !== null && mousePosition.mouseX !== null
                             ? {
@@ -610,6 +614,11 @@ const TreeViewsContainer = () => {
                               }
                             : undefined
                     }
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
                 />
             </div>
         </>

@@ -119,8 +119,8 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
     );
 
     /* User interaction */
-    function handleContextMenuClick(event, nodeId) {
-        onContextMenu(event, nodeId);
+    function handleContextMenuClick(event, nodeId, anchorReference) {
+        onContextMenu(event, nodeId, anchorReference);
     }
 
     function handleLabelClick(nodeId) {
@@ -160,7 +160,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
                 label={
                     <Box
                         sx={styles.treeItemLabelRoot}
-                        onContextMenu={(e) => handleContextMenuClick(e, node.elementUuid)}
+                        onContextMenu={(e) => handleContextMenuClick(e, node.elementUuid, 'anchorPosition')}
                     >
                         <Tooltip
                             TransitionComponent={Zoom}
@@ -181,6 +181,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
                 ContentProps={{
                     onExpand: handleIconClick,
                     onSelect: handleLabelClick,
+                    onAddIconClick: handleContextMenuClick,
                     styles: {
                         root: styles.treeItemRoot,
                         selected: styles.treeItemSelected,
