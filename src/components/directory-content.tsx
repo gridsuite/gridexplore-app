@@ -163,7 +163,7 @@ const DirectoryContent = () => {
     const [isMissingDataAfterDirChange, setIsMissingDataAfterDirChange] = useState(true);
 
     const intl = useIntl();
-    const [rows, childrenMetadata] = useDirectoryContent(setIsMissingDataAfterDirChange);
+    const [rows, childrenMetadata] = useDirectoryContent();
     const [checkedRows, setCheckedRows] = useState<ElementAttributes[]>([]);
 
     /* Menu states */
@@ -424,7 +424,11 @@ const DirectoryContent = () => {
         }
         setIsMissingDataAfterDirChange(true);
         setCheckedRows([]);
-    }, [selectedDirectory?.elementUuid, setIsMissingDataAfterDirChange]);
+    }, [selectedDirectory?.elementUuid]);
+
+    useEffect(() => {
+        setIsMissingDataAfterDirChange(false);
+    }, [childrenMetadata]); // this will change after switching selectedDirectory
 
     const isActiveElementUnchecked = useMemo(
         () => activeElement && !checkedRows.find((children) => children.elementUuid === activeElement.elementUuid),

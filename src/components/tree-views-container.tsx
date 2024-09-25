@@ -14,6 +14,7 @@ import {
     setCurrentPath,
     setSelectedDirectory,
     setTreeData,
+    setUploadingElements,
 } from '../redux/actions';
 
 import { connectNotificationsWsUpdateDirectories } from '../utils/rest-api';
@@ -30,7 +31,7 @@ import { notificationType } from '../utils/notificationType';
 import * as constants from '../utils/UIconstants';
 // Menu
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
-import { AppState, IDirectory, ITreeData } from '../redux/reducer';
+import { AppState, IDirectory, ITreeData, UploadingElement } from '../redux/reducer';
 import { UUID } from 'crypto';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
@@ -172,8 +173,11 @@ const TreeViewsContainer = () => {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
 
     const uploadingElements = useSelector((state: AppState) => state.uploadingElements);
+    const uploadingElementsRef = useRef<Record<string, UploadingElement>>({});
+    uploadingElementsRef.current = uploadingElements;
     const currentChildren = useSelector((state: AppState) => state.currentChildren);
     const currentChildrenRef = useRef<ElementAttributes[] | undefined>(currentChildren);
+
     currentChildrenRef.current = currentChildren;
     const selectedDirectoryRef = useRef<ElementAttributes | null>(null);
     selectedDirectoryRef.current = selectedDirectory;
@@ -325,20 +329,45 @@ const TreeViewsContainer = () => {
 
     const mergeCurrentAndUploading = useCallback(
         (current: ElementAttributes[]): ElementAttributes[] | undefined => {
-            let elementsToMerge = Object.values(uploadingElements).filter(
-                (e) =>
-                    e.directory === selectedDirectoryRef.current?.elementUuid &&
-                    current &&
-                    current.find((cur) => cur.elementName === e.elementName) === undefined
+            let uploadingElementsInSelectedDirectory = Object.values(uploadingElementsRef.current).filter(
+                (e) => e.directory === selectedDirectoryRef.current?.elementUuid
             );
-            if (elementsToMerge != null && elementsToMerge.length > 0) {
-                // We need to filter current array of elements in elementsToMerge to avoid duplicates in the directoryContent component.
-                // An uploading element doesn't have an elementUuid yet, then we filter on element name and type.
-                const filteredCurrentElements = current.filter(
-                    (el) => !elementsToMerge.some((e) => e.elementName === el.elementName && e.type === el.type)
-                );
+            if (uploadingElementsInSelectedDirectory?.length > 0) {
+                // Reduce uploadingElementsInSelectedDirectory to get
+                // those to remove from uploadingElements because present in current
+                // and those to keep because it's still ghost elements
+                const [toRemoveFromUploadingElements, toKeepToUploadingElements] =
+                    uploadingElementsInSelectedDirectory.reduce(
+                        (
+                            [toRemoveFromUploadingElements, toKeepToUploadingElements],
+                            uploadingElementInSelectedDirectory
+                        ) =>
+                            current.some(
+                                (e) =>
+                                    e.elementName === uploadingElementInSelectedDirectory.elementName &&
+                                    e.type === uploadingElementInSelectedDirectory.type &&
+                                    e.elementUuid // if it has an elementUuid then it's not a ghost anymore
+                            )
+                                ? [
+                                      [...toRemoveFromUploadingElements, uploadingElementInSelectedDirectory],
+                                      toKeepToUploadingElements,
+                                  ]
+                                : [
+                                      toRemoveFromUploadingElements,
+                                      [...toKeepToUploadingElements, uploadingElementInSelectedDirectory],
+                                  ],
+                        [[] as UploadingElement[], [] as UploadingElement[]]
+                    );
 
-                return [...filteredCurrentElements, ...elementsToMerge].sort(function (a, b) {
+                // then remove the ghosts if necessary
+                if (toRemoveFromUploadingElements.length > 0) {
+                    let newUploadingElements = { ...uploadingElementsRef.current };
+                    toRemoveFromUploadingElements.forEach((r) => delete newUploadingElements[r.id]);
+
+                    dispatch(setUploadingElements(newUploadingElements));
+                }
+
+                return [...current, ...toKeepToUploadingElements].sort(function (a, b) {
                     return a.elementName.localeCompare(b.elementName);
                 }) as ElementAttributes[];
             } else {
@@ -349,7 +378,7 @@ const TreeViewsContainer = () => {
                       });
             }
         },
-        [uploadingElements]
+        [dispatch]
     );
 
     /* currentChildren management */
@@ -381,8 +410,11 @@ const TreeViewsContainer = () => {
         [updateCurrentChildren, updateMapData]
     );
 
+    // add ghost studies or ghost cases as soon as possible (uploadingElements)
     useEffect(() => {
-        dispatch(setCurrentChildren(mergeCurrentAndUploading(currentChildrenRef.current ?? [])));
+        if (Object.values(uploadingElements).length > 0) {
+            dispatch(setCurrentChildren(mergeCurrentAndUploading(currentChildrenRef.current ?? [])));
+        }
     }, [currentChildrenRef, mergeCurrentAndUploading, dispatch]);
 
     const updateDirectoryTree = useCallback(
@@ -483,8 +515,22 @@ const TreeViewsContainer = () => {
                     selectedDirectoryRef.current.elementUuid === directoryUuid
                 ) {
                     dispatch(setSelectedDirectory(null));
+                    return;
                 }
-                return;
+                // if it's a new root directory then do not continue because we don't need
+                // to fetch an empty content
+                if (
+                    !treeDataRef.current ||
+                    !treeDataRef.current.rootDirectories.some((n) => n.elementUuid === directoryUuid)
+                ) {
+                    return;
+                }
+
+                // if it's a deleted root directory then do not continue because we don't need
+                // to fetch its content anymore
+                if (notificationTypeH === notificationType.DELETE_DIRECTORY) {
+                    return;
+                }
             }
             if (directoryUuid) {
                 // Remark : It could be a Uuid of a rootDirectory if we need to update it because its content update
@@ -518,9 +564,9 @@ const TreeViewsContainer = () => {
     }, [onUpdateDirectories]);
 
     /* Handle components synchronization */
+    // To proc only if selectedDirectory?.elementUuid changed, take care of updateDirectoryTreeAndContent dependencies
     useEffect(() => {
         if (selectedDirectory?.elementUuid) {
-            console.debug('useEffect over selectedDirectory', selectedDirectory.elementUuid);
             updateDirectoryTreeAndContent(selectedDirectory.elementUuid);
         }
     }, [selectedDirectory?.elementUuid, updateDirectoryTreeAndContent]);
