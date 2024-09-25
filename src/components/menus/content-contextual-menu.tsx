@@ -239,7 +239,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         if (handleMaxElementsExceededError(error, snackError)) {
                             return;
                         }
-                        if(handleNameAlreadyExist(error, snackError)){
+                        if (handleNameAlreadyExist(error, snackError)) {
                             return;
                         }
                         handleDuplicateError(error.message);
@@ -252,7 +252,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         activeElement.type,
                         selectedElements[0].specificMetadata.type
                     ).catch((error) => {
-                        if(handleNameAlreadyExist(error, snackError)){
+                        if (handleNameAlreadyExist(error, snackError)) {
                             return;
                         }
                         handleDuplicateError(error.message);
@@ -269,7 +269,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         ElementType.PARAMETERS,
                         activeElement.type
                     ).catch((error) => {
-                        if(handleNameAlreadyExist(error, snackError)){
+                        if (handleNameAlreadyExist(error, snackError)) {
                             return;
                         }
                         handleDuplicateError(error.message);

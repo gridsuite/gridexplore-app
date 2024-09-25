@@ -145,7 +145,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         if (handleMaxElementsExceededError(error, snackError)) {
                             return;
                         }
-                        if(handleNameAlreadyExist(error, snackError)){
+                        if (handleNameAlreadyExist(error, snackError)) {
                             return;
                         }
                         handlePasteError(error);
@@ -162,7 +162,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         ElementType.PARAMETERS,
                         selectionForCopy.typeItem
                     ).catch((error: any) => {
-                        if(handleNameAlreadyExist(error, snackError)){
+                        if (handleNameAlreadyExist(error, snackError)) {
                             return;
                         }
                         handlePasteError(error);
@@ -175,7 +175,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         selectionForCopy.typeItem,
                         selectionForCopy.specificType
                     ).catch((error: any) => {
-                        if(handleNameAlreadyExist(error, snackError)){
+                        if (handleNameAlreadyExist(error, snackError)) {
                             return;
                         }
                         handlePasteError(error);
