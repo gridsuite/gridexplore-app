@@ -108,25 +108,23 @@ const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogPr
     };
 
     const onSubmit = (contingencyList: CriteriaBasedEditionFormData) => {
-        if (contingencyListId) {
-            editContingencyList(contingencyListId, contingencyList)
-                .then(() => {
-                    if (selectionForCopy.sourceItemUuid === contingencyListId) {
-                        dispatch(setSelectionForCopy(noSelectionForCopy));
-                        broadcastChannel.postMessage({
-                            noSelectionForCopy,
-                        });
-                    }
-                    closeAndClear();
-                })
-                .catch((errorMessage) => {
-                    snackError({
-                        messageTxt: errorMessage,
-                        headerId: 'contingencyListEditingError',
-                        headerValues: { name },
+        editContingencyList(contingencyListId, contingencyList)
+            .then(() => {
+                if (selectionForCopy.sourceItemUuid === contingencyListId) {
+                    dispatch(setSelectionForCopy(noSelectionForCopy));
+                    broadcastChannel.postMessage({
+                        noSelectionForCopy,
                     });
+                }
+                closeAndClear();
+            })
+            .catch((errorMessage) => {
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'contingencyListEditingError',
+                    headerValues: { name },
                 });
-        }
+            });
     };
 
     return (
