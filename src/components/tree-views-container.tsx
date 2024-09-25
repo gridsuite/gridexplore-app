@@ -415,7 +415,7 @@ const TreeViewsContainer = () => {
         if (Object.values(uploadingElements).length > 0) {
             dispatch(setCurrentChildren(mergeCurrentAndUploading(currentChildrenRef.current ?? [])));
         }
-    }, [currentChildrenRef, mergeCurrentAndUploading, dispatch]);
+    }, [uploadingElements, currentChildrenRef, mergeCurrentAndUploading, dispatch]);
 
     const updateDirectoryTree = useCallback(
         (nodeId: UUID, isClose = false) => {
@@ -519,10 +519,7 @@ const TreeViewsContainer = () => {
                 }
                 // if it's a new root directory then do not continue because we don't need
                 // to fetch an empty content
-                if (
-                    !treeDataRef.current ||
-                    !treeDataRef.current.rootDirectories.some((n) => n.elementUuid === directoryUuid)
-                ) {
+                if (!treeDataRef.current?.rootDirectories.some((n) => n.elementUuid === directoryUuid)) {
                     return;
                 }
 
