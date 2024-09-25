@@ -46,7 +46,15 @@ export const defaultColumnDefinition = {
     wrapHeaderText: true,
     autoHeaderHeight: true,
     suppressHorizontalScroll: true,
-    comparator: (valueA: string, valueB: string) => valueA.toLowerCase().localeCompare(valueB.toLowerCase()),
+    lockVisible: true,
+    comparator: (valueA: string | null | undefined, valueB: string | null | undefined) => {
+        // Need to check because ghost elements (uploading ones) don't have
+        // created or modification dates yet
+        if (!valueA || !valueB) {
+            return -1;
+        }
+        return valueA.toLowerCase().localeCompare(valueB.toLowerCase());
+    },
 };
 export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttributes>, intl: IntlShape): ColDef[] => [
     {

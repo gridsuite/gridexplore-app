@@ -28,7 +28,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
-import { addUploadingElement, removeUploadingElement, setActiveDirectory } from '../../../redux/actions';
+import { addUploadingElement, setActiveDirectory } from '../../../redux/actions';
 import {
     CreateStudyDialogFormValues,
     createStudyDialogFormValidationSchema,
@@ -221,9 +221,10 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
                 })
                 .finally(() => {
                     setValue(FieldConstants.CASE_UUID, null);
-                    dispatch(removeUploadingElement(uploadingStudy));
                 });
 
+            // the uploadingStudy ghost element will be removed when directory
+            // content updated by fetch
             dispatch(addUploadingElement(uploadingStudy));
         }
     };
