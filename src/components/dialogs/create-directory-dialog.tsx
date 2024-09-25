@@ -19,10 +19,10 @@ import { FunctionComponent } from 'react';
 
 interface CreateDirectoryDialogProps {
     open: boolean;
-    onClose: () => void;
+    onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     onClick: (newName: string) => void;
     title: string;
-    parentDirectory: string;
+    parentDirectory?: string;
     error: string;
 }
 
