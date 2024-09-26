@@ -43,6 +43,7 @@
     "CASE": "Situation",
     "unsupportedItem": "Cet élément n'est pas supporté",
     "move": "Déplacer",
+    "moveFolder": "Déplacer dossier",
     "delete": "Supprimer",
     "rename": "Renommer",
     "duplicate": "Dupliquer",

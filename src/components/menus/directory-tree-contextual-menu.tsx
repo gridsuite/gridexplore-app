@@ -289,7 +289,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
 
             menuItems.push(
                 {
-                    messageDescriptorId: 'move',
+                    messageDescriptorId: 'moveFolder',
                     callback: () => {
                         handleOpenDialog(DialogsId.MOVE);
                     },
