@@ -17,8 +17,12 @@ import { UserCellRenderer } from './renderers/user-cell-renderer';
 import { DateCellRenderer } from './renderers/date-cell-renderer';
 import type { ElementAttributes } from '@gridsuite/commons-ui';
 
-export const formatMetadata = (data: ElementAttributes, childrenMetadata: Record<UUID, ElementAttributes>) => ({
+export const formatMetadata = (
+    data: ElementAttributes,
+    childrenMetadata: Record<UUID, ElementAttributes>
+): ElementAttributes => ({
     ...data,
+    // @ts-expect-error TODO: "Type `object` is not assignable to type `string`"
     subtype: childrenMetadata[data.elementUuid]?.specificMetadata.type,
     hasMetadata: !!childrenMetadata[data.elementUuid],
 });
@@ -26,7 +30,7 @@ export const formatMetadata = (data: ElementAttributes, childrenMetadata: Record
 export const computeCheckedElements = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
     childrenMetadata: Record<UUID, ElementAttributes>
-) => {
+): ElementAttributes[] => {
     return (
         gridRef.current?.api
             ?.getSelectedRows()
