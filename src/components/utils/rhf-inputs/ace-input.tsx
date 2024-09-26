@@ -27,7 +27,8 @@ const AceInput = ({ name, ...props }: AceInputProps) => {
      * Set name of for the Ace Editor : if theme is light set "github theme" else set "clouds_midnight theme"
      * */
     let themeForAceEditor = () => {
-        return selectedTheme === 'Light' ? 'github' : selectedTheme === 'Dark' ? 'clouds_midnight' : '';
+        const darkTheme = selectedTheme === 'Dark' ? 'clouds_midnight' : '';
+        return selectedTheme === 'Light' ? 'github' : darkTheme;
     };
 
     const {

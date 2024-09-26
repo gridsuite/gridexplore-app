@@ -94,7 +94,7 @@ function handleError(response: Response): Promise<never> {
         const errorName = 'HttpResponseError : ';
         let error: ErrorWithStatus;
         const errorJson = parseError(text);
-        if (errorJson && errorJson.status && errorJson.error && errorJson.message) {
+        if (errorJson?.status && errorJson?.error && errorJson?.message) {
             error = new Error(
                 errorName + errorJson.status + ' ' + errorJson.error + ', message : ' + errorJson.message
             );
@@ -111,9 +111,9 @@ function prepareRequest(init: InitRequest, token?: Token) {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError('Argument 2 of backendFetch is not an object' + typeof init);
     }
-    const initCopy = Object.assign({}, init);
+    const initCopy = { ...init };
     initCopy.headers = new Headers(initCopy.headers || {});
-    const tokenCopy = token ? token : getToken();
+    const tokenCopy = token ?? getToken();
     initCopy.headers.append('Authorization', 'Bearer ' + tokenCopy);
     return initCopy;
 }
