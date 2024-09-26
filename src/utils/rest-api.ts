@@ -23,7 +23,6 @@ import { AppState } from '../redux/reducer';
 import { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
 import { User } from 'oidc-client';
-import { UUID } from 'crypto';
 import { CriteriaBasedEditionFormData } from '../components/dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { Script } from '../components/dialogs/contingency-list/edition/script/script-edition-dialog';
