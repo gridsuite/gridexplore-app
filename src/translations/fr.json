@@ -160,6 +160,5 @@
     "grid.ariaUnchecked": "Non sélectionné",
     "grid.ariaRowToggleSelection": "grid.ariaRowToggleSelection",
     "emptyDirContent": "Votre dossier est vide",
-    "createElement": "AJOUTER UN ELEMENT",
-    "CannotMoveRootDirectory": "Vous ne pouvez pas déplacer un dossier racine"
+    "createElement": "AJOUTER UN ELEMENT"
 }
