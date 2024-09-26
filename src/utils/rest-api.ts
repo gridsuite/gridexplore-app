@@ -585,11 +585,7 @@ export function replaceFormContingencyListWithScript(id: string, parentDirectory
  * Save new script contingency list from form contingency list
  * @returns {Promise<Response>}
  */
-export function newScriptFromFiltersContingencyList(
-    id: string,
-    newName: string,
-    parentDirectoryUuid: string
-) {
+export function newScriptFromFiltersContingencyList(id: string, newName: string, parentDirectoryUuid: string) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
