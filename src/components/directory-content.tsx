@@ -475,10 +475,7 @@ const DirectoryContent = () => {
     );
 
     const renderEmptyDirContent = () => (
-        <EmptyDirectory
-            openDialog={(mouseEvent: React.MouseEvent<HTMLElement>) => handleDialog(mouseEvent, true)}
-            theme={selectedTheme}
-        />
+        <EmptyDirectory openDialog={(mouseEvent) => handleDialog(mouseEvent, true)} theme={selectedTheme} />
     );
 
     const renderContent = () => {
@@ -496,7 +493,7 @@ const DirectoryContent = () => {
         }
 
         // If empty dir then render an appropriate content
-        if (!rows || rows.length === 0) {
+        if (rows.length === 0) {
             return renderEmptyDirContent();
         }
 

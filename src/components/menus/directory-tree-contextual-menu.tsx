@@ -270,9 +270,8 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 {
                     messageDescriptorId: 'paste',
                     callback: () => {
-                        if (directory) {
-                            pasteElement(directory.elementUuid, selectionForCopy);
-                        }
+                        // @ts-expect-error TODO: manage null case
+                        pasteElement(directory.elementUuid, selectionForCopy);
                     },
                     icon: <ContentPasteIcon fontSize="small" />,
                     disabled: !selectionForCopy.sourceItemUuid,
