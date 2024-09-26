@@ -67,7 +67,7 @@ interface MultipleAction<T> {
  *          {Object} state.data The JSON results of the request (see hasResult)
  */
 export const useDeferredFetch = <T>(
-    fetchFunction: (...args: unknown[]) => Promise<T>,
+    fetchFunction: GenericFunction<T>,
     onSuccess?: (data: T, args: unknown[]) => void,
     errorToString?: (status: number) => string | undefined,
     onError?: (errorMessage: string, args: unknown[]) => void,
@@ -187,7 +187,7 @@ export const useDeferredFetch = <T>(
  *          {Array} state.data The results array of each request (see hasResult)
  */
 
-export type GenericFunction<T> = (...args: unknown[]) => Promise<T>;
+export type GenericFunction<T, TArgs extends unknown[] = any[]> = (...args: TArgs) => Promise<T>;
 
 export const useMultipleDeferredFetch = <T>(
     fetchFunction: GenericFunction<T>,

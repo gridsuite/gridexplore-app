@@ -6,14 +6,12 @@
  */
 import { useEffect, useRef } from 'react';
 import {
-    GridSuiteModule,
     fetchAppsMetadata,
+    GridSuiteModule,
     LIGHT_THEME,
     logout,
     TopBar,
     UserManagerState,
-    GsTheme,
-    GsLang,
 } from '@gridsuite/commons-ui';
 import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
@@ -32,7 +30,7 @@ type AppTopBarProps = {
     userManagerInstance: UserManagerState['instance'];
 };
 
-export default function AppTopBar({ userManagerInstance }: AppTopBarProps) {
+export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarProps>) {
     const navigate = useNavigate();
 
     const dispatch = useDispatch<AppDispatch>();
@@ -62,7 +60,7 @@ export default function AppTopBar({ userManagerInstance }: AppTopBarProps) {
             const openSearch = (e: DocumentEventMap['keydown']) => {
                 if (e.ctrlKey && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
                     e.preventDefault();
-                    searchInputRef.current?.focus();
+                    searchInputRef?.current?.focus();
                 }
             };
             document.addEventListener('keydown', openSearch);
@@ -82,9 +80,9 @@ export default function AppTopBar({ userManagerInstance }: AppTopBarProps) {
             user={user ?? undefined}
             appsAndUrls={appsAndUrls}
             onThemeClick={handleChangeTheme}
-            theme={themeLocal as GsTheme}
+            theme={themeLocal}
             onLanguageClick={handleChangeLanguage}
-            language={languageLocal as GsLang}
+            language={languageLocal}
             globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
             additionalModulesPromise={getServersInfos as () => Promise<GridSuiteModule[]>}
         >

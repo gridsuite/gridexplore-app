@@ -6,29 +6,29 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-
 import { useSelector } from 'react-redux';
-
 import { updateConfigParameter } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../../utils/config-params';
-import { AppState } from 'redux/reducer';
+import { AppState } from '../../redux/reducer';
 
 type ParamName = typeof PARAM_THEME | typeof PARAM_LANGUAGE;
 
-export function useParameterState(paramName: ParamName): [string, (value: string) => void] {
+export function useParameterState<TParamName extends ParamName>(
+    paramName: TParamName
+): [AppState[TParamName], (value: AppState[TParamName]) => void] {
     const { snackError } = useSnackMessage();
 
     const paramGlobalState = useSelector((state: AppState) => state[paramName]);
 
-    const [paramLocalState, setParamLocalState] = useState<string>(paramGlobalState);
+    const [paramLocalState, setParamLocalState] = useState<AppState[TParamName]>(paramGlobalState);
 
     useEffect(() => {
         setParamLocalState(paramGlobalState);
     }, [paramGlobalState]);
 
     const handleChangeParamLocalState = useCallback(
-        (value: string) => {
+        (value: AppState[TParamName]) => {
             setParamLocalState(value);
             updateConfigParameter(paramName, value).catch((error) => {
                 setParamLocalState(paramGlobalState);

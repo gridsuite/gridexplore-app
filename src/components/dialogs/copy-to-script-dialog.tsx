@@ -30,7 +30,7 @@ interface CopyToScriptDialogProps {
     onValidate: (...args: any[]) => void;
     currentName: string;
     title: string;
-    directoryUuid?: string;
+    directoryUuid: string;
     elementType: ElementType;
     handleError: (...args: any[]) => void;
 }
@@ -99,22 +99,20 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
     }, [currentName, handleError, intl]);
 
     useEffect(() => {
-        if (directoryUuid) {
-            setLoading(true);
-            getNameCandidate(directoryUuid, currentName, elementType)
-                .then((newName) => {
-                    let generatedName: string = newName || '';
-                    setValue(FieldConstants.NAME, generatedName, {
-                        shouldDirty: true,
-                    });
-                })
-                .catch(() => {
-                    handleGenerateNameError();
-                })
-                .finally(() => {
-                    setLoading(false);
+        setLoading(true);
+        getNameCandidate(directoryUuid, currentName, elementType)
+            .then((newName) => {
+                let generatedName: string = newName || '';
+                setValue(FieldConstants.NAME, generatedName, {
+                    shouldDirty: true,
                 });
-        }
+            })
+            .catch(() => {
+                handleGenerateNameError();
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }, [handleGenerateNameError, setValue, currentName, elementType, directoryUuid]);
 
     return (

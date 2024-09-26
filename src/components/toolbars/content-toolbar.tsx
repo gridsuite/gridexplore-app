@@ -14,22 +14,20 @@ import { deleteElements, moveElementsToDirectory } from '../../utils/rest-api';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import DeleteDialog from '../dialogs/delete-dialog';
-import CommonToolbar from './common-toolbar';
-import { GenericFunction, useMultipleDeferredFetch } from '../../utils/custom-hooks';
+import CommonToolbar, { CommonToolbarProps } from './common-toolbar';
+import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
+import * as constants from '../../utils/UIconstants';
 import { DialogsId } from '../../utils/UIconstants';
 import { AppState } from 'redux/reducer';
-import * as constants from '../../utils/UIconstants';
 
-interface ContentToolbarProps {
+export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
     selectedElements: ElementAttributes[];
-
-    [key: string]: unknown;
-}
+};
 
 const ContentToolbar = (props: ContentToolbarProps) => {
     const { selectedElements, ...others } = props;
@@ -64,6 +62,7 @@ const ContentToolbar = (props: ContentToolbarProps) => {
         handleCloseDialog();
     }, [handleCloseDialog, stopCasesExports]);
 
+    //TODO: duplicate code detected with content-contextual-menu.tsx (moveElementErrorToString, moveElementOnError and moveCB)
     const moveElementErrorToString = useCallback(
         (HTTPStatusCode: number) => {
             if (HTTPStatusCode === 403) {
@@ -94,7 +93,7 @@ const ContentToolbar = (props: ContentToolbarProps) => {
     );
 
     const [moveCB] = useMultipleDeferredFetch(
-        moveElementsToDirectory as GenericFunction<any>,
+        moveElementsToDirectory,
         undefined,
         moveElementErrorToString,
         moveElementOnError,
@@ -131,15 +130,14 @@ const ContentToolbar = (props: ContentToolbarProps) => {
     const handleDeleteElements = useCallback(
         (elementsUuids: string[]) => {
             setDeleteError('');
-            if (selectedDirectory) {
-                deleteElements(elementsUuids, selectedDirectory.elementUuid)
-                    .then(handleCloseDialog)
-                    .catch((error) => {
-                        //show the error message and don't close the dialog
-                        setDeleteError(error.message);
-                        handleLastError(error.message);
-                    });
-            }
+            //@ts-expect-error TODO: manage null case
+            deleteElements(elementsUuids, selectedDirectory.elementUuid)
+                .then(handleCloseDialog)
+                .catch((error) => {
+                    //show the error message and don't close the dialog
+                    setDeleteError(error.message);
+                    handleLastError(error.message);
+                });
         },
         [selectedDirectory, handleCloseDialog, handleLastError]
     );

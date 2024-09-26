@@ -41,15 +41,15 @@ import {
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
 import {
+    ElementAttributes,
     ElementType,
-    useSnackMessage,
     FilterCreationDialog,
     TreeViewFinderNodeProps,
-    ElementAttributes,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 
 import CommonContextualMenu from './common-contextual-menu';
-import { GenericFunction, useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
+import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
 import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/caseUtils';
@@ -247,7 +247,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         activeElement.elementUuid,
                         undefined,
                         activeElement.type,
-                        selectedElements[0].specificMetadata.type as unknown as string
+                        // @ts-expect-error TODO: seems to be an object but we await a string???
+                        selectedElements[0].specificMetadata.type
                     ).catch((error) => {
                         handleDuplicateError(error.message);
                     });
@@ -294,15 +295,14 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     const handleDeleteElements = useCallback(
         (elementsUuids: string[]) => {
             setDeleteError('');
-            if (selectedDirectory) {
-                deleteElements(elementsUuids, selectedDirectory.elementUuid)
-                    .then(() => handleCloseDialog())
-                    //show the error message and don't close the dialog
-                    .catch((error) => {
-                        setDeleteError(error.message);
-                        handleLastError(error.message);
-                    });
-            }
+            // @ts-expect-error TODO: manage null case
+            deleteElements(elementsUuids, selectedDirectory?.elementUuid)
+                .then(() => handleCloseDialog())
+                //show the error message and don't close the dialog
+                .catch((error) => {
+                    setDeleteError(error.message);
+                    handleLastError(error.message);
+                });
         },
         [selectedDirectory, handleCloseDialog, handleLastError]
     );
@@ -337,7 +337,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [moveCB] = useMultipleDeferredFetch(
-        moveElementsToDirectory as GenericFunction<any>,
+        moveElementsToDirectory,
         undefined,
         moveElementErrorToString,
         moveElementOnError,
@@ -345,7 +345,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [renameCB, renameState] = useDeferredFetch(
-        renameElement as GenericFunction<any>,
+        renameElement,
         (elementUuid: string, renamedElement: any[]) => {
             // if copied element is renamed
             if (selectionForCopy.sourceItemUuid === renamedElement[0]) {
@@ -386,7 +386,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [FiltersReplaceWithScriptCB] = useDeferredFetch(
-        replaceFiltersWithScript as GenericFunction<any>,
+        replaceFiltersWithScript,
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -394,7 +394,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [newScriptFromFiltersContingencyListCB] = useDeferredFetch(
-        newScriptFromFiltersContingencyList as GenericFunction<any>,
+        newScriptFromFiltersContingencyList,
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -402,7 +402,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [replaceFormContingencyListWithScriptCB] = useDeferredFetch(
-        replaceFormContingencyListWithScript as GenericFunction<any>,
+        replaceFormContingencyListWithScript,
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -410,7 +410,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     );
 
     const [newScriptFromFilterCB] = useDeferredFetch(
-        newScriptFromFilter as GenericFunction<any>,
+        newScriptFromFilter,
         handleCloseDialog,
         undefined,
         handleLastError,
@@ -692,6 +692,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         }
                         currentName={activeElement ? activeElement.elementName : ''}
                         title={'copyToScriptList'}
+                        // @ts-expect-error TODO: manage undefined case
                         directoryUuid={selectedDirectory?.elementUuid}
                         elementType={activeElement?.type}
                         handleError={handleLastError}
@@ -716,6 +717,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         onValidate={(id, newName) => newScriptFromFilterCB(id, newName, selectedDirectory?.elementUuid)}
                         currentName={activeElement ? activeElement.elementName : ''}
                         title={'copyToScriptList'}
+                        // @ts-expect-error TODO: manage undefined case
                         directoryUuid={selectedDirectory?.elementUuid}
                         elementType={activeElement?.type}
                         handleError={handleLastError}

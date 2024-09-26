@@ -6,8 +6,8 @@
  */
 
 import { useController } from 'react-hook-form';
-import AceEditor from 'react-ace';
-import React from 'react';
+import AceEditor, { IAceEditorProps, IEditorProps } from 'react-ace';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import 'ace-builds/src-noconflict/mode-groovy';
 import 'ace-builds/src-noconflict/theme-github';
@@ -17,32 +17,29 @@ import { AppState } from '../../../redux/reducer';
 interface AceInputProps {
     name: string;
     placeholder: string;
-    fontSize: string;
-    editorProps: Record<string, any>;
+    fontSize: Exclude<IAceEditorProps['fontSize'], undefined>;
+    editorProps: IEditorProps;
 }
 
 const AceInput = ({ name, ...props }: AceInputProps) => {
     const selectedTheme = useSelector((state: AppState) => state.theme);
-    /**
-     * Set name of for the Ace Editor : if theme is light set "github theme" else set "clouds_midnight theme"
-     * */
-    let themeForAceEditor = () => {
-        const darkTheme = selectedTheme === 'Dark' ? 'clouds_midnight' : '';
-        return selectedTheme === 'Light' ? 'github' : darkTheme;
-    };
+    const themeForAceEditor = useMemo(() => {
+        switch (selectedTheme) {
+            case 'Dark':
+                return 'clouds_midnight';
+            case 'Light':
+                return 'github';
+            default:
+                return '';
+        }
+    }, [selectedTheme]);
 
     const {
         field: { onChange, value },
     } = useController({ name });
 
     return (
-        <AceEditor
-            mode="groovy"
-            theme={themeForAceEditor()}
-            onChange={(val) => onChange(val)}
-            value={value}
-            {...props}
-        />
+        <AceEditor mode="groovy" theme={themeForAceEditor} onChange={(val) => onChange(val)} value={value} {...props} />
     );
 };
 
