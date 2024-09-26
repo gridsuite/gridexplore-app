@@ -128,8 +128,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                     typeItem: typeItem,
                     nameItem: nameItem,
                     descriptionItem: descriptionItem,
-                    parentDirectoryUuid: parentDirectoryUuid,
-                    specificTypeItem,
+                    parentDirectoryUuid: parentDirectoryUuid ?? null,
+                    specificTypeItem: specificTypeItem ?? null,
                 })
             );
         },
