@@ -114,7 +114,6 @@ function updatedTree(prevRoots, prevMap, nodeId, children) {
                 };
             }
         });
-
     const prevChildren = nodeId ? prevMap[nodeId]?.children : prevRoots;
     if (prevChildren?.length === nextChildren.length && prevChildren.every((e, i) => e === nextChildren[i])) {
         return [prevRoots, prevMap];
@@ -130,6 +129,7 @@ function updatedTree(prevRoots, prevMap, nodeId, children) {
         ...Array.prototype.concat(
             ...prevUuids
                 .filter((u) => !nextUuids.has(u))
+                .filter((uuid) => !(nodeId && prevMap[uuid] && prevMap[uuid].parentUuid !== nodeId)) // if the element is moved but not deleted
                 .map((u) => flattenDownNodes(prevMap[u], (n) => n.children).map((n) => n.elementUuid))
         ),
     ]);
