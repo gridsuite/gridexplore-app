@@ -635,7 +635,7 @@ const DirectoryContent = () => {
                 //creates a visual offset rendering the last elements of a full table inaccessible
                 rows && rows.length > 0 && (
                     <div style={{ ...styles.toolBarContainer }}>
-                        <ContentToolbar selectedElements={checkedRows} onContextMenu={onContextMenu} />
+                        <ContentToolbar selectedElements={checkedRows} />
                         <Button
                             variant="contained"
                             endIcon={<AddIcon />}
