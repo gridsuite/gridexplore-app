@@ -59,5 +59,5 @@ export const useDirectoryContent = () => {
         }
     }, [handleError, currentChildren]);
 
-    return [currentChildren, childrenMetadata];
+    return [currentChildren, childrenMetadata] as const;
 };

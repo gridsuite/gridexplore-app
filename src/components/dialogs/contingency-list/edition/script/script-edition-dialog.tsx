@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, CustomMuiDialog, FieldConstants } from '@gridsuite/commons-ui';
+import { useSnackMessage, CustomMuiDialog, FieldConstants, noSelectionForCopy } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
@@ -15,7 +15,6 @@ import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
 import yup from 'components/utils/yup-config';
 import ScriptEditionForm from './script-edition-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
 import { AppState } from 'redux/reducer';
 
@@ -73,23 +72,21 @@ const ScriptEditionDialog: FunctionComponent<ScriptEditionDialogProps> = ({
     const isValidating = errors.root?.isValidating;
 
     useEffect(() => {
-        if (contingencyListId) {
-            setIsFetching(true);
-            getContingencyList(contingencyListType, contingencyListId)
-                .then((response) => {
-                    if (response) {
-                        const formData = getScriptFormDataFromFetchedElement(response);
-                        reset({ ...formData, [FieldConstants.NAME]: name });
-                    }
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'cannotRetrieveContingencyList',
-                    });
-                })
-                .finally(() => setIsFetching(false));
-        }
+        setIsFetching(true);
+        getContingencyList(contingencyListType, contingencyListId)
+            .then((response) => {
+                if (response) {
+                    const formData = getScriptFormDataFromFetchedElement(response);
+                    reset({ ...formData, [FieldConstants.NAME]: name });
+                }
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'cannotRetrieveContingencyList',
+                });
+            })
+            .finally(() => setIsFetching(false));
     }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
     const closeAndClear = (event?: SyntheticEvent) => {

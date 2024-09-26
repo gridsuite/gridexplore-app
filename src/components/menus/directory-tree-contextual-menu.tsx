@@ -43,7 +43,7 @@ import { PopoverPosition, PopoverReference } from '@mui/material';
 import { AppState } from 'redux/reducer';
 
 interface DirectoryTreeContextualMenuProps {
-    directory: ElementAttributes;
+    directory: ElementAttributes | null;
     open: boolean;
     onClose: (e: unknown, nextSelectedDirectoryId?: string | null) => void;
     openDialog: string;
@@ -271,7 +271,8 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 {
                     messageDescriptorId: 'paste',
                     callback: () => {
-                        pasteElement(directory?.elementUuid, selectionForCopy);
+                        // @ts-expect-error TODO: manage null case
+                        pasteElement(directory.elementUuid, selectionForCopy);
                     },
                     icon: <ContentPasteIcon fontSize="small" />,
                     disabled: !selectionForCopy.sourceItemUuid,
@@ -342,7 +343,8 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 return (
                     <RenameDialog
                         message={'renameElementMsg'}
-                        currentName={directory?.elementName}
+                        // @ts-expect-error TODO: manage null case(s) here
+                        currentName={directory.elementName}
                         open={true}
                         onClick={(newName: string) => renameCB(directory?.elementUuid, newName)}
                         onClose={handleCloseDialog}
@@ -361,7 +363,10 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         multipleDeleteFormatMessageId={'deleteMultipleDirectoriesDialogMessage'}
                         simpleDeleteFormatMessageId={'deleteDirectoryDialogMessage'}
                         open={true}
-                        onClick={() => handleDeleteElement(directory?.elementUuid)}
+                        onClick={() => {
+                            // @ts-expect-error TODO: manage undefined case
+                            handleDeleteElement(directory.elementUuid);
+                        }}
                         onClose={handleCloseDialog}
                         error={deleteError}
                     />
