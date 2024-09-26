@@ -328,7 +328,7 @@ const DirectoryContent = () => {
         (elementUuid: string, objectType: string): string | null => {
             let href: string | null = null;
             if (appsAndUrls !== null) {
-                const found = appsAndUrls.find((app) => {
+                appsAndUrls.find((app) => {
                     const appStudy = app as StudyMetadata;
                     if (!appStudy.resources) {
                         return false;
