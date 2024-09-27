@@ -219,7 +219,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         activeElement.description,
                         activeElement.elementUuid,
                         selectedDirectory?.elementUuid,
-                        String(activeElement.specificMetadata.type)
+                        // @ts-expect-error TODO: seems to be an object but we await a string???
+                        activeElement.specificMetadata.type
                     );
                     break;
 
@@ -248,7 +249,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         undefined,
                         activeElement.type,
                         // @ts-expect-error TODO: seems to be an object but we await a string???
-                        selectedElements[0].specificMetadata.type
+                        activeElement.specificMetadata.type
                     ).catch((error) => {
                         handleDuplicateError(error.message);
                     });
@@ -730,7 +731,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         onClose={handleCloseDialog}
                         sourceFilterForExplicitNamingConversion={{
                             id: activeElement.elementUuid,
-                            equipmentType: String(activeElement.specificMetadata.equipmentType),
+                            // @ts-expect-error TODO: seems to be an object but we await a string???
+                            equipmentType: activeElement.specificMetadata.equipmentType,
                         }}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}

@@ -164,7 +164,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         selectionForCopy.sourceItemUuid,
                         directoryUuid,
                         selectionForCopy.typeItem,
-                        selectionForCopy.specificType
+                        selectionForCopy.specificTypeItem
                     ).catch((error: any) => {
                         handlePasteError(error);
                     });
