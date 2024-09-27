@@ -515,7 +515,6 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
         return selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
 
-
     const buildMenu = () => {
         if (selectedElements.length === 0) {
             return;
