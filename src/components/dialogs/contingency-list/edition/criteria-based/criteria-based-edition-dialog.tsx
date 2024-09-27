@@ -11,6 +11,7 @@ import {
     getCriteriaBasedSchema,
     FieldConstants,
     noSelectionForCopy,
+    yup,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
@@ -22,7 +23,6 @@ import {
     getCriteriaBasedFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
 import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
-import yup from 'components/utils/yup-config';
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectionForCopy } from '../../../../../redux/actions';
