@@ -77,30 +77,28 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
             uploading: true,
         };
 
-        if (caseFile && activeDirectory) {
-            createCase(caseName, description ?? '', caseFile, activeDirectory)
-                .then(onClose)
-                .catch((err) => {
-                    if (handleMaxElementsExceededError(err, snackError)) {
-                        return;
-                    } else if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
-                        snackError({
-                            messageId: 'invalidFormatOrName',
-                            headerId: 'caseCreationError',
-                            headerValues: { name: caseName },
-                        });
-                    } else {
-                        snackError({
-                            messageTxt: err?.message,
-                            headerId: 'caseCreationError',
-                            headerValues: { name: caseName },
-                        });
-                    }
-                });
-            // the uploadingCase ghost element will be removed when directory
-            // content updated by fetch
-            dispatch(addUploadingElement(uploadingCase));
-        }
+        // @ts-expect-error TODO: manage null cases here
+        createCase(caseName, description ?? '', caseFile, activeDirectory)
+            .then(onClose)
+            .catch((err) => {
+                if (handleMaxElementsExceededError(err, snackError)) {
+                    return;
+                } else if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
+                    snackError({
+                        messageId: 'invalidFormatOrName',
+                        headerId: 'caseCreationError',
+                        headerValues: { name: caseName },
+                    });
+                } else {
+                    snackError({
+                        messageTxt: err?.message,
+                        headerId: 'caseCreationError',
+                        headerValues: { name: caseName },
+                    });
+                }
+            });
+        // the uploadingCase ghost element will be removed when directory content updated by fetch
+        dispatch(addUploadingElement(uploadingCase));
     };
 
     return (

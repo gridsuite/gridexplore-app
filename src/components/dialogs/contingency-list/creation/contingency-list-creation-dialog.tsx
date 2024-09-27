@@ -75,25 +75,24 @@ const ContingencyListCreationDialog: FunctionComponent<ContingencyListCreationDi
         onClose(event);
     };
 
-    const onSubmit = (data: ContingencyListFormData) => {
-        if (activeDirectory) {
-            const formContent = getFormContent(null, data as ContingencyListFormDataWithRequiredCriteria);
-            createContingencyList(
-                data[FieldConstants.CONTINGENCY_LIST_TYPE],
-                data[FieldConstants.NAME],
-                data[FieldConstants.DESCRIPTION] ?? '',
-                formContent,
-                activeDirectory
-            )
-                .then(() => closeAndClear())
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'contingencyListCreationError',
-                        headerValues: { name: data[FieldConstants.NAME] },
-                    });
+    const onSubmit = (data: ContingencyListFormDataWithRequiredCriteria) => {
+        const formContent = getFormContent(null, data);
+        createContingencyList(
+            data[FieldConstants.CONTINGENCY_LIST_TYPE],
+            data[FieldConstants.NAME],
+            data[FieldConstants.DESCRIPTION] ?? '',
+            formContent,
+            // @ts-expect-error TODO: manage null case of activeDirectory
+            activeDirectory
+        )
+            .then(() => closeAndClear())
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'contingencyListCreationError',
+                    headerValues: { name: data[FieldConstants.NAME] },
                 });
-        }
+            });
     };
     return (
         <CustomMuiDialog

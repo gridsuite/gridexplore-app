@@ -25,7 +25,6 @@ import { IncomingHttpHeaders } from 'node:http';
 import { User } from 'oidc-client';
 import { CriteriaBasedEditionFormData } from '../components/dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
-import { Script } from '../components/dialogs/contingency-list/edition/script/script-edition-dialog';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/user-admin';
 const PREFIX_CONFIG_NOTIFICATION_WS = import.meta.env.VITE_WS_GATEWAY + '/config-notification';
@@ -38,6 +37,8 @@ const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = import.meta.env.VITE_API_GATEWA
 const PREFIX_NOTIFICATION_WS = import.meta.env.VITE_WS_GATEWAY + '/directory-notification';
 const PREFIX_FILTERS_QUERIES = import.meta.env.VITE_API_GATEWAY + '/filter/v1/filters';
 const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
+
+export type Script = { id: string; script: string | null | undefined };
 
 export type KeyOfWithoutIndexSignature<T> = {
     // copy every declared property from T but remove index signatures
