@@ -60,7 +60,7 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
             const openSearch = (e: DocumentEventMap['keydown']) => {
                 if (e.ctrlKey && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
                     e.preventDefault();
-                    searchInputRef?.current?.focus();
+                    searchInputRef.current?.focus();
                 }
             };
             document.addEventListener('keydown', openSearch);
