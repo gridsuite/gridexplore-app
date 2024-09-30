@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, CustomMuiDialog, FieldConstants, noSelectionForCopy } from '@gridsuite/commons-ui';
+import { useSnackMessage, CustomMuiDialog, FieldConstants, noSelectionForCopy, yup } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
@@ -15,7 +15,6 @@ import {
     getExplicitNamingFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
 import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
-import yup from 'components/utils/yup-config';
 import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-form';
 import ExplicitNamingEditionForm from './explicit-naming-edition-form';
 import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
