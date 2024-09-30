@@ -208,7 +208,7 @@ export function fetchConfigParameter(name: string) {
     const fetchParams = PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters/${name}`;
     return backendFetchJson(fetchParams, {
         method: 'get',
-    }) as Promise<ConfigParameters>;
+    }) as Promise<ConfigParameter>;
 }
 
 export function deleteElement(elementUuid: string) {

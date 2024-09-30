@@ -94,7 +94,7 @@ const App = () => {
             let eventData = JSON.parse(event.data);
             if (eventData.headers?.['parameterName']) {
                 fetchConfigParameter(eventData.headers['parameterName'])
-                    .then((param) => updateParams(param))
+                    .then((param) => updateParams([param]))
                     .catch((error) =>
                         snackError({
                             messageTxt: error.message,
