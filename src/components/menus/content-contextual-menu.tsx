@@ -128,8 +128,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                     typeItem: typeItem,
                     nameItem: nameItem,
                     descriptionItem: descriptionItem,
-                    parentDirectoryUuid: parentDirectoryUuid,
-                    specificTypeItem,
+                    parentDirectoryUuid: parentDirectoryUuid ?? null,
+                    specificTypeItem: specificTypeItem ?? null,
                 })
             );
         },
@@ -247,7 +247,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         activeElement.elementUuid,
                         undefined,
                         activeElement.type,
-                        selectedElements[0].specificMetadata.type
+                        String(activeElement.specificMetadata.type)
                     ).catch((error) => {
                         handleDuplicateError(error.message);
                     });
