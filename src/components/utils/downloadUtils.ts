@@ -55,7 +55,6 @@ const downloadStrategies: { [key in ElementType]?: (element: ElementAttributes) 
             console.error('Error parsing JSON:', error);
             return { blob: await result.blob(), filename };
         }
-        // return { blob: await result.blob(), filename };
     },
 };
 

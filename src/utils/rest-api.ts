@@ -411,7 +411,7 @@ export function duplicateElement(
     });
 }
 
-export function duplicateSpreadsheetConfig(sourceCaseUuid, parentDirectoryUuid) {
+export function duplicateSpreadsheetConfig(sourceCaseUuid: string, parentDirectoryUuid: string) {
     console.info('Duplicating a spreadsheet config...');
     let queryParams = new URLSearchParams();
     queryParams.append('duplicateFrom', sourceCaseUuid);
@@ -427,7 +427,7 @@ export function duplicateSpreadsheetConfig(sourceCaseUuid, parentDirectoryUuid) 
     });
 }
 
-export function downloadSpreadsheetConfig(configId) {
+export function downloadSpreadsheetConfig(configId: string) {
     console.info(`Downloading spreadsheet config with id: ${configId}`);
     const fetchUrl = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/spreadsheet-configs/${configId}`;
 
