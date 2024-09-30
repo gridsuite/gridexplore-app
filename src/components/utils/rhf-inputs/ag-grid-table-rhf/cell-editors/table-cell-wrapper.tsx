@@ -5,10 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useImperativeHandle } from 'react';
+import { forwardRef, ReactNode, useImperativeHandle } from 'react';
 import { useWatch } from 'react-hook-form';
 
-const TableCellWrapper = ({ agGridRef, name, children }) => {
+interface TableCellWrapperProps {
+    name: string;
+    children: ReactNode;
+}
+
+const TableCellWrapper = forwardRef(({ name, children }: TableCellWrapperProps, agGridRef) => {
     const watchValues = useWatch({
         name,
     });
@@ -26,6 +31,6 @@ const TableCellWrapper = ({ agGridRef, name, children }) => {
     );
 
     return <>{children}</>;
-};
+});
 
 export default TableCellWrapper;

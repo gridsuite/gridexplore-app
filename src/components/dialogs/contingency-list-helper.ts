@@ -25,7 +25,7 @@ interface IdentifierList {
     identifierList?: Identifier[];
 }
 
-interface PrepareContingencyListForBackend {
+export interface PrepareContingencyListForBackend {
     id: string | null;
     identifierContingencyList: {
         type: 'identifier';

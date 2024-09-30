@@ -21,20 +21,20 @@ const styles = {
     }),
 };
 
-interface ToolbarItem {
+export type ToolbarItem = {
     tooltipTextId: string;
     callback: () => void;
     disabled: boolean;
     icon?: React.ReactNode;
-}
+};
 
-interface CommonToolbarProps {
+export type CommonToolbarProps = {
+    /** Action items to add in the toolbar as buttons */
     items: ToolbarItem[];
-}
+};
 
 /**
  * Generic CommonToolbar
- * @param {Array} items Action items to add in the toolbar as buttons
  */
 const CommonToolbar = (props: CommonToolbarProps) => {
     const { items, ...others } = props;

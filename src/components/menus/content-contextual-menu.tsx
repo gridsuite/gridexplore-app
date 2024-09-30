@@ -42,11 +42,11 @@ import {
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
 import {
+    ElementAttributes,
     ElementType,
-    useSnackMessage,
     FilterCreationDialog,
     TreeViewFinderNodeProps,
-    ElementAttributes,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 
 import CommonContextualMenu from './common-contextual-menu';
@@ -221,7 +221,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         activeElement.description,
                         activeElement.elementUuid,
                         selectedDirectory?.elementUuid,
-                        String(activeElement.specificMetadata.type)
+                        // @ts-expect-error TODO: seems to be an object but we await a string???
+                        activeElement.specificMetadata.type
                     );
                     break;
 
@@ -249,7 +250,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         activeElement.elementUuid,
                         undefined,
                         activeElement.type,
-                        String(activeElement.specificMetadata.type)
+                        // @ts-expect-error TODO: seems to be an object but we await a string???
+                        activeElement.specificMetadata.type
                     ).catch((error) => {
                         handleDuplicateError(error.message);
                     });
@@ -301,6 +303,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     const handleDeleteElements = useCallback(
         (elementsUuids: string[]) => {
             setDeleteError('');
+            // @ts-expect-error TODO: manage null case
             deleteElements(elementsUuids, selectedDirectory?.elementUuid)
                 .then(() => handleCloseDialog())
                 //show the error message and don't close the dialog
@@ -309,7 +312,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                     handleLastError(error.message);
                 });
         },
-        [selectedDirectory?.elementUuid, handleCloseDialog, handleLastError]
+        [selectedDirectory, handleCloseDialog, handleLastError]
     );
 
     const moveElementErrorToString = useCallback(
@@ -711,6 +714,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         }
                         currentName={activeElement ? activeElement.elementName : ''}
                         title={'copyToScriptList'}
+                        // @ts-expect-error TODO: manage undefined case
                         directoryUuid={selectedDirectory?.elementUuid}
                         elementType={activeElement?.type}
                         handleError={handleLastError}
@@ -735,6 +739,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         onValidate={(id, newName) => newScriptFromFilterCB(id, newName, selectedDirectory?.elementUuid)}
                         currentName={activeElement ? activeElement.elementName : ''}
                         title={'copyToScriptList'}
+                        // @ts-expect-error TODO: manage undefined case
                         directoryUuid={selectedDirectory?.elementUuid}
                         elementType={activeElement?.type}
                         handleError={handleLastError}
@@ -747,7 +752,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         onClose={handleCloseDialog}
                         sourceFilterForExplicitNamingConversion={{
                             id: activeElement.elementUuid,
-                            equipmentType: String(activeElement.specificMetadata.equipmentType),
+                            // @ts-expect-error TODO: seems to be an object but we await a string???
+                            equipmentType: activeElement.specificMetadata.equipmentType,
                         }}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
