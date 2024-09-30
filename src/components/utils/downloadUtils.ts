@@ -42,7 +42,20 @@ const downloadStrategies: { [key in ElementType]?: (element: ElementAttributes) 
     [ElementType.SPREADSHEET_CONFIG]: async (element: ElementAttributes) => {
         const result = await downloadSpreadsheetConfig(element.elementUuid);
         const filename = `${element.elementName}.json`;
-        return { blob: await result.blob(), filename };
+        try {
+            // Parse the JSON to ensure it's valid
+            const jsonContent = await result.json();
+            // Stringify with indentation for pretty formatting
+            const prettyJson = JSON.stringify(jsonContent, null, 2);
+            // Create a new Blob with the pretty-formatted JSON
+            const blob = new Blob([prettyJson], { type: 'application/json' });
+            return { blob, filename };
+        } catch (error) {
+            // If parsing fails, fall back to the original blob
+            console.error('Error parsing JSON:', error);
+            return { blob: await result.blob(), filename };
+        }
+        // return { blob: await result.blob(), filename };
     },
 };
 
