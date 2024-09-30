@@ -33,7 +33,6 @@
         "reconnecting-websocket": "^4.4.0",
         "redux": "^5.0.1",
         "typeface-roboto": "^1.1.13",
-        "type-fest": "^4.22.1",
         "uuid": "^9.0.1",
         "yup": "^1.4.0"
     },
@@ -88,6 +87,7 @@
         "oidc-client": "^1.11.5",
         "prettier": "^2.8.8",
         "ts-node": "^10.9.2",
+        "type-fest": "^4.22.1",
         "typescript": "5.1.6",
         "vite": "^5.2.7",
         "vite-plugin-eslint": "^1.8.1",
