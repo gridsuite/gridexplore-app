@@ -73,8 +73,8 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         },
         headerCheckboxSelection: true,
         checkboxSelection: true,
-        flex: 5,  
-        width: 400,          
+        flex: 5,
+        width: 400,
     },
     {
         headerName: intl.formatMessage({
@@ -95,7 +95,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         cellRendererParams: {
             childrenMetadata: childrenMetadata,
         },
-        flex: 3,  
+        flex: 3,
         comparator: (
             valueA: string,
             valueB: string,
