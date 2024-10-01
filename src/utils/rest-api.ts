@@ -411,7 +411,7 @@ export function duplicateElement(
     });
 }
 
-export function duplicateSpreadsheetConfig(sourceCaseUuid: string, parentDirectoryUuid: string) {
+export function duplicateSpreadsheetConfig(sourceCaseUuid: string, parentDirectoryUuid?: string) {
     console.info('Duplicating a spreadsheet config...');
     let queryParams = new URLSearchParams();
     queryParams.append('duplicateFrom', sourceCaseUuid);
