@@ -19,7 +19,7 @@ import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
 import { DownloadForOffline, FileDownload } from '@mui/icons-material';
-import { useDownloadUtils } from '../utils/caseUtils';
+import { useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import * as constants from '../../utils/UIconstants';
 import { DialogsId } from '../../utils/UIconstants';
@@ -35,7 +35,7 @@ const ContentToolbar = (props: ContentToolbarProps) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
-    const { handleDownloadCases, handleConvertCases, stopCasesExports } = useDownloadUtils();
+    const { downloadElements, handleConvertCases, stopCasesExports } = useDownloadUtils();
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
 
@@ -121,7 +121,13 @@ const ContentToolbar = (props: ContentToolbarProps) => {
         [isUserAllowed, selectedElements, noCreationInProgress]
     );
 
-    const allowsDownloadExportCases = useMemo(
+    const allowsDownload = useMemo(() => {
+        const allowedTypes = [ElementType.CASE, ElementType.SPREADSHEET_CONFIG];
+        //if selectedElements contains at least one of the allowed types
+        return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress;
+    }, [selectedElements, noCreationInProgress]);
+
+    const allowsExportCases = useMemo(
         () => selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress,
         [selectedElements, noCreationInProgress]
     );
@@ -145,7 +151,7 @@ const ContentToolbar = (props: ContentToolbarProps) => {
     const items = useMemo(() => {
         const toolbarItems = [];
 
-        if (selectedElements.length && (allowsDelete || allowsMove || allowsDownloadExportCases)) {
+        if (selectedElements.length && (allowsDelete || allowsMove || allowsDownload || allowsExportCases)) {
             toolbarItems.push(
                 {
                     tooltipTextId: 'delete',
@@ -165,20 +171,20 @@ const ContentToolbar = (props: ContentToolbarProps) => {
                 },
                 {
                     tooltipTextId: 'download.button',
-                    callback: () => handleDownloadCases(selectedElements),
+                    callback: () => downloadElements(selectedElements),
                     icon: <FileDownload fontSize="small" />,
-                    disabled: !selectedElements.length || !allowsDownloadExportCases,
+                    disabled: !selectedElements.length || !allowsDownload,
                 },
                 {
                     tooltipTextId: 'download.export.button',
                     callback: () => handleOpenDialog(DialogsId.EXPORT),
                     icon: <DownloadForOffline fontSize="small" />,
-                    disabled: !selectedElements.length || !allowsDownloadExportCases,
+                    disabled: !selectedElements.length || !allowsExportCases,
                 }
             );
         }
         return toolbarItems;
-    }, [allowsDelete, allowsDownloadExportCases, allowsMove, handleDownloadCases, selectedElements]);
+    }, [allowsDelete, allowsDownload, allowsExportCases, allowsMove, downloadElements, selectedElements]);
 
     const renderDialog = () => {
         switch (openDialog) {

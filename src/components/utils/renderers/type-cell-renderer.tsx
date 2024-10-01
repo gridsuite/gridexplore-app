@@ -55,14 +55,19 @@ export const TypeCellRenderer = ({
     childrenMetadata: Record<UUID, ElementAttributes>;
 }) => {
     const intl = useIntl();
+
+    const specificMetadata = childrenMetadata[data?.elementUuid]?.specificMetadata;
+
     return (
         childrenMetadata[data?.elementUuid] && (
             <Box sx={styles.tableCell}>
                 <OverflowableText
                     text={getElementTypeTranslation(
                         data?.type,
-                        childrenMetadata[data?.elementUuid]?.specificMetadata.type?.toString(),
-                        childrenMetadata[data?.elementUuid]?.specificMetadata.format?.toString(),
+                        specificMetadata?.type?.toString(),
+                        data?.type === ElementType.SPREADSHEET_CONFIG
+                            ? specificMetadata.sheetType?.toString() ?? null
+                            : specificMetadata.format?.toString() ?? null,
                         intl
                     )}
                     tooltipSx={styles.tooltip}
