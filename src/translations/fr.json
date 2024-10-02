@@ -161,5 +161,6 @@
     "grid.ariaUnchecked": "Non sélectionné",
     "grid.ariaRowToggleSelection": "grid.ariaRowToggleSelection",
     "emptyDirContent": "Votre dossier est vide",
-    "createElement": "AJOUTER UN ELEMENT"
+    "createElement": "AJOUTER UN ELEMENT",
+    "MovingDirectoryError": "Une erreur survenue lors du déplacement de dossier. Le dossier suivant n'a pas été déplacé : {elementPath}"
 }

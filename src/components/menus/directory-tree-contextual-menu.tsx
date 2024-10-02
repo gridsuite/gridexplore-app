@@ -51,6 +51,7 @@ import { PopoverPosition, PopoverReference } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import MoveDialog from '../dialogs/move-dialog';
+import { buildPathToFromMap } from '../tree-views-container';
 
 interface DirectoryTreeContextualMenuProps {
     directory: ElementAttributes | null;
@@ -72,6 +73,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     const [hideMenu, setHideMenu] = useState(false);
     const { snackError } = useSnackMessage();
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
+    const treeData = useSelector((state: AppState) => state.treeData);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -326,12 +328,18 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
         (selectedDir: TreeViewFinderNodeProps[]) => {
             if (selectedDir.length === 1) {
                 moveElementsToDirectory([directory.elementUuid], selectedDir[0].id).catch((error: any) => {
-                    handleError(error.message);
+                    const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
+                        ?.map((el) => el.elementName)
+                        .join('/');
+                    snackError({
+                        messageId: 'MovingDirectoryError',
+                        messageValues: { elementPath: path },
+                    });
                 });
             }
             handleCloseDialog(null);
         },
-        [directory, handleCloseDialog, handleError]
+        [directory, handleCloseDialog, snackError, treeData.mapData]
     );
 
     const renderDialog = () => {

@@ -40,7 +40,7 @@ const initialMousePosition = {
     mouseY: null,
 };
 
-function buildPathToFromMap(nodeId: UUID | undefined, mapDataRef: Record<string, IDirectory> | undefined) {
+export function buildPathToFromMap(nodeId: UUID | undefined, mapDataRef: Record<string, IDirectory> | undefined) {
     let path = [];
     if (mapDataRef && nodeId) {
         let currentUuid: UUID | null = nodeId ?? null;
