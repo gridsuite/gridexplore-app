@@ -12,7 +12,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import { CancelButton } from '@gridsuite/commons-ui';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, SyntheticEvent } from 'react';
 
 interface ReplaceWithScriptDialogProps {
     id: string;
@@ -37,7 +37,10 @@ const ReplaceWithScriptDialog: FunctionComponent<ReplaceWithScriptDialogProps> =
     onClick,
     title,
 }) => {
-    const handleClose = (): void => {
+    const handleClose = (_: SyntheticEvent, reason?: string): void => {
+        if (reason === 'backdropClick') {
+            return;
+        }
         onClose();
     };
 

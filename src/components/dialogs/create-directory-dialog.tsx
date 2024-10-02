@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import React, { SyntheticEvent } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage } from 'react-intl';
@@ -53,7 +54,10 @@ export const CreateDirectoryDialog: FunctionComponent<CreateDirectoryDialogProps
         },
     });
 
-    const handleClose = () => {
+    const handleClose = (_: SyntheticEvent, reason?: string) => {
+        if (reason === 'backdropClick') {
+            return;
+        }
         onClose();
     };
 
