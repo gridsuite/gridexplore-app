@@ -104,6 +104,7 @@ const ContingencyListCreationDialog: FunctionComponent<ContingencyListCreationDi
             removeOptional={true}
             disabledSave={Boolean(nameError || isValidating)}
             language={languageLocal}
+            unscrollableFullHeight
         >
             <ContingencyListCreationForm />
         </CustomMuiDialog>

@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
 import {
     UniqueNameInput,
     ElementType,
@@ -17,26 +16,36 @@ import {
 import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import Box from '@mui/material/Box';
+
+const styles = {
+    FillerContainer: {
+        height: '100%',
+        '&::before': {
+            content: '""',
+            height: '100%',
+            float: 'left',
+        },
+    },
+};
 
 const CriteriaBasedEditionForm = () => {
     const emptyValues = getCriteriaBasedFormData({}, {});
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
-        <Grid container spacing={2} marginTop={'auto'}>
-            <Grid item xs={12}>
-                <UniqueNameInput
-                    name={FieldConstants.NAME}
-                    label={'nameProperty'}
-                    elementType={ElementType.CONTINGENCY_LIST}
-                    activeDirectory={activeDirectory}
-                    elementExists={elementExists}
-                />
-            </Grid>
+        <Box sx={styles.FillerContainer}>
+            <UniqueNameInput
+                name={FieldConstants.NAME}
+                label={'nameProperty'}
+                elementType={ElementType.CONTINGENCY_LIST}
+                activeDirectory={activeDirectory}
+                elementExists={elementExists}
+            />
             <CriteriaBasedForm
                 equipments={CONTINGENCY_LIST_EQUIPMENTS}
                 defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
             />
-        </Grid>
+        </Box>
     );
 };
 

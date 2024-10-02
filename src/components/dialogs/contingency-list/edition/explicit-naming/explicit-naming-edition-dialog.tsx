@@ -137,6 +137,7 @@ const ExplicitNamingEditionDialog: FunctionComponent<ExplicitNamingEditionDialog
             removeOptional={true}
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
+            unscrollableFullHeight
         >
             {!isFetching && <ExplicitNamingEditionForm />}
         </CustomMuiDialog>

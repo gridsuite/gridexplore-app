@@ -136,6 +136,7 @@ const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogPr
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
             language={languageLocal}
+            unscrollableFullHeight
         >
             {!isFetching && <CriteriaBasedEditionForm />}
         </CustomMuiDialog>

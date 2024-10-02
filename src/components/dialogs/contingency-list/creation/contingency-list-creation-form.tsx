@@ -25,6 +25,18 @@ import { useSelector } from 'react-redux';
 import { elementExists } from '../../../../utils/rest-api';
 import { ChangeEvent, FunctionComponent } from 'react';
 import { AppState } from 'redux/reducer';
+import Box from '@mui/material/Box';
+
+const styles = {
+    FillerContainer: {
+        height: '100%',
+        '&::before': {
+            content: '""',
+            height: '100%',
+            float: 'left',
+        },
+    },
+};
 
 const ContingencyListCreationForm: FunctionComponent = () => {
     const { setValue } = useFormContext();
@@ -50,32 +62,36 @@ const ContingencyListCreationForm: FunctionComponent = () => {
 
     const emptyValues = getCriteriaBasedFormData({}, {});
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={12}>
-                <UniqueNameInput
-                    name={FieldConstants.NAME}
-                    label={'nameProperty'}
-                    elementType={ElementType.CONTINGENCY_LIST}
-                    autoFocus
-                    activeDirectory={activeDirectory}
-                    elementExists={elementExists}
-                />
+        <Box sx={styles.FillerContainer}>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <UniqueNameInput
+                        name={FieldConstants.NAME}
+                        label={'nameProperty'}
+                        elementType={ElementType.CONTINGENCY_LIST}
+                        autoFocus
+                        activeDirectory={activeDirectory}
+                        elementExists={elementExists}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <DescriptionField />
+                </Grid>
+                <Grid container item>
+                    {gridItem(contingencyListTypeField, 12)}
+                </Grid>
+                {watchContingencyListType === ContingencyListType.CRITERIA_BASED.id && (
+                    <Grid item xs={12}>
+                        <CriteriaBasedForm
+                            equipments={CONTINGENCY_LIST_EQUIPMENTS}
+                            defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
+                        />
+                    </Grid>
+                )}
+                {watchContingencyListType === ContingencyListType.EXPLICIT_NAMING.id && <ExplicitNamingForm />}
+                {watchContingencyListType === ContingencyListType.SCRIPT.id && <ScriptInputForm />}
             </Grid>
-            <Grid item xs={12}>
-                <DescriptionField />
-            </Grid>
-            <Grid container item>
-                {gridItem(contingencyListTypeField, 12)}
-            </Grid>
-            {watchContingencyListType === ContingencyListType.CRITERIA_BASED.id && (
-                <CriteriaBasedForm
-                    equipments={CONTINGENCY_LIST_EQUIPMENTS}
-                    defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
-                />
-            )}
-            {watchContingencyListType === ContingencyListType.EXPLICIT_NAMING.id && <ExplicitNamingForm />}
-            {watchContingencyListType === ContingencyListType.SCRIPT.id && <ScriptInputForm />}
-        </Grid>
+        </Box>
     );
 };
 

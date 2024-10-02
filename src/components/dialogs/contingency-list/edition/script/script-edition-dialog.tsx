@@ -133,6 +133,7 @@ const ScriptEditionDialog: FunctionComponent<ScriptEditionDialogProps> = ({
             removeOptional={true}
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
+            unscrollableFullHeight
         >
             {!isFetching && <ScriptEditionForm />}
         </CustomMuiDialog>
