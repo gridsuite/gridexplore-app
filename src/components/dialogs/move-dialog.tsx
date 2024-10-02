@@ -14,9 +14,10 @@ interface MoveDialogProps {
     open: boolean;
     onClose: (selectedDir: TreeViewFinderNodeProps[]) => void;
     itemsCount: number;
+    titleId?: string;
 }
 
-const MoveDialog: FunctionComponent<MoveDialogProps> = ({ open, onClose, itemsCount }) => {
+const MoveDialog: FunctionComponent<MoveDialogProps> = ({ open, onClose, itemsCount, titleId }) => {
     const intl = useIntl();
 
     return (
@@ -35,7 +36,7 @@ const MoveDialog: FunctionComponent<MoveDialogProps> = ({ open, onClose, itemsCo
                 }
             )}
             title={intl.formatMessage({
-                id: 'moveItemTitle',
+                id: titleId ?? 'moveItemTitle',
             })}
             contentText={intl.formatMessage({ id: 'moveItemContentText' })}
         />

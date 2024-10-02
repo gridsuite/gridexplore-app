@@ -426,7 +426,14 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
             case DialogsId.ADD_NEW_CASE:
                 return <CreateCaseDialog open={true} onClose={handleCloseDialog} />;
             case DialogsId.MOVE_DIRECTORY:
-                return <MoveDialog open={true} onClose={handleMoveDirectory} itemsCount={1} />;
+                return (
+                    <MoveDialog
+                        open={true}
+                        onClose={handleMoveDirectory}
+                        itemsCount={1}
+                        titleId={'moveDirectoryTitle'}
+                    />
+                );
             default:
                 return null;
         }

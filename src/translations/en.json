@@ -119,6 +119,7 @@
     "contingencyTablePartiallyDefinedError": "At least one contingency is partially defined",
     "contingencyTableContainAtLeastOneRowError": "Contingency list should contain at least one contingency ",
     "moveItemTitle": "Move element to another folder",
+    "moveDirectoryTitle": "Move folder to another folder",
     "moveItemValidate": "{nbElements, plural, =0 {Please select a folder} =1 {Move element} other {Move # elements}}",
     "moveItemContentText": "Please choose a folder",
     "moveElementNotFoundError": "The element or the targeted folder was not found",
