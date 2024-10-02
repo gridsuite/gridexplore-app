@@ -9,6 +9,11 @@ import { IntlShape, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
 import { Box } from '@mui/material';
 
+// This function is used to lowercase all the characters in a string except the first one
+const toTitleCase = (str: string) => {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
 export const getElementTypeTranslation = (
     type: ElementType,
     subtype: string | null,
@@ -66,7 +71,7 @@ export const TypeCellRenderer = ({
                         data?.type,
                         specificMetadata?.type?.toString(),
                         data?.type === ElementType.SPREADSHEET_CONFIG
-                            ? specificMetadata.sheetType?.toString() ?? null
+                            ? toTitleCase(specificMetadata.sheetType?.toString()) ?? null
                             : specificMetadata.format?.toString() ?? null,
                         intl
                     )}
