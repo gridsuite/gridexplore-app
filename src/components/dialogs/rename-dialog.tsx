@@ -73,7 +73,7 @@ const RenameDialog: FunctionComponent<RenameDialogProps> = ({
             console.debug('Request for renaming : ' + currentName + ' => ' + newName);
             onClick(newName);
         } else {
-            handleClose();
+            onClose();
         }
     };
 
