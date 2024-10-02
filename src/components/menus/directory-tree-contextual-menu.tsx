@@ -326,7 +326,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
 
     const handleMoveDirectory = useCallback(
         (selectedDir: TreeViewFinderNodeProps[]) => {
-            if (selectedDir.length === 1) {
+            if (selectedDir.length === 1 && directory) {
                 moveElementsToDirectory([directory.elementUuid], selectedDir[0].id).catch((error: any) => {
                     const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
                         ?.map((el) => el.elementName)
