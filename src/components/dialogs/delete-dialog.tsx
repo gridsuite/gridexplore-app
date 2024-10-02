@@ -65,8 +65,8 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
         openRef.current = open;
     }, [open, items, error]);
 
-    const handleClose = (_: SyntheticEvent, reasonOfClose?: string) => {
-        if (reasonOfClose && reasonOfClose === 'backdropClick' && loadingState) {
+    const handleClose = (_: SyntheticEvent, reason?: string) => {
+        if (reason === 'backdropClick') {
             return;
         }
         onClose();
