@@ -44,7 +44,7 @@
     "CASE": "Case",
     "unsupportedItem": "This element is not eligible",
     "move": "Move",
-    "moveFolder": "Move folder",
+    "moveDirectory": "Move folder",
     "rename": "Rename",
     "delete": "Delete",
     "duplicate": "Duplicate",

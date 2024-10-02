@@ -135,7 +135,6 @@ function updatedTree(
         ...Array.prototype.concat(
             ...prevUuids
                 .filter((u) => !nextUuids.has(u))
-                .filter((uuid) => !(nodeId && prevMap[uuid] && prevMap[uuid].parentUuid !== nodeId)) // if the element is moved but not deleted
                 .map((u) => flattenDownNodes(prevMap[u], (n: IDirectory) => n.children).map((n) => n.elementUuid))
         ),
     ]);
@@ -307,7 +306,7 @@ const TreeViewsContainer = () => {
     );
 
     const updateMapData = useCallback(
-        (nodeId: string, children: ElementAttributes[]) => {
+        (nodeId: string, children: ElementAttributes[], isDirectoryMoving: boolean) => {
             let newSubdirectories = children.filter((child) => child.type === ElementType.DIRECTORY);
 
             let prevPath = buildPathToFromMap(selectedDirectoryRef.current?.elementUuid, treeDataRef.current?.mapData);
@@ -322,7 +321,11 @@ const TreeViewsContainer = () => {
                 // if selected directory (possibly via ancestor)
                 // is deleted by another user
                 // we should select (closest still existing) parent directory
-                dispatch(setSelectedDirectory(treeDataRef.current?.mapData[nodeId] as IDirectory));
+                dispatch(
+                    setSelectedDirectory(
+                        isDirectoryMoving ? null : (treeDataRef.current?.mapData[nodeId] as IDirectory)
+                    )
+                );
             }
         },
         [insertContent, dispatch]
@@ -395,17 +398,17 @@ const TreeViewsContainer = () => {
     );
 
     const updateDirectoryTreeAndContent = useCallback(
-        (nodeId: UUID) => {
+        (nodeId: UUID, isDirectoryMoving: boolean) => {
             fetchDirectoryContent(nodeId)
                 .then((childrenToBeInserted) => {
                     // update directory Content
                     updateCurrentChildren(childrenToBeInserted);
                     // Update Tree Map data
-                    updateMapData(nodeId, childrenToBeInserted);
+                    updateMapData(nodeId, childrenToBeInserted, isDirectoryMoving);
                 })
                 .catch((error) => {
                     console.warn(`Could not update subs (and content) of '${nodeId}' : ${error.message}`);
-                    updateMapData(nodeId, []);
+                    updateMapData(nodeId, [], false);
                 });
         },
         [updateCurrentChildren, updateMapData]
@@ -419,7 +422,7 @@ const TreeViewsContainer = () => {
     }, [uploadingElements, currentChildrenRef, mergeCurrentAndUploading, dispatch]);
 
     const updateDirectoryTree = useCallback(
-        (nodeId: UUID, isClose = false) => {
+        (nodeId: UUID, isClose = false, isDirectoryMoving = false) => {
             // quite rare occasion to clean up
             if (isClose) {
                 if (treeDataRef.current?.rootDirectories.some((n) => n.elementUuid === nodeId)) {
@@ -440,11 +443,11 @@ const TreeViewsContainer = () => {
             fetchDirectoryContent(nodeId)
                 .then((childrenToBeInserted) => {
                     // Update Tree Map data
-                    updateMapData(nodeId, childrenToBeInserted);
+                    updateMapData(nodeId, childrenToBeInserted, isDirectoryMoving);
                 })
                 .catch((error) => {
                     console.warn(`Could not update subs of '${nodeId}' : ${error.message}`);
-                    updateMapData(nodeId, []);
+                    updateMapData(nodeId, [], false);
                 });
         },
         [dispatch, updateMapData]
@@ -503,6 +506,7 @@ const TreeViewsContainer = () => {
             const directoryUuid = directoryUpdatedEvent.eventData.headers['directoryUuid'] as UUID;
             const error = directoryUpdatedEvent.eventData.headers['error'] as string;
             const elementName = directoryUpdatedEvent.eventData.headers['elementName'] as string;
+            const isDirectoryMoving = directoryUpdatedEvent.eventData.headers['isDirectoryMoving'] as boolean;
             if (error) {
                 displayErrorIfExist(error, elementName);
                 dispatch(directoryUpdated({}));
@@ -536,11 +540,11 @@ const TreeViewsContainer = () => {
                 // else expanded or not then updateDirectoryTree
                 if (selectedDirectoryRef.current != null) {
                     if (directoryUuid === selectedDirectoryRef.current.elementUuid) {
-                        updateDirectoryTreeAndContent(directoryUuid);
+                        updateDirectoryTreeAndContent(directoryUuid, isDirectoryMoving);
                         return; // break here
                     }
                 }
-                updateDirectoryTree(directoryUuid);
+                updateDirectoryTree(directoryUuid, false, isDirectoryMoving);
             }
         }
     }, [
@@ -565,7 +569,7 @@ const TreeViewsContainer = () => {
     // To proc only if selectedDirectory?.elementUuid changed, take care of updateDirectoryTreeAndContent dependencies
     useEffect(() => {
         if (selectedDirectory?.elementUuid) {
-            updateDirectoryTreeAndContent(selectedDirectory.elementUuid);
+            updateDirectoryTreeAndContent(selectedDirectory.elementUuid, false);
         }
     }, [selectedDirectory?.elementUuid, updateDirectoryTreeAndContent]);
 

@@ -290,12 +290,11 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
 
             menuItems.push(
                 {
-                    messageDescriptorId: 'moveFolder',
+                    messageDescriptorId: 'moveDirectory',
                     callback: () => {
-                        handleOpenDialog(DialogsId.MOVE);
+                        handleOpenDialog(DialogsId.MOVE_DIRECTORY);
                     },
                     icon: <DriveFileMoveIcon fontSize="small" />,
-                    disabled: directory.parentUuid == null,
                 },
                 { isDivider: true }
             );
@@ -415,7 +414,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 );
             case DialogsId.ADD_NEW_CASE:
                 return <CreateCaseDialog open={true} onClose={handleCloseDialog} />;
-            case DialogsId.MOVE:
+            case DialogsId.MOVE_DIRECTORY:
                 return <MoveDialog open={true} onClose={handleMoveDirectory} itemsCount={1} />;
             default:
                 return null;
