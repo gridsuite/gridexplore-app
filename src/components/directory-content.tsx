@@ -21,9 +21,11 @@ import {
     ExpertFilterEditionDialog,
     CriteriaBasedFilterEditionDialog,
     DescriptionModificationDialog,
+    ElementAttributes,
+    StudyMetadata,
     noSelectionForCopy,
 } from '@gridsuite/commons-ui';
-import { Box, Button } from '@mui/material';
+import { Box, Button, SxProps, Theme } from '@mui/material';
 
 import { elementExists, getFilterById, updateElement } from '../utils/rest-api';
 
@@ -48,11 +50,14 @@ import { DirectoryContentTable, CUSTOM_ROW_CLASS } from './directory-content-tab
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
 import EmptyDirectory from './empty-directory';
 import AddIcon from '@mui/icons-material/Add';
+import { AppState } from '../redux/reducer';
+import { AgGridReact } from 'ag-grid-react';
+import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
 
 const circularProgressSize = '70px';
 
 const styles = {
-    link: (theme) => ({
+    link: (theme: Theme) => ({
         color: theme.link.color,
         textDecoration: 'none',
     }),
@@ -68,7 +73,7 @@ const styles = {
     centeredCircularProgress: {
         alignSelf: 'center',
     },
-    highlightedElementAnimation: (theme) => ({
+    highlightedElementAnimation: (theme: Theme) => ({
         '@keyframes highlighted-element': {
             'from, 24%': {
                 backgroundColor: 'inherit',
@@ -78,13 +83,13 @@ const styles = {
             },
         },
     }),
-    button: (theme) => ({
+    button: (theme: Theme) => ({
         marginRight: theme.spacing(9),
         borderRadius: '20px',
     }),
     toolBarContainer: {
         display: 'flex',
-        flexDirection: 'row',
+        flexDirection: 'row' as const,
         justifyContent: 'space-between',
         alignItems: 'center',
     },
@@ -96,32 +101,23 @@ const initialMousePosition = {
 };
 
 const DirectoryContent = () => {
-    const treeData = useSelector((state) => state.treeData);
+    const treeData = useSelector((state: AppState) => state.treeData);
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
-    const selectionForCopy = useSelector((state) => state.selectionForCopy);
-    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
 
-    const gridRef = useRef();
+    const gridRef = useRef<AgGridReact | null>(null);
 
-    const [onGridReady, getRowStyle] = useHighlightSearchedElement(gridRef?.current?.api);
+    const [onGridReady, getRowStyle] = useHighlightSearchedElement(gridRef?.current?.api ?? null);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
-    const selectedTheme = useSelector((state) => state.theme);
+    const selectedTheme = useSelector((state: AppState) => state.theme);
 
     const dispatchSelectionForCopy = useCallback(
-        (typeItem, nameItem, descriptionItem, sourceItemUuid, parentDirectoryUuid, specificTypeItem) => {
-            dispatch(
-                setSelectionForCopy({
-                    sourceItemUuid: sourceItemUuid,
-                    typeItem: typeItem,
-                    nameItem: nameItem,
-                    descriptionItem: descriptionItem,
-                    parentDirectoryUuid: parentDirectoryUuid,
-                    specificTypeItem: specificTypeItem,
-                })
-            );
+        (selection: SelectionForCopy) => {
+            dispatch(setSelectionForCopy(selection));
         },
         [dispatch]
     );
@@ -132,31 +128,34 @@ const DirectoryContent = () => {
             if (JSON.stringify(noSelectionForCopy) === JSON.stringify(event.data)) {
                 dispatch(setSelectionForCopy(noSelectionForCopy));
             } else {
-                dispatchSelectionForCopy(
-                    event.data.typeItem,
-                    event.data.nameItem,
-                    event.data.descriptionItem,
-                    event.data.sourceItemUuid,
-                    event.data.parentDirectoryUuid,
-                    event.data.specificTypeItem
-                );
+                dispatchSelectionForCopy({
+                    typeItem: event.data.typeItem,
+                    nameItem: event.data.nameItem,
+                    descriptionItem: event.data.descriptionItem,
+                    sourceItemUuid: event.data.sourceItemUuid,
+                    parentDirectoryUuid: event.data.parentDirectoryUuid,
+                    specificTypeItem: event.data.specificTypeItem,
+                });
             }
         };
         return broadcast;
     });
 
-    const appsAndUrls = useSelector((state) => state.appsAndUrls);
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
+    const appsAndUrls = useSelector((state: AppState) => state.appsAndUrls);
+    const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
 
-    const [activeElement, setActiveElement] = useState(null);
+    const [activeElement, setActiveElement] = useState<ElementAttributes | null>(null);
     const [isMissingDataAfterDirChange, setIsMissingDataAfterDirChange] = useState(true);
 
     const intl = useIntl();
-    const [rows, childrenMetadata] = useDirectoryContent(setIsMissingDataAfterDirChange);
-    const [checkedRows, setCheckedRows] = useState([]);
+    const [rows, childrenMetadata] = useDirectoryContent();
+    const [checkedRows, setCheckedRows] = useState<ElementAttributes[]>([]);
 
     /* Menu states */
-    const [mousePosition, setMousePosition] = useState(initialMousePosition);
+    const [mousePosition, setMousePosition] = useState<{
+        mouseX: number | null;
+        mouseY: number | null;
+    }>(initialMousePosition);
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
     const [elementName, setElementName] = useState('');
@@ -233,7 +232,7 @@ const DirectoryContent = () => {
     const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
     const [openContentMenu, setOpenContentMenu] = useState(false);
 
-    const handleOpenContentMenu = (event) => {
+    const handleOpenContentMenu = (event: React.MouseEvent<HTMLDivElement>) => {
         setOpenContentMenu(true);
         event?.stopPropagation();
     };
@@ -247,7 +246,7 @@ const DirectoryContent = () => {
         setOpenDirectoryMenu(false);
     };
 
-    const handleOpenDirectoryMenu = (event) => {
+    const handleOpenDirectoryMenu = (event: React.MouseEvent<HTMLDivElement>) => {
         setOpenDirectoryMenu(true);
         event.stopPropagation();
     };
@@ -263,11 +262,10 @@ const DirectoryContent = () => {
     const contextualMixPolicy = contextualMixPolicies.ALL;
 
     const onCellContextMenu = useCallback(
-        (event) => {
+        (event: any) => {
             if (event.data && event.data.uploading !== null) {
                 if (event.data.type !== 'DIRECTORY') {
                     dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-
                     setActiveElement({
                         hasMetadata: childrenMetadata[event.data.elementUuid] !== undefined,
                         specificMetadata: childrenMetadata[event.data.elementUuid]?.specificMetadata,
@@ -278,11 +276,9 @@ const DirectoryContent = () => {
                         if (isRowUnchecked(event.data, checkedRows)) {
                             gridRef.current?.api.deselectAll();
                         }
-                    } else {
+                    } else if (isRowUnchecked(event.data, checkedRows)) {
                         // If some elements were already selected, we add the active element to the selected list if not already in it.
-                        if (isRowUnchecked(event.data, checkedRows)) {
-                            gridRef.current?.api.getRowNode(event.data.elementUuid).setSelected(true);
-                        }
+                        gridRef.current?.api.getRowNode(event.data.elementUuid)?.setSelected(true);
                     }
                 }
                 setMousePosition({
@@ -303,7 +299,7 @@ const DirectoryContent = () => {
     );
 
     const onContextMenu = useCallback(
-        (event) => {
+        (event: any) => {
             //We check if the context menu was triggered from a row to prevent displaying both the directory and the content context menus
             const isRow = !!event.target.closest(`.${CUSTOM_ROW_CLASS}`);
             if (!isRow) {
@@ -320,7 +316,7 @@ const DirectoryContent = () => {
     );
 
     const handleError = useCallback(
-        (message) => {
+        (message: string) => {
             snackError({
                 messageTxt: message,
             });
@@ -329,14 +325,15 @@ const DirectoryContent = () => {
     );
 
     const getLink = useCallback(
-        (elementUuid, objectType) => {
-            let href;
+        (elementUuid: string, objectType: string): string | null => {
+            let href: string | null = null;
             if (appsAndUrls !== null) {
                 appsAndUrls.find((app) => {
-                    if (!app.resources) {
+                    const appStudy = app as StudyMetadata;
+                    if (!appStudy.resources) {
                         return false;
                     }
-                    return app.resources.find((res) => {
+                    return appStudy.resources.find((res) => {
                         if (res.types.includes(objectType)) {
                             href = app.url + res.path.replace('{elementUuid}', elementUuid);
                         }
@@ -349,55 +346,55 @@ const DirectoryContent = () => {
         [appsAndUrls]
     );
 
-    const handleDescriptionIconClick = (e) => {
+    const handleDescriptionIconClick = (e: any) => {
         setActiveElement(e.data);
         setOpenDescModificationDialog(true);
     };
 
     const handleCellClick = useCallback(
-        (event) => {
+        (event: any) => {
             if (event.colDef.field === 'description') {
                 handleDescriptionIconClick(event);
-            } else {
-                if (childrenMetadata[event.data.elementUuid] !== undefined) {
-                    setElementName(childrenMetadata[event.data.elementUuid]?.elementName);
-                    const subtype = childrenMetadata[event.data.elementUuid].specificMetadata.type;
-                    /** set active directory on the store because it will be used while editing the contingency name */
-                    dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-                    switch (event.data.type) {
-                        case ElementType.STUDY:
-                            let url = getLink(event.data.elementUuid, event.data.type);
-                            url
-                                ? window.open(url, '_blank')
-                                : handleError(intl.formatMessage({ id: 'getAppLinkError' }, { type: event.data.type }));
-                            break;
-                        case ElementType.CONTINGENCY_LIST:
-                            if (subtype === ContingencyListType.CRITERIA_BASED.id) {
-                                setCurrentFiltersContingencyListId(event.data.elementUuid);
-                                setOpenDialog(subtype);
-                            } else if (subtype === ContingencyListType.SCRIPT.id) {
-                                setCurrentScriptContingencyListId(event.data.elementUuid);
-                                setOpenDialog(subtype);
-                            } else if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
-                                setCurrentExplicitNamingContingencyListId(event.data.elementUuid);
-                                setOpenDialog(subtype);
-                            }
-                            break;
-                        case ElementType.FILTER:
-                            if (subtype === FilterType.EXPLICIT_NAMING.id) {
-                                setCurrentExplicitNamingFilterId(event.data.elementUuid);
-                                setOpenDialog(subtype);
-                            } else if (subtype === FilterType.CRITERIA_BASED.id) {
-                                setCurrentCriteriaBasedFilterId(event.data.elementUuid);
-                                setOpenDialog(subtype);
-                            } else if (subtype === FilterType.EXPERT.id) {
-                                setCurrentExpertFilterId(event.data.elementUuid);
-                                setOpenDialog(subtype);
-                            }
-                            break;
-                        default:
-                            break;
+            } else if (childrenMetadata[event.data.elementUuid] !== undefined) {
+                setElementName(childrenMetadata[event.data.elementUuid]?.elementName);
+                const subtype: string = childrenMetadata[event.data.elementUuid].specificMetadata
+                    .type as unknown as string;
+                /** set active directory on the store because it will be used while editing the contingency name */
+                dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
+                switch (event.data.type) {
+                    case ElementType.STUDY: {
+                        let url = getLink(event.data.elementUuid, event.data.type);
+                        url
+                            ? window.open(url, '_blank')
+                            : handleError(intl.formatMessage({ id: 'getAppLinkError' }, { type: event.data.type }));
+                        break;
                     }
+                    case ElementType.CONTINGENCY_LIST:
+                        if (subtype === ContingencyListType.CRITERIA_BASED.id) {
+                            setCurrentFiltersContingencyListId(event.data.elementUuid);
+                            setOpenDialog(subtype);
+                        } else if (subtype === ContingencyListType.SCRIPT.id) {
+                            setCurrentScriptContingencyListId(event.data.elementUuid);
+                            setOpenDialog(subtype);
+                        } else if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
+                            setCurrentExplicitNamingContingencyListId(event.data.elementUuid);
+                            setOpenDialog(subtype);
+                        }
+                        break;
+                    case ElementType.FILTER:
+                        if (subtype === FilterType.EXPLICIT_NAMING.id) {
+                            setCurrentExplicitNamingFilterId(event.data.elementUuid);
+                            setOpenDialog(subtype);
+                        } else if (subtype === FilterType.CRITERIA_BASED.id) {
+                            setCurrentCriteriaBasedFilterId(event.data.elementUuid);
+                            setOpenDialog(subtype);
+                        } else if (subtype === FilterType.EXPERT.id) {
+                            setCurrentExpertFilterId(event.data.elementUuid);
+                            setOpenDialog(subtype);
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
         },
@@ -412,7 +409,11 @@ const DirectoryContent = () => {
         }
         setIsMissingDataAfterDirChange(true);
         setCheckedRows([]);
-    }, [selectedDirectory?.elementUuid, setIsMissingDataAfterDirChange]);
+    }, [selectedDirectory?.elementUuid]);
+
+    useEffect(() => {
+        setIsMissingDataAfterDirChange(false);
+    }, [childrenMetadata]); // this will change after switching selectedDirectory
 
     const isActiveElementUnchecked = useMemo(
         () => activeElement && !checkedRows.find((children) => children.elementUuid === activeElement.elementUuid),
@@ -424,9 +425,9 @@ const DirectoryContent = () => {
     }, [childrenMetadata]);
 
     //It includes checked rows and the row with its context menu open
-    const fullSelection = useMemo(() => {
+    const fullSelection: ElementAttributes[] = useMemo(() => {
         const selection = [...checkedRows];
-        if (isActiveElementUnchecked) {
+        if (isActiveElementUnchecked && activeElement) {
             selection.push(formatMetadata(activeElement, childrenMetadata));
         }
         return selection;
@@ -444,28 +445,31 @@ const DirectoryContent = () => {
         );
     };
 
-    const handleMousePosition = useCallback((coordinates, isEmpty) => {
-        if (isEmpty) {
-            return {
-                mouseX: coordinates.right,
-                mouseY: coordinates.top + 25 * constants.VERTICAL_SHIFT,
-            };
-        } else {
-            return {
-                mouseX: coordinates.left,
-                mouseY: coordinates.bottom,
-            };
-        }
-    }, []);
+    const handleMousePosition = useCallback(
+        (coordinates: DOMRect, isEmpty: boolean): { mouseX: number | null; mouseY: number | null } => {
+            if (isEmpty) {
+                return {
+                    mouseX: coordinates.right,
+                    mouseY: coordinates.top + 25 * constants.VERTICAL_SHIFT,
+                };
+            } else {
+                return {
+                    mouseX: coordinates.left,
+                    mouseY: coordinates.bottom,
+                };
+            }
+        },
+        []
+    );
 
     const handleDialog = useCallback(
-        (mouseEvent, isEmpty) => {
-            const coordinates = mouseEvent.target.getBoundingClientRect();
+        (mouseEvent: React.MouseEvent<HTMLElement>, isEmpty: boolean) => {
+            const coordinates: DOMRect = (mouseEvent.target as HTMLElement).getBoundingClientRect();
             //set the contextualMenu position
             setMousePosition(handleMousePosition(coordinates, isEmpty));
             setOpenDirectoryMenu(true);
 
-            dispatch(setActiveDirectory(selectedDirectory.elementUuid));
+            dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
         },
         [dispatch, selectedDirectory?.elementUuid, handleMousePosition]
     );
@@ -508,7 +512,7 @@ const DirectoryContent = () => {
         );
     };
 
-    const renderDialog = (name) => {
+    const renderDialog = (name: string) => {
         if (openDescModificationDialog && activeElement) {
             return (
                 <DescriptionModificationDialog
@@ -531,6 +535,7 @@ const DirectoryContent = () => {
                     <CriteriaBasedEditionDialog
                         open={true}
                         titleId={'editContingencyList'}
+                        // @ts-expect-error TODO: manage null case(s) here
                         contingencyListId={currentFiltersContingencyListId}
                         contingencyListType={ContingencyListType.CRITERIA_BASED.id}
                         onClose={handleCloseFiltersContingency}
@@ -543,6 +548,7 @@ const DirectoryContent = () => {
                     <ScriptEditionDialog
                         open={true}
                         titleId={'editContingencyList'}
+                        // @ts-expect-error TODO: manage null case(s) here
                         contingencyListId={currentScriptContingencyListId}
                         contingencyListType={ContingencyListType.SCRIPT.id}
                         onClose={handleCloseScriptContingency}
@@ -555,6 +561,7 @@ const DirectoryContent = () => {
                     <ExplicitNamingEditionDialog
                         open={true}
                         titleId={'editContingencyList'}
+                        // @ts-expect-error TODO: manage null case(s) here
                         contingencyListId={currentExplicitNamingContingencyListId}
                         contingencyListType={ContingencyListType.EXPLICIT_NAMING.id}
                         onClose={handleCloseExplicitNamingContingency}
@@ -565,12 +572,15 @@ const DirectoryContent = () => {
             case FilterType.EXPLICIT_NAMING.id:
                 return (
                     <ExplicitNamingFilterEditionDialog
+                        // @ts-expect-error TODO: manage null case(s) here
                         id={currentExplicitNamingFilterId}
                         open={true}
                         onClose={handleCloseExplicitNamingFilterDialog}
                         titleId={'editFilter'}
                         name={name}
                         broadcastChannel={broadcastChannel}
+                        selectionForCopy={selectionForCopy}
+                        setSelectionForCopy={setSelectionForCopy}
                         getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
@@ -580,6 +590,7 @@ const DirectoryContent = () => {
             case FilterType.CRITERIA_BASED.id:
                 return (
                     <CriteriaBasedFilterEditionDialog
+                        // @ts-expect-error TODO: manage null case(s) here
                         id={currentCriteriaBasedFilterId}
                         open={true}
                         onClose={handleCloseCriteriaBasedFilterDialog}
@@ -588,6 +599,7 @@ const DirectoryContent = () => {
                         broadcastChannel={broadcastChannel}
                         getFilterById={getFilterById}
                         selectionForCopy={selectionForCopy}
+                        setSelectionForCopy={setSelectionForCopy}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
                         language={languageLocal}
@@ -596,6 +608,7 @@ const DirectoryContent = () => {
             case FilterType.EXPERT.id:
                 return (
                     <ExpertFilterEditionDialog
+                        // @ts-expect-error TODO: manage null case(s) here
                         id={currentExpertFilterId}
                         open={true}
                         onClose={handleCloseExpertFilterDialog}
@@ -603,6 +616,7 @@ const DirectoryContent = () => {
                         name={name}
                         broadcastChannel={broadcastChannel}
                         selectionForCopy={selectionForCopy}
+                        setSelectionForCopy={setSelectionForCopy}
                         getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
@@ -619,9 +633,9 @@ const DirectoryContent = () => {
             {
                 //ContentToolbar needs to be outside the DirectoryContentTable container otherwise it
                 //creates a visual offset rendering the last elements of a full table inaccessible
-                rows?.length > 0 && (
+                rows && rows.length > 0 && (
                     <div style={{ ...styles.toolBarContainer }}>
-                        <ContentToolbar selectedElements={checkedRows} onContextMenu={onContextMenu} />
+                        <ContentToolbar selectedElements={checkedRows} />
                         <Button
                             variant="contained"
                             endIcon={<AddIcon />}
@@ -633,7 +647,7 @@ const DirectoryContent = () => {
                     </div>
                 )
             }
-            <Grid item sx={styles.highlightedElementAnimation} xs={12} onContextMenu={onContextMenu}>
+            <Grid item sx={styles.highlightedElementAnimation as SxProps} xs={12} onContextMenu={onContextMenu}>
                 {renderContent()}
             </Grid>
             <div
@@ -644,25 +658,27 @@ const DirectoryContent = () => {
                     }
                 }}
             >
-                <ContentContextualMenu
-                    activeElement={activeElement}
-                    selectedElements={fullSelection}
-                    onUpdateSelectedElements={setCheckedRows}
-                    open={openContentMenu}
-                    openDialog={openDialog}
-                    setOpenDialog={setOpenDialog}
-                    onClose={handleCloseContentMenu}
-                    anchorReference="anchorPosition"
-                    anchorPosition={
-                        mousePosition.mouseY !== null && mousePosition.mouseX !== null
-                            ? {
-                                  top: mousePosition.mouseY,
-                                  left: mousePosition.mouseX,
-                              }
-                            : undefined
-                    }
-                    broadcastChannel={broadcastChannel}
-                />
+                {activeElement && (
+                    <ContentContextualMenu
+                        activeElement={activeElement}
+                        selectedElements={fullSelection}
+                        onUpdateSelectedElements={setCheckedRows}
+                        open={openContentMenu}
+                        openDialog={openDialog}
+                        setOpenDialog={setOpenDialog}
+                        onClose={handleCloseContentMenu}
+                        anchorReference="anchorPosition"
+                        anchorPosition={
+                            mousePosition.mouseY !== null && mousePosition.mouseX !== null
+                                ? {
+                                      top: mousePosition.mouseY,
+                                      left: mousePosition.mouseX,
+                                  }
+                                : undefined
+                        }
+                        broadcastChannel={broadcastChannel}
+                    />
+                )}
                 <DirectoryTreeContextualMenu
                     directory={selectedDirectory}
                     open={openDirectoryMenu}

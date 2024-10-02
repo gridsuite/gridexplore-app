@@ -8,7 +8,8 @@
 import { ContingencyListType } from '../../../utils/elementType';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { v4 as uuid4 } from 'uuid';
-import { getCriteriaBasedFormData, FieldConstants } from '@gridsuite/commons-ui';
+import { FieldConstants, getCriteriaBasedFormData } from '@gridsuite/commons-ui';
+import { SetRequired } from 'type-fest';
 
 interface Identifier {
     type: 'ID_BASED';
@@ -19,14 +20,6 @@ interface IdentifierList {
     type: 'LIST';
     contingencyId: string;
     identifierList: Identifier[];
-}
-
-export interface ExplicitNamingScript {
-    script: string;
-    metadata?: Record<string, unknown>;
-    id?: string;
-    type?: string;
-    modificationDate?: string;
 }
 
 interface RangeInputData {
@@ -46,7 +39,7 @@ export interface CriteriaBasedData {
     [key: string]: any;
 }
 
-export interface ContingencyListFormData {
+export type ContingencyListFormData = {
     [FieldConstants.NAME]: string;
     [FieldConstants.DESCRIPTION]?: string;
     [FieldConstants.EQUIPMENT_TABLE]?: {
@@ -57,12 +50,12 @@ export interface ContingencyListFormData {
     [FieldConstants.SCRIPT]?: string | null;
     [FieldConstants.EQUIPMENT_TYPE]?: string | null;
     [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
-}
+};
 
-export interface ContingencyListFormDataWithRequiredCriteria
-    extends Omit<ContingencyListFormData, FieldConstants.CRITERIA_BASED> {
-    [FieldConstants.CRITERIA_BASED]: CriteriaBasedData;
-}
+export type ContingencyListFormDataWithRequiredCriteria = SetRequired<
+    ContingencyListFormData,
+    FieldConstants.CRITERIA_BASED
+>;
 
 export const makeDefaultRowData = () => ({
     [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),

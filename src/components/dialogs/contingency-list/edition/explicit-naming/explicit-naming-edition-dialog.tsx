@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, CustomMuiDialog, FieldConstants } from '@gridsuite/commons-ui';
+import { useSnackMessage, CustomMuiDialog, FieldConstants, noSelectionForCopy, yup } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
@@ -15,12 +15,10 @@ import {
     getExplicitNamingFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
 import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
-import yup from 'components/utils/yup-config';
 import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-form';
 import ExplicitNamingEditionForm from './explicit-naming-edition-form';
 import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
 import { useDispatch, useSelector } from 'react-redux';
-import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
 import { AppState } from 'redux/reducer';
 
@@ -77,23 +75,21 @@ const ExplicitNamingEditionDialog: FunctionComponent<ExplicitNamingEditionDialog
     const isValidating = errors.root?.isValidating;
 
     useEffect(() => {
-        if (contingencyListId) {
-            setIsFetching(true);
-            getContingencyList(contingencyListType, contingencyListId)
-                .then((response) => {
-                    if (response) {
-                        const formData = getExplicitNamingFormDataFromFetchedElement(response);
-                        reset({ ...formData, [FieldConstants.NAME]: name });
-                    }
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'cannotRetrieveContingencyList',
-                    });
-                })
-                .finally(() => setIsFetching(false));
-        }
+        setIsFetching(true);
+        getContingencyList(contingencyListType, contingencyListId)
+            .then((response) => {
+                if (response) {
+                    const formData = getExplicitNamingFormDataFromFetchedElement(response);
+                    reset({ ...formData, [FieldConstants.NAME]: name });
+                }
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'cannotRetrieveContingencyList',
+                });
+            })
+            .finally(() => setIsFetching(false));
     }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
     const closeAndClear = (event?: SyntheticEvent) => {

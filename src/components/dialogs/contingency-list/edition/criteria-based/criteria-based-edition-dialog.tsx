@@ -5,7 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, CustomMuiDialog, getCriteriaBasedSchema, FieldConstants } from '@gridsuite/commons-ui';
+import {
+    useSnackMessage,
+    CustomMuiDialog,
+    getCriteriaBasedSchema,
+    FieldConstants,
+    noSelectionForCopy,
+    yup,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
@@ -16,10 +23,8 @@ import {
     getCriteriaBasedFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
 import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
-import yup from 'components/utils/yup-config';
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
 import { useParameterState } from '../../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
@@ -33,7 +38,7 @@ const schema = yup.object().shape({
 
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
 
-interface CriteriaBasedEditionFormData {
+export interface CriteriaBasedEditionFormData {
     [FieldConstants.NAME]: string;
     [FieldConstants.EQUIPMENT_TYPE]?: string | null;
     [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
@@ -76,23 +81,21 @@ const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogPr
     const isValidating = errors.root?.isValidating;
 
     useEffect(() => {
-        if (contingencyListId) {
-            setIsFetching(true);
-            getContingencyList(contingencyListType, contingencyListId)
-                .then((response) => {
-                    if (response) {
-                        const formData = getCriteriaBasedFormDataFromFetchedElement(response, name);
-                        reset({ ...formData, [FieldConstants.NAME]: name });
-                    }
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'cannotRetrieveContingencyList',
-                    });
-                })
-                .finally(() => setIsFetching(false));
-        }
+        setIsFetching(true);
+        getContingencyList(contingencyListType, contingencyListId)
+            .then((response) => {
+                if (response) {
+                    const formData = getCriteriaBasedFormDataFromFetchedElement(response, name);
+                    reset({ ...formData, [FieldConstants.NAME]: name });
+                }
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'cannotRetrieveContingencyList',
+                });
+            })
+            .finally(() => setIsFetching(false));
     }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
     const closeAndClear = (event?: SyntheticEvent) => {

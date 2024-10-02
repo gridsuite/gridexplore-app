@@ -29,8 +29,8 @@ import {
     DIRECTORY_UPDATED,
     DirectoryUpdatedAction,
     LanguageAction,
-    REMOVE_UPLOADING_ELEMENT,
-    RemoveUploadingElementAction,
+    REORDERED_COLUMNS,
+    ReorderedColumnsAction,
     SEARCHED_ELEMENT,
     SearchedElementAction,
     SELECT_COMPUTED_LANGUAGE,
@@ -42,6 +42,8 @@ import {
     SelectionForCopyAction,
     SET_APPS_AND_URLS,
     SetAppsAndUrlsAction,
+    SET_UPLOADING_ELEMENTS,
+    SetUploadingElementsAction,
     ThemeAction,
     TREE_DATA,
     TreeDataAction,
@@ -74,6 +76,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { UUID } from 'crypto';
+import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
 
 // IDirectory is exactly an IElement, with a specific type value
 export type IDirectory = ElementAttributes & {
@@ -128,15 +131,9 @@ export interface AppState extends CommonStoreState {
     currentPath: any[];
     selectedFile: unknown | null;
     uploadingElements: Record<string, UploadingElement>;
-    directoryUpdated: { force: number; eventData: Record<string, unknown> };
-    selectionForCopy: {
-        sourceItemUuid: unknown | null;
-        typeItem: unknown | null;
-        nameItem: unknown | null;
-        descriptionItem: unknown | null;
-        parentDirectoryUuid: unknown | null;
-        specificTypeItem: unknown | null;
-    };
+    directoryUpdated: { force: number; eventData: Record<string, Record<string, unknown>> };
+    selectionForCopy: SelectionForCopy;
+    reorderedColumns: string[];
 }
 
 const initialState: AppState = {
@@ -169,6 +166,7 @@ const initialState: AppState = {
         parentDirectoryUuid: null,
         specificTypeItem: null,
     },
+    reorderedColumns: [],
 };
 
 export type Actions = AuthenticationActions | AppActions;
@@ -256,10 +254,8 @@ export const reducer = createReducer(initialState, (builder) => {
         };
     });
 
-    builder.addCase(REMOVE_UPLOADING_ELEMENT, (state, action: RemoveUploadingElementAction) => {
-        let newUploadingElements = { ...state.uploadingElements };
-        delete newUploadingElements[action.uploadingElement.id];
-        state.uploadingElements = newUploadingElements;
+    builder.addCase(SET_UPLOADING_ELEMENTS, (state, action: SetUploadingElementsAction) => {
+        state.uploadingElements = action.uploadingElements;
     });
 
     builder.addCase(DIRECTORY_UPDATED, (state, action: DirectoryUpdatedAction) => {
@@ -294,7 +290,8 @@ export const reducer = createReducer(initialState, (builder) => {
         };
 
         // we must override selectedDirectory elementName because it could be the one to have changed
-        if (state.selectedDirectory) {
+        // if it's the deleted one then it's not in filteredTreeDataMapData anymore then check
+        if (state.selectedDirectory && filteredTreeDataMapData[state.selectedDirectory?.elementUuid]) {
             state.selectedDirectory.elementName =
                 filteredTreeDataMapData[state.selectedDirectory?.elementUuid].elementName;
         }
@@ -302,5 +299,9 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SELECTION_FOR_COPY, (state, action: SelectionForCopyAction) => {
         state.selectionForCopy = action.selectionForCopy;
+    });
+
+    builder.addCase(REORDERED_COLUMNS, (state, action: ReorderedColumnsAction) => {
+        state.reorderedColumns = action.reorderedColumns;
     });
 });
