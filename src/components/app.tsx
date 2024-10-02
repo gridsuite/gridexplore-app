@@ -12,13 +12,16 @@ import { selectComputedLanguage, selectLanguage, selectTheme } from '../redux/ac
 import {
     AuthenticationRouter,
     CardErrorBoundary,
+    getComputedLanguage,
     getPreLoginPath,
+    GsLangUser,
     initializeAuthenticationProd,
     UserManagerState,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
 import {
+    ConfigParameters,
     connectNotificationsWsUpdateConfig,
     fetchConfigParameter,
     fetchConfigParameters,
@@ -26,7 +29,6 @@ import {
     fetchValidateUser,
 } from '../utils/rest-api';
 import { APP_NAME, COMMON_APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
-import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import Grid from '@mui/material/Grid';
 import TreeViewsContainer from './tree-views-container';
@@ -56,18 +58,18 @@ const App = () => {
     const location = useLocation();
 
     const updateParams = useCallback(
-        (params: any) => {
+        (params: ConfigParameters) => {
             console.debug('received UI parameters : ', params);
-            params.forEach((param: any) => {
+            params.forEach((param) => {
                 switch (param.name) {
                     case PARAM_THEME:
                         dispatch(selectTheme(param.value));
                         break;
                     case PARAM_LANGUAGE:
                         dispatch(selectLanguage(param.value));
-                        dispatch(selectComputedLanguage(getComputedLanguage(param.value)));
+                        //TODO remove cast when prototype is fixed in commons-ui
+                        dispatch(selectComputedLanguage(getComputedLanguage(param.value) as GsLangUser));
                         break;
-                    default:
                 }
             });
         },
@@ -90,7 +92,7 @@ const App = () => {
 
         ws.onmessage = function (event) {
             let eventData = JSON.parse(event.data);
-            if (eventData.headers && eventData.headers['parameterName']) {
+            if (eventData.headers?.['parameterName']) {
                 fetchConfigParameter(eventData.headers['parameterName'])
                     .then((param) => updateParams([param]))
                     .catch((error) =>
@@ -193,35 +195,33 @@ const App = () => {
                             <Route
                                 path="/"
                                 element={
-                                    <>
-                                        <Grid container style={{ height: '100%' }}>
-                                            <Grid
-                                                item
-                                                xs={12}
-                                                sm={3}
+                                    <Grid container style={{ height: '100%' }}>
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            sm={3}
+                                            style={{
+                                                borderRight: '1px solid rgba(81, 81, 81, 1)',
+                                                height: '100%',
+                                                overflow: 'auto',
+                                                display: 'flex',
+                                            }}
+                                        >
+                                            <TreeViewsContainer />
+                                        </Grid>
+                                        <Grid item xs={12} sm={9}>
+                                            <div
                                                 style={{
-                                                    borderRight: '1px solid rgba(81, 81, 81, 1)',
-                                                    height: '100%',
-                                                    overflow: 'auto',
                                                     display: 'flex',
+                                                    flexDirection: 'column',
+                                                    height: '100%',
                                                 }}
                                             >
-                                                <TreeViewsContainer />
-                                            </Grid>
-                                            <Grid item xs={12} sm={9}>
-                                                <div
-                                                    style={{
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
-                                                        height: '100%',
-                                                    }}
-                                                >
-                                                    <DirectoryBreadcrumbs />
-                                                    <DirectoryContent />
-                                                </div>
-                                            </Grid>
+                                                <DirectoryBreadcrumbs />
+                                                <DirectoryContent />
+                                            </div>
                                         </Grid>
-                                    </>
+                                    </Grid>
                                 }
                             />
                             <Route

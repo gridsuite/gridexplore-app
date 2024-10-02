@@ -22,7 +22,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { getExportFormats } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
@@ -112,6 +112,13 @@ const ExportCaseDialog = ({ selectedElements, onClose, onExport }: ExportCaseDia
         }
     }, []);
 
+    const handleClose = (_: SyntheticEvent, reason?: string) => {
+        if (reason === 'backdropClick') {
+            return;
+        }
+        onClose();
+    };
+
     const handleExport = useCallback(async () => {
         setLoading(true);
         await onExport(selectedElements, selectedFormat!, currentParameters, caseUuidFileNameMap);
@@ -119,7 +126,7 @@ const ExportCaseDialog = ({ selectedElements, onClose, onExport }: ExportCaseDia
     }, [onExport, onClose, selectedElements, selectedFormat, currentParameters, caseUuidFileNameMap]);
 
     return (
-        <Dialog open fullWidth maxWidth="sm" onClose={onClose} aria-labelledby="dialog-title-export-case">
+        <Dialog open fullWidth maxWidth="sm" onClose={handleClose} aria-labelledby="dialog-title-export-case">
             <DialogTitle>{intl.formatMessage({ id: 'download.export.button' })}</DialogTitle>
             <DialogContent>
                 {oneFileMode && (

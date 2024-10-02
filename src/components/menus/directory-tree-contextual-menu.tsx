@@ -25,11 +25,12 @@ import { DialogsId } from '../../utils/UIconstants';
 import {
     deleteElement,
     duplicateElement,
+    elementExists,
     insertDirectory,
     insertRootDirectory,
     renameElement,
-    elementExists,
     moveElementsToDirectory,
+    duplicateSpreadsheetConfig,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
@@ -145,17 +146,14 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 case ElementType.STUDY:
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
-                    duplicateElement(
-                        selectionForCopy.sourceItemUuid,
-                        directoryUuid,
-                        selectionForCopy.typeItem,
-                        undefined
-                    ).catch((error: any) => {
-                        if (handleMaxElementsExceededError(error, snackError)) {
-                            return;
+                    duplicateElement(selectionForCopy.sourceItemUuid, directoryUuid, selectionForCopy.typeItem).catch(
+                        (error: any) => {
+                            if (handleMaxElementsExceededError(error, snackError)) {
+                                return;
+                            }
+                            handlePasteError(error);
                         }
-                        handlePasteError(error);
-                    });
+                    );
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
@@ -178,6 +176,11 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         selectionForCopy.typeItem,
                         selectionForCopy.specificTypeItem
                     ).catch((error: any) => {
+                        handlePasteError(error);
+                    });
+                    break;
+                case ElementType.SPREADSHEET_CONFIG:
+                    duplicateSpreadsheetConfig(selectionForCopy.sourceItemUuid, directoryUuid).catch((error: any) => {
                         handlePasteError(error);
                     });
                     break;

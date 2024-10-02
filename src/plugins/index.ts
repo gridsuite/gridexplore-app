@@ -5,4 +5,4 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-// This file will contains exported plugin collections
+// This file will contain exported plugin collections

@@ -77,12 +77,8 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
             uploading: true,
         };
 
-        createCase({
-            name: caseName,
-            description,
-            file: caseFile,
-            parentDirectoryUuid: activeDirectory,
-        })
+        // @ts-expect-error TODO: manage null cases here
+        createCase(caseName, description ?? '', caseFile, activeDirectory)
             .then(onClose)
             .catch((err) => {
                 if (handleMaxElementsExceededError(err, snackError)) {
@@ -101,8 +97,7 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
                     });
                 }
             });
-        // the uploadingCase ghost element will be removed when directory
-        // content updated by fetch
+        // the uploadingCase ghost element will be removed when directory content updated by fetch
         dispatch(addUploadingElement(uploadingCase));
     };
 
