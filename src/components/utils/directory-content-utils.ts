@@ -74,7 +74,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         headerCheckboxSelection: true,
         checkboxSelection: true,
         flex: 5,
-        width: 400,
+        minWidth: 400,
     },
     {
         headerName: intl.formatMessage({
