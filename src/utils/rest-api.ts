@@ -219,12 +219,19 @@ export function deleteElement(elementUuid: string) {
     });
 }
 
-export function deleteElements(elementUuids: string[], activeDirectory: string) {
+export async function deleteElements(elementUuids: string[], activeDirectory: string) {
     console.info('Deleting elements : %s', elementUuids);
-    const idsParams = getRequestParamFromList('ids', elementUuids).toString();
-    return backendFetch(PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/` + activeDirectory + '?' + idsParams, {
-        method: 'delete',
-    });
+    const chunkSize = 50;
+    for (let i = 0; i < elementUuids.length; i += chunkSize) {
+        const partitionIds = elementUuids.slice(i, i + chunkSize);
+        const idsParams = getRequestParamFromList('ids', partitionIds).toString();
+        await backendFetch(
+            PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/` + activeDirectory + '?' + idsParams,
+            {
+                method: 'delete',
+            }
+        );
+    }
 }
 
 export function moveElementsToDirectory(elementsUuids: string[], targetDirectoryUuid: string) {
