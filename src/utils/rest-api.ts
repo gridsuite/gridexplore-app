@@ -37,6 +37,7 @@ const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = import.meta.env.VITE_API_GATEWA
 const PREFIX_NOTIFICATION_WS = import.meta.env.VITE_WS_GATEWAY + '/directory-notification';
 const PREFIX_FILTERS_QUERIES = import.meta.env.VITE_API_GATEWAY + '/filter/v1/filters';
 const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
+const PREFIX_SPREADSHEET_CONFIG_QUERIES = import.meta.env.VITE_API_GATEWAY + '/spreadsheet-config';
 
 export type Script = { id: string; script: string | null | undefined };
 
@@ -414,6 +415,34 @@ export function duplicateElement(
 
     return backendFetch(url, {
         method: 'post',
+    });
+}
+
+export function duplicateSpreadsheetConfig(sourceCaseUuid: string, parentDirectoryUuid?: string) {
+    console.info('Duplicating a spreadsheet config...');
+    let queryParams = new URLSearchParams();
+    queryParams.append('duplicateFrom', sourceCaseUuid);
+    if (parentDirectoryUuid) {
+        queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    }
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-configs/duplicate?` + queryParams.toString();
+
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
+    });
+}
+
+export function downloadSpreadsheetConfig(configId: string) {
+    console.info(`Downloading spreadsheet config with id: ${configId}`);
+    const fetchUrl = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/spreadsheet-configs/${configId}`;
+
+    return backendFetch(fetchUrl, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
     });
 }
 

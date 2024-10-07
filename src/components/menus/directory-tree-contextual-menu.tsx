@@ -29,6 +29,7 @@ import {
     insertDirectory,
     insertRootDirectory,
     renameElement,
+    duplicateSpreadsheetConfig,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
@@ -166,6 +167,11 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         selectionForCopy.typeItem,
                         selectionForCopy.specificTypeItem
                     ).catch((error: any) => {
+                        handlePasteError(error);
+                    });
+                    break;
+                case ElementType.SPREADSHEET_CONFIG:
+                    duplicateSpreadsheetConfig(selectionForCopy.sourceItemUuid, directoryUuid).catch((error: any) => {
                         handlePasteError(error);
                     });
                     break;
