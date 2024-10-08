@@ -503,7 +503,7 @@ const TreeViewsContainer = () => {
                 return;
             }
 
-            if (Object.keys(eventData.headers).includes('userMessage') && eventData.payload) {
+            if (eventData.headers.hasOwnProperty('userMessage') && eventData.payload) {
                 handleUserMessage(eventData);
                 return;
             }
