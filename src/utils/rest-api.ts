@@ -518,6 +518,17 @@ export function getContingencyList(type: string, id: string) {
 }
 
 /**
+ * Get the network modifications contained in a composite modification
+ */
+export function getCompositeModificationContent(id: string) {
+    const url: string = PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/network-composite-modification/' + id;
+
+    return backendFetchJson(url, {
+        method: 'get',
+    });
+}
+
+/**
  * Saves a Filter contingency list
  * @returns {Promise<Response>}
  */

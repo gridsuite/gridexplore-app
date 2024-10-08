@@ -11,6 +11,10 @@ export const FilterType = {
     EXPERT: { id: 'EXPERT', label: 'filter.expert' },
 };
 
+export const NetworkModificationType = {
+    COMPOSITE: { id: 'COMPOSITE_MODIFICATION', label: 'compositeModification' },
+};
+
 export const ContingencyListType = {
     CRITERIA_BASED: { id: 'FORM', label: 'contingencyList.criteriaBased' },
     EXPLICIT_NAMING: {
