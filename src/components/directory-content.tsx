@@ -15,15 +15,16 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { ContingencyListType, FilterType } from '../utils/elementType';
 import {
-    ElementType,
-    useSnackMessage,
-    ExplicitNamingFilterEditionDialog,
-    ExpertFilterEditionDialog,
+    CommonMetadata,
     CriteriaBasedFilterEditionDialog,
     DescriptionModificationDialog,
     ElementAttributes,
-    StudyMetadata,
+    ElementType,
+    ExpertFilterEditionDialog,
+    ExplicitNamingFilterEditionDialog,
     noSelectionForCopy,
+    StudyMetadata,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Box, Button, SxProps, Theme } from '@mui/material';
 
@@ -40,13 +41,13 @@ import { PARAM_LANGUAGE } from '../utils/config-params';
 import Grid from '@mui/material/Grid';
 import { useDirectoryContent } from '../hooks/useDirectoryContent';
 import {
-    getColumnsDefinition,
     computeCheckedElements,
     formatMetadata,
+    getColumnsDefinition,
     isRowUnchecked,
 } from './utils/directory-content-utils';
 import NoContentDirectory from './no-content-directory';
-import { DirectoryContentTable, CUSTOM_ROW_CLASS } from './directory-content-table';
+import { CUSTOM_ROW_CLASS, DirectoryContentTable } from './directory-content-table';
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
 import EmptyDirectory from './empty-directory';
 import AddIcon from '@mui/icons-material/Add';
@@ -98,6 +99,10 @@ const styles = {
 const initialMousePosition = {
     mouseX: null,
     mouseY: null,
+};
+
+const isStudyMetadata = (metadata: CommonMetadata): metadata is StudyMetadata => {
+    return metadata.name === 'Study';
 };
 
 const DirectoryContent = () => {
@@ -325,23 +330,17 @@ const DirectoryContent = () => {
     );
 
     const getLink = useCallback(
-        (elementUuid: string, objectType: string): string | null => {
-            let href: string | null = null;
-            if (appsAndUrls !== null) {
-                appsAndUrls.find((app) => {
-                    const appStudy = app as StudyMetadata;
-                    if (!appStudy.resources) {
-                        return false;
-                    }
-                    return appStudy.resources.find((res) => {
-                        if (res.types.includes(objectType)) {
-                            href = app.url + res.path.replace('{elementUuid}', elementUuid);
-                        }
-                        return href;
-                    });
-                });
+        (elementUuid: string): string | null => {
+            const appStudy = appsAndUrls.find(isStudyMetadata);
+            if (appStudy) {
+                const studyResource = appStudy.resources?.find((resource) =>
+                    resource.types.includes(ElementType.STUDY)
+                );
+                if (studyResource) {
+                    return appStudy.url + studyResource.path.replace('{elementUuid}', elementUuid);
+                }
             }
-            return href;
+            return null;
         },
         [appsAndUrls]
     );
@@ -363,7 +362,7 @@ const DirectoryContent = () => {
                 dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
                 switch (event.data.type) {
                     case ElementType.STUDY: {
-                        let url = getLink(event.data.elementUuid, event.data.type);
+                        let url = getLink(event.data.elementUuid);
                         url
                             ? window.open(url, '_blank')
                             : handleError(intl.formatMessage({ id: 'getAppLinkError' }, { type: event.data.type }));
