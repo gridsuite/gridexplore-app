@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ElementAttributes, FieldConstants, Parameter, yup } from '@gridsuite/commons-ui';
+import { ElementAttributes, FieldConstants, Parameter, yupConfig as yup } from '@gridsuite/commons-ui';
 
 export const getCreateStudyDialogFormDefaultValues = ({
     directory = '',

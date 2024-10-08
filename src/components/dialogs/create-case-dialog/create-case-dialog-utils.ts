@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FieldConstants, yup } from '@gridsuite/commons-ui';
+import { FieldConstants, yupConfig as yup } from '@gridsuite/commons-ui';
 
 export const getCreateCaseDialogFormValidationDefaultValues = () => ({
     [FieldConstants.CASE_NAME]: '',
