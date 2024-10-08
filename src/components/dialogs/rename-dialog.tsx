@@ -15,7 +15,7 @@ import { useNameField } from './field-hook';
 import { useSelector } from 'react-redux';
 import { ElementType } from '@gridsuite/commons-ui';
 import { CancelButton } from '@gridsuite/commons-ui';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, SyntheticEvent } from 'react';
 import { AppState } from 'redux/reducer';
 
 interface RenameDialogProps {
@@ -73,11 +73,14 @@ const RenameDialog: FunctionComponent<RenameDialogProps> = ({
             console.debug('Request for renaming : ' + currentName + ' => ' + newName);
             onClick(newName);
         } else {
-            handleClose();
+            onClose();
         }
     };
 
-    const handleClose = () => {
+    const handleClose = (_: SyntheticEvent, reason?: string) => {
+        if (reason === 'backdropClick') {
+            return;
+        }
         onClose();
     };
 
