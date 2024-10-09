@@ -7,7 +7,13 @@
 import { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
 import { useParameterState } from '../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
-import { CustomMuiDialog, FieldConstants, useSnackMessage, yup } from '@gridsuite/commons-ui';
+import {
+    CustomMuiDialog,
+    FieldConstants,
+    useModificationLabelComputer,
+    useSnackMessage,
+    yup,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { getCompositeModificationContent } from '../../../../utils/rest-api';
@@ -15,6 +21,7 @@ import { CriteriaBasedEditionFormData } from '../../contingency-list/edition/cri
 import CompositeModificationEditionForm from './composite-modification-edition-form';
 import { List, ListItem } from '@mui/material';
 import { useIntl } from 'react-intl';
+import { NetworkModificationMetadata } from '@gridsuite/commons-ui/dist/hooks/useModificationLabelComputer';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 
@@ -36,13 +43,6 @@ interface CompositeModificationEditionDialogProps {
     onClose: (event?: SyntheticEvent) => void;
     titleId: string;
     name: string;
-}
-
-export interface ModificationInfos {
-    // TODO : voir si ça n'existe pas déjà ailleurs, sinon étendre ce type avec les autres ModificationInfos du back
-    uuid: string;
-    type: string;
-    date: Date; // ???
 }
 
 export const styles = {
@@ -83,24 +83,23 @@ const CompositeModificationEditionDialog: FunctionComponent<CompositeModificatio
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!compositeModificationListId);
     const { snackError } = useSnackMessage();
-    const [modifications, setModifications] = useState<ModificationInfos[]>([]);
+    const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
 
     const methods = useForm<FormData>({
         defaultValues: emptyFormData(name),
         resolver: yupResolver(schema),
     });
 
-    //const { computeLabel } = useModificationLabelComputer();
-    const getModificationLabel = (modif: ModificationInfos) => {
+    const { computeLabel } = useModificationLabelComputer();
+    const getModificationLabel = (modif: NetworkModificationMetadata) => {
         if (!modif) {
             return null;
         }
-        console.log(JSON.stringify(modif, null, 4)); // TODO REMOVE
         return intl.formatMessage(
             { id: 'network_modifications.' + modif.type },
             {
                 ...modif,
-                //...computeLabel(modif), // TODO
+                ...computeLabel(modif),
             }
         );
     };
@@ -110,9 +109,9 @@ const CompositeModificationEditionDialog: FunctionComponent<CompositeModificatio
             <Box sx={styles.ScrollableContainer}>
                 {modifications && (
                     <List sx={styles.ScrollableContent}>
-                        {modifications.map((modification: ModificationInfos) => (
+                        {modifications.map((modification: NetworkModificationMetadata) => (
                             <>
-                                <ListItem key={modification.uuid}>{getModificationLabel(modification)}</ListItem>
+                                <ListItem key={modification.uuid}> {getModificationLabel(modification)} </ListItem>
                                 <Divider component="li" />
                             </>
                         ))}

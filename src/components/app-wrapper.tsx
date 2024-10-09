@@ -22,6 +22,8 @@ import {
     filter_en,
     filter_expert_en,
     filter_expert_fr,
+    network_modifications_locale_en,
+    network_modifications_locale_fr,
     description_en,
     description_fr,
     equipments_en,
@@ -53,8 +55,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
-import network_modification_locale_en from '../translations/dynamic/network-modifications-locale-en';
-import network_modification_locale_fr from '../translations/dynamic/network-modifications-locale-fr';
 import messages_plugins from '../plugins/translations';
 import aggrid_locale_fr from '../translations/external/aggrid-locale-fr';
 import backend_locale_fr from '../translations/external/backend-locale-fr';
