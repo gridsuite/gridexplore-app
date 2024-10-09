@@ -15,14 +15,14 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { ContingencyListType, FilterType } from '../utils/elementType';
 import {
-    CommonMetadata,
     CriteriaBasedFilterEditionDialog,
     DescriptionModificationDialog,
     ElementAttributes,
     ElementType,
     ExpertFilterEditionDialog,
     ExplicitNamingFilterEditionDialog,
-    noSelectionForCopy,
+    Metadata,
+    NO_SELECTION_FOR_COPY,
     StudyMetadata,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -101,7 +101,7 @@ const initialMousePosition = {
     mouseY: null,
 };
 
-const isStudyMetadata = (metadata: CommonMetadata): metadata is StudyMetadata => {
+const isStudyMetadata = (metadata: Metadata): metadata is StudyMetadata => {
     return metadata.name === 'Study';
 };
 
@@ -130,8 +130,8 @@ const DirectoryContent = () => {
         const broadcast = new BroadcastChannel('itemCopyChannel');
         broadcast.onmessage = (event) => {
             console.info('message received from broadcast channel');
-            if (JSON.stringify(noSelectionForCopy) === JSON.stringify(event.data)) {
-                dispatch(setSelectionForCopy(noSelectionForCopy));
+            if (JSON.stringify(NO_SELECTION_FOR_COPY) === JSON.stringify(event.data)) {
+                dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
             } else {
                 dispatchSelectionForCopy({
                     typeItem: event.data.typeItem,
