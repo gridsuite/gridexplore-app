@@ -111,7 +111,9 @@ const CompositeModificationEditionDialog: FunctionComponent<CompositeModificatio
                     <List sx={styles.ScrollableContent}>
                         {modifications.map((modification: NetworkModificationMetadata) => (
                             <>
-                                <ListItem key={modification.uuid}> {getModificationLabel(modification)} </ListItem>
+                                <ListItem key={modification.uuid}>
+                                    <Box>{getModificationLabel(modification)}</Box>
+                                </ListItem>
                                 <Divider component="li" />
                             </>
                         ))}
