@@ -329,7 +329,7 @@ const DirectoryContent = () => {
         [snackError]
     );
 
-    const getLink = useCallback(
+    const getStudyUrl = useCallback(
         (elementUuid: string): string | null => {
             const appStudy = appsAndUrls.find(isStudyMetadata);
             if (appStudy) {
@@ -362,7 +362,7 @@ const DirectoryContent = () => {
                 dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
                 switch (event.data.type) {
                     case ElementType.STUDY: {
-                        let url = getLink(event.data.elementUuid);
+                        let url = getStudyUrl(event.data.elementUuid);
                         url
                             ? window.open(url, '_blank')
                             : handleError(intl.formatMessage({ id: 'getAppLinkError' }, { type: event.data.type }));
@@ -397,7 +397,7 @@ const DirectoryContent = () => {
                 }
             }
         },
-        [childrenMetadata, dispatch, getLink, handleError, intl, selectedDirectory?.elementUuid]
+        [childrenMetadata, dispatch, getStudyUrl, handleError, intl, selectedDirectory?.elementUuid]
     );
 
     const [openDescModificationDialog, setOpenDescModificationDialog] = useState(false);
