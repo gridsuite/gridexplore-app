@@ -13,6 +13,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { getCompositeModificationContent } from '../../../../utils/rest-api';
 import { CriteriaBasedEditionFormData } from '../../contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import CompositeModificationEditionForm from './composite-modification-edition-form';
+import { List, ListItem } from '@mui/material';
+import { useIntl } from 'react-intl';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -36,8 +40,37 @@ interface CompositeModificationEditionDialogProps {
 
 export interface ModificationInfos {
     // TODO : voir si ça n'existe pas déjà ailleurs, sinon étendre ce type avec les autres ModificationInfos du back
-    uuid?: string;
+    uuid: string;
+    type: string;
+    date: Date; // ???
 }
+
+export const styles = {
+    // TODO : those styles should probably be fetched inside commons-ui (once my version is integrated)
+    FillerContainer: {
+        height: '100%',
+        '&::before': {
+            content: '""',
+            height: '100%',
+            float: 'left',
+        },
+    },
+    ScrollableContainer: {
+        paddingY: '12px',
+        position: 'relative',
+        '&::after': {
+            content: '""',
+            clear: 'both',
+            display: 'block',
+        },
+    },
+    ScrollableContent: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        overflow: 'auto',
+    },
+};
 
 const CompositeModificationEditionDialog: FunctionComponent<CompositeModificationEditionDialogProps> = ({
     compositeModificationListId,
@@ -46,22 +79,55 @@ const CompositeModificationEditionDialog: FunctionComponent<CompositeModificatio
     titleId,
     name,
 }: Readonly<CompositeModificationEditionDialogProps>) => {
+    const intl = useIntl();
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!compositeModificationListId);
     const { snackError } = useSnackMessage();
-    const [modificationsData, setModificationsData] = useState<ModificationInfos[]>([]);
+    const [modifications, setModifications] = useState<ModificationInfos[]>([]);
 
     const methods = useForm<FormData>({
         defaultValues: emptyFormData(name),
         resolver: yupResolver(schema),
     });
 
+    //const { computeLabel } = useModificationLabelComputer();
+    const getModificationLabel = (modif: ModificationInfos) => {
+        if (!modif) {
+            return null;
+        }
+        console.log(JSON.stringify(modif, null, 4)); // TODO REMOVE
+        return intl.formatMessage(
+            { id: 'network_modifications.' + modif.type },
+            {
+                ...modif,
+                //...computeLabel(modif), // TODO
+            }
+        );
+    };
+
+    const renderNetworkModificationsList = () => {
+        return (
+            <Box sx={styles.ScrollableContainer}>
+                {modifications && (
+                    <List sx={styles.ScrollableContent}>
+                        {modifications.map((modification: ModificationInfos) => (
+                            <>
+                                <ListItem key={modification.uuid}>{getModificationLabel(modification)}</ListItem>
+                                <Divider component="li" />
+                            </>
+                        ))}
+                    </List>
+                )}
+            </Box>
+        );
+    };
+
     useEffect(() => {
         setIsFetching(true);
         getCompositeModificationContent(compositeModificationListId)
             .then((response) => {
                 if (response) {
-                    setModificationsData(response);
+                    setModifications(response);
                 }
             })
             .catch((error) => {
@@ -78,7 +144,7 @@ const CompositeModificationEditionDialog: FunctionComponent<CompositeModificatio
     };
 
     const onSubmit = (contingencyList: CriteriaBasedEditionFormData) => {
-        // SAUVE LE NOM ??
+        // TODO : SAUVE LE NOM
     };
 
     return (
@@ -94,11 +160,12 @@ const CompositeModificationEditionDialog: FunctionComponent<CompositeModificatio
             formMethods={methods}
             unscrollableFullHeight
         >
-            {!isFetching && <CompositeModificationEditionForm />}
-            <ul>
-                {modificationsData &&
-                    modificationsData.map((modification) => <li key={modification.uuid}>id : {modification.uuid}</li>)}
-            </ul>
+            {!isFetching && (
+                <Box sx={styles.FillerContainer}>
+                    <CompositeModificationEditionForm />
+                    {renderNetworkModificationsList()}
+                </Box>
+            )}
         </CustomMuiDialog>
     );
 };
