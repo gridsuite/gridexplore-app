@@ -30,6 +30,7 @@ import { DialogsId } from '../../utils/UIconstants';
 import {
     deleteElements,
     duplicateElement,
+    duplicateSpreadsheetConfig,
     elementExists,
     moveElementsToDirectory,
     newScriptFromFilter,
@@ -41,18 +42,18 @@ import {
 
 import { ContingencyListType, FilterType } from '../../utils/elementType';
 import {
+    ElementAttributes,
     ElementType,
-    useSnackMessage,
     FilterCreationDialog,
     TreeViewFinderNodeProps,
-    ElementAttributes,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
 import { DownloadForOffline, FileDownload } from '@mui/icons-material';
-import { useDownloadUtils } from '../utils/caseUtils';
+import { useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
@@ -96,7 +97,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
 
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
-    const { handleDownloadCases, handleConvertCases, stopCasesExports } = useDownloadUtils();
+    const { downloadElements, handleConvertCases, stopCasesExports } = useDownloadUtils();
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -128,8 +129,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                     typeItem: typeItem,
                     nameItem: nameItem,
                     descriptionItem: descriptionItem,
-                    parentDirectoryUuid: parentDirectoryUuid,
-                    specificTypeItem,
+                    parentDirectoryUuid: parentDirectoryUuid ?? null,
+                    specificTypeItem: specificTypeItem ?? null,
                 })
             );
         },
@@ -188,6 +189,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                case ElementType.SPREADSHEET_CONFIG:
                     console.info(
                         activeElement.type +
                             ' with uuid ' +
@@ -219,7 +221,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         activeElement.description,
                         activeElement.elementUuid,
                         selectedDirectory?.elementUuid,
-                        String(activeElement.specificMetadata.type)
+                        // @ts-expect-error TODO: seems to be an object but we await a string???
+                        activeElement.specificMetadata.type
                     );
                     break;
 
@@ -247,7 +250,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         activeElement.elementUuid,
                         undefined,
                         activeElement.type,
-                        selectedElements[0].specificMetadata.type
+                        // @ts-expect-error TODO: seems to be an object but we await a string???
+                        activeElement.specificMetadata.type
                     ).catch((error) => {
                         handleDuplicateError(error.message);
                     });
@@ -263,6 +267,11 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         ElementType.PARAMETERS,
                         activeElement.type
                     ).catch((error) => {
+                        handleDuplicateError(error.message);
+                    });
+                    break;
+                case ElementType.SPREADSHEET_CONFIG:
+                    duplicateSpreadsheetConfig(activeElement.elementUuid).catch((error) => {
                         handleDuplicateError(error.message);
                     });
                     break;
@@ -294,6 +303,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     const handleDeleteElements = useCallback(
         (elementsUuids: string[]) => {
             setDeleteError('');
+            // @ts-expect-error TODO: manage null case
             deleteElements(elementsUuids, selectedDirectory?.elementUuid)
                 .then(() => handleCloseDialog())
                 //show the error message and don't close the dialog
@@ -302,7 +312,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                     handleLastError(error.message);
                 });
         },
-        [selectedDirectory?.elementUuid, handleCloseDialog, handleLastError]
+        [selectedDirectory, handleCloseDialog, handleLastError]
     );
 
     const moveElementErrorToString = useCallback(
@@ -441,21 +451,26 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
         );
     }, [isUserAllowed, selectedElements]);
 
-    const allowsDuplicate = useCallback(() => {
-        return (
-            selectedElements[0].hasMetadata &&
-            selectedElements.length === 1 &&
-            (selectedElements[0].type === ElementType.CASE ||
-                selectedElements[0].type === ElementType.STUDY ||
-                selectedElements[0].type === ElementType.CONTINGENCY_LIST ||
-                selectedElements[0].type === ElementType.FILTER ||
-                selectedElements[0].type === ElementType.MODIFICATION ||
-                selectedElements[0].type === ElementType.VOLTAGE_INIT_PARAMETERS ||
-                selectedElements[0].type === ElementType.SECURITY_ANALYSIS_PARAMETERS ||
-                selectedElements[0].type === ElementType.SENSITIVITY_PARAMETERS ||
-                selectedElements[0].type === ElementType.SHORT_CIRCUIT_PARAMETERS ||
-                selectedElements[0].type === ElementType.LOADFLOW_PARAMETERS)
-        );
+    const allowsDuplicateAndCopy = useCallback(() => {
+        const allowedTypes = [
+            ElementType.CASE,
+            ElementType.STUDY,
+            ElementType.CONTINGENCY_LIST,
+            ElementType.FILTER,
+            ElementType.MODIFICATION,
+            ElementType.VOLTAGE_INIT_PARAMETERS,
+            ElementType.SECURITY_ANALYSIS_PARAMETERS,
+            ElementType.SENSITIVITY_PARAMETERS,
+            ElementType.SHORT_CIRCUIT_PARAMETERS,
+            ElementType.LOADFLOW_PARAMETERS,
+            ElementType.SPREADSHEET_CONFIG,
+        ];
+
+        const hasMetadata = selectedElements[0]?.hasMetadata;
+        const isSingleElement = selectedElements.length === 1;
+        const isAllowedType = allowedTypes.includes(selectedElements[0]?.type);
+
+        return hasMetadata && isSingleElement && isAllowedType;
     }, [selectedElements]);
 
     const allowsCreateNewStudyFromCase = useCallback(() => {
@@ -492,7 +507,13 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
         );
     }, [isUserAllowed, selectedElements]);
 
-    const allowsDownloadCase = useCallback(() => {
+    const allowsDownload = useCallback(() => {
+        const allowedTypes = [ElementType.CASE, ElementType.SPREADSHEET_CONFIG];
+        //if selectedElements contains at least one of the allowed types
+        return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress();
+    }, [selectedElements, noCreationInProgress]);
+
+    const allowsExportCase = useCallback(() => {
         //if selectedElements contains at least one case
         return selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
@@ -535,7 +556,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
             });
         }
 
-        if (allowsDuplicate()) {
+        if (allowsDuplicateAndCopy()) {
             menuItems.push({
                 messageDescriptorId: 'duplicate',
                 callback: () => {
@@ -574,15 +595,18 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
             });
         }
 
-        if (allowsDownloadCase()) {
+        if (allowsDownload()) {
             menuItems.push({
                 messageDescriptorId: 'download.button',
                 callback: async () => {
-                    await handleDownloadCases(selectedElements);
+                    await downloadElements(selectedElements);
                     handleCloseDialog();
                 },
                 icon: <FileDownload fontSize="small" />,
             });
+        }
+
+        if (allowsExportCase()) {
             menuItems.push({
                 messageDescriptorId: 'download.export.button',
                 callback: () => handleOpenDialog(DialogsId.EXPORT),
@@ -690,6 +714,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         }
                         currentName={activeElement ? activeElement.elementName : ''}
                         title={'copyToScriptList'}
+                        // @ts-expect-error TODO: manage undefined case
                         directoryUuid={selectedDirectory?.elementUuid}
                         elementType={activeElement?.type}
                         handleError={handleLastError}
@@ -714,6 +739,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         onValidate={(id, newName) => newScriptFromFilterCB(id, newName, selectedDirectory?.elementUuid)}
                         currentName={activeElement ? activeElement.elementName : ''}
                         title={'copyToScriptList'}
+                        // @ts-expect-error TODO: manage undefined case
                         directoryUuid={selectedDirectory?.elementUuid}
                         elementType={activeElement?.type}
                         handleError={handleLastError}
@@ -726,7 +752,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                         onClose={handleCloseDialog}
                         sourceFilterForExplicitNamingConversion={{
                             id: activeElement.elementUuid,
-                            equipmentType: String(activeElement.specificMetadata.equipmentType),
+                            // @ts-expect-error TODO: seems to be an object but we await a string???
+                            equipmentType: activeElement.specificMetadata.equipmentType,
                         }}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}

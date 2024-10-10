@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from '../../utils/yup-config';
-import { ElementAttributes, FieldConstants, Parameter } from '@gridsuite/commons-ui';
+import { ElementAttributes, FieldConstants, Parameter, yupConfig as yup } from '@gridsuite/commons-ui';
 
 export const getCreateStudyDialogFormDefaultValues = ({
     directory = '',

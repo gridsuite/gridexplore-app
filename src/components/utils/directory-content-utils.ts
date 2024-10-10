@@ -17,8 +17,12 @@ import { UserCellRenderer } from './renderers/user-cell-renderer';
 import { DateCellRenderer } from './renderers/date-cell-renderer';
 import type { ElementAttributes } from '@gridsuite/commons-ui';
 
-export const formatMetadata = (data: ElementAttributes, childrenMetadata: Record<UUID, ElementAttributes>) => ({
+export const formatMetadata = (
+    data: ElementAttributes,
+    childrenMetadata: Record<UUID, ElementAttributes>
+): ElementAttributes => ({
     ...data,
+    // @ts-expect-error TODO: "Type `object` is not assignable to type `string`"
     subtype: childrenMetadata[data.elementUuid]?.specificMetadata.type,
     hasMetadata: !!childrenMetadata[data.elementUuid],
 });
@@ -26,7 +30,7 @@ export const formatMetadata = (data: ElementAttributes, childrenMetadata: Record
 export const computeCheckedElements = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
     childrenMetadata: Record<UUID, ElementAttributes>
-) => {
+): ElementAttributes[] => {
     return (
         gridRef.current?.api
             ?.getSelectedRows()
@@ -41,12 +45,20 @@ export const isRowUnchecked = (row: ElementAttributes, checkedRows: ElementAttri
 
 export const defaultColumnDefinition = {
     sortable: true,
-    resizable: false,
+    resizable: true,
     lockPinned: true,
     wrapHeaderText: true,
     autoHeaderHeight: true,
-    suppressMovable: true,
-    comparator: (valueA: string, valueB: string) => valueA.toLowerCase().localeCompare(valueB.toLowerCase()),
+    suppressHorizontalScroll: true,
+    lockVisible: true,
+    comparator: (valueA: string | null | undefined, valueB: string | null | undefined) => {
+        // Need to check because ghost elements (uploading ones) don't have
+        // created or modification dates yet
+        if (!valueA || !valueB) {
+            return -1;
+        }
+        return valueA.toLowerCase().localeCompare(valueB.toLowerCase());
+    },
 };
 export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttributes>, intl: IntlShape): ColDef[] => [
     {
@@ -54,6 +66,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
             id: 'elementName',
         }),
         field: 'elementName',
+        pinned: true,
         cellRenderer: NameCellRenderer,
         cellRendererParams: {
             childrenMetadata: childrenMetadata,
@@ -76,6 +89,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
             id: 'type',
         }),
         field: 'type',
+        sortable: true,
         cellRenderer: TypeCellRenderer,
         cellRendererParams: {
             childrenMetadata: childrenMetadata,

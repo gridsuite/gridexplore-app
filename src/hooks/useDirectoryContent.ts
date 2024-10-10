@@ -6,13 +6,13 @@
  */
 
 import { useSelector } from 'react-redux';
-import React, { useRef, useEffect, useCallback, useState, useMemo } from 'react';
+import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
 import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { fetchUsersIdentities } from '../utils/rest-api';
+import { fetchUsersIdentities, UsersIdentities } from '../utils/rest-api';
 import { AppState } from '../redux/reducer';
 
-const getName = (userId, data) => {
+const getName = (userId: string, data: UsersIdentities): string => {
     const firstName = data?.[userId]?.firstName;
     const lastName = data?.[userId]?.lastName;
     if (firstName && lastName) {
@@ -26,7 +26,7 @@ const getName = (userId, data) => {
     }
 };
 
-export const useDirectoryContent = (setIsMissingDataAfterDirChange: React.Dispatch<React.SetStateAction<boolean>>) => {
+export const useDirectoryContent = () => {
     const currentChildren = useSelector((state: AppState) => state.currentChildren);
     const [childrenMetadata, setChildrenMetadata] = useState<Record<UUID, ElementAttributes>>({});
     const { snackError } = useSnackMessage();
@@ -45,41 +45,40 @@ export const useDirectoryContent = (setIsMissingDataAfterDirChange: React.Dispat
     useEffect(() => {
         if (!currentChildren?.length) {
             setChildrenMetadata({});
-            setIsMissingDataAfterDirChange(false);
+            return;
+        }
+
+        // Do not fetch metadata again if we just added a ghost element
+        if (Object.values(currentChildren).some((e) => e.uploading)) {
             return;
         }
 
         let metadata: Record<UUID, ElementAttributes> = {};
-        let childrenToFetchElementsInfos = Object.values(currentChildren)
-            .filter((e) => !e.uploading)
-            .map((e) => e.elementUuid);
+        let childrenToFetchElementsInfos = Object.values(currentChildren).map((e) => e.elementUuid);
         if (childrenToFetchElementsInfos.length > 0) {
             Promise.all([
                 fetchUsersIdentities(childrenToFetchElementsInfos), // TODO cache user identities across elements
                 fetchElementsInfos(childrenToFetchElementsInfos),
             ])
                 .then((res) => {
-                    res[1].forEach((e) => {
-                        // TODO proper typescript modeling instead of monkeypatching e directly
-                        e.ownerName = getName(e.owner, res[0]?.data);
-                        e.lastModifiedByName = getName(e.lastModifiedBy, res[0]?.data);
-                        metadata[e.elementUuid] = e;
-                    });
+                    // discarding request for older directory
+                    if (previousData.current === currentChildren) {
+                        res[1].forEach((e) => {
+                            // TODO proper typescript modeling instead of monkeypatching e directly
+                            e.ownerName = getName(e.owner, res[0]);
+                            e.lastModifiedByName = getName(e.lastModifiedBy, res[0]);
+                            metadata[e.elementUuid] = e;
+                        });
+                        setChildrenMetadata(metadata);
+                    }
                 })
                 .catch((error) => {
                     if (previousData.current && Object.keys(previousData.current).length === 0) {
                         handleError(error.message);
                     }
-                })
-                .finally(() => {
-                    // discarding request for older directory
-                    if (previousData.current === currentChildren) {
-                        setChildrenMetadata(metadata);
-                        setIsMissingDataAfterDirChange(false);
-                    }
                 });
         }
-    }, [handleError, currentChildren, setIsMissingDataAfterDirChange]);
+    }, [handleError, currentChildren]);
 
     // TODO remove this when global user identity caching is implemented
     const currentChildrenWithOwnerNames = useMemo(() => {
@@ -93,5 +92,6 @@ export const useDirectoryContent = (setIsMissingDataAfterDirChange: React.Dispat
             }));
         }
     }, [currentChildren, childrenMetadata]);
-    return [currentChildrenWithOwnerNames, childrenMetadata];
+
+    return [currentChildrenWithOwnerNames, childrenMetadata] as const;
 };
