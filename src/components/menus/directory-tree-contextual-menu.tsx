@@ -46,7 +46,7 @@ import { AppState } from 'redux/reducer';
 interface DirectoryTreeContextualMenuProps {
     directory: ElementAttributes | null;
     open: boolean;
-    onClose: (e: unknown, nextSelectedDirectoryId?: string | null) => void;
+    onClose: (nextSelectedDirectoryId?: string | null) => void;
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
     restrictMenuItems: boolean;
@@ -72,8 +72,8 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     };
 
     const handleCloseDialog = useCallback(
-        (e: unknown, nextSelectedDirectoryId: string | null = null) => {
-            onClose(e, nextSelectedDirectoryId);
+        (nextSelectedDirectoryId: string | null = null) => {
+            onClose(nextSelectedDirectoryId);
             setOpenDialog(DialogsId.NONE);
             setHideMenu(false);
             setDeleteError('');
@@ -83,7 +83,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
 
     const [renameCB, renameState] = useDeferredFetch(
         renameElement,
-        () => handleCloseDialog(null, null),
+        () => handleCloseDialog(),
         (HTTPStatusCode: number) => {
             if (HTTPStatusCode === 403) {
                 return intl.formatMessage({ id: 'renameDirectoryError' });
@@ -94,12 +94,12 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     );
 
     const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, (response: ElementAttributes) =>
-        handleCloseDialog(null, response?.elementUuid)
+        handleCloseDialog(response?.elementUuid)
     );
 
     const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(
         insertRootDirectory,
-        (response: ElementAttributes) => handleCloseDialog(null, response?.elementUuid)
+        (response: ElementAttributes) => handleCloseDialog(response?.elementUuid)
     );
 
     const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
@@ -128,7 +128,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     function pasteElement(directoryUuid: string, selectionForCopy: any) {
         if (!selectionForCopy.sourceItemUuid) {
             handleError(intl.formatMessage({ id: 'elementPasteFailed404' }));
-            handleCloseDialog(null);
+            handleCloseDialog();
         } else {
             console.info('Pasting element %s into directory %s', selectionForCopy.nameItem, directoryUuid);
 
@@ -183,7 +183,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                     );
             }
 
-            handleCloseDialog(null);
+            handleCloseDialog();
         }
     }
 
@@ -192,7 +192,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
         (elementsUuid: string) => {
             setDeleteError('');
             deleteElement(elementsUuid)
-                .then(() => handleCloseDialog(null, directory?.parentUuid))
+                .then(() => handleCloseDialog(directory?.parentUuid))
                 .catch((error: any) => {
                     //show the error message and don't close the dialog
                     setDeleteError(error.message);
@@ -377,7 +377,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 return (
                     <FilterCreationDialog
                         open={true}
-                        onClose={handleCloseDialog}
+                        onClose={() => handleCloseDialog()}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
                         language={languageLocal}
@@ -392,7 +392,12 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     return (
         <>
             {open && (
-                <CommonContextualMenu {...others} menuItems={buildMenu()} open={open && !hideMenu} onClose={onClose} />
+                <CommonContextualMenu
+                    {...others}
+                    menuItems={buildMenu()}
+                    open={open && !hideMenu}
+                    onClose={() => onClose()}
+                />
             )}
             {renderDialog()}
         </>

@@ -16,7 +16,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { createContingencyList } from '../../../../utils/rest-api';
-import { FunctionComponent, SyntheticEvent } from 'react';
+import { FunctionComponent } from 'react';
 import ContingencyListCreationForm from './contingency-list-creation-form';
 import {
     ContingencyListFormData,
@@ -47,7 +47,7 @@ const schema = yup.object().shape({
 const emptyFormData = getContingencyListEmptyFormData();
 
 interface ContingencyListCreationDialogProps {
-    onClose: (event?: SyntheticEvent) => void;
+    onClose: () => void;
     open: boolean;
     titleId: string;
 }
@@ -75,9 +75,9 @@ const ContingencyListCreationDialog: FunctionComponent<ContingencyListCreationDi
     const nameError = errors[FieldConstants.NAME];
     const isValidating = errors.root?.isValidating;
 
-    const closeAndClear = (event?: SyntheticEvent) => {
+    const closeAndClear = () => {
         reset(emptyFormData);
-        onClose(event);
+        onClose();
     };
 
     const onSubmit = (data: ContingencyListFormDataWithRequiredCriteria) => {
