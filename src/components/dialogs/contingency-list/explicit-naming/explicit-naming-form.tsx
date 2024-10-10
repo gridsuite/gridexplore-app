@@ -16,7 +16,7 @@ import {
     gridItem,
     CustomAgGridTable,
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
-    yup,
+    yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { SuppressKeyboardEventParams } from 'ag-grid-community';
 

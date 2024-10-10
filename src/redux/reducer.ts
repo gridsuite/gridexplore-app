@@ -53,7 +53,7 @@ import {
     AuthenticationActions,
     AuthenticationRouterErrorAction,
     AuthenticationRouterErrorState,
-    CommonMetadata,
+    Metadata,
     CommonStoreState,
     ElementAttributes,
     ElementType,
@@ -122,7 +122,7 @@ export interface AppState extends CommonStoreState {
     authenticationRouterError: AuthenticationRouterErrorState | null;
     showAuthenticationRouterLogin: boolean;
 
-    appsAndUrls: CommonMetadata[];
+    appsAndUrls: Metadata[];
     activeDirectory?: UUID;
     currentChildren?: ElementAttributes[];
     selectedDirectory: ElementAttributes | null;
