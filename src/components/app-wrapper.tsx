@@ -185,7 +185,7 @@ function getMuiTheme(theme: GsTheme, locale: GsLangUser) {
 const messages: Record<GsLangUser, IntlConfig['messages']> = {
     en: {
         ...messages_en,
-        ...network_modification_locale_en,
+        ...network_modifications_locale_en,
         ...login_en,
         ...top_bar_en,
         ...table_en,
@@ -207,7 +207,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
     },
     fr: {
         ...messages_fr,
-        ...network_modification_locale_fr,
+        ...network_modifications_locale_fr,
         ...login_fr,
         ...top_bar_fr,
         ...table_fr,
