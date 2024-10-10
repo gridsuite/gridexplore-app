@@ -79,7 +79,7 @@ interface DirectoryTreeViewProps {
     treeViewUuid: UUID;
     mapData: Record<string, IDirectory> | undefined;
     onContextMenu: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, nodeId: UUID | undefined) => void;
-    onDirectoryUpdate: (nodeId: UUID, isClose: boolean) => void;
+    onDirectoryUpdate: (nodeId: UUID, isClose: boolean, isDirectoryMoving: boolean) => void;
 }
 
 const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUpdate }: DirectoryTreeViewProps) => {
@@ -144,7 +144,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
     }
 
     function handleIconClick(nodeId: UUID) {
-        onDirectoryUpdate(nodeId, expandedRef.current.includes(nodeId));
+        onDirectoryUpdate(nodeId, expandedRef.current.includes(nodeId), false);
         toggleDirectories([nodeId]);
     }
 
