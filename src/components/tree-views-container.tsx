@@ -204,11 +204,8 @@ const TreeViewsContainer = () => {
         setOpenDirectoryMenu(true);
         event.stopPropagation();
     };
-    const handleCloseDirectoryMenu = (e: unknown, nextSelectedDirectoryId: string | null = null) => {
+    const handleCloseDirectoryMenu = () => {
         setOpenDirectoryMenu(false);
-        if (nextSelectedDirectoryId !== null && treeDataRef.current?.mapData?.[nextSelectedDirectoryId]) {
-            dispatch(setSelectedDirectory(treeDataRef.current.mapData[nextSelectedDirectoryId]));
-        }
         //so it removes the style that we added ourselves
         if (DOMFocusedDirectory !== null) {
             (DOMFocusedDirectory as HTMLElement).classList.remove('focused');
@@ -603,7 +600,7 @@ const TreeViewsContainer = () => {
             <div
                 onMouseDown={(e) => {
                     if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON && openDialog === constants.DialogsId.NONE) {
-                        handleCloseDirectoryMenu(e, null);
+                        handleCloseDirectoryMenu();
                     }
                 }}
             >
@@ -612,7 +609,7 @@ const TreeViewsContainer = () => {
                     open={openDirectoryMenu}
                     openDialog={openDialog}
                     setOpenDialog={setOpenDialog}
-                    onClose={(e: unknown) => handleCloseDirectoryMenu(e, null)}
+                    onClose={handleCloseDirectoryMenu}
                     anchorReference="anchorPosition"
                     anchorPosition={
                         mousePosition.mouseY !== null && mousePosition.mouseX !== null
