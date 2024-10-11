@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, CustomMuiDialog, FieldConstants, noSelectionForCopy, yup } from '@gridsuite/commons-ui';
+import {
+    CustomMuiDialog,
+    FieldConstants,
+    NO_SELECTION_FOR_COPY,
+    useSnackMessage,
+    yupConfig as yup,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
@@ -106,9 +112,9 @@ const ExplicitNamingEditionDialog: FunctionComponent<ExplicitNamingEditionDialog
         editContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === contingencyListId) {
-                    dispatch(setSelectionForCopy(noSelectionForCopy));
+                    dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
                     broadcastChannel.postMessage({
-                        noSelectionForCopy,
+                        NO_SELECTION_FOR_COPY,
                     });
                 }
                 closeAndClear();
