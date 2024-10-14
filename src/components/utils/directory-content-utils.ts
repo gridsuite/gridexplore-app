@@ -73,7 +73,6 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         },
         headerCheckboxSelection: true,
         checkboxSelection: true,
-
         width: 400,
     },
     {
@@ -82,8 +81,8 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         }),
         field: 'description',
         cellRenderer: DescriptionCellRenderer,
-        width: 120,
         sortable: false,
+        minWidth: 90,
     },
     {
         headerName: intl.formatMessage({
@@ -95,8 +94,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         cellRendererParams: {
             childrenMetadata: childrenMetadata,
         },
-        width: 300,
-
+        minWidth: 180,
         comparator: (
             valueA: string,
             valueB: string,
@@ -128,8 +126,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         }),
         field: 'owner',
         cellRenderer: UserCellRenderer,
-
-        width: 120,
+        minWidth: 90,
     },
     {
         headerName: intl.formatMessage({
@@ -137,7 +134,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         }),
         field: 'creationDate',
         cellRenderer: DateCellRenderer,
-        width: 130,
+        minWidth: 140,
     },
     {
         headerName: intl.formatMessage({
@@ -145,7 +142,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         }),
         field: 'lastModifiedBy',
         cellRenderer: UserCellRenderer,
-        width: 150,
+        minWidth: 90,
     },
     {
         headerName: intl.formatMessage({
@@ -153,6 +150,6 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         }),
         field: 'lastModificationDate',
         cellRenderer: DateCellRenderer,
-        width: 130,
+        minWidth: 140,
     },
 ];
