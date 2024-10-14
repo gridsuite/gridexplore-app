@@ -68,11 +68,11 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
         onAddIconClick(event, nodeId, 'anchorEl');
     };
 
-    const handleHover = (isHovering: boolean) => {
+    const toggleHover = () => {
         if (isMenuOpen) {
             setHover(true);
         } else {
-            setHover(isHovering);
+            setHover(prevHover => !prevHover);
         }
     };
 
@@ -96,8 +96,8 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
                 hover ? { backgroundColor: theme.aggrid.highlightColor, borderRadius: '16px' } : undefined
             )}
             onMouseDown={handleMouseDown}
-            onMouseEnter={() => handleHover(true)}
-            onMouseLeave={() => handleHover(false)}
+            onMouseEnter={toggleHover}
+            onMouseLeave={toggleHover}
             ref={ref}
         >
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
