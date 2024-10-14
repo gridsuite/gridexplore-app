@@ -5,17 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, CustomMuiDialog, FieldConstants } from '@gridsuite/commons-ui';
+import {
+    CustomMuiDialog,
+    FieldConstants,
+    NO_SELECTION_FOR_COPY,
+    useSnackMessage,
+    yupConfig as yup,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
 import React, { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
 import { getContingencyListEmptyFormData, getScriptFormDataFromFetchedElement } from '../../contingency-list-utils';
 import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
-import yup from 'components/utils/yup-config';
 import ScriptEditionForm from './script-edition-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { noSelectionForCopy } from 'utils/constants';
 import { setSelectionForCopy } from '../../../../../redux/actions';
 import { AppState } from 'redux/reducer';
 
@@ -71,23 +75,21 @@ const ScriptEditionDialog: FunctionComponent<ScriptEditionDialogProps> = ({
     const isValidating = errors.root?.isValidating;
 
     useEffect(() => {
-        if (contingencyListId) {
-            setIsFetching(true);
-            getContingencyList(contingencyListType, contingencyListId)
-                .then((response) => {
-                    if (response) {
-                        const formData = getScriptFormDataFromFetchedElement(response);
-                        reset({ ...formData, [FieldConstants.NAME]: name });
-                    }
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'cannotRetrieveContingencyList',
-                    });
-                })
-                .finally(() => setIsFetching(false));
-        }
+        setIsFetching(true);
+        getContingencyList(contingencyListType, contingencyListId)
+            .then((response) => {
+                if (response) {
+                    const formData = getScriptFormDataFromFetchedElement(response);
+                    reset({ ...formData, [FieldConstants.NAME]: name });
+                }
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'cannotRetrieveContingencyList',
+                });
+            })
+            .finally(() => setIsFetching(false));
     }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
     const closeAndClear = (event?: SyntheticEvent) => {
@@ -106,9 +108,9 @@ const ScriptEditionDialog: FunctionComponent<ScriptEditionDialogProps> = ({
         editContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === contingencyListId) {
-                    dispatch(setSelectionForCopy(noSelectionForCopy));
+                    dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
                     broadcastChannel.postMessage({
-                        noSelectionForCopy,
+                        NO_SELECTION_FOR_COPY,
                     });
                 }
                 closeAndClear();

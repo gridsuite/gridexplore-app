@@ -6,11 +6,10 @@
  */
 import React, { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
-import yup from 'components/utils/yup-config';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CircularProgress, Grid } from '@mui/material';
-import { UniqueNameInput, ElementType, CustomMuiDialog, FieldConstants } from '@gridsuite/commons-ui';
+import { UniqueNameInput, ElementType, CustomMuiDialog, FieldConstants, yupConfig as yup } from '@gridsuite/commons-ui';
 import { elementExists, getNameCandidate } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -30,7 +29,7 @@ interface CopyToScriptDialogProps {
     onValidate: (...args: any[]) => void;
     currentName: string;
     title: string;
-    directoryUuid?: string;
+    directoryUuid: string;
     elementType: ElementType;
     handleError: (...args: any[]) => void;
 }

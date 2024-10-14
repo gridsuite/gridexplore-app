@@ -16,14 +16,17 @@ import Zoom from '@mui/material/Zoom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory } from '../redux/actions';
 import CustomTreeItem from './custom-tree-item';
-import { Box } from '@mui/material';
+import { Box, PopoverReference, Theme } from '@mui/material';
 import { TreeView } from '@mui/x-tree-view';
+import { AppState, IDirectory } from '../redux/reducer';
+import { ElementAttributes } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
 
 const styles = {
-    treeViewRoot: (theme) => ({
+    treeViewRoot: (theme: Theme) => ({
         padding: theme.spacing(0.5),
     }),
-    treeItemRoot: (theme) => ({
+    treeItemRoot: (theme: Theme) => ({
         userSelect: 'none',
         '&:focus > .MuiTreeItem-content .MuiTreeItem-label, .focused': {
             borderRadius: theme.spacing(2),
@@ -34,12 +37,12 @@ const styles = {
             backgroundColor: theme.row.primary,
         },
     }),
-    treeItemSelected: (theme) => ({
+    treeItemSelected: (theme: Theme) => ({
         borderRadius: theme.spacing(2),
         backgroundColor: theme.row.hover,
         fontWeight: 'bold',
     }),
-    treeItemContent: (theme) => ({
+    treeItemContent: (theme: Theme) => ({
         paddingRight: theme.spacing(1),
         paddingLeft: theme.spacing(1),
     }),
@@ -48,7 +51,7 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
     },
-    treeItemLabel: (theme) => ({
+    treeItemLabel: (theme: Theme) => ({
         flexGrow: 1,
         overflow: 'hidden',
         paddingRight: theme.spacing(1),
@@ -56,7 +59,7 @@ const styles = {
         fontWeight: 'inherit',
         color: 'inherit',
     }),
-    treeItemLabelRoot: (theme) => ({
+    treeItemLabelRoot: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(0.5, 0),
@@ -65,29 +68,40 @@ const styles = {
         fontWeight: 'inherit',
         flexGrow: 1,
     },
-    icon: (theme) => ({
+    icon: (theme: Theme) => ({
         marginRight: theme.spacing(1),
         width: '18px',
         height: '18px',
     }),
 };
 
-const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUpdate }) => {
+interface DirectoryTreeViewProps {
+    treeViewUuid: UUID;
+    mapData: Record<string, IDirectory> | undefined;
+    onContextMenu: (
+        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+        nodeId: UUID | undefined,
+        anchorReference: PopoverReference
+    ) => void;
+    onDirectoryUpdate: (nodeId: UUID, isClose: boolean) => void;
+}
+
+const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUpdate }: DirectoryTreeViewProps) => {
     const dispatch = useDispatch();
 
-    const [expanded, setExpanded] = React.useState([]);
-    const selectedDirectory = useSelector((state) => state.selectedDirectory);
-    const currentPath = useSelector((state) => state.currentPath);
+    const [expanded, setExpanded] = React.useState<UUID[]>([]);
+    const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
+    const currentPath = useSelector((state: AppState) => state.currentPath);
 
-    const mapDataRef = useRef({});
-    const expandedRef = useRef([]);
-    const selectedDirectoryRef = useRef(null);
+    const mapDataRef = useRef<Record<string, IDirectory> | undefined>({});
+    const expandedRef = useRef<UUID[]>([]);
+    const selectedDirectoryRef = useRef<ElementAttributes | null>(null);
     selectedDirectoryRef.current = selectedDirectory;
     expandedRef.current = expanded;
     mapDataRef.current = mapData;
 
     const ensureInOutExpansion = useCallback(
-        (inIds, outIds = []) => {
+        (inIds: any[], outIds: any[] = []) => {
             let prevAsSet = new Set(expandedRef.current);
             // if on both side : no-op
             let inIdsSet = new Set(inIds.filter((id) => !outIds.includes(id) && !prevAsSet.has(id)));
@@ -103,9 +117,9 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
     );
 
     const toggleDirectories = useCallback(
-        (ids) => {
-            let ins = [];
-            let outs = [];
+        (ids: UUID[]) => {
+            let ins: UUID[] = [];
+            let outs: UUID[] = [];
             ids.forEach((id) => {
                 if (!expandedRef.current.includes(id)) {
                     ins.push(id);
@@ -119,13 +133,17 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
     );
 
     /* User interaction */
-    function handleContextMenuClick(event, nodeId, anchorReference) {
+    function handleContextMenuClick(
+        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+        nodeId: UUID | undefined,
+        anchorReference: PopoverReference
+    ) {
         onContextMenu(event, nodeId, anchorReference);
     }
 
-    function handleLabelClick(nodeId) {
+    function handleLabelClick(nodeId: UUID) {
         if (selectedDirectory?.elementUuid !== nodeId) {
-            dispatch(setSelectedDirectory(mapDataRef.current[nodeId]));
+            dispatch(setSelectedDirectory(mapDataRef.current ? mapDataRef.current[nodeId] : null));
         }
         if (!expandedRef.current.includes(nodeId)) {
             // update fold status of item
@@ -133,7 +151,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
         }
     }
 
-    function handleIconClick(nodeId) {
+    function handleIconClick(nodeId: UUID) {
         onDirectoryUpdate(nodeId, expandedRef.current.includes(nodeId));
         toggleDirectories([nodeId]);
     }
@@ -149,7 +167,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
     }, [currentPath, ensureInOutExpansion, treeViewUuid]);
 
     /* Handle Rendering */
-    const renderTree = (node) => {
+    const renderTree = (node: ElementAttributes | undefined) => {
         if (!node) {
             return;
         }
@@ -185,7 +203,6 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
                     styles: {
                         root: styles.treeItemRoot,
                         selected: styles.treeItemSelected,
-                        focused: styles.treeItemFocused,
                         label: styles.treeItemLabel,
                         iconContainer: styles.treeItemIconContainer,
                     },
@@ -196,24 +213,22 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
                 }}
             >
                 {Array.isArray(node.children)
-                    ? node.children.map((child) => renderTree(mapDataRef.current[child.elementUuid]))
+                    ? node.children.map((child) => renderTree(mapDataRef.current?.[child.elementUuid]))
                     : null}
             </CustomTreeItem>
         );
     };
 
     return (
-        <>
-            <TreeView
-                sx={styles.treeViewRoot}
-                defaultCollapseIcon={<ExpandMoreIcon sx={styles.icon} />}
-                defaultExpandIcon={<ChevronRightIcon sx={styles.icon} />}
-                expanded={expanded}
-                selected={selectedDirectory ? selectedDirectory.elementUuid : null}
-            >
-                {renderTree(mapDataRef.current[treeViewUuid])}
-            </TreeView>
-        </>
+        <TreeView
+            sx={styles.treeViewRoot}
+            defaultCollapseIcon={<ExpandMoreIcon sx={styles.icon} />}
+            defaultExpandIcon={<ChevronRightIcon sx={styles.icon} />}
+            expanded={expanded}
+            selected={selectedDirectory ? selectedDirectory.elementUuid : null}
+        >
+            {renderTree(mapDataRef.current?.[treeViewUuid])}
+        </TreeView>
     );
 };
 

@@ -9,21 +9,34 @@ import { forwardRef } from 'react';
 import TableCellWrapper from './table-cell-wrapper';
 import { useFormContext } from 'react-hook-form';
 import { FieldConstants, MultipleAutocompleteInput } from '@gridsuite/commons-ui';
+import { ColDef, IRowNode } from 'ag-grid-community';
 
-const ChipsArrayEditor = forwardRef(({ ...props }, ref) => {
+interface ChipsArrayEditorProps {
+    name: string;
+    node: IRowNode<AgGridData>;
+    colDef: ColDef;
+}
+
+type AgGridData = {
+    [FieldConstants.AG_GRID_ROW_UUID]: string;
+    [key: string]: any;
+};
+
+const ChipsArrayEditor = forwardRef(({ ...props }: ChipsArrayEditorProps, ref) => {
     const { name, node, colDef } = props;
     const { getValues } = useFormContext();
 
-    const getIndexInFormData = (nodeData) => {
+    const getIndexInFormData = (nodeData: AgGridData | undefined) => {
         return getValues(name).findIndex(
-            (row) => row[FieldConstants.AG_GRID_ROW_UUID] === nodeData[FieldConstants.AG_GRID_ROW_UUID]
+            (row: AgGridData) =>
+                nodeData && row[FieldConstants.AG_GRID_ROW_UUID] === nodeData[FieldConstants.AG_GRID_ROW_UUID]
         );
     };
 
     const cellName = `${name}.${getIndexInFormData(node.data)}.${colDef.field}`;
 
     return (
-        <TableCellWrapper agGridRef={ref} name={cellName}>
+        <TableCellWrapper ref={ref} name={cellName}>
             <MultipleAutocompleteInput
                 name={cellName}
                 size={'small'}

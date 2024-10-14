@@ -8,7 +8,14 @@
 import { defaultColumnDefinition } from './utils/directory-content-utils';
 import { CustomAGGrid, ElementAttributes, ElementType } from '@gridsuite/commons-ui';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
-import { ColDef, RowClassParams, AgGridEvent, GetRowIdParams } from 'ag-grid-community';
+import {
+    ColDef,
+    RowClassParams,
+    AgGridEvent,
+    GetRowIdParams,
+    CellContextMenuEvent,
+    CellClickedEvent,
+} from 'ag-grid-community';
 import { RefObject, useCallback, useEffect, useState } from 'react';
 import { setReorderedColumns } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,9 +24,9 @@ import { AppState } from '../redux/reducer';
 interface DirectoryContentTableProps extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
     gridRef: RefObject<AgGridReact<ElementAttributes>>;
     rows: ElementAttributes[];
-    handleCellContextualMenu: () => void;
+    handleCellContextualMenu: (event: CellContextMenuEvent) => void;
     handleRowSelected: () => void;
-    handleCellClick: () => void;
+    handleCellClick: (event: CellClickedEvent) => void;
     colDef: ColDef[];
 }
 
@@ -41,6 +48,7 @@ const getClickableRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
             ElementType.SECURITY_ANALYSIS_PARAMETERS,
             ElementType.VOLTAGE_INIT_PARAMETERS,
             ElementType.SHORT_CIRCUIT_PARAMETERS,
+            ElementType.SPREADSHEET_CONFIG,
         ].includes(cellData.data.type)
     ) {
         style.cursor = 'pointer';

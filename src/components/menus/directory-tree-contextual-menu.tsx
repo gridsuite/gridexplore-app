@@ -25,10 +25,11 @@ import { DialogsId } from '../../utils/UIconstants';
 import {
     deleteElement,
     duplicateElement,
+    elementExists,
     insertDirectory,
     insertRootDirectory,
     renameElement,
-    elementExists,
+    duplicateSpreadsheetConfig,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
@@ -43,14 +44,19 @@ import { PopoverPosition, PopoverReference } from '@mui/material';
 import { AppState } from 'redux/reducer';
 
 interface DirectoryTreeContextualMenuProps {
-    directory: ElementAttributes;
+    directory: ElementAttributes | null;
     open: boolean;
     onClose: (e: unknown, nextSelectedDirectoryId?: string | null) => void;
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
     restrictMenuItems: boolean;
-    anchorReference?: PopoverReference;
+    anchorReference?: PopoverReference | undefined;
     anchorPosition?: PopoverPosition;
+    anchorEl?: HTMLElement | null;
+    anchorOrigin: {
+        vertical: 'top' | 'bottom';
+        horizontal: 'left' | 'right';
+    };
 }
 
 const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = (props) => {
@@ -136,17 +142,14 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 case ElementType.STUDY:
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
-                    duplicateElement(
-                        selectionForCopy.sourceItemUuid,
-                        directoryUuid,
-                        selectionForCopy.typeItem,
-                        undefined
-                    ).catch((error: any) => {
-                        if (handleMaxElementsExceededError(error, snackError)) {
-                            return;
+                    duplicateElement(selectionForCopy.sourceItemUuid, directoryUuid, selectionForCopy.typeItem).catch(
+                        (error: any) => {
+                            if (handleMaxElementsExceededError(error, snackError)) {
+                                return;
+                            }
+                            handlePasteError(error);
                         }
-                        handlePasteError(error);
-                    });
+                    );
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
@@ -167,8 +170,13 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         selectionForCopy.sourceItemUuid,
                         directoryUuid,
                         selectionForCopy.typeItem,
-                        selectionForCopy.specificType
+                        selectionForCopy.specificTypeItem
                     ).catch((error: any) => {
+                        handlePasteError(error);
+                    });
+                    break;
+                case ElementType.SPREADSHEET_CONFIG:
+                    duplicateSpreadsheetConfig(selectionForCopy.sourceItemUuid, directoryUuid).catch((error: any) => {
                         handlePasteError(error);
                     });
                     break;
@@ -270,7 +278,8 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 {
                     messageDescriptorId: 'paste',
                     callback: () => {
-                        pasteElement(directory?.elementUuid, selectionForCopy);
+                        // @ts-expect-error TODO: manage null case
+                        pasteElement(directory.elementUuid, selectionForCopy);
                     },
                     icon: <ContentPasteIcon fontSize="small" />,
                     disabled: !selectionForCopy.sourceItemUuid,
@@ -341,7 +350,8 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 return (
                     <RenameDialog
                         message={'renameElementMsg'}
-                        currentName={directory?.elementName}
+                        // @ts-expect-error TODO: manage null case(s) here
+                        currentName={directory.elementName}
                         open={true}
                         onClick={(newName: string) => renameCB(directory?.elementUuid, newName)}
                         onClose={handleCloseDialog}
@@ -360,7 +370,10 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                         multipleDeleteFormatMessageId={'deleteMultipleDirectoriesDialogMessage'}
                         simpleDeleteFormatMessageId={'deleteDirectoryDialogMessage'}
                         open={true}
-                        onClick={() => handleDeleteElement(directory?.elementUuid)}
+                        onClick={() => {
+                            // @ts-expect-error TODO: manage undefined case
+                            handleDeleteElement(directory.elementUuid);
+                        }}
                         onClose={handleCloseDialog}
                         error={deleteError}
                     />

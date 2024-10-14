@@ -7,7 +7,6 @@
 
 import React, { useState, useEffect } from 'react';
 
-import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/material';
 import { TreeItem, useTreeItem } from '@mui/x-tree-view';
@@ -16,8 +15,22 @@ import AddIcon from '@mui/icons-material/Add';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import { useTheme } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 
-const CustomContent = React.forwardRef(function CustomContent(props, ref) {
+export interface TreeItemCustomContentProps {
+    className?: string;
+    styles: any;
+    label?: React.ReactNode;
+    nodeId: string;
+    icon?: React.ReactNode;
+    expansionIcon?: React.ReactNode;
+    displayIcon?: React.ReactNode;
+    onExpand: (e: string) => void;
+    onSelect: (e: string) => void;
+    onAddIconClick: (e: React.MouseEvent<HTMLDivElement>, nodeId: string, anchor: string) => void;
+}
+
+const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCustomContentProps, ref) {
     const {
         className,
         styles,
@@ -33,29 +46,29 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
     const theme = useTheme();
 
     const { disabled, expanded, selected, focused, preventSelection } = useTreeItem(nodeId);
-    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const isMenuOpen = activeDirectory === nodeId;
 
     const [hover, setHover] = useState(false);
     const icon = iconProp || expansionIcon || displayIcon;
 
-    const handleMouseDown = (event) => {
+    const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
         preventSelection(event);
     };
 
-    const handleExpansionClick = (event) => {
+    const handleExpansionClick = (event: React.MouseEvent<HTMLDivElement>) => {
         onExpand(nodeId);
     };
 
-    const handleSelectionClick = (event) => {
+    const handleSelectionClick = (event: React.MouseEvent<HTMLDivElement>) => {
         onSelect(nodeId);
     };
-    const handleAddIconClick = (event) => {
+    const handleAddIconClick = (event: React.MouseEvent<HTMLDivElement>) => {
         // used to open the menu
         onAddIconClick(event, nodeId, 'anchorEl');
     };
 
-    const handleHover = (isHovering) => {
+    const handleHover = (isHovering: boolean) => {
         if (isMenuOpen) {
             setHover(true);
         } else {
@@ -80,7 +93,7 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
                 selected && styles.selected,
                 focused && styles.focused,
                 disabled && styles.disabled,
-                hover && { backgroundColor: `${theme.aggrid.highlightColor} !important`, borderRadius: '16px' } // Add hover style with  background color
+                hover ? { backgroundColor: theme.aggrid.highlightColor, borderRadius: '16px' } : undefined
             )}
             onMouseDown={handleMouseDown}
             onMouseEnter={() => handleHover(true)}
@@ -103,52 +116,6 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
     );
 });
 
-CustomContent.propTypes = {
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    styles: PropTypes.object.isRequired,
-    /**
-     * className applied to the root element.
-     */
-    className: PropTypes.string,
-    /**
-     * The icon to display next to the tree node's label. Either a parent or end icon.
-     */
-    displayIcon: PropTypes.node,
-    /**
-     * The icon to display next to the tree node's label. Either an expansion or collapse icon.
-     */
-    expansionIcon: PropTypes.node,
-    /**
-     * The icon to display next to the tree node's label.
-     */
-    icon: PropTypes.node,
-    /**
-     * The tree node label.
-     */
-    label: PropTypes.node,
-    /**
-     * The id of the node.
-     */
-    nodeId: PropTypes.string.isRequired,
-
-    /**
-     * The callback to call when handle Expansion Click.
-     */
-    onExpand: PropTypes.func,
-
-    /**
-     * The callback to call when handle Selection Click.
-     */
-    onSelect: PropTypes.func,
-
-    /**
-     * The callback to call when handle the add icon Click.
-     */
-    onAddIconClick: PropTypes.func,
-};
-
-const CustomTreeItem = (props) => <TreeItem ContentComponent={CustomContent} {...props} />;
+const CustomTreeItem = (props: any) => <TreeItem ContentComponent={CustomContent} {...props} />;
 
 export default CustomTreeItem;
