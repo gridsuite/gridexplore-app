@@ -50,7 +50,7 @@ interface DirectoryTreeContextualMenuProps {
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
     restrictMenuItems: boolean;
-    anchorReference?: PopoverReference | undefined;
+    anchorReference?: PopoverReference;
     anchorPosition?: PopoverPosition;
     anchorEl?: HTMLElement | null;
     anchorOrigin: {
