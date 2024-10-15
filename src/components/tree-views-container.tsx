@@ -186,7 +186,7 @@ const TreeViewsContainer = () => {
 
     const wsRef = useRef<ReconnectingWebSocket>();
 
-    const { snackError } = useSnackMessage();
+    const { snackError, snackWarning } = useSnackMessage();
 
     const directoryUpdatedEvent = useSelector((state: AppState) => state.directoryUpdated);
     /**
@@ -486,6 +486,17 @@ const TreeViewsContainer = () => {
         };
     }, []);
 
+    const handleUserMessage = useCallback(
+        (eventData: any) => {
+            const messageValues = JSON.parse(eventData.payload);
+            snackWarning({
+                messageId: eventData.headers['userMessage'],
+                messageValues: messageValues,
+            });
+        },
+        [snackWarning]
+    );
+
     const onUpdateDirectories = useCallback(
         (event: MessageEvent) => {
             console.debug('Received Update directories notification', event);
@@ -494,9 +505,15 @@ const TreeViewsContainer = () => {
             if (!eventData.headers) {
                 return;
             }
+
+            if (eventData.headers.hasOwnProperty('userMessage') && eventData.payload) {
+                handleUserMessage(eventData);
+                return;
+            }
+
             dispatch(directoryUpdated(eventData));
         },
-        [dispatch]
+        [dispatch, handleUserMessage]
     );
 
     useEffect(() => {
