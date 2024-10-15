@@ -10,8 +10,8 @@ import {
     CustomMuiDialog,
     getCriteriaBasedSchema,
     FieldConstants,
-    noSelectionForCopy,
-    yup,
+    NO_SELECTION_FOR_COPY,
+    yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
@@ -111,9 +111,9 @@ const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogPr
         editContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === contingencyListId) {
-                    dispatch(setSelectionForCopy(noSelectionForCopy));
+                    dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
                     broadcastChannel.postMessage({
-                        noSelectionForCopy,
+                        NO_SELECTION_FOR_COPY,
                     });
                 }
                 closeAndClear();
