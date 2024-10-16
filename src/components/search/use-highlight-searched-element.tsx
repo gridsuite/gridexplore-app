@@ -40,7 +40,6 @@ export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
 
     const onGridReady = useCallback(
         ({ api }: GridReadyEvent<ElementAttributes>) => {
-            api.autoSizeAllColumns(); // autosize columns
             highlightElement(api);
         },
         [highlightElement]
