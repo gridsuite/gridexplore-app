@@ -59,6 +59,10 @@ const styles = {
         fontWeight: 'inherit',
         color: 'inherit',
     }),
+    treeItemHovered: (theme: Theme) => ({
+        backgroundColor: theme.aggrid.highlightColor + '!important',
+        borderRadius: 16,
+    }),
     treeItemLabelRoot: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
@@ -204,6 +208,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
                         root: styles.treeItemRoot,
                         selected: styles.treeItemSelected,
                         label: styles.treeItemLabel,
+                        hovered: styles.treeItemHovered,
                         iconContainer: styles.treeItemIconContainer,
                     },
                 }}

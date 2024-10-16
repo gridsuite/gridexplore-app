@@ -93,7 +93,8 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
                 selected && styles.selected,
                 focused && styles.focused,
                 disabled && styles.disabled,
-                hover ? { backgroundColor: theme.aggrid.highlightColor, borderRadius: '16px' } : undefined
+                isMenuOpen && styles.hovered,
+                { '&:hover': styles.hovered }
             )}
             onMouseDown={handleMouseDown}
             onMouseEnter={() => handleHover(true)}
