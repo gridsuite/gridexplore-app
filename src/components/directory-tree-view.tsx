@@ -30,7 +30,7 @@ const styles = {
         userSelect: 'none',
         '&:focus > .MuiTreeItem-content .MuiTreeItem-label, .focused': {
             borderRadius: theme.spacing(2),
-            backgroundColor: theme.row.primary,
+            backgroundColor: theme.aggrid.highlightColor,
         },
         '&:hover': {
             borderRadius: theme.spacing(2),

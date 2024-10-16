@@ -13,7 +13,6 @@ import { TreeItem, useTreeItem } from '@mui/x-tree-view';
 import { mergeSx } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
-import { useTheme } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 
@@ -43,8 +42,6 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
         onSelect,
         onAddIconClick,
     } = props;
-    const theme = useTheme();
-
     const { disabled, expanded, selected, focused, preventSelection } = useTreeItem(nodeId);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const isMenuOpen = activeDirectory === nodeId;
@@ -68,14 +65,6 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
         onAddIconClick(event, nodeId, 'anchorEl');
     };
 
-    const handleHover = (isHovering: boolean) => {
-        if (isMenuOpen) {
-            setHover(true);
-        } else {
-            setHover(isHovering);
-        }
-    };
-
     useEffect(() => {
         // we need to remove the hover when  the user clicks outside the menu while it is open.
         if (!activeDirectory) {
@@ -97,8 +86,8 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
                 { '&:hover': styles.hovered }
             )}
             onMouseDown={handleMouseDown}
-            onMouseEnter={() => handleHover(true)}
-            onMouseLeave={() => handleHover(false)}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
             ref={ref}
         >
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
