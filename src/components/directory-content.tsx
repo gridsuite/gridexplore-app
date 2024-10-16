@@ -694,6 +694,10 @@ const DirectoryContent = () => {
                             : undefined
                     }
                     restrictMenuItems={true}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
                 />
             </div>
             {renderDialog(elementName)}
