@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/material';
@@ -64,13 +64,6 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
         // used to open the menu
         onAddIconClick(event, nodeId, 'anchorEl');
     };
-
-    useEffect(() => {
-        // we need to remove the hover when  the user clicks outside the menu while it is open.
-        if (!activeDirectory) {
-            setHover(false);
-        }
-    }, [activeDirectory]);
 
     return (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
