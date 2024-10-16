@@ -73,7 +73,6 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         },
         headerCheckboxSelection: true,
         checkboxSelection: true,
-        width: 400,
         minWidth: 400,
     },
     {
@@ -96,7 +95,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         cellRendererParams: {
             childrenMetadata: childrenMetadata,
         },
-        minWidth: 180,
+        minWidth: 200,
         flex: 2,
         comparator: (
             valueA: string,
@@ -138,7 +137,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         }),
         field: 'creationDate',
         cellRenderer: DateCellRenderer,
-        minWidth: 140,
+        minWidth: 130,
         flex: 2,
     },
     {
@@ -156,7 +155,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         }),
         field: 'lastModificationDate',
         cellRenderer: DateCellRenderer,
-        minWidth: 140,
+        minWidth: 130,
         flex: 2,
     },
 ];
