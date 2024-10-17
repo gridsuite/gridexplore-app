@@ -41,7 +41,7 @@ interface IFormData {
     [FieldConstants.CASE_FILE]: File | null;
 }
 
-interface CreateCaseDialogProps {
+export interface CreateCaseDialogProps {
     onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     open: boolean;
 }

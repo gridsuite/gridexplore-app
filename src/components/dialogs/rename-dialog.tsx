@@ -12,7 +12,7 @@ import { FunctionComponent, SyntheticEvent } from 'react';
 import { AppState } from 'redux/reducer';
 import { useNameField } from './field-hook';
 
-interface RenameDialogProps {
+export interface RenameDialogProps {
     open: boolean;
     onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     onClick: (newName: string) => void;

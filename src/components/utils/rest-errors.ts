@@ -6,7 +6,7 @@
  */
 import { HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE } from 'utils/UIconstants';
 
-interface CustomError extends Error {
+export interface CustomError extends Error {
     status?: number;
 }
 

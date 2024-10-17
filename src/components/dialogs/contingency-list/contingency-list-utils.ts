@@ -11,18 +11,18 @@ import { SetRequired } from 'type-fest';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { ContingencyListType } from '../../../utils/elementType';
 
-interface Identifier {
+export interface Identifier {
     type: 'ID_BASED';
     identifier: string;
 }
 
-interface IdentifierList {
+export interface IdentifierList {
     type: 'LIST';
     contingencyId: string;
     identifierList: Identifier[];
 }
 
-interface RangeInputData {
+export interface RangeInputData {
     [FieldConstants.OPERATION_TYPE]: string;
     [FieldConstants.VALUE_1]: number | null;
     [FieldConstants.VALUE_2]: number | null;

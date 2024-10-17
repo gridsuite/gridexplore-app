@@ -69,7 +69,7 @@ const styles = {
     }),
 };
 
-interface DirectoryTreeViewProps {
+export interface DirectoryTreeViewProps {
     treeViewUuid: UUID;
     mapData: Record<string, IDirectory> | undefined;
     onContextMenu: (event: ReactMouseEvent<HTMLDivElement, MouseEvent>, nodeId: UUID | undefined) => void;

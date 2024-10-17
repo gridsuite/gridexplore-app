@@ -9,7 +9,7 @@ import { FormattedMessage } from 'react-intl';
 import { CancelButton } from '@gridsuite/commons-ui';
 import { FunctionComponent, SyntheticEvent } from 'react';
 
-interface ReplaceWithScriptDialogProps {
+export interface ReplaceWithScriptDialogProps {
     id: string;
     open: boolean;
     onClose: () => void;

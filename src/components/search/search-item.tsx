@@ -30,12 +30,12 @@ const styles = {
     }),
 };
 
-interface HighlightedTextProps {
+export interface HighlightedTextProps {
     text: string;
     highlight: string;
 }
 
-interface SearchItemProps {
+export interface SearchItemProps {
     matchingElement: ElementAttributesES;
     inputValue: string;
 }

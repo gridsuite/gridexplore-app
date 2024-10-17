@@ -21,7 +21,8 @@ import { setReorderedColumns } from '../redux/actions';
 import { defaultColumnDefinition } from './utils/directory-content-utils';
 import { AppState } from '../redux/reducer';
 
-interface DirectoryContentTableProps extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
+export interface DirectoryContentTableProps
+    extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
     gridRef: RefObject<AgGridReact<ElementAttributes>>;
     rows: ElementAttributes[];
     handleCellContextualMenu: (event: CellContextMenuEvent) => void;

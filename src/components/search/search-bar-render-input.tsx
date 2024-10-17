@@ -9,7 +9,7 @@ import { AutocompleteRenderInputParams, TextField, TextFieldProps } from '@mui/m
 import { RefObject } from 'react';
 import { useIntl } from 'react-intl';
 
-interface SearchBarRenderInputProps extends AutocompleteRenderInputParams {
+export interface SearchBarRenderInputProps extends AutocompleteRenderInputParams {
     inputRef: RefObject<TextFieldProps>;
 }
 

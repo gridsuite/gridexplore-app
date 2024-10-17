@@ -9,7 +9,7 @@ import { DirectoryItemSelector, ElementType, TreeViewFinderNodeProps } from '@gr
 import { useIntl } from 'react-intl';
 import { FunctionComponent } from 'react';
 
-interface MoveDialogProps {
+export interface MoveDialogProps {
     open: boolean;
     onClose: (selectedDir: TreeViewFinderNodeProps[]) => void;
     itemsCount: number;

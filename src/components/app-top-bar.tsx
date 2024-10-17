@@ -26,7 +26,7 @@ import { AppState } from '../redux/reducer';
 import { AppDispatch } from '../redux/store';
 import { useParameterState } from './dialogs/use-parameters-dialog';
 
-type AppTopBarProps = {
+export type AppTopBarProps = {
     userManagerInstance: UserManagerState['instance'];
 };
 

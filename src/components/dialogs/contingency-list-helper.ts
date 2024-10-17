@@ -6,7 +6,7 @@
  */
 import { FieldConstants } from '@gridsuite/commons-ui';
 
-interface ContingencyList {
+export interface ContingencyList {
     [FieldConstants.NAME]: string;
     [FieldConstants.EQUIPMENT_TABLE]?: {
         [FieldConstants.CONTINGENCY_NAME]?: string | null | undefined;
@@ -14,12 +14,12 @@ interface ContingencyList {
     }[];
 }
 
-interface Identifier {
+export interface Identifier {
     type: 'ID_BASED';
     identifier?: string | null;
 }
 
-interface IdentifierList {
+export interface IdentifierList {
     type: 'LIST';
     contingencyId: string;
     identifierList?: Identifier[];

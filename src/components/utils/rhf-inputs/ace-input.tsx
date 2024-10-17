@@ -14,7 +14,7 @@ import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import { AppState } from '../../../redux/reducer';
 
-interface AceInputProps {
+export interface AceInputProps {
     name: string;
     placeholder: string;
     fontSize: Exclude<IAceEditorProps['fontSize'], undefined>;

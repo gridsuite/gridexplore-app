@@ -12,7 +12,7 @@ import { useController, useFormContext } from 'react-hook-form';
 import { FieldConstants } from '@gridsuite/commons-ui';
 import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
 
-interface UploadNewCaseProps {
+export interface UploadNewCaseProps {
     isNewStudyCreation?: boolean;
     getCurrentCaseImportParams?: (uuid: string) => void;
     handleApiCallError?: ErrorCallback;

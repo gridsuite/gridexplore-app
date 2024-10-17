@@ -26,7 +26,7 @@ import { SearchBarPaperDisplayedElementWarning } from './search-bar-displayed-el
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 
-interface SearchBarProps {
+export interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
 }
 

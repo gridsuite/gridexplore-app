@@ -19,7 +19,7 @@ const stylesIcon = {
     }),
 };
 
-interface NoContentDirectoryProps {
+export interface NoContentDirectoryProps {
     handleOpenDialog: () => void;
 }
 

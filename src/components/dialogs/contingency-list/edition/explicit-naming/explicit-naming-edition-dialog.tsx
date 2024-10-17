@@ -44,7 +44,7 @@ const schema = yup.object().shape({
 
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
 
-interface ExplicitNamingEditionDialogProps {
+export interface ExplicitNamingEditionDialogProps {
     contingencyListId: string;
     contingencyListType: string;
     open: boolean;

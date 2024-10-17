@@ -10,7 +10,7 @@ import { Button, Grid } from '@mui/material';
 import { Check as CheckIcon, Settings as SettingsIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 
-interface AdvancedParameterButtonProps {
+export interface AdvancedParameterButtonProps {
     showOpenIcon: boolean;
     label: string;
     onClick: () => void;

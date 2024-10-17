@@ -38,7 +38,7 @@ const styles = {
     }),
 };
 
-interface EmptyFolderProps {
+export interface EmptyFolderProps {
     openDialog: (e: MouseEvent<HTMLElement>) => void;
     theme: string;
 }

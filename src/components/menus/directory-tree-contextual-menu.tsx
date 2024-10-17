@@ -41,7 +41,7 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 
-interface DirectoryTreeContextualMenuProps {
+export interface DirectoryTreeContextualMenuProps {
     directory: ElementAttributes | null;
     open: boolean;
     onClose: (e: unknown, nextSelectedDirectoryId?: string | null) => void;

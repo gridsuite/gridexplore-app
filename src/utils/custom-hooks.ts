@@ -22,7 +22,7 @@ export enum ActionType {
     ADD_SUCCESS = 'ADD_SUCCESS', // Use by multipleDeferredFetch when one request respond with success
 }
 
-interface FetchState<T> {
+export interface FetchState<T> {
     status: FetchStatus;
     errorMessage: string;
     data: T | null;

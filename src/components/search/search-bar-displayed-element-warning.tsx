@@ -9,7 +9,7 @@ import { Paper, Theme, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { HTMLAttributes } from 'react';
 
-type SearchBarPaperDisplayedElementWarningProps = HTMLAttributes<HTMLElement> & {
+export type SearchBarPaperDisplayedElementWarningProps = HTMLAttributes<HTMLElement> & {
     elementFoundLength: number;
     elementFoundTotal: number;
     isLoading: boolean;

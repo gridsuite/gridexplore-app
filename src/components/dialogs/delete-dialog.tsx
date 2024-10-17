@@ -18,7 +18,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { FunctionComponent, SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { CancelButton, ElementAttributes, OverflowableText } from '@gridsuite/commons-ui';
 
-interface DeleteDialogProps {
+export interface DeleteDialogProps {
     open: boolean;
     onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     onClick: () => void;

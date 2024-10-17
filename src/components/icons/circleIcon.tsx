@@ -7,7 +7,7 @@
 import { CSSProperties, FunctionComponent, ReactNode } from 'react';
 import { Box, useTheme } from '@mui/material';
 
-interface CircleIconProps {
+export interface CircleIconProps {
     size: number;
     iconStyles?: (theme: any) => CSSProperties; // Adjust this type based on your theme type
     children: ReactNode;

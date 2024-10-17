@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { elementExists } from '../../../utils/rest-api';
 import { AppState } from '../../../redux/reducer';
 
-interface PrefilledNameInputProps {
+export interface PrefilledNameInputProps {
     label: string;
     name: string;
     elementType: ElementType;

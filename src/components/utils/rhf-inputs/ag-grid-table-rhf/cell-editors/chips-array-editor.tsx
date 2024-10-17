@@ -11,7 +11,7 @@ import { FieldConstants, MultipleAutocompleteInput } from '@gridsuite/commons-ui
 import { ColDef, IRowNode } from 'ag-grid-community';
 import TableCellWrapper from './table-cell-wrapper';
 
-interface ChipsArrayEditorProps {
+export interface ChipsArrayEditorProps {
     name: string;
     node: IRowNode<AgGridData>;
     colDef: ColDef;

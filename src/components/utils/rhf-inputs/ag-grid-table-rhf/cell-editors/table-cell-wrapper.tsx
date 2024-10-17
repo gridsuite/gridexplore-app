@@ -8,7 +8,7 @@
 import { forwardRef, ReactNode, useImperativeHandle } from 'react';
 import { useWatch } from 'react-hook-form';
 
-interface TableCellWrapperProps {
+export interface TableCellWrapperProps {
     name: string;
     children: ReactNode;
 }

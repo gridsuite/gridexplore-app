@@ -46,7 +46,7 @@ const schema = yup.object().shape({
 
 const emptyFormData = getContingencyListEmptyFormData();
 
-interface ContingencyListCreationDialogProps {
+export interface ContingencyListCreationDialogProps {
     onClose: (event?: SyntheticEvent) => void;
     open: boolean;
     titleId: string;

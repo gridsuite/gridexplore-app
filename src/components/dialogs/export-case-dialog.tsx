@@ -47,7 +47,7 @@ type FormatParameters = {
     [parameterName: string]: any;
 };
 
-interface ExportCaseDialogProps {
+export interface ExportCaseDialogProps {
     selectedElements: ElementAttributes[];
     onClose: () => void;
     onExport: (

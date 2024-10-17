@@ -22,7 +22,7 @@ const emptyFormData = {
     [FieldConstants.NAME]: '',
 };
 
-interface CopyToScriptDialogProps {
+export interface CopyToScriptDialogProps {
     id: string;
     open: boolean;
     onClose: (...args: any[]) => void;

@@ -34,7 +34,7 @@ export interface MenuItemType {
     disabled?: boolean;
 }
 
-interface CommonContextualMenuProps {
+export interface CommonContextualMenuProps {
     onClose?: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     open: boolean;
     anchorReference?: PopoverReference;

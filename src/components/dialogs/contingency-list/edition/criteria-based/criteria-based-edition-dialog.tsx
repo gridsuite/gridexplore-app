@@ -43,7 +43,7 @@ export interface CriteriaBasedEditionFormData {
     [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
 }
 
-interface CriteriaBasedEditionDialogProps {
+export interface CriteriaBasedEditionDialogProps {
     contingencyListId: string;
     contingencyListType: string;
     open: boolean;

@@ -11,7 +11,7 @@ import { FormattedMessage } from 'react-intl';
 import { CancelButton, ElementType } from '@gridsuite/commons-ui';
 import { useNameField } from './field-hook';
 
-interface CreateDirectoryDialogProps {
+export interface CreateDirectoryDialogProps {
     open: boolean;
     onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     onClick: (newName: string) => void;

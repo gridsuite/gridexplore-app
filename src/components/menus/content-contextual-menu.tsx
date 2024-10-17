@@ -59,7 +59,7 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 
-interface ContentContextualMenuProps {
+export interface ContentContextualMenuProps {
     activeElement: ElementAttributes;
     selectedElements: ElementAttributes[];
     onUpdateSelectedElements: (elements: ElementAttributes[]) => void;

@@ -19,7 +19,7 @@ const styles = {
     },
 };
 
-interface UseTextValueProps extends Omit<TextFieldProps, 'label' | 'defaultValue'> {
+export interface UseTextValueProps extends Omit<TextFieldProps, 'label' | 'defaultValue'> {
     label: string;
     id?: string;
     defaultValue?: string;
@@ -68,7 +68,7 @@ export const useTextValue = ({
     return [value, field, setValue, hasChanged];
 };
 
-interface UseNameFieldProps extends UseTextValueProps {
+export interface UseNameFieldProps extends UseTextValueProps {
     parentDirectoryId?: string | null;
     elementType: ElementType;
     active: boolean;
