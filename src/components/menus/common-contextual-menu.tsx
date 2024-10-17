@@ -15,7 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
-import { PopoverPosition, PopoverReference, styled } from '@mui/material';
+import { styled } from '@mui/material';
 
 const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} />)({
     '.MuiMenu-paper': {
@@ -31,16 +31,12 @@ export interface MenuItemType {
     disabled?: boolean;
 }
 
-interface CommonContextualMenuProps {
-    onClose?: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
-    open: boolean;
-    anchorReference?: PopoverReference;
-    anchorPosition?: PopoverPosition;
+interface CommonContextualMenuProps extends MenuProps {
     menuItems?: MenuItemType[];
 }
 
 const CommonContextualMenu: React.FC<CommonContextualMenuProps> = (props) => {
-    const { menuItems, ...others } = props;
+    const { menuItems, ...menuProps } = props;
 
     function makeMenuItem(
         key: number,
@@ -70,7 +66,7 @@ const CommonContextualMenu: React.FC<CommonContextualMenuProps> = (props) => {
     }
 
     return (
-        <StyledMenu keepMounted {...others}>
+        <StyledMenu keepMounted {...menuProps}>
             {menuItems?.map((menuItem, index) => {
                 if (menuItem.isDivider) {
                     return <Divider key={index} />;
