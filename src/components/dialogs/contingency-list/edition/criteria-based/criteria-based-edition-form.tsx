@@ -12,40 +12,32 @@ import {
     getCriteriaBasedFormData,
     CONTINGENCY_LIST_EQUIPMENTS,
     FieldConstants,
+    unscrollableDialogStyles,
 } from '@gridsuite/commons-ui';
 import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import Box from '@mui/material/Box';
 
-const styles = {
-    FillerContainer: {
-        height: '100%',
-        '&::before': {
-            content: '""',
-            height: '100%',
-            float: 'left',
-        },
-    },
-};
-
 const CriteriaBasedEditionForm = () => {
     const emptyValues = getCriteriaBasedFormData({}, {});
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
-        <Box sx={styles.FillerContainer}>
-            <UniqueNameInput
-                name={FieldConstants.NAME}
-                label={'nameProperty'}
-                elementType={ElementType.CONTINGENCY_LIST}
-                activeDirectory={activeDirectory}
-                elementExists={elementExists}
-            />
+        <>
+            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
+                <UniqueNameInput
+                    name={FieldConstants.NAME}
+                    label={'nameProperty'}
+                    elementType={ElementType.CONTINGENCY_LIST}
+                    activeDirectory={activeDirectory}
+                    elementExists={elementExists}
+                />
+            </Box>
             <CriteriaBasedForm
                 equipments={CONTINGENCY_LIST_EQUIPMENTS}
                 defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
             />
-        </Box>
+        </>
     );
 };
 
