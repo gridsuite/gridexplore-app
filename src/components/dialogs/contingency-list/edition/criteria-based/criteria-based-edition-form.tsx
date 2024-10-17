@@ -18,15 +18,15 @@ import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 
-const CriteriaBasedEditionForm = () => {
+function CriteriaBasedEditionForm() {
     const emptyValues = getCriteriaBasedFormData({}, {});
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
-        <Grid container spacing={2} marginTop={'auto'}>
+        <Grid container spacing={2} marginTop="auto">
             <Grid item xs={12}>
                 <UniqueNameInput
                     name={FieldConstants.NAME}
-                    label={'nameProperty'}
+                    label="nameProperty"
                     elementType={ElementType.CONTINGENCY_LIST}
                     activeDirectory={activeDirectory}
                     elementExists={elementExists}
@@ -38,6 +38,6 @@ const CriteriaBasedEditionForm = () => {
             />
         </Grid>
     );
-};
+}
 
 export default CriteriaBasedEditionForm;

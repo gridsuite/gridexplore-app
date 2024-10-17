@@ -6,20 +6,20 @@
  */
 
 import { Grid } from '@mui/material';
-import ExplicitNamingForm from '../../explicit-naming/explicit-naming-form';
 import { ElementType, UniqueNameInput, FieldConstants } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { elementExists } from 'utils/rest-api';
 import { AppState } from 'redux/reducer';
+import ExplicitNamingForm from '../../explicit-naming/explicit-naming-form';
 
-const ExplicitNamingEditionForm = () => {
+function ExplicitNamingEditionForm() {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
-        <Grid container spacing={2} marginTop={'auto'}>
+        <Grid container spacing={2} marginTop="auto">
             <Grid item xs={12}>
                 <UniqueNameInput
                     name={FieldConstants.NAME}
-                    label={'nameProperty'}
+                    label="nameProperty"
                     elementType={ElementType.CONTINGENCY_LIST}
                     activeDirectory={activeDirectory}
                     elementExists={elementExists}
@@ -28,6 +28,6 @@ const ExplicitNamingEditionForm = () => {
             <ExplicitNamingForm />
         </Grid>
     );
-};
+}
 
 export default ExplicitNamingEditionForm;

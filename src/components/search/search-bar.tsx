@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { FunctionComponent, RefObject, useCallback, useRef } from 'react';
-import { searchElementsInfos } from '../../utils/rest-api';
 import {
     ElementSearchInput,
     ElementType,
@@ -15,11 +14,12 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
+import { TextFieldProps } from '@mui/material';
+import { searchElementsInfos } from '../../utils/rest-api';
 import { setSearchedElement, setSelectedDirectory, setTreeData } from '../../redux/actions';
 import { updatedTree } from '../tree-views-container';
 import { SearchItem } from './search-item';
 import { AppState, ElementAttributesES, IDirectory, ITreeData } from '../../redux/reducer';
-import { TextFieldProps } from '@mui/material';
 import { SearchBarRenderInput } from './search-bar-render-input';
 import { AppDispatch } from '../../redux/store';
 import { SearchBarPaperDisplayedElementWarning } from './search-bar-displayed-element-warning';
@@ -30,7 +30,7 @@ interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
 }
 
-//TODO remove when ElementSearchInputProps is exported in commons-ui
+// TODO remove when ElementSearchInputProps is exported in commons-ui
 type ElementSearchInputProps<T> = Parameters<typeof ElementSearchInput<T>>[0];
 
 export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
@@ -64,7 +64,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
             if (!treeDataRef.current) {
                 return;
             }
-            let [newRootDirectories, newMapData] = updatedTree(
+            const [newRootDirectories, newMapData] = updatedTree(
                 treeDataRef.current.rootDirectories,
                 treeDataRef.current.mapData,
                 nodeId,

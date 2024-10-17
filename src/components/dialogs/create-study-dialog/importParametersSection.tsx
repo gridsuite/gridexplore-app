@@ -8,9 +8,9 @@
 import { Divider } from '@mui/material';
 import { FlatParameters, FieldConstants } from '@gridsuite/commons-ui';
 import React, { useState, FunctionComponent } from 'react';
-import AdvancedParameterButton from './advancedParameterButton';
 import { useController, useWatch } from 'react-hook-form';
 import Box from '@mui/material/Box';
+import AdvancedParameterButton from './advancedParameterButton';
 
 const ImportParametersSection: FunctionComponent = () => {
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
@@ -48,7 +48,7 @@ const ImportParametersSection: FunctionComponent = () => {
             >
                 <AdvancedParameterButton
                     showOpenIcon={isParamsDisplayed}
-                    label={'importParameters'}
+                    label="importParameters"
                     onClick={handleShowParametersClick}
                     disabled={formatWithParameters.length === 0}
                 />

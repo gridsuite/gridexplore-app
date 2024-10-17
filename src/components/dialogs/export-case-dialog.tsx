@@ -23,11 +23,11 @@ import {
     Typography,
 } from '@mui/material';
 import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { getExportFormats } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { CancelButton, ElementAttributes, FlatParameters } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
+import { getExportFormats } from '../../utils/rest-api';
 
 type ExportFormats =
     | {
@@ -58,7 +58,7 @@ interface ExportCaseDialogProps {
     ) => Promise<void>;
 }
 
-const ExportCaseDialog = ({ selectedElements, onClose, onExport }: ExportCaseDialogProps) => {
+function ExportCaseDialog({ selectedElements, onClose, onExport }: ExportCaseDialogProps) {
     const [loading, setLoading] = useState<boolean>(false);
     const [formats, setFormats] = useState<ExportFormats>([]);
     const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
@@ -91,7 +91,7 @@ const ExportCaseDialog = ({ selectedElements, onClose, onExport }: ExportCaseDia
         getExportFormats().then((fetchedFormats: ExportFormats) => {
             // we check if the param is for extension, if it is, we select all possible values by default.
             // the only way for the moment to check if the param is for extension, is by checking his type is name.
-            //TODO to be removed when extensions param default value corrected in backend to include all possible values
+            // TODO to be removed when extensions param default value corrected in backend to include all possible values
             Object.values(fetchedFormats).forEach((format) =>
                 format.parameters.forEach((param) => {
                     if (param.type === 'STRING_LIST' && param.name.endsWith('extensions')) {
@@ -206,6 +206,6 @@ const ExportCaseDialog = ({ selectedElements, onClose, onExport }: ExportCaseDia
             </DialogActions>
         </Dialog>
     );
-};
+}
 
 export default ExportCaseDialog;

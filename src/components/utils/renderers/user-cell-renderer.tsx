@@ -15,9 +15,8 @@ const abbreviationFromUserName = (name: string | null) => {
     const tab = name.split(' ').map((x) => x.charAt(0));
     if (tab.length === 1) {
         return tab[0];
-    } else {
-        return tab[0] + tab[tab.length - 1];
     }
+    return tab[0] + tab[tab.length - 1];
 };
 
 const styles = {
@@ -26,7 +25,7 @@ const styles = {
     },
 };
 
-export const UserCellRenderer = ({ value }: { value: string }) => {
+export function UserCellRenderer({ value }: { value: string }) {
     return (
         <Box>
             <Tooltip title={value} placement="right">
@@ -34,4 +33,4 @@ export const UserCellRenderer = ({ value }: { value: string }) => {
             </Tooltip>
         </Box>
     );
-};
+}

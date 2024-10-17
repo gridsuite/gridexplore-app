@@ -15,6 +15,9 @@ import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import AddIcon from '@mui/icons-material/Add';
 import CreateIcon from '@mui/icons-material/Create';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import { ElementAttributes, ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
+import { PopoverPosition, PopoverReference } from '@mui/material';
+import { AppState } from 'redux/reducer';
 import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
 import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
@@ -34,14 +37,11 @@ import {
 
 import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
-import { ElementAttributes, ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
-import { PopoverPosition, PopoverReference } from '@mui/material';
-import { AppState } from 'redux/reducer';
 
 interface DirectoryTreeContextualMenuProps {
     directory: ElementAttributes | null;
@@ -194,7 +194,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
             deleteElement(elementsUuid)
                 .then(() => handleCloseDialog(null, directory?.parentUuid))
                 .catch((error: any) => {
-                    //show the error message and don't close the dialog
+                    // show the error message and don't close the dialog
                     setDeleteError(error.message);
                     handleError(error.message);
                 });
@@ -213,7 +213,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
 
     const buildMenu = () => {
         // build menuItems here
-        let menuItems: MenuItemType[] = [];
+        const menuItems: MenuItemType[] = [];
 
         if (!showMenuFromEmptyZone()) {
             menuItems.push(
@@ -305,19 +305,19 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     const renderDialog = () => {
         switch (openDialog) {
             case DialogsId.ADD_NEW_STUDY:
-                return <CreateStudyForm open={true} onClose={handleCloseDialog} />;
+                return <CreateStudyForm open onClose={handleCloseDialog} />;
             case DialogsId.ADD_NEW_CONTINGENCY_LIST:
                 return (
                     <ContingencyListCreationDialog
-                        open={true}
-                        titleId={'createNewContingencyList'}
+                        open
+                        titleId="createNewContingencyList"
                         onClose={handleCloseDialog}
                     />
                 );
             case DialogsId.ADD_DIRECTORY:
                 return (
                     <CreateDirectoryDialog
-                        open={true}
+                        open
                         onClick={(elementName: string) =>
                             insertDirectoryCB(elementName, directory?.elementUuid, userId)
                         }
@@ -332,7 +332,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
             case DialogsId.ADD_ROOT_DIRECTORY:
                 return (
                     <CreateDirectoryDialog
-                        open={true}
+                        open
                         onClick={(elementName: string) => insertRootDirectoryCB(elementName, userId)}
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
@@ -344,10 +344,10 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
             case DialogsId.RENAME_DIRECTORY:
                 return (
                     <RenameDialog
-                        message={'renameElementMsg'}
+                        message="renameElementMsg"
                         // @ts-expect-error TODO: manage null case(s) here
                         currentName={directory.elementName}
-                        open={true}
+                        open
                         onClick={(newName: string) => renameCB(directory?.elementUuid, newName)}
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
@@ -362,9 +362,9 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 return (
                     <DeleteDialog
                         items={directory ? [directory] : []}
-                        multipleDeleteFormatMessageId={'deleteMultipleDirectoriesDialogMessage'}
-                        simpleDeleteFormatMessageId={'deleteDirectoryDialogMessage'}
-                        open={true}
+                        multipleDeleteFormatMessageId="deleteMultipleDirectoriesDialogMessage"
+                        simpleDeleteFormatMessageId="deleteDirectoryDialogMessage"
+                        open
                         onClick={() => {
                             // @ts-expect-error TODO: manage undefined case
                             handleDeleteElement(directory.elementUuid);
@@ -376,7 +376,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
             case DialogsId.ADD_NEW_FILTER:
                 return (
                     <FilterCreationDialog
-                        open={true}
+                        open
                         onClose={handleCloseDialog}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
@@ -384,7 +384,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                     />
                 );
             case DialogsId.ADD_NEW_CASE:
-                return <CreateCaseDialog open={true} onClose={handleCloseDialog} />;
+                return <CreateCaseDialog open onClose={handleCloseDialog} />;
             default:
                 return null;
         }

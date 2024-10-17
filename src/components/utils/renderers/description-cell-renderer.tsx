@@ -22,8 +22,8 @@ const styles = {
     },
 };
 
-export const DescriptionCellRenderer = ({ data }: { data: ElementAttributes }) => {
-    const description = data.description;
+export function DescriptionCellRenderer({ data }: { data: ElementAttributes }) {
+    const { description } = data;
     const descriptionLines = description?.split('\n');
     if (descriptionLines?.length > 3) {
         descriptionLines[2] = '...';
@@ -48,4 +48,4 @@ export const DescriptionCellRenderer = ({ data }: { data: ElementAttributes }) =
             {icon}
         </Box>
     );
-};
+}

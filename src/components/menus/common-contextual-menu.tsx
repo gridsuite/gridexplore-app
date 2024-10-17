@@ -74,15 +74,14 @@ const CommonContextualMenu: React.FC<CommonContextualMenuProps> = (props) => {
             {menuItems?.map((menuItem, index) => {
                 if (menuItem.isDivider) {
                     return <Divider key={index} />;
-                } else {
-                    return makeMenuItem(
-                        index,
-                        menuItem.messageDescriptorId,
-                        menuItem.callback,
-                        menuItem.icon,
-                        menuItem.disabled
-                    );
                 }
+                return makeMenuItem(
+                    index,
+                    menuItem.messageDescriptorId,
+                    menuItem.callback,
+                    menuItem.icon,
+                    menuItem.disabled
+                );
             })}
         </StyledMenu>
     );

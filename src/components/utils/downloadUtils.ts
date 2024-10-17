@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { downloadCase, downloadSpreadsheetConfig, fetchConvertedCase, getCaseOriginalName } from '../../utils/rest-api';
 import { useIntl } from 'react-intl';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { UUID } from 'crypto';
+import { downloadCase, downloadSpreadsheetConfig, fetchConvertedCase, getCaseOriginalName } from '../../utils/rest-api';
 
 interface DownloadData {
     blob: Blob;
@@ -30,12 +30,12 @@ const triggerDownload = ({ blob, filename }: DownloadData): void => {
 const downloadStrategies: { [key in ElementType]?: (element: ElementAttributes) => Promise<DownloadData> } = {
     [ElementType.CASE]: async (element: ElementAttributes) => {
         const result = await downloadCase(element.elementUuid);
-        let caseOriginalName = await getCaseOriginalName(element.elementUuid);
-        let extension =
+        const caseOriginalName = await getCaseOriginalName(element.elementUuid);
+        const extension =
             typeof caseOriginalName === 'string' && caseOriginalName.includes('.')
                 ? caseOriginalName.substring(caseOriginalName.indexOf('.') + 1)
                 : 'xiidm';
-        let caseName = element.elementName;
+        const caseName = element.elementName;
         const filename = `${caseName}.${extension}`;
         return { blob: await result.blob(), filename };
     },
@@ -213,7 +213,7 @@ export function useDownloadUtils() {
                     );
                     break;
             }
-            return messageFirstLine + '\n' + capitalizeFirstLetter(messageSecondLine);
+            return `${messageFirstLine}\n${capitalizeFirstLetter(messageSecondLine)}`;
         },
         [intl, capitalizeFirstLetter]
     );

@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ContingencyListType } from '../../../utils/elementType';
-import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { v4 as uuid4 } from 'uuid';
 import { FieldConstants, getCriteriaBasedFormData } from '@gridsuite/commons-ui';
 import { SetRequired } from 'type-fest';
+import { prepareContingencyListForBackend } from '../contingency-list-helper';
+import { ContingencyListType } from '../../../utils/elementType';
 
 interface Identifier {
     type: 'ID_BASED';
@@ -134,9 +134,7 @@ export const getFormContent = (
             return { script: contingencyList[FieldConstants.SCRIPT] };
         }
         default: {
-            console.info(
-                "Unknown contingency list type '" + contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE] + "'"
-            );
+            console.info(`Unknown contingency list type '${contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE]}'`);
             return null;
         }
     }

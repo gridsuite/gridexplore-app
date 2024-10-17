@@ -7,8 +7,6 @@
 
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo } from 'react';
-import { makeDefaultRowData } from '../contingency-list-utils';
-import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { ContingencyListType } from 'utils/elementType';
 import { v4 as uuid4 } from 'uuid';
 import {
@@ -19,6 +17,8 @@ import {
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { SuppressKeyboardEventParams } from 'ag-grid-community';
+import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
+import { makeDefaultRowData } from '../contingency-list-utils';
 
 export const getExplicitNamingSchema = (id: FieldConstants.EQUIPMENT_TABLE) => {
     return {
@@ -67,7 +67,7 @@ const getExplicitNamingConditionSchema = (schema: yup.ArraySchema<any, any, any,
 };
 
 const suppressKeyboardEvent = (params: SuppressKeyboardEventParams) => {
-    const key = params.event.key;
+    const { key } = params.event;
     return key === 'Enter' || key === 'ArrowLeft' || key === 'ArrowRight';
 };
 
@@ -145,7 +145,7 @@ const ExplicitNamingForm = () => {
             name={FieldConstants.EQUIPMENT_TABLE}
             columnDefs={columnDefs}
             makeDefaultRowData={makeDefaultRowData}
-            pagination={true}
+            pagination
             paginationPageSize={100}
             suppressRowClickSelection
             defaultColDef={defaultColDef}

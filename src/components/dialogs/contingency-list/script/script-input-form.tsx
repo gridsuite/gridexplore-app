@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import AceInput from '../../../utils/rhf-inputs/ace-input';
 import { styled } from '@mui/system';
 import { FieldConstants } from '@gridsuite/commons-ui';
+import AceInput from '../../../utils/rhf-inputs/ace-input';
 
 const StyledAceInput = styled(AceInput)({
     minWidth: '650px',
@@ -16,7 +16,7 @@ const StyledAceInput = styled(AceInput)({
     flexGrow: 1,
 });
 
-const ScriptInputForm = () => {
+function ScriptInputForm() {
     return (
         <StyledAceInput
             name={FieldConstants.SCRIPT}
@@ -25,6 +25,6 @@ const ScriptInputForm = () => {
             fontSize="18px"
         />
     );
-};
+}
 
 export default ScriptInputForm;

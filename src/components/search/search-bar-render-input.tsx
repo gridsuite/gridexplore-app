@@ -13,13 +13,13 @@ interface SearchBarRenderInputProps extends AutocompleteRenderInputParams {
     inputRef: RefObject<TextFieldProps>;
 }
 
-export const SearchBarRenderInput = (props: SearchBarRenderInputProps) => {
+export function SearchBarRenderInput(props: SearchBarRenderInputProps) {
     const intl = useIntl();
     const { InputProps } = props;
 
     return (
         <TextField
-            autoFocus={true}
+            autoFocus
             {...props}
             placeholder={intl.formatMessage({
                 id: 'searchPlaceholder',
@@ -36,4 +36,4 @@ export const SearchBarRenderInput = (props: SearchBarRenderInputProps) => {
             }}
         />
     );
-};
+}

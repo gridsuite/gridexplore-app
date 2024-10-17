@@ -68,6 +68,8 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
     );
 });
 
-const CustomTreeItem = (props: any) => <TreeItem ContentComponent={CustomContent} {...props} />;
+function CustomTreeItem(props: any) {
+    return <TreeItem ContentComponent={CustomContent} {...props} />;
+}
 
 export default CustomTreeItem;

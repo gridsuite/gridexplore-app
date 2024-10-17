@@ -12,10 +12,10 @@ interface CustomError extends Error {
 
 export const handleMaxElementsExceededError = (error: CustomError, snackError: Function): boolean => {
     if (error.status === 403 && error.message.includes(HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE)) {
-        let limit = error.message.split(/[: ]+/).pop();
+        const limit = error.message.split(/[: ]+/).pop();
         snackError({
             messageId: 'maxElementExceededError',
-            messageValues: { limit: limit },
+            messageValues: { limit },
         });
         return true;
     }

@@ -15,8 +15,9 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import { createContingencyList } from '../../../../utils/rest-api';
 import { FunctionComponent, SyntheticEvent } from 'react';
+import { AppState } from 'redux/reducer';
+import { createContingencyList } from '../../../../utils/rest-api';
 import ContingencyListCreationForm from './contingency-list-creation-form';
 import {
     ContingencyListFormData,
@@ -28,7 +29,6 @@ import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form
 import { ContingencyListType } from '../../../../utils/elementType';
 import { useParameterState } from '../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
-import { AppState } from 'redux/reducer';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -107,7 +107,7 @@ const ContingencyListCreationDialog: FunctionComponent<ContingencyListCreationDi
             formSchema={schema}
             formMethods={methods}
             titleId={titleId}
-            removeOptional={true}
+            removeOptional
             disabledSave={Boolean(nameError || isValidating)}
             language={languageLocal}
         >

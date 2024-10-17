@@ -6,10 +6,10 @@
  */
 
 import { forwardRef } from 'react';
-import TableCellWrapper from './table-cell-wrapper';
 import { useFormContext } from 'react-hook-form';
 import { FieldConstants, MultipleAutocompleteInput } from '@gridsuite/commons-ui';
 import { ColDef, IRowNode } from 'ag-grid-community';
+import TableCellWrapper from './table-cell-wrapper';
 
 interface ChipsArrayEditorProps {
     name: string;
@@ -39,7 +39,7 @@ const ChipsArrayEditor = forwardRef(({ ...props }: ChipsArrayEditorProps, ref) =
         <TableCellWrapper ref={ref} name={cellName}>
             <MultipleAutocompleteInput
                 name={cellName}
-                size={'small'}
+                size="small"
                 formProps={{
                     sx: {
                         '& .MuiOutlinedInput-notchedOutline': {

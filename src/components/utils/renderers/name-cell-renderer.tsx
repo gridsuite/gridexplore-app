@@ -20,12 +20,12 @@ const getDisplayedElementName = (
     intl: IntlShape
 ) => {
     const { elementName, uploading, elementUuid } = data;
-    const formatMessage = intl.formatMessage;
+    const { formatMessage } = intl;
     if (uploading) {
-        return elementName + '\n' + formatMessage({ id: 'uploading' });
+        return `${elementName}\n${formatMessage({ id: 'uploading' })}`;
     }
     if (!childrenMetadata[elementUuid]) {
-        return elementName + '\n' + formatMessage({ id: 'creationInProgress' });
+        return `${elementName}\n${formatMessage({ id: 'creationInProgress' })}`;
     }
     return childrenMetadata[elementUuid].elementName;
 };
@@ -56,13 +56,13 @@ const styles = {
         verticalAlign: 'middle',
     },
 };
-export const NameCellRenderer = ({
+export function NameCellRenderer({
     data,
     childrenMetadata,
 }: {
     data: ElementAttributes;
     childrenMetadata: Record<UUID, ElementAttributes>;
-}) => {
+}) {
     const intl = useIntl();
     return (
         <Box sx={styles.tableCell}>
@@ -79,4 +79,4 @@ export const NameCellRenderer = ({
             />
         </Box>
     );
-};
+}

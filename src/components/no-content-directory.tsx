@@ -8,8 +8,8 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import CircleIcon from './icons/circleIcon';
 import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
+import CircleIcon from './icons/circleIcon';
 
 const CIRCLE_SIZE = 200;
 
@@ -51,10 +51,10 @@ const NoContentDirectory: React.FC<NoContentDirectoryProps> = ({ handleOpenDialo
             </CircleIcon>
             <Box sx={styles.noContentText}>
                 <h1>
-                    <FormattedMessage id={'createFirstDir'} />
+                    <FormattedMessage id="createFirstDir" />
                 </h1>
                 <Button variant="contained" sx={styles.noContentButton} onClick={handleOpenDialog}>
-                    <FormattedMessage id={'createFolder'} />
+                    <FormattedMessage id="createFolder" />
                 </Button>
             </Box>
         </Box>

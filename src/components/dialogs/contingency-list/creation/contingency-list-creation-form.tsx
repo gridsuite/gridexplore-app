@@ -16,15 +16,15 @@ import {
     ElementType,
     gridItem,
 } from '@gridsuite/commons-ui';
-import { ContingencyListType } from '../../../../utils/elementType';
 import { Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
-import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
-import ScriptInputForm from '../script/script-input-form';
 import { useSelector } from 'react-redux';
-import { elementExists } from '../../../../utils/rest-api';
 import { ChangeEvent, FunctionComponent } from 'react';
 import { AppState } from 'redux/reducer';
+import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
+import ScriptInputForm from '../script/script-input-form';
+import { elementExists } from '../../../../utils/rest-api';
+import { ContingencyListType } from '../../../../utils/elementType';
 
 const ContingencyListCreationForm: FunctionComponent = () => {
     const { setValue } = useFormContext();
@@ -54,7 +54,7 @@ const ContingencyListCreationForm: FunctionComponent = () => {
             <Grid item xs={12}>
                 <UniqueNameInput
                     name={FieldConstants.NAME}
-                    label={'nameProperty'}
+                    label="nameProperty"
                     elementType={ElementType.CONTINGENCY_LIST}
                     autoFocus
                     activeDirectory={activeDirectory}

@@ -53,12 +53,12 @@ export const prepareContingencyListForBackend = (
             return {
                 type: 'LIST',
                 contingencyId: contingency[FieldConstants.CONTINGENCY_NAME] ?? '',
-                identifierList: identifierList,
+                identifierList,
             };
         }) ?? [];
 
     return {
-        id: id,
+        id,
         identifierContingencyList: {
             type: 'identifier',
             version: '1.2',

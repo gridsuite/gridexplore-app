@@ -11,12 +11,11 @@ import Alert from '@mui/material/Alert';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useNameField } from './field-hook';
 import { useSelector } from 'react-redux';
-import { ElementType } from '@gridsuite/commons-ui';
-import { CancelButton } from '@gridsuite/commons-ui';
+import { ElementType, CancelButton } from '@gridsuite/commons-ui';
 import { FunctionComponent, SyntheticEvent } from 'react';
 import { AppState } from 'redux/reducer';
+import { useNameField } from './field-hook';
 
 interface RenameDialogProps {
     open: boolean;
@@ -70,7 +69,7 @@ const RenameDialog: FunctionComponent<RenameDialogProps> = ({
 
     const handleClick = () => {
         if (currentName !== newName) {
-            console.debug('Request for renaming : ' + currentName + ' => ' + newName);
+            console.debug(`Request for renaming : ${currentName} => ${newName}`);
             onClick(newName);
         } else {
             onClose();
@@ -89,7 +88,7 @@ const RenameDialog: FunctionComponent<RenameDialogProps> = ({
     };
 
     return (
-        <Dialog fullWidth={true} open={open} onClose={handleClose} aria-labelledby="dialog-title-rename">
+        <Dialog fullWidth open={open} onClose={handleClose} aria-labelledby="dialog-title-rename">
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 {newNameField}

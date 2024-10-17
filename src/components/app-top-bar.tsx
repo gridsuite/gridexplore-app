@@ -13,10 +13,10 @@ import {
     TopBar,
     UserManagerState,
 } from '@gridsuite/commons-ui';
-import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchVersion, getServersInfos } from '../utils/rest-api';
 import { useNavigate } from 'react-router-dom';
+import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
+import { fetchVersion, getServersInfos } from '../utils/rest-api';
 import GridExploreLogoLight from '../images/GridExplore_logo_light.svg?react';
 import GridExploreLogoDark from '../images/GridExplore_logo_dark.svg?react';
 import { setAppsAndUrls } from '../redux/actions';

@@ -14,13 +14,13 @@ import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDirectory } from '../redux/actions';
-import CustomTreeItem from './custom-tree-item';
 import { Box, Theme } from '@mui/material';
 import { TreeView } from '@mui/x-tree-view';
-import { AppState, IDirectory } from '../redux/reducer';
 import { ElementAttributes } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
+import { AppState, IDirectory } from '../redux/reducer';
+import CustomTreeItem from './custom-tree-item';
+import { setSelectedDirectory } from '../redux/actions';
 
 const styles = {
     treeViewRoot: (theme: Theme) => ({
@@ -82,7 +82,7 @@ interface DirectoryTreeViewProps {
     onDirectoryUpdate: (nodeId: UUID, isClose: boolean) => void;
 }
 
-const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUpdate }: DirectoryTreeViewProps) => {
+function DirectoryTreeView({ treeViewUuid, mapData, onContextMenu, onDirectoryUpdate }: DirectoryTreeViewProps) {
     const dispatch = useDispatch();
 
     const [expanded, setExpanded] = React.useState<UUID[]>([]);
@@ -98,14 +98,14 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
 
     const ensureInOutExpansion = useCallback(
         (inIds: any[], outIds: any[] = []) => {
-            let prevAsSet = new Set(expandedRef.current);
+            const prevAsSet = new Set(expandedRef.current);
             // if on both side : no-op
-            let inIdsSet = new Set(inIds.filter((id) => !outIds.includes(id) && !prevAsSet.has(id)));
-            let outIdsSet = new Set(outIds.filter((id) => !inIds.includes(id) && prevAsSet.has(id)));
+            const inIdsSet = new Set(inIds.filter((id) => !outIds.includes(id) && !prevAsSet.has(id)));
+            const outIdsSet = new Set(outIds.filter((id) => !inIds.includes(id) && prevAsSet.has(id)));
 
             if (inIdsSet.size > 0 || outIdsSet.size > 0) {
-                let purged = [...prevAsSet].filter((id) => !outIdsSet.has(id));
-                let grown = purged.concat(...inIdsSet);
+                const purged = [...prevAsSet].filter((id) => !outIdsSet.has(id));
+                const grown = purged.concat(...inIdsSet);
                 setExpanded(grown);
             }
         },
@@ -114,8 +114,8 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
 
     const toggleDirectories = useCallback(
         (ids: UUID[]) => {
-            let ins: UUID[] = [];
-            let outs: UUID[] = [];
+            const ins: UUID[] = [];
+            const outs: UUID[] = [];
             ids.forEach((id) => {
                 if (!expandedRef.current.includes(id)) {
                     ins.push(id);
@@ -221,6 +221,6 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
             {renderTree(mapDataRef.current?.[treeViewUuid])}
         </TreeView>
     );
-};
+}
 
 export default DirectoryTreeView;

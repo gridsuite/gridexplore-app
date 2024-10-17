@@ -8,9 +8,10 @@
 import React from 'react';
 import { Box, Button, SvgIcon } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import CircleIcon from './icons/circleIcon';
 import { FormattedMessage } from 'react-intl';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
+import CircleIcon from './icons/circleIcon';
+
 const CIRCLE_SIZE = 250;
 
 const styles = {
@@ -59,10 +60,10 @@ const EmptyDirectory: React.FC<EmptyFolderProps> = ({ openDialog, theme }) => {
             </CircleIcon>
             <Box sx={styles.text}>
                 <h3>
-                    <FormattedMessage id={'emptyDirContent'} />
+                    <FormattedMessage id="emptyDirContent" />
                 </h3>
                 <Button variant="contained" sx={styles.button} onClick={openDialog} endIcon={<AddIcon />}>
-                    <FormattedMessage id={'createElement'} />
+                    <FormattedMessage id="createElement" />
                 </Button>
             </Box>
         </Box>

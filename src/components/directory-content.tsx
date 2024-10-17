@@ -7,13 +7,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
 import { FormattedMessage, useIntl } from 'react-intl';
-
-import * as constants from '../utils/UIconstants';
 import CircularProgress from '@mui/material/CircularProgress';
-
-import { ContingencyListType, FilterType } from '../utils/elementType';
 import {
     CriteriaBasedFilterEditionDialog,
     DescriptionModificationDialog,
@@ -27,6 +22,15 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Box, Button, SxProps, Theme } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import AddIcon from '@mui/icons-material/Add';
+import { AgGridReact } from 'ag-grid-react';
+import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
+import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
+
+import * as constants from '../utils/UIconstants';
+
+import { ContingencyListType, FilterType } from '../utils/elementType';
 
 import { elementExists, getFilterById, updateElement } from '../utils/rest-api';
 
@@ -38,7 +42,6 @@ import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/expl
 import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
 import { useParameterState } from './dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../utils/config-params';
-import Grid from '@mui/material/Grid';
 import { useDirectoryContent } from '../hooks/useDirectoryContent';
 import {
     computeCheckedElements,
@@ -50,10 +53,7 @@ import NoContentDirectory from './no-content-directory';
 import { CUSTOM_ROW_CLASS, DirectoryContentTable } from './directory-content-table';
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
 import EmptyDirectory from './empty-directory';
-import AddIcon from '@mui/icons-material/Add';
 import { AppState } from '../redux/reducer';
-import { AgGridReact } from 'ag-grid-react';
-import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
 
 const circularProgressSize = '70px';
 
@@ -105,7 +105,7 @@ const isStudyMetadata = (metadata: Metadata): metadata is StudyMetadata => {
     return metadata.name === 'Study';
 };
 
-const DirectoryContent = () => {
+function DirectoryContent() {
     const treeData = useSelector((state: AppState) => state.treeData);
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
@@ -305,7 +305,7 @@ const DirectoryContent = () => {
 
     const onContextMenu = useCallback(
         (event: any) => {
-            //We check if the context menu was triggered from a row to prevent displaying both the directory and the content context menus
+            // We check if the context menu was triggered from a row to prevent displaying both the directory and the content context menus
             const isRow = !!event.target.closest(`.${CUSTOM_ROW_CLASS}`);
             if (!isRow) {
                 dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
@@ -362,7 +362,7 @@ const DirectoryContent = () => {
                 dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
                 switch (event.data.type) {
                     case ElementType.STUDY: {
-                        let url = getStudyUrl(event.data.elementUuid);
+                        const url = getStudyUrl(event.data.elementUuid);
                         url
                             ? window.open(url, '_blank')
                             : handleError(intl.formatMessage({ id: 'getAppLinkError' }, { type: event.data.type }));
@@ -423,7 +423,7 @@ const DirectoryContent = () => {
         setCheckedRows(computeCheckedElements(gridRef, childrenMetadata));
     }, [childrenMetadata]);
 
-    //It includes checked rows and the row with its context menu open
+    // It includes checked rows and the row with its context menu open
     const fullSelection: ElementAttributes[] = useMemo(() => {
         const selection = [...checkedRows];
         if (isActiveElementUnchecked && activeElement) {
@@ -451,12 +451,11 @@ const DirectoryContent = () => {
                     mouseX: coordinates.right,
                     mouseY: coordinates.top + 25 * constants.VERTICAL_SHIFT,
                 };
-            } else {
-                return {
-                    mouseX: coordinates.left,
-                    mouseY: coordinates.bottom,
-                };
             }
+            return {
+                mouseX: coordinates.left,
+                mouseY: coordinates.bottom,
+            };
         },
         []
     );
@@ -464,7 +463,7 @@ const DirectoryContent = () => {
     const handleDialog = useCallback(
         (mouseEvent: React.MouseEvent<HTMLElement>, isEmpty: boolean) => {
             const coordinates: DOMRect = (mouseEvent.target as HTMLElement).getBoundingClientRect();
-            //set the contextualMenu position
+            // set the contextualMenu position
             setMousePosition(handleMousePosition(coordinates, isEmpty));
             setOpenDirectoryMenu(true);
 
@@ -515,7 +514,7 @@ const DirectoryContent = () => {
         if (openDescModificationDialog && activeElement) {
             return (
                 <DescriptionModificationDialog
-                    open={true}
+                    open
                     description={activeElement.description}
                     elementUuid={activeElement.elementUuid}
                     onClose={() => {
@@ -532,8 +531,8 @@ const DirectoryContent = () => {
             case ContingencyListType.CRITERIA_BASED.id:
                 return (
                     <CriteriaBasedEditionDialog
-                        open={true}
-                        titleId={'editContingencyList'}
+                        open
+                        titleId="editContingencyList"
                         // @ts-expect-error TODO: manage null case(s) here
                         contingencyListId={currentFiltersContingencyListId}
                         contingencyListType={ContingencyListType.CRITERIA_BASED.id}
@@ -545,8 +544,8 @@ const DirectoryContent = () => {
             case ContingencyListType.SCRIPT.id:
                 return (
                     <ScriptEditionDialog
-                        open={true}
-                        titleId={'editContingencyList'}
+                        open
+                        titleId="editContingencyList"
                         // @ts-expect-error TODO: manage null case(s) here
                         contingencyListId={currentScriptContingencyListId}
                         contingencyListType={ContingencyListType.SCRIPT.id}
@@ -558,8 +557,8 @@ const DirectoryContent = () => {
             case ContingencyListType.EXPLICIT_NAMING.id:
                 return (
                     <ExplicitNamingEditionDialog
-                        open={true}
-                        titleId={'editContingencyList'}
+                        open
+                        titleId="editContingencyList"
                         // @ts-expect-error TODO: manage null case(s) here
                         contingencyListId={currentExplicitNamingContingencyListId}
                         contingencyListType={ContingencyListType.EXPLICIT_NAMING.id}
@@ -573,9 +572,9 @@ const DirectoryContent = () => {
                     <ExplicitNamingFilterEditionDialog
                         // @ts-expect-error TODO: manage null case(s) here
                         id={currentExplicitNamingFilterId}
-                        open={true}
+                        open
                         onClose={handleCloseExplicitNamingFilterDialog}
-                        titleId={'editFilter'}
+                        titleId="editFilter"
                         name={name}
                         broadcastChannel={broadcastChannel}
                         selectionForCopy={selectionForCopy}
@@ -591,9 +590,9 @@ const DirectoryContent = () => {
                     <CriteriaBasedFilterEditionDialog
                         // @ts-expect-error TODO: manage null case(s) here
                         id={currentCriteriaBasedFilterId}
-                        open={true}
+                        open
                         onClose={handleCloseCriteriaBasedFilterDialog}
-                        titleId={'editFilter'}
+                        titleId="editFilter"
                         name={name}
                         broadcastChannel={broadcastChannel}
                         getFilterById={getFilterById}
@@ -609,9 +608,9 @@ const DirectoryContent = () => {
                     <ExpertFilterEditionDialog
                         // @ts-expect-error TODO: manage null case(s) here
                         id={currentExpertFilterId}
-                        open={true}
+                        open
                         onClose={handleCloseExpertFilterDialog}
-                        titleId={'editFilter'}
+                        titleId="editFilter"
                         name={name}
                         broadcastChannel={broadcastChannel}
                         selectionForCopy={selectionForCopy}
@@ -630,8 +629,8 @@ const DirectoryContent = () => {
     return (
         <>
             {
-                //ContentToolbar needs to be outside the DirectoryContentTable container otherwise it
-                //creates a visual offset rendering the last elements of a full table inaccessible
+                // ContentToolbar needs to be outside the DirectoryContentTable container otherwise it
+                // creates a visual offset rendering the last elements of a full table inaccessible
                 rows && rows.length > 0 && (
                     <div style={{ ...styles.toolBarContainer }}>
                         <ContentToolbar selectedElements={checkedRows} />
@@ -641,7 +640,7 @@ const DirectoryContent = () => {
                             sx={styles.button}
                             onClick={(mouseEvent) => handleDialog(mouseEvent, false)}
                         >
-                            <FormattedMessage id={'createElement'} />
+                            <FormattedMessage id="createElement" />
                         </Button>
                     </div>
                 )
@@ -693,12 +692,12 @@ const DirectoryContent = () => {
                               }
                             : undefined
                     }
-                    restrictMenuItems={true}
+                    restrictMenuItems
                 />
             </div>
             {renderDialog(elementName)}
         </>
     );
-};
+}
 
 export default DirectoryContent;

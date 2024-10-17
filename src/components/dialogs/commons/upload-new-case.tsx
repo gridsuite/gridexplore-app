@@ -11,8 +11,8 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
-import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
 import { FieldConstants } from '@gridsuite/commons-ui';
+import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
 
 interface UploadNewCaseProps {
     isNewStudyCreation?: boolean;
@@ -55,7 +55,7 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
         clearErrors(FieldConstants.CASE_FILE);
         clearErrors(`root.${FieldConstants.API_CALL}`);
 
-        const files = event.target.files;
+        const { files } = event.target;
 
         if (files?.length) {
             const currentFile = files[0];

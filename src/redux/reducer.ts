@@ -6,7 +6,33 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-
+import {
+    AuthenticationActions,
+    AuthenticationRouterErrorAction,
+    AuthenticationRouterErrorState,
+    Metadata,
+    CommonStoreState,
+    ElementAttributes,
+    ElementType,
+    GsLang,
+    GsLangUser,
+    GsTheme,
+    LOGOUT_ERROR,
+    LogoutErrorAction,
+    RESET_AUTHENTICATION_ROUTER_ERROR,
+    SHOW_AUTH_INFO_LOGIN,
+    ShowAuthenticationRouterLoginAction,
+    SIGNIN_CALLBACK_ERROR,
+    SignInCallbackErrorAction,
+    UNAUTHORIZED_USER_INFO,
+    UnauthorizedUserAction,
+    USER,
+    USER_VALIDATION_ERROR,
+    UserAction,
+    UserValidationErrorAction,
+} from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
+import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
 import {
     getLocalStorageComputedLanguage,
     getLocalStorageLanguage,
@@ -14,7 +40,6 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './local-storage';
-
 import {
     ACTIVE_DIRECTORY,
     ActiveDirectoryAction,
@@ -48,35 +73,7 @@ import {
     TREE_DATA,
     TreeDataAction,
 } from './actions';
-
-import {
-    AuthenticationActions,
-    AuthenticationRouterErrorAction,
-    AuthenticationRouterErrorState,
-    Metadata,
-    CommonStoreState,
-    ElementAttributes,
-    ElementType,
-    GsLang,
-    GsLangUser,
-    GsTheme,
-    LOGOUT_ERROR,
-    LogoutErrorAction,
-    RESET_AUTHENTICATION_ROUTER_ERROR,
-    SHOW_AUTH_INFO_LOGIN,
-    ShowAuthenticationRouterLoginAction,
-    SIGNIN_CALLBACK_ERROR,
-    SignInCallbackErrorAction,
-    UNAUTHORIZED_USER_INFO,
-    UnauthorizedUserAction,
-    USER,
-    USER_VALIDATION_ERROR,
-    UserAction,
-    UserValidationErrorAction,
-} from '@gridsuite/commons-ui';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
-import { UUID } from 'crypto';
-import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
 
 // IDirectory is exactly an IElement, with a specific type value
 export type IDirectory = ElementAttributes & {
@@ -117,7 +114,7 @@ export interface AppState extends CommonStoreState {
     [PARAM_LANGUAGE]: GsLang;
     computedLanguage: GsLangUser;
 
-    //userManager: UserManagerState;
+    // userManager: UserManagerState;
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
     showAuthenticationRouterLogin: boolean;
@@ -266,7 +263,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(TREE_DATA, (state, action: TreeDataAction) => {
-        //TODO: remove those filters below when this file has been migrated to Typescript
+        // TODO: remove those filters below when this file has been migrated to Typescript
         // it's only here to prevent regressions due to javascript not checking types
 
         // filtering non DIRECTORY elements from action.treeData

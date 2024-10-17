@@ -17,18 +17,18 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
 import { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
+import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 import {
     CriteriaBasedData,
     getContingencyListEmptyFormData,
     getCriteriaBasedFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
-import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
-import { useDispatch, useSelector } from 'react-redux';
 import { setSelectionForCopy } from '../../../../../redux/actions';
 import { useParameterState } from '../../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
-import { AppState } from 'redux/reducer';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -135,7 +135,7 @@ const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogPr
             formSchema={schema}
             formMethods={methods}
             titleId={titleId}
-            removeOptional={true}
+            removeOptional
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
             language={languageLocal}

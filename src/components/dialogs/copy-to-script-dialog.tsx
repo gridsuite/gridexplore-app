@@ -101,7 +101,7 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
         setLoading(true);
         getNameCandidate(directoryUuid, currentName, elementType)
             .then((newName) => {
-                let generatedName: string = newName || '';
+                const generatedName: string = newName || '';
                 setValue(FieldConstants.NAME, generatedName, {
                     shouldDirty: true,
                 });
@@ -122,7 +122,7 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
             formSchema={schema}
             formMethods={methods}
             titleId={title}
-            removeOptional={true}
+            removeOptional
             disabledSave={!!nameError || !!isValidating}
         >
             <Grid container spacing={2}>
@@ -132,7 +132,7 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
                     ) : (
                         <UniqueNameInput
                             name={FieldConstants.NAME}
-                            label={'nameProperty'}
+                            label="nameProperty"
                             elementType={ElementType.CONTINGENCY_LIST}
                             autoFocus
                             activeDirectory={activeDirectory}

@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import messages_plugins_fr from '../translations/fr.json';
-import messages_plugins_en from '../translations/en.json';
+import messages_plugins_fr from './fr.json';
+import messages_plugins_en from './en.json';
+
 const messages_plugins = {
     fr: {
         ...messages_plugins_fr,

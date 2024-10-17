@@ -8,7 +8,6 @@
 import React from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDirectory } from '../redux/actions';
 
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
@@ -17,6 +16,7 @@ import { emphasize } from '@mui/material/styles/';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import { Box, SxProps, Theme, Tooltip } from '@mui/material';
 import { ElementAttributes, mergeSx } from '@gridsuite/commons-ui';
+import { setSelectedDirectory } from '../redux/actions';
 import { AppState } from '../redux/reducer';
 
 const styles = {
@@ -70,7 +70,7 @@ const styles = {
     },
 };
 
-const DirectoryBreadcrumbs = () => {
+function DirectoryBreadcrumbs() {
     const dispatch = useDispatch();
 
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
@@ -132,6 +132,6 @@ const DirectoryBreadcrumbs = () => {
             )}
         </>
     );
-};
+}
 
 export default DirectoryBreadcrumbs;

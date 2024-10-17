@@ -16,12 +16,12 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
 import React, { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
-import { getContingencyListEmptyFormData, getScriptFormDataFromFetchedElement } from '../../contingency-list-utils';
 import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
-import ScriptEditionForm from './script-edition-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectionForCopy } from '../../../../../redux/actions';
 import { AppState } from 'redux/reducer';
+import { getContingencyListEmptyFormData, getScriptFormDataFromFetchedElement } from '../../contingency-list-utils';
+import ScriptEditionForm from './script-edition-form';
+import { setSelectionForCopy } from '../../../../../redux/actions';
 
 interface ScriptEditionFormData {
     [FieldConstants.NAME]: string;
@@ -132,7 +132,7 @@ const ScriptEditionDialog: FunctionComponent<ScriptEditionDialogProps> = ({
             formSchema={schema}
             formMethods={methods}
             titleId={titleId}
-            removeOptional={true}
+            removeOptional
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
         >

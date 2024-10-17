@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { defaultColumnDefinition } from './utils/directory-content-utils';
 import { CustomAGGrid, ElementAttributes, ElementType } from '@gridsuite/commons-ui';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import {
@@ -17,8 +16,9 @@ import {
     CellClickedEvent,
 } from 'ag-grid-community';
 import { RefObject, useCallback, useEffect, useState } from 'react';
-import { setReorderedColumns } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
+import { setReorderedColumns } from '../redux/actions';
+import { defaultColumnDefinition } from './utils/directory-content-utils';
 import { AppState } from '../redux/reducer';
 
 interface DirectoryContentTableProps extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
@@ -67,7 +67,7 @@ const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): 
         });
 };
 
-export const DirectoryContentTable = ({
+export function DirectoryContentTable({
     gridRef,
     rows,
     getRowStyle,
@@ -76,7 +76,7 @@ export const DirectoryContentTable = ({
     handleCellClick,
     onGridReady,
     colDef,
-}: DirectoryContentTableProps) => {
+}: DirectoryContentTableProps) {
     const [columnDefs, setColumnDefs] = useState<ColDef[]>(colDef);
     const getCustomRowStyle = useCallback(
         (cellData: RowClassParams<ElementAttributes>) => {
@@ -131,11 +131,11 @@ export const DirectoryContentTable = ({
             onRowSelected={handleRowSelected}
             onGridSizeChanged={recomputeOverFlowableCells}
             onColumnMoved={onColumnMoved}
-            animateRows={true}
+            animateRows
             columnDefs={columnDefs}
             getRowStyle={getCustomRowStyle}
-            //We set a custom className for rows in order to easily determine if a context menu event is happening on a row or not
+            // We set a custom className for rows in order to easily determine if a context menu event is happening on a row or not
             rowClass={CUSTOM_ROW_CLASS}
         />
     );
-};
+}

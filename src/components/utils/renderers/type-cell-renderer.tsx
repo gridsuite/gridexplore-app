@@ -25,7 +25,7 @@ export const getElementTypeTranslation = (
         case ElementType.FILTER:
         case ElementType.CONTINGENCY_LIST:
             translatedType = intl.formatMessage({
-                id: subtype ? subtype + '_' + type : type,
+                id: subtype ? `${subtype}_${type}` : type,
             });
             break;
         case ElementType.MODIFICATION:
@@ -36,7 +36,7 @@ export const getElementTypeTranslation = (
             break;
     }
 
-    const translatedFormat = formatCase ? ' (' + intl.formatMessage({ id: formatCase }) + ')' : '';
+    const translatedFormat = formatCase ? ` (${intl.formatMessage({ id: formatCase })})` : '';
 
     return `${translatedType}${translatedFormat}`;
 };
@@ -52,13 +52,13 @@ const styles = {
     },
 };
 
-export const TypeCellRenderer = ({
+export function TypeCellRenderer({
     data,
     childrenMetadata,
 }: {
     data: ElementAttributes;
     childrenMetadata: Record<UUID, ElementAttributes>;
-}) => {
+}) {
     const intl = useIntl();
 
     const specificMetadata = childrenMetadata[data?.elementUuid]?.specificMetadata;
@@ -80,4 +80,4 @@ export const TypeCellRenderer = ({
             </Box>
         )
     );
-};
+}

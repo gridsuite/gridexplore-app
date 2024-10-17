@@ -38,8 +38,8 @@ export const useDirectoryContent = () => {
             return;
         }
 
-        let metadata: Record<UUID, ElementAttributes> = {};
-        let childrenToFetchElementsInfos = Object.values(currentChildren).map((e) => e.elementUuid);
+        const metadata: Record<UUID, ElementAttributes> = {};
+        const childrenToFetchElementsInfos = Object.values(currentChildren).map((e) => e.elementUuid);
         if (childrenToFetchElementsInfos.length > 0) {
             fetchElementsInfos(childrenToFetchElementsInfos)
                 .then((res) => {

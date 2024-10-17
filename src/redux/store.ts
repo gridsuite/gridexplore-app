@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { legacy_createStore as createStore, Store } from 'redux';
-import { Actions, AppState, reducer } from './reducer';
 import { setCommonStore } from '@gridsuite/commons-ui';
+import { Actions, AppState, reducer } from './reducer';
 
 export const store: Store<AppState, Actions> = createStore(reducer);
 setCommonStore(store);

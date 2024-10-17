@@ -16,17 +16,17 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
 import { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
+import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
+import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 import {
     getContingencyListEmptyFormData,
     getExplicitNamingFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
-import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
 import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-form';
 import ExplicitNamingEditionForm from './explicit-naming-edition-form';
-import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
-import { useDispatch, useSelector } from 'react-redux';
 import { setSelectionForCopy } from '../../../../../redux/actions';
-import { AppState } from 'redux/reducer';
 
 interface ExplicitNamingEditionFormData {
     [FieldConstants.NAME]: string;
@@ -136,7 +136,7 @@ const ExplicitNamingEditionDialog: FunctionComponent<ExplicitNamingEditionDialog
             formSchema={schema}
             formMethods={methods}
             titleId={titleId}
-            removeOptional={true}
+            removeOptional
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
         >

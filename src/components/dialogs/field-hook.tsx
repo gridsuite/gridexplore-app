@@ -7,10 +7,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { ElementType, useDebounce } from '@gridsuite/commons-ui';
+import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 
 const styles = {
     helperText: {
@@ -110,23 +110,21 @@ export const useNameField = ({
 
             if (nameFormatted !== '' && name === props.defaultValue) {
                 setError(
-                    alreadyExistingErrorMessage
-                        ? alreadyExistingErrorMessage
-                        : intl.formatMessage({
-                              id: 'nameAlreadyUsed',
-                          })
+                    alreadyExistingErrorMessage ||
+                        intl.formatMessage({
+                            id: 'nameAlreadyUsed',
+                        })
                 );
                 setChecking(false);
             }
             if (nameFormatted !== '') {
-                //If the name is not only white spaces and not defaultValue
+                // If the name is not only white spaces and not defaultValue
                 doesElementExist(name)
                     .then((data) => {
                         setError(
                             data
-                                ? alreadyExistingErrorMessage
-                                    ? alreadyExistingErrorMessage
-                                    : intl.formatMessage({
+                                ? alreadyExistingErrorMessage ||
+                                      intl.formatMessage({
                                           id: 'nameAlreadyUsed',
                                       })
                                 : ''
@@ -159,19 +157,18 @@ export const useNameField = ({
                     <CircularProgress size="1rem" />
                 </InputAdornment>
             );
-        } else {
-            return (
-                <InputAdornment position="end">
-                    <CheckIcon style={{ color: 'green' }} />
-                </InputAdornment>
-            );
         }
+        return (
+            <InputAdornment position="end">
+                <CheckIcon style={{ color: 'green' }} />
+            </InputAdornment>
+        );
     }, [checking, error]);
 
     const [name, field, setName, touched] = useTextValue({
         ...props,
         error: !!error,
-        adornment: adornment,
+        adornment,
     });
 
     useEffect(() => {

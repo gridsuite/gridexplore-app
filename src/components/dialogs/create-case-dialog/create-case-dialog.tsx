@@ -7,19 +7,9 @@
 
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createCase } from '../../../utils/rest-api';
-import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import { Grid } from '@mui/material';
-import { addUploadingElement } from '../../../redux/actions';
-import UploadNewCase from '../commons/upload-new-case';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import {
-    createCaseDialogFormValidationSchema,
-    getCreateCaseDialogFormValidationDefaultValues,
-} from './create-case-dialog-utils';
-import { AppState, UploadingElement } from '../../../redux/reducer';
-import PrefilledNameInput from '../commons/prefilled-name-input';
 import {
     CustomMuiDialog,
     DescriptionField,
@@ -32,6 +22,16 @@ import {
     useConfidentialityWarning,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
+import { createCase } from '../../../utils/rest-api';
+import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
+import { addUploadingElement } from '../../../redux/actions';
+import UploadNewCase from '../commons/upload-new-case';
+import {
+    createCaseDialogFormValidationSchema,
+    getCreateCaseDialogFormValidationDefaultValues,
+} from './create-case-dialog-utils';
+import { AppState, UploadingElement } from '../../../redux/reducer';
+import PrefilledNameInput from '../commons/prefilled-name-input';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
 import { AppDispatch } from '../../../redux/store';
 
@@ -82,7 +82,6 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
             .then(onClose)
             .catch((err) => {
                 if (handleMaxElementsExceededError(err, snackError)) {
-                    return;
                 } else if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                     snackError({
                         messageId: 'invalidFormatOrName',
@@ -103,21 +102,21 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
 
     return (
         <CustomMuiDialog
-            titleId={'ImportNewCase'}
+            titleId="ImportNewCase"
             formSchema={createCaseDialogFormValidationSchema}
             formMethods={createCaseFormMethods}
-            removeOptional={true}
+            removeOptional
             open={open}
             onClose={onClose}
             onSave={handleCreateNewCase}
             disabledSave={!isFormValid}
             confirmationMessageKey={confidentialityWarningKey}
         >
-            <Grid container spacing={2} marginTop={'auto'} direction="column">
+            <Grid container spacing={2} marginTop="auto" direction="column">
                 <Grid item>
                     <PrefilledNameInput
                         name={FieldConstants.CASE_NAME}
-                        label={'nameProperty'}
+                        label="nameProperty"
                         elementType={ElementType.CASE}
                     />
                 </Grid>

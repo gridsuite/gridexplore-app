@@ -56,7 +56,7 @@ export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
             const style: RowStyle = { fontSize: '1rem' };
             if (cellData?.data?.elementUuid === searchedElement?.id) {
                 // keyframe "highlighted-element" has to be defined in css containing highlighted element
-                style['animation'] = `highlighted-element ${SEARCH_HIGHLIGHT_DURATION_S}s`;
+                style.animation = `highlighted-element ${SEARCH_HIGHLIGHT_DURATION_S}s`;
             }
             return style;
         },

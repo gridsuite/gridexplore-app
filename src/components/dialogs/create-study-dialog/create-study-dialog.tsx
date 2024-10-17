@@ -8,9 +8,6 @@ import { useForm } from 'react-hook-form';
 import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { FunctionComponent, useCallback, useEffect } from 'react';
-import UploadNewCase from '../commons/upload-new-case';
-import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
-import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import {
     useSnackMessage,
     ErrorInput,
@@ -27,6 +24,12 @@ import {
     useConfidentialityWarning,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { AppState, UploadingElement } from 'redux/reducer';
+import { UUID } from 'crypto';
+import UploadNewCase from '../commons/upload-new-case';
+import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
+import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import ImportParametersSection from './importParametersSection';
 import { addUploadingElement, setActiveDirectory } from '../../../redux/actions';
 import {
@@ -34,11 +37,8 @@ import {
     createStudyDialogFormValidationSchema,
     getCreateStudyDialogFormDefaultValues,
 } from './create-study-dialog-utils';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
-import { AppState, UploadingElement } from 'redux/reducer';
-import { UUID } from 'crypto';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -46,7 +46,7 @@ function customizeCurrentParameters(params: Parameter[]): Record<string, string>
     return params.reduce((obj, parameter) => {
         // we check if the parameter is for extensions. If so, we select all possible values by default.
         // the only way for the moment to check if the parameter is for extension, is by checking his name.
-        //TODO: implement a cleaner way to determine the extensions field
+        // TODO: implement a cleaner way to determine the extensions field
         if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
             obj[parameter.name] = parameter.possibleValues.toString();
         }
@@ -240,10 +240,10 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
 
     return (
         <CustomMuiDialog
-            titleId={'createNewStudy'}
+            titleId="createNewStudy"
             formSchema={createStudyDialogFormValidationSchema}
             formMethods={createStudyFormMethods}
-            removeOptional={true}
+            removeOptional
             open={open}
             onClose={onClose}
             onSave={handleCreateNewStudy}
@@ -251,11 +251,11 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
             disabledSave={!isFormValid}
             confirmationMessageKey={confidentialityWarningKey}
         >
-            <Grid container spacing={2} marginTop={'auto'} direction="column">
+            <Grid container spacing={2} marginTop="auto" direction="column">
                 <Grid item>
                     <PrefilledNameInput
                         name={FieldConstants.STUDY_NAME}
-                        label={'nameProperty'}
+                        label="nameProperty"
                         elementType={ElementType.STUDY}
                     />
                 </Grid>
@@ -266,13 +266,13 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
             {providedExistingCase ? (
                 <ModifyElementSelection
                     elementType={ElementType.DIRECTORY}
-                    dialogOpeningButtonLabel={'showSelectDirectoryDialog'}
-                    dialogTitleLabel={'selectDirectoryDialogTitle'}
-                    dialogMessageLabel={'moveItemContentText'}
+                    dialogOpeningButtonLabel="showSelectDirectoryDialog"
+                    dialogTitleLabel="selectDirectoryDialogTitle"
+                    dialogMessageLabel="moveItemContentText"
                 />
             ) : (
                 <UploadNewCase
-                    isNewStudyCreation={true}
+                    isNewStudyCreation
                     getCurrentCaseImportParams={getCurrentCaseImportParams}
                     handleApiCallError={handleApiCallError}
                 />

@@ -168,7 +168,7 @@ export const useDeferredFetch = <T>(
     return [fetchCallback, state];
 };
 
-/////////////////////////////////////////////////////////////////:
+/// //////////////////////////////////////////////////////////////:
 
 /**
  * This custom hook manage multiple fetchs workflows and return a unique callback to defer process execution when needed.
@@ -284,7 +284,7 @@ export const useMultipleDeferredFetch = <T>(
         (cbParamsList: unknown[][]) => {
             dispatch({ type: ActionType.START });
             setParamList(cbParamsList);
-            for (let params of cbParamsList) {
+            for (const params of cbParamsList) {
                 fetchCB(...params);
             }
         },
