@@ -7,7 +7,7 @@
 
 import { useController } from 'react-hook-form';
 import AceEditor, { IAceEditorProps, IEditorProps } from 'react-ace';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import 'ace-builds/src-noconflict/mode-groovy';
 import 'ace-builds/src-noconflict/theme-github';

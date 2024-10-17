@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     ElementAttributes,
@@ -190,14 +190,14 @@ export default function TreeViewsContainer() {
     /**
      * Contextual Menus
      */
-    const [openDirectoryMenu, setOpenDirectoryMenu] = React.useState(false);
+    const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
 
     const treeData = useSelector((state: AppState) => state.treeData);
 
     const treeDataRef = useRef<ITreeData>();
     treeDataRef.current = treeData;
 
-    const handleOpenDirectoryMenu = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const handleOpenDirectoryMenu = (event: ReactMouseEvent<HTMLDivElement, MouseEvent>) => {
         setOpenDirectoryMenu(true);
         event.stopPropagation();
     };
@@ -214,14 +214,14 @@ export default function TreeViewsContainer() {
     };
 
     /* Menu states */
-    const [mousePosition, setMousePosition] = React.useState<{
+    const [mousePosition, setMousePosition] = useState<{
         mouseX: number | null;
         mouseY: number | null;
     }>(initialMousePosition);
 
     /* User interactions */
     const onContextMenu = useCallback(
-        (event: React.MouseEvent<HTMLDivElement, MouseEvent>, nodeId: UUID | undefined) => {
+        (event: ReactMouseEvent<HTMLDivElement, MouseEvent>, nodeId: UUID | undefined) => {
             // to keep the focused style (that is normally lost when opening a contextual menu)
             if (event.currentTarget.parentNode) {
                 (event.currentTarget.parentNode as HTMLElement).classList.add('focused');

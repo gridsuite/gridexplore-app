@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import { FunctionComponent } from 'react';
 import { Button, Grid } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
@@ -18,7 +18,7 @@ interface AdvancedParameterButtonProps {
     disabled?: boolean;
 }
 
-const AdvancedParameterButton: React.FunctionComponent<AdvancedParameterButtonProps> = ({
+const AdvancedParameterButton: FunctionComponent<AdvancedParameterButtonProps> = ({
     showOpenIcon,
     label,
     onClick,

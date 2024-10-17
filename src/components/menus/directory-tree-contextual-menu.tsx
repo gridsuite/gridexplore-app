@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -50,7 +50,7 @@ interface DirectoryTreeContextualMenuProps {
     anchorPosition?: PopoverPosition;
 }
 
-const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = (props) => {
+const DirectoryTreeContextualMenu: FunctionComponent<DirectoryTreeContextualMenuProps> = (props) => {
     const { directory, open, onClose, openDialog, setOpenDialog, restrictMenuItems, ...others } = props;
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 

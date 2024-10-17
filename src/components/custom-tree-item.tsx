@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import { forwardRef, MouseEvent, ReactNode } from 'react';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/material';
 import { TreeItem, useTreeItem } from '@mui/x-tree-view';
@@ -14,31 +14,31 @@ import { mergeSx } from '@gridsuite/commons-ui';
 export interface TreeItemCustomContentProps {
     className?: string;
     styles: any;
-    label?: React.ReactNode;
+    label?: ReactNode;
     nodeId: string;
-    icon?: React.ReactNode;
-    expansionIcon?: React.ReactNode;
-    displayIcon?: React.ReactNode;
+    icon?: ReactNode;
+    expansionIcon?: ReactNode;
+    displayIcon?: ReactNode;
     onExpand: (e: string) => void;
     onSelect: (e: string) => void;
 }
 
-const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCustomContentProps, ref) {
+const CustomContent = forwardRef(function CustomContent(props: TreeItemCustomContentProps, ref) {
     const { className, styles, label, nodeId, icon: iconProp, expansionIcon, displayIcon, onExpand, onSelect } = props;
 
     const { disabled, expanded, selected, focused, preventSelection } = useTreeItem(nodeId);
 
     const icon = iconProp || expansionIcon || displayIcon;
 
-    const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    const handleMouseDown = (event: MouseEvent<HTMLDivElement>) => {
         preventSelection(event);
     };
 
-    const handleExpansionClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    const handleExpansionClick = (event: MouseEvent<HTMLDivElement>) => {
         onExpand(nodeId);
     };
 
-    const handleSelectionClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    const handleSelectionClick = (event: MouseEvent<HTMLDivElement>) => {
         onSelect(nodeId);
     };
 

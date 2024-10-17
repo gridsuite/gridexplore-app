@@ -14,7 +14,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import React, { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
 import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -40,7 +40,7 @@ interface ScriptEditionDialogProps {
     contingencyListId: string;
     contingencyListType: string;
     open: boolean;
-    onClose: (event?: React.SyntheticEvent) => void;
+    onClose: (event?: SyntheticEvent) => void;
     titleId: string;
     name: string;
     broadcastChannel: BroadcastChannel;

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import { FunctionComponent } from 'react';
 import { Box, Button } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
@@ -23,7 +23,7 @@ interface NoContentDirectoryProps {
     handleOpenDialog: () => void;
 }
 
-const NoContentDirectory: React.FC<NoContentDirectoryProps> = ({ handleOpenDialog }) => {
+const NoContentDirectory: FunctionComponent<NoContentDirectoryProps> = ({ handleOpenDialog }) => {
     const styles = {
         noContentContainer: (theme: any) => ({
             display: 'flex',

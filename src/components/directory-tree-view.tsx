@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef } from 'react';
+import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Typography from '@mui/material/Typography';
@@ -76,7 +76,7 @@ const styles = {
 interface DirectoryTreeViewProps {
     treeViewUuid: UUID;
     mapData: Record<string, IDirectory> | undefined;
-    onContextMenu: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, nodeId: UUID | undefined) => void;
+    onContextMenu: (event: ReactMouseEvent<HTMLDivElement, MouseEvent>, nodeId: UUID | undefined) => void;
     onDirectoryUpdate: (nodeId: UUID, isClose: boolean) => void;
 }
 
@@ -88,7 +88,7 @@ export default function DirectoryTreeView({
 }: DirectoryTreeViewProps) {
     const dispatch = useDispatch();
 
-    const [expanded, setExpanded] = React.useState<UUID[]>([]);
+    const [expanded, setExpanded] = useState<UUID[]>([]);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const currentPath = useSelector((state: AppState) => state.currentPath);
 
@@ -132,7 +132,7 @@ export default function DirectoryTreeView({
     );
 
     /* User interaction */
-    function handleContextMenuClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>, nodeId: UUID | undefined) {
+    function handleContextMenuClick(event: ReactMouseEvent<HTMLDivElement, MouseEvent>, nodeId: UUID | undefined) {
         onContextMenu(event, nodeId);
     }
 

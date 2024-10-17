@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CircularProgress, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
@@ -23,7 +23,7 @@ interface UseTextValueProps extends Omit<TextFieldProps, 'label' | 'defaultValue
     label: string;
     id?: string;
     defaultValue?: string;
-    adornment?: React.ReactNode;
+    adornment?: ReactNode;
 }
 
 export const useTextValue = ({
@@ -32,11 +32,11 @@ export const useTextValue = ({
     defaultValue = '',
     adornment,
     ...formProps
-}: UseTextValueProps): [string, React.ReactNode, (value: string) => void, boolean] => {
+}: UseTextValueProps): [string, ReactNode, (value: string) => void, boolean] => {
     const [value, setValue] = useState(defaultValue);
     const [hasChanged, setHasChanged] = useState(false);
 
-    const handleChangeValue = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeValue = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         setValue(event.target.value);
         setHasChanged(true);
     }, []);
@@ -81,7 +81,7 @@ export const useNameField = ({
     active,
     alreadyExistingErrorMessage,
     ...props
-}: UseNameFieldProps): [string, React.ReactNode, string | undefined, boolean, (value: string) => void, boolean] => {
+}: UseNameFieldProps): [string, ReactNode, string | undefined, boolean, (value: string) => void, boolean] => {
     const [error, setError] = useState<string | undefined>();
     const intl = useIntl();
     const [checking, setChecking] = useState<boolean | undefined>(undefined);

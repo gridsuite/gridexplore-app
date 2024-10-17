@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
@@ -23,7 +23,7 @@ export type ToolbarItem = {
     tooltipTextId: string;
     callback: () => void;
     disabled: boolean;
-    icon?: React.ReactNode;
+    icon?: ReactNode;
 };
 
 export type CommonToolbarProps = {
@@ -42,7 +42,7 @@ export default function CommonToolbar(props: CommonToolbarProps) {
         tooltipTextId: string,
         callback: () => void,
         disabledItem: boolean,
-        icon: React.ReactNode = <EditIcon fontSize="small" />
+        icon: ReactNode = <EditIcon fontSize="small" />
     ) {
         return (
             <Tooltip title={<FormattedMessage id={tooltipTextId} />} key={key} placement="right">

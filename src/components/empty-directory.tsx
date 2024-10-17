@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import { FunctionComponent, MouseEvent } from 'react';
 import { Box, Button, SvgIcon } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { FormattedMessage } from 'react-intl';
@@ -39,11 +39,11 @@ const styles = {
 };
 
 interface EmptyFolderProps {
-    openDialog: (e: React.MouseEvent<HTMLElement>) => void;
+    openDialog: (e: MouseEvent<HTMLElement>) => void;
     theme: string;
 }
 
-const EmptyDirectory: React.FC<EmptyFolderProps> = ({ openDialog, theme }) => {
+const EmptyDirectory: FunctionComponent<EmptyFolderProps> = ({ openDialog, theme }) => {
     return (
         <Box sx={styles.container}>
             <CircleIcon size={CIRCLE_SIZE} iconStyles={styles.circle}>

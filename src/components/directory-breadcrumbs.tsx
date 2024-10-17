@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
@@ -14,6 +13,7 @@ import { emphasize } from '@mui/material/styles/';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import { Box, SxProps, Theme, Tooltip } from '@mui/material';
 import { ElementAttributes, mergeSx } from '@gridsuite/commons-ui';
+import { MouseEvent } from 'react';
 import { setSelectedDirectory } from '../redux/actions';
 import { AppState } from '../redux/reducer';
 
@@ -75,7 +75,7 @@ export default function DirectoryBreadcrumbs() {
     const currentPath = useSelector((state: AppState) => state.currentPath);
 
     /* Handle User interactions */
-    const handleSelect = (event: React.MouseEvent<HTMLElement>, dir: ElementAttributes | null) => {
+    const handleSelect = (event: MouseEvent<HTMLElement>, dir: ElementAttributes | null) => {
         event.preventDefault();
         dispatch(setSelectedDirectory(dir));
     };
@@ -88,8 +88,8 @@ export default function DirectoryBreadcrumbs() {
                     sx={styles.link as SxProps}
                     key={dir.elementUuid}
                     href="/"
-                    onClick={(event: React.MouseEvent<HTMLElement>) => handleSelect(event, dir)}
-                    onDragStart={(event: React.MouseEvent<HTMLElement>) => {
+                    onClick={(event: MouseEvent<HTMLElement>) => handleSelect(event, dir)}
+                    onDragStart={(event: MouseEvent<HTMLElement>) => {
                         event.preventDefault();
                     }}
                     underline="hover"

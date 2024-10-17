@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -50,7 +50,7 @@ interface FormData {
  * @param elementType Type of the element to copy
  * @param handleError Function to call to handle error
  */
-const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
+const CopyToScriptDialog: FunctionComponent<CopyToScriptDialogProps> = ({
     id,
     open,
     onClose,

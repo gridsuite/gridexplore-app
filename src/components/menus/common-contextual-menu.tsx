@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import { FunctionComponent, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import EditIcon from '@mui/icons-material/Edit';
 import Menu, { MenuProps } from '@mui/material/Menu';
@@ -25,7 +25,7 @@ export interface MenuItemType {
     isDivider?: boolean;
     messageDescriptorId?: string;
     callback?: () => void;
-    icon?: React.ReactNode;
+    icon?: ReactNode;
     disabled?: boolean;
 }
 
@@ -37,14 +37,14 @@ interface CommonContextualMenuProps {
     menuItems?: MenuItemType[];
 }
 
-const CommonContextualMenu: React.FC<CommonContextualMenuProps> = (props) => {
+const CommonContextualMenu: FunctionComponent<CommonContextualMenuProps> = (props) => {
     const { menuItems, ...others } = props;
 
     function makeMenuItem(
         key: number,
         messageDescriptorId?: string,
         callback?: () => void,
-        icon: React.ReactNode = <EditIcon fontSize="small" />,
+        icon: ReactNode = <EditIcon fontSize="small" />,
         disabled: boolean = false
     ) {
         return (

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -233,7 +233,7 @@ export default function DirectoryContent() {
     const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
     const [openContentMenu, setOpenContentMenu] = useState(false);
 
-    const handleOpenContentMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+    const handleOpenContentMenu = (event: MouseEvent<HTMLDivElement>) => {
         setOpenContentMenu(true);
         event?.stopPropagation();
     };
@@ -247,7 +247,7 @@ export default function DirectoryContent() {
         setOpenDirectoryMenu(false);
     };
 
-    const handleOpenDirectoryMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+    const handleOpenDirectoryMenu = (event: MouseEvent<HTMLDivElement>) => {
         setOpenDirectoryMenu(true);
         event.stopPropagation();
     };
@@ -457,7 +457,7 @@ export default function DirectoryContent() {
     );
 
     const handleDialog = useCallback(
-        (mouseEvent: React.MouseEvent<HTMLElement>, isEmpty: boolean) => {
+        (mouseEvent: MouseEvent<HTMLElement>, isEmpty: boolean) => {
             const coordinates: DOMRect = (mouseEvent.target as HTMLElement).getBoundingClientRect();
             // set the contextualMenu position
             setMousePosition(handleMousePosition(coordinates, isEmpty));

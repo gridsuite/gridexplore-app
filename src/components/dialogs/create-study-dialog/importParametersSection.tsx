@@ -7,7 +7,7 @@
 
 import { Divider } from '@mui/material';
 import { FieldConstants, FlatParameters } from '@gridsuite/commons-ui';
-import React, { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { useController, useWatch } from 'react-hook-form';
 import Box from '@mui/material/Box';
 import AdvancedParameterButton from './advancedParameterButton';
