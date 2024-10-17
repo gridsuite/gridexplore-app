@@ -37,7 +37,7 @@ import DirectoryBreadcrumbs from './directory-breadcrumbs';
 import { AppState } from '../redux/reducer';
 import { AppDispatch } from '../redux/store';
 
-function App() {
+export default function App() {
     const { snackError } = useSnackMessage();
 
     const user = useSelector((state: AppState) => state.user);
@@ -257,5 +257,3 @@ function App() {
         </div>
     );
 }
-
-export default App;

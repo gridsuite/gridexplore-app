@@ -70,7 +70,7 @@ const styles = {
     },
 };
 
-function DirectoryBreadcrumbs() {
+export default function DirectoryBreadcrumbs() {
     const dispatch = useDispatch();
 
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
@@ -133,5 +133,3 @@ function DirectoryBreadcrumbs() {
         </>
     );
 }
-
-export default DirectoryBreadcrumbs;

@@ -36,7 +36,7 @@ export type CommonToolbarProps = {
 /**
  * Generic CommonToolbar
  */
-function CommonToolbar(props: CommonToolbarProps) {
+export default function CommonToolbar(props: CommonToolbarProps) {
     const { items, ...others } = props;
 
     function makeToolbarButton(
@@ -66,5 +66,3 @@ function CommonToolbar(props: CommonToolbarProps) {
         </Toolbar>
     );
 }
-
-export default CommonToolbar;

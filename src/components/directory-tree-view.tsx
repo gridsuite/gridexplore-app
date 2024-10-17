@@ -82,7 +82,12 @@ interface DirectoryTreeViewProps {
     onDirectoryUpdate: (nodeId: UUID, isClose: boolean) => void;
 }
 
-function DirectoryTreeView({ treeViewUuid, mapData, onContextMenu, onDirectoryUpdate }: DirectoryTreeViewProps) {
+export default function DirectoryTreeView({
+    treeViewUuid,
+    mapData,
+    onContextMenu,
+    onDirectoryUpdate,
+}: DirectoryTreeViewProps) {
     const dispatch = useDispatch();
 
     const [expanded, setExpanded] = React.useState<UUID[]>([]);
@@ -222,5 +227,3 @@ function DirectoryTreeView({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
         </TreeView>
     );
 }
-
-export default DirectoryTreeView;

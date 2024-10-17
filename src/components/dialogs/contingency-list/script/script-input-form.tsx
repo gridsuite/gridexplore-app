@@ -16,7 +16,7 @@ const StyledAceInput = styled(AceInput)({
     flexGrow: 1,
 });
 
-function ScriptInputForm() {
+export default function ScriptInputForm() {
     return (
         <StyledAceInput
             name={FieldConstants.SCRIPT}
@@ -26,5 +26,3 @@ function ScriptInputForm() {
         />
     );
 }
-
-export default ScriptInputForm;

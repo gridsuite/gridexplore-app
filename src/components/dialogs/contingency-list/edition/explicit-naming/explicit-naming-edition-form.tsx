@@ -12,7 +12,7 @@ import { elementExists } from 'utils/rest-api';
 import { AppState } from 'redux/reducer';
 import ExplicitNamingForm from '../../explicit-naming/explicit-naming-form';
 
-function ExplicitNamingEditionForm() {
+export default function ExplicitNamingEditionForm() {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
         <Grid container spacing={2} marginTop="auto">
@@ -29,5 +29,3 @@ function ExplicitNamingEditionForm() {
         </Grid>
     );
 }
-
-export default ExplicitNamingEditionForm;

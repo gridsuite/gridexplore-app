@@ -89,7 +89,7 @@ function mapFromRoots(roots: IDirectory[]): Record<string, IDirectory> {
  * @param nodeId uuid of the node to update children, may be null or undefined (means root)
  * @param children new value of the node children (shallow nodes)
  */
-function updatedTree(
+export function updatedTree(
     prevRoots: IDirectory[],
     prevMap: Record<string, IDirectory>,
     nodeId: string | null,
@@ -164,7 +164,7 @@ function updatedTree(
     return ret;
 }
 
-function TreeViewsContainer() {
+export default function TreeViewsContainer() {
     const dispatch = useDispatch();
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
@@ -646,6 +646,3 @@ function TreeViewsContainer() {
         </>
     );
 }
-
-export { updatedTree };
-export default TreeViewsContainer;

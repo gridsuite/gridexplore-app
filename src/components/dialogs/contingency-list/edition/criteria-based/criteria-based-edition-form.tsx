@@ -18,7 +18,7 @@ import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 
-function CriteriaBasedEditionForm() {
+export default function CriteriaBasedEditionForm() {
     const emptyValues = getCriteriaBasedFormData({}, {});
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
@@ -39,5 +39,3 @@ function CriteriaBasedEditionForm() {
         </Grid>
     );
 }
-
-export default CriteriaBasedEditionForm;

@@ -75,7 +75,7 @@ interface ContentContextualMenuProps {
     anchorPosition?: PopoverPosition;
 }
 
-function ContentContextualMenu(props: ContentContextualMenuProps) {
+export default function ContentContextualMenu(props: ContentContextualMenuProps) {
     const {
         activeElement,
         selectedElements,
@@ -772,5 +772,3 @@ ContentContextualMenu.propTypes = {
     onUpdateSelectedElements: PropTypes.func,
     onClose: PropTypes.func,
 };
-
-export default ContentContextualMenu;

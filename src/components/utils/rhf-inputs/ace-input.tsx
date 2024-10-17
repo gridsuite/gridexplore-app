@@ -21,7 +21,7 @@ interface AceInputProps {
     editorProps: IEditorProps;
 }
 
-function AceInput({ name, ...props }: AceInputProps) {
+export default function AceInput({ name, ...props }: AceInputProps) {
     const selectedTheme = useSelector((state: AppState) => state.theme);
     const themeForAceEditor = useMemo(() => {
         switch (selectedTheme) {
@@ -42,5 +42,3 @@ function AceInput({ name, ...props }: AceInputProps) {
         <AceEditor mode="groovy" theme={themeForAceEditor} onChange={(val) => onChange(val)} value={value} {...props} />
     );
 }
-
-export default AceInput;

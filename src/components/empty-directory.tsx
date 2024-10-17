@@ -42,7 +42,7 @@ interface EmptyFolderProps {
     openDialog: (e: React.MouseEvent<HTMLElement>) => void;
     theme: string;
 }
-const EmptyDirectory: React.FC<EmptyFolderProps> = ({ openDialog, theme }) => {
+export default const EmptyDirectory: React.FC<EmptyFolderProps> = ({ openDialog, theme }) => {
     return (
         <Box sx={styles.container}>
             <CircleIcon size={CIRCLE_SIZE} iconStyles={styles.circle}>
@@ -69,5 +69,3 @@ const EmptyDirectory: React.FC<EmptyFolderProps> = ({ openDialog, theme }) => {
         </Box>
     );
 };
-
-export default EmptyDirectory;

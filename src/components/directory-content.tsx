@@ -105,7 +105,7 @@ const isStudyMetadata = (metadata: Metadata): metadata is StudyMetadata => {
     return metadata.name === 'Study';
 };
 
-function DirectoryContent() {
+export default function DirectoryContent() {
     const treeData = useSelector((state: AppState) => state.treeData);
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
@@ -699,5 +699,3 @@ function DirectoryContent() {
         </>
     );
 }
-
-export default DirectoryContent;

@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import ScriptInputForm from '../../script/script-input-form';
 
-function ScriptEditionForm() {
+export default function ScriptEditionForm() {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
         <Grid container spacing={2} marginTop="auto">
@@ -29,5 +29,3 @@ function ScriptEditionForm() {
         </Grid>
     );
 }
-
-export default ScriptEditionForm;
