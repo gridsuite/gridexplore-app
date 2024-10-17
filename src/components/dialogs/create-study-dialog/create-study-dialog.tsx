@@ -64,7 +64,7 @@ function formatCaseImportParameters(params: Parameter[]): Parameter[] {
 
 interface CreateStudyDialogProps {
     open: boolean;
-    onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
+    onClose: () => void;
     providedExistingCase?: ElementAttributes;
 }
 
