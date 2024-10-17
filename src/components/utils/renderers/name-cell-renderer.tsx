@@ -8,7 +8,7 @@ import { UUID } from 'crypto';
 import { IntlShape, useIntl } from 'react-intl';
 import { Box, Theme } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import { ElementType, getFileIcon, OverflowableText, ElementAttributes } from '@gridsuite/commons-ui';
+import { ElementAttributes, ElementType, getFileIcon, OverflowableText } from '@gridsuite/commons-ui';
 
 const isElementCaseOrStudy = (objectType: ElementType) => {
     return objectType === ElementType.STUDY || objectType === ElementType.CASE;
@@ -56,6 +56,7 @@ const styles = {
         verticalAlign: 'middle',
     },
 };
+
 export function NameCellRenderer({
     data,
     childrenMetadata,

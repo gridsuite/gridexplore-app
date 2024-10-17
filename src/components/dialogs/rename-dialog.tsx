@@ -12,7 +12,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { ElementType, CancelButton } from '@gridsuite/commons-ui';
+import { CancelButton, ElementType } from '@gridsuite/commons-ui';
 import { FunctionComponent, SyntheticEvent } from 'react';
 import { AppState } from 'redux/reducer';
 import { useNameField } from './field-hook';

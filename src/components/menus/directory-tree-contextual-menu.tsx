@@ -28,11 +28,11 @@ import { DialogsId } from '../../utils/UIconstants';
 import {
     deleteElement,
     duplicateElement,
+    duplicateSpreadsheetConfig,
     elementExists,
     insertDirectory,
     insertRootDirectory,
     renameElement,
-    duplicateSpreadsheetConfig,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';

@@ -25,7 +25,9 @@ declare module '@mui/material/styles' {
         };
         agGridBackground: CSSObject;
     };
+
     export interface Theme extends /*MuiTheme,*/ ThemeExtension {}
+
     // allow configuration using `createTheme`
     export interface ThemeOptions extends /*MuiThemeOptions,*/ Partial<ThemeExtension> {}
 }

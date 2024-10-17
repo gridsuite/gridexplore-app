@@ -6,15 +6,15 @@
  */
 
 import {
-    RadioInput,
-    getCriteriaBasedFormData,
     CONTINGENCY_LIST_EQUIPMENTS,
     CriteriaBasedForm,
-    FieldConstants,
-    UniqueNameInput,
     DescriptionField,
     ElementType,
+    FieldConstants,
+    getCriteriaBasedFormData,
     gridItem,
+    RadioInput,
+    UniqueNameInput,
 } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';

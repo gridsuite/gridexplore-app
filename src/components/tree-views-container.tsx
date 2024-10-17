@@ -8,11 +8,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    useSnackMessage,
+    ElementAttributes,
+    ElementType,
     fetchDirectoryContent,
     fetchRootFolders,
-    ElementType,
-    ElementAttributes,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import ReconnectingWebSocket from 'reconnecting-websocket';

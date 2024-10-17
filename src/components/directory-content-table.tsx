@@ -8,12 +8,12 @@
 import { CustomAGGrid, ElementAttributes, ElementType } from '@gridsuite/commons-ui';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import {
-    ColDef,
-    RowClassParams,
     AgGridEvent,
-    GetRowIdParams,
-    CellContextMenuEvent,
     CellClickedEvent,
+    CellContextMenuEvent,
+    ColDef,
+    GetRowIdParams,
+    RowClassParams,
 } from 'ag-grid-community';
 import { RefObject, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';

@@ -10,9 +10,9 @@ import { useCallback, useMemo } from 'react';
 import { ContingencyListType } from 'utils/elementType';
 import { v4 as uuid4 } from 'uuid';
 import {
+    CustomAgGridTable,
     FieldConstants,
     gridItem,
-    CustomAgGridTable,
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';

@@ -60,6 +60,7 @@ export const CURRENT_CHILDREN = 'CURRENT_CHILDREN';
 export type CurrentChildrenAction = Readonly<Action<typeof CURRENT_CHILDREN>> & {
     currentChildren: AppState['currentChildren'];
 };
+
 export function setCurrentChildren(currentChildren: AppState['currentChildren']): CurrentChildrenAction {
     return {
         type: CURRENT_CHILDREN,
@@ -83,6 +84,7 @@ export const ACTIVE_DIRECTORY = 'ACTIVE_DIRECTORY';
 export type ActiveDirectoryAction = Readonly<Action<typeof ACTIVE_DIRECTORY>> & {
     activeDirectory: AppState['activeDirectory'];
 };
+
 export function setActiveDirectory(activeDirectory: AppState['activeDirectory']): ActiveDirectoryAction {
     return {
         type: ACTIVE_DIRECTORY,
@@ -94,6 +96,7 @@ export const SELECTION_FOR_COPY = 'SELECTION_FOR_COPY';
 export type SelectionForCopyAction = Readonly<Action<typeof SELECTION_FOR_COPY>> & {
     selectionForCopy: AppState['selectionForCopy'];
 };
+
 export function setSelectionForCopy(selectionForCopy: AppState['selectionForCopy']): SelectionForCopyAction {
     return {
         type: SELECTION_FOR_COPY,

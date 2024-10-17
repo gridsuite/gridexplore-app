@@ -25,6 +25,7 @@ interface DeleteDialogProps {
     simpleDeleteFormatMessageId: string;
     error: string;
 }
+
 /**
  * Dialog to delete an element
  * @param {Boolean} open Is the dialog open ?

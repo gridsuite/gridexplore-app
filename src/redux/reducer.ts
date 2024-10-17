@@ -10,7 +10,6 @@ import {
     AuthenticationActions,
     AuthenticationRouterErrorAction,
     AuthenticationRouterErrorState,
-    Metadata,
     CommonStoreState,
     ElementAttributes,
     ElementType,
@@ -19,6 +18,7 @@ import {
     GsTheme,
     LOGOUT_ERROR,
     LogoutErrorAction,
+    Metadata,
     RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
     ShowAuthenticationRouterLoginAction,
@@ -66,8 +66,8 @@ import {
     SELECTION_FOR_COPY,
     SelectionForCopyAction,
     SET_APPS_AND_URLS,
-    SetAppsAndUrlsAction,
     SET_UPLOADING_ELEMENTS,
+    SetAppsAndUrlsAction,
     SetUploadingElementsAction,
     ThemeAction,
     TREE_DATA,
@@ -169,6 +169,7 @@ const initialState: AppState = {
 export type Actions = AuthenticationActions | AppActions;
 
 export type ArrayFilter<V> = (value: V, index: number, array: V[]) => boolean;
+
 function filterFromObject<K extends string | number | symbol, V>(
     objectToFilter: Record<K, V>,
     filterMethod: ArrayFilter<[K, V]>

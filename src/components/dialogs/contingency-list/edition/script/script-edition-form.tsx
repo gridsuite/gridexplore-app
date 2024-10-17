@@ -6,7 +6,7 @@
  */
 
 import { Grid } from '@mui/material';
-import { UniqueNameInput, ElementType, FieldConstants } from '@gridsuite/commons-ui';
+import { ElementType, FieldConstants, UniqueNameInput } from '@gridsuite/commons-ui';
 import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';

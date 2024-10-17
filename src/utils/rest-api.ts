@@ -7,11 +7,11 @@
 
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import {
-    ElementType,
-    getRequestParamFromList,
-    fetchEnv,
-    backendFetchJson,
     backendFetch,
+    backendFetchJson,
+    ElementType,
+    fetchEnv,
+    getRequestParamFromList,
     GsLang,
     GsTheme,
 } from '@gridsuite/commons-ui';

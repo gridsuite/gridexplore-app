@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DirectoryItemSelector, TreeViewFinderNodeProps, ElementType } from '@gridsuite/commons-ui';
+import { DirectoryItemSelector, ElementType, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { FunctionComponent } from 'react';
 

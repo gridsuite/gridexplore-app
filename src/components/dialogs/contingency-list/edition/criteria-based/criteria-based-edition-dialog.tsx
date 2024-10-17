@@ -6,11 +6,11 @@
  */
 
 import {
-    useSnackMessage,
     CustomMuiDialog,
-    getCriteriaBasedSchema,
     FieldConstants,
+    getCriteriaBasedSchema,
     NO_SELECTION_FOR_COPY,
+    useSnackMessage,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
@@ -53,6 +53,7 @@ interface CriteriaBasedEditionDialogProps {
     name: string;
     broadcastChannel: BroadcastChannel;
 }
+
 const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogProps> = ({
     contingencyListId,
     contingencyListType,

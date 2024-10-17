@@ -9,7 +9,7 @@ import { useIntl } from 'react-intl';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CircularProgress, Grid } from '@mui/material';
-import { UniqueNameInput, ElementType, CustomMuiDialog, FieldConstants, yupConfig as yup } from '@gridsuite/commons-ui';
+import { CustomMuiDialog, ElementType, FieldConstants, UniqueNameInput, yupConfig as yup } from '@gridsuite/commons-ui';
 import { elementExists, getNameCandidate } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';

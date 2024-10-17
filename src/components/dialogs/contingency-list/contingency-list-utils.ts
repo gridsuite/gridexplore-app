@@ -36,6 +36,7 @@ export interface CriteriaBasedData {
     [FieldConstants.NOMINAL_VOLTAGE_1]?: RangeInputData | null;
     [FieldConstants.NOMINAL_VOLTAGE_2]?: RangeInputData | null;
     [FieldConstants.NOMINAL_VOLTAGE_3]?: RangeInputData | null;
+
     [key: string]: any;
 }
 

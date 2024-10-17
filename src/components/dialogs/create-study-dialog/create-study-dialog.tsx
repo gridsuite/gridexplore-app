@@ -9,19 +9,19 @@ import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { FunctionComponent, useCallback, useEffect } from 'react';
 import {
-    useSnackMessage,
-    ErrorInput,
-    FieldErrorAlert,
-    ElementType,
     CustomMuiDialog,
+    DescriptionField,
+    ElementAttributes,
+    ElementType,
+    ErrorInput,
     FieldConstants,
+    FieldErrorAlert,
     isObjectEmpty,
     keyGenerator,
     ModifyElementSelection,
-    ElementAttributes,
     Parameter,
-    DescriptionField,
     useConfidentialityWarning,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
@@ -33,8 +33,8 @@ import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from
 import ImportParametersSection from './importParametersSection';
 import { addUploadingElement, setActiveDirectory } from '../../../redux/actions';
 import {
-    CreateStudyDialogFormValues,
     createStudyDialogFormValidationSchema,
+    CreateStudyDialogFormValues,
     getCreateStudyDialogFormDefaultValues,
 } from './create-study-dialog-utils';
 import PrefilledNameInput from '../commons/prefilled-name-input';

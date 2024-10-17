@@ -7,12 +7,12 @@
 
 import { Grid } from '@mui/material';
 import {
-    UniqueNameInput,
-    ElementType,
-    CriteriaBasedForm,
-    getCriteriaBasedFormData,
     CONTINGENCY_LIST_EQUIPMENTS,
+    CriteriaBasedForm,
+    ElementType,
     FieldConstants,
+    getCriteriaBasedFormData,
+    UniqueNameInput,
 } from '@gridsuite/commons-ui';
 import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
