@@ -72,7 +72,7 @@ interface ContentContextualMenuProps {
     anchorPosition?: PopoverPosition;
 }
 
-export default function ContentContextualMenu(props: ContentContextualMenuProps) {
+export default function ContentContextualMenu(props: Readonly<ContentContextualMenuProps>) {
     const {
         activeElement,
         selectedElements,

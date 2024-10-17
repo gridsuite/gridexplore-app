@@ -13,7 +13,7 @@ interface SearchBarRenderInputProps extends AutocompleteRenderInputParams {
     inputRef: RefObject<TextFieldProps>;
 }
 
-export function SearchBarRenderInput(props: SearchBarRenderInputProps) {
+export function SearchBarRenderInput(props: Readonly<SearchBarRenderInputProps>) {
     const intl = useIntl();
     const { InputProps } = props;
 

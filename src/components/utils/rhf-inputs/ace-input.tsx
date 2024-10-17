@@ -21,7 +21,7 @@ interface AceInputProps {
     editorProps: IEditorProps;
 }
 
-export default function AceInput({ name, ...props }: AceInputProps) {
+export default function AceInput({ name, ...props }: Readonly<AceInputProps>) {
     const selectedTheme = useSelector((state: AppState) => state.theme);
     const themeForAceEditor = useMemo(() => {
         switch (selectedTheme) {

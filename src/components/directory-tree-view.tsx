@@ -81,7 +81,7 @@ export default function DirectoryTreeView({
     mapData,
     onContextMenu,
     onDirectoryUpdate,
-}: DirectoryTreeViewProps) {
+}: Readonly<DirectoryTreeViewProps>) {
     const dispatch = useDispatch();
 
     const [expanded, setExpanded] = useState<UUID[]>([]);

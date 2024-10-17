@@ -31,7 +31,7 @@ export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
     selectedElements: ElementAttributes[];
 };
 
-export default function ContentToolbar(props: ContentToolbarProps) {
+export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
     const { selectedElements, ...others } = props;
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
     const { snackError } = useSnackMessage();

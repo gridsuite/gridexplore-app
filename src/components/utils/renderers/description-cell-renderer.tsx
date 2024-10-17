@@ -20,7 +20,7 @@ const styles = {
     },
 };
 
-export function DescriptionCellRenderer({ data }: { data: ElementAttributes }) {
+export function DescriptionCellRenderer({ data }: Readonly<{ data: ElementAttributes }>) {
     const { description } = data;
     const descriptionLines = description?.split('\n');
     if (descriptionLines?.length > 3) {

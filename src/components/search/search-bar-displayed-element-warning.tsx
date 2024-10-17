@@ -24,7 +24,7 @@ const styles = {
     }),
 };
 
-export function SearchBarPaperDisplayedElementWarning(props: SearchBarPaperDisplayedElementWarningProps) {
+export function SearchBarPaperDisplayedElementWarning(props: Readonly<SearchBarPaperDisplayedElementWarningProps>) {
     const { elementFoundLength, elementFoundTotal, isLoading, children, ...other } = props;
     const intl = useIntl();
 

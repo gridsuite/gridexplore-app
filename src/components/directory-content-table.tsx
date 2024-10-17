@@ -76,7 +76,7 @@ export function DirectoryContentTable({
     handleCellClick,
     onGridReady,
     colDef,
-}: DirectoryContentTableProps) {
+}: Readonly<DirectoryContentTableProps>) {
     const [columnDefs, setColumnDefs] = useState<ColDef[]>(colDef);
     const getCustomRowStyle = useCallback(
         (cellData: RowClassParams<ElementAttributes>) => {

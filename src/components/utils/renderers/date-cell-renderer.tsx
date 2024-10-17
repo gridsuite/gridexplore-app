@@ -7,7 +7,7 @@
 import { useIntl } from 'react-intl';
 import { Box, Tooltip } from '@mui/material';
 
-export function DateCellRenderer({ value }: { value: string }) {
+export function DateCellRenderer({ value }: Readonly<{ value: string }>) {
     const intl = useIntl();
 
     const todayStart = new Date().setHours(0, 0, 0, 0);

@@ -33,7 +33,7 @@ export type CommonToolbarProps = {
 /**
  * Generic CommonToolbar
  */
-export default function CommonToolbar(props: CommonToolbarProps) {
+export default function CommonToolbar(props: Readonly<CommonToolbarProps>) {
     const { items, ...others } = props;
 
     function makeToolbarButton(

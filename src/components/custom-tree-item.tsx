@@ -66,6 +66,6 @@ const CustomContent = forwardRef(function CustomContent(props: TreeItemCustomCon
     );
 });
 
-export default function CustomTreeItem(props: any) {
+export default function CustomTreeItem(props: Readonly<any>) {
     return <TreeItem ContentComponent={CustomContent} {...props} />;
 }

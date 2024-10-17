@@ -6,7 +6,7 @@
  */
 
 // At the moment, only the french locale is needed
-const aggrid_locale_fr = {
+const AgGridLocaleFr = {
     'agGrid.of': 'sur',
     'agGrid.to': 'à',
     'agGrid.equals': 'Égal à',
@@ -24,4 +24,4 @@ const aggrid_locale_fr = {
     'agGrid.thousandSeparator': ' ',
 };
 
-export default aggrid_locale_fr;
+export default AgGridLocaleFr;

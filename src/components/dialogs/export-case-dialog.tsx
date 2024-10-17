@@ -58,7 +58,7 @@ interface ExportCaseDialogProps {
     ) => Promise<void>;
 }
 
-export default function ExportCaseDialog({ selectedElements, onClose, onExport }: ExportCaseDialogProps) {
+export default function ExportCaseDialog({ selectedElements, onClose, onExport }: Readonly<ExportCaseDialogProps>) {
     const [loading, setLoading] = useState<boolean>(false);
     const [formats, setFormats] = useState<ExportFormats>([]);
     const [selectedFormat, setSelectedFormat] = useState<string | null>(null);

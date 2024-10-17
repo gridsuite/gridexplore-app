@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const network_modifications_locale_fr = {
+const NetworkModificationsLocaleFr = {
     'network_modifications.EQUIPMENT_DELETION': 'Suppression',
     'network_modifications.BY_FILTER_DELETION': 'Suppression par filtre',
     'network_modifications.SUBSTATION_CREATION': 'Création du site',
@@ -42,4 +42,4 @@ const network_modifications_locale_fr = {
     'network_modifications.BY_FORMULA_MODIFICATION': 'Modification par formule',
 };
 
-export default network_modifications_locale_fr;
+export default NetworkModificationsLocaleFr;
