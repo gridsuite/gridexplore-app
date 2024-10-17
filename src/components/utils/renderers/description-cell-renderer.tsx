@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Box, Tooltip } from '@mui/material';
-import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
-import CreateIcon from '@mui/icons-material/Create';
+import { Create as CreateIcon, StickyNote2Outlined as StickyNote2OutlinedIcon } from '@mui/icons-material';
 import { ElementAttributes } from '@gridsuite/commons-ui';
 
 const styles = {

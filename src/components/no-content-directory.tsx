@@ -8,7 +8,7 @@
 import { FunctionComponent } from 'react';
 import { Box, Button } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
+import { CreateNewFolderOutlined as CreateNewFolderOutlinedIcon } from '@mui/icons-material';
 import CircleIcon from './icons/circleIcon';
 
 const CIRCLE_SIZE = 200;

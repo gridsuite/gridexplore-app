@@ -9,10 +9,13 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
+import {
+    Delete as DeleteIcon,
+    DownloadForOffline,
+    DriveFileMove as DriveFileMoveIcon,
+    FileDownload,
+} from '@mui/icons-material';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
-import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { AppState } from 'redux/reducer';
 import { deleteElements, moveElementsToDirectory } from '../../utils/rest-api';
 import DeleteDialog from '../dialogs/delete-dialog';

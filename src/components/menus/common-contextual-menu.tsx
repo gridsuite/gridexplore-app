@@ -7,7 +7,7 @@
 
 import { FunctionComponent, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
-import EditIcon from '@mui/icons-material/Edit';
+import { Edit as EditIcon } from '@mui/icons-material';
 import {
     Divider,
     ListItemIcon,

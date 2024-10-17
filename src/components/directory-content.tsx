@@ -21,7 +21,7 @@ import {
     StudyMetadata,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import AddIcon from '@mui/icons-material/Add';
+import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
 import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
 import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';

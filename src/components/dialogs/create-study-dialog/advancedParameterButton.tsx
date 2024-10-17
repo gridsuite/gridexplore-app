@@ -7,8 +7,7 @@
 
 import { FunctionComponent } from 'react';
 import { Button, Grid } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
-import CheckIcon from '@mui/icons-material/Check';
+import { Check as CheckIcon, Settings as SettingsIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 
 interface AdvancedParameterButtonProps {

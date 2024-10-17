@@ -8,12 +8,14 @@
 import { FunctionComponent, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
-import AddIcon from '@mui/icons-material/Add';
-import CreateIcon from '@mui/icons-material/Create';
-import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import {
+    Add as AddIcon,
+    ContentPaste as ContentPasteIcon,
+    Create as CreateIcon,
+    CreateNewFolder as CreateNewFolderIcon,
+    Delete as DeleteIcon,
+    FolderSpecial as FolderSpecialIcon,
+} from '@mui/icons-material';
 import { ElementAttributes, ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { PopoverPosition, PopoverReference } from '@mui/material';
 import { AppState } from 'redux/reducer';

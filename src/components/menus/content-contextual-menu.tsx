@@ -9,14 +9,18 @@ import { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
-import PhotoLibrary from '@mui/icons-material/PhotoLibrary';
-import FileCopyTwoToneIcon from '@mui/icons-material/FileCopyTwoTone';
-import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
-import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
+import {
+    ContentCopyRounded as ContentCopyRoundedIcon,
+    Delete as DeleteIcon,
+    DoNotDisturbAlt as DoNotDisturbAltIcon,
+    DownloadForOffline,
+    DriveFileMove as DriveFileMoveIcon,
+    FileCopy as FileCopyIcon,
+    FileCopyTwoTone as FileCopyTwoToneIcon,
+    FileDownload,
+    InsertDriveFile as InsertDriveFileIcon,
+    PhotoLibrary,
+} from '@mui/icons-material';
 import {
     ElementAttributes,
     ElementType,
@@ -24,7 +28,6 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { AppState } from 'redux/reducer';
 import { PopoverPosition, PopoverReference } from '@mui/material';
 import RenameDialog from '../dialogs/rename-dialog';

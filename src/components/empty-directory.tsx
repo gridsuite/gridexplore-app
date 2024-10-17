@@ -7,7 +7,7 @@
 
 import { FunctionComponent, MouseEvent } from 'react';
 import { Box, Button, SvgIcon } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { Add as AddIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
 import CircleIcon from './icons/circleIcon';
