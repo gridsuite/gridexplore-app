@@ -6,8 +6,7 @@
  */
 import { UUID } from 'crypto';
 import { IntlShape, useIntl } from 'react-intl';
-import { Box, Theme } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
+import { Box, CircularProgress, Theme } from '@mui/material';
 import { ElementAttributes, ElementType, getFileIcon, OverflowableText } from '@gridsuite/commons-ui';
 
 const isElementCaseOrStudy = (objectType: ElementType) => {

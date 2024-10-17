@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Divider } from '@mui/material';
+import { Box, Divider } from '@mui/material';
 import { FieldConstants, FlatParameters } from '@gridsuite/commons-ui';
 import { FunctionComponent, useState } from 'react';
 import { useController, useWatch } from 'react-hook-form';
-import Box from '@mui/material/Box';
 import AdvancedParameterButton from './advancedParameterButton';
 
 const ImportParametersSection: FunctionComponent = () => {

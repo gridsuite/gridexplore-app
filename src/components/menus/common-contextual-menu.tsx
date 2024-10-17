@@ -8,12 +8,17 @@
 import { FunctionComponent, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import EditIcon from '@mui/icons-material/Edit';
-import Menu, { MenuProps } from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
-import { PopoverPosition, PopoverReference, styled } from '@mui/material';
+import {
+    Divider,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
+    MenuProps,
+    PopoverPosition,
+    PopoverReference,
+    styled,
+} from '@mui/material';
 
 const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} />)({
     '.MuiMenu-paper': {

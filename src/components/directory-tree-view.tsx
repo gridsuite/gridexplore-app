@@ -8,11 +8,8 @@
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
-import Zoom from '@mui/material/Zoom';
+import { Box, Theme, Tooltip, Typography, Zoom } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Theme } from '@mui/material';
 import { TreeView } from '@mui/x-tree-view';
 import { ElementAttributes } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';

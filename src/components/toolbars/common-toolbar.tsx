@@ -8,8 +8,7 @@
 import { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import EditIcon from '@mui/icons-material/Edit';
-import IconButton from '@mui/material/IconButton';
-import { Theme, Toolbar, Tooltip } from '@mui/material';
+import { IconButton, Theme, Toolbar, Tooltip } from '@mui/material';
 
 const styles = {
     icon: (theme: Theme) => ({

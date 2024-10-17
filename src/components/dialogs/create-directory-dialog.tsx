@@ -6,13 +6,8 @@
  */
 
 import { FunctionComponent, SyntheticEvent } from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Alert from '@mui/material/Alert';
 import { CancelButton, ElementType } from '@gridsuite/commons-ui';
 import { useNameField } from './field-hook';
 

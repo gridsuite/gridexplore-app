@@ -6,7 +6,14 @@
  */
 
 import { useMemo } from 'react';
-import { createTheme, responsiveFontSizes, StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
+import {
+    createTheme,
+    CssBaseline,
+    responsiveFontSizes,
+    StyledEngineProvider,
+    Theme,
+    ThemeProvider,
+} from '@mui/material';
 import { enUS as MuiCoreEnUS, frFR as MuiCoreFrFR } from '@mui/material/locale';
 import {
     CardErrorBoundary,
@@ -50,8 +57,6 @@ import {
 import { IntlConfig, IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
-import CssBaseline from '@mui/material/CssBaseline';
-import { Theme } from '@mui/material';
 import App from './app';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';

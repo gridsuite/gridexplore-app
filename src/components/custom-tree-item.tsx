@@ -6,8 +6,7 @@
  */
 
 import { forwardRef, MouseEvent, ReactNode } from 'react';
-import Typography from '@mui/material/Typography';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { TreeItem, useTreeItem } from '@mui/x-tree-view';
 import { mergeSx } from '@gridsuite/commons-ui';
 

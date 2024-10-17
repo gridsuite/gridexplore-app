@@ -7,9 +7,7 @@
 
 import { ChangeEvent, FunctionComponent, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import { Grid, Input } from '@mui/material';
+import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
 import { FieldConstants } from '@gridsuite/commons-ui';
 import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';

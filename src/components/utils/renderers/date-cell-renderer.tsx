@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useIntl } from 'react-intl';
-import { Box } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
+import { Box, Tooltip } from '@mui/material';
 
 export function DateCellRenderer({ value }: { value: string }) {
     const intl = useIntl();

@@ -4,16 +4,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import Alert from '@mui/material/Alert';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
+import {
+    Alert,
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Grid,
+} from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { FunctionComponent, SyntheticEvent, useEffect, useRef, useState } from 'react';
-import Grid from '@mui/material/Grid';
-import CircularProgress from '@mui/material/CircularProgress';
 import { CancelButton, ElementAttributes, OverflowableText } from '@gridsuite/commons-ui';
 
 interface DeleteDialogProps {

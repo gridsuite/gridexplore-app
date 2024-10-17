@@ -8,7 +8,7 @@
 import { MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import CircularProgress from '@mui/material/CircularProgress';
+import { Box, Button, CircularProgress, Grid, SxProps, Theme } from '@mui/material';
 import {
     CriteriaBasedFilterEditionDialog,
     DescriptionModificationDialog,
@@ -21,8 +21,6 @@ import {
     StudyMetadata,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Box, Button, SxProps, Theme } from '@mui/material';
-import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
 import { AgGridReact } from 'ag-grid-react';
 import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';

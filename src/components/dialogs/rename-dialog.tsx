@@ -4,12 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import Alert from '@mui/material/Alert';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { CancelButton, ElementType } from '@gridsuite/commons-ui';

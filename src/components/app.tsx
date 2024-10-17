@@ -19,7 +19,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
-import Grid from '@mui/material/Grid';
+import { Grid } from '@mui/material';
 import { selectComputedLanguage, selectLanguage, selectTheme } from '../redux/actions';
 import {
     ConfigParameters,

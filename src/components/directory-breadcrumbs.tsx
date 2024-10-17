@@ -6,12 +6,8 @@
  */
 
 import { useDispatch, useSelector } from 'react-redux';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
-import { emphasize } from '@mui/material/styles/';
+import { Box, Breadcrumbs, emphasize, Link, SxProps, Theme, Tooltip, Typography } from '@mui/material';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import { Box, SxProps, Theme, Tooltip } from '@mui/material';
 import { ElementAttributes, mergeSx } from '@gridsuite/commons-ui';
 import { MouseEvent } from 'react';
 import { setSelectedDirectory } from '../redux/actions';
