@@ -68,10 +68,12 @@ const ContingencyListCreationForm: FunctionComponent = () => {
                 {gridItem(contingencyListTypeField, 12)}
             </Grid>
             {watchContingencyListType === ContingencyListType.CRITERIA_BASED.id && (
-                <CriteriaBasedForm
-                    equipments={CONTINGENCY_LIST_EQUIPMENTS}
-                    defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
-                />
+                <Grid item xs={12}>
+                    <CriteriaBasedForm
+                        equipments={CONTINGENCY_LIST_EQUIPMENTS}
+                        defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
+                    />
+                </Grid>
             )}
             {watchContingencyListType === ContingencyListType.EXPLICIT_NAMING.id && <ExplicitNamingForm />}
             {watchContingencyListType === ContingencyListType.SCRIPT.id && <ScriptInputForm />}
