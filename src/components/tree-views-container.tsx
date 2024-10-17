@@ -25,13 +25,10 @@ import {
     setTreeData,
     setUploadingElements,
 } from '../redux/actions';
-
 import { connectNotificationsWsUpdateDirectories } from '../utils/rest-api';
 import DirectoryTreeView from './directory-tree-view';
 import { notificationType } from '../utils/notificationType';
-
 import * as constants from '../utils/UIconstants';
-// Menu
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 import { AppState, IDirectory, ITreeData, UploadingElement } from '../redux/reducer';
 

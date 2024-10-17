@@ -14,7 +14,6 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-
 import { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
 import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
 import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';

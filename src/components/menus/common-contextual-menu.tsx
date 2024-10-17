@@ -7,9 +7,7 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-
 import EditIcon from '@mui/icons-material/Edit';
-
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';

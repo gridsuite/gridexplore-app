@@ -8,7 +8,6 @@
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-
 import DeleteIcon from '@mui/icons-material/Delete';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
@@ -22,9 +21,7 @@ import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog'
 import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
-
 import { DialogsId } from '../../utils/UIconstants';
-
 import {
     deleteElement,
     duplicateElement,
@@ -34,7 +31,6 @@ import {
     insertRootDirectory,
     renameElement,
 } from '../../utils/rest-api';
-
 import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';

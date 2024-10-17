@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/material';
 import { TreeItem, useTreeItem } from '@mui/x-tree-view';

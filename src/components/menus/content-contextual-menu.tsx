@@ -9,7 +9,6 @@ import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -18,7 +17,6 @@ import PhotoLibrary from '@mui/icons-material/PhotoLibrary';
 import FileCopyTwoToneIcon from '@mui/icons-material/FileCopyTwoTone';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
-
 import {
     ElementAttributes,
     ElementType,
@@ -34,9 +32,7 @@ import DeleteDialog from '../dialogs/delete-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
-
 import { DialogsId } from '../../utils/UIconstants';
-
 import {
     deleteElements,
     duplicateElement,
@@ -49,9 +45,7 @@ import {
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
 } from '../../utils/rest-api';
-
 import { ContingencyListType, FilterType } from '../../utils/elementType';
-
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';

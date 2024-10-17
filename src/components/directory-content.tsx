@@ -27,13 +27,9 @@ import AddIcon from '@mui/icons-material/Add';
 import { AgGridReact } from 'ag-grid-react';
 import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
 import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
-
 import * as constants from '../utils/UIconstants';
-
 import { ContingencyListType, FilterType } from '../utils/elementType';
-
 import { elementExists, getFilterById, updateElement } from '../utils/rest-api';
-
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';

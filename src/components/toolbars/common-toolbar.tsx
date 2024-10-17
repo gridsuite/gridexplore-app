@@ -7,9 +7,7 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-
 import EditIcon from '@mui/icons-material/Edit';
-
 import IconButton from '@mui/material/IconButton';
 import { Theme, Toolbar, Tooltip } from '@mui/material';
 
