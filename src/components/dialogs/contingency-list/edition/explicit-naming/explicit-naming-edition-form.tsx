@@ -25,9 +25,7 @@ const ExplicitNamingEditionForm = () => {
                     elementExists={elementExists}
                 />
             </Box>
-            <Box sx={unscrollableDialogStyles.scrollableContent}>
-                <ExplicitNamingForm />
-            </Box>
+            <ExplicitNamingForm />
         </>
     );
 };
