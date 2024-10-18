@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/material';
@@ -46,7 +46,6 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const isMenuOpen = activeDirectory === nodeId;
 
-    const [hover, setHover] = useState(false);
     const icon = iconProp || expansionIcon || displayIcon;
 
     const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -79,8 +78,6 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
                 { '&:hover': styles.hovered }
             )}
             onMouseDown={handleMouseDown}
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
             ref={ref}
         >
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
@@ -90,11 +87,13 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
             <Typography onClick={handleSelectionClick} component="div" sx={styles.label}>
                 {label}
             </Typography>
-            {hover && (
-                <Box onClick={handleAddIconClick} sx={{ display: 'flex' }}>
-                    {isMenuOpen ? <AddBoxOutlinedIcon /> : <AddIcon />}
-                </Box>
-            )}
+            <Box
+                onClick={handleAddIconClick}
+                className="menuIcon"
+                sx={{ display: 'none' }} // This is hidden by default, but shown when the parent Box has its styles.hovered active.
+            >
+                {isMenuOpen ? <AddBoxOutlinedIcon /> : <AddIcon />}
+            </Box>
         </Box>
     );
 });
