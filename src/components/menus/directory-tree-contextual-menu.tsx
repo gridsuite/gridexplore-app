@@ -52,6 +52,11 @@ interface DirectoryTreeContextualMenuProps {
     restrictMenuItems: boolean;
     anchorReference?: PopoverReference;
     anchorPosition?: PopoverPosition;
+    anchorEl?: HTMLElement | null;
+    anchorOrigin: {
+        vertical: 'top' | 'bottom';
+        horizontal: 'left' | 'right';
+    };
 }
 
 const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = (props) => {

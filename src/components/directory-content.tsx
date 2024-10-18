@@ -249,6 +249,7 @@ const DirectoryContent = () => {
 
     const handleCloseDirectoryMenu = () => {
         setOpenDirectoryMenu(false);
+        dispatch(setActiveDirectory(undefined));
     };
 
     const handleOpenDirectoryMenu = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -694,6 +695,10 @@ const DirectoryContent = () => {
                             : undefined
                     }
                     restrictMenuItems={true}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
                 />
             </div>
             {renderDialog(elementName)}

@@ -11,6 +11,10 @@ import Typography from '@mui/material/Typography';
 import { Box } from '@mui/material';
 import { TreeItem, useTreeItem } from '@mui/x-tree-view';
 import { mergeSx } from '@gridsuite/commons-ui';
+import AddIcon from '@mui/icons-material/Add';
+import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 
 export interface TreeItemCustomContentProps {
     className?: string;
@@ -22,12 +26,25 @@ export interface TreeItemCustomContentProps {
     displayIcon?: React.ReactNode;
     onExpand: (e: string) => void;
     onSelect: (e: string) => void;
+    onAddIconClick: (e: React.MouseEvent<HTMLDivElement>, nodeId: string, anchor: string) => void;
 }
 
 const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCustomContentProps, ref) {
-    const { className, styles, label, nodeId, icon: iconProp, expansionIcon, displayIcon, onExpand, onSelect } = props;
-
+    const {
+        className,
+        styles,
+        label,
+        nodeId,
+        icon: iconProp,
+        expansionIcon,
+        displayIcon,
+        onExpand,
+        onSelect,
+        onAddIconClick,
+    } = props;
     const { disabled, expanded, selected, focused, preventSelection } = useTreeItem(nodeId);
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
+    const isMenuOpen = activeDirectory === nodeId;
 
     const icon = iconProp || expansionIcon || displayIcon;
 
@@ -42,6 +59,10 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
     const handleSelectionClick = (event: React.MouseEvent<HTMLDivElement>) => {
         onSelect(nodeId);
     };
+    const handleAddIconClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        // used to open the menu
+        onAddIconClick(event, nodeId, 'anchorEl');
+    };
 
     return (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
@@ -52,7 +73,9 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
                 expanded && styles.expanded,
                 selected && styles.selected,
                 focused && styles.focused,
-                disabled && styles.disabled
+                disabled && styles.disabled,
+                isMenuOpen && styles.hovered,
+                { '&:hover': styles.hovered }
             )}
             onMouseDown={handleMouseDown}
             ref={ref}
@@ -64,6 +87,13 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
             <Typography onClick={handleSelectionClick} component="div" sx={styles.label}>
                 {label}
             </Typography>
+            <Box
+                onClick={handleAddIconClick}
+                className="menuIcon"
+                sx={{ display: 'none' }} // This is hidden by default, but shown when the parent Box has its styles.hovered active.
+            >
+                {isMenuOpen ? <AddBoxOutlinedIcon /> : <AddIcon />}
+            </Box>
         </Box>
     );
 });
