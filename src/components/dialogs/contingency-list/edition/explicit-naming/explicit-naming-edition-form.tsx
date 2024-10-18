@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Box } from '@mui/material';
 import ExplicitNamingForm from '../../explicit-naming/explicit-naming-form';
-import { ElementType, UniqueNameInput, FieldConstants } from '@gridsuite/commons-ui';
+import { ElementType, UniqueNameInput, FieldConstants, unscrollableDialogStyles } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { elementExists } from 'utils/rest-api';
 import { AppState } from 'redux/reducer';
@@ -15,8 +15,8 @@ import { AppState } from 'redux/reducer';
 const ExplicitNamingEditionForm = () => {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
-        <Grid container spacing={2} marginTop={'auto'}>
-            <Grid item xs={12}>
+        <>
+            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
                 <UniqueNameInput
                     name={FieldConstants.NAME}
                     label={'nameProperty'}
@@ -24,9 +24,9 @@ const ExplicitNamingEditionForm = () => {
                     activeDirectory={activeDirectory}
                     elementExists={elementExists}
                 />
-            </Grid>
+            </Box>
             <ExplicitNamingForm />
-        </Grid>
+        </>
     );
 };
 

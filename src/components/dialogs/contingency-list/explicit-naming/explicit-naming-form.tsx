@@ -13,7 +13,6 @@ import { ContingencyListType } from 'utils/elementType';
 import { v4 as uuid4 } from 'uuid';
 import {
     FieldConstants,
-    gridItem,
     CustomAgGridTable,
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
     yupConfig as yup,
@@ -140,7 +139,7 @@ const ExplicitNamingForm = () => {
         []
     );
 
-    const equipmentTableField = (
+    return (
         <CustomAgGridTable
             name={FieldConstants.EQUIPMENT_TABLE}
             columnDefs={columnDefs}
@@ -157,11 +156,14 @@ const ExplicitNamingForm = () => {
                 getDataFromCsv: getDataFromCsvFile,
                 csvData: csvInitialData,
             }}
-            cssProps={{}}
+            cssProps={{
+                padding: 1,
+                '& .ag-root-wrapper-body': {
+                    maxHeight: 'unset',
+                },
+            }}
         />
     );
-
-    return gridItem(equipmentTableField, 12);
 };
 
 export default ExplicitNamingForm;
