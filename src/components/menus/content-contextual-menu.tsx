@@ -49,7 +49,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 
-import CommonContextualMenu from './common-contextual-menu';
+import CommonContextualMenu, { CommonContextualMenuProps } from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
 import { DownloadForOffline, FileDownload } from '@mui/icons-material';
@@ -60,19 +60,15 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 import { AppState } from 'redux/reducer';
-import { PopoverPosition, PopoverReference } from '@mui/material';
 
-interface ContentContextualMenuProps {
+interface ContentContextualMenuProps extends CommonContextualMenuProps {
     activeElement: ElementAttributes;
     selectedElements: ElementAttributes[];
     onUpdateSelectedElements: (elements: ElementAttributes[]) => void;
-    open: boolean;
     onClose: () => void;
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
     broadcastChannel: BroadcastChannel;
-    anchorReference?: PopoverReference;
-    anchorPosition?: PopoverPosition;
 }
 
 const ContentContextualMenu = (props: ContentContextualMenuProps) => {

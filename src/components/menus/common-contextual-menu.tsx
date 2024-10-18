@@ -15,7 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
-import { PopoverPosition, PopoverReference, styled } from '@mui/material';
+import { PopoverOrigin, PopoverPosition, PopoverProps, PopoverReference, styled } from '@mui/material';
 
 const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} />)({
     '.MuiMenu-paper': {
@@ -31,13 +31,22 @@ export interface MenuItemType {
     disabled?: boolean;
 }
 
-interface CommonContextualMenuProps {
+export interface CommonContextualMenuProps extends MenuProps {
     onClose?: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
-    open: boolean;
-    anchorReference?: PopoverReference;
-    anchorPosition?: PopoverPosition;
     menuItems?: MenuItemType[];
 }
+
+export interface AnchorStatesType {
+    anchorEl?: PopoverProps['anchorEl'];
+    anchorReference?: PopoverReference;
+    anchorPosition?: PopoverPosition;
+    anchorOrigin?: PopoverOrigin;
+    transformOrigin?: PopoverOrigin;
+}
+
+export const defaultAnchorStates: AnchorStatesType = {
+    anchorReference: 'anchorPosition',
+};
 
 const CommonContextualMenu: React.FC<CommonContextualMenuProps> = (props) => {
     const { menuItems, ...others } = props;
