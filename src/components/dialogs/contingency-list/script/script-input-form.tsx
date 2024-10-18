@@ -7,7 +7,8 @@
 
 import AceInput from '../../../utils/rhf-inputs/ace-input';
 import { styled } from '@mui/system';
-import { FieldConstants } from '@gridsuite/commons-ui';
+import { FieldConstants, mergeSx, unscrollableDialogStyles } from '@gridsuite/commons-ui';
+import Box from '@mui/material/Box';
 
 const StyledAceInput = styled(AceInput)({
     minWidth: '650px',
@@ -18,12 +19,14 @@ const StyledAceInput = styled(AceInput)({
 
 const ScriptInputForm = () => {
     return (
-        <StyledAceInput
-            name={FieldConstants.SCRIPT}
-            placeholder="Insert your groovy script here"
-            editorProps={{ $blockScrolling: true }}
-            fontSize="18px"
-        />
+        <Box sx={mergeSx(unscrollableDialogStyles.scrollableContent, { display: 'flex' })}>
+            <StyledAceInput
+                name={FieldConstants.SCRIPT}
+                placeholder="Insert your groovy script here"
+                editorProps={{ $blockScrolling: true }}
+                fontSize="18px"
+            />
+        </Box>
     );
 };
 

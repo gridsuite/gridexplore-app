@@ -157,12 +157,7 @@ const ExplicitNamingForm = () => {
                 getDataFromCsv: getDataFromCsvFile,
                 csvData: csvInitialData,
             }}
-            cssProps={{
-                '& .ag-root-wrapper-body': {
-                    maxHeight: '380px',
-                    height: '380px',
-                },
-            }}
+            cssProps={{}}
         />
     );
 

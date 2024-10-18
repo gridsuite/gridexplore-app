@@ -7,7 +7,7 @@
 
 import { Box } from '@mui/material';
 import ScriptInputForm from '../../script/script-input-form';
-import { UniqueNameInput, ElementType, FieldConstants, unscrollableDialogStyles, mergeSx } from '@gridsuite/commons-ui';
+import { UniqueNameInput, ElementType, FieldConstants, unscrollableDialogStyles } from '@gridsuite/commons-ui';
 import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -25,9 +25,7 @@ const ScriptEditionForm = () => {
                     elementExists={elementExists}
                 />
             </Box>
-            <Box sx={mergeSx(unscrollableDialogStyles.scrollableContent, { display: 'flex' })}>
-                <ScriptInputForm />
-            </Box>
+            <ScriptInputForm />
         </>
     );
 };
