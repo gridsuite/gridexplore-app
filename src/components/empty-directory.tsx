@@ -11,6 +11,9 @@ import AddIcon from '@mui/icons-material/Add';
 import CircleIcon from './icons/circleIcon';
 import { FormattedMessage } from 'react-intl';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
+import { PARAM_THEME } from 'utils/config-params';
 const CIRCLE_SIZE = 250;
 
 const styles = {
@@ -37,11 +40,12 @@ const styles = {
     }),
 };
 
-interface EmptyFolderProps {
-    openDialog: (e: React.MouseEvent<HTMLElement>) => void;
-    theme: string;
+interface EmptyDirectoryProps {
+    onCreateElement: (e: React.MouseEvent<HTMLElement>) => void;
 }
-const EmptyDirectory: React.FC<EmptyFolderProps> = ({ openDialog, theme }) => {
+const EmptyDirectory: React.FC<EmptyDirectoryProps> = ({ onCreateElement }) => {
+    const theme = useSelector((state: AppState) => state[PARAM_THEME]);
+
     return (
         <Box sx={styles.container}>
             <CircleIcon size={CIRCLE_SIZE} iconStyles={styles.circle}>
@@ -61,7 +65,7 @@ const EmptyDirectory: React.FC<EmptyFolderProps> = ({ openDialog, theme }) => {
                 <h3>
                     <FormattedMessage id={'emptyDirContent'} />
                 </h3>
-                <Button variant="contained" sx={styles.button} onClick={openDialog} endIcon={<AddIcon />}>
+                <Button variant="contained" sx={styles.button} onClick={onCreateElement} endIcon={<AddIcon />}>
                     <FormattedMessage id={'createElement'} />
                 </Button>
             </Box>

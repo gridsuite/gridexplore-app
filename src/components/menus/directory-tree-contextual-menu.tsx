@@ -32,7 +32,7 @@ import {
     duplicateSpreadsheetConfig,
 } from '../../utils/rest-api';
 
-import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
+import CommonContextualMenu, { CommonContextualMenuProps, MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
 import { ElementAttributes, ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
@@ -40,18 +40,14 @@ import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
-import { PopoverPosition, PopoverReference } from '@mui/material';
 import { AppState } from 'redux/reducer';
 
-interface DirectoryTreeContextualMenuProps {
+interface DirectoryTreeContextualMenuProps extends CommonContextualMenuProps {
     directory: ElementAttributes | null;
-    open: boolean;
     onClose: (e: unknown, nextSelectedDirectoryId?: string | null) => void;
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
     restrictMenuItems: boolean;
-    anchorReference?: PopoverReference;
-    anchorPosition?: PopoverPosition;
 }
 
 const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = (props) => {
