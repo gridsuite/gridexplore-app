@@ -13,6 +13,7 @@ export const DialogsId = {
     RENAME: 'rename',
     DELETE: 'delete',
     MOVE: 'move',
+    MOVE_DIRECTORY: 'moveDirectory',
     EXPORT: 'export',
     ADD_NEW_STUDY_FROM_CASE: 'create_study_from_case',
     ADD_NEW_STUDY: 'create_study',
