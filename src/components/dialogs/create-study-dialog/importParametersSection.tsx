@@ -59,6 +59,7 @@ const ImportParametersSection: FunctionComponent = () => {
                         onChange={handleParamsChange}
                         variant="standard"
                         selectionWithDialog={(param: any) => param.possibleValues?.length > 10}
+                        disabledParams={['iidm.import.cgmes.cgm-with-subnetworks']} //disabled parameters list
                     />
                 )}
             </Box>
