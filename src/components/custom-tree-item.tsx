@@ -86,7 +86,6 @@ const CustomContent = forwardRef(function CustomContent(props: CustomContentProp
             onMouseDown={handleMouseDown}
             ref={ref}
         >
-            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
             <Box onClick={handleExpansionClick} className={classes?.iconContainer} sx={styles?.iconContainer}>
                 {icon}
             </Box>

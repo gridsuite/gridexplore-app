@@ -98,7 +98,7 @@ export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
                 try {
                     // eslint-disable-next-line no-restricted-syntax -- usage of async/await syntax
                     for (const uuid of elementUuidPath) {
-                        // eslint-disable-next-line no-await-in-loop
+                        // eslint-disable-next-line no-await-in-loop -- it's wanted because we don't want to download in parallel
                         const resources = await fetchDirectoryContent(uuid);
                         updateMapData(
                             uuid,
