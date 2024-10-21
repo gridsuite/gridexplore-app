@@ -9,16 +9,9 @@ import { createReducer } from '@reduxjs/toolkit';
 import {
     AuthenticationActions,
     AuthenticationRouterErrorAction,
-    AuthenticationRouterErrorState,
-    CommonStoreState,
-    ElementAttributes,
     ElementType,
-    GsLang,
-    GsLangUser,
-    GsTheme,
     LOGOUT_ERROR,
     LogoutErrorAction,
-    Metadata,
     RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
     ShowAuthenticationRouterLoginAction,
@@ -31,8 +24,6 @@ import {
     UserAction,
     UserValidationErrorAction,
 } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
-import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
 import {
     getLocalStorageComputedLanguage,
     getLocalStorageLanguage,
@@ -74,64 +65,7 @@ import {
     TreeDataAction,
 } from './actions';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
-
-// IDirectory is exactly an IElement, with a specific type value
-export type IDirectory = ElementAttributes & {
-    type: ElementType.DIRECTORY;
-};
-
-export interface ElementAttributesES {
-    id: UUID;
-    name: string;
-    parentId: UUID;
-    type: ElementType;
-    owner: string;
-    subdirectoriesCount: number;
-    lastModificationDate: string;
-    pathName: string[];
-    pathUuid: UUID[];
-}
-
-export interface ITreeData {
-    rootDirectories: IDirectory[];
-    mapData: Record<string, IDirectory>;
-    initialized: boolean;
-}
-
-export type UploadingElement = {
-    id: number;
-    elementName: string;
-    directory?: UUID;
-    type: ElementType;
-    owner?: string;
-    lastModifiedBy?: string;
-    uploading: boolean;
-    caseFormat?: string;
-};
-
-export interface AppState extends CommonStoreState {
-    [PARAM_THEME]: GsTheme;
-    [PARAM_LANGUAGE]: GsLang;
-    computedLanguage: GsLangUser;
-
-    // userManager: UserManagerState;
-    signInCallbackError: Error | null;
-    authenticationRouterError: AuthenticationRouterErrorState | null;
-    showAuthenticationRouterLogin: boolean;
-
-    appsAndUrls: Metadata[];
-    activeDirectory?: UUID;
-    currentChildren?: ElementAttributes[];
-    selectedDirectory: ElementAttributes | null;
-    searchedElement: ElementAttributesES | null;
-    treeData: ITreeData;
-    currentPath: any[];
-    selectedFile: unknown | null;
-    uploadingElements: Record<string, UploadingElement>;
-    directoryUpdated: { force: number; eventData: Record<string, Record<string, unknown>> };
-    selectionForCopy: SelectionForCopy;
-    reorderedColumns: string[];
-}
+import { AppState } from './types';
 
 const initialState: AppState = {
     // authentication

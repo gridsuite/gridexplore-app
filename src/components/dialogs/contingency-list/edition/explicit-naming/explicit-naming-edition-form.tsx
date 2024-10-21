@@ -9,8 +9,8 @@ import { Grid } from '@mui/material';
 import { ElementType, FieldConstants, UniqueNameInput } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { elementExists } from 'utils/rest-api';
-import { AppState } from 'redux/reducer';
 import ExplicitNamingForm from '../../explicit-naming/explicit-naming-form';
+import { AppState } from '../../../../../redux/types';
 
 export default function ExplicitNamingEditionForm() {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);

@@ -10,7 +10,8 @@ import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { updateConfigParameter } from '../../utils/rest-api';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../../utils/config-params';
-import { AppState } from '../../redux/reducer';
+
+import { AppState } from '../../redux/types';
 
 type ParamName = typeof PARAM_THEME | typeof PARAM_LANGUAGE;
 

@@ -31,7 +31,7 @@ import DirectoryTreeView from './directory-tree-view';
 import { notificationType } from '../utils/notificationType';
 import * as constants from '../utils/UIconstants';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
-import { AppState, IDirectory, ITreeData, UploadingElement } from '../redux/reducer';
+import { AppState, IDirectory, ITreeData, UploadingElement } from '../redux/types';
 
 const initialMousePosition = {
     mouseX: null,

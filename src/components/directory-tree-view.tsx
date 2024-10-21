@@ -14,9 +14,9 @@ import { ElementAttributes } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 // eslint-disable-next-line import/no-extraneous-dependencies -- lib from MUI
 import { Property } from 'csstype';
-import { AppState, IDirectory } from '../redux/reducer';
 import CustomTreeItem from './custom-tree-item';
 import { setSelectedDirectory } from '../redux/actions';
+import { AppState, IDirectory } from '../redux/types';
 
 const styles = {
     treeViewRoot: (theme) => ({
@@ -88,7 +88,7 @@ export default function DirectoryTreeView({
 
     const [expanded, setExpanded] = useState<UUID[]>([]);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
-    const currentPath = useSelector((state: AppState) => state.currentPath);
+    const currentPath = useSelector((state: AppState) => state.currentPath as any[]);
 
     const mapDataRef = useRef<Record<string, IDirectory> | undefined>({});
     const expandedRef = useRef<UUID[]>([]);

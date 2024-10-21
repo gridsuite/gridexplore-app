@@ -47,7 +47,8 @@ import NoContentDirectory from './no-content-directory';
 import { CUSTOM_ROW_CLASS, DirectoryContentTable } from './directory-content-table';
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
 import EmptyDirectory from './empty-directory';
-import { AppState } from '../redux/reducer';
+
+import { AppState } from '../redux/types';
 
 const circularProgressSize = '70px';
 

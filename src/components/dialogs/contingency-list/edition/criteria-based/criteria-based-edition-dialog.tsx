@@ -18,15 +18,15 @@ import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from '../../../../../redux/types';
 import {
-    CriteriaBasedData,
     getContingencyListEmptyFormData,
     getCriteriaBasedFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import { setSelectionForCopy } from '../../../../../redux/actions';
 import { useParameterState } from '../../../use-parameters-dialog';
+import { CriteriaBasedEditionFormData } from '../../../../../utils/rest-api';
 import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
 
 const schema = yup.object().shape({
@@ -36,12 +36,6 @@ const schema = yup.object().shape({
 });
 
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
-
-export interface CriteriaBasedEditionFormData {
-    [FieldConstants.NAME]: string;
-    [FieldConstants.EQUIPMENT_TYPE]?: string | null;
-    [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
-}
 
 export interface CriteriaBasedEditionDialogProps {
     contingencyListId: string;

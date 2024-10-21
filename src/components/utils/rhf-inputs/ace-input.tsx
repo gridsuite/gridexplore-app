@@ -12,7 +12,8 @@ import { useSelector } from 'react-redux';
 import 'ace-builds/src-noconflict/mode-groovy';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
-import { AppState } from '../../../redux/reducer';
+
+import { AppState } from '../../../redux/types';
 
 export interface AceInputProps {
     name: string;

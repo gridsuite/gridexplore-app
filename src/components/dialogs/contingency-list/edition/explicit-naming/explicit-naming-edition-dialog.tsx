@@ -18,7 +18,6 @@ import { SyntheticEvent, useEffect, useState } from 'react';
 import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
 import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import {
     getContingencyListEmptyFormData,
     getExplicitNamingFormDataFromFetchedElement,
@@ -26,6 +25,7 @@ import {
 import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-form';
 import ExplicitNamingEditionForm from './explicit-naming-edition-form';
 import { setSelectionForCopy } from '../../../../../redux/actions';
+import { AppState } from '../../../../../redux/types';
 
 interface ExplicitNamingEditionFormData {
     [FieldConstants.NAME]: string;

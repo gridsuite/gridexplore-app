@@ -22,9 +22,9 @@ import GridExploreLogoDark from '../images/GridExplore_logo_dark.svg?react';
 import { setAppsAndUrls } from '../redux/actions';
 import AppPackage from '../../package.json';
 import { SearchBar } from './search/search-bar';
-import { AppState } from '../redux/reducer';
 import { AppDispatch } from '../redux/store';
 import { useParameterState } from './dialogs/use-parameters-dialog';
+import { AppState } from '../redux/types';
 
 export type AppTopBarProps = {
     userManagerInstance: UserManagerState['instance'];

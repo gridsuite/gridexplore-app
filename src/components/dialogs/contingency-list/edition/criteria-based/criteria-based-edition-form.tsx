@@ -16,7 +16,8 @@ import {
 } from '@gridsuite/commons-ui';
 import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+
+import { AppState } from '../../../../../redux/types';
 
 export default function CriteriaBasedEditionForm() {
     const emptyValues = getCriteriaBasedFormData({}, {});

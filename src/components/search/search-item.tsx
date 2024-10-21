@@ -7,7 +7,8 @@
 import { getFileIcon } from '@gridsuite/commons-ui';
 import { Grid, Theme, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { ElementAttributesES } from 'redux/reducer';
+
+import { ElementAttributesES } from '../../redux/types';
 
 const styles = {
     icon: (theme: Theme) => ({

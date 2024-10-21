@@ -7,7 +7,7 @@
 
 import { Action } from 'redux';
 import { PARAM_LANGUAGE } from '../utils/config-params';
-import { AppState } from './reducer';
+import { AppState } from './types';
 
 export type AppActions =
     | ThemeAction

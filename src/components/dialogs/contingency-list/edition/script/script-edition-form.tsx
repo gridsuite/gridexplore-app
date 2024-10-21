@@ -9,8 +9,8 @@ import { Grid } from '@mui/material';
 import { ElementType, FieldConstants, UniqueNameInput } from '@gridsuite/commons-ui';
 import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import ScriptInputForm from '../../script/script-input-form';
+import { AppState } from '../../../../../redux/types';
 
 export default function ScriptEditionForm() {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);

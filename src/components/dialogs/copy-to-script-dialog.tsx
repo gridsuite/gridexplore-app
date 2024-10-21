@@ -12,7 +12,8 @@ import { CircularProgress, Grid } from '@mui/material';
 import { CustomMuiDialog, ElementType, FieldConstants, UniqueNameInput, yupConfig as yup } from '@gridsuite/commons-ui';
 import { elementExists, getNameCandidate } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+
+import { AppState } from '../../redux/types';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),

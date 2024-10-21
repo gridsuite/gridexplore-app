@@ -11,6 +11,7 @@ import {
     backendFetchJson,
     ElementType,
     fetchEnv,
+    FieldConstants,
     getRequestParamFromList,
     GsLang,
     GsTheme,
@@ -22,8 +23,8 @@ import { APP_NAME, getAppName, PARAM_LANGUAGE, PARAM_THEME } from './config-para
 import { store } from '../redux/store';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
-import { AppState } from '../redux/reducer';
-import { CriteriaBasedEditionFormData } from '../components/dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
+import { AppState } from '../redux/types';
+import { CriteriaBasedData } from '../components/dialogs/contingency-list/contingency-list-utils';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
@@ -494,11 +495,16 @@ export function getContingencyList(type: string, id: string) {
     });
 }
 
+export interface CriteriaBasedEditionFormData {
+    [FieldConstants.NAME]: string;
+    [FieldConstants.EQUIPMENT_TYPE]?: string | null;
+    [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
+}
+
 /**
  * Saves a Filter contingency list
  * @returns {Promise<Response>}
  */
-
 export function saveCriteriaBasedContingencyList(id: string, form: CriteriaBasedEditionFormData) {
     const { name, equipmentType, criteriaBased } = form;
     const urlSearchParams = new URLSearchParams();

@@ -9,8 +9,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { CancelButton, ElementType } from '@gridsuite/commons-ui';
 import { SyntheticEvent } from 'react';
-import { AppState } from 'redux/reducer';
 import { useNameField } from './field-hook';
+import { AppState } from '../../redux/types';
 
 export interface RenameDialogProps {
     open: boolean;

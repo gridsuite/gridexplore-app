@@ -29,10 +29,10 @@ import {
     createCaseDialogFormValidationSchema,
     getCreateCaseDialogFormValidationDefaultValues,
 } from './create-case-dialog-utils';
-import { AppState, UploadingElement } from '../../../redux/reducer';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
 import { AppDispatch } from '../../../redux/store';
+import { AppState, UploadingElement } from '../../../redux/types';
 
 interface IFormData {
     [FieldConstants.CASE_NAME]: string;

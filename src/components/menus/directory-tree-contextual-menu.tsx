@@ -18,7 +18,6 @@ import {
 } from '@mui/icons-material';
 import { ElementAttributes, ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { PopoverPosition, PopoverReference } from '@mui/material';
-import { AppState } from 'redux/reducer';
 import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
 import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
@@ -40,6 +39,7 @@ import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { AppState } from '../../redux/types';
 
 export interface DirectoryTreeContextualMenuProps {
     directory: ElementAttributes | null;

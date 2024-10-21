@@ -11,7 +11,8 @@ import { FolderOpen as FolderOpenIcon } from '@mui/icons-material';
 import { ElementAttributes, mergeSx } from '@gridsuite/commons-ui';
 import { MouseEvent } from 'react';
 import { setSelectedDirectory } from '../redux/actions';
-import { AppState } from '../redux/reducer';
+
+import { AppState } from '../redux/types';
 
 const styles = {
     link: (theme: Theme) => ({
@@ -68,7 +69,7 @@ export default function DirectoryBreadcrumbs() {
     const dispatch = useDispatch();
 
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
-    const currentPath = useSelector((state: AppState) => state.currentPath);
+    const currentPath = useSelector((state: AppState) => state.currentPath as any[]);
 
     /* Handle User interactions */
     const handleSelect = (event: MouseEvent<HTMLElement>, dir: ElementAttributes | null) => {

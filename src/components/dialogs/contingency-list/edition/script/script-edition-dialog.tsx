@@ -17,10 +17,10 @@ import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import { getContingencyListEmptyFormData, getScriptFormDataFromFetchedElement } from '../../contingency-list-utils';
 import ScriptEditionForm from './script-edition-form';
 import { setSelectionForCopy } from '../../../../../redux/actions';
+import { AppState } from '../../../../../redux/types';
 
 interface ScriptEditionFormData {
     [FieldConstants.NAME]: string;

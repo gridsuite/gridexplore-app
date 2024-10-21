@@ -34,8 +34,8 @@ import AppTopBar from './app-top-bar';
 import TreeViewsContainer from './tree-views-container';
 import DirectoryContent from './directory-content';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
-import { AppState } from '../redux/reducer';
 import { AppDispatch } from '../redux/store';
+import { AppState } from '../redux/types';
 
 export default function App() {
     const { snackError } = useSnackMessage();
