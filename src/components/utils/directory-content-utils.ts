@@ -73,7 +73,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         },
         headerCheckboxSelection: true,
         checkboxSelection: true,
-        flex: 5,
+        minWidth: 400,
     },
     {
         headerName: intl.formatMessage({
@@ -81,8 +81,9 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         }),
         field: 'description',
         cellRenderer: DescriptionCellRenderer,
-        flex: 1.1,
         sortable: false,
+        minWidth: 110,
+        flex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -94,6 +95,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         cellRendererParams: {
             childrenMetadata: childrenMetadata,
         },
+        minWidth: 200,
         flex: 2,
         comparator: (
             valueA: string,
@@ -126,6 +128,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         }),
         field: 'ownerName', //TODO can we fallback to owner if this is missing ?
         cellRenderer: UserCellRenderer,
+        minWidth: 110,
         flex: 1,
     },
     {
@@ -134,6 +137,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         }),
         field: 'creationDate',
         cellRenderer: DateCellRenderer,
+        minWidth: 130,
         flex: 2,
     },
     {
@@ -142,6 +146,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         }),
         field: 'lastModifiedByName', //TODO can we fallback to lastModifiedBy if this is missing ?
         cellRenderer: UserCellRenderer,
+        minWidth: 110,
         flex: 1,
     },
     {
@@ -150,6 +155,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         }),
         field: 'lastModificationDate',
         cellRenderer: DateCellRenderer,
+        minWidth: 130,
         flex: 2,
     },
 ];
