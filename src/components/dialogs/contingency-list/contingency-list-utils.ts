@@ -76,40 +76,33 @@ export const getContingencyListEmptyFormData = (name = '') => ({
     ...getCriteriaBasedFormData({}, {}),
 });
 
-export const getCriteriaBasedFormDataFromFetchedElement = (response: any, name: string) => {
-    return {
-        [FieldConstants.NAME]: name,
-        [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
-        [FieldConstants.EQUIPMENT_TYPE]: response.equipmentType,
-        ...getCriteriaBasedFormData(response, {}),
-    };
-};
+export const getCriteriaBasedFormDataFromFetchedElement = (response: any, name: string) => ({
+    [FieldConstants.NAME]: name,
+    [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
+    [FieldConstants.EQUIPMENT_TYPE]: response.equipmentType,
+    ...getCriteriaBasedFormData(response, {}),
+});
 
 export const getExplicitNamingFormDataFromFetchedElement = (response: any) => {
     let result;
     if (response.identifierContingencyList?.identifiers?.length) {
-        result = response.identifierContingencyList?.identifiers?.map((identifiers: IdentifierList) => {
-            return {
-                [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
-                [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.EXPLICIT_NAMING.id,
-                [FieldConstants.CONTINGENCY_NAME]: identifiers.contingencyId,
-                [FieldConstants.EQUIPMENT_IDS]: identifiers.identifierList.map((identifier) => identifier.identifier),
-            };
-        });
+        result = response.identifierContingencyList?.identifiers?.map((identifiers: IdentifierList) => ({
+            [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+            [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.EXPLICIT_NAMING.id,
+            [FieldConstants.CONTINGENCY_NAME]: identifiers.contingencyId,
+            [FieldConstants.EQUIPMENT_IDS]: identifiers.identifierList.map((identifier) => identifier.identifier),
+        }));
     } else {
         result = makeDefaultTableRows();
     }
-
     return {
         [FieldConstants.EQUIPMENT_TABLE]: result,
     };
 };
 
-export const getScriptFormDataFromFetchedElement = (response: any) => {
-    return {
-        [FieldConstants.SCRIPT]: response.script,
-    };
-};
+export const getScriptFormDataFromFetchedElement = (response: any) => ({
+    [FieldConstants.SCRIPT]: response.script,
+});
 
 export const getFormContent = (
     contingencyListId: string | null,

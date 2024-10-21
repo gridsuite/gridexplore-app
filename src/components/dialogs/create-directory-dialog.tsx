@@ -58,10 +58,6 @@ export default function CreateDirectoryDialog({
         onClick(name);
     };
 
-    const canCreate = () => {
-        return nameOk;
-    };
-
     return (
         <Dialog fullWidth open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
             <DialogTitle>{title}</DialogTitle>
@@ -73,7 +69,7 @@ export default function CreateDirectoryDialog({
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button disabled={!canCreate()} onClick={handleClick} variant="outlined">
+                <Button disabled={!nameOk} onClick={handleClick} variant="outlined">
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>

@@ -21,13 +21,9 @@ const TableCellWrapper = forwardRef(({ name, children }: TableCellWrapperProps, 
 
     useImperativeHandle(
         agGridRef,
-        () => {
-            return {
-                getValue: () => {
-                    return watchValues;
-                },
-            };
-        },
+        () => ({
+            getValue: () => watchValues,
+        }),
         [watchValues]
     );
 

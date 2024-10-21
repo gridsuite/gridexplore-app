@@ -87,16 +87,10 @@ export default function CopyToScriptDialog({
         onClose();
     };
 
-    const handleGenerateNameError = useCallback(() => {
-        return handleError(
-            intl.formatMessage(
-                { id: 'generateCopyScriptNameError' },
-                {
-                    itemName: currentName,
-                }
-            )
-        );
-    }, [currentName, handleError, intl]);
+    const handleGenerateNameError = useCallback(
+        () => handleError(intl.formatMessage({ id: 'generateCopyScriptNameError' }, { itemName: currentName })),
+        [currentName, handleError, intl]
+    );
 
     useEffect(() => {
         setLoading(true);

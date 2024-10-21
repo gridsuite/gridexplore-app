@@ -433,9 +433,9 @@ export function elementExists(directoryUuid: string | null | undefined, elementN
     const elementNameEncoded = encodeURIComponent(elementName);
     const existsElementUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/elements/${elementNameEncoded}/types/${type}`;
     console.debug(existsElementUrl);
-    return backendFetch(existsElementUrl, { method: 'head' }).then((response) => {
-        return response.status !== 204; // HTTP 204 : No-content
-    });
+    return backendFetch(existsElementUrl, { method: 'head' }).then(
+        (response) => response.status !== 204 // HTTP 204 : No-content
+    );
 }
 
 export function getNameCandidate(directoryUuid: string, elementName: string, type: string) {
@@ -450,12 +450,10 @@ export function rootDirectoryExists(directoryName: string) {
     const existsRootDirectoryUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/root-directories?${new URLSearchParams({
         directoryName,
     }).toString()}`;
-
     console.debug(existsRootDirectoryUrl);
-
-    return backendFetch(existsRootDirectoryUrl, { method: 'head' }).then((response) => {
-        return response.status !== 204; // HTTP 204 : No-content
-    });
+    return backendFetch(existsRootDirectoryUrl, { method: 'head' }).then(
+        (response) => response.status !== 204 // HTTP 204 : No-content
+    );
 }
 
 export function createContingencyList(

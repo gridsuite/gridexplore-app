@@ -57,9 +57,9 @@ export default function CommonToolbar(props: Readonly<CommonToolbarProps>) {
 
     return (
         <Toolbar {...others}>
-            {items.map((item, index) => {
-                return makeToolbarButton(index, item.tooltipTextId, item.callback, item.disabled, item.icon);
-            })}
+            {items.map((item, index) =>
+                makeToolbarButton(index, item.tooltipTextId, item.callback, item.disabled, item.icon)
+            )}
         </Toolbar>
     );
 }

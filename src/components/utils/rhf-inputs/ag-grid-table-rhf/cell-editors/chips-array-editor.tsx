@@ -26,12 +26,11 @@ const ChipsArrayEditor = forwardRef(({ ...props }: ChipsArrayEditorProps, ref) =
     const { name, node, colDef } = props;
     const { getValues } = useFormContext();
 
-    const getIndexInFormData = (nodeData: AgGridData | undefined) => {
-        return getValues(name).findIndex(
+    const getIndexInFormData = (nodeData: AgGridData | undefined) =>
+        getValues(name).findIndex(
             (row: AgGridData) =>
                 nodeData && row[FieldConstants.AG_GRID_ROW_UUID] === nodeData[FieldConstants.AG_GRID_ROW_UUID]
         );
-    };
 
     const cellName = `${name}.${getIndexInFormData(node.data)}.${colDef.field}`;
 

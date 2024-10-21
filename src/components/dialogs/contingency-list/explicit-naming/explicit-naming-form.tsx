@@ -20,35 +20,36 @@ import { SuppressKeyboardEventParams } from 'ag-grid-community';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { makeDefaultRowData } from '../contingency-list-utils';
 
-const getExplicitNamingConditionSchema = (schema: yup.ArraySchema<any, any, any, any>) => {
-    return schema
+const getExplicitNamingConditionSchema = (schema: yup.ArraySchema<any, any, any, any>) =>
+    schema
         .min(1, 'contingencyTableContainAtLeastOneRowError')
-        .test('rowWithoutName', 'contingencyTablePartiallyDefinedError', (array) => {
-            return !array.some((row: any) => !row[FieldConstants.CONTINGENCY_NAME]?.trim());
-        })
-        .test('rowWithoutEquipments', 'contingencyTablePartiallyDefinedError', (array) => {
-            return !array.some((row: any) => !row[FieldConstants.EQUIPMENT_IDS]?.length);
-        });
-};
+        .test(
+            'rowWithoutName',
+            'contingencyTablePartiallyDefinedError',
+            (array) => !array.some((row: any) => !row[FieldConstants.CONTINGENCY_NAME]?.trim())
+        )
+        .test(
+            'rowWithoutEquipments',
+            'contingencyTablePartiallyDefinedError',
+            (array) => !array.some((row: any) => !row[FieldConstants.EQUIPMENT_IDS]?.length)
+        );
 
-export const getExplicitNamingSchema = (id: FieldConstants.EQUIPMENT_TABLE) => {
-    return {
-        [id]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [FieldConstants.CONTINGENCY_NAME]: yup.string().nullable(),
-                    [FieldConstants.EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
-                })
-            )
-            // we remove empty lines
-            .compact((row) => !row[FieldConstants.CONTINGENCY_NAME] && !row[FieldConstants.EQUIPMENT_IDS]?.length)
-            .when([FieldConstants.CONTINGENCY_LIST_TYPE], {
-                is: ContingencyListType.EXPLICIT_NAMING.id,
-                then: (schema) => getExplicitNamingConditionSchema(schema),
-            }),
-    };
-};
+export const getExplicitNamingSchema = (id: FieldConstants.EQUIPMENT_TABLE) => ({
+    [id]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [FieldConstants.CONTINGENCY_NAME]: yup.string().nullable(),
+                [FieldConstants.EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
+            })
+        )
+        // we remove empty lines
+        .compact((row) => !row[FieldConstants.CONTINGENCY_NAME] && !row[FieldConstants.EQUIPMENT_IDS]?.length)
+        .when([FieldConstants.CONTINGENCY_LIST_TYPE], {
+            is: ContingencyListType.EXPLICIT_NAMING.id,
+            then: (schema) => getExplicitNamingConditionSchema(schema),
+        }),
+});
 
 export const getExplicitNamingEditSchema = (id: string) => {
     const schema = yup
@@ -73,8 +74,8 @@ const suppressKeyboardEvent = (params: SuppressKeyboardEventParams) => {
 
 const ExplicitNamingForm = () => {
     const intl = useIntl();
-    const columnDefs = useMemo(() => {
-        return [
+    const columnDefs = useMemo(
+        () => [
             ...ROW_DRAGGING_SELECTION_COLUMN_DEF,
             {
                 headerName: intl.formatMessage({ id: 'elementName' }),
@@ -97,22 +98,21 @@ const ExplicitNamingForm = () => {
                 },
                 cellStyle: { padding: 0 },
             },
-        ];
-    }, [intl]);
+        ],
+        [intl]
+    );
 
     const getDataFromCsvFile = useCallback((csvData: string[][]) => {
         if (csvData) {
-            return csvData.map((value) => {
-                return {
-                    [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
-                    [FieldConstants.CONTINGENCY_NAME]: value[0]?.trim() || '',
-                    [FieldConstants.EQUIPMENT_IDS]:
-                        value[1]
-                            ?.split('|')
-                            .map((n) => n.trim())
-                            .filter((n) => n) || undefined,
-                };
-            });
+            return csvData.map((value) => ({
+                [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+                [FieldConstants.CONTINGENCY_NAME]: value[0]?.trim() || '',
+                [FieldConstants.EQUIPMENT_IDS]:
+                    value[1]
+                        ?.split('|')
+                        .map((n) => n.trim())
+                        .filter((n) => n) || undefined,
+            }));
         }
         return [];
     }, []);

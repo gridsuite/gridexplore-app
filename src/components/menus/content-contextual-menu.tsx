@@ -170,8 +170,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         handleCloseDialog();
     }
 
-    const handleDuplicateError = (error: string) => {
-        return handleLastError(
+    const handleDuplicateError = (error: string) =>
+        handleLastError(
             intl.formatMessage(
                 { id: 'duplicateElementFailure' },
                 {
@@ -180,7 +180,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 }
             )
         );
-    };
 
     const copyItem = () => {
         if (activeElement) {
@@ -416,31 +415,30 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         false
     );
 
-    const noCreationInProgress = useCallback(() => {
-        return selectedElements.every((el) => el.hasMetadata);
-    }, [selectedElements]);
+    const noCreationInProgress = useCallback(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
 
     // Allowance
-    const isUserAllowed = useCallback(() => {
-        return selectedElements.every((el) => {
-            return el.owner === userId;
-        });
-    }, [selectedElements, userId]);
+    const isUserAllowed = useCallback(
+        () => selectedElements.every((el) => el.owner === userId),
+        [selectedElements, userId]
+    );
 
-    const allowsDelete = useCallback(() => {
-        return isUserAllowed() && selectedElements.every((el) => el.elementUuid != null);
-    }, [isUserAllowed, selectedElements]);
+    const allowsDelete = useCallback(
+        () => isUserAllowed() && selectedElements.every((el) => el.elementUuid != null),
+        [isUserAllowed, selectedElements]
+    );
 
-    const allowsRename = useCallback(() => {
-        return selectedElements.length === 1 && isUserAllowed() && selectedElements[0].hasMetadata;
-    }, [isUserAllowed, selectedElements]);
+    const allowsRename = useCallback(
+        () => selectedElements.length === 1 && isUserAllowed() && selectedElements[0].hasMetadata,
+        [isUserAllowed, selectedElements]
+    );
 
-    const allowsMove = useCallback(() => {
-        return (
+    const allowsMove = useCallback(
+        () =>
             selectedElements.every((element) => element.type !== ElementType.DIRECTORY && element.hasMetadata) &&
-            isUserAllowed()
-        );
-    }, [isUserAllowed, selectedElements]);
+            isUserAllowed(),
+        [isUserAllowed, selectedElements]
+    );
 
     const allowsDuplicateAndCopy = useCallback(() => {
         const allowedTypes = [
@@ -464,21 +462,21 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return hasMetadata && isSingleElement && isAllowedType;
     }, [selectedElements]);
 
-    const allowsCreateNewStudyFromCase = useCallback(() => {
-        return (
+    const allowsCreateNewStudyFromCase = useCallback(
+        () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CASE &&
-            selectedElements[0].hasMetadata
-        );
-    }, [selectedElements]);
+            selectedElements[0].hasMetadata,
+        [selectedElements]
+    );
 
-    const allowsCopyContingencyToScript = useCallback(() => {
-        return (
+    const allowsCopyContingencyToScript = useCallback(
+        () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id
-        );
-    }, [selectedElements]);
+            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id,
+        [selectedElements]
+    );
 
     const allowsReplaceContingencyWithScript = useCallback(() => {
         return (
@@ -489,14 +487,14 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         );
     }, [isUserAllowed, selectedElements]);
 
-    const allowsConvertFilterIntoExplicitNaming = useCallback(() => {
-        return (
+    const allowsConvertFilterIntoExplicitNaming = useCallback(
+        () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.FILTER &&
             selectedElements[0].subtype !== FilterType.EXPLICIT_NAMING.id &&
-            isUserAllowed()
-        );
-    }, [isUserAllowed, selectedElements]);
+            isUserAllowed(),
+        [isUserAllowed, selectedElements]
+    );
 
     const allowsDownload = useCallback(() => {
         const allowedTypes = [ElementType.CASE, ElementType.SPREADSHEET_CONFIG];

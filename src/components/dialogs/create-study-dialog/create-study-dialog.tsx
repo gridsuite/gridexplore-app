@@ -56,9 +56,10 @@ function customizeCurrentParameters(params: Parameter[]): Record<string, string>
 
 function formatCaseImportParameters(params: Parameter[]): Parameter[] {
     // sort possible values alphabetically to display select options sorted
-    return params?.map((parameter) => {
-        return { ...parameter, possibleValues: parameter.possibleValues?.sort((a: any, b: any) => a.localeCompare(b)) };
-    });
+    return params?.map((parameter) => ({
+        ...parameter,
+        possibleValues: parameter.possibleValues?.sort((a: any, b: any) => a.localeCompare(b)),
+    }));
 }
 
 export interface CreateStudyDialogProps {

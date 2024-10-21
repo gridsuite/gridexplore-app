@@ -82,9 +82,7 @@ export default function DeleteDialog({
         onClick();
     };
 
-    const buildTitle = () => {
-        return intl.formatMessage({ id: 'deleteDialogTitle' });
-    };
+    const buildTitle = () => intl.formatMessage({ id: 'deleteDialogTitle' });
 
     const renderElement = (renderItems: ElementAttributes[]) => {
         const isBig = renderItems[0].elementName?.length > 72;
@@ -105,37 +103,34 @@ export default function DeleteDialog({
         gridItems: ElementAttributes[],
         gridMultipleDeleteFormatMessageId: string,
         gridSimpleDeleteFormatMessageId: string
-    ) => {
-        return (
-            gridItems &&
-            (gridItems.length > 1 ? (
-                <Grid>
-                    <Grid item>
-                        <span>
-                            {intl.formatMessage({
-                                id: gridMultipleDeleteFormatMessageId,
-                            })}
-                        </span>
-                    </Grid>
+    ) =>
+        gridItems &&
+        (gridItems.length > 1 ? (
+            <Grid>
+                <Grid item>
+                    <span>
+                        {intl.formatMessage({
+                            id: gridMultipleDeleteFormatMessageId,
+                        })}
+                    </span>
                 </Grid>
-            ) : (
-                <Grid>
-                    <Grid item>
-                        <span>
-                            {intl.formatMessage(
-                                {
-                                    id: gridSimpleDeleteFormatMessageId,
-                                },
-                                {
-                                    itemName: <span>{gridItems.length === 1 && renderElement(gridItems)}</span>,
-                                }
-                            )}
-                        </span>
-                    </Grid>
+            </Grid>
+        ) : (
+            <Grid>
+                <Grid item>
+                    <span>
+                        {intl.formatMessage(
+                            {
+                                id: gridSimpleDeleteFormatMessageId,
+                            },
+                            {
+                                itemName: <span>{gridItems.length === 1 && renderElement(gridItems)}</span>,
+                            }
+                        )}
+                    </span>
                 </Grid>
-            ))
-        );
-    };
+            </Grid>
+        ));
 
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">

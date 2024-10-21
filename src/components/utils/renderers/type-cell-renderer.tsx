@@ -10,9 +10,7 @@ import { UUID } from 'crypto';
 import { Box } from '@mui/material';
 
 // This function is used to lowercase all the characters in a string except the first one
-const toTitleCase = (str: string) => {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-};
+const toTitleCase = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
 export const getElementTypeTranslation = (
     type: ElementType,

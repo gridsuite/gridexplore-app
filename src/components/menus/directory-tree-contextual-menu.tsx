@@ -202,13 +202,9 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     );
 
     // Allowance
-    const showMenuFromEmptyZone = useCallback(() => {
-        return !directory;
-    }, [directory]);
+    const showMenuFromEmptyZone = useCallback(() => !directory, [directory]);
 
-    const isAllowed = useCallback(() => {
-        return directory && directory.owner === userId;
-    }, [directory, userId]);
+    const isAllowed = useCallback(() => directory && directory.owner === userId, [directory, userId]);
 
     const buildMenu = () => {
         // build menuItems here

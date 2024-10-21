@@ -30,13 +30,9 @@ export const formatMetadata = (
 export const computeCheckedElements = (
     gridRef: MutableRefObject<AgGridReact | null>,
     childrenMetadata: Record<UUID, ElementAttributes>
-): ElementAttributes[] => {
-    return (
-        gridRef.current?.api
-            ?.getSelectedRows()
-            .map((row: ElementAttributes) => formatMetadata(row, childrenMetadata)) ?? []
-    );
-};
+): ElementAttributes[] =>
+    gridRef.current?.api?.getSelectedRows().map((row: ElementAttributes) => formatMetadata(row, childrenMetadata)) ??
+    [];
 
 export const isRowUnchecked = (row: ElementAttributes, checkedRows: ElementAttributes[]) =>
     checkedRows?.length &&

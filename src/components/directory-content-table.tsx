@@ -81,12 +81,10 @@ export function DirectoryContentTable({
 }: Readonly<DirectoryContentTableProps>) {
     const [columnDefs, setColumnDefs] = useState<ColDef[]>(colDef);
     const getCustomRowStyle = useCallback(
-        (cellData: RowClassParams<ElementAttributes>) => {
-            return {
-                ...getClickableRowStyle(cellData),
-                ...getRowStyle?.(cellData),
-            };
-        },
+        (cellData: RowClassParams<ElementAttributes>) => ({
+            ...getClickableRowStyle(cellData),
+            ...getRowStyle?.(cellData),
+        }),
         [getRowStyle]
     );
 
@@ -94,10 +92,8 @@ export function DirectoryContentTable({
     const columnOrder = useSelector((state: AppState) => state.reorderedColumns);
 
     useEffect(() => {
-        const extractColumnOrder = (colDefs: ColDef[]): string[] => {
-            return colDefs.filter((col) => col.field).map((col) => col.field as string);
-        };
-
+        const extractColumnOrder = (colDefs: ColDef[]): string[] =>
+            colDefs.filter((col) => col.field).map((col) => col.field as string);
         if (!columnOrder || columnOrder.length === 0) {
             const initialColumnOrder = extractColumnOrder(colDef);
             dispatch(setReorderedColumns(initialColumnOrder));
@@ -108,13 +104,11 @@ export function DirectoryContentTable({
     }, [columnOrder, colDef, dispatch]);
 
     const onColumnMoved = useCallback(() => {
-        const extractFieldNames = (currentColumnDefs: ColDef[] | undefined): string[] => {
-            return (currentColumnDefs ?? [])
+        const extractFieldNames = (currentColumnDefs: ColDef[] | undefined): string[] =>
+            (currentColumnDefs ?? [])
                 .filter((obj): obj is ColDef => obj && typeof obj === 'object' && 'field' in obj)
                 .map((def) => def.field)
                 .filter((field): field is string => field !== undefined);
-        };
-
         const currentColumnDefs = gridRef?.current?.api?.getColumnDefs();
         const fieldNames = extractFieldNames(currentColumnDefs);
         dispatch(setReorderedColumns(fieldNames));

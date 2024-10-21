@@ -96,9 +96,7 @@ const initialMousePosition = {
     mouseY: null,
 };
 
-const isStudyMetadata = (metadata: Metadata): metadata is StudyMetadata => {
-    return metadata.name === 'Study';
-};
+const isStudyMetadata = (metadata: Metadata): metadata is StudyMetadata => metadata.name === 'Study';
 
 export default function DirectoryContent() {
     const treeData = useSelector((state: AppState) => state.treeData);
@@ -433,13 +431,11 @@ export default function DirectoryContent() {
         setOpenDialog(constants.DialogsId.ADD_ROOT_DIRECTORY);
     }, []);
 
-    const renderLoadingContent = () => {
-        return (
-            <Box sx={styles.circularProgressContainer}>
-                <CircularProgress size={circularProgressSize} color="inherit" sx={styles.centeredCircularProgress} />
-            </Box>
-        );
-    };
+    const renderLoadingContent = () => (
+        <Box sx={styles.circularProgressContainer}>
+            <CircularProgress size={circularProgressSize} color="inherit" sx={styles.centeredCircularProgress} />
+        </Box>
+    );
 
     const handleMousePosition = useCallback(
         (coordinates: DOMRect, isEmpty: boolean): { mouseX: number | null; mouseY: number | null } => {

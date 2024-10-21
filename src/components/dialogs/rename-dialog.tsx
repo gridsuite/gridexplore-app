@@ -78,10 +78,6 @@ export default function RenameDialog({
         onClose();
     };
 
-    const canRename = () => {
-        return newNameOk;
-    };
-
     return (
         <Dialog fullWidth open={open} onClose={handleClose} aria-labelledby="dialog-title-rename">
             <DialogTitle>{title}</DialogTitle>
@@ -94,7 +90,7 @@ export default function RenameDialog({
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button onClick={handleClick} disabled={!canRename()} variant="outlined">
+                <Button onClick={handleClick} disabled={!newNameOk} variant="outlined">
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>

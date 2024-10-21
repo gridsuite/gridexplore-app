@@ -17,19 +17,17 @@ export const getCreateStudyDialogFormDefaultValues = ({
     studyName?: string;
     caseFile?: ElementAttributes | null;
     caseUuid?: string;
-}): CreateStudyDialogFormValues => {
-    return {
-        [FieldConstants.STUDY_NAME]: studyName,
-        [FieldConstants.DESCRIPTION]: '',
-        [FieldConstants.CASE_FILE]: caseFile,
-        [FieldConstants.CASE_UUID]: caseUuid,
-        [FieldConstants.FORMATTED_CASE_PARAMETERS]: [],
-        [FieldConstants.CURRENT_PARAMETERS]: {},
-        [FieldConstants.DIRECTORY]: directory,
-        [FieldConstants.CASE_FORMAT]: '',
-        [FieldConstants.CASE_NAME]: '',
-    };
-};
+}): CreateStudyDialogFormValues => ({
+    [FieldConstants.STUDY_NAME]: studyName,
+    [FieldConstants.DESCRIPTION]: '',
+    [FieldConstants.CASE_FILE]: caseFile,
+    [FieldConstants.CASE_UUID]: caseUuid,
+    [FieldConstants.FORMATTED_CASE_PARAMETERS]: [],
+    [FieldConstants.CURRENT_PARAMETERS]: {},
+    [FieldConstants.DIRECTORY]: directory,
+    [FieldConstants.CASE_FORMAT]: '',
+    [FieldConstants.CASE_NAME]: '',
+});
 
 export const createStudyDialogFormValidationSchema = yup.object().shape({
     [FieldConstants.STUDY_NAME]: yup.string().trim().required('nameEmpty'),

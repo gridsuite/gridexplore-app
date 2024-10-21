@@ -43,12 +43,10 @@ export const prepareContingencyListForBackend = (
     const identifiersList: IdentifierList[] =
         contingencyList[FieldConstants.EQUIPMENT_TABLE]?.map((contingency) => {
             const identifierList: Identifier[] =
-                contingency[FieldConstants.EQUIPMENT_IDS]?.map((identifier) => {
-                    return {
-                        type: 'ID_BASED',
-                        identifier: identifier ?? null,
-                    };
-                }) ?? [];
+                contingency[FieldConstants.EQUIPMENT_IDS]?.map((identifier) => ({
+                    type: 'ID_BASED',
+                    identifier: identifier ?? null,
+                })) ?? [];
 
             return {
                 type: 'LIST',
