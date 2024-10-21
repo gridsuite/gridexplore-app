@@ -12,6 +12,7 @@ import AdvancedParameterButton from './advancedParameterButton';
 import { useController, useWatch } from 'react-hook-form';
 import Box from '@mui/material/Box';
 
+const DISABLED_PARAMS = ['iidm.import.cgmes.cgm-with-subnetworks'];
 const ImportParametersSection: FunctionComponent = () => {
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
 
@@ -59,7 +60,7 @@ const ImportParametersSection: FunctionComponent = () => {
                         onChange={handleParamsChange}
                         variant="standard"
                         selectionWithDialog={(param: any) => param.possibleValues?.length > 10}
-                        disabledParams={['iidm.import.cgmes.cgm-with-subnetworks']} //disabled parameters list
+                        disabledParams={DISABLED_PARAMS} //disabled parameters list
                     />
                 )}
             </Box>
