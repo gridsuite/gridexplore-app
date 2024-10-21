@@ -55,8 +55,7 @@ function flattenDownNodes(n: IDirectory, cef: (arg: IDirectory) => any[]): IDire
     if (subs.length === 0) {
         return [n];
     }
-    const ret = Array.prototype.concat([n], ...subs.map((sn) => flattenDownNodes(sn, cef)));
-    return ret;
+    return Array.prototype.concat([n], ...subs.map((sn) => flattenDownNodes(sn, cef)));
 }
 
 function refreshedUpNodes(m: Record<string, IDirectory> | undefined, nn: IDirectory | undefined): IDirectory[] {
@@ -157,9 +156,7 @@ export function updatedTree(
         nodeId === null ? nextChildren : prevRoots?.map((r) => nextMap[r.elementUuid])
     ) as IDirectory[];
 
-    const ret: [IDirectory[], Record<string, IDirectory>] = [nextRoots, nextMap];
-
-    return ret;
+    return [nextRoots, nextMap];
 }
 
 export default function TreeViewsContainer() {
@@ -473,7 +470,7 @@ export default function TreeViewsContainer() {
             console.error('Unexpected Notification WebSocket error', event);
         };
         // We must save wsRef.current in a variable to make sure that when close is called it refers to the same instance.
-        // That's because wsRef.current could be modify outside of this scope.
+        // That's because wsRef.current could be modified outside of this scope.
         const wsToClose = wsRef.current;
         // cleanup at unmount event
         return () => {
@@ -546,7 +543,7 @@ export default function TreeViewsContainer() {
                 }
             }
             if (directoryUuid) {
-                // Remark : It could be a Uuid of a rootDirectory if we need to update it because its content update
+                // Remark : It could be an Uuid of a rootDirectory if we need to update it because its content update
                 // if dir is actually selected then call updateDirectoryTreeAndContent of this dir
                 // else expanded or not then updateDirectoryTree
                 if (selectedDirectoryRef.current != null) {

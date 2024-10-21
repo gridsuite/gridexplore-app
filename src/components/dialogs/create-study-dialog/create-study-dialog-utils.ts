@@ -6,17 +6,20 @@
  */
 
 import { ElementAttributes, FieldConstants, Parameter, yupConfig as yup } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
 
 export const getCreateStudyDialogFormDefaultValues = ({
+    // @ts-expect-error how react-hook manage strings like UUIDs?
     directory = '',
     studyName = '',
     caseFile = null,
+    // @ts-expect-error how react-hook manage strings like UUIDs?
     caseUuid = '',
 }: {
-    directory?: string;
+    directory?: UUID;
     studyName?: string;
     caseFile?: ElementAttributes | null;
-    caseUuid?: string;
+    caseUuid?: UUID;
 }): CreateStudyDialogFormValues => ({
     [FieldConstants.STUDY_NAME]: studyName,
     [FieldConstants.DESCRIPTION]: '',
@@ -34,9 +37,9 @@ export const createStudyDialogFormValidationSchema = yup.object().shape({
     [FieldConstants.FORMATTED_CASE_PARAMETERS]: yup.mixed<Parameter[]>().required(),
     [FieldConstants.DESCRIPTION]: yup.string().max(500, 'descriptionLimitError'),
     [FieldConstants.CURRENT_PARAMETERS]: yup.mixed<Record<string, string>>().required(),
-    [FieldConstants.CASE_UUID]: yup.string().nullable().required(),
+    [FieldConstants.CASE_UUID]: yup.string<UUID>().nullable().uuid().required(),
     [FieldConstants.CASE_FILE]: yup.mixed<ElementAttributes>().nullable().required(),
-    [FieldConstants.DIRECTORY]: yup.string().required(),
+    [FieldConstants.DIRECTORY]: yup.string<UUID>().uuid().required(),
     [FieldConstants.CASE_FORMAT]: yup.string().optional(),
     [FieldConstants.CASE_NAME]: yup.string().optional(),
 });
@@ -45,10 +48,10 @@ export interface CreateStudyDialogFormValues {
     [FieldConstants.STUDY_NAME]: string;
     [FieldConstants.DESCRIPTION]?: string;
     [FieldConstants.CASE_FILE]: ElementAttributes | null;
-    [FieldConstants.CASE_UUID]: string | null;
+    [FieldConstants.CASE_UUID]: UUID | null;
     [FieldConstants.FORMATTED_CASE_PARAMETERS]: Parameter[];
     [FieldConstants.CURRENT_PARAMETERS]: Record<string, string>;
-    [FieldConstants.DIRECTORY]: string;
+    [FieldConstants.DIRECTORY]: UUID;
     [FieldConstants.CASE_FORMAT]?: string;
     [FieldConstants.CASE_NAME]?: string;
 }

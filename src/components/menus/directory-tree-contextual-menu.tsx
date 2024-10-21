@@ -18,6 +18,7 @@ import {
 } from '@mui/icons-material';
 import { ElementAttributes, ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { PopoverPosition, PopoverReference } from '@mui/material';
+import { UUID } from 'crypto';
 import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
 import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
 import RenameDialog from '../dialogs/rename-dialog';
@@ -125,7 +126,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         return handleError(msg);
     };
 
-    function pasteElement(directoryUuid: string, selectionForPaste: any) {
+    function pasteElement(directoryUuid: UUID, selectionForPaste: any) {
         if (!selectionForPaste.sourceItemUuid) {
             handleError(intl.formatMessage({ id: 'elementPasteFailed404' }));
             handleCloseDialog(null);
@@ -188,7 +189,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     }
 
     const handleDeleteElement = useCallback(
-        (elementsUuid: string) => {
+        (elementsUuid: UUID) => {
             setDeleteError('');
             deleteElement(elementsUuid)
                 .then(() => handleCloseDialog(null, directory?.parentUuid))
@@ -314,6 +315,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     <CreateDirectoryDialog
                         open
                         onClick={(elementName: string) =>
+                            // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
                             insertDirectoryCB(elementName, directory?.elementUuid, userId)
                         }
                         onClose={handleCloseDialog}
@@ -328,6 +330,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 return (
                     <CreateDirectoryDialog
                         open
+                        // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
                         onClick={(elementName: string) => insertRootDirectoryCB(elementName, userId)}
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
@@ -343,6 +346,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         // @ts-expect-error TODO: manage null case(s) here
                         currentName={directory.elementName}
                         open
+                        // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
                         onClick={(newName: string) => renameCB(directory?.elementUuid, newName)}
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({

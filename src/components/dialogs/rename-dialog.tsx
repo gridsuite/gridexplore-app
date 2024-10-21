@@ -9,30 +9,31 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { CancelButton, ElementType } from '@gridsuite/commons-ui';
 import { SyntheticEvent } from 'react';
+import { UUID } from 'crypto';
 import { useNameField } from './field-hook';
 import { AppState } from '../../redux/types';
 
 export interface RenameDialogProps {
+    /** Is the dialog open ? */
     open: boolean;
+    /** Event to close the dialog */
     onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
+    /** Event to submit the renaming */
     onClick: (newName: string) => void;
+    /** Title of the dialog */
     title: string;
+    /** Message of the dialog */
     message: string;
+    /** Name before renaming */
     currentName: string;
     type: ElementType;
+    /** Error message */
     error?: string;
-    parentDirectory?: string | null;
+    parentDirectory?: UUID | null;
 }
 
 /**
  * Dialog to rename an element
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
- * @param {EventListener} onClick Event to submit the renaming
- * @param {String} title Title of the dialog
- * @param {String} message Message of the dialog
- * @param {String} currentName Name before renaming
- * @param {String} error Error message
  */
 export default function RenameDialog({
     open,

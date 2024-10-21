@@ -10,6 +10,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { CircularProgress, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import { Check as CheckIcon } from '@mui/icons-material';
 import { ElementType, useDebounce } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 
 const styles = {
@@ -69,7 +70,7 @@ export const useTextValue = ({
 };
 
 export interface UseNameFieldProps extends UseTextValueProps {
-    parentDirectoryId?: string | null;
+    parentDirectoryId?: UUID | null;
     elementType: ElementType;
     active: boolean;
     alreadyExistingErrorMessage?: string;

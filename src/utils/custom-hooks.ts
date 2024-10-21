@@ -54,7 +54,6 @@ interface MultipleAction<T> {
  * This custom hook manage a fetch workflow and return a unique callback to defer process execution when needed.
  * It also returns a unique state which contains fetch status, results and error message if it failed.
  * @param {function} fetchFunction the fetch function to call
- * @param {Object} params Params of the fetch function. WARNING: Must respect order here
  * @param {function} onSuccess callback to call on request success
  * @param {function} errorToString callback to translate HTTPCode to string error messages
  * @param {function} onError callback to call if request failed
@@ -66,13 +65,13 @@ interface MultipleAction<T> {
  *          {String} state.errorMessage error message of the request
  *          {Object} state.data The JSON results of the request (see hasResult)
  */
-export const useDeferredFetch = <T>(
-    fetchFunction: GenericFunction<T>,
-    onSuccess?: (data: T, args: unknown[]) => void,
+export const useDeferredFetch = <T, TArgs extends unknown[] = any[]>(
+    fetchFunction: GenericFunction<T, TArgs>,
+    onSuccess?: (data: T, args: TArgs) => void,
     errorToString?: (status: number) => string | undefined,
-    onError?: (errorMessage: string, args: unknown[]) => void,
+    onError?: (errorMessage: string, args: TArgs) => void,
     hasResult: boolean = true
-): [(...args: unknown[]) => void, FetchState<T>] => {
+): [(...args: TArgs) => void, FetchState<T>] => {
     const initialState: FetchState<T> = {
         status: FetchStatus.IDLE,
         errorMessage: '',
@@ -101,9 +100,8 @@ export const useDeferredFetch = <T>(
     }, initialState);
 
     const handleError = useCallback(
-        (error: any, paramsOnError: unknown[]) => {
-            const defaultErrorMessage = error.message;
-            let errorMessage = defaultErrorMessage;
+        (error: any, paramsOnError: TArgs) => {
+            let errorMessage = error.message;
             if (error && errorToString) {
                 const providedErrorMessage = errorToString(error.status);
                 if (providedErrorMessage && providedErrorMessage !== '') {
@@ -122,7 +120,7 @@ export const useDeferredFetch = <T>(
     );
 
     const fetchData = useCallback(
-        async (...args: unknown[]) => {
+        async (...args: TArgs) => {
             dispatch({ type: ActionType.START });
             try {
                 // Params resolution
@@ -158,12 +156,7 @@ export const useDeferredFetch = <T>(
         [fetchFunction, onSuccess, handleError, hasResult]
     );
 
-    const fetchCallback = useCallback(
-        (...args: unknown[]) => {
-            fetchData(...args);
-        },
-        [fetchData]
-    );
+    const fetchCallback = useCallback((...args: TArgs) => fetchData(...args), [fetchData]);
 
     return [fetchCallback, state];
 };
@@ -172,13 +165,13 @@ export const useDeferredFetch = <T>(
 
 /**
  * This custom hook manage multiple fetchs workflows and return a unique callback to defer process execution when needed.
- * It also return a unique state which concatenate all fetch results independently.
+ * It also returns a unique state which concatenate all fetch results independently.
  * @param {function} fetchFunction the fetch function to call for each request
  * @param {function} onSuccess callback to call on all request success
  * @param {function} errorToString callback to translate HTTPCode to string error messages
  * @param {function} onError callback to call if one or more requests failed
  * @param {boolean} hasResult Configure if fetchFunction return results or only HTTP request response
- * @returns {function} fetchCallback The callback to call to execute the requests collection.
+ * @returns {function} fetchCallback The callback to call to execute the collection of requests.
  *                      It accepts params array as arguments which define the number of fetch to execute.
  * @returns {state} state complete states of the requests collection
  *          {Enum}  state.status Status of the requests set
@@ -269,7 +262,7 @@ export const useMultipleDeferredFetch = <T>(
     }, []);
 
     const onInstanceError = useCallback((errorMessage: string, paramsOnError: unknown[]) => {
-        // counter now stored in reducer to avoid counter and state being updated not simultenaously,
+        // counter now stored in reducer to avoid counter and state being updated not simultaneously,
         // causing useEffect to be triggered once for each change, which would cause an expected behaviour
         dispatch({
             type: ActionType.ADD_ERROR,

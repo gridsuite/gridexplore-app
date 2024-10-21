@@ -16,7 +16,7 @@ import {
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
-import { SuppressKeyboardEventParams } from 'ag-grid-community';
+import { ColDef, SuppressKeyboardEventParams } from 'ag-grid-community';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { makeDefaultRowData } from '../contingency-list-utils';
 
@@ -74,7 +74,7 @@ const suppressKeyboardEvent = (params: SuppressKeyboardEventParams) => {
 
 const ExplicitNamingForm = () => {
     const intl = useIntl();
-    const columnDefs = useMemo(
+    const columnDefs = useMemo<ColDef[]>(
         () => [
             ...ROW_DRAGGING_SELECTION_COLUMN_DEF,
             {

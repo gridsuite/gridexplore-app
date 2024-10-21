@@ -24,8 +24,6 @@ import { SearchBarRenderInput } from './search-bar-render-input';
 import { AppDispatch } from '../../redux/store';
 import { SearchBarPaperDisplayedElementWarning } from './search-bar-displayed-element-warning';
 
-export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
-
 export interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
 }

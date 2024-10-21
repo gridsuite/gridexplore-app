@@ -39,13 +39,12 @@ export const isRowUnchecked = (row: ElementAttributes, checkedRows: ElementAttri
     row?.elementUuid &&
     !checkedRows.find((checkedRow) => checkedRow.elementUuid === row.elementUuid);
 
-export const defaultColumnDefinition = {
+export const defaultColumnDefinition: ColDef<unknown> = {
     sortable: true,
     resizable: true,
     lockPinned: true,
     wrapHeaderText: true,
     autoHeaderHeight: true,
-    suppressHorizontalScroll: true,
     lockVisible: true,
     comparator: (valueA: string | null | undefined, valueB: string | null | undefined) => {
         // Need to check because ghost elements (uploading ones) don't have
@@ -56,6 +55,7 @@ export const defaultColumnDefinition = {
         return valueA.toLowerCase().localeCompare(valueB.toLowerCase());
     },
 };
+
 export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttributes>, intl: IntlShape): ColDef[] => [
     {
         headerName: intl.formatMessage({

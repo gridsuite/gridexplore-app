@@ -514,6 +514,7 @@ export default function DirectoryContent() {
                         setActiveElement(null);
                         setOpenDescModificationDialog(false);
                     }}
+                    // @ts-expect-error TODO: set UUID as parameter type in commons-ui
                     updateElement={updateElement}
                 />
             );

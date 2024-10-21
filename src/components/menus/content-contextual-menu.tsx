@@ -688,6 +688,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         id={activeElement ? activeElement.elementUuid : ''}
                         open
                         onClose={handleCloseDialog}
+                        // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
                         onClick={(id) => replaceFormContingencyListWithScriptCB(id, selectedDirectory?.elementUuid)}
                         title={intl.formatMessage({ id: 'replaceList' })}
                     />
@@ -699,6 +700,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         open
                         onClose={handleCloseDialog}
                         onValidate={(id, newName) =>
+                            // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
                             newScriptFromFiltersContingencyListCB(id, newName, selectedDirectory?.elementUuid)
                         }
                         currentName={activeElement ? activeElement.elementName : ''}
@@ -715,6 +717,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         id={activeElement ? activeElement.elementUuid : ''}
                         open
                         onClose={handleCloseDialog}
+                        // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
                         onClick={(id) => FiltersReplaceWithScriptCB(id, selectedDirectory?.elementUuid)}
                         title={intl.formatMessage({ id: 'replaceList' })}
                     />
@@ -725,6 +728,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         id={activeElement ? activeElement.elementUuid : ''}
                         open
                         onClose={handleCloseDialog}
+                        // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
                         onValidate={(id, newName) => newScriptFromFilterCB(id, newName, selectedDirectory?.elementUuid)}
                         currentName={activeElement ? activeElement.elementName : ''}
                         title="copyToScriptList"

@@ -9,6 +9,7 @@ import { SyntheticEvent } from 'react';
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { CancelButton, ElementType } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
 import { useNameField } from './field-hook';
 
 export interface CreateDirectoryDialogProps {
@@ -16,7 +17,7 @@ export interface CreateDirectoryDialogProps {
     onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     onClick: (newName: string) => void;
     title: string;
-    parentDirectory?: string;
+    parentDirectory?: UUID;
     error: string;
 }
 

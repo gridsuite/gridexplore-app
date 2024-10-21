@@ -10,9 +10,9 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CircularProgress, Grid } from '@mui/material';
 import { CustomMuiDialog, ElementType, FieldConstants, UniqueNameInput, yupConfig as yup } from '@gridsuite/commons-ui';
-import { elementExists, getNameCandidate } from 'utils/rest-api';
+import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
-
+import { elementExists, getNameCandidate } from '../../utils/rest-api';
 import { AppState } from '../../redux/types';
 
 const schema = yup.object().shape({
@@ -30,7 +30,7 @@ export interface CopyToScriptDialogProps {
     onValidate: (...args: any[]) => void;
     currentName: string;
     title: string;
-    directoryUuid: string;
+    directoryUuid: UUID;
     elementType: ElementType;
     handleError: (...args: any[]) => void;
 }

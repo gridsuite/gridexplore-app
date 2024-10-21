@@ -125,7 +125,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
     );
 
     const getCurrentCaseImportParams = useCallback(
-        (uuid: string) => {
+        (uuid: UUID) => {
             getCaseImportParameters(uuid)
                 .then((result) => {
                     const formattedParams = formatCaseImportParameters(result.parameters);

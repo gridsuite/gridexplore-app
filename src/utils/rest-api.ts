@@ -19,6 +19,7 @@ import {
 import { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
 import { User } from 'oidc-client';
+import { UUID } from 'crypto';
 import { APP_NAME, getAppName, PARAM_LANGUAGE, PARAM_THEME } from './config-params';
 import { store } from '../redux/store';
 import { ContingencyListType } from './elementType';
@@ -210,7 +211,7 @@ export function fetchConfigParameter(name: string) {
     }) as Promise<ConfigParameter>;
 }
 
-export function deleteElement(elementUuid: string) {
+export function deleteElement(elementUuid: UUID) {
     console.info("Deleting element %s'", elementUuid);
     const fetchParams = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}`;
     return backendFetch(fetchParams, {
@@ -218,7 +219,7 @@ export function deleteElement(elementUuid: string) {
     });
 }
 
-export function deleteElements(elementUuids: string[], activeDirectory: string) {
+export function deleteElements(elementUuids: UUID[], activeDirectory: string) {
     console.info('Deleting elements : %s', elementUuids);
     const idsParams = getRequestParamFromList('ids', elementUuids).toString();
     return backendFetch(`${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${activeDirectory}?${idsParams}`, {
@@ -226,7 +227,7 @@ export function deleteElements(elementUuids: string[], activeDirectory: string) 
     });
 }
 
-export function moveElementsToDirectory(elementsUuids: string[], targetDirectoryUuid: string) {
+export function moveElementsToDirectory(elementsUuids: UUID[], targetDirectoryUuid: UUID) {
     console.info('Moving elements to directory %s', targetDirectoryUuid);
 
     const fetchParams = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements?targetDirectoryUuid=${targetDirectoryUuid}`;
@@ -240,7 +241,7 @@ export function moveElementsToDirectory(elementsUuids: string[], targetDirectory
     });
 }
 
-export function updateElement(elementUuid: string, element: unknown) {
+export function updateElement(elementUuid: UUID, element: unknown) {
     console.info(`Updating element info for ${elementUuid}`);
     const updateElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}`;
     return backendFetch(updateElementUrl, {
@@ -253,7 +254,7 @@ export function updateElement(elementUuid: string, element: unknown) {
     });
 }
 
-export function insertDirectory(directoryName: string, parentUuid: string, owner: string) {
+export function insertDirectory(directoryName: string, parentUuid: UUID, owner: string) {
     console.info("Inserting a new folder '%s'", directoryName);
     const insertDirectoryUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${parentUuid}/elements`;
     return backendFetchJson(insertDirectoryUrl, {
@@ -287,7 +288,7 @@ export function insertRootDirectory(directoryName: string, owner: string) {
     });
 }
 
-export function renameElement(elementUuid: string, newElementName: string) {
+export function renameElement(elementUuid: UUID, newElementName: string) {
     console.info(`Renaming element ${elementUuid}`);
     const renameElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}`;
     console.debug(renameElementUrl);
@@ -315,9 +316,9 @@ export function updateConfigParameter(name: string, value: string) {
 export function createStudy(
     studyName: string,
     studyDescription: string,
-    caseUuid: string,
+    caseUuid: UUID,
     duplicateCase: boolean,
-    parentDirectoryUuid: string,
+    parentDirectoryUuid: UUID,
     importParameters: string,
     caseFormat: string
 ) {
@@ -339,7 +340,7 @@ export function createStudy(
     });
 }
 
-export function createCase(name: string, description: string, file: Blob, parentDirectoryUuid: string) {
+export function createCase(name: string, description: string, file: Blob, parentDirectoryUuid: UUID) {
     console.info('Creating a new case...');
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('description', description);
@@ -358,7 +359,7 @@ export function createCase(name: string, description: string, file: Blob, parent
     });
 }
 
-const getDuplicateEndpoint = (type: string) => {
+const getDuplicateEndpoint = (type: ElementType) => {
     switch (type) {
         case ElementType.CASE:
             return '/cases';
@@ -378,9 +379,9 @@ const getDuplicateEndpoint = (type: string) => {
 };
 
 export function duplicateElement(
-    sourceCaseUuid: string,
-    parentDirectoryUuid: string | undefined,
-    type: string,
+    sourceCaseUuid: UUID,
+    parentDirectoryUuid: UUID | undefined,
+    type: ElementType,
     specificType?: string
 ) {
     console.info(`Duplicating an element of type ${type} ...`);
@@ -401,7 +402,7 @@ export function duplicateElement(
     });
 }
 
-export function duplicateSpreadsheetConfig(sourceCaseUuid: string, parentDirectoryUuid?: string) {
+export function duplicateSpreadsheetConfig(sourceCaseUuid: UUID, parentDirectoryUuid?: UUID) {
     console.info('Duplicating a spreadsheet config...');
     const queryParams = new URLSearchParams();
     queryParams.append('duplicateFrom', sourceCaseUuid);
@@ -429,7 +430,7 @@ export function downloadSpreadsheetConfig(configId: string) {
     });
 }
 
-export function elementExists(directoryUuid: string | null | undefined, elementName: string, type: string) {
+export function elementExists(directoryUuid: UUID | null | undefined, elementName: string, type: string) {
     const elementNameEncoded = encodeURIComponent(elementName);
     const existsElementUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/elements/${elementNameEncoded}/types/${type}`;
     console.debug(existsElementUrl);
@@ -438,7 +439,7 @@ export function elementExists(directoryUuid: string | null | undefined, elementN
     );
 }
 
-export function getNameCandidate(directoryUuid: string, elementName: string, type: string) {
+export function getNameCandidate(directoryUuid: UUID, elementName: string, type: string) {
     const nameCandidateUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/${elementName}/newNameCandidate?type=${type}`;
     console.debug(nameCandidateUrl);
     return backendFetchText(nameCandidateUrl, {
@@ -461,7 +462,7 @@ export function createContingencyList(
     contingencyListName: string,
     description: string,
     formContent: any,
-    parentDirectoryUuid: string
+    parentDirectoryUuid: UUID
 ) {
     console.info('Creating a new contingency list...');
     const urlSearchParams = new URLSearchParams();
@@ -565,7 +566,7 @@ export function saveExplicitNamingContingencyList(
  * Replace form contingency list with script contingency list
  * @returns {Promise<Response>}
  */
-export function replaceFormContingencyListWithScript(id: string, parentDirectoryUuid: string) {
+export function replaceFormContingencyListWithScript(id: string, parentDirectoryUuid: UUID) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
@@ -582,7 +583,7 @@ export function replaceFormContingencyListWithScript(id: string, parentDirectory
  * Save new script contingency list from form contingency list
  * @returns {Promise<Response>}
  */
-export function newScriptFromFiltersContingencyList(id: string, newName: string, parentDirectoryUuid: string) {
+export function newScriptFromFiltersContingencyList(id: string, newName: string, parentDirectoryUuid: UUID) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
@@ -623,7 +624,7 @@ export function getFilterById(id: string) {
  * Replace filter with script filter
  * @returns {Promise<Response>}
  */
-export function replaceFiltersWithScript(id: string, parentDirectoryUuid: string) {
+export function replaceFiltersWithScript(id: string, parentDirectoryUuid: UUID) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
@@ -640,7 +641,7 @@ export function replaceFiltersWithScript(id: string, parentDirectoryUuid: string
  * Save new script from filters
  * @returns {Promise<Response>}
  */
-export function newScriptFromFilter(id: string, newName: string, parentDirectoryUuid: string) {
+export function newScriptFromFilter(id: string, newName: string, parentDirectoryUuid: UUID) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/filters/${encodeURIComponent(
@@ -652,7 +653,7 @@ export function newScriptFromFilter(id: string, newName: string, parentDirectory
     });
 }
 
-export function getCaseImportParameters(caseUuid: string) {
+export function getCaseImportParameters(caseUuid: UUID) {
     console.info(`get import parameters for case '${caseUuid}' ...`);
     const getExportFormatsUrl = `${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/cases/${caseUuid}/import-parameters`;
     console.debug(getExportFormatsUrl);
@@ -674,7 +675,7 @@ export function createCaseWithoutDirectoryElementCreation(selectedFile: Blob) {
     });
 }
 
-export function deleteCase(caseUuid: string) {
+export function deleteCase(caseUuid: UUID) {
     const deleteCaseUrl = `${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}`;
     return backendFetch(deleteCaseUrl, {
         method: 'delete',
@@ -682,7 +683,7 @@ export function deleteCase(caseUuid: string) {
 }
 
 export const fetchConvertedCase = (
-    caseUuid: string,
+    caseUuid: UUID,
     fileName: string,
     format: string,
     formatParameters: unknown,
@@ -706,7 +707,7 @@ export const downloadCase = (caseUuid: string) =>
  * @param {string} caseUuid - The UUID of the element.
  * @returns {Promise<string|boolean>} - A promise that resolves to the original name of the case if found, or false if not found.
  */
-export function getCaseOriginalName(caseUuid: string) {
+export function getCaseOriginalName(caseUuid: UUID) {
     const caseNameUrl = `${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}/name`;
     console.debug(caseNameUrl);
     return backendFetchText(caseNameUrl, { method: 'GET' }).catch((error) => {
@@ -736,7 +737,7 @@ export const getExportFormats = () => {
     });
 };
 
-export function searchElementsInfos(searchTerm: string, currentDirectoryUuid: string | undefined) {
+export function searchElementsInfos(searchTerm: string, currentDirectoryUuid: UUID | undefined) {
     console.info("Fetching elements infos matching with '%s' term ... ", searchTerm);
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
