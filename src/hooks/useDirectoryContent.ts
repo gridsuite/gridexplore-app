@@ -9,10 +9,10 @@ import { useSelector } from 'react-redux';
 import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
 import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { fetchUsersIdentities, UsersIdentities } from '../utils/rest-api';
+import { fetchUsersIdentities, UsersIdentitiesMap } from '../utils/rest-api';
 import { AppState } from '../redux/reducer';
 
-const getName = (userId: string, data: UsersIdentities): string => {
+const getName = (userId: string, data: UsersIdentitiesMap): string => {
     const firstName = data?.[userId]?.firstName;
     const lastName = data?.[userId]?.lastName;
     if (firstName && lastName) {
@@ -65,8 +65,8 @@ export const useDirectoryContent = () => {
                     if (previousData.current === currentChildren) {
                         res[1].forEach((e) => {
                             // TODO proper typescript modeling instead of monkeypatching e directly
-                            e.ownerName = getName(e.owner, res[0]);
-                            e.lastModifiedByName = getName(e.lastModifiedBy, res[0]);
+                            e.ownerName = getName(e.owner, res[0]?.data);
+                            e.lastModifiedByName = getName(e.lastModifiedBy, res[0].data);
                             metadata[e.elementUuid] = e;
                         });
                         setChildrenMetadata(metadata);

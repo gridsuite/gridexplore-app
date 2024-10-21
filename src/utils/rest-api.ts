@@ -188,8 +188,23 @@ export type UserIdentity = {
     firstName: string;
     lastName: string;
 };
+
+export type UsersIdentitiesMap = {
+    [sub: string]: UserIdentity;
+};
+
+export type UserIdentityError = {
+    sub: string;
+    code: string;
+};
+
+export type UsersIdentitiesErrorMAp = {
+    [sub: string]: UserIdentity;
+};
+
 export type UsersIdentities = {
-    [userId: string]: UserIdentity;
+    data: UsersIdentitiesMap;
+    errors: UsersIdentitiesErrorMAp;
 };
 
 export function fetchUsersIdentities(elementUuids: string[]) {
