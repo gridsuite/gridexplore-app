@@ -161,5 +161,6 @@
     "grid.ariaUnchecked": "Non sélectionné",
     "grid.ariaRowToggleSelection": "grid.ariaRowToggleSelection",
     "emptyDirContent": "Votre dossier est vide",
-    "createElement": "AJOUTER UN ELEMENT"
+    "createElement": "AJOUTER UN ELEMENT",
+    "casesAlertThreshold": "Vous avez atteint {userUsagePercentage}% de votre quota utilisateur en termes de situations et d'études ({casesCount} éléments), vous ne pourrez donc bientôt plus importer des situations ou créer des études. Merci de supprimer des situations ou études anciennes."
 }

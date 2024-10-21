@@ -15,15 +15,16 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import {
-    ElementType,
-    useSnackMessage,
-    ExplicitNamingFilterEditionDialog,
-    ExpertFilterEditionDialog,
     CriteriaBasedFilterEditionDialog,
     DescriptionModificationDialog,
     ElementAttributes,
+    ElementType,
+    ExpertFilterEditionDialog,
+    ExplicitNamingFilterEditionDialog,
+    Metadata,
+    NO_SELECTION_FOR_COPY,
     StudyMetadata,
-    noSelectionForCopy,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Box, Button, SxProps, Theme } from '@mui/material';
 
@@ -40,13 +41,13 @@ import { PARAM_LANGUAGE } from '../utils/config-params';
 import Grid from '@mui/material/Grid';
 import { useDirectoryContent } from '../hooks/useDirectoryContent';
 import {
-    getColumnsDefinition,
     computeCheckedElements,
     formatMetadata,
+    getColumnsDefinition,
     isRowUnchecked,
 } from './utils/directory-content-utils';
 import NoContentDirectory from './no-content-directory';
-import { DirectoryContentTable, CUSTOM_ROW_CLASS } from './directory-content-table';
+import { CUSTOM_ROW_CLASS, DirectoryContentTable } from './directory-content-table';
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
 import EmptyDirectory from './empty-directory';
 import AddIcon from '@mui/icons-material/Add';
@@ -101,6 +102,10 @@ const initialMousePosition = {
     mouseY: null,
 };
 
+const isStudyMetadata = (metadata: Metadata): metadata is StudyMetadata => {
+    return metadata.name === 'Study';
+};
+
 const DirectoryContent = () => {
     const treeData = useSelector((state: AppState) => state.treeData);
     const { snackError } = useSnackMessage();
@@ -126,8 +131,8 @@ const DirectoryContent = () => {
         const broadcast = new BroadcastChannel('itemCopyChannel');
         broadcast.onmessage = (event) => {
             console.info('message received from broadcast channel');
-            if (JSON.stringify(noSelectionForCopy) === JSON.stringify(event.data)) {
-                dispatch(setSelectionForCopy(noSelectionForCopy));
+            if (JSON.stringify(NO_SELECTION_FOR_COPY) === JSON.stringify(event.data)) {
+                dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
             } else {
                 dispatchSelectionForCopy({
                     typeItem: event.data.typeItem,
@@ -333,24 +338,18 @@ const DirectoryContent = () => {
         [snackError]
     );
 
-    const getLink = useCallback(
-        (elementUuid: string, objectType: string): string | null => {
-            let href: string | null = null;
-            if (appsAndUrls !== null) {
-                appsAndUrls.find((app) => {
-                    const appStudy = app as StudyMetadata;
-                    if (!appStudy.resources) {
-                        return false;
-                    }
-                    return appStudy.resources.find((res) => {
-                        if (res.types.includes(objectType)) {
-                            href = app.url + res.path.replace('{elementUuid}', elementUuid);
-                        }
-                        return href;
-                    });
-                });
+    const getStudyUrl = useCallback(
+        (elementUuid: string): string | null => {
+            const appStudy = appsAndUrls.find(isStudyMetadata);
+            if (appStudy) {
+                const studyResource = appStudy.resources?.find((resource) =>
+                    resource.types.includes(ElementType.STUDY)
+                );
+                if (studyResource) {
+                    return appStudy.url + studyResource.path.replace('{elementUuid}', elementUuid);
+                }
             }
-            return href;
+            return null;
         },
         [appsAndUrls]
     );
@@ -372,7 +371,7 @@ const DirectoryContent = () => {
                 dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
                 switch (event.data.type) {
                     case ElementType.STUDY: {
-                        let url = getLink(event.data.elementUuid, event.data.type);
+                        let url = getStudyUrl(event.data.elementUuid);
                         url
                             ? window.open(url, '_blank')
                             : handleError(intl.formatMessage({ id: 'getAppLinkError' }, { type: event.data.type }));
@@ -413,7 +412,7 @@ const DirectoryContent = () => {
                 }
             }
         },
-        [childrenMetadata, dispatch, getLink, handleError, intl, selectedDirectory?.elementUuid]
+        [childrenMetadata, dispatch, getStudyUrl, handleError, intl, selectedDirectory?.elementUuid]
     );
 
     const [openDescModificationDialog, setOpenDescModificationDialog] = useState(false);

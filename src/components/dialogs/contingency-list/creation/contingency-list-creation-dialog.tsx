@@ -6,7 +6,13 @@
  */
 
 import { useSelector } from 'react-redux';
-import { useSnackMessage, CustomMuiDialog, getCriteriaBasedSchema, FieldConstants, yup } from '@gridsuite/commons-ui';
+import {
+    CustomMuiDialog,
+    FieldConstants,
+    getCriteriaBasedSchema,
+    useSnackMessage,
+    yupConfig as yup,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { createContingencyList } from '../../../../utils/rest-api';

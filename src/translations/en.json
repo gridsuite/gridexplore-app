@@ -160,6 +160,7 @@
     "elementsSearchingError": "An error occurred while searching the elements",
     "pathRetrievingError": "An error occurred while retrieving element path",
     "emptyDirContent": "Your directory is empty",
-    "createElement": "ADD AN ELEMENT"
+    "createElement": "ADD AN ELEMENT",
+    "casesAlertThreshold": "You have reached {userUsagePercentage}% of your user quota for cases and studies ({casesCount} elements), therefore you will soon be unable to import further cases or create further studies. Please delete old cases or studies."
 
 }
