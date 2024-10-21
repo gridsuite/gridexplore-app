@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { styled } from '@mui/system';
+import { styled } from '@mui/material';
 import { FieldConstants } from '@gridsuite/commons-ui';
 import AceInput from '../../../utils/rhf-inputs/ace-input';
 

@@ -15,7 +15,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -53,7 +53,7 @@ export interface CriteriaBasedEditionDialogProps {
     broadcastChannel: BroadcastChannel;
 }
 
-const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogProps> = ({
+export default function CriteriaBasedEditionDialog({
     contingencyListId,
     contingencyListType,
     open,
@@ -61,7 +61,7 @@ const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogPr
     titleId,
     name,
     broadcastChannel,
-}) => {
+}: Readonly<CriteriaBasedEditionDialogProps>) {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
@@ -103,12 +103,8 @@ const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogPr
         onClose(event);
     };
 
-    const editContingencyList = (contingencyListId: string, contingencyList: CriteriaBasedEditionFormData) => {
-        return saveCriteriaBasedContingencyList(contingencyListId, contingencyList);
-    };
-
     const onSubmit = (contingencyList: CriteriaBasedEditionFormData) => {
-        editContingencyList(contingencyListId, contingencyList)
+        saveCriteriaBasedContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === contingencyListId) {
                     dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
@@ -143,6 +139,4 @@ const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogPr
             {!isFetching && <CriteriaBasedEditionForm />}
         </CustomMuiDialog>
     );
-};
-
-export default CriteriaBasedEditionDialog;
+}

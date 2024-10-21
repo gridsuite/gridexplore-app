@@ -89,6 +89,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const dispatch = useDispatch();
     const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
+    const [deleteError, setDeleteError] = useState('');
 
     const { snackError } = useSnackMessage();
 
@@ -133,6 +134,13 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         },
         [dispatch]
     );
+
+    const handleCloseDialog = useCallback(() => {
+        onClose();
+        setOpenDialog(DialogsId.NONE);
+        setHideMenu(false);
+        setDeleteError('');
+    }, [onClose, setOpenDialog]);
 
     function copyElement(
         typeItem: string,
@@ -274,19 +282,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         }
     };
 
-    const handleCloseDialog = useCallback(() => {
-        onClose();
-        setOpenDialog(DialogsId.NONE);
-        setHideMenu(false);
-        setDeleteError('');
-    }, [onClose, setOpenDialog]);
-
     const handleCloseExportDialog = useCallback(() => {
         stopCasesExports();
         handleCloseDialog();
     }, [handleCloseDialog, stopCasesExports]);
 
-    const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(
         (elementsUuids: string[]) => {
             setDeleteError('');
@@ -312,6 +312,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             if (HTTPStatusCode === 404) {
                 return intl.formatMessage({ id: 'moveElementNotFoundError' });
             }
+            return undefined;
         },
         [intl]
     );
@@ -377,6 +378,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 // == NOT FOUND
                 return intl.formatMessage({ id: 'renameElementNotFoundError' });
             }
+            return undefined;
         },
         undefined,
         false
@@ -509,7 +511,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
     const buildMenu = () => {
         if (selectedElements.length === 0) {
-            return;
+            return undefined;
         }
 
         // build menuItems here

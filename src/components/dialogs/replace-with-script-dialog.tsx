@@ -7,7 +7,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { CancelButton } from '@gridsuite/commons-ui';
-import { FunctionComponent, SyntheticEvent } from 'react';
+import { SyntheticEvent } from 'react';
 
 export interface ReplaceWithScriptDialogProps {
     id: string;
@@ -25,13 +25,13 @@ export interface ReplaceWithScriptDialogProps {
  * @param onClick Function to call to perform rename
  * @param title Title of the dialog
  */
-const ReplaceWithScriptDialog: FunctionComponent<ReplaceWithScriptDialogProps> = ({
+export default function ReplaceWithScriptDialog({
     id,
     open,
     onClose,
     onClick,
     title,
-}) => {
+}: Readonly<ReplaceWithScriptDialogProps>) {
     const handleClose = (_: SyntheticEvent, reason?: string): void => {
         if (reason === 'backdropClick') {
             return;
@@ -59,6 +59,4 @@ const ReplaceWithScriptDialog: FunctionComponent<ReplaceWithScriptDialogProps> =
             </DialogActions>
         </Dialog>
     );
-};
-
-export default ReplaceWithScriptDialog;
+}

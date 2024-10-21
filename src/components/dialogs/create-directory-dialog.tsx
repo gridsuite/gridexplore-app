@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent } from 'react';
+import { SyntheticEvent } from 'react';
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { CancelButton, ElementType } from '@gridsuite/commons-ui';
@@ -28,14 +28,14 @@ export interface CreateDirectoryDialogProps {
  * @param {String} title Title of the dialog
  * @param {String} message Message of the dialog
  */
-export const CreateDirectoryDialog: FunctionComponent<CreateDirectoryDialogProps> = ({
+export default function CreateDirectoryDialog({
     open,
     onClose,
     onClick,
     title,
     parentDirectory,
     error,
-}) => {
+}: Readonly<CreateDirectoryDialogProps>) {
     const [name, nameField, nameError, nameOk] = useNameField({
         label: 'nameProperty',
         autoFocus: true,
@@ -79,5 +79,4 @@ export const CreateDirectoryDialog: FunctionComponent<CreateDirectoryDialogProps
             </DialogActions>
         </Dialog>
     );
-};
-export default CreateDirectoryDialog;
+}

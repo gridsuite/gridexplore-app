@@ -99,6 +99,7 @@ export default function DirectoryBreadcrumbs() {
                 </Link>
             ));
         }
+        return undefined;
     };
 
     const renderBreadCrumbsTypography = () => {
@@ -114,16 +115,13 @@ export default function DirectoryBreadcrumbs() {
                 </Tooltip>
             );
         }
+        return undefined;
     };
 
-    return (
-        <>
-            {selectedDirectory !== null && currentPath !== null && currentPath.length > 0 && (
-                <Breadcrumbs aria-label="breadcrumb" sx={styles.breadcrumbs}>
-                    {renderBreadCrumbsLinks()}
-                    {renderBreadCrumbsTypography()}
-                </Breadcrumbs>
-            )}
-        </>
-    );
+    return selectedDirectory !== null && currentPath !== null && currentPath.length > 0 ? (
+        <Breadcrumbs aria-label="breadcrumb" sx={styles.breadcrumbs}>
+            {renderBreadCrumbsLinks()}
+            {renderBreadCrumbsTypography()}
+        </Breadcrumbs>
+    ) : undefined;
 }

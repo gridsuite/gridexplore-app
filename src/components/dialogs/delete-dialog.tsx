@@ -15,7 +15,7 @@ import {
     Grid,
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { FunctionComponent, SyntheticEvent, useEffect, useRef, useState } from 'react';
+import { SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { CancelButton, ElementAttributes, OverflowableText } from '@gridsuite/commons-ui';
 
 export interface DeleteDialogProps {
@@ -28,6 +28,12 @@ export interface DeleteDialogProps {
     error: string;
 }
 
+const styles = {
+    tooltip: {
+        maxWidth: '1000px',
+    },
+};
+
 /**
  * Dialog to delete an element
  * @param {Boolean} open Is the dialog open ?
@@ -38,12 +44,7 @@ export interface DeleteDialogProps {
  * @param {String} simpleDeleteFormatMessageId Format message id for simple delete
  * @param {String} error Error message
  */
-const styles = {
-    tooltip: {
-        maxWidth: '1000px',
-    },
-};
-const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
+export default function DeleteDialog({
     open,
     onClose,
     onClick,
@@ -51,7 +52,7 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
     multipleDeleteFormatMessageId,
     simpleDeleteFormatMessageId,
     error,
-}) => {
+}: Readonly<DeleteDialogProps>) {
     const intl = useIntl();
 
     const [itemsState, setItemsState] = useState<ElementAttributes[]>([]);
@@ -85,8 +86,8 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
         return intl.formatMessage({ id: 'deleteDialogTitle' });
     };
 
-    const renderElement = (items: ElementAttributes[]) => {
-        const isBig = items[0].elementName?.length > 72;
+    const renderElement = (renderItems: ElementAttributes[]) => {
+        const isBig = renderItems[0].elementName?.length > 72;
 
         const style = isBig
             ? { width: '100%', fontWeight: 'bold' }
@@ -97,22 +98,22 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
                   verticalAlign: 'middle',
                   display: 'inline-block',
               };
-        return <OverflowableText text={items[0].elementName} style={style} tooltipSx={styles.tooltip} />;
+        return <OverflowableText text={renderItems[0].elementName} style={style} tooltipSx={styles.tooltip} />;
     };
 
     const buildItemsToDeleteGrid = (
-        items: ElementAttributes[],
-        multipleDeleteFormatMessageId: string,
-        simpleDeleteFormatMessageId: string
+        gridItems: ElementAttributes[],
+        gridMultipleDeleteFormatMessageId: string,
+        gridSimpleDeleteFormatMessageId: string
     ) => {
         return (
-            items &&
-            (items.length > 1 ? (
+            gridItems &&
+            (gridItems.length > 1 ? (
                 <Grid>
                     <Grid item>
                         <span>
                             {intl.formatMessage({
-                                id: multipleDeleteFormatMessageId,
+                                id: gridMultipleDeleteFormatMessageId,
                             })}
                         </span>
                     </Grid>
@@ -123,10 +124,10 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
                         <span>
                             {intl.formatMessage(
                                 {
-                                    id: simpleDeleteFormatMessageId,
+                                    id: gridSimpleDeleteFormatMessageId,
                                 },
                                 {
-                                    itemName: <span>{items.length === 1 && renderElement(items)}</span>,
+                                    itemName: <span>{gridItems.length === 1 && renderElement(gridItems)}</span>,
                                 }
                             )}
                         </span>
@@ -135,6 +136,7 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
             ))
         );
     };
+
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
             <DialogTitle style={{ display: 'flex' }}>{buildTitle()}</DialogTitle>
@@ -150,6 +152,4 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
             </DialogActions>
         </Dialog>
     );
-};
-
-export default DeleteDialog;
+}

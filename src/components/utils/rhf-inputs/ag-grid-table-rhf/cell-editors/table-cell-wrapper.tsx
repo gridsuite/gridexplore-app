@@ -13,6 +13,7 @@ export interface TableCellWrapperProps {
     children: ReactNode;
 }
 
+// eslint-disable-next-line react/prop-types -- TODO
 const TableCellWrapper = forwardRef(({ name, children }: TableCellWrapperProps, agGridRef) => {
     const watchValues = useWatch({
         name,
@@ -30,7 +31,7 @@ const TableCellWrapper = forwardRef(({ name, children }: TableCellWrapperProps, 
         [watchValues]
     );
 
-    return <>{children}</>;
+    return children;
 });
 
 export default TableCellWrapper;

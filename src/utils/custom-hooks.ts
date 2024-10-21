@@ -126,7 +126,7 @@ export const useDeferredFetch = <T>(
             dispatch({ type: ActionType.START });
             try {
                 // Params resolution
-                const response = await fetchFunction.apply(null, args);
+                const response = await fetchFunction(...args);
 
                 if (hasResult) {
                     const data = response;
@@ -284,9 +284,7 @@ export const useMultipleDeferredFetch = <T>(
         (cbParamsList: unknown[][]) => {
             dispatch({ type: ActionType.START });
             setParamList(cbParamsList);
-            for (const params of cbParamsList) {
-                fetchCB(...params);
-            }
+            cbParamsList.forEach((params) => fetchCB(...params));
         },
         [fetchCB]
     );

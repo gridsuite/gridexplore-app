@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FunctionComponent, RefObject, useCallback, useRef } from 'react';
+import { RefObject, useCallback, useRef } from 'react';
 import {
     ElementSearchInput,
     ElementType,
@@ -33,7 +33,7 @@ export interface SearchBarProps {
 // TODO remove when ElementSearchInputProps is exported in commons-ui
 type ElementSearchInputProps<T> = Parameters<typeof ElementSearchInput<T>>[0];
 
-export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
+export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
     const treeData = useSelector((state: AppState) => state.treeData);
@@ -84,9 +84,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
     const handleDispatchDirectory = useCallback(
         (elementUuidPath: string | undefined) => {
             if (treeDataRef.current && elementUuidPath !== undefined) {
-                const selectedDirectory = treeDataRef.current.mapData[elementUuidPath];
-
-                dispatch(setSelectedDirectory(selectedDirectory));
+                dispatch(setSelectedDirectory(treeDataRef.current.mapData[elementUuidPath]));
             }
         },
         [dispatch]
@@ -98,9 +96,14 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
             if (matchingElement !== undefined) {
                 const elementUuidPath = matchingElement?.pathUuid;
                 try {
+                    // eslint-disable-next-line no-restricted-syntax -- usage of async/await syntax
                     for (const uuid of elementUuidPath) {
-                        const res = await fetchDirectoryContent(uuid);
-                        updateMapData(uuid, res.filter((res) => res.type === ElementType.DIRECTORY) as IDirectory[]);
+                        // eslint-disable-next-line no-await-in-loop
+                        const resources = await fetchDirectoryContent(uuid);
+                        updateMapData(
+                            uuid,
+                            resources.filter((res) => res.type === ElementType.DIRECTORY) as IDirectory[]
+                        );
                     }
                 } catch (error: any) {
                     snackError({
@@ -119,6 +122,18 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
         [selectedDirectory?.elementUuid, handleDispatchDirectory, updateMapData, snackError, dispatch, elementsFound]
     );
 
+    const displayComponent = useCallback<NonNullable<ElementSearchInputProps<ElementAttributesES>['PaperComponent']>>(
+        (props) => (
+            <SearchBarPaperDisplayedElementWarning
+                elementFoundLength={elementsFound.length}
+                elementFoundTotal={totalElements}
+                isLoading={isLoading}
+                {...props}
+            />
+        ),
+        [elementsFound.length, isLoading, totalElements]
+    );
+
     return (
         <ElementSearchInput
             sx={{ width: '50%', marginLeft: '14%' }}
@@ -132,14 +147,7 @@ export const SearchBar: FunctionComponent<SearchBarProps> = ({ inputRef }) => {
             searchTerm={searchTerm}
             loading={isLoading}
             renderInput={(_value, params) => <SearchBarRenderInput inputRef={inputRef} {...params} />}
-            PaperComponent={(props) => (
-                <SearchBarPaperDisplayedElementWarning
-                    elementFoundLength={elementsFound.length}
-                    elementFoundTotal={totalElements}
-                    isLoading={isLoading}
-                    {...props}
-                />
-            )}
+            PaperComponent={displayComponent}
         />
     );
-};
+}

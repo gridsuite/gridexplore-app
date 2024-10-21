@@ -192,6 +192,7 @@ export default function DirectoryContent() {
         setElementName('');
     };
 
+    const [currentExplicitNamingFilterId, setCurrentExplicitNamingFilterId] = useState(null);
     /**
      * Filters dialog: window status value to edit ExplicitNaming filters
      */
@@ -201,7 +202,6 @@ export default function DirectoryContent() {
         setActiveElement(null);
         setElementName('');
     };
-    const [currentExplicitNamingFilterId, setCurrentExplicitNamingFilterId] = useState(null);
 
     /**
      * Filters dialog: window status value to edit Expert filters
@@ -339,6 +339,8 @@ export default function DirectoryContent() {
         [appsAndUrls]
     );
 
+    const [openDescModificationDialog, setOpenDescModificationDialog] = useState(false);
+
     const handleDescriptionIconClick = (e: any) => {
         setActiveElement(e.data);
         setOpenDescModificationDialog(true);
@@ -357,9 +359,11 @@ export default function DirectoryContent() {
                 switch (event.data.type) {
                     case ElementType.STUDY: {
                         const url = getStudyUrl(event.data.elementUuid);
-                        url
-                            ? window.open(url, '_blank')
-                            : handleError(intl.formatMessage({ id: 'getAppLinkError' }, { type: event.data.type }));
+                        if (url) {
+                            window.open(url, '_blank');
+                        } else {
+                            handleError(intl.formatMessage({ id: 'getAppLinkError' }, { type: event.data.type }));
+                        }
                         break;
                     }
                     case ElementType.CONTINGENCY_LIST:
@@ -393,8 +397,6 @@ export default function DirectoryContent() {
         },
         [childrenMetadata, dispatch, getStudyUrl, handleError, intl, selectedDirectory?.elementUuid]
     );
-
-    const [openDescModificationDialog, setOpenDescModificationDialog] = useState(false);
 
     useEffect(() => {
         if (!selectedDirectory?.elementUuid) {
@@ -481,7 +483,7 @@ export default function DirectoryContent() {
             if (treeData.rootDirectories.length === 0 && treeData.initialized) {
                 return <NoContentDirectory handleOpenDialog={handleOpenDialog} />;
             }
-            return;
+            return undefined;
         }
 
         // If empty dir then render an appropriate content
@@ -642,7 +644,7 @@ export default function DirectoryContent() {
             <Grid item sx={styles.highlightedElementAnimation as SxProps} xs={12} onContextMenu={onContextMenu}>
                 {renderContent()}
             </Grid>
-            <div
+            <Box
                 onMouseDown={(e) => {
                     if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON && openDialog === constants.DialogsId.NONE) {
                         handleCloseContentMenu();
@@ -688,7 +690,7 @@ export default function DirectoryContent() {
                     }
                     restrictMenuItems
                 />
-            </div>
+            </Box>
             {renderDialog(elementName)}
         </>
     );

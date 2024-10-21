@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ChangeEvent, FunctionComponent, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
@@ -21,11 +21,11 @@ export interface UploadNewCaseProps {
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
 
-const UploadNewCase: FunctionComponent<UploadNewCaseProps> = ({
+export default function UploadNewCase({
     isNewStudyCreation = false,
     getCurrentCaseImportParams,
     handleApiCallError,
-}) => {
+}: Readonly<UploadNewCaseProps>) {
     const intl = useIntl();
 
     const [caseFileLoading, setCaseFileLoading] = useState(false);
@@ -61,7 +61,7 @@ const UploadNewCase: FunctionComponent<UploadNewCaseProps> = ({
             if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
                 onValueChange(currentFile);
 
-                const { name: caseFileName } = currentFile;
+                const { name: currentCaseFileName } = currentFile;
 
                 if (isNewStudyCreation) {
                     // Create new case
@@ -86,12 +86,16 @@ const UploadNewCase: FunctionComponent<UploadNewCaseProps> = ({
                         });
                 } else {
                     const caseName = getValues(FieldConstants.CASE_NAME);
-                    if (caseFileName && !caseName) {
+                    if (currentCaseFileName && !caseName) {
                         clearErrors(FieldConstants.CASE_NAME);
-                        setValue(FieldConstants.CASE_NAME, caseFileName.substring(0, caseFileName.indexOf('.')), {
-                            shouldDirty: true,
-                            shouldValidate: true,
-                        });
+                        setValue(
+                            FieldConstants.CASE_NAME,
+                            currentCaseFileName.substring(0, currentCaseFileName.indexOf('.')),
+                            {
+                                shouldDirty: true,
+                                shouldValidate: true,
+                            }
+                        );
                     }
                 }
             } else {
@@ -122,6 +126,7 @@ const UploadNewCase: FunctionComponent<UploadNewCaseProps> = ({
             </Grid>
             <Grid item sx={{ fontWeight: 'bold' }}>
                 <p>
+                    {/* eslint-disable-next-line no-nested-ternary -- "if" can't be used inside jsx block */}
                     {caseFileLoading ? (
                         <CircularProgress size="1rem" />
                     ) : caseFileName ? (
@@ -133,6 +138,4 @@ const UploadNewCase: FunctionComponent<UploadNewCaseProps> = ({
             </Grid>
         </Grid>
     );
-};
-
-export default UploadNewCase;
+}

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, MouseEvent } from 'react';
+import { MouseEvent } from 'react';
 import { Box, Button, SvgIcon } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
@@ -43,7 +43,7 @@ export interface EmptyFolderProps {
     theme: string;
 }
 
-const EmptyDirectory: FunctionComponent<EmptyFolderProps> = ({ openDialog, theme }) => {
+export default function EmptyDirectory({ openDialog, theme }: Readonly<EmptyFolderProps>) {
     return (
         <Box sx={styles.container}>
             <CircleIcon size={CIRCLE_SIZE} iconStyles={styles.circle}>
@@ -69,6 +69,4 @@ const EmptyDirectory: FunctionComponent<EmptyFolderProps> = ({ openDialog, theme
             </Box>
         </Box>
     );
-};
-
-export default EmptyDirectory;
+}

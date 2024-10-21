@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent } from 'react';
 import { Box, Button } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { CreateNewFolderOutlined as CreateNewFolderOutlinedIcon } from '@mui/icons-material';
@@ -23,7 +22,7 @@ export interface NoContentDirectoryProps {
     handleOpenDialog: () => void;
 }
 
-const NoContentDirectory: FunctionComponent<NoContentDirectoryProps> = ({ handleOpenDialog }) => {
+export default function NoContentDirectory({ handleOpenDialog }: Readonly<NoContentDirectoryProps>) {
     const styles = {
         noContentContainer: (theme: any) => ({
             display: 'flex',
@@ -59,6 +58,4 @@ const NoContentDirectory: FunctionComponent<NoContentDirectoryProps> = ({ handle
             </Box>
         </Box>
     );
-};
-
-export default NoContentDirectory;
+}

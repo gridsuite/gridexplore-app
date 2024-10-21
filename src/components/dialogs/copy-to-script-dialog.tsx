@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -50,7 +50,7 @@ interface FormData {
  * @param elementType Type of the element to copy
  * @param handleError Function to call to handle error
  */
-const CopyToScriptDialog: FunctionComponent<CopyToScriptDialogProps> = ({
+export default function CopyToScriptDialog({
     id,
     open,
     onClose,
@@ -60,7 +60,7 @@ const CopyToScriptDialog: FunctionComponent<CopyToScriptDialogProps> = ({
     directoryUuid,
     elementType,
     handleError,
-}) => {
+}: Readonly<CopyToScriptDialogProps>) {
     const [loading, setLoading] = useState(false);
     const intl = useIntl();
     const methods = useForm<FormData>({
@@ -143,6 +143,4 @@ const CopyToScriptDialog: FunctionComponent<CopyToScriptDialogProps> = ({
             </Grid>
         </CustomMuiDialog>
     );
-};
-
-export default CopyToScriptDialog;
+}

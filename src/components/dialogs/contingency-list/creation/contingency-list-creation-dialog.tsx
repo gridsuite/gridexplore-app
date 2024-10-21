@@ -15,7 +15,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import { FunctionComponent, SyntheticEvent } from 'react';
+import { SyntheticEvent } from 'react';
 import { AppState } from 'redux/reducer';
 import { createContingencyList } from '../../../../utils/rest-api';
 import ContingencyListCreationForm from './contingency-list-creation-form';
@@ -37,8 +37,8 @@ const schema = yup.object().shape({
     [FieldConstants.SCRIPT]: yup.string().nullable(),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().when([FieldConstants.CONTINGENCY_LIST_TYPE], {
         is: ContingencyListType.CRITERIA_BASED.id,
-        then: (schema) => schema.required(),
-        otherwise: (schema) => schema.nullable(),
+        then: (schemaThen) => schemaThen.required(),
+        otherwise: (schemaOtherwise) => schemaOtherwise.nullable(),
     }),
     ...getExplicitNamingSchema(FieldConstants.EQUIPMENT_TABLE),
     ...getCriteriaBasedSchema({}),
@@ -52,11 +52,11 @@ export interface ContingencyListCreationDialogProps {
     titleId: string;
 }
 
-const ContingencyListCreationDialog: FunctionComponent<ContingencyListCreationDialogProps> = ({
+export default function ContingencyListCreationDialog({
     onClose,
     open,
     titleId,
-}) => {
+}: Readonly<ContingencyListCreationDialogProps>) {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const { snackError } = useSnackMessage();
 
@@ -114,6 +114,4 @@ const ContingencyListCreationDialog: FunctionComponent<ContingencyListCreationDi
             <ContingencyListCreationForm />
         </CustomMuiDialog>
     );
-};
-
-export default ContingencyListCreationDialog;
+}

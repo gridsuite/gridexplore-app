@@ -212,7 +212,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.authenticationRouterError = action.authenticationRouterError;
     });
 
-    builder.addCase(RESET_AUTHENTICATION_ROUTER_ERROR, (state, action: AuthenticationRouterErrorAction) => {
+    builder.addCase(RESET_AUTHENTICATION_ROUTER_ERROR, (state, _action: AuthenticationRouterErrorAction) => {
         state.authenticationRouterError = null;
     });
 
@@ -278,7 +278,7 @@ export const reducer = createReducer(initialState, (builder) => {
         // Object.fromEntries will turn [[elementId1, element1], [elementId2, element2]] back to {<elementId1>: <element1>, <elementId2>: <element2>} which is the initial form
         const filteredTreeDataMapData = filterFromObject(
             action.treeData.mapData,
-            ([elementId, element]) => element.type === ElementType.DIRECTORY
+            ([_elementId, element]) => element.type === ElementType.DIRECTORY
         );
 
         state.treeData = {

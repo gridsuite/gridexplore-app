@@ -85,7 +85,7 @@ export function useDownloadUtils() {
             formatParameters: {
                 [parameterName: string]: any;
             },
-            abortController: AbortController,
+            abortController2: AbortController,
             fileName?: string
         ): Promise<void> => {
             try {
@@ -94,7 +94,7 @@ export function useDownloadUtils() {
                     fileName || caseElement.elementName, // if no fileName is provided or empty, the case name will be used
                     format,
                     formatParameters,
-                    abortController
+                    abortController2
                 );
 
                 let downloadFileName = result.headers.get('Content-Disposition').split('filename=')[1];
@@ -243,7 +243,9 @@ export function useDownloadUtils() {
                 const controller = new AbortController();
                 setAbortController(controller);
 
+                // eslint-disable-next-line no-restricted-syntax -- usage of async/await syntax
                 for (const c of cases) {
+                    // eslint-disable-next-line no-await-in-loop -- it's wanted because we don't want to download in parallel
                     await exportCase(c, format, formatParameters, controller, caseUuidFileNameMap?.get(c.elementUuid));
                 }
             } catch (error: any) {
@@ -275,10 +277,12 @@ export function useDownloadUtils() {
             const downloadableElements = selectedElements.filter((element) => downloadStrategies[element.type]);
             const undownloadableElements = selectedElements.filter((element) => !downloadStrategies[element.type]);
 
+            // eslint-disable-next-line no-restricted-syntax -- usage of async/await syntax
             for (const element of downloadableElements) {
                 try {
                     const downloadStrategy = downloadStrategies[element.type];
                     if (downloadStrategy) {
+                        // eslint-disable-next-line no-await-in-loop -- it's wanted because we don't want to download in parallel
                         const downloadData = await downloadStrategy(element);
                         triggerDownload(downloadData);
                     }

@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent } from 'react';
 import { Button, Grid } from '@mui/material';
 import { Check as CheckIcon, Settings as SettingsIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
@@ -17,12 +16,12 @@ export interface AdvancedParameterButtonProps {
     disabled?: boolean;
 }
 
-const AdvancedParameterButton: FunctionComponent<AdvancedParameterButtonProps> = ({
+export default function AdvancedParameterButton({
     showOpenIcon,
     label,
     onClick,
     disabled = false,
-}) => {
+}: Readonly<AdvancedParameterButtonProps>) {
     return (
         <Grid item xs={12} sx={{ marginTop: '30px', marginBottom: '10px' }}>
             <Button
@@ -35,6 +34,4 @@ const AdvancedParameterButton: FunctionComponent<AdvancedParameterButtonProps> =
             </Button>
         </Grid>
     );
-};
-
-export default AdvancedParameterButton;
+}

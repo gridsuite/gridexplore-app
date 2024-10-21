@@ -7,6 +7,7 @@
 /* eslint-disable spaced-comment */
 
 // https://mui.com/material-ui/customization/theming/#typescript
+// eslint-disable-next-line import/no-extraneous-dependencies -- lib from MUI
 import { CSSObject } from '@mui/styled-engine';
 import type { Property } from 'csstype';
 // import { Theme as MuiTheme, ThemeOptions as MuiThemeOptions } from '@mui/material/styles/createTheme';

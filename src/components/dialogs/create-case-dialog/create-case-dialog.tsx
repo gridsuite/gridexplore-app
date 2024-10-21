@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Grid } from '@mui/material';
 import { useForm } from 'react-hook-form';
@@ -46,7 +45,7 @@ export interface CreateCaseDialogProps {
     open: boolean;
 }
 
-const CreateCaseDialog: FunctionComponent<CreateCaseDialogProps> = ({ onClose, open }) => {
+export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseDialogProps>) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
     const confidentialityWarningKey = useConfidentialityWarning();
@@ -82,6 +81,7 @@ const CreateCaseDialog: FunctionComponent<CreateCaseDialogProps> = ({ onClose, o
             .then(onClose)
             .catch((err) => {
                 if (handleMaxElementsExceededError(err, snackError)) {
+                    // do nothing
                 } else if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                     snackError({
                         messageId: 'invalidFormatOrName',
@@ -128,6 +128,4 @@ const CreateCaseDialog: FunctionComponent<CreateCaseDialogProps> = ({ onClose, o
             <UploadNewCase />
         </CustomMuiDialog>
     );
-};
-
-export default CreateCaseDialog;
+}

@@ -92,14 +92,24 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
             // we check if the param is for extension, if it is, we select all possible values by default.
             // the only way for the moment to check if the param is for extension, is by checking his type is name.
             // TODO to be removed when extensions param default value corrected in backend to include all possible values
-            Object.values(fetchedFormats).forEach((format) =>
-                format.parameters.forEach((param) => {
-                    if (param.type === 'STRING_LIST' && param.name.endsWith('extensions')) {
-                        param.defaultValue = param.possibleValues;
-                    }
-                })
+            setFormats(
+                Array.isArray(fetchedFormats)
+                    ? fetchedFormats
+                    : Object.fromEntries(
+                          Object.entries(fetchedFormats).map(([key, value]) => [
+                              key,
+                              {
+                                  ...value,
+                                  parameters: value.parameters.map((param) => {
+                                      if (param.type === 'STRING_LIST' && param.name.endsWith('extensions')) {
+                                          return { ...param, defaultValue: param.possibleValues };
+                                      }
+                                      return param;
+                                  }),
+                              },
+                          ])
+                      )
             );
-            setFormats(fetchedFormats);
         });
     }, []);
 

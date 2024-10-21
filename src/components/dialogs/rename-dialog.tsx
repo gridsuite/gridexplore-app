@@ -8,7 +8,7 @@ import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { CancelButton, ElementType } from '@gridsuite/commons-ui';
-import { FunctionComponent, SyntheticEvent } from 'react';
+import { SyntheticEvent } from 'react';
 import { AppState } from 'redux/reducer';
 import { useNameField } from './field-hook';
 
@@ -34,7 +34,7 @@ export interface RenameDialogProps {
  * @param {String} currentName Name before renaming
  * @param {String} error Error message
  */
-const RenameDialog: FunctionComponent<RenameDialogProps> = ({
+export default function RenameDialog({
     open,
     onClose,
     onClick,
@@ -44,7 +44,7 @@ const RenameDialog: FunctionComponent<RenameDialogProps> = ({
     type,
     error,
     parentDirectory,
-}) => {
+}: Readonly<RenameDialogProps>) {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const intl = useIntl();
 
@@ -100,6 +100,4 @@ const RenameDialog: FunctionComponent<RenameDialogProps> = ({
             </DialogActions>
         </Dialog>
     );
-};
-
-export default RenameDialog;
+}

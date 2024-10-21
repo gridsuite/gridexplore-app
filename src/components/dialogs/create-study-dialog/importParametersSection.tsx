@@ -7,11 +7,11 @@
 
 import { Box, Divider } from '@mui/material';
 import { FieldConstants, FlatParameters } from '@gridsuite/commons-ui';
-import { FunctionComponent, useState } from 'react';
+import { useState } from 'react';
 import { useController, useWatch } from 'react-hook-form';
 import AdvancedParameterButton from './advancedParameterButton';
 
-const ImportParametersSection: FunctionComponent = () => {
+export default function ImportParametersSection() {
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
 
     const {
@@ -63,6 +63,4 @@ const ImportParametersSection: FunctionComponent = () => {
             </Box>
         </>
     );
-};
-
-export default ImportParametersSection;
+}

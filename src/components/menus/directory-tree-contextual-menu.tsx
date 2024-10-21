@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import {
@@ -52,11 +52,12 @@ export interface DirectoryTreeContextualMenuProps {
     anchorPosition?: PopoverPosition;
 }
 
-const DirectoryTreeContextualMenu: FunctionComponent<DirectoryTreeContextualMenuProps> = (props) => {
+export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTreeContextualMenuProps>) {
     const { directory, open, onClose, openDialog, setOpenDialog, restrictMenuItems, ...others } = props;
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const intl = useIntl();
+    const [deleteError, setDeleteError] = useState('');
 
     const [hideMenu, setHideMenu] = useState(false);
     const { snackError } = useSnackMessage();
@@ -86,6 +87,7 @@ const DirectoryTreeContextualMenu: FunctionComponent<DirectoryTreeContextualMenu
             if (HTTPStatusCode === 403) {
                 return intl.formatMessage({ id: 'renameDirectoryError' });
             }
+            return undefined;
         },
         undefined,
         false
@@ -118,24 +120,24 @@ const DirectoryTreeContextualMenu: FunctionComponent<DirectoryTreeContextualMenu
                 id: 'elementPasteFailed404',
             });
         } else {
-            msg = intl.formatMessage({ id: 'elementPasteFailed' }) + error?.message;
+            msg = intl.formatMessage({ id: 'elementPasteFailed' }) + (error?.message ?? '');
         }
         return handleError(msg);
     };
 
-    function pasteElement(directoryUuid: string, selectionForCopy: any) {
-        if (!selectionForCopy.sourceItemUuid) {
+    function pasteElement(directoryUuid: string, selectionForPaste: any) {
+        if (!selectionForPaste.sourceItemUuid) {
             handleError(intl.formatMessage({ id: 'elementPasteFailed404' }));
             handleCloseDialog(null);
         } else {
-            console.info('Pasting element %s into directory %s', selectionForCopy.nameItem, directoryUuid);
+            console.info('Pasting element %s into directory %s', selectionForPaste.nameItem, directoryUuid);
 
-            switch (selectionForCopy.typeItem) {
+            switch (selectionForPaste.typeItem) {
                 case ElementType.CASE:
                 case ElementType.STUDY:
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
-                    duplicateElement(selectionForCopy.sourceItemUuid, directoryUuid, selectionForCopy.typeItem).catch(
+                    duplicateElement(selectionForPaste.sourceItemUuid, directoryUuid, selectionForPaste.typeItem).catch(
                         (error: any) => {
                             if (handleMaxElementsExceededError(error, snackError)) {
                                 return;
@@ -150,26 +152,26 @@ const DirectoryTreeContextualMenu: FunctionComponent<DirectoryTreeContextualMenu
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
                     duplicateElement(
-                        selectionForCopy.sourceItemUuid,
+                        selectionForPaste.sourceItemUuid,
                         directoryUuid,
                         ElementType.PARAMETERS,
-                        selectionForCopy.typeItem
+                        selectionForPaste.typeItem
                     ).catch((error: any) => {
                         handlePasteError(error);
                     });
                     break;
                 case ElementType.CONTINGENCY_LIST:
                     duplicateElement(
-                        selectionForCopy.sourceItemUuid,
+                        selectionForPaste.sourceItemUuid,
                         directoryUuid,
-                        selectionForCopy.typeItem,
-                        selectionForCopy.specificTypeItem
+                        selectionForPaste.typeItem,
+                        selectionForPaste.specificTypeItem
                     ).catch((error: any) => {
                         handlePasteError(error);
                     });
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
-                    duplicateSpreadsheetConfig(selectionForCopy.sourceItemUuid, directoryUuid).catch((error: any) => {
+                    duplicateSpreadsheetConfig(selectionForPaste.sourceItemUuid, directoryUuid).catch((error: any) => {
                         handlePasteError(error);
                     });
                     break;
@@ -185,7 +187,6 @@ const DirectoryTreeContextualMenu: FunctionComponent<DirectoryTreeContextualMenu
         }
     }
 
-    const [deleteError, setDeleteError] = useState('');
     const handleDeleteElement = useCallback(
         (elementsUuid: string) => {
             setDeleteError('');
@@ -395,6 +396,4 @@ const DirectoryTreeContextualMenu: FunctionComponent<DirectoryTreeContextualMenu
             {renderDialog()}
         </>
     );
-};
-
-export default DirectoryTreeContextualMenu;
+}

@@ -25,6 +25,32 @@
         "react/jsx-props-no-spreading": "off",
         "react/require-default-props": "off",
         "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
-        "import/prefer-default-export":"off"
+        "import/prefer-default-export":"off",
+        // add on top of https://github.com/airbnb/javascript/blob/6499695ac11c4640ed0f77f8865a1adcb32d3239/packages/eslint-config-airbnb-base/rules/best-practices.js#L237
+        "no-param-reassign": ["error", {
+            "props": true,
+            "ignorePropertyModificationsFor": [
+                "acc", // for reduce accumulators
+                "accumulator", // for reduce accumulators
+                "e", // for e.returnvalue
+                "ctx", // for Koa routing
+                "context", // for Koa routing
+                "req", // for Express requests
+                "request", // for Express requests
+                "res", // for Express responses
+                "response", // for Express responses
+                "$scope", // for Angular 1 scopes
+                "staticContext", // for ReactRouter context
+                "state" // for Redux builder
+            ]
+        }],
+        // add on top of https://github.com/iamturns/eslint-config-airbnb-typescript/blob/303e346214847385bee4016367ff3b1b9978e337/lib/shared.js#L180
+        // having as source: https://github.com/airbnb/javascript/blob/6499695ac11c4640ed0f77f8865a1adcb32d3239/packages/eslint-config-airbnb-base/rules/variables.js#L54
+        "@typescript-eslint/no-unused-vars": ["error", {
+            "vars": "all",
+            "args": "after-used",
+            "ignoreRestSiblings": true,
+            "argsIgnorePattern": "^_"
+        }]
     }
 }

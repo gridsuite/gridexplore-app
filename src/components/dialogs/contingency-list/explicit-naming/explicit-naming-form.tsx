@@ -20,6 +20,17 @@ import { SuppressKeyboardEventParams } from 'ag-grid-community';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { makeDefaultRowData } from '../contingency-list-utils';
 
+const getExplicitNamingConditionSchema = (schema: yup.ArraySchema<any, any, any, any>) => {
+    return schema
+        .min(1, 'contingencyTableContainAtLeastOneRowError')
+        .test('rowWithoutName', 'contingencyTablePartiallyDefinedError', (array) => {
+            return !array.some((row: any) => !row[FieldConstants.CONTINGENCY_NAME]?.trim());
+        })
+        .test('rowWithoutEquipments', 'contingencyTablePartiallyDefinedError', (array) => {
+            return !array.some((row: any) => !row[FieldConstants.EQUIPMENT_IDS]?.length);
+        });
+};
+
 export const getExplicitNamingSchema = (id: FieldConstants.EQUIPMENT_TABLE) => {
     return {
         [id]: yup
@@ -53,17 +64,6 @@ export const getExplicitNamingEditSchema = (id: string) => {
     return {
         [id]: getExplicitNamingConditionSchema(schema),
     };
-};
-
-const getExplicitNamingConditionSchema = (schema: yup.ArraySchema<any, any, any, any>) => {
-    return schema
-        .min(1, 'contingencyTableContainAtLeastOneRowError')
-        .test('rowWithoutName', 'contingencyTablePartiallyDefinedError', (array) => {
-            return !array.some((row: any) => !row[FieldConstants.CONTINGENCY_NAME]?.trim());
-        })
-        .test('rowWithoutEquipments', 'contingencyTablePartiallyDefinedError', (array) => {
-            return !array.some((row: any) => !row[FieldConstants.EQUIPMENT_IDS]?.length);
-        });
 };
 
 const suppressKeyboardEvent = (params: SuppressKeyboardEventParams) => {

@@ -70,6 +70,8 @@ export default function App() {
                         // TODO remove cast when prototype is fixed in commons-ui
                         dispatch(selectComputedLanguage(getComputedLanguage(param.value) as GsLangUser));
                         break;
+                    default:
+                        break;
                 }
             });
         },
@@ -90,7 +92,7 @@ export default function App() {
     const connectNotificationsUpdateConfig = useCallback(() => {
         const ws = connectNotificationsWsUpdateConfig();
 
-        ws.onmessage = function (event) {
+        ws.onmessage = function onmessage(event) {
             const eventData = JSON.parse(event.data);
             if (eventData.headers?.parameterName) {
                 fetchConfigParameter(eventData.headers.parameterName)
@@ -103,7 +105,7 @@ export default function App() {
                     );
             }
         };
-        ws.onerror = function (event) {
+        ws.onerror = function onerror(event) {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
@@ -164,10 +166,11 @@ export default function App() {
                 );
 
             const ws = connectNotificationsUpdateConfig();
-            return function () {
+            return function closeWS() {
                 ws.close();
             };
         }
+        return undefined;
     }, [user, dispatch, updateParams, snackError, connectNotificationsUpdateConfig]);
 
     return (

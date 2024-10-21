@@ -66,6 +66,7 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
             document.addEventListener('keydown', openSearch);
             return () => document.removeEventListener('keydown', openSearch);
         }
+        return undefined;
     }, [user]);
 
     return (

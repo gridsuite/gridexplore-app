@@ -7,7 +7,6 @@
 
 import { DirectoryItemSelector, ElementType, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { FunctionComponent } from 'react';
 
 export interface MoveDialogProps {
     open: boolean;
@@ -15,7 +14,7 @@ export interface MoveDialogProps {
     itemsCount: number;
 }
 
-const MoveDialog: FunctionComponent<MoveDialogProps> = ({ open, onClose, itemsCount }) => {
+export default function MoveDialog({ open, onClose, itemsCount }: Readonly<MoveDialogProps>) {
     const intl = useIntl();
 
     return (
@@ -39,6 +38,4 @@ const MoveDialog: FunctionComponent<MoveDialogProps> = ({ open, onClose, itemsCo
             contentText={intl.formatMessage({ id: 'moveItemContentText' })}
         />
     );
-};
-
-export default MoveDialog;
+}

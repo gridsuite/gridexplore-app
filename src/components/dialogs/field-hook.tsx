@@ -130,11 +130,11 @@ export const useNameField = ({
                                 : ''
                         );
                     })
-                    .catch((error) => {
+                    .catch((error2) => {
                         setError(
                             intl.formatMessage({
                                 id: 'nameValidityCheckErrorMsg',
-                            }) + error.message
+                            }) + error2.message
                         );
                     })
                     .finally(() => {

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CSSProperties, FunctionComponent, ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import { Box, useTheme } from '@mui/material';
 
 export interface CircleIconProps {
@@ -13,7 +13,7 @@ export interface CircleIconProps {
     children: ReactNode;
 }
 
-const CircleIcon: FunctionComponent<CircleIconProps> = ({ size, iconStyles, children }) => {
+export default function CircleIcon({ size, iconStyles, children }: Readonly<CircleIconProps>) {
     const theme = useTheme();
     const circleStyles: CSSProperties = {
         display: 'flex',
@@ -26,6 +26,4 @@ const CircleIcon: FunctionComponent<CircleIconProps> = ({ size, iconStyles, chil
     };
 
     return <Box sx={circleStyles}>{children}</Box>;
-};
-
-export default CircleIcon;
+}

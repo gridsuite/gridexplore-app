@@ -7,20 +7,22 @@
 
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronRight as ChevronRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import { Box, Theme, Tooltip, Typography, Zoom } from '@mui/material';
+import { Box, SxProps, Theme, Tooltip, Typography, Zoom } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { TreeView } from '@mui/x-tree-view';
 import { ElementAttributes } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
+// eslint-disable-next-line import/no-extraneous-dependencies -- lib from MUI
+import { Property } from 'csstype';
 import { AppState, IDirectory } from '../redux/reducer';
 import CustomTreeItem from './custom-tree-item';
 import { setSelectedDirectory } from '../redux/actions';
 
 const styles = {
-    treeViewRoot: (theme: Theme) => ({
+    treeViewRoot: (theme) => ({
         padding: theme.spacing(0.5),
     }),
-    treeItemRoot: (theme: Theme) => ({
+    treeItemRoot: (theme) => ({
         userSelect: 'none',
         '&:focus > .MuiTreeItem-content .MuiTreeItem-label, .focused': {
             borderRadius: theme.spacing(2),
@@ -31,12 +33,12 @@ const styles = {
             backgroundColor: theme.row.primary,
         },
     }),
-    treeItemSelected: (theme: Theme) => ({
+    treeItemSelected: (theme) => ({
         borderRadius: theme.spacing(2),
-        backgroundColor: theme.row.hover,
+        backgroundColor: theme.row.hover as Property.BackgroundColor,
         fontWeight: 'bold',
     }),
-    treeItemContent: (theme: Theme) => ({
+    treeItemContent: (theme) => ({
         paddingRight: theme.spacing(1),
         paddingLeft: theme.spacing(1),
     }),
@@ -45,7 +47,7 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
     },
-    treeItemLabel: (theme: Theme) => ({
+    treeItemLabel: (theme) => ({
         flexGrow: 1,
         overflow: 'hidden',
         paddingRight: theme.spacing(1),
@@ -53,7 +55,7 @@ const styles = {
         fontWeight: 'inherit',
         color: 'inherit',
     }),
-    treeItemLabelRoot: (theme: Theme) => ({
+    treeItemLabelRoot: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(0.5, 0),
@@ -62,12 +64,12 @@ const styles = {
         fontWeight: 'inherit',
         flexGrow: 1,
     },
-    icon: (theme: Theme) => ({
+    icon: (theme) => ({
         marginRight: theme.spacing(1),
         width: '18px',
         height: '18px',
     }),
-};
+} satisfies Record<string, SxProps<Theme>>;
 
 export interface DirectoryTreeViewProps {
     treeViewUuid: UUID;
@@ -160,7 +162,7 @@ export default function DirectoryTreeView({
     /* Handle Rendering */
     const renderTree = (node: ElementAttributes | undefined) => {
         if (!node) {
-            return;
+            return undefined;
         }
         return (
             <CustomTreeItem

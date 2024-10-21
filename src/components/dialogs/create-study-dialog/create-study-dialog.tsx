@@ -7,7 +7,7 @@
 import { useForm } from 'react-hook-form';
 import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { FunctionComponent, useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import {
     CustomMuiDialog,
     DescriptionField,
@@ -48,7 +48,7 @@ function customizeCurrentParameters(params: Parameter[]): Record<string, string>
         // the only way for the moment to check if the parameter is for extension, is by checking his name.
         // TODO: implement a cleaner way to determine the extensions field
         if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
-            obj[parameter.name] = parameter.possibleValues.toString();
+            return { ...obj, [parameter.name]: parameter.possibleValues.toString() };
         }
         return obj;
     }, {} as Record<string, string>);
@@ -57,8 +57,7 @@ function customizeCurrentParameters(params: Parameter[]): Record<string, string>
 function formatCaseImportParameters(params: Parameter[]): Parameter[] {
     // sort possible values alphabetically to display select options sorted
     return params?.map((parameter) => {
-        parameter.possibleValues = parameter.possibleValues?.sort((a: any, b: any) => a.localeCompare(b));
-        return parameter;
+        return { ...parameter, possibleValues: parameter.possibleValues?.sort((a: any, b: any) => a.localeCompare(b)) };
     });
 }
 
@@ -68,7 +67,7 @@ export interface CreateStudyDialogProps {
     providedExistingCase?: ElementAttributes;
 }
 
-const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, onClose, providedExistingCase }) => {
+export default function CreateStudyDialog({ open, onClose, providedExistingCase }: Readonly<CreateStudyDialogProps>) {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
@@ -233,8 +232,7 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
     // handle create study from existing case
     useEffect(() => {
         if (providedExistingCase) {
-            const { elementUuid } = providedExistingCase;
-            getCurrentCaseImportParams(elementUuid);
+            getCurrentCaseImportParams(providedExistingCase.elementUuid);
         }
     }, [getCurrentCaseImportParams, providedExistingCase, setValue]);
 
@@ -284,6 +282,4 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
             </Grid>
         </CustomMuiDialog>
     );
-};
-
-export default CreateStudyDialog;
+}

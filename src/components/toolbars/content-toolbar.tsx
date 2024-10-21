@@ -7,7 +7,6 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import {
     Delete as DeleteIcon,
@@ -38,7 +37,7 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
     const intl = useIntl();
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const { downloadElements, handleConvertCases, stopCasesExports } = useDownloadUtils();
-
+    const [deleteError, setDeleteError] = useState('');
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
 
     const handleLastError = useCallback(
@@ -75,6 +74,7 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
             if (HTTPStatusCode === 404) {
                 return intl.formatMessage({ id: 'moveElementNotFoundError' });
             }
+            return undefined;
         },
         [intl]
     );
@@ -135,7 +135,6 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         [selectedElements, noCreationInProgress]
     );
 
-    const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(
         (elementsUuids: string[]) => {
             setDeleteError('');
@@ -235,7 +234,3 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         </>
     );
 }
-
-ContentToolbar.propTypes = {
-    selectedElements: PropTypes.array,
-};

@@ -93,8 +93,8 @@ export function DirectoryContentTable({
     const columnOrder = useSelector((state: AppState) => state.reorderedColumns);
 
     useEffect(() => {
-        const extractColumnOrder = (columnDefs: ColDef[]): string[] => {
-            return columnDefs.filter((col) => col.field).map((col) => col.field as string);
+        const extractColumnOrder = (colDefs: ColDef[]): string[] => {
+            return colDefs.filter((col) => col.field).map((col) => col.field as string);
         };
 
         if (!columnOrder || columnOrder.length === 0) {

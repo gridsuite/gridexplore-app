@@ -12,7 +12,7 @@ export function DateCellRenderer({ value }: Readonly<{ value: string }>) {
 
     const todayStart = new Date().setHours(0, 0, 0, 0);
     const dateValue = new Date(value);
-    if (!isNaN(dateValue.getDate())) {
+    if (!Number.isNaN(dateValue.getDate())) {
         const cellMidnight = new Date(value).setHours(0, 0, 0, 0);
 
         const time = new Intl.DateTimeFormat(intl.locale, {

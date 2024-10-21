@@ -16,6 +16,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import ReconnectingWebSocket from 'reconnecting-websocket';
+import { Box } from '@mui/material';
 import {
     directoryUpdated,
     setActiveDirectory,
@@ -147,7 +148,7 @@ export function updatedTree(
     };
 
     const nextMap: Record<string, IDirectory> = Object.fromEntries([
-        ...Object.entries(prevMap).filter(([k, v], i) => !nonCopyUuids.has(k)),
+        ...Object.entries(prevMap).filter(([k]) => !nonCopyUuids.has(k)),
         ...nextChildren.map((n) => [n.elementUuid, n]),
         ...refreshedUpNodes(prevMap, nextNode as IDirectory).map((n: any) => [n.elementUuid, n]),
     ]);
@@ -340,7 +341,7 @@ export default function TreeViewsContainer() {
                 const [toRemoveFromUploadingElements, toKeepToUploadingElements] =
                     uploadingElementsInSelectedDirectory.reduce(
                         (
-                            [toRemoveFromUploadingElements, toKeepToUploadingElements],
+                            [toRemoveFromUploadingElements2, toKeepToUploadingElements2],
                             uploadingElementInSelectedDirectory
                         ) =>
                             current.some(
@@ -350,12 +351,12 @@ export default function TreeViewsContainer() {
                                     e.elementUuid // if it has an elementUuid then it's not a ghost anymore
                             )
                                 ? [
-                                      [...toRemoveFromUploadingElements, uploadingElementInSelectedDirectory],
-                                      toKeepToUploadingElements,
+                                      [...toRemoveFromUploadingElements2, uploadingElementInSelectedDirectory],
+                                      toKeepToUploadingElements2,
                                   ]
                                 : [
-                                      toRemoveFromUploadingElements,
-                                      [...toKeepToUploadingElements, uploadingElementInSelectedDirectory],
+                                      toRemoveFromUploadingElements2,
+                                      [...toKeepToUploadingElements2, uploadingElementInSelectedDirectory],
                                   ],
                         [[] as UploadingElement[], [] as UploadingElement[]]
                     );
@@ -368,15 +369,13 @@ export default function TreeViewsContainer() {
                     dispatch(setUploadingElements(newUploadingElements));
                 }
 
-                return [...current, ...toKeepToUploadingElements].sort(function (a, b) {
-                    return a.elementName.localeCompare(b.elementName);
-                }) as ElementAttributes[];
+                return [...current, ...toKeepToUploadingElements].sort((a, b) =>
+                    a.elementName.localeCompare(b.elementName)
+                ) as ElementAttributes[];
             }
             return current == null
                 ? undefined
-                : [...current].sort(function (a, b) {
-                      return a.elementName.localeCompare(b.elementName);
-                  });
+                : [...current].sort((a, b) => a.elementName.localeCompare(b.elementName));
         },
         [dispatch]
     );
@@ -467,10 +466,10 @@ export default function TreeViewsContainer() {
         // create ws at mount event
         wsRef.current = connectNotificationsWsUpdateDirectories();
 
-        wsRef.current.onclose = function () {
+        wsRef.current.onclose = function onclose() {
             console.error('Unexpected Notification WebSocket closed');
         };
-        wsRef.current.onerror = function (event) {
+        wsRef.current.onerror = function onerror(event) {
             console.error('Unexpected Notification WebSocket error', event);
         };
         // We must save wsRef.current in a variable to make sure that when close is called it refers to the same instance.
@@ -502,7 +501,7 @@ export default function TreeViewsContainer() {
                 return;
             }
 
-            if (eventData.headers.hasOwnProperty('userMessage') && eventData.payload) {
+            if (Object.prototype.hasOwnProperty.call(eventData.headers, 'userMessage') && eventData.payload) {
                 handleUserMessage(eventData);
                 return;
             }
@@ -594,7 +593,7 @@ export default function TreeViewsContainer() {
 
     return (
         <>
-            <div
+            <Box
                 style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -613,9 +612,8 @@ export default function TreeViewsContainer() {
                             onDirectoryUpdate={updateDirectoryTree}
                         />
                     ))}
-            </div>
-
-            <div
+            </Box>
+            <Box
                 onMouseDown={(e) => {
                     if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON && openDialog === constants.DialogsId.NONE) {
                         handleCloseDirectoryMenu(e, null);
@@ -639,7 +637,7 @@ export default function TreeViewsContainer() {
                     }
                     restrictMenuItems={false}
                 />
-            </div>
+            </Box>
         </>
     );
 }

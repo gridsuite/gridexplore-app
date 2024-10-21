@@ -8,7 +8,7 @@
 import messages_plugins_fr from './fr.json';
 import messages_plugins_en from './en.json';
 
-const messages_plugins = {
+const MessagesPlugins = {
     fr: {
         ...messages_plugins_fr,
     },
@@ -17,4 +17,4 @@ const messages_plugins = {
     },
 };
 
-export default messages_plugins;
+export default MessagesPlugins;

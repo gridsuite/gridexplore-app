@@ -19,14 +19,14 @@ import {
 import { Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
-import { ChangeEvent, FunctionComponent } from 'react';
+import { ChangeEvent } from 'react';
 import { AppState } from 'redux/reducer';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import ScriptInputForm from '../script/script-input-form';
 import { elementExists } from '../../../../utils/rest-api';
 import { ContingencyListType } from '../../../../utils/elementType';
 
-const ContingencyListCreationForm: FunctionComponent = () => {
+export default function ContingencyListCreationForm() {
     const { setValue } = useFormContext();
 
     const watchContingencyListType = useWatch({
@@ -77,6 +77,4 @@ const ContingencyListCreationForm: FunctionComponent = () => {
             {watchContingencyListType === ContingencyListType.SCRIPT.id && <ScriptInputForm />}
         </Grid>
     );
-};
-
-export default ContingencyListCreationForm;
+}

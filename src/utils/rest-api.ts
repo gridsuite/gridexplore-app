@@ -74,7 +74,7 @@ export function connectNotificationsWsUpdateConfig() {
     const webSocketUrl = `${webSocketBaseUrl + PREFIX_CONFIG_NOTIFICATION_WS}/notify?appName=${APP_NAME}`;
 
     const reconnectingWebSocket = new ReconnectingWebSocket(() => `${webSocketUrl}&access_token=${getToken()}`);
-    reconnectingWebSocket.onopen = function () {
+    reconnectingWebSocket.onopen = function onopen() {
         console.info(`Connected Websocket update config ui ${webSocketUrl} ...`);
     };
     return reconnectingWebSocket;
@@ -372,7 +372,7 @@ const getDuplicateEndpoint = (type: string) => {
         case ElementType.MODIFICATION:
             return '/modifications';
         default:
-            break;
+            return undefined;
     }
 };
 
@@ -565,10 +565,9 @@ export function replaceFormContingencyListWithScript(id: string, parentDirectory
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
-    const url =
-        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${
-            CONTINGENCY_ENDPOINTS.FORM_CONTINGENCY_LISTS
-        }/${encodeURIComponent(id)}/replace-with-script` + `?${urlSearchParams.toString()}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${
+        CONTINGENCY_ENDPOINTS.FORM_CONTINGENCY_LISTS
+    }/${encodeURIComponent(id)}/replace-with-script?${urlSearchParams.toString()}`;
 
     return backendFetch(url, {
         method: 'post',
@@ -601,7 +600,7 @@ export function connectNotificationsWsUpdateDirectories() {
     const webSocketUrl = `${webSocketBaseUrl + PREFIX_NOTIFICATION_WS}/notify?updateType=directories`;
 
     const reconnectingWebSocket = new ReconnectingWebSocket(() => `${webSocketUrl}&access_token=${getToken()}`);
-    reconnectingWebSocket.onopen = function () {
+    reconnectingWebSocket.onopen = function onopen() {
         console.info(`Connected Websocket update studies ${webSocketUrl} ...`);
     };
     return reconnectingWebSocket;

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Edit as EditIcon } from '@mui/icons-material';
 import {
@@ -42,7 +42,7 @@ export interface CommonContextualMenuProps {
     menuItems?: MenuItemType[];
 }
 
-const CommonContextualMenu: FunctionComponent<CommonContextualMenuProps> = (props) => {
+export default function CommonContextualMenu(props: Readonly<CommonContextualMenuProps>) {
     const { menuItems, ...others } = props;
 
     function makeMenuItem(
@@ -76,7 +76,13 @@ const CommonContextualMenu: FunctionComponent<CommonContextualMenuProps> = (prop
         <StyledMenu keepMounted {...others}>
             {menuItems?.map((menuItem, index) => {
                 if (menuItem.isDivider) {
-                    return <Divider key={index} />;
+                    return (
+                        <Divider
+                            key={`${menuItem.isDivider ? 'divider' : 'menu'}-${
+                                menuItem?.messageDescriptorId ?? 'no_msg'
+                            }`}
+                        />
+                    );
                 }
                 return makeMenuItem(
                     index,
@@ -88,6 +94,4 @@ const CommonContextualMenu: FunctionComponent<CommonContextualMenuProps> = (prop
             })}
         </StyledMenu>
     );
-};
-
-export default CommonContextualMenu;
+}

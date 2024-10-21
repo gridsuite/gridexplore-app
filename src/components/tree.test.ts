@@ -100,7 +100,7 @@ test('boot2', () => {
     expect(res3[0][1].children[0].children[0].elementUuid).toBe('623e4567-e89b-12d3-a456-426614174000');
     expect(res3[0][1].children[0].children[0].parentUuid).toBe('523e4567-e89b-12d3-a456-426614174000');
 
-    const res1_1 = updatedTree(res3[0], res3[1], '323e4567-e89b-12d3-a456-426614174000', [
+    const res1bis = updatedTree(res3[0], res3[1], '323e4567-e89b-12d3-a456-426614174000', [
         {
             elementUuid: '723e4567-e89b-12d3-a456-426614174000',
             elementName: 'a2 name',
@@ -109,7 +109,7 @@ test('boot2', () => {
         },
     ]);
 
-    const res4 = updatedTree(res1_1[0], res1_1[1], null, [
+    const res4 = updatedTree(res1bis[0], res1bis[1], null, [
         {
             elementUuid: '823e4567-e89b-12d3-a456-426614174000',
             elementName: 'e name',

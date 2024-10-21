@@ -29,7 +29,7 @@ export function DescriptionCellRenderer({ data }: Readonly<{ data: ElementAttrib
     const tooltip = descriptionLines?.join('\n');
 
     const icon = description ? (
-        <Tooltip title={<Box children={tooltip} sx={styles.descriptionTooltip} />} placement="right">
+        <Tooltip title={<Box sx={styles.descriptionTooltip}>{tooltip}</Box>} placement="right">
             <StickyNote2OutlinedIcon />
         </Tooltip>
     ) : (
