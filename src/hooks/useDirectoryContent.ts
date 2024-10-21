@@ -64,9 +64,8 @@ export const useDirectoryContent = () => {
                     // discarding request for older directory
                     if (previousData.current === currentChildren) {
                         res[1].forEach((e) => {
-                            // TODO proper typescript modeling instead of monkeypatching e directly
-                            e.ownerName = getName(e.owner, res[0]?.data);
-                            e.lastModifiedByName = getName(e.lastModifiedBy, res[0].data);
+                            e.owner = getName(e.owner, res[0]?.data);
+                            e.lastModifiedBy = getName(e.lastModifiedBy, res[0].data);
                             metadata[e.elementUuid] = e;
                         });
                         setChildrenMetadata(metadata);
@@ -87,8 +86,8 @@ export const useDirectoryContent = () => {
         } else {
             return currentChildren.map((x) => ({
                 ...x,
-                ownerName: childrenMetadata?.[x.elementUuid]?.ownerName,
-                lastModifiedByName: childrenMetadata?.[x.elementUuid]?.lastModifiedByName,
+                owner: childrenMetadata?.[x.elementUuid]?.owner,
+                lastModifiedBy: childrenMetadata?.[x.elementUuid]?.lastModifiedBy,
             }));
         }
     }, [currentChildren, childrenMetadata]);
