@@ -11,12 +11,12 @@ import {
     ElementType,
     CriteriaBasedForm,
     getCriteriaBasedFormData,
-    CONTINGENCY_LIST_EQUIPMENTS,
     FieldConstants,
 } from '@gridsuite/commons-ui';
 import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import { filteredContingencyList } from '../../contingency-list-utils';
 
 const CriteriaBasedEditionForm = () => {
     const emptyValues = getCriteriaBasedFormData({}, {});
@@ -33,7 +33,7 @@ const CriteriaBasedEditionForm = () => {
                 />
             </Grid>
             <CriteriaBasedForm
-                equipments={CONTINGENCY_LIST_EQUIPMENTS}
+                equipments={filteredContingencyList}
                 defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
             />
         </Grid>

@@ -8,7 +8,6 @@
 import {
     RadioInput,
     getCriteriaBasedFormData,
-    CONTINGENCY_LIST_EQUIPMENTS,
     CriteriaBasedForm,
     FieldConstants,
     UniqueNameInput,
@@ -25,6 +24,7 @@ import { useSelector } from 'react-redux';
 import { elementExists } from '../../../../utils/rest-api';
 import { ChangeEvent, FunctionComponent } from 'react';
 import { AppState } from 'redux/reducer';
+import { filteredContingencyList } from '../contingency-list-utils';
 
 const ContingencyListCreationForm: FunctionComponent = () => {
     const { setValue } = useFormContext();
@@ -69,7 +69,7 @@ const ContingencyListCreationForm: FunctionComponent = () => {
             </Grid>
             {watchContingencyListType === ContingencyListType.CRITERIA_BASED.id && (
                 <CriteriaBasedForm
-                    equipments={CONTINGENCY_LIST_EQUIPMENTS}
+                    equipments={filteredContingencyList}
                     defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
                 />
             )}
