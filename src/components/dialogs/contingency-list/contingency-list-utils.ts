@@ -154,7 +154,7 @@ const excludedEquipmentTypes = [
     EquipmentType.STATIC_VAR_COMPENSATOR,
 ];
 
-export const filteredContingencyList = Object.fromEntries(
+export const SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS = Object.fromEntries(
     Object.entries(CONTINGENCY_LIST_EQUIPMENTS).filter(
         ([key]) => !excludedEquipmentTypes.includes(key as EquipmentType)
     )
