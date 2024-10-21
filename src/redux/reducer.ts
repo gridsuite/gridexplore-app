@@ -5,6 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* eslint
+   no-param-reassign: ["error", {"props": true, "ignorePropertyModificationsFor": ["state"]}],
+   "@typescript-eslint/no-unused-vars": ["error", {"vars": "all", "args": "after-used", "ignoreRestSiblings": true, "argsIgnorePattern": "^action$"}]
+   --------
+   source: https://github.com/airbnb/javascript/blob/main/packages/eslint-config-airbnb-base/
+       and https://github.com/iamturns/eslint-config-airbnb-typescript
+   Special case for redux usage. */
+
 import { createReducer } from '@reduxjs/toolkit';
 import {
     AuthenticationActions,
@@ -146,7 +154,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.authenticationRouterError = action.authenticationRouterError;
     });
 
-    builder.addCase(RESET_AUTHENTICATION_ROUTER_ERROR, (state, _action: AuthenticationRouterErrorAction) => {
+    builder.addCase(RESET_AUTHENTICATION_ROUTER_ERROR, (state, action: AuthenticationRouterErrorAction) => {
         state.authenticationRouterError = null;
     });
 
@@ -212,7 +220,7 @@ export const reducer = createReducer(initialState, (builder) => {
         // Object.fromEntries will turn [[elementId1, element1], [elementId2, element2]] back to {<elementId1>: <element1>, <elementId2>: <element2>} which is the initial form
         const filteredTreeDataMapData = filterFromObject(
             action.treeData.mapData,
-            ([_elementId, element]) => element.type === ElementType.DIRECTORY
+            ([, element]) => element.type === ElementType.DIRECTORY
         );
 
         state.treeData = {
