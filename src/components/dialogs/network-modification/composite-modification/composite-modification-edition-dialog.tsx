@@ -11,8 +11,9 @@ import {
     CustomMuiDialog,
     FieldConstants,
     useModificationLabelComputer,
+    NetworkModificationMetadata,
     useSnackMessage,
-    yup,
+    yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -21,7 +22,6 @@ import { CriteriaBasedEditionFormData } from '../../contingency-list/edition/cri
 import CompositeModificationEditionForm from './composite-modification-edition-form';
 import { List, ListItem } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { NetworkModificationMetadata } from '@gridsuite/commons-ui/dist/hooks/useModificationLabelComputer';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 
