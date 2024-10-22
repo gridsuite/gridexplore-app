@@ -7,7 +7,7 @@
 
 import { Divider } from '@mui/material';
 import { FlatParameters, FieldConstants, Parameter } from '@gridsuite/commons-ui';
-import React, { useState, FunctionComponent, useCallback, useMemo } from 'react';
+import React, { useState, FunctionComponent, useMemo } from 'react';
 import AdvancedParameterButton from './advancedParameterButton';
 import { useController, useWatch } from 'react-hook-form';
 import Box from '@mui/material/Box';
@@ -39,15 +39,13 @@ const ImportParametersSection: FunctionComponent = () => {
         setIsParamsDisplayed((prevIsParamsDisplayed) => !prevIsParamsDisplayed);
     };
 
-    const getFilteredParams: () => Parameter[] = useCallback(
+    const filteredParams = useMemo(
         () =>
             formatWithParameters.filter(
                 (param: Parameter) => !IGNORED_PARAMS || IGNORED_PARAMS.indexOf(param.name) === -1
             ),
         [formatWithParameters]
     );
-
-    const filteredParams = useMemo(() => getFilteredParams(), [getFilteredParams]);
 
     return (
         <>
