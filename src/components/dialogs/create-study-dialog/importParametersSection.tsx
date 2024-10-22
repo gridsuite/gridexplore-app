@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Divider } from '@mui/material';
-import { FlatParameters, FieldConstants, Parameter } from '@gridsuite/commons-ui';
-import React, { useState, FunctionComponent, useMemo } from 'react';
+import { Box, Divider } from '@mui/material';
+import { FieldConstants, FlatParameters, Parameter } from '@gridsuite/commons-ui';
+import { FunctionComponent, useMemo, useState } from 'react';
 import AdvancedParameterButton from './advancedParameterButton';
 import { useController, useWatch } from 'react-hook-form';
-import Box from '@mui/material/Box';
 
 const IGNORED_PARAMS = ['iidm.import.cgmes.cgm-with-subnetworks'];
 const ImportParametersSection: FunctionComponent = () => {
