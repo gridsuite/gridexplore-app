@@ -15,7 +15,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 
-import { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import {
     getContingencyListEmptyFormData,
     getExplicitNamingFormDataFromFetchedElement,
@@ -49,7 +49,7 @@ interface ExplicitNamingEditionDialogProps {
     contingencyListId: string;
     contingencyListType: string;
     open: boolean;
-    onClose: (event?: SyntheticEvent) => void;
+    onClose: () => void;
     titleId: string;
     name: string;
     broadcastChannel: BroadcastChannel;
@@ -98,9 +98,9 @@ const ExplicitNamingEditionDialog: FunctionComponent<ExplicitNamingEditionDialog
             .finally(() => setIsFetching(false));
     }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
-    const closeAndClear = (event?: SyntheticEvent) => {
+    const closeAndClear = () => {
         reset(emptyFormData());
-        onClose(event);
+        onClose();
     };
 
     const editContingencyList = (contingencyListId: string, contingencyList: ExplicitNamingEditionFormData) => {
