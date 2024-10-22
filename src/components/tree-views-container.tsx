@@ -161,7 +161,8 @@ function updatedTree(
             const mapElement = node.parentUuid ? filteredPrevMap[node.parentUuid] : null;
 
             // Check if the map element and its children exist.
-            if (mapElement && mapElement.children) {
+            // we check node.parenUuid otherwise we get Typescript error 'Type 'null' cannot be used as an index type' when we update filteredPrevMap[node.parentUuid].
+            if (node.parentUuid && mapElement?.children) {
                 // Create a new children list excluding the node that has moved.
                 const filteredChildren = mapElement.children.filter(
                     (child: any) => child.elementUuid !== node.elementUuid
