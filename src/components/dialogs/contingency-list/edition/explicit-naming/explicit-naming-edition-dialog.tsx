@@ -39,7 +39,7 @@ interface ExplicitNamingEditionFormData {
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().nullable(),
-    ...getExplicitNamingEditSchema(FieldConstants.EQUIPMENT_TABLE),
+    ...getExplicitNamingEditSchema(),
 });
 
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
@@ -138,6 +138,7 @@ export default function ExplicitNamingEditionDialog({
             removeOptional
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
+            unscrollableFullHeight
         >
             {!isFetching && <ExplicitNamingEditionForm />}
         </CustomMuiDialog>

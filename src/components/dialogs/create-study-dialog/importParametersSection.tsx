@@ -6,10 +6,13 @@
  */
 
 import { Box, Divider } from '@mui/material';
-import { FieldConstants, FlatParameters } from '@gridsuite/commons-ui';
-import { useState } from 'react';
+import { FieldConstants, FlatParameters, Parameter } from '@gridsuite/commons-ui';
+import { useMemo, useState } from 'react';
 import { useController, useWatch } from 'react-hook-form';
 import AdvancedParameterButton from './advancedParameterButton';
+
+// FIXME: To be removed when gridsuite supports subnetworks.
+const IGNORED_PARAMS = ['iidm.import.cgmes.cgm-with-subnetworks'];
 
 export default function ImportParametersSection() {
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
@@ -37,6 +40,14 @@ export default function ImportParametersSection() {
         setIsParamsDisplayed((prevIsParamsDisplayed) => !prevIsParamsDisplayed);
     };
 
+    const filteredParams = useMemo(
+        () =>
+            formatWithParameters.filter(
+                (param: Parameter) => !IGNORED_PARAMS || IGNORED_PARAMS.indexOf(param.name) === -1
+            ),
+        [formatWithParameters]
+    );
+
     return (
         <>
             <Divider sx={{ marginTop: '20px' }} />
@@ -53,7 +64,7 @@ export default function ImportParametersSection() {
                 />
                 {isParamsDisplayed && (
                     <FlatParameters
-                        paramsAsArray={formatWithParameters}
+                        paramsAsArray={filteredParams}
                         initValues={currentParameters}
                         onChange={handleParamsChange}
                         variant="standard"

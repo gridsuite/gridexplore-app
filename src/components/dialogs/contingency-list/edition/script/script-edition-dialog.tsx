@@ -134,6 +134,7 @@ export default function ScriptEditionDialog({
             removeOptional
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
+            unscrollableFullHeight
         >
             {!isFetching && <ScriptEditionForm />}
         </CustomMuiDialog>

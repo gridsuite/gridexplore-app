@@ -7,16 +7,15 @@
 
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo } from 'react';
-import { ContingencyListType } from 'utils/elementType';
 import { v4 as uuid4 } from 'uuid';
 import {
     CustomAgGridTable,
     FieldConstants,
-    gridItem,
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { ColDef, SuppressKeyboardEventParams } from 'ag-grid-community';
+import { ContingencyListType } from '../../../../utils/elementType';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { makeDefaultRowData } from '../contingency-list-utils';
 
@@ -34,25 +33,8 @@ const getExplicitNamingConditionSchema = (schema: yup.ArraySchema<any, any, any,
             (array) => !array.some((row: any) => !row[FieldConstants.EQUIPMENT_IDS]?.length)
         );
 
-export const getExplicitNamingSchema = (id: FieldConstants.EQUIPMENT_TABLE) => ({
-    [id]: yup
-        .array()
-        .of(
-            yup.object().shape({
-                [FieldConstants.CONTINGENCY_NAME]: yup.string().nullable(),
-                [FieldConstants.EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
-            })
-        )
-        // we remove empty lines
-        .compact((row) => !row[FieldConstants.CONTINGENCY_NAME] && !row[FieldConstants.EQUIPMENT_IDS]?.length)
-        .when([FieldConstants.CONTINGENCY_LIST_TYPE], {
-            is: ContingencyListType.EXPLICIT_NAMING.id,
-            then: (schema) => getExplicitNamingConditionSchema(schema),
-        }),
-});
-
-export const getExplicitNamingEditSchema = (id: string) => {
-    const schema = yup
+const getSchema = () =>
+    yup
         .array()
         .of(
             yup.object().shape({
@@ -62,8 +44,16 @@ export const getExplicitNamingEditSchema = (id: string) => {
         ) // we remove empty lines
         .compact((row) => !row[FieldConstants.CONTINGENCY_NAME] && !row[FieldConstants.EQUIPMENT_IDS]?.length);
 
+export const getExplicitNamingSchema = () => ({
+    [FieldConstants.EQUIPMENT_TABLE]: getSchema().when([FieldConstants.CONTINGENCY_LIST_TYPE], {
+        is: ContingencyListType.EXPLICIT_NAMING.id,
+        then: (schema) => getExplicitNamingConditionSchema(schema),
+    }),
+});
+
+export const getExplicitNamingEditSchema = () => {
     return {
-        [id]: getExplicitNamingConditionSchema(schema),
+        [FieldConstants.EQUIPMENT_TABLE]: getExplicitNamingConditionSchema(getSchema()),
     };
 };
 
@@ -72,7 +62,7 @@ const suppressKeyboardEvent = (params: SuppressKeyboardEventParams) => {
     return key === 'Enter' || key === 'ArrowLeft' || key === 'ArrowRight';
 };
 
-const ExplicitNamingForm = () => {
+export default function ExplicitNamingForm() {
     const intl = useIntl();
     const columnDefs = useMemo<ColDef[]>(
         () => [
@@ -140,7 +130,7 @@ const ExplicitNamingForm = () => {
         []
     );
 
-    const equipmentTableField = (
+    return (
         <CustomAgGridTable
             name={FieldConstants.EQUIPMENT_TABLE}
             columnDefs={columnDefs}
@@ -157,11 +147,12 @@ const ExplicitNamingForm = () => {
                 getDataFromCsv: getDataFromCsvFile,
                 csvData: csvInitialData,
             }}
-            cssProps={{}}
+            cssProps={{
+                padding: 1,
+                '& .ag-root-wrapper-body': {
+                    maxHeight: 'unset',
+                },
+            }}
         />
     );
-
-    return gridItem(equipmentTableField, 12);
-};
-
-export default ExplicitNamingForm;
+}

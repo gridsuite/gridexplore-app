@@ -40,7 +40,7 @@ const schema = yup.object().shape({
         then: (schemaThen) => schemaThen.required(),
         otherwise: (schemaOtherwise) => schemaOtherwise.nullable(),
     }),
-    ...getExplicitNamingSchema(FieldConstants.EQUIPMENT_TABLE),
+    ...getExplicitNamingSchema(),
     ...getCriteriaBasedSchema({}),
 });
 
@@ -110,6 +110,7 @@ export default function ContingencyListCreationDialog({
             removeOptional
             disabledSave={Boolean(nameError || isValidating)}
             language={languageLocal}
+            unscrollableFullHeight
         >
             <ContingencyListCreationForm />
         </CustomMuiDialog>

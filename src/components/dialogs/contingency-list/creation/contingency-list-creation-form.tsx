@@ -15,8 +15,9 @@ import {
     gridItem,
     RadioInput,
     UniqueNameInput,
+    unscrollableDialogStyles,
 } from '@gridsuite/commons-ui';
-import { Grid } from '@mui/material';
+import { Box } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { ChangeEvent } from 'react';
@@ -50,8 +51,8 @@ export default function ContingencyListCreationForm() {
 
     const emptyValues = getCriteriaBasedFormData({}, {});
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={12}>
+        <>
+            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
                 <UniqueNameInput
                     name={FieldConstants.NAME}
                     label="nameProperty"
@@ -60,13 +61,9 @@ export default function ContingencyListCreationForm() {
                     activeDirectory={activeDirectory}
                     elementExists={elementExists}
                 />
-            </Grid>
-            <Grid item xs={12}>
                 <DescriptionField />
-            </Grid>
-            <Grid container item>
                 {gridItem(contingencyListTypeField, 12)}
-            </Grid>
+            </Box>
             {watchContingencyListType === ContingencyListType.CRITERIA_BASED.id && (
                 <CriteriaBasedForm
                     equipments={CONTINGENCY_LIST_EQUIPMENTS}
@@ -75,6 +72,6 @@ export default function ContingencyListCreationForm() {
             )}
             {watchContingencyListType === ContingencyListType.EXPLICIT_NAMING.id && <ExplicitNamingForm />}
             {watchContingencyListType === ContingencyListType.SCRIPT.id && <ScriptInputForm />}
-        </Grid>
+        </>
     );
 }

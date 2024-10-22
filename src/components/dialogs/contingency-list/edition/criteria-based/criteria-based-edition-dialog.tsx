@@ -129,6 +129,7 @@ export default function CriteriaBasedEditionDialog({
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
             language={languageLocal}
+            unscrollableFullHeight
         >
             {!isFetching && <CriteriaBasedEditionForm />}
         </CustomMuiDialog>

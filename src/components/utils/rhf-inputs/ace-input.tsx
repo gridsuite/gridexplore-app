@@ -19,6 +19,7 @@ export interface AceInputProps {
     name: string;
     placeholder: string;
     fontSize: Exclude<IAceEditorProps['fontSize'], undefined>;
+    height: Exclude<IAceEditorProps['height'], undefined>;
     editorProps: IEditorProps;
 }
 
