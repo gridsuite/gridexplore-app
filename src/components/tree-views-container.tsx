@@ -158,12 +158,14 @@ function updatedTree(
     if (nodesWithNewParent.length !== 0) {
         nodesWithNewParent.forEach((node) => {
             // Retrieve the map element of the previous parent using the parentUuid of the node.
-            const mapElement = filteredPrevMap[node.parentUuid];
+            const mapElement = node.parentUuid ? filteredPrevMap[node.parentUuid] : null;
 
             // Check if the map element and its children exist.
             if (mapElement && mapElement.children) {
                 // Create a new children list excluding the node that has moved.
-                const filteredChildren = mapElement.children.filter((child) => child.elementUuid !== node.elementUuid);
+                const filteredChildren = mapElement.children.filter(
+                    (child: any) => child.elementUuid !== node.elementUuid
+                );
 
                 // Update the map element to include the new children list.
                 filteredPrevMap[node.parentUuid] = {
