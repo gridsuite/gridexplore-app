@@ -6,8 +6,8 @@
  */
 
 import { Divider } from '@mui/material';
-import { FlatParameters, FieldConstants, Parameter } from "@gridsuite/commons-ui";
-import React, { useState, FunctionComponent } from 'react';
+import { FlatParameters, FieldConstants, Parameter } from '@gridsuite/commons-ui';
+import React, { useState, FunctionComponent, useCallback, useMemo } from 'react';
 import AdvancedParameterButton from './advancedParameterButton';
 import { useController, useWatch } from 'react-hook-form';
 import Box from '@mui/material/Box';
@@ -39,6 +39,16 @@ const ImportParametersSection: FunctionComponent = () => {
         setIsParamsDisplayed((prevIsParamsDisplayed) => !prevIsParamsDisplayed);
     };
 
+    const getFilteredParams: () => Parameter[] = useCallback(
+        () =>
+            formatWithParameters.filter(
+                (param: Parameter) => !IGNORED_PARAMS || IGNORED_PARAMS.indexOf(param.name) === -1
+            ),
+        [formatWithParameters]
+    );
+
+    const filteredParams = useMemo(() => getFilteredParams(), [getFilteredParams]);
+
     return (
         <>
             <Divider sx={{ marginTop: '20px' }} />
@@ -55,7 +65,7 @@ const ImportParametersSection: FunctionComponent = () => {
                 />
                 {isParamsDisplayed && (
                     <FlatParameters
-                        paramsAsArray={formatWithParameters.filter((param: Parameter) => !IGNORED_PARAMS || IGNORED_PARAMS.indexOf(param.name) === -1 )}
+                        paramsAsArray={filteredParams}
                         initValues={currentParameters}
                         onChange={handleParamsChange}
                         variant="standard"
