@@ -20,11 +20,11 @@ import {
 import { connectNotificationsWsUpdateDirectories } from '../utils/rest-api';
 import DirectoryTreeView from './directory-tree-view';
 import {
-    useSnackMessage,
+    ElementAttributes,
+    ElementType,
     fetchDirectoryContent,
     fetchRootFolders,
-    ElementType,
-    ElementAttributes,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { notificationType } from '../utils/notificationType';
 
@@ -95,6 +95,7 @@ function updatedTree(
     nodeId: string | null,
     children: IDirectory[]
 ): [IDirectory[], Record<string, IDirectory>] {
+    const nodesWithNewParent = [];
     const nextChildren = children
         .sort((a, b) => a.elementName.localeCompare(b.elementName))
         .map((n) => {
@@ -110,6 +111,9 @@ function updatedTree(
             } else {
                 if (pn.parentUuid !== nodeId) {
                     console.warn('reparent ' + pn.parentUuid + ' -> ' + nodeId);
+
+                    // Store every node that changes its parent, so we can remove it later from the children list of the previous parent.
+                    nodesWithNewParent.push(pn);
                 }
                 return {
                     ...pn,
@@ -148,8 +152,30 @@ function updatedTree(
         subdirectoriesCount: nextChildren.length,
     };
 
+    const filteredPrevMap = { ...prevMap };
+
+    // If there are nodes that have changed their parent, we need to remove them from the children list of their previous parent.
+    if (nodesWithNewParent.length !== 0) {
+        nodesWithNewParent.forEach((node) => {
+            // Retrieve the map element of the previous parent using the parentUuid of the node.
+            const mapElement = filteredPrevMap[node.parentUuid];
+
+            // Check if the map element and its children exist.
+            if (mapElement && mapElement.children) {
+                // Create a new children list excluding the node that has moved.
+                const filteredChildren = mapElement.children.filter((child) => child.elementUuid !== node.elementUuid);
+
+                // Update the map element to include the new children list.
+                filteredPrevMap[node.parentUuid] = {
+                    ...mapElement,
+                    children: filteredChildren,
+                };
+            }
+        });
+    }
+
     const nextMap: Record<string, IDirectory> = Object.fromEntries([
-        ...Object.entries(prevMap).filter(([k, v], i) => !nonCopyUuids.has(k)),
+        ...Object.entries(filteredPrevMap).filter(([k, v], i) => !nonCopyUuids.has(k)),
         ...nextChildren.map((n) => [n.elementUuid, n]),
         ...refreshedUpNodes(prevMap, nextNode as IDirectory).map((n: any) => [n.elementUuid, n]),
     ]);

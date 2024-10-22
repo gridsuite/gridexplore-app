@@ -14,10 +14,17 @@ interface MoveDialogProps {
     open: boolean;
     onClose: (selectedDir: TreeViewFinderNodeProps[]) => void;
     itemsCount: number;
-    titleId?: string;
+    isDirectoryMoving?: boolean;
+    directoryName?: string;
 }
 
-const MoveDialog: FunctionComponent<MoveDialogProps> = ({ open, onClose, itemsCount, titleId }) => {
+const MoveDialog: FunctionComponent<MoveDialogProps> = ({
+    open,
+    onClose,
+    itemsCount,
+    isDirectoryMoving,
+    directoryName,
+}) => {
     const intl = useIntl();
 
     return (
@@ -29,15 +36,17 @@ const MoveDialog: FunctionComponent<MoveDialogProps> = ({ open, onClose, itemsCo
             multiSelect={false}
             validationButtonText={intl.formatMessage(
                 {
-                    id: 'moveItemValidate',
+                    id: isDirectoryMoving ? 'moveDirectoryValidate' : 'moveItemValidate',
                 },
                 {
                     nbElements: itemsCount,
                 }
             )}
-            title={intl.formatMessage({
-                id: titleId ?? 'moveItemTitle',
-            })}
+            title={
+                isDirectoryMoving
+                    ? intl.formatMessage({ id: 'moveDirectoryTitle' }, { directoryName: directoryName })
+                    : intl.formatMessage({ id: 'moveItemTitle' })
+            }
             contentText={intl.formatMessage({ id: 'moveItemContentText' })}
         />
     );
