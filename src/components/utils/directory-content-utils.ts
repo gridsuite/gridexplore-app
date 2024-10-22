@@ -8,14 +8,14 @@
 import { IntlShape } from 'react-intl';
 import { UUID } from 'crypto';
 import { AgGridReact } from 'ag-grid-react';
-import React from 'react';
+import { MutableRefObject } from 'react';
 import { ColDef, IRowNode } from 'ag-grid-community';
+import type { ElementAttributes } from '@gridsuite/commons-ui';
 import { NameCellRenderer } from './renderers/name-cell-renderer';
 import { DescriptionCellRenderer } from './renderers/description-cell-renderer';
-import { TypeCellRenderer, getElementTypeTranslation } from './renderers/type-cell-renderer';
+import { getElementTypeTranslation, TypeCellRenderer } from './renderers/type-cell-renderer';
 import { UserCellRenderer } from './renderers/user-cell-renderer';
 import { DateCellRenderer } from './renderers/date-cell-renderer';
-import type { ElementAttributes } from '@gridsuite/commons-ui';
 
 export const formatMetadata = (
     data: ElementAttributes,
@@ -28,28 +28,23 @@ export const formatMetadata = (
 });
 
 export const computeCheckedElements = (
-    gridRef: React.MutableRefObject<AgGridReact | null>,
+    gridRef: MutableRefObject<AgGridReact | null>,
     childrenMetadata: Record<UUID, ElementAttributes>
-): ElementAttributes[] => {
-    return (
-        gridRef.current?.api
-            ?.getSelectedRows()
-            .map((row: ElementAttributes) => formatMetadata(row, childrenMetadata)) ?? []
-    );
-};
+): ElementAttributes[] =>
+    gridRef.current?.api?.getSelectedRows().map((row: ElementAttributes) => formatMetadata(row, childrenMetadata)) ??
+    [];
 
 export const isRowUnchecked = (row: ElementAttributes, checkedRows: ElementAttributes[]) =>
     checkedRows?.length &&
     row?.elementUuid &&
     !checkedRows.find((checkedRow) => checkedRow.elementUuid === row.elementUuid);
 
-export const defaultColumnDefinition = {
+export const defaultColumnDefinition: ColDef<unknown> = {
     sortable: true,
     resizable: true,
     lockPinned: true,
     wrapHeaderText: true,
     autoHeaderHeight: true,
-    suppressHorizontalScroll: true,
     lockVisible: true,
     comparator: (valueA: string | null | undefined, valueB: string | null | undefined) => {
         // Need to check because ghost elements (uploading ones) don't have
@@ -60,6 +55,7 @@ export const defaultColumnDefinition = {
         return valueA.toLowerCase().localeCompare(valueB.toLowerCase());
     },
 };
+
 export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttributes>, intl: IntlShape): ColDef[] => [
     {
         headerName: intl.formatMessage({
@@ -69,7 +65,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         pinned: true,
         cellRenderer: NameCellRenderer,
         cellRendererParams: {
-            childrenMetadata: childrenMetadata,
+            childrenMetadata,
         },
         headerCheckboxSelection: true,
         checkboxSelection: true,
@@ -93,7 +89,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         sortable: true,
         cellRenderer: TypeCellRenderer,
         cellRendererParams: {
-            childrenMetadata: childrenMetadata,
+            childrenMetadata,
         },
         minWidth: 200,
         flex: 2,

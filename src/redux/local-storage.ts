@@ -8,8 +8,8 @@
 import { DARK_THEME, getComputedLanguage, GsLang, GsLangUser, GsTheme, LANG_SYSTEM } from '@gridsuite/commons-ui';
 import { APP_NAME } from '../utils/config-params';
 
-const LOCAL_STORAGE_THEME_KEY = (APP_NAME + '_THEME').toUpperCase();
-const LOCAL_STORAGE_LANGUAGE_KEY = (APP_NAME + '_LANGUAGE').toUpperCase();
+const LOCAL_STORAGE_THEME_KEY = `${APP_NAME}_THEME`.toUpperCase();
+const LOCAL_STORAGE_LANGUAGE_KEY = `${APP_NAME}_LANGUAGE`.toUpperCase();
 
 export function getLocalStorageTheme() {
     return (localStorage.getItem(LOCAL_STORAGE_THEME_KEY) as GsTheme) || DARK_THEME;
@@ -28,6 +28,6 @@ export function saveLocalStorageLanguage(language: GsLang) {
 }
 
 export function getLocalStorageComputedLanguage() {
-    //TODO remove cast when prototype is fixed in commons-ui
+    // TODO remove cast when prototype is fixed in commons-ui
     return getComputedLanguage(getLocalStorageLanguage()) as GsLangUser;
 }

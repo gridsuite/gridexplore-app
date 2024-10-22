@@ -14,14 +14,13 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-
-import React, { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
-import { getContingencyListEmptyFormData, getScriptFormDataFromFetchedElement } from '../../contingency-list-utils';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
-import ScriptEditionForm from './script-edition-form';
 import { useDispatch, useSelector } from 'react-redux';
+import { getContingencyListEmptyFormData, getScriptFormDataFromFetchedElement } from '../../contingency-list-utils';
+import ScriptEditionForm from './script-edition-form';
 import { setSelectionForCopy } from '../../../../../redux/actions';
-import { AppState } from 'redux/reducer';
+import { AppState } from '../../../../../redux/types';
 
 interface ScriptEditionFormData {
     [FieldConstants.NAME]: string;
@@ -37,17 +36,17 @@ const schema = yup.object().shape({
 
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
 
-interface ScriptEditionDialogProps {
+export interface ScriptEditionDialogProps {
     contingencyListId: string;
     contingencyListType: string;
     open: boolean;
-    onClose: (event?: React.SyntheticEvent) => void;
+    onClose: (event?: SyntheticEvent) => void;
     titleId: string;
     name: string;
     broadcastChannel: BroadcastChannel;
 }
 
-const ScriptEditionDialog: FunctionComponent<ScriptEditionDialogProps> = ({
+export default function ScriptEditionDialog({
     contingencyListId,
     contingencyListType,
     open,
@@ -55,7 +54,7 @@ const ScriptEditionDialog: FunctionComponent<ScriptEditionDialogProps> = ({
     titleId,
     name,
     broadcastChannel,
-}) => {
+}: Readonly<ScriptEditionDialogProps>) {
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
     const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
@@ -97,9 +96,9 @@ const ScriptEditionDialog: FunctionComponent<ScriptEditionDialogProps> = ({
         onClose(event);
     };
 
-    const editContingencyList = (contingencyListId: string, contingencyList: ScriptEditionFormData) => {
+    const editContingencyList = (contingencyListId2: string, contingencyList: ScriptEditionFormData) => {
         const newScript = {
-            id: contingencyListId,
+            id: contingencyListId2,
             script: contingencyList[FieldConstants.SCRIPT],
         };
         return saveScriptContingencyList(newScript, contingencyList[FieldConstants.NAME]);
@@ -132,7 +131,7 @@ const ScriptEditionDialog: FunctionComponent<ScriptEditionDialogProps> = ({
             formSchema={schema}
             formMethods={methods}
             titleId={titleId}
-            removeOptional={true}
+            removeOptional
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
             unscrollableFullHeight
@@ -140,6 +139,4 @@ const ScriptEditionDialog: FunctionComponent<ScriptEditionDialogProps> = ({
             {!isFetching && <ScriptEditionForm />}
         </CustomMuiDialog>
     );
-};
-
-export default ScriptEditionDialog;
+}

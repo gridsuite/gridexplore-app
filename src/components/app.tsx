@@ -8,7 +8,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
-import { selectComputedLanguage, selectLanguage, selectTheme } from '../redux/actions';
 import {
     AuthenticationRouter,
     CardErrorBoundary,
@@ -20,6 +19,8 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
+import { Grid } from '@mui/material';
+import { selectComputedLanguage, selectLanguage, selectTheme } from '../redux/actions';
 import {
     ConfigParameters,
     connectNotificationsWsUpdateConfig,
@@ -30,14 +31,13 @@ import {
 } from '../utils/rest-api';
 import { APP_NAME, COMMON_APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import AppTopBar from './app-top-bar';
-import Grid from '@mui/material/Grid';
 import TreeViewsContainer from './tree-views-container';
 import DirectoryContent from './directory-content';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
-import { AppState } from '../redux/reducer';
 import { AppDispatch } from '../redux/store';
+import { AppState } from '../redux/types';
 
-const App = () => {
+export default function App() {
     const { snackError } = useSnackMessage();
 
     const user = useSelector((state: AppState) => state.user);
@@ -67,8 +67,10 @@ const App = () => {
                         break;
                     case PARAM_LANGUAGE:
                         dispatch(selectLanguage(param.value));
-                        //TODO remove cast when prototype is fixed in commons-ui
+                        // TODO remove cast when prototype is fixed in commons-ui
                         dispatch(selectComputedLanguage(getComputedLanguage(param.value) as GsLangUser));
+                        break;
+                    default:
                         break;
                 }
             });
@@ -76,7 +78,7 @@ const App = () => {
         [dispatch]
     );
 
-    //remove the default contextMenu
+    // remove the default contextMenu
     useEffect(() => {
         document.addEventListener(
             'contextmenu',
@@ -90,10 +92,10 @@ const App = () => {
     const connectNotificationsUpdateConfig = useCallback(() => {
         const ws = connectNotificationsWsUpdateConfig();
 
-        ws.onmessage = function (event) {
-            let eventData = JSON.parse(event.data);
-            if (eventData.headers?.['parameterName']) {
-                fetchConfigParameter(eventData.headers['parameterName'])
+        ws.onmessage = function onmessage(event) {
+            const eventData = JSON.parse(event.data);
+            if (eventData.headers?.parameterName) {
+                fetchConfigParameter(eventData.headers.parameterName)
                     .then((param) => updateParams([param]))
                     .catch((error) =>
                         snackError({
@@ -103,7 +105,7 @@ const App = () => {
                     );
             }
         };
-        ws.onerror = function (event) {
+        ws.onerror = function onerror(event) {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
@@ -164,10 +166,11 @@ const App = () => {
                 );
 
             const ws = connectNotificationsUpdateConfig();
-            return function () {
+            return function closeWS() {
                 ws.close();
             };
         }
+        return undefined;
     }, [user, dispatch, updateParams, snackError, connectNotificationsUpdateConfig]);
 
     return (
@@ -256,6 +259,4 @@ const App = () => {
             </CardErrorBoundary>
         </div>
     );
-};
-
-export default App;
+}

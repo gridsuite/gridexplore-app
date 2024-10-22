@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { downloadCase, downloadSpreadsheetConfig, fetchConvertedCase, getCaseOriginalName } from '../../utils/rest-api';
 import { useIntl } from 'react-intl';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { UUID } from 'crypto';
+import { downloadCase, downloadSpreadsheetConfig, fetchConvertedCase, getCaseOriginalName } from '../../utils/rest-api';
 
 interface DownloadData {
     blob: Blob;
@@ -30,12 +30,12 @@ const triggerDownload = ({ blob, filename }: DownloadData): void => {
 const downloadStrategies: { [key in ElementType]?: (element: ElementAttributes) => Promise<DownloadData> } = {
     [ElementType.CASE]: async (element: ElementAttributes) => {
         const result = await downloadCase(element.elementUuid);
-        let caseOriginalName = await getCaseOriginalName(element.elementUuid);
-        let extension =
+        const caseOriginalName = await getCaseOriginalName(element.elementUuid);
+        const extension =
             typeof caseOriginalName === 'string' && caseOriginalName.includes('.')
                 ? caseOriginalName.substring(caseOriginalName.indexOf('.') + 1)
                 : 'xiidm';
-        let caseName = element.elementName;
+        const caseName = element.elementName;
         const filename = `${caseName}.${extension}`;
         return { blob: await result.blob(), filename };
     },
@@ -85,7 +85,7 @@ export function useDownloadUtils() {
             formatParameters: {
                 [parameterName: string]: any;
             },
-            abortController: AbortController,
+            abortController2: AbortController,
             fileName?: string
         ): Promise<void> => {
             try {
@@ -94,7 +94,7 @@ export function useDownloadUtils() {
                     fileName || caseElement.elementName, // if no fileName is provided or empty, the case name will be used
                     format,
                     formatParameters,
-                    abortController
+                    abortController2
                 );
 
                 let downloadFileName = result.headers.get('Content-Disposition').split('filename=')[1];
@@ -213,7 +213,7 @@ export function useDownloadUtils() {
                     );
                     break;
             }
-            return messageFirstLine + '\n' + capitalizeFirstLetter(messageSecondLine);
+            return `${messageFirstLine}\n${capitalizeFirstLetter(messageSecondLine)}`;
         },
         [intl, capitalizeFirstLetter]
     );
@@ -243,7 +243,9 @@ export function useDownloadUtils() {
                 const controller = new AbortController();
                 setAbortController(controller);
 
+                // eslint-disable-next-line no-restricted-syntax -- usage of async/await syntax
                 for (const c of cases) {
+                    // eslint-disable-next-line no-await-in-loop -- it's wanted because we don't want to download in parallel
                     await exportCase(c, format, formatParameters, controller, caseUuidFileNameMap?.get(c.elementUuid));
                 }
             } catch (error: any) {
@@ -275,10 +277,12 @@ export function useDownloadUtils() {
             const downloadableElements = selectedElements.filter((element) => downloadStrategies[element.type]);
             const undownloadableElements = selectedElements.filter((element) => !downloadStrategies[element.type]);
 
+            // eslint-disable-next-line no-restricted-syntax -- usage of async/await syntax
             for (const element of downloadableElements) {
                 try {
                     const downloadStrategy = downloadStrategies[element.type];
                     if (downloadStrategy) {
+                        // eslint-disable-next-line no-await-in-loop -- it's wanted because we don't want to download in parallel
                         const downloadData = await downloadStrategy(element);
                         triggerDownload(downloadData);
                     }

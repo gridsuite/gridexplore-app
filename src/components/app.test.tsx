@@ -5,18 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { act } from 'react-dom/test-utils';
-
 import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import App from './app';
-import { store } from '../redux/store';
-import { createTheme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
+import { createTheme, CssBaseline, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { SnackbarProvider } from '@gridsuite/commons-ui';
-import CssBaseline from '@mui/material/CssBaseline';
+import { store } from '../redux/store';
+import App from './app';
 
 let container: HTMLDivElement | null = null;
 beforeEach(() => {

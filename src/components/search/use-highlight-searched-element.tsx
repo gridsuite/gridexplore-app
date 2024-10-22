@@ -10,8 +10,8 @@ import { GridApi, GridReadyEvent, RowClassParams, RowStyle } from 'ag-grid-commu
 import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSearchedElement } from '../../redux/actions';
-import { AppState } from '../../redux/reducer';
 import { AppDispatch } from '../../redux/store';
+import { AppState } from '../../redux/types';
 
 const SEARCH_HIGHLIGHT_DURATION_S = 4;
 
@@ -56,7 +56,7 @@ export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
             const style: RowStyle = { fontSize: '1rem' };
             if (cellData?.data?.elementUuid === searchedElement?.id) {
                 // keyframe "highlighted-element" has to be defined in css containing highlighted element
-                style['animation'] = `highlighted-element ${SEARCH_HIGHLIGHT_DURATION_S}s`;
+                style.animation = `highlighted-element ${SEARCH_HIGHLIGHT_DURATION_S}s`;
             }
             return style;
         },

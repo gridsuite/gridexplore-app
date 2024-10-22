@@ -6,13 +6,11 @@
  */
 import { UUID } from 'crypto';
 import { IntlShape, useIntl } from 'react-intl';
-import { Box, Theme } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import { ElementType, getFileIcon, OverflowableText, ElementAttributes } from '@gridsuite/commons-ui';
+import { Box, CircularProgress, Theme } from '@mui/material';
+import { ElementAttributes, ElementType, getFileIcon, OverflowableText } from '@gridsuite/commons-ui';
 
-const isElementCaseOrStudy = (objectType: ElementType) => {
-    return objectType === ElementType.STUDY || objectType === ElementType.CASE;
-};
+const isElementCaseOrStudy = (objectType: ElementType) =>
+    objectType === ElementType.STUDY || objectType === ElementType.CASE;
 
 const getDisplayedElementName = (
     data: ElementAttributes,
@@ -20,12 +18,12 @@ const getDisplayedElementName = (
     intl: IntlShape
 ) => {
     const { elementName, uploading, elementUuid } = data;
-    const formatMessage = intl.formatMessage;
+    const { formatMessage } = intl;
     if (uploading) {
-        return elementName + '\n' + formatMessage({ id: 'uploading' });
+        return `${elementName}\n${formatMessage({ id: 'uploading' })}`;
     }
     if (!childrenMetadata[elementUuid]) {
-        return elementName + '\n' + formatMessage({ id: 'creationInProgress' });
+        return `${elementName}\n${formatMessage({ id: 'creationInProgress' })}`;
     }
     return childrenMetadata[elementUuid].elementName;
 };
@@ -56,13 +54,14 @@ const styles = {
         verticalAlign: 'middle',
     },
 };
-export const NameCellRenderer = ({
+
+export function NameCellRenderer({
     data,
     childrenMetadata,
 }: {
     data: ElementAttributes;
     childrenMetadata: Record<UUID, ElementAttributes>;
-}) => {
+}) {
     const intl = useIntl();
     return (
         <Box sx={styles.tableCell}>
@@ -79,4 +78,4 @@ export const NameCellRenderer = ({
             />
         </Box>
     );
-};
+}

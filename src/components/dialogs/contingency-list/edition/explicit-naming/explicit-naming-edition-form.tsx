@@ -6,20 +6,20 @@
  */
 
 import { Box } from '@mui/material';
-import ExplicitNamingForm from '../../explicit-naming/explicit-naming-form';
-import { ElementType, UniqueNameInput, FieldConstants, unscrollableDialogStyles } from '@gridsuite/commons-ui';
+import { ElementType, FieldConstants, UniqueNameInput, unscrollableDialogStyles } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { elementExists } from 'utils/rest-api';
-import { AppState } from 'redux/reducer';
+import { elementExists } from '../../../../../utils/rest-api';
+import ExplicitNamingForm from '../../explicit-naming/explicit-naming-form';
+import { AppState } from '../../../../../redux/types';
 
-const ExplicitNamingEditionForm = () => {
+export default function ExplicitNamingEditionForm() {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
         <>
             <Box sx={unscrollableDialogStyles.unscrollableHeader}>
                 <UniqueNameInput
                     name={FieldConstants.NAME}
-                    label={'nameProperty'}
+                    label="nameProperty"
                     elementType={ElementType.CONTINGENCY_LIST}
                     activeDirectory={activeDirectory}
                     elementExists={elementExists}
@@ -28,6 +28,4 @@ const ExplicitNamingEditionForm = () => {
             <ExplicitNamingForm />
         </>
     );
-};
-
-export default ExplicitNamingEditionForm;
+}

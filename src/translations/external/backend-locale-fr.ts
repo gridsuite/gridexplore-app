@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const backend_locale_fr = {
+const BackendLocaleFr = {
     DIE: 'ARCADE',
     XIIDM: 'XIIDM',
     CGMES: 'CGMES',
@@ -24,4 +24,4 @@ const backend_locale_fr = {
     CRITERIA_FILTER: 'Filtre (Par critères)',
 };
 
-export default backend_locale_fr;
+export default BackendLocaleFr;

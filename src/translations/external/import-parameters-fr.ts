@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const import_parameters_fr = {
+const ImportParametersFr = {
     'iidm.import.cgmes.allow-unsupported-tap-changers': "Autoriser n'importe quel type de régleur ou déphaseur",
     'iidm.import.cgmes.allow-unsupported-tap-changers.desc': "Autoriser n'importe quel type de régleur ou déphaseur",
     'iidm.import.cgmes.change-sign-for-shunt-reactive-power-flow-initial-state':
@@ -143,4 +143,4 @@ const import_parameters_fr = {
     'iidm.import.xml.extensions.xnode': 'Code Xnode',
 };
 
-export default import_parameters_fr;
+export default ImportParametersFr;

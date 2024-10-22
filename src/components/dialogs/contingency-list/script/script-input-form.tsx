@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import AceInput from '../../../utils/rhf-inputs/ace-input';
-import { styled } from '@mui/system';
+import { Box, styled } from '@mui/material';
 import { FieldConstants } from '@gridsuite/commons-ui';
-import Box from '@mui/material/Box';
+import AceInput from '../../../utils/rhf-inputs/ace-input';
 
 const StyledAceInput = styled(AceInput)({
     minWidth: '650px',
@@ -16,7 +15,7 @@ const StyledAceInput = styled(AceInput)({
     flexGrow: 1,
 });
 
-const ScriptInputForm = () => {
+export default function ScriptInputForm() {
     return (
         <Box sx={{ display: 'flex', height: '100%', width: '100%', padding: 1 }}>
             <StyledAceInput
@@ -24,10 +23,8 @@ const ScriptInputForm = () => {
                 placeholder="Insert your groovy script here"
                 editorProps={{ $blockScrolling: true }}
                 fontSize="18px"
-                height={'unset'}
+                height="unset"
             />
         </Box>
     );
-};
-
-export default ScriptInputForm;
+}

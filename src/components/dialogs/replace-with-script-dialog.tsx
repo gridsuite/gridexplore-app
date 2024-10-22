@@ -4,17 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { CancelButton } from '@gridsuite/commons-ui';
-import { FunctionComponent, SyntheticEvent } from 'react';
+import { SyntheticEvent } from 'react';
 
-interface ReplaceWithScriptDialogProps {
+export interface ReplaceWithScriptDialogProps {
     id: string;
     open: boolean;
     onClose: () => void;
@@ -30,13 +25,13 @@ interface ReplaceWithScriptDialogProps {
  * @param onClick Function to call to perform rename
  * @param title Title of the dialog
  */
-const ReplaceWithScriptDialog: FunctionComponent<ReplaceWithScriptDialogProps> = ({
+export default function ReplaceWithScriptDialog({
     id,
     open,
     onClose,
     onClick,
     title,
-}) => {
+}: Readonly<ReplaceWithScriptDialogProps>) {
     const handleClose = (_: SyntheticEvent, reason?: string): void => {
         if (reason === 'backdropClick') {
             return;
@@ -64,6 +59,4 @@ const ReplaceWithScriptDialog: FunctionComponent<ReplaceWithScriptDialogProps> =
             </DialogActions>
         </Dialog>
     );
-};
-
-export default ReplaceWithScriptDialog;
+}

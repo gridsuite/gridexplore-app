@@ -7,8 +7,9 @@
 
 import { Paper, Theme, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
+import { HTMLAttributes } from 'react';
 
-type SearchBarPaperDisplayedElementWarningProps = React.HTMLAttributes<HTMLElement> & {
+export type SearchBarPaperDisplayedElementWarningProps = HTMLAttributes<HTMLElement> & {
     elementFoundLength: number;
     elementFoundTotal: number;
     isLoading: boolean;
@@ -23,7 +24,7 @@ const styles = {
     }),
 };
 
-export const SearchBarPaperDisplayedElementWarning = (props: SearchBarPaperDisplayedElementWarningProps) => {
+export function SearchBarPaperDisplayedElementWarning(props: Readonly<SearchBarPaperDisplayedElementWarningProps>) {
     const { elementFoundLength, elementFoundTotal, isLoading, children, ...other } = props;
     const intl = useIntl();
 
@@ -47,4 +48,4 @@ export const SearchBarPaperDisplayedElementWarning = (props: SearchBarPaperDispl
             {children}
         </Paper>
     );
-};
+}

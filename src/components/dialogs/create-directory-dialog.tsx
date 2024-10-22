@@ -5,25 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { SyntheticEvent } from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
+import { SyntheticEvent } from 'react';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Alert from '@mui/material/Alert';
-import { ElementType } from '@gridsuite/commons-ui';
+import { CancelButton, ElementType } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
 import { useNameField } from './field-hook';
-import { CancelButton } from '@gridsuite/commons-ui';
-import { FunctionComponent } from 'react';
 
-interface CreateDirectoryDialogProps {
+export interface CreateDirectoryDialogProps {
     open: boolean;
     onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     onClick: (newName: string) => void;
     title: string;
-    parentDirectory?: string;
+    parentDirectory?: UUID;
     error: string;
 }
 
@@ -35,14 +29,14 @@ interface CreateDirectoryDialogProps {
  * @param {String} title Title of the dialog
  * @param {String} message Message of the dialog
  */
-export const CreateDirectoryDialog: FunctionComponent<CreateDirectoryDialogProps> = ({
+export default function CreateDirectoryDialog({
     open,
     onClose,
     onClick,
     title,
     parentDirectory,
     error,
-}) => {
+}: Readonly<CreateDirectoryDialogProps>) {
     const [name, nameField, nameError, nameOk] = useNameField({
         label: 'nameProperty',
         autoFocus: true,
@@ -65,12 +59,8 @@ export const CreateDirectoryDialog: FunctionComponent<CreateDirectoryDialogProps
         onClick(name);
     };
 
-    const canCreate = () => {
-        return nameOk;
-    };
-
     return (
-        <Dialog fullWidth={true} open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
+        <Dialog fullWidth open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 {nameField}
@@ -80,11 +70,10 @@ export const CreateDirectoryDialog: FunctionComponent<CreateDirectoryDialogProps
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button disabled={!canCreate()} onClick={handleClick} variant="outlined">
+                <Button disabled={!nameOk} onClick={handleClick} variant="outlined">
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
         </Dialog>
     );
-};
-export default CreateDirectoryDialog;
+}

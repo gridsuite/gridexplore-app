@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { Box, Button } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
+import { CreateNewFolderOutlined as CreateNewFolderOutlinedIcon } from '@mui/icons-material';
 import CircleIcon from './icons/circleIcon';
-import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
 
 const CIRCLE_SIZE = 200;
 
@@ -19,11 +18,11 @@ const stylesIcon = {
     }),
 };
 
-interface NoContentDirectoryProps {
+export interface NoContentDirectoryProps {
     handleOpenDialog: () => void;
 }
 
-const NoContentDirectory: React.FC<NoContentDirectoryProps> = ({ handleOpenDialog }) => {
+export default function NoContentDirectory({ handleOpenDialog }: Readonly<NoContentDirectoryProps>) {
     const styles = {
         noContentContainer: (theme: any) => ({
             display: 'flex',
@@ -51,14 +50,12 @@ const NoContentDirectory: React.FC<NoContentDirectoryProps> = ({ handleOpenDialo
             </CircleIcon>
             <Box sx={styles.noContentText}>
                 <h1>
-                    <FormattedMessage id={'createFirstDir'} />
+                    <FormattedMessage id="createFirstDir" />
                 </h1>
                 <Button variant="contained" sx={styles.noContentButton} onClick={handleOpenDialog}>
-                    <FormattedMessage id={'createFolder'} />
+                    <FormattedMessage id="createFolder" />
                 </Button>
             </Box>
         </Box>
     );
-};
-
-export default NoContentDirectory;
+}

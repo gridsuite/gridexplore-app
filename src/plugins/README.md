@@ -24,7 +24,7 @@ export const MyPluginGroupPlugins = [
 ];
 ```
 
-Defining and adding a group a group of plugins needs to add some code in the target component
+Defining and adding a group of plugins needs to add some code in the target component
 
 ```js
 // Plugins
@@ -49,9 +49,9 @@ const MyPluggableComponent = () => {
 
 Add your private translations to the following directory to complete or overwrite existing translations
 
--   src/plugins/translations
+- src/plugins/translations
 
-import your file and export an object messages_plugins for the translation in french or english
+import your file and export an object messages_plugins for the translation in French or english
 in src/plugins/translations/index.js
 
 ```diff

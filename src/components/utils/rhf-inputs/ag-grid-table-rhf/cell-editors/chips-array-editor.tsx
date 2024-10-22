@@ -6,12 +6,12 @@
  */
 
 import { forwardRef } from 'react';
-import TableCellWrapper from './table-cell-wrapper';
 import { useFormContext } from 'react-hook-form';
 import { FieldConstants, MultipleAutocompleteInput } from '@gridsuite/commons-ui';
 import { ColDef, IRowNode } from 'ag-grid-community';
+import TableCellWrapper from './table-cell-wrapper';
 
-interface ChipsArrayEditorProps {
+export interface ChipsArrayEditorProps {
     name: string;
     node: IRowNode<AgGridData>;
     colDef: ColDef;
@@ -26,12 +26,11 @@ const ChipsArrayEditor = forwardRef(({ ...props }: ChipsArrayEditorProps, ref) =
     const { name, node, colDef } = props;
     const { getValues } = useFormContext();
 
-    const getIndexInFormData = (nodeData: AgGridData | undefined) => {
-        return getValues(name).findIndex(
+    const getIndexInFormData = (nodeData: AgGridData | undefined) =>
+        getValues(name).findIndex(
             (row: AgGridData) =>
                 nodeData && row[FieldConstants.AG_GRID_ROW_UUID] === nodeData[FieldConstants.AG_GRID_ROW_UUID]
         );
-    };
 
     const cellName = `${name}.${getIndexInFormData(node.data)}.${colDef.field}`;
 
@@ -39,7 +38,7 @@ const ChipsArrayEditor = forwardRef(({ ...props }: ChipsArrayEditorProps, ref) =
         <TableCellWrapper ref={ref} name={cellName}>
             <MultipleAutocompleteInput
                 name={cellName}
-                size={'small'}
+                size="small"
                 formProps={{
                     sx: {
                         '& .MuiOutlinedInput-notchedOutline': {

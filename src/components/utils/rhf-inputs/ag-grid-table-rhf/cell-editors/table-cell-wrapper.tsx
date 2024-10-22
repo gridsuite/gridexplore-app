@@ -8,11 +8,12 @@
 import { forwardRef, ReactNode, useImperativeHandle } from 'react';
 import { useWatch } from 'react-hook-form';
 
-interface TableCellWrapperProps {
+export interface TableCellWrapperProps {
     name: string;
     children: ReactNode;
 }
 
+// eslint-disable-next-line react/prop-types -- TODO
 const TableCellWrapper = forwardRef(({ name, children }: TableCellWrapperProps, agGridRef) => {
     const watchValues = useWatch({
         name,
@@ -20,17 +21,13 @@ const TableCellWrapper = forwardRef(({ name, children }: TableCellWrapperProps, 
 
     useImperativeHandle(
         agGridRef,
-        () => {
-            return {
-                getValue: () => {
-                    return watchValues;
-                },
-            };
-        },
+        () => ({
+            getValue: () => watchValues,
+        }),
         [watchValues]
     );
 
-    return <>{children}</>;
+    return children;
 });
 
 export default TableCellWrapper;

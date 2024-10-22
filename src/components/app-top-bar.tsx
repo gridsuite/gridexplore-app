@@ -13,20 +13,20 @@ import {
     TopBar,
     UserManagerState,
 } from '@gridsuite/commons-ui';
-import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchVersion, getServersInfos } from '../utils/rest-api';
 import { useNavigate } from 'react-router-dom';
+import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
+import { fetchVersion, getServersInfos } from '../utils/rest-api';
 import GridExploreLogoLight from '../images/GridExplore_logo_light.svg?react';
 import GridExploreLogoDark from '../images/GridExplore_logo_dark.svg?react';
 import { setAppsAndUrls } from '../redux/actions';
 import AppPackage from '../../package.json';
 import { SearchBar } from './search/search-bar';
-import { AppState } from '../redux/reducer';
 import { AppDispatch } from '../redux/store';
 import { useParameterState } from './dialogs/use-parameters-dialog';
+import { AppState } from '../redux/types';
 
-type AppTopBarProps = {
+export type AppTopBarProps = {
     userManagerInstance: UserManagerState['instance'];
 };
 
@@ -66,6 +66,7 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
             document.addEventListener('keydown', openSearch);
             return () => document.removeEventListener('keydown', openSearch);
         }
+        return undefined;
     }, [user]);
 
     return (

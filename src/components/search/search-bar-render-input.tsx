@@ -9,17 +9,17 @@ import { AutocompleteRenderInputParams, TextField, TextFieldProps } from '@mui/m
 import { RefObject } from 'react';
 import { useIntl } from 'react-intl';
 
-interface SearchBarRenderInputProps extends AutocompleteRenderInputParams {
+export interface SearchBarRenderInputProps extends AutocompleteRenderInputParams {
     inputRef: RefObject<TextFieldProps>;
 }
 
-export const SearchBarRenderInput = (props: SearchBarRenderInputProps) => {
+export function SearchBarRenderInput(props: Readonly<SearchBarRenderInputProps>) {
     const intl = useIntl();
     const { InputProps } = props;
 
     return (
         <TextField
-            autoFocus={true}
+            autoFocus
             {...props}
             placeholder={intl.formatMessage({
                 id: 'searchPlaceholder',
@@ -36,4 +36,4 @@ export const SearchBarRenderInput = (props: SearchBarRenderInputProps) => {
             }}
         />
     );
-};
+}

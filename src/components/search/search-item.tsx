@@ -5,12 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { getFileIcon } from '@gridsuite/commons-ui';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
+import { Grid, Theme, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { FunctionComponent } from 'react';
-import { Theme } from '@mui/material';
-import { ElementAttributesES } from 'redux/reducer';
+
+import { ElementAttributesES } from '../../redux/types';
 
 const styles = {
     icon: (theme: Theme) => ({
@@ -32,24 +30,27 @@ const styles = {
     }),
 };
 
-interface HighlightedTextProps {
+export interface HighlightedTextProps {
     text: string;
     highlight: string;
 }
 
-interface SearchItemProps {
+export interface SearchItemProps {
     matchingElement: ElementAttributesES;
     inputValue: string;
 }
 
-export const HighlightedText: FunctionComponent<HighlightedTextProps> = ({ text, highlight }) => {
+export function HighlightedText({ text, highlight }: Readonly<HighlightedTextProps>) {
     const escapedHighlight = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const parts = text.split(new RegExp(`(${escapedHighlight})`, 'gi'));
     return (
         <span>
-            {parts.map((part, i) =>
+            {parts.map((part) =>
                 part.toLowerCase() === highlight.toLowerCase() ? (
-                    <span key={i} style={{ fontWeight: 'bold' }}>
+                    <span
+                        key={`part-${part.toLowerCase().replace(/[^[a-z]\d.-]+/g, '-')}`}
+                        style={{ fontWeight: 'bold' }}
+                    >
                         {part}
                     </span>
                 ) : (
@@ -58,9 +59,9 @@ export const HighlightedText: FunctionComponent<HighlightedTextProps> = ({ text,
             )}
         </span>
     );
-};
+}
 
-export const SearchItem: FunctionComponent<SearchItemProps> = ({ matchingElement, inputValue, ...othersProps }) => {
+export function SearchItem({ matchingElement, inputValue, ...othersProps }: Readonly<SearchItemProps>) {
     return (
         <li {...othersProps}>
             <span>{getFileIcon(matchingElement.type, styles.icon)}</span>
@@ -77,4 +78,4 @@ export const SearchItem: FunctionComponent<SearchItemProps> = ({ matchingElement
             </Grid>
         </li>
     );
-};
+}

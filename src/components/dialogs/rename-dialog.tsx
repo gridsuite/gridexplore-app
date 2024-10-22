@@ -4,43 +4,38 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import Alert from '@mui/material/Alert';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useNameField } from './field-hook';
 import { useSelector } from 'react-redux';
-import { ElementType } from '@gridsuite/commons-ui';
-import { CancelButton } from '@gridsuite/commons-ui';
-import { FunctionComponent, SyntheticEvent } from 'react';
-import { AppState } from 'redux/reducer';
+import { CancelButton, ElementType } from '@gridsuite/commons-ui';
+import { SyntheticEvent } from 'react';
+import { UUID } from 'crypto';
+import { useNameField } from './field-hook';
+import { AppState } from '../../redux/types';
 
-interface RenameDialogProps {
+export interface RenameDialogProps {
+    /** Is the dialog open ? */
     open: boolean;
+    /** Event to close the dialog */
     onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
+    /** Event to submit the renaming */
     onClick: (newName: string) => void;
+    /** Title of the dialog */
     title: string;
+    /** Message of the dialog */
     message: string;
+    /** Name before renaming */
     currentName: string;
     type: ElementType;
+    /** Error message */
     error?: string;
-    parentDirectory?: string | null;
+    parentDirectory?: UUID | null;
 }
 
 /**
  * Dialog to rename an element
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
- * @param {EventListener} onClick Event to submit the renaming
- * @param {String} title Title of the dialog
- * @param {String} message Message of the dialog
- * @param {String} currentName Name before renaming
- * @param {String} error Error message
  */
-const RenameDialog: FunctionComponent<RenameDialogProps> = ({
+export default function RenameDialog({
     open,
     onClose,
     onClick,
@@ -50,7 +45,7 @@ const RenameDialog: FunctionComponent<RenameDialogProps> = ({
     type,
     error,
     parentDirectory,
-}) => {
+}: Readonly<RenameDialogProps>) {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const intl = useIntl();
 
@@ -70,7 +65,7 @@ const RenameDialog: FunctionComponent<RenameDialogProps> = ({
 
     const handleClick = () => {
         if (currentName !== newName) {
-            console.debug('Request for renaming : ' + currentName + ' => ' + newName);
+            console.debug(`Request for renaming : ${currentName} => ${newName}`);
             onClick(newName);
         } else {
             onClose();
@@ -84,12 +79,8 @@ const RenameDialog: FunctionComponent<RenameDialogProps> = ({
         onClose();
     };
 
-    const canRename = () => {
-        return newNameOk;
-    };
-
     return (
-        <Dialog fullWidth={true} open={open} onClose={handleClose} aria-labelledby="dialog-title-rename">
+        <Dialog fullWidth open={open} onClose={handleClose} aria-labelledby="dialog-title-rename">
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 {newNameField}
@@ -100,12 +91,10 @@ const RenameDialog: FunctionComponent<RenameDialogProps> = ({
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button onClick={handleClick} disabled={!canRename()} variant="outlined">
+                <Button onClick={handleClick} disabled={!newNameOk} variant="outlined">
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
         </Dialog>
     );
-};
-
-export default RenameDialog;
+}

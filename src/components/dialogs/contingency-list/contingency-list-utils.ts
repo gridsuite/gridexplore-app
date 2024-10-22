@@ -5,24 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ContingencyListType } from '../../../utils/elementType';
-import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { v4 as uuid4 } from 'uuid';
 import { FieldConstants, getCriteriaBasedFormData } from '@gridsuite/commons-ui';
 import { SetRequired } from 'type-fest';
+import { prepareContingencyListForBackend } from '../contingency-list-helper';
+import { ContingencyListType } from '../../../utils/elementType';
 
-interface Identifier {
+export interface Identifier {
     type: 'ID_BASED';
     identifier: string;
 }
 
-interface IdentifierList {
+export interface IdentifierList {
     type: 'LIST';
     contingencyId: string;
     identifierList: Identifier[];
 }
 
-interface RangeInputData {
+export interface RangeInputData {
     [FieldConstants.OPERATION_TYPE]: string;
     [FieldConstants.VALUE_1]: number | null;
     [FieldConstants.VALUE_2]: number | null;
@@ -36,6 +36,7 @@ export interface CriteriaBasedData {
     [FieldConstants.NOMINAL_VOLTAGE_1]?: RangeInputData | null;
     [FieldConstants.NOMINAL_VOLTAGE_2]?: RangeInputData | null;
     [FieldConstants.NOMINAL_VOLTAGE_3]?: RangeInputData | null;
+
     [key: string]: any;
 }
 
@@ -75,40 +76,33 @@ export const getContingencyListEmptyFormData = (name = '') => ({
     ...getCriteriaBasedFormData({}, {}),
 });
 
-export const getCriteriaBasedFormDataFromFetchedElement = (response: any, name: string) => {
-    return {
-        [FieldConstants.NAME]: name,
-        [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
-        [FieldConstants.EQUIPMENT_TYPE]: response.equipmentType,
-        ...getCriteriaBasedFormData(response, {}),
-    };
-};
+export const getCriteriaBasedFormDataFromFetchedElement = (response: any, name: string) => ({
+    [FieldConstants.NAME]: name,
+    [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
+    [FieldConstants.EQUIPMENT_TYPE]: response.equipmentType,
+    ...getCriteriaBasedFormData(response, {}),
+});
 
 export const getExplicitNamingFormDataFromFetchedElement = (response: any) => {
     let result;
     if (response.identifierContingencyList?.identifiers?.length) {
-        result = response.identifierContingencyList?.identifiers?.map((identifiers: IdentifierList) => {
-            return {
-                [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
-                [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.EXPLICIT_NAMING.id,
-                [FieldConstants.CONTINGENCY_NAME]: identifiers.contingencyId,
-                [FieldConstants.EQUIPMENT_IDS]: identifiers.identifierList.map((identifier) => identifier.identifier),
-            };
-        });
+        result = response.identifierContingencyList?.identifiers?.map((identifiers: IdentifierList) => ({
+            [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+            [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.EXPLICIT_NAMING.id,
+            [FieldConstants.CONTINGENCY_NAME]: identifiers.contingencyId,
+            [FieldConstants.EQUIPMENT_IDS]: identifiers.identifierList.map((identifier) => identifier.identifier),
+        }));
     } else {
         result = makeDefaultTableRows();
     }
-
     return {
         [FieldConstants.EQUIPMENT_TABLE]: result,
     };
 };
 
-export const getScriptFormDataFromFetchedElement = (response: any) => {
-    return {
-        [FieldConstants.SCRIPT]: response.script,
-    };
-};
+export const getScriptFormDataFromFetchedElement = (response: any) => ({
+    [FieldConstants.SCRIPT]: response.script,
+});
 
 export const getFormContent = (
     contingencyListId: string | null,
@@ -134,9 +128,7 @@ export const getFormContent = (
             return { script: contingencyList[FieldConstants.SCRIPT] };
         }
         default: {
-            console.info(
-                "Unknown contingency list type '" + contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE] + "'"
-            );
+            console.info(`Unknown contingency list type '${contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE]}'`);
             return null;
         }
     }
