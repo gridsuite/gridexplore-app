@@ -184,6 +184,38 @@ export function fetchVersion() {
         });
 }
 
+export type UserIdentity = {
+    firstName: string;
+    lastName: string;
+};
+
+export type UsersIdentitiesMap = {
+    [sub: string]: UserIdentity;
+};
+
+export type UserIdentityError = {
+    sub: string;
+    code: string;
+};
+
+export type UsersIdentitiesErrorMAp = {
+    [sub: string]: UserIdentity;
+};
+
+export type UsersIdentities = {
+    data: UsersIdentitiesMap;
+    errors: UsersIdentitiesErrorMAp;
+};
+
+export function fetchUsersIdentities(elementUuids: string[]) {
+    console.info('fetching users identities for elements : %s', elementUuids);
+    const idsParams = getRequestParamFromList('ids', elementUuids).toString();
+    const fetchParams = PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/users-identities?${idsParams}`;
+    return backendFetchJson(fetchParams, {
+        method: 'get',
+    }) as Promise<UsersIdentities>;
+}
+
 export type ConfigParameter =
     | {
           readonly name: typeof PARAM_LANGUAGE;

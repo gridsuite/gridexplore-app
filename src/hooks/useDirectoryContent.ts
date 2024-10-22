@@ -6,10 +6,25 @@
  */
 
 import { useSelector } from 'react-redux';
-import { useRef, useEffect, useCallback, useState } from 'react';
+import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
 import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
+import { fetchUsersIdentities, UsersIdentitiesMap } from '../utils/rest-api';
 import { AppState } from '../redux/reducer';
+
+const getName = (userId: string, data: UsersIdentitiesMap): string => {
+    const firstName = data?.[userId]?.firstName;
+    const lastName = data?.[userId]?.lastName;
+    if (firstName && lastName) {
+        return firstName + ' ' + lastName;
+    } else if (firstName) {
+        return firstName;
+    } else if (lastName) {
+        return lastName;
+    } else {
+        return userId; // fallback to id
+    }
+};
 
 export const useDirectoryContent = () => {
     const currentChildren = useSelector((state: AppState) => state.currentChildren);
@@ -41,11 +56,16 @@ export const useDirectoryContent = () => {
         let metadata: Record<UUID, ElementAttributes> = {};
         let childrenToFetchElementsInfos = Object.values(currentChildren).map((e) => e.elementUuid);
         if (childrenToFetchElementsInfos.length > 0) {
-            fetchElementsInfos(childrenToFetchElementsInfos)
+            Promise.all([
+                fetchUsersIdentities(childrenToFetchElementsInfos), // TODO cache user identities across elements
+                fetchElementsInfos(childrenToFetchElementsInfos),
+            ])
                 .then((res) => {
                     // discarding request for older directory
                     if (previousData.current === currentChildren) {
-                        res.forEach((e) => {
+                        res[1].forEach((e) => {
+                            e.owner = getName(e.owner, res[0]?.data);
+                            e.lastModifiedBy = getName(e.lastModifiedBy, res[0].data);
                             metadata[e.elementUuid] = e;
                         });
                         setChildrenMetadata(metadata);
@@ -59,5 +79,18 @@ export const useDirectoryContent = () => {
         }
     }, [handleError, currentChildren]);
 
-    return [currentChildren, childrenMetadata] as const;
+    // TODO remove this when global user identity caching is implemented
+    const currentChildrenWithOwnerNames = useMemo(() => {
+        if (!currentChildren) {
+            return currentChildren;
+        } else {
+            return currentChildren.map((x) => ({
+                ...x,
+                owner: childrenMetadata?.[x.elementUuid]?.owner,
+                lastModifiedBy: childrenMetadata?.[x.elementUuid]?.lastModifiedBy,
+            }));
+        }
+    }, [currentChildren, childrenMetadata]);
+
+    return [currentChildrenWithOwnerNames, childrenMetadata] as const;
 };
