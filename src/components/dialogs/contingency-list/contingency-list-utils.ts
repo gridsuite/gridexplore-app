@@ -146,7 +146,8 @@ export const getFormContent = (
         }
     }
 };
-
+// Not implemented yet for criteria based contingency lists.
+// Exclusions to remove when contingency lists implemented for those equipment types
 const excludedEquipmentTypes = [
     EquipmentType.BATTERY,
     EquipmentType.LOAD,
