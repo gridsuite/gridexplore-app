@@ -95,7 +95,7 @@ function updatedTree(
     nodeId: string | null,
     children: IDirectory[]
 ): [IDirectory[], Record<string, IDirectory>] {
-    const nodesWithNewParent = [];
+    const nodesWithNewParent = [] as ElementAttributes[];
     const nextChildren = children
         .sort((a, b) => a.elementName.localeCompare(b.elementName))
         .map((n) => {
