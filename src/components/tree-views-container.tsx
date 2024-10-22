@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     directoryUpdated,
     setActiveDirectory,
+    setCreationFailedElementToRemove,
     setCurrentChildren,
     setCurrentPath,
     setSelectedDirectory,
@@ -178,6 +179,9 @@ const TreeViewsContainer = () => {
     uploadingElementsRef.current = uploadingElements;
     const currentChildren = useSelector((state: AppState) => state.currentChildren);
     const currentChildrenRef = useRef<ElementAttributes[] | undefined>(currentChildren);
+    const creationFailedElementToRemove = useSelector((state: AppState) => state.creationFailedElementToRemove);
+    const creationFailedElementToRemoveRef = useRef<string | null>(null);
+    creationFailedElementToRemoveRef.current = creationFailedElementToRemove;
 
     currentChildrenRef.current = currentChildren;
     const selectedDirectoryRef = useRef<ElementAttributes | null>(null);
@@ -360,15 +364,36 @@ const TreeViewsContainer = () => {
                         [[] as UploadingElement[], [] as UploadingElement[]]
                     );
 
+                let newCurrentElement = [...current];
                 // then remove the ghosts if necessary
-                if (toRemoveFromUploadingElements.length > 0) {
+                if (toRemoveFromUploadingElements.length > 0 || creationFailedElementToRemoveRef.current != null) {
                     let newUploadingElements = { ...uploadingElementsRef.current };
-                    toRemoveFromUploadingElements.forEach((r) => delete newUploadingElements[r.id]);
-
+                    if (toRemoveFromUploadingElements.length > 0) {
+                        toRemoveFromUploadingElements.forEach((r) => delete newUploadingElements[r.id]);
+                    }
+                    //To remove the element that failed at creation but are still visible as "uploading"
+                    if (creationFailedElementToRemoveRef.current != null) {
+                        delete newUploadingElements[creationFailedElementToRemoveRef.current];
+                        let index = toKeepToUploadingElements.findIndex(
+                            (element) => element.id.toString() === creationFailedElementToRemoveRef.current
+                        );
+                        if (index > -1) {
+                            toKeepToUploadingElements.splice(index, 1);
+                        }
+                        newCurrentElement = [...current];
+                        //only updating element have the field id
+                        index = newCurrentElement.findIndex(
+                            (element) =>
+                                creationFailedElementToRemoveRef.current === (element.id ? element.id.toString() : null)
+                        );
+                        if (index > -1) {
+                            newCurrentElement.splice(index, 1);
+                        }
+                        dispatch(setCreationFailedElementToRemove(null));
+                    }
                     dispatch(setUploadingElements(newUploadingElements));
                 }
-
-                return [...current, ...toKeepToUploadingElements].sort(function (a, b) {
+                return [...newCurrentElement, ...toKeepToUploadingElements].sort(function (a, b) {
                     return a.elementName.localeCompare(b.elementName);
                 }) as ElementAttributes[];
             } else {
@@ -411,12 +436,12 @@ const TreeViewsContainer = () => {
         [updateCurrentChildren, updateMapData]
     );
 
-    // add ghost studies or ghost cases as soon as possible (uploadingElements)
+    // add ghost studies or ghost cases as soon as possible (uploadingElements) and clean them if necessary
     useEffect(() => {
-        if (Object.values(uploadingElements).length > 0) {
+        if (Object.values(uploadingElements).length > 0 || creationFailedElementToRemove != null) {
             dispatch(setCurrentChildren(mergeCurrentAndUploading(currentChildrenRef.current ?? [])));
         }
-    }, [uploadingElements, currentChildrenRef, mergeCurrentAndUploading, dispatch]);
+    }, [creationFailedElementToRemove, uploadingElements, currentChildrenRef, mergeCurrentAndUploading, dispatch]);
 
     const updateDirectoryTree = useCallback(
         (nodeId: UUID, isClose = false) => {

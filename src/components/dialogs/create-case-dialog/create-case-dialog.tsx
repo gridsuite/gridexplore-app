@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createCase } from '../../../utils/rest-api';
 import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import { Grid } from '@mui/material';
-import { addUploadingElement } from '../../../redux/actions';
+import { addUploadingElement, setCreationFailedElementToRemove } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
@@ -81,6 +81,7 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
         createCase(caseName, description ?? '', caseFile, activeDirectory)
             .then(onClose)
             .catch((err) => {
+                dispatch(setCreationFailedElementToRemove(uploadingCase.id.toString()));
                 if (handleMaxElementsExceededError(err, snackError)) {
                     return;
                 } else if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {

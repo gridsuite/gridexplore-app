@@ -28,7 +28,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
-import { addUploadingElement, setActiveDirectory } from '../../../redux/actions';
+import { addUploadingElement, setActiveDirectory, setCreationFailedElementToRemove } from '../../../redux/actions';
 import {
     CreateStudyDialogFormValues,
     createStudyDialogFormValidationSchema,
@@ -208,6 +208,7 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
                     onClose();
                 })
                 .catch((error) => {
+                    dispatch(setCreationFailedElementToRemove(uploadingStudy.id.toString()));
                     if (handleMaxElementsExceededError(error, snackError)) {
                         return;
                     }
