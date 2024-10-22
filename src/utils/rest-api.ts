@@ -226,6 +226,9 @@ export async function deleteElements(elementUuids: string[], activeDirectory: st
     for (let i = 0; i < elementUuids.length; i += chunkSize) {
         const partitionIds = elementUuids.slice(i, i + chunkSize);
         const idsParams = getRequestParamFromList('ids', partitionIds).toString();
+        // eslint disable is present because of https://eslint.org/docs/latest/rules/no-await-in-loop#when-not-to-use-it
+        // we use await here to avoid to do too many request to the server
+        // eslint-disable-next-line no-await-in-loop
         await backendFetch(
             PREFIX_EXPLORE_SERVER_QUERIES + `/v1/explore/elements/` + activeDirectory + '?' + idsParams,
             {
