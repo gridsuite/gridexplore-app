@@ -682,7 +682,15 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                             }
                             handleCloseDialog();
                         }}
-                        itemsCount={selectedElements.length}
+                        title={intl.formatMessage({ id: 'moveItemTitle' })}
+                        validationButtonText={intl.formatMessage(
+                            {
+                                id: 'moveItemValidate',
+                            },
+                            {
+                                nbElements: selectedElements.length,
+                            }
+                        )}
                     />
                 );
             case DialogsId.EXPORT:

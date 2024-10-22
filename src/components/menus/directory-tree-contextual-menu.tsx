@@ -430,9 +430,13 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                     <MoveDialog
                         open={true}
                         onClose={handleMoveDirectory}
-                        itemsCount={1}
-                        directoryName={directory?.elementName}
-                        isDirectoryMoving
+                        title={intl.formatMessage(
+                            { id: 'moveDirectoryTitle' },
+                            { directoryName: directory?.elementName }
+                        )}
+                        validationButtonText={intl.formatMessage({
+                            id: 'moveDirectoryValidate',
+                        })}
                     />
                 );
             default:

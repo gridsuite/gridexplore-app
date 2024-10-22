@@ -120,7 +120,7 @@
     "moveItemTitle": "Déplacer élément vers un autre dossier",
     "moveDirectoryTitle": "Déplacer le dossier ''{directoryName}'' vers un autre dossier",
     "moveItemValidate": "{nbElements, plural, =0 {Veuillez sélectionner un dossier} =1 {Déplacer l'élément} other {Déplacer # éléments}}",
-    "moveDirectoryValidate": "{nbElements, plural, =0 {Veuillez sélectionner un dossier} other {Déplacer le dossier}}",
+    "moveDirectoryValidate": "Déplacer le dossier",
     "moveItemContentText": "Veuillez choisir un dossier",
     "moveElementNotFoundError": "L'élément ou le dossier cible n'a pas été trouvé",
     "moveElementNotAllowedError": "Vous ne pouvez pas déplacer cet élément dans le dossier cible. Action non autorisée",
