@@ -21,7 +21,6 @@ export type AppActions =
     | SetAppsAndUrlsAction
     | AddUploadingElementAction
     | SetUploadingElementsAction
-    | SetCreationFailedElementToRemoveAction
     | DirectoryUpdatedAction
     | TreeDataAction
     | SearchedElementAction
@@ -144,20 +143,6 @@ export type SetUploadingElementsAction = Readonly<Action<typeof SET_UPLOADING_EL
 
 export function setUploadingElements(uploadingElements: AppState['uploadingElements']): SetUploadingElementsAction {
     return { type: SET_UPLOADING_ELEMENTS, uploadingElements: uploadingElements };
-}
-
-export const SET_CREATION_FAILED_ELEMENT_TO_REMOVE = 'SET_CREATION_FAILED_ELEMENT_TO_REMOVE';
-export type SetCreationFailedElementToRemoveAction = Readonly<Action<typeof SET_CREATION_FAILED_ELEMENT_TO_REMOVE>> & {
-    creationFailedElementToRemove: AppState['creationFailedElementToRemove'];
-};
-
-export function setCreationFailedElementToRemove(
-    creationFailedElementToRemove: AppState['creationFailedElementToRemove']
-): SetCreationFailedElementToRemoveAction {
-    return {
-        type: SET_CREATION_FAILED_ELEMENT_TO_REMOVE,
-        creationFailedElementToRemove: creationFailedElementToRemove,
-    };
 }
 
 export const DIRECTORY_UPDATED = 'DIRECTORY_UPDATED';

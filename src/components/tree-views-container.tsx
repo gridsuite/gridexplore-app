@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     directoryUpdated,
     setActiveDirectory,
-    setCreationFailedElementToRemove,
     setCurrentChildren,
     setCurrentPath,
     setSelectedDirectory,
@@ -179,9 +178,6 @@ const TreeViewsContainer = () => {
     uploadingElementsRef.current = uploadingElements;
     const currentChildren = useSelector((state: AppState) => state.currentChildren);
     const currentChildrenRef = useRef<ElementAttributes[] | undefined>(currentChildren);
-    const creationFailedElementToRemove = useSelector((state: AppState) => state.creationFailedElementToRemove);
-    const creationFailedElementToRemoveRef = useRef<string | null>(null);
-    creationFailedElementToRemoveRef.current = creationFailedElementToRemove;
 
     currentChildrenRef.current = currentChildren;
     const selectedDirectoryRef = useRef<ElementAttributes | null>(null);
@@ -337,7 +333,7 @@ const TreeViewsContainer = () => {
             let uploadingElementsInSelectedDirectory = Object.values(uploadingElementsRef.current).filter(
                 (e) => e.directory === selectedDirectoryRef.current?.elementUuid
             );
-            if (uploadingElementsInSelectedDirectory?.length > 0) {
+            if (uploadingElementsInSelectedDirectory) {
                 // Reduce uploadingElementsInSelectedDirectory to get
                 // those to remove from uploadingElements because present in current
                 // and those to keep because it's still ghost elements
@@ -364,35 +360,19 @@ const TreeViewsContainer = () => {
                         [[] as UploadingElement[], [] as UploadingElement[]]
                     );
 
-                let newCurrentElement = [...current];
-                // then remove the ghosts if necessary
-                if (toRemoveFromUploadingElements.length > 0 || creationFailedElementToRemoveRef.current != null) {
+                // then remove the ghosts if the upload succeeded
+                if (toRemoveFromUploadingElements.length > 0) {
                     let newUploadingElements = { ...uploadingElementsRef.current };
                     if (toRemoveFromUploadingElements.length > 0) {
                         toRemoveFromUploadingElements.forEach((r) => delete newUploadingElements[r.id]);
                     }
-                    //To remove the element that failed at creation but are still visible as "uploading"
-                    if (creationFailedElementToRemoveRef.current != null) {
-                        delete newUploadingElements[creationFailedElementToRemoveRef.current];
-                        let index = toKeepToUploadingElements.findIndex(
-                            (element) => element.id.toString() === creationFailedElementToRemoveRef.current
-                        );
-                        if (index > -1) {
-                            toKeepToUploadingElements.splice(index, 1);
-                        }
-                        newCurrentElement = [...current];
-                        //only updating element have the field id
-                        index = newCurrentElement.findIndex(
-                            (element) =>
-                                creationFailedElementToRemoveRef.current === (element.id ? element.id.toString() : null)
-                        );
-                        if (index > -1) {
-                            newCurrentElement.splice(index, 1);
-                        }
-                        dispatch(setCreationFailedElementToRemove(null));
-                    }
                     dispatch(setUploadingElements(newUploadingElements));
                 }
+                //remove the ghosts if the upload failed
+                let newCurrentElement = cleanCreationFailedElementInCurrentElements(
+                    current,
+                    uploadingElementsInSelectedDirectory
+                );
                 return [...newCurrentElement, ...toKeepToUploadingElements].sort(function (a, b) {
                     return a.elementName.localeCompare(b.elementName);
                 }) as ElementAttributes[];
@@ -406,6 +386,22 @@ const TreeViewsContainer = () => {
         },
         [dispatch]
     );
+
+    function cleanCreationFailedElementInCurrentElements(
+        currentElements: ElementAttributes[],
+        uploadingElements: UploadingElement[]
+    ): ElementAttributes[] {
+        return currentElements.filter((currentElement) => {
+            // if the element is present in currentElement as uploading (with the field id) and not in uploadingElement
+            // it means it's a failed upload that needs to be removed
+            return !(
+                currentElement.id &&
+                uploadingElements.findIndex(
+                    (uploadingElement) => uploadingElement.id.toString() === currentElement.id
+                ) === -1
+            );
+        });
+    }
 
     /* currentChildren management */
     const updateCurrentChildren = useCallback(
@@ -438,10 +434,8 @@ const TreeViewsContainer = () => {
 
     // add ghost studies or ghost cases as soon as possible (uploadingElements) and clean them if necessary
     useEffect(() => {
-        if (Object.values(uploadingElements).length > 0 || creationFailedElementToRemove != null) {
-            dispatch(setCurrentChildren(mergeCurrentAndUploading(currentChildrenRef.current ?? [])));
-        }
-    }, [creationFailedElementToRemove, uploadingElements, currentChildrenRef, mergeCurrentAndUploading, dispatch]);
+        dispatch(setCurrentChildren(mergeCurrentAndUploading(currentChildrenRef.current ?? [])));
+    }, [uploadingElements, currentChildrenRef, mergeCurrentAndUploading, dispatch]);
 
     const updateDirectoryTree = useCallback(
         (nodeId: UUID, isClose = false) => {

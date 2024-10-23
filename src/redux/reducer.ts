@@ -47,8 +47,6 @@ import {
     ThemeAction,
     TREE_DATA,
     TreeDataAction,
-    SET_CREATION_FAILED_ELEMENT_TO_REMOVE,
-    SetCreationFailedElementToRemoveAction,
 } from './actions';
 
 import {
@@ -133,7 +131,6 @@ export interface AppState extends CommonStoreState {
     currentPath: any[];
     selectedFile: unknown | null;
     uploadingElements: Record<string, UploadingElement>;
-    creationFailedElementToRemove: string | null;
     directoryUpdated: { force: number; eventData: Record<string, Record<string, unknown>> };
     selectionForCopy: SelectionForCopy;
     reorderedColumns: string[];
@@ -159,7 +156,6 @@ const initialState: AppState = {
     appsAndUrls: [],
     selectedFile: null,
     uploadingElements: {},
-    creationFailedElementToRemove: null,
     directoryUpdated: { force: 0, eventData: {} },
     treeData: { mapData: {}, rootDirectories: [], initialized: false },
     selectionForCopy: {
@@ -260,10 +256,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_UPLOADING_ELEMENTS, (state, action: SetUploadingElementsAction) => {
         state.uploadingElements = action.uploadingElements;
-    });
-
-    builder.addCase(SET_CREATION_FAILED_ELEMENT_TO_REMOVE, (state, action: SetCreationFailedElementToRemoveAction) => {
-        state.creationFailedElementToRemove = action.creationFailedElementToRemove;
     });
 
     builder.addCase(DIRECTORY_UPDATED, (state, action: DirectoryUpdatedAction) => {

@@ -7,7 +7,7 @@
 import { useForm } from 'react-hook-form';
 import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { FunctionComponent, useCallback, useEffect } from 'react';
+import { FunctionComponent, useCallback, useEffect, useRef } from 'react';
 import UploadNewCase from '../commons/upload-new-case';
 import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
 import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
@@ -28,7 +28,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import ImportParametersSection from './importParametersSection';
-import { addUploadingElement, setActiveDirectory, setCreationFailedElementToRemove } from '../../../redux/actions';
+import { addUploadingElement, setActiveDirectory, setUploadingElements } from '../../../redux/actions';
 import {
     CreateStudyDialogFormValues,
     createStudyDialogFormValidationSchema,
@@ -77,6 +77,9 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
+    const uploadingElements = useSelector((state: AppState) => state.uploadingElements);
+    const uploadingElementsRef = useRef<Record<string, UploadingElement>>({});
+    uploadingElementsRef.current = uploadingElements;
 
     const { elementUuid, elementName } = providedExistingCase || {};
 
@@ -208,7 +211,8 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
                     onClose();
                 })
                 .catch((error) => {
-                    dispatch(setCreationFailedElementToRemove(uploadingStudy.id.toString()));
+                    delete uploadingElementsRef.current[uploadingStudy.id];
+                    dispatch(setUploadingElements(uploadingElementsRef.current));
                     if (handleMaxElementsExceededError(error, snackError)) {
                         return;
                     }
