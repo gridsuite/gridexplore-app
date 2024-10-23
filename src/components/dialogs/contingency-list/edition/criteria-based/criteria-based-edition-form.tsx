@@ -10,13 +10,13 @@ import {
     ElementType,
     CriteriaBasedForm,
     getCriteriaBasedFormData,
-    CONTINGENCY_LIST_EQUIPMENTS,
     FieldConstants,
     unscrollableDialogStyles,
 } from '@gridsuite/commons-ui';
 import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import { SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS } from '../../contingency-list-utils';
 import Box from '@mui/material/Box';
 
 const CriteriaBasedEditionForm = () => {
@@ -34,7 +34,7 @@ const CriteriaBasedEditionForm = () => {
                 />
             </Box>
             <CriteriaBasedForm
-                equipments={CONTINGENCY_LIST_EQUIPMENTS}
+                equipments={SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS}
                 defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
             />
         </>
