@@ -13,7 +13,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import * as constants from '../utils/UIconstants';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { ContingencyListType, FilterType } from '../utils/elementType';
+import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import {
     CriteriaBasedFilterEditionDialog,
     DescriptionModificationDialog,
@@ -54,6 +54,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { AppState } from '../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
+import CompositeModificationEditionDialog from './dialogs/network-modification/composite-modification/composite-modification-edition-dialog';
 
 const circularProgressSize = '70px';
 
@@ -208,6 +209,14 @@ const DirectoryContent = () => {
         setElementName('');
     };
     const [currentExplicitNamingFilterId, setCurrentExplicitNamingFilterId] = useState(null);
+
+    const handleCloseCompositeModificationDialog = () => {
+        setOpenDialog(constants.DialogsId.NONE);
+        setCurrentNetworkModificationId(null);
+        setActiveElement(null);
+        setElementName('');
+    };
+    const [currentNetworkModificationId, setCurrentNetworkModificationId] = useState(null);
 
     /**
      * Filters dialog: window status value to edit Expert filters
@@ -392,6 +401,12 @@ const DirectoryContent = () => {
                             setOpenDialog(subtype);
                         }
                         break;
+                    case ElementType.MODIFICATION:
+                        if (subtype === NetworkModificationType.COMPOSITE.id) {
+                            setCurrentNetworkModificationId(event.data.elementUuid);
+                            setOpenDialog(subtype);
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -529,6 +544,18 @@ const DirectoryContent = () => {
         // TODO openDialog should also be aware of the dialog's type, not only its subtype, because
         // if/when two different dialogs have the same subtype, this function will display the wrong dialog.
         switch (openDialog) {
+            case NetworkModificationType.COMPOSITE.id:
+                return (
+                    <CompositeModificationEditionDialog
+                        open={true}
+                        titleId={'compositeModification'}
+                        // @ts-expect-error TODO: manage null case(s) here
+                        compositeModificationId={currentNetworkModificationId}
+                        onClose={handleCloseCompositeModificationDialog}
+                        name={name}
+                        broadcastChannel={broadcastChannel}
+                    />
+                );
             case ContingencyListType.CRITERIA_BASED.id:
                 return (
                     <CriteriaBasedEditionDialog
