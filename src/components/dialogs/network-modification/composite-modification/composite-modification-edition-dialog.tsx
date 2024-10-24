@@ -15,7 +15,7 @@ import {
     unscrollableDialogStyles,
     useModificationLabelComputer,
     useSnackMessage,
-    yupConfig as yup
+    yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -50,7 +50,7 @@ interface CompositeModificationEditionDialogProps {
     broadcastChannel: BroadcastChannel;
 }
 
-const CompositeModificationEditionDialog: FunctionComponent<CompositeModificationEditionDialogProps> = ({
+export const CompositeModificationEditionDialog: FunctionComponent<CompositeModificationEditionDialogProps> = ({
     compositeModificationId,
     open,
     onClose,
@@ -167,5 +167,3 @@ const CompositeModificationEditionDialog: FunctionComponent<CompositeModificatio
         </CustomMuiDialog>
     );
 };
-
-export default CompositeModificationEditionDialog;
