@@ -249,6 +249,7 @@ const DirectoryContent = () => {
 
     const handleCloseDirectoryMenu = () => {
         setOpenDirectoryMenu(false);
+        dispatch(setActiveDirectory(undefined));
     };
 
     const handleOpenDirectoryMenu = (event: React.MouseEvent<HTMLDivElement>) => {
