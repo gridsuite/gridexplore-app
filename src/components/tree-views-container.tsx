@@ -333,7 +333,7 @@ const TreeViewsContainer = () => {
             let uploadingElementsInSelectedDirectory = Object.values(uploadingElementsRef.current).filter(
                 (e) => e.directory === selectedDirectoryRef.current?.elementUuid
             );
-            if (uploadingElementsInSelectedDirectory?.length > 0) {
+            if (uploadingElementsInSelectedDirectory) {
                 // Reduce uploadingElementsInSelectedDirectory to get
                 // those to remove from uploadingElements because present in current
                 // and those to keep because it's still ghost elements
@@ -360,15 +360,20 @@ const TreeViewsContainer = () => {
                         [[] as UploadingElement[], [] as UploadingElement[]]
                     );
 
-                // then remove the ghosts if necessary
+                // then remove the ghosts if the upload succeeded
                 if (toRemoveFromUploadingElements.length > 0) {
                     let newUploadingElements = { ...uploadingElementsRef.current };
-                    toRemoveFromUploadingElements.forEach((r) => delete newUploadingElements[r.id]);
-
+                    if (toRemoveFromUploadingElements.length > 0) {
+                        toRemoveFromUploadingElements.forEach((r) => delete newUploadingElements[r.id]);
+                    }
                     dispatch(setUploadingElements(newUploadingElements));
                 }
-
-                return [...current, ...toKeepToUploadingElements].sort(function (a, b) {
+                //remove the ghosts if the upload failed
+                let newCurrentElement = cleanCreationFailedElementInCurrentElements(
+                    current,
+                    uploadingElementsInSelectedDirectory
+                );
+                return [...newCurrentElement, ...toKeepToUploadingElements].sort(function (a, b) {
                     return a.elementName.localeCompare(b.elementName);
                 }) as ElementAttributes[];
             } else {
@@ -381,6 +386,22 @@ const TreeViewsContainer = () => {
         },
         [dispatch]
     );
+
+    function cleanCreationFailedElementInCurrentElements(
+        currentElements: ElementAttributes[],
+        uploadingElements: UploadingElement[]
+    ): ElementAttributes[] {
+        return currentElements.filter((currentElement) => {
+            // if the element is present in currentElement as uploading (with the field id) and not in uploadingElement
+            // it means it's a failed upload that needs to be removed
+            return !(
+                currentElement.id &&
+                uploadingElements.findIndex(
+                    (uploadingElement) => uploadingElement.id.toString() === currentElement.id
+                ) === -1
+            );
+        });
+    }
 
     /* currentChildren management */
     const updateCurrentChildren = useCallback(
@@ -411,11 +432,9 @@ const TreeViewsContainer = () => {
         [updateCurrentChildren, updateMapData]
     );
 
-    // add ghost studies or ghost cases as soon as possible (uploadingElements)
+    // add ghost studies or ghost cases as soon as possible (uploadingElements) and clean them if necessary
     useEffect(() => {
-        if (Object.values(uploadingElements).length > 0) {
-            dispatch(setCurrentChildren(mergeCurrentAndUploading(currentChildrenRef.current ?? [])));
-        }
+        dispatch(setCurrentChildren(mergeCurrentAndUploading(currentChildrenRef.current ?? [])));
     }, [uploadingElements, currentChildrenRef, mergeCurrentAndUploading, dispatch]);
 
     const updateDirectoryTree = useCallback(
