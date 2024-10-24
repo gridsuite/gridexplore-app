@@ -18,7 +18,7 @@ import CommonToolbar, { CommonToolbarProps } from './common-toolbar';
 import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
-import { DownloadForOffline, FileDownload } from '@mui/icons-material';
+import { FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import * as constants from '../../utils/UIconstants';
@@ -174,13 +174,14 @@ const ContentToolbar = (props: ContentToolbarProps) => {
                     callback: () => downloadElements(selectedElements),
                     icon: <FileDownload fontSize="small" />,
                     disabled: !selectedElements.length || !allowsDownload,
-                },
+                }
+                /*  // disabled until fix
                 {
                     tooltipTextId: 'download.export.button',
                     callback: () => handleOpenDialog(DialogsId.EXPORT),
                     icon: <DownloadForOffline fontSize="small" />,
                     disabled: !selectedElements.length || !allowsExportCases,
-                }
+                }*/
             );
         }
         return toolbarItems;
