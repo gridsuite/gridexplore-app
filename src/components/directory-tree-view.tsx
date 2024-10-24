@@ -61,7 +61,7 @@ const styles = {
     }),
     treeItemHovered: (theme: Theme) => ({
         backgroundColor: theme.aggrid.highlightColor + '!important',
-        borderRadius: 16,
+        borderRadius: theme.spacing(2),
         '& .menuIcon': {
             display: 'flex',
         },
