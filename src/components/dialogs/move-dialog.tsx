@@ -13,10 +13,11 @@ import { FunctionComponent } from 'react';
 interface MoveDialogProps {
     open: boolean;
     onClose: (selectedDir: TreeViewFinderNodeProps[]) => void;
-    itemsCount: number;
+    validationButtonText: string;
+    title: string;
 }
 
-const MoveDialog: FunctionComponent<MoveDialogProps> = ({ open, onClose, itemsCount }) => {
+const MoveDialog: FunctionComponent<MoveDialogProps> = ({ open, onClose, validationButtonText, title }) => {
     const intl = useIntl();
 
     return (
@@ -26,17 +27,8 @@ const MoveDialog: FunctionComponent<MoveDialogProps> = ({ open, onClose, itemsCo
             types={[ElementType.DIRECTORY]}
             onlyLeaves={false}
             multiSelect={false}
-            validationButtonText={intl.formatMessage(
-                {
-                    id: 'moveItemValidate',
-                },
-                {
-                    nbElements: itemsCount,
-                }
-            )}
-            title={intl.formatMessage({
-                id: 'moveItemTitle',
-            })}
+            validationButtonText={validationButtonText}
+            title={title}
             contentText={intl.formatMessage({ id: 'moveItemContentText' })}
         />
     );
