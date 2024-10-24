@@ -553,6 +553,7 @@ const DirectoryContent = () => {
                         compositeModificationId={currentNetworkModificationId}
                         onClose={handleCloseCompositeModificationDialog}
                         name={name}
+                        broadcastChannel={broadcastChannel}
                     />
                 );
             case ContingencyListType.CRITERIA_BASED.id:

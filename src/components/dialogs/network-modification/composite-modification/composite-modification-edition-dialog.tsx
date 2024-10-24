@@ -10,21 +10,24 @@ import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 import {
     CustomMuiDialog,
     FieldConstants,
-    useModificationLabelComputer,
     NetworkModificationMetadata,
-    useSnackMessage,
-    yupConfig as yup,
+    NO_SELECTION_FOR_COPY,
     unscrollableDialogStyles,
+    useModificationLabelComputer,
+    useSnackMessage,
+    yupConfig as yup
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getCompositeModificationContent } from '../../../../utils/rest-api';
-import { CriteriaBasedEditionFormData } from '../../contingency-list/edition/criteria-based/criteria-based-edition-dialog';
+import { getCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationEditionForm from './composite-modification-edition-form';
 import { List, ListItem } from '@mui/material';
 import { useIntl } from 'react-intl';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
+import { setSelectionForCopy } from '../../../../redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -44,6 +47,7 @@ interface CompositeModificationEditionDialogProps {
     onClose: (event?: SyntheticEvent) => void;
     titleId: string;
     name: string;
+    broadcastChannel: BroadcastChannel;
 }
 
 const CompositeModificationEditionDialog: FunctionComponent<CompositeModificationEditionDialogProps> = ({
@@ -52,12 +56,15 @@ const CompositeModificationEditionDialog: FunctionComponent<CompositeModificatio
     onClose,
     titleId,
     name,
+    broadcastChannel,
 }: Readonly<CompositeModificationEditionDialogProps>) => {
     const intl = useIntl();
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!compositeModificationId);
     const { snackError } = useSnackMessage();
+    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
+    const dispatch = useDispatch();
 
     const methods = useForm<FormData>({
         defaultValues: emptyFormData(name),
@@ -118,8 +125,24 @@ const CompositeModificationEditionDialog: FunctionComponent<CompositeModificatio
         onClose(event);
     };
 
-    const onSubmit = (contingencyList: CriteriaBasedEditionFormData) => {
-        // TODO : SAUVE LE NOM
+    const onSubmit = (formData: FormData) => {
+        saveCompositeModification(compositeModificationId, formData[FieldConstants.NAME])
+            .then(() => {
+                if (selectionForCopy.sourceItemUuid === compositeModificationId) {
+                    dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
+                    broadcastChannel.postMessage({
+                        NO_SELECTION_FOR_COPY,
+                    });
+                }
+                closeAndClear();
+            })
+            .catch((errorMessage) => {
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'contingencyListEditingError',
+                    headerValues: { name },
+                });
+            });
     };
 
     return (

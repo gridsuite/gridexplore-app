@@ -538,6 +538,19 @@ export function getCompositeModificationContent(id: string) {
     });
 }
 
+export function saveCompositeModification(id: string, name: string) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/composite-modification/' + id + '?' + urlSearchParams.toString();
+
+    return backendFetch(url, {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
+
 /**
  * Saves a Filter contingency list
  * @returns {Promise<Response>}
