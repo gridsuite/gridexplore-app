@@ -550,7 +550,7 @@ const DirectoryContent = () => {
                         open={true}
                         titleId={'compositeModification'}
                         // @ts-expect-error TODO: manage null case(s) here
-                        compositeModificationListId={currentNetworkModificationId}
+                        compositeModificationId={currentNetworkModificationId}
                         onClose={handleCloseCompositeModificationDialog}
                         name={name}
                     />

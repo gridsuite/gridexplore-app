@@ -14,6 +14,7 @@ import {
     NetworkModificationMetadata,
     useSnackMessage,
     yupConfig as yup,
+    unscrollableDialogStyles,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -38,42 +39,15 @@ interface FormData {
 }
 
 interface CompositeModificationEditionDialogProps {
-    compositeModificationListId: string;
+    compositeModificationId: string;
     open: boolean;
     onClose: (event?: SyntheticEvent) => void;
     titleId: string;
     name: string;
 }
 
-export const styles = {
-    // TODO : those styles should probably be fetched inside commons-ui (once my version is integrated)
-    FillerContainer: {
-        height: '100%',
-        '&::before': {
-            content: '""',
-            height: '100%',
-            float: 'left',
-        },
-    },
-    ScrollableContainer: {
-        paddingY: '12px',
-        position: 'relative',
-        '&::after': {
-            content: '""',
-            clear: 'both',
-            display: 'block',
-        },
-    },
-    ScrollableContent: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        overflow: 'auto',
-    },
-};
-
 const CompositeModificationEditionDialog: FunctionComponent<CompositeModificationEditionDialogProps> = ({
-    compositeModificationListId,
+    compositeModificationId,
     open,
     onClose,
     titleId,
@@ -81,7 +55,7 @@ const CompositeModificationEditionDialog: FunctionComponent<CompositeModificatio
 }: Readonly<CompositeModificationEditionDialogProps>) => {
     const intl = useIntl();
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
-    const [isFetching, setIsFetching] = useState(!!compositeModificationListId);
+    const [isFetching, setIsFetching] = useState(!!compositeModificationId);
     const { snackError } = useSnackMessage();
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
 
@@ -106,9 +80,9 @@ const CompositeModificationEditionDialog: FunctionComponent<CompositeModificatio
 
     const renderNetworkModificationsList = () => {
         return (
-            <Box sx={styles.ScrollableContainer}>
+            <>
                 {modifications && (
-                    <List sx={styles.ScrollableContent}>
+                    <List sx={unscrollableDialogStyles.scrollableContent}>
                         {modifications.map((modification: NetworkModificationMetadata) => (
                             <>
                                 <ListItem key={modification.uuid}>
@@ -119,13 +93,13 @@ const CompositeModificationEditionDialog: FunctionComponent<CompositeModificatio
                         ))}
                     </List>
                 )}
-            </Box>
+            </>
         );
     };
 
     useEffect(() => {
         setIsFetching(true);
-        getCompositeModificationContent(compositeModificationListId)
+        getCompositeModificationContent(compositeModificationId)
             .then((response) => {
                 if (response) {
                     setModifications(response);
@@ -134,11 +108,11 @@ const CompositeModificationEditionDialog: FunctionComponent<CompositeModificatio
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'cannotRetrieveContingencyList',
+                    headerId: 'cannotRetrieveCompositeModification',
                 });
             })
             .finally(() => setIsFetching(false));
-    }, [compositeModificationListId, name, snackError]);
+    }, [compositeModificationId, name, snackError]);
 
     const closeAndClear = (event?: SyntheticEvent) => {
         onClose(event);
@@ -162,7 +136,7 @@ const CompositeModificationEditionDialog: FunctionComponent<CompositeModificatio
             unscrollableFullHeight
         >
             {!isFetching && (
-                <Box sx={styles.FillerContainer}>
+                <Box sx={unscrollableDialogStyles.unscrollableContainer}>
                     <CompositeModificationEditionForm />
                     {renderNetworkModificationsList()}
                 </Box>

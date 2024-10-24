@@ -110,6 +110,7 @@
     "Min": "Min",
     "Max": "Max",
     "cannotRetrieveContingencyList": "Erreur d'accès à la liste d'aléas : ",
+    "cannotRetrieveCompositeModification": "Erreur d'accès au contenu de la modification composite : ",
     "AddDescription": "Ajouter une description (optionnel)",
     "PropertyName": "Nom de la propriété",
     "getAppLinkError": "Erreur lors de la récupération du lien vers l'application pour le type = {type}",
