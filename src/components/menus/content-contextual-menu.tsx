@@ -605,8 +605,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                 icon: <FileDownload fontSize="small" />,
             });
         }
-
-        if (allowsExportCase()) {
+        // disabled until fix bug from the back side
+        if (!allowsExportCase()) {
             menuItems.push({
                 messageDescriptorId: 'download.export.button',
                 callback: () => handleOpenDialog(DialogsId.EXPORT),
