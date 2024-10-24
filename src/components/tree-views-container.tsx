@@ -96,7 +96,7 @@ function updatedTree(
     children: IDirectory[]
 ): [IDirectory[], Record<string, IDirectory>] {
     // In case of node change parent, we store the old parent uuid
-    let previousParentUuidOfReparentedChildren: UUID | null;
+    let previousParentUuidOfReparentedChildren: UUID | null = null;
 
     const nextChildren = children
         .sort((a, b) => a.elementName.localeCompare(b.elementName))
