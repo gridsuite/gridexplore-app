@@ -531,7 +531,7 @@ export function getContingencyList(type: string, id: string) {
  * Get the basic data of the network modifications contained in a composite modification
  */
 export function getCompositeModificationContent(id: string) {
-    const url: string = PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/network-composite-modification/' + id;
+    const url: string = PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/composite-modification/' + id;
 
     return backendFetchJson(url, {
         method: 'get',
