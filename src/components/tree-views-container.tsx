@@ -95,7 +95,9 @@ function updatedTree(
     nodeId: string | null,
     children: IDirectory[]
 ): [IDirectory[], Record<string, IDirectory>] {
-    const nodesWithNewParent = [] as ElementAttributes[];
+    // In case of node change parent, we store the old parent uuid
+    let previousParentUuidOfReparentedChildren: UUID | null;
+
     const nextChildren = children
         .sort((a, b) => a.elementName.localeCompare(b.elementName))
         .map((n) => {
@@ -112,8 +114,7 @@ function updatedTree(
                 if (pn.parentUuid !== nodeId) {
                     console.warn('reparent ' + pn.parentUuid + ' -> ' + nodeId);
 
-                    // Store every node that changes its parent, so we can remove it later from the children list of the previous parent.
-                    nodesWithNewParent.push(pn);
+                    previousParentUuidOfReparentedChildren = pn.parentUuid;
                 }
                 return {
                     ...pn,
@@ -152,35 +153,35 @@ function updatedTree(
         subdirectoriesCount: nextChildren.length,
     };
 
-    const filteredPrevMap = { ...prevMap };
+    let previousParentWithNewChildren = null;
 
-    // If there are nodes that have changed their parent, we need to remove them from the children list of their previous parent.
-    if (nodesWithNewParent.length !== 0) {
-        nodesWithNewParent.forEach((node) => {
-            // Retrieve the map element of the previous parent using the parentUuid of the node.
-            const mapElement = node.parentUuid ? filteredPrevMap[node.parentUuid] : null;
+    if (previousParentUuidOfReparentedChildren && prevMap) {
+        // if we have previousParentUuidOfReparentedChildren (at least one of the children change parent), we get the previous parent from the previous map
+        const previousParentOfReparentedChildren: IDirectory = prevMap[previousParentUuidOfReparentedChildren];
 
-            // Check if the map element and its children exist.
-            // we check node.parenUuid otherwise we get Typescript error 'Type 'null' cannot be used as an index type' when we update filteredPrevMap[node.parentUuid].
-            if (node.parentUuid && mapElement?.children) {
-                // Create a new children list excluding the node that has moved.
-                const filteredChildren = mapElement.children.filter(
-                    (child: any) => child.elementUuid !== node.elementUuid
-                );
+        // we create an uuid list of all the current children of the current node with nodeId
+        const nextChildrenUuids = nextChildren.map((n) => n.elementUuid);
 
-                // Update the map element to include the new children list.
-                filteredPrevMap[node.parentUuid] = {
-                    ...mapElement,
-                    children: filteredChildren,
-                };
-            }
-        });
+        // We remove from the children list of the previous parent, the children that have benn reparented to the current node with nodeId
+        const nextPreviousParentChildren = previousParentOfReparentedChildren?.children?.filter(
+            (previousChild) => !nextChildrenUuids.includes(previousChild.elementUuid)
+        );
+
+        // we create the updated previous parent of the reparented nodes
+        previousParentWithNewChildren = {
+            ...previousParentOfReparentedChildren,
+            children: nextPreviousParentChildren,
+            subdirectoriesCount: nextPreviousParentChildren.length,
+        };
     }
 
     const nextMap: Record<string, IDirectory> = Object.fromEntries([
-        ...Object.entries(filteredPrevMap).filter(([k, v], i) => !nonCopyUuids.has(k)),
+        ...Object.entries(prevMap).filter(([k, v], i) => !nonCopyUuids.has(k)),
         ...nextChildren.map((n) => [n.elementUuid, n]),
         ...refreshedUpNodes(prevMap, nextNode as IDirectory).map((n: any) => [n.elementUuid, n]),
+        ...(previousParentWithNewChildren
+            ? refreshedUpNodes(prevMap, previousParentWithNewChildren as IDirectory).map((n: any) => [n.elementUuid, n])
+            : []),
     ]);
 
     const nextRoots: IDirectory[] = (
