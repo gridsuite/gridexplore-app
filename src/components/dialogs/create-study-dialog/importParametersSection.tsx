@@ -12,7 +12,7 @@ import AdvancedParameterButton from './advancedParameterButton';
 import { useController, useWatch } from 'react-hook-form';
 
 // FIXME: To be removed when gridsuite supports subnetworks.
-const IGNORED_PARAMS = ['iidm.import.cgmes.cgm-with-subnetworks'];
+const IGNORED_PARAMS = ['iidm.import.cgmes.cgm-with-subnetworks', 'iidm.import.cgmes.cgm-with-subnetworks-defined-by'];
 
 const ImportParametersSection: FunctionComponent = () => {
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
