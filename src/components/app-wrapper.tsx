@@ -47,6 +47,10 @@ import {
     topBarFr,
     treeviewFinderEn,
     treeviewFinderFr,
+    importParamsEn,
+    importParamsFr,
+    exportParamsEn,
+    exportParamsFr,
 } from '@gridsuite/commons-ui';
 import { IntlConfig, IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -59,8 +63,6 @@ import messages_plugins from '../plugins/translations';
 import aggrid_locale_fr from '../translations/external/aggrid-locale-fr';
 import backend_locale_fr from '../translations/external/backend-locale-fr';
 import backend_locale_en from '../translations/external/backend-locale-en';
-import import_parameters_en from '../translations/external/import-parameters-en';
-import import_parameters_fr from '../translations/external/import-parameters-fr';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
@@ -185,13 +187,14 @@ function getMuiTheme(theme: GsTheme, locale: GsLangUser) {
 const messages: Record<GsLangUser, IntlConfig['messages']> = {
     en: {
         ...messages_en,
+        ...importParamsEn,
+        ...exportParamsEn,
         ...network_modification_locale_en,
         ...loginEn,
         ...topBarEn,
         ...tableEn,
         ...treeviewFinderEn,
         ...cardErrorBoundaryEn,
-        ...import_parameters_en,
         ...flatParametersEn,
         ...multipleSelectionDialogEn,
         ...commonButtonEn,
@@ -207,13 +210,14 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
     },
     fr: {
         ...messages_fr,
+        ...importParamsFr,
+        ...exportParamsFr,
         ...network_modification_locale_fr,
         ...loginFr,
         ...topBarFr,
         ...tableFr,
         ...treeviewFinderFr,
         ...cardErrorBoundaryFr,
-        ...import_parameters_fr,
         ...flatParametersFr,
         ...multipleSelectionDialogFr,
         ...commonButtonFr,
