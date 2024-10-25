@@ -34,6 +34,7 @@ import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu'
 import { AppState, IDirectory, ITreeData, UploadingElement } from '../redux/reducer';
 import { UUID } from 'crypto';
 import ReconnectingWebSocket from 'reconnecting-websocket';
+import { PopoverReference } from '@mui/material';
 
 const initialMousePosition = {
     mouseX: null,
@@ -206,6 +207,7 @@ const TreeViewsContainer = () => {
     };
     const handleCloseDirectoryMenu = (e: unknown, nextSelectedDirectoryId: string | null = null) => {
         setOpenDirectoryMenu(false);
+        dispatch(setActiveDirectory(undefined));
         if (nextSelectedDirectoryId !== null && treeDataRef.current?.mapData?.[nextSelectedDirectoryId]) {
             dispatch(setSelectedDirectory(treeDataRef.current.mapData[nextSelectedDirectoryId]));
         }
@@ -221,10 +223,17 @@ const TreeViewsContainer = () => {
         mouseX: number | null;
         mouseY: number | null;
     }>(initialMousePosition);
+    const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+
+    const [anchorReference, setAnchorReference] = React.useState<PopoverReference>('anchorPosition');
 
     /* User interactions */
     const onContextMenu = useCallback(
-        (event: React.MouseEvent<HTMLDivElement, MouseEvent>, nodeId: UUID | undefined) => {
+        (
+            event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+            nodeId: UUID | undefined,
+            anchorReference: PopoverReference
+        ) => {
             //to keep the focused style (that is normally lost when opening a contextual menu)
             if (event.currentTarget.parentNode) {
                 (event.currentTarget.parentNode as HTMLElement).classList.add('focused');
@@ -232,7 +241,8 @@ const TreeViewsContainer = () => {
             }
 
             dispatch(setActiveDirectory(nodeId));
-
+            setAnchorReference(anchorReference);
+            setAnchorEl(event.currentTarget);
             setMousePosition({
                 mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
                 mouseY: event.clientY + constants.VERTICAL_SHIFT,
@@ -623,9 +633,10 @@ const TreeViewsContainer = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     height: '100%',
+                    width: '100%',
                     flexGrow: 1,
                 }}
-                onContextMenu={(e) => onContextMenu(e, undefined)}
+                onContextMenu={(e) => onContextMenu(e, undefined, 'anchorPosition')}
             >
                 {treeData.mapData &&
                     treeData.rootDirectories.map((rootDirectory) => (
@@ -652,7 +663,7 @@ const TreeViewsContainer = () => {
                     openDialog={openDialog}
                     setOpenDialog={setOpenDialog}
                     onClose={(e: unknown) => handleCloseDirectoryMenu(e, null)}
-                    anchorReference="anchorPosition"
+                    anchorReference={anchorReference}
                     anchorPosition={
                         mousePosition.mouseY !== null && mousePosition.mouseX !== null
                             ? {
@@ -661,6 +672,11 @@ const TreeViewsContainer = () => {
                               }
                             : undefined
                     }
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
                     restrictMenuItems={false}
                 />
             </div>

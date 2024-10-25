@@ -16,7 +16,7 @@ import Zoom from '@mui/material/Zoom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDirectory } from '../redux/actions';
 import CustomTreeItem from './custom-tree-item';
-import { Box, Theme } from '@mui/material';
+import { Box, PopoverReference, Theme } from '@mui/material';
 import { TreeView } from '@mui/x-tree-view';
 import { AppState, IDirectory } from '../redux/reducer';
 import { ElementAttributes } from '@gridsuite/commons-ui';
@@ -30,7 +30,7 @@ const styles = {
         userSelect: 'none',
         '&:focus > .MuiTreeItem-content .MuiTreeItem-label, .focused': {
             borderRadius: theme.spacing(2),
-            backgroundColor: theme.row.primary,
+            backgroundColor: theme.aggrid.highlightColor,
         },
         '&:hover': {
             borderRadius: theme.spacing(2),
@@ -59,6 +59,10 @@ const styles = {
         fontWeight: 'inherit',
         color: 'inherit',
     }),
+    treeItemHovered: (theme: Theme) => ({
+        backgroundColor: theme.aggrid.highlightColor + '!important',
+        borderRadius: theme.spacing(2),
+    }),
     treeItemLabelRoot: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
@@ -78,7 +82,11 @@ const styles = {
 interface DirectoryTreeViewProps {
     treeViewUuid: UUID;
     mapData: Record<string, IDirectory> | undefined;
-    onContextMenu: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, nodeId: UUID | undefined) => void;
+    onContextMenu: (
+        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+        nodeId: UUID | undefined,
+        anchorReference: PopoverReference
+    ) => void;
     onDirectoryUpdate: (nodeId: UUID, isClose: boolean) => void;
 }
 
@@ -129,8 +137,12 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
     );
 
     /* User interaction */
-    function handleContextMenuClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>, nodeId: UUID | undefined) {
-        onContextMenu(event, nodeId);
+    function handleContextMenuClick(
+        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+        nodeId: UUID | undefined,
+        anchorReference: PopoverReference
+    ) {
+        onContextMenu(event, nodeId, anchorReference);
     }
 
     function handleLabelClick(nodeId: UUID) {
@@ -170,7 +182,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
                 label={
                     <Box
                         sx={styles.treeItemLabelRoot}
-                        onContextMenu={(e) => handleContextMenuClick(e, node.elementUuid)}
+                        onContextMenu={(e) => handleContextMenuClick(e, node.elementUuid, 'anchorPosition')}
                     >
                         <Tooltip
                             TransitionComponent={Zoom}
@@ -191,10 +203,12 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
                 ContentProps={{
                     onExpand: handleIconClick,
                     onSelect: handleLabelClick,
+                    onAddIconClick: handleContextMenuClick,
                     styles: {
                         root: styles.treeItemRoot,
                         selected: styles.treeItemSelected,
                         label: styles.treeItemLabel,
+                        hovered: styles.treeItemHovered,
                         iconContainer: styles.treeItemIconContainer,
                     },
                 }}
