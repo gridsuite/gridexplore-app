@@ -219,12 +219,16 @@ export function deleteElement(elementUuid: UUID) {
     });
 }
 
-export function deleteElements(elementUuids: UUID[], activeDirectory: string) {
+const deleteElementsChunkSize = 50;
+export async function deleteElements(elementUuids: UUID[], activeDirectory: string) {
     console.info('Deleting elements : %s', elementUuids);
-    const idsParams = getRequestParamFromList('ids', elementUuids).toString();
-    return backendFetch(`${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${activeDirectory}?${idsParams}`, {
-        method: 'delete',
-    });
+    for (let i = 0; i < elementUuids.length; i += deleteElementsChunkSize) {
+        const idsParams = getRequestParamFromList('ids', elementUuids.slice(i, i + deleteElementsChunkSize)).toString();
+        // eslint-disable-next-line no-await-in-loop -- we use await here to avoid to do too many request to the server
+        await backendFetch(`${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${activeDirectory}?${idsParams}`, {
+            method: 'delete',
+        });
+    }
 }
 
 export function moveElementsToDirectory(elementsUuids: UUID[], targetDirectoryUuid: UUID) {

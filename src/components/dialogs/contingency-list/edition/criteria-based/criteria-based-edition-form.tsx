@@ -7,7 +7,6 @@
 
 import { Box } from '@mui/material';
 import {
-    CONTINGENCY_LIST_EQUIPMENTS,
     CriteriaBasedForm,
     ElementType,
     FieldConstants,
@@ -18,6 +17,7 @@ import {
 import { useSelector } from 'react-redux';
 import { elementExists } from '../../../../../utils/rest-api';
 import { AppState } from '../../../../../redux/types';
+import { SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS } from '../../contingency-list-utils';
 
 export default function CriteriaBasedEditionForm() {
     const emptyValues = getCriteriaBasedFormData({}, {});
@@ -34,7 +34,7 @@ export default function CriteriaBasedEditionForm() {
                 />
             </Box>
             <CriteriaBasedForm
-                equipments={CONTINGENCY_LIST_EQUIPMENTS}
+                equipments={SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS}
                 defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
             />
         </>

@@ -6,7 +6,6 @@
  */
 
 import {
-    CONTINGENCY_LIST_EQUIPMENTS,
     CriteriaBasedForm,
     DescriptionField,
     ElementType,
@@ -26,6 +25,7 @@ import ScriptInputForm from '../script/script-input-form';
 import { elementExists } from '../../../../utils/rest-api';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { AppState } from '../../../../redux/types';
+import { SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS } from '../contingency-list-utils';
 
 export default function ContingencyListCreationForm() {
     const { setValue } = useFormContext();
@@ -66,7 +66,7 @@ export default function ContingencyListCreationForm() {
             </Box>
             {watchContingencyListType === ContingencyListType.CRITERIA_BASED.id && (
                 <CriteriaBasedForm
-                    equipments={CONTINGENCY_LIST_EQUIPMENTS}
+                    equipments={SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS}
                     defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
                 />
             )}
