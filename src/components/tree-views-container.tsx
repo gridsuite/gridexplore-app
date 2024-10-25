@@ -97,25 +97,30 @@ function updatedTree(
     children: IDirectory[]
 ): [IDirectory[], Record<string, IDirectory>] {
     // In case of node change parent, we store the old parent uuid
-    let previousParentUuidOfReparentedChildren: UUID | null = null;
+    let oldParentUuidOfReparentedChildren: UUID | null = null;
 
     const nextChildren = children
         .sort((a, b) => a.elementName.localeCompare(b.elementName))
         .map((n) => {
             let pn = prevMap[n.elementUuid];
             if (!pn) {
+                // new child, then add it
                 return { ...n, children: [], parentUuid: nodeId };
             } else if (
                 n.elementName === pn.elementName &&
                 n.subdirectoriesCount === pn.subdirectoriesCount &&
                 nodeId === pn.parentUuid
             ) {
+                // existing child, nothing has changed, keep existing one
                 return pn;
             } else {
+                // existing child, but something has changed, update it
                 if (pn.parentUuid !== nodeId) {
-                    console.warn('reparent ' + pn.parentUuid + ' -> ' + nodeId);
-
-                    previousParentUuidOfReparentedChildren = pn.parentUuid;
+                    // if the parent has changed, we will need to update the previous parent later
+                    console.debug('reparent ' + pn.parentUuid + ' -> ' + nodeId);
+                    // There can be only one parent because one action move multiple elements from
+                    // one directory to another not multiple directories at once
+                    oldParentUuidOfReparentedChildren = pn.parentUuid;
                 }
                 return {
                     ...pn,
@@ -154,25 +159,22 @@ function updatedTree(
         subdirectoriesCount: nextChildren.length,
     };
 
-    let previousParentWithNewChildren = null;
+    let oldParentWithUpdatedChildren = null;
 
-    if (previousParentUuidOfReparentedChildren && prevMap) {
-        // if we have previousParentUuidOfReparentedChildren (at least one of the children change parent), we get the previous parent from the previous map
-        const previousParentOfReparentedChildren: IDirectory = prevMap[previousParentUuidOfReparentedChildren];
+    if (oldParentUuidOfReparentedChildren && prevMap) {
+        // if we have oldParentUuidOfReparentedChildren (at least one child has changed their parent), we get the old parent from the previous map
+        const oldParentOfReparentedChildren: IDirectory = prevMap[oldParentUuidOfReparentedChildren];
 
-        // we create an uuid list of all the current children of the current node with nodeId
-        const nextChildrenUuids = nextChildren.map((n) => n.elementUuid);
-
-        // We remove from the children list of the previous parent, the children that have benn reparented to the current node with nodeId
-        const nextPreviousParentChildren = previousParentOfReparentedChildren?.children?.filter(
-            (previousChild) => !nextChildrenUuids.includes(previousChild.elementUuid)
+        // We remove from the children list of the old parent, the children that have been reparented to the current node (nodeId)
+        const nextOldParentChildren = oldParentOfReparentedChildren?.children?.filter(
+            (previousChild) => !nextUuids.has(previousChild.elementUuid)
         );
 
-        // we create the updated previous parent of the reparented nodes
-        previousParentWithNewChildren = {
-            ...previousParentOfReparentedChildren,
-            children: nextPreviousParentChildren,
-            subdirectoriesCount: nextPreviousParentChildren.length,
+        // we create the updated old parent of the reparented children
+        oldParentWithUpdatedChildren = {
+            ...oldParentOfReparentedChildren,
+            children: nextOldParentChildren, // override children
+            subdirectoriesCount: nextOldParentChildren.length, // recompute
         };
     }
 
@@ -180,8 +182,8 @@ function updatedTree(
         ...Object.entries(prevMap).filter(([k, v], i) => !nonCopyUuids.has(k)),
         ...nextChildren.map((n) => [n.elementUuid, n]),
         ...refreshedUpNodes(prevMap, nextNode as IDirectory).map((n: any) => [n.elementUuid, n]),
-        ...(previousParentWithNewChildren
-            ? refreshedUpNodes(prevMap, previousParentWithNewChildren as IDirectory).map((n: any) => [n.elementUuid, n])
+        ...(oldParentWithUpdatedChildren
+            ? refreshedUpNodes(prevMap, oldParentWithUpdatedChildren as IDirectory).map((n: any) => [n.elementUuid, n])
             : []),
     ]);
 
