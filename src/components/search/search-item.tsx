@@ -4,11 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
+import { useMemo } from 'react';
 import { getFileIcon } from '@gridsuite/commons-ui';
 import { Grid, Theme, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-
 import { ElementAttributesES } from '../../redux/types';
+import cyrb53 from '../../utils/cyrb53';
 
 const styles = {
     icon: (theme: Theme) => ({
@@ -41,16 +43,16 @@ export interface SearchItemProps {
 }
 
 export function HighlightedText({ text, highlight }: Readonly<HighlightedTextProps>) {
-    const escapedHighlight = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const parts = text.split(new RegExp(`(${escapedHighlight})`, 'gi'));
+    const escapedHighlight = useMemo(() => highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), [highlight]);
+    const parts = useMemo<[string, number][]>(
+        () => text.split(new RegExp(`(${escapedHighlight})`, 'gi')).map((part) => [part, cyrb53(part)]),
+        [escapedHighlight, text]
+    );
     return (
         <span>
-            {parts.map((part) =>
+            {parts.map(([part, hashCode]) =>
                 part.toLowerCase() === highlight.toLowerCase() ? (
-                    <span
-                        key={`part-${part.toLowerCase().replace(/[^[a-z]\d.-]+/g, '-')}`}
-                        style={{ fontWeight: 'bold' }}
-                    >
+                    <span key={`part-${hashCode}`} style={{ fontWeight: 'bold' }}>
                         {part}
                     </span>
                 ) : (

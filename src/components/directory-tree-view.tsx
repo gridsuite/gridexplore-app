@@ -88,7 +88,7 @@ export default function DirectoryTreeView({
 
     const [expanded, setExpanded] = useState<UUID[]>([]);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
-    const currentPath = useSelector((state: AppState) => state.currentPath as any[]);
+    const currentPath = useSelector((state: AppState) => state.currentPath);
 
     const mapDataRef = useRef<Record<string, IDirectory> | undefined>({});
     const expandedRef = useRef<UUID[]>([]);

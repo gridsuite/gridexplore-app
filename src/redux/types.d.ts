@@ -69,7 +69,7 @@ export interface AppState extends CommonStoreState {
     selectedDirectory: ElementAttributes | null;
     searchedElement: ElementAttributesES | null;
     treeData: ITreeData;
-    currentPath: unknown[]; // TODO type in commons-ui?
+    currentPath: ElementAttributes[];
     selectedFile: unknown | null;
     uploadingElements: Record<string, UploadingElement>;
     directoryUpdated: { force: number; eventData: Record<string, Record<string, unknown>> };

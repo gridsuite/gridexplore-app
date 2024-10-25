@@ -69,7 +69,7 @@ export default function DirectoryBreadcrumbs() {
     const dispatch = useDispatch();
 
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
-    const currentPath = useSelector((state: AppState) => state.currentPath as any[]);
+    const currentPath = useSelector((state: AppState) => state.currentPath);
 
     /* Handle User interactions */
     const handleSelect = (event: MouseEvent<HTMLElement>, dir: ElementAttributes | null) => {
