@@ -333,7 +333,7 @@ const TreeViewsContainer = () => {
             let uploadingElementsInSelectedDirectory = Object.values(uploadingElementsRef.current).filter(
                 (e) => e.directory === selectedDirectoryRef.current?.elementUuid
             );
-            if (uploadingElementsInSelectedDirectory) {
+            if (uploadingElementsInSelectedDirectory?.length > 0) {
                 // Reduce uploadingElementsInSelectedDirectory to get
                 // those to remove from uploadingElements because present in current
                 // and those to keep because it's still ghost elements
@@ -363,9 +363,7 @@ const TreeViewsContainer = () => {
                 // then remove the ghosts if the upload succeeded
                 if (toRemoveFromUploadingElements.length > 0) {
                     let newUploadingElements = { ...uploadingElementsRef.current };
-                    if (toRemoveFromUploadingElements.length > 0) {
-                        toRemoveFromUploadingElements.forEach((r) => delete newUploadingElements[r.id]);
-                    }
+                    toRemoveFromUploadingElements.forEach((r) => delete newUploadingElements[r.id]);
                     dispatch(setUploadingElements(newUploadingElements));
                 }
                 //remove the ghosts if the upload failed
@@ -377,9 +375,14 @@ const TreeViewsContainer = () => {
                     return a.elementName.localeCompare(b.elementName);
                 }) as ElementAttributes[];
             } else {
-                return current == null
+                //remove the ghosts if the upload failed
+                let newCurrentElement = cleanCreationFailedElementInCurrentElements(
+                    current,
+                    uploadingElementsInSelectedDirectory
+                );
+                return newCurrentElement == null
                     ? undefined
-                    : [...current].sort(function (a, b) {
+                    : [...newCurrentElement].sort(function (a, b) {
                           return a.elementName.localeCompare(b.elementName);
                       });
             }
