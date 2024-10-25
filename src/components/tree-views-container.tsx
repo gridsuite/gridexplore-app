@@ -447,7 +447,9 @@ const TreeViewsContainer = () => {
 
     // add ghost studies or ghost cases as soon as possible (uploadingElements) and clean them if necessary
     useEffect(() => {
-        dispatch(setCurrentChildren(mergeCurrentAndUploading(currentChildrenRef.current ?? [])));
+        if( Object.values(uploadingElements).length > 0 || currentChildrenRef.current?.some((c) => c.uploading)) {
+            dispatch(setCurrentChildren(mergeCurrentAndUploading(currentChildrenRef.current ?? [])));
+        }
     }, [uploadingElements, currentChildrenRef, mergeCurrentAndUploading, dispatch]);
 
     const updateDirectoryTree = useCallback(
