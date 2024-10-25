@@ -40,7 +40,7 @@ import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
-import { PopoverPosition, PopoverReference } from '@mui/material';
+import { PopoverOrigin, PopoverPosition, PopoverReference } from '@mui/material';
 import { AppState } from 'redux/reducer';
 
 interface DirectoryTreeContextualMenuProps {
@@ -52,6 +52,8 @@ interface DirectoryTreeContextualMenuProps {
     restrictMenuItems: boolean;
     anchorReference?: PopoverReference;
     anchorPosition?: PopoverPosition;
+    anchorEl?: HTMLElement | null;
+    anchorOrigin?: PopoverOrigin;
 }
 
 const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = (props) => {
