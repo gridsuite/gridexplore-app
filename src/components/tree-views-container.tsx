@@ -341,7 +341,6 @@ const TreeViewsContainer = () => {
     const mergeCurrentAndUploading = useCallback(
         (current: ElementAttributes[]): ElementAttributes[] | undefined => {
             let uploadingElementsInSelectedDirectory = Object.values(uploadingElementsRef.current).filter(
-                //TOCHECK   (e) => e.directory === selectedDirectoryRef.current?.elementUuid && current[e.elementName] === undefined // WTF ?
                 (e) => e.directory === selectedDirectoryRef.current?.elementUuid
             );
             if (uploadingElementsInSelectedDirectory?.length > 0) {
