@@ -7,6 +7,7 @@
 import { RefObject, useCallback, useRef } from 'react';
 import {
     ElementSearchInput,
+    ElementSearchInputProps,
     ElementType,
     fetchDirectoryContent,
     Paginated,
@@ -27,9 +28,6 @@ import { SearchBarPaperDisplayedElementWarning } from './search-bar-displayed-el
 export interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
 }
-
-// TODO remove when ElementSearchInputProps is exported in commons-ui
-type ElementSearchInputProps<T> = Parameters<typeof ElementSearchInput<T>>[0];
 
 export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
     const dispatch = useDispatch<AppDispatch>();

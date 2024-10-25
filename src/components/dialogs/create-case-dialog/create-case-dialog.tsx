@@ -80,20 +80,20 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
         createCase(caseName, description ?? '', caseFile, activeDirectory)
             .then(onClose)
             .catch((err) => {
-                if (handleMaxElementsExceededError(err, snackError)) {
-                    // do nothing
-                } else if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
-                    snackError({
-                        messageId: 'invalidFormatOrName',
-                        headerId: 'caseCreationError',
-                        headerValues: { name: caseName },
-                    });
-                } else {
-                    snackError({
-                        messageTxt: err?.message,
-                        headerId: 'caseCreationError',
-                        headerValues: { name: caseName },
-                    });
+                if (!handleMaxElementsExceededError(err, snackError)) {
+                    if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
+                        snackError({
+                            messageId: 'invalidFormatOrName',
+                            headerId: 'caseCreationError',
+                            headerValues: { name: caseName },
+                        });
+                    } else {
+                        snackError({
+                            messageTxt: err?.message,
+                            headerId: 'caseCreationError',
+                            headerValues: { name: caseName },
+                        });
+                    }
                 }
             });
         // the uploadingCase ghost element will be removed when directory content updated by fetch

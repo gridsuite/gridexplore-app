@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
@@ -47,6 +47,16 @@ export default function UploadNewCase({
 
     const caseFile = value as File;
     const { name: caseFileName } = caseFile || {};
+
+    const gridValue = useMemo(() => {
+        if (caseFileLoading) {
+            return <CircularProgress size="1rem" />;
+        }
+        if (caseFileName) {
+            return <span>{caseFileName}</span>;
+        }
+        return <FormattedMessage id="uploadMessage" />;
+    }, [caseFileLoading, caseFileName]);
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
@@ -126,16 +136,7 @@ export default function UploadNewCase({
                 </Button>
             </Grid>
             <Grid item sx={{ fontWeight: 'bold' }}>
-                <p>
-                    {/* eslint-disable-next-line no-nested-ternary -- "if" can't be used inside jsx block */}
-                    {caseFileLoading ? (
-                        <CircularProgress size="1rem" />
-                    ) : caseFileName ? (
-                        <span>{caseFileName}</span>
-                    ) : (
-                        <FormattedMessage id="uploadMessage" />
-                    )}
-                </p>
+                <p>{gridValue}</p>
             </Grid>
         </Grid>
     );

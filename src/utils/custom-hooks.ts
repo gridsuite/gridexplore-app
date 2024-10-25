@@ -161,7 +161,7 @@ export const useDeferredFetch = <T, TArgs extends unknown[] = any[]>(
     return [fetchCallback, state];
 };
 
-/// //////////////////////////////////////////////////////////////:
+// ///////////////////////////////////////////////////////////////:
 
 /**
  * This custom hook manage multiple fetchs workflows and return a unique callback to defer process execution when needed.

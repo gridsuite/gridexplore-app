@@ -9,11 +9,11 @@ import { ElementAttributes, FieldConstants, Parameter, yupConfig as yup } from '
 import { UUID } from 'crypto';
 
 export const getCreateStudyDialogFormDefaultValues = ({
-    // @ts-expect-error how react-hook manage strings like UUIDs?
+    // @ts-expect-error how react-hook-form manage strings like UUIDs?
     directory = '',
     studyName = '',
     caseFile = null,
-    // @ts-expect-error how react-hook manage strings like UUIDs?
+    // @ts-expect-error how react-hook-form manage strings like UUIDs?
     caseUuid = '',
 }: {
     directory?: UUID;
