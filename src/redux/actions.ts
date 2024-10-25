@@ -21,6 +21,7 @@ export type AppActions =
     | SetAppsAndUrlsAction
     | AddUploadingElementAction
     | SetUploadingElementsAction
+    | RemoveUploadingElementAction
     | DirectoryUpdatedAction
     | TreeDataAction
     | SearchedElementAction
@@ -143,6 +144,17 @@ export type SetUploadingElementsAction = Readonly<Action<typeof SET_UPLOADING_EL
 
 export function setUploadingElements(uploadingElements: AppState['uploadingElements']): SetUploadingElementsAction {
     return { type: SET_UPLOADING_ELEMENTS, uploadingElements: uploadingElements };
+}
+
+export const REMOVE_UPLOADING_ELEMENT = 'REMOVE_UPLOADING_ELEMENTS';
+export type RemoveUploadingElementAction = Readonly<Action<typeof REMOVE_UPLOADING_ELEMENT>> & {
+    uploadingElement: AppState['uploadingElements'][number];
+};
+
+export function removeUploadingElement(
+    uploadingElement: AppState['uploadingElements'][number]
+): RemoveUploadingElementAction {
+    return { type: REMOVE_UPLOADING_ELEMENT, uploadingElement: uploadingElement };
 }
 
 export const DIRECTORY_UPDATED = 'DIRECTORY_UPDATED';

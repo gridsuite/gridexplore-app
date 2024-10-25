@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useRef } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createCase } from '../../../utils/rest-api';
 import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import { Grid } from '@mui/material';
-import { addUploadingElement, setUploadingElements } from '../../../redux/actions';
+import { addUploadingElement, removeUploadingElement } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
@@ -64,9 +64,6 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
 
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
-    const uploadingElements = useSelector((state: AppState) => state.uploadingElements);
-    const uploadingElementsRef = useRef<Record<string, UploadingElement>>({});
-    uploadingElementsRef.current = uploadingElements;
 
     const handleCreateNewCase = ({ caseName, description, caseFile }: IFormData): void => {
         const uploadingCase: UploadingElement = {
@@ -84,8 +81,7 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
         createCase(caseName, description ?? '', caseFile, activeDirectory)
             .then(onClose)
             .catch((err) => {
-                delete uploadingElementsRef.current[uploadingCase.id];
-                dispatch(setUploadingElements(uploadingElementsRef.current));
+                dispatch(removeUploadingElement(uploadingCase));
                 if (handleMaxElementsExceededError(err, snackError)) {
                     return;
                 } else if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
