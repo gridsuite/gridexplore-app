@@ -377,7 +377,7 @@ const TreeViewsContainer = () => {
                     dispatch(setUploadingElements(newUploadingElements));
                 }
                 //remove the ghosts if the upload failed
-                let newCurrentElement = cleanCreationFailedElementInCurrentElements(
+                const newCurrentElement = cleanCreationFailedElementInCurrentElements(
                     current,
                     uploadingElementsInSelectedDirectory
                 );
@@ -386,7 +386,7 @@ const TreeViewsContainer = () => {
                 }) as ElementAttributes[];
             } else {
                 //remove the ghosts if the upload failed
-                let newCurrentElement = cleanCreationFailedElementInCurrentElements(
+                const newCurrentElement = cleanCreationFailedElementInCurrentElements(
                     current,
                     uploadingElementsInSelectedDirectory
                 );
