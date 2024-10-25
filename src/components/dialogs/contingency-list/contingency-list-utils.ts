@@ -8,7 +8,12 @@
 import { ContingencyListType } from '../../../utils/elementType';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { v4 as uuid4 } from 'uuid';
-import { FieldConstants, getCriteriaBasedFormData } from '@gridsuite/commons-ui';
+import {
+    CONTINGENCY_LIST_EQUIPMENTS,
+    EquipmentType,
+    FieldConstants,
+    getCriteriaBasedFormData,
+} from '@gridsuite/commons-ui';
 import { SetRequired } from 'type-fest';
 
 interface Identifier {
@@ -141,3 +146,17 @@ export const getFormContent = (
         }
     }
 };
+// Not implemented yet for criteria based contingency lists.
+// Exclusions to remove when contingency lists implemented for those equipment types
+const excludedEquipmentTypes = [
+    EquipmentType.BATTERY,
+    EquipmentType.LOAD,
+    EquipmentType.THREE_WINDINGS_TRANSFORMER,
+    EquipmentType.STATIC_VAR_COMPENSATOR,
+];
+
+export const SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS = Object.fromEntries(
+    Object.entries(CONTINGENCY_LIST_EQUIPMENTS).filter(
+        ([key]) => !excludedEquipmentTypes.includes(key as EquipmentType)
+    )
+);
