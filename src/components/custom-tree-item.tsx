@@ -65,8 +65,8 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
         onAddIconClick(event, nodeId, 'anchorEl');
     };
 
-    // We don't get a onMouseLeave event when using or leaving the contextual menu
-    // clicking outside the concerned div, then we must update the hover state manually
+    // We don't get a onMouseLeave event when using or leaving the contextual menu by
+    // clicking outside the concerned div, so we must update the hover state manually.
     useEffect(() => {
         if (!isMenuOpen) {
             setHover(false);
