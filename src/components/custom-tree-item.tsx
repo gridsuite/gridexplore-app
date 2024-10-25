@@ -86,13 +86,12 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCus
                 hover && styles.hovered
             )}
             onMouseDown={handleMouseDown}
-            /* It's not a good idea to base the hover state over those mouse events
-               because those events could be skip with html optimization.
-               However we choose to use this simple way because the
+            /* It's not a good idea to rely on the hover state provided by those mouse events
+               because those events could be skipped with the web-browser's html optimization.
+               Therefore, we choose to use this simple way because the
                contextual menu opened by the AddIcon Button is shared for all the app.
-               Using the hover state directly in the CSS + isMenuOpen to manage the
-               color of this div and show/hidden state of the button caused some problems
-               when the menu is openned from another event in the app.
+               Using the :hover CSS pseudo class and the isMenuOpen prop to determine the style can be done but
+               causes issues when the menu is opened from another event in the app.
             */
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
