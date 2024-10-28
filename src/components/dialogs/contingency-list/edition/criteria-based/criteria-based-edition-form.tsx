@@ -5,25 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
 import {
     UniqueNameInput,
     ElementType,
     CriteriaBasedForm,
     getCriteriaBasedFormData,
-    CONTINGENCY_LIST_EQUIPMENTS,
     FieldConstants,
+    unscrollableDialogStyles,
 } from '@gridsuite/commons-ui';
 import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import { SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS } from '../../contingency-list-utils';
+import Box from '@mui/material/Box';
 
 const CriteriaBasedEditionForm = () => {
     const emptyValues = getCriteriaBasedFormData({}, {});
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
-        <Grid container spacing={2} marginTop={'auto'}>
-            <Grid item xs={12}>
+        <>
+            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
                 <UniqueNameInput
                     name={FieldConstants.NAME}
                     label={'nameProperty'}
@@ -31,12 +32,12 @@ const CriteriaBasedEditionForm = () => {
                     activeDirectory={activeDirectory}
                     elementExists={elementExists}
                 />
-            </Grid>
+            </Box>
             <CriteriaBasedForm
-                equipments={CONTINGENCY_LIST_EQUIPMENTS}
+                equipments={SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS}
                 defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
             />
-        </Grid>
+        </>
     );
 };
 
