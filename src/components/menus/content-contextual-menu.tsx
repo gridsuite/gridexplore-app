@@ -671,7 +671,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                             }
                             handleCloseDialog();
                         }}
-                        itemsCount={selectedElements.length}
+                        validationButtonText={intl.formatMessage(
+                            { id: 'moveItemValidate' },
+                            { nbElements: selectedElements.length }
+                        )}
+                        title={intl.formatMessage({ id: 'moveItemTitle' })}
                     />
                 );
             case DialogsId.EXPORT:

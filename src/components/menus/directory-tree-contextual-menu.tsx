@@ -14,10 +14,17 @@ import {
     Create as CreateIcon,
     CreateNewFolder as CreateNewFolderIcon,
     Delete as DeleteIcon,
+    DriveFileMove as DriveFileMoveIcon,
     FolderSpecial as FolderSpecialIcon,
 } from '@mui/icons-material';
-import { ElementAttributes, ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
-import { PopoverPosition, PopoverReference } from '@mui/material';
+import {
+    ElementAttributes,
+    ElementType,
+    FilterCreationDialog,
+    TreeViewFinderNodeProps,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { PopoverOrigin, PopoverPosition, PopoverReference } from '@mui/material';
 import { UUID } from 'crypto';
 import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
 import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
@@ -31,6 +38,7 @@ import {
     elementExists,
     insertDirectory,
     insertRootDirectory,
+    moveElementsToDirectory,
     renameElement,
 } from '../../utils/rest-api';
 import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
@@ -41,6 +49,9 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
+import MoveDialog from '../dialogs/move-dialog';
+
+import { buildPathToFromMap } from '../treeview-utils';
 
 export interface DirectoryTreeContextualMenuProps {
     directory: ElementAttributes | null;
@@ -51,6 +62,8 @@ export interface DirectoryTreeContextualMenuProps {
     restrictMenuItems: boolean;
     anchorReference?: PopoverReference;
     anchorPosition?: PopoverPosition;
+    anchorEl?: HTMLElement | null;
+    anchorOrigin?: PopoverOrigin;
 }
 
 export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTreeContextualMenuProps>) {
@@ -63,6 +76,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     const [hideMenu, setHideMenu] = useState(false);
     const { snackError } = useSnackMessage();
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
+    const treeData = useSelector((state: AppState) => state.treeData);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -105,14 +119,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
 
     const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
 
-    const handleError = useCallback(
-        (message: string) => {
-            snackError({
-                messageTxt: message,
-            });
-        },
-        [snackError]
-    );
+    const handleError = useCallback((message: string) => snackError({ messageTxt: message }), [snackError]);
 
     const handlePasteError = (error: any) => {
         let msg;
@@ -140,10 +147,9 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 case ElementType.MODIFICATION:
                     duplicateElement(selectionForPaste.sourceItemUuid, directoryUuid, selectionForPaste.typeItem).catch(
                         (error: any) => {
-                            if (handleMaxElementsExceededError(error, snackError)) {
-                                return;
+                            if (!handleMaxElementsExceededError(error, snackError)) {
+                                handlePasteError(error);
                             }
-                            handlePasteError(error);
                         }
                     );
                     break;
@@ -157,9 +163,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         directoryUuid,
                         ElementType.PARAMETERS,
                         selectionForPaste.typeItem
-                    ).catch((error: any) => {
-                        handlePasteError(error);
-                    });
+                    ).catch((error: any) => handlePasteError(error));
                     break;
                 case ElementType.CONTINGENCY_LIST:
                     duplicateElement(
@@ -167,14 +171,12 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         directoryUuid,
                         selectionForPaste.typeItem,
                         selectionForPaste.specificTypeItem
-                    ).catch((error: any) => {
-                        handlePasteError(error);
-                    });
+                    ).catch((error: any) => handlePasteError(error));
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
-                    duplicateSpreadsheetConfig(selectionForPaste.sourceItemUuid, directoryUuid).catch((error: any) => {
-                        handlePasteError(error);
-                    });
+                    duplicateSpreadsheetConfig(selectionForPaste.sourceItemUuid, directoryUuid).catch((error: any) =>
+                        handlePasteError(error)
+                    );
                     break;
                 default:
                     handleError(
@@ -215,30 +217,22 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             menuItems.push(
                 {
                     messageDescriptorId: 'createNewStudy',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.ADD_NEW_STUDY);
-                    },
+                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_STUDY),
                     icon: <AddIcon fontSize="small" />,
                 },
                 {
                     messageDescriptorId: 'createNewContingencyList',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.ADD_NEW_CONTINGENCY_LIST);
-                    },
+                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_CONTINGENCY_LIST),
                     icon: <AddIcon fontSize="small" />,
                 },
                 {
                     messageDescriptorId: 'createNewFilter',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.ADD_NEW_FILTER);
-                    },
+                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_FILTER),
                     icon: <AddIcon fontSize="small" />,
                 },
                 {
                     messageDescriptorId: 'ImportNewCase',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.ADD_NEW_CASE);
-                    },
+                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_CASE),
                     icon: <AddIcon fontSize="small" />,
                 }
             );
@@ -249,16 +243,12 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 menuItems.push(
                     {
                         messageDescriptorId: 'renameFolder',
-                        callback: () => {
-                            handleOpenDialog(DialogsId.RENAME_DIRECTORY);
-                        },
+                        callback: () => handleOpenDialog(DialogsId.RENAME_DIRECTORY),
                         icon: <CreateIcon fontSize="small" />,
                     },
                     {
                         messageDescriptorId: 'deleteFolder',
-                        callback: () => {
-                            handleOpenDialog(DialogsId.DELETE_DIRECTORY);
-                        },
+                        callback: () => handleOpenDialog(DialogsId.DELETE_DIRECTORY),
                         icon: <DeleteIcon fontSize="small" />,
                     },
                     { isDivider: true }
@@ -268,35 +258,56 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             menuItems.push(
                 {
                     messageDescriptorId: 'paste',
-                    callback: () => {
-                        // @ts-expect-error TODO: manage null case
-                        pasteElement(directory.elementUuid, selectionForCopy);
-                    },
+                    // @ts-expect-error TODO: manage null case
+                    callback: () => pasteElement(directory.elementUuid, selectionForCopy),
                     icon: <ContentPasteIcon fontSize="small" />,
                     disabled: !selectionForCopy.sourceItemUuid,
                 },
                 { isDivider: true }
             );
 
+            menuItems.push(
+                {
+                    messageDescriptorId: 'moveDirectory',
+                    callback: () => handleOpenDialog(DialogsId.MOVE_DIRECTORY),
+                    icon: <DriveFileMoveIcon fontSize="small" />,
+                },
+                { isDivider: true }
+            );
+
             menuItems.push({
                 messageDescriptorId: 'createFolder',
-                callback: () => {
-                    handleOpenDialog(DialogsId.ADD_DIRECTORY);
-                },
+                callback: () => handleOpenDialog(DialogsId.ADD_DIRECTORY),
                 icon: <CreateNewFolderIcon fontSize="small" />,
             });
         }
 
         menuItems.push({
             messageDescriptorId: 'createRootFolder',
-            callback: () => {
-                handleOpenDialog(DialogsId.ADD_ROOT_DIRECTORY);
-            },
+            callback: () => handleOpenDialog(DialogsId.ADD_ROOT_DIRECTORY),
             icon: <FolderSpecialIcon fontSize="small" />,
         });
 
         return menuItems;
     };
+
+    const handleMoveDirectory = useCallback(
+        (selectedDir: TreeViewFinderNodeProps[]) => {
+            if (selectedDir.length === 1 && directory) {
+                moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch(() => {
+                    const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
+                        ?.map((el) => el.elementName)
+                        .join('/');
+                    snackError({
+                        messageId: 'MovingDirectoryError',
+                        messageValues: { elementPath: path },
+                    });
+                });
+            }
+            handleCloseDialog(null);
+        },
+        [directory, handleCloseDialog, snackError, treeData.mapData]
+    );
 
     const renderDialog = () => {
         switch (openDialog) {
@@ -364,10 +375,8 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         multipleDeleteFormatMessageId="deleteMultipleDirectoriesDialogMessage"
                         simpleDeleteFormatMessageId="deleteDirectoryDialogMessage"
                         open
-                        onClick={() => {
-                            // @ts-expect-error TODO: manage undefined case
-                            handleDeleteElement(directory.elementUuid);
-                        }}
+                        // @ts-expect-error TODO: manage undefined case
+                        onClick={() => handleDeleteElement(directory.elementUuid)}
                         onClose={handleCloseDialog}
                         error={deleteError}
                     />
@@ -384,6 +393,18 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 );
             case DialogsId.ADD_NEW_CASE:
                 return <CreateCaseDialog open onClose={handleCloseDialog} />;
+            case DialogsId.MOVE_DIRECTORY:
+                return (
+                    <MoveDialog
+                        open
+                        onClose={handleMoveDirectory}
+                        title={intl.formatMessage(
+                            { id: 'moveDirectoryTitle' },
+                            { directoryName: directory?.elementName }
+                        )}
+                        validationButtonText={intl.formatMessage({ id: 'moveDirectoryValidate' })}
+                    />
+                );
             default:
                 return null;
         }

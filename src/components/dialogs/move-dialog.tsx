@@ -11,10 +11,11 @@ import { useIntl } from 'react-intl';
 export interface MoveDialogProps {
     open: boolean;
     onClose: (selectedDir: TreeViewFinderNodeProps[]) => void;
-    itemsCount: number;
+    validationButtonText: string;
+    title: string;
 }
 
-export default function MoveDialog({ open, onClose, itemsCount }: Readonly<MoveDialogProps>) {
+export default function MoveDialog({ open, onClose, validationButtonText, title }: Readonly<MoveDialogProps>) {
     const intl = useIntl();
 
     return (
@@ -24,17 +25,8 @@ export default function MoveDialog({ open, onClose, itemsCount }: Readonly<MoveD
             types={[ElementType.DIRECTORY]}
             onlyLeaves={false}
             multiSelect={false}
-            validationButtonText={intl.formatMessage(
-                {
-                    id: 'moveItemValidate',
-                },
-                {
-                    nbElements: itemsCount,
-                }
-            )}
-            title={intl.formatMessage({
-                id: 'moveItemTitle',
-            })}
+            validationButtonText={validationButtonText}
+            title={title}
             contentText={intl.formatMessage({ id: 'moveItemContentText' })}
         />
     );

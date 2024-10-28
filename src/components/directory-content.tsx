@@ -158,9 +158,7 @@ export default function DirectoryContent() {
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
     const [elementName, setElementName] = useState('');
 
-    /**
-     * Filters contingency list dialog: window status value for editing a filters contingency list
-     */
+    /** Filters contingency list dialog: window status value for editing a filters contingency list */
     const [currentFiltersContingencyListId, setCurrentFiltersContingencyListId] = useState(null);
     const handleCloseFiltersContingency = () => {
         setOpenDialog(constants.DialogsId.NONE);
@@ -169,9 +167,7 @@ export default function DirectoryContent() {
         setElementName('');
     };
 
-    /**
-     * Explicit Naming contingency list dialog: window status value for editing an explicit naming contingency list
-     */
+    /** Explicit Naming contingency list dialog: window status value for editing an explicit naming contingency list */
     const [currentExplicitNamingContingencyListId, setCurrentExplicitNamingContingencyListId] = useState(null);
     const handleCloseExplicitNamingContingency = () => {
         setOpenDialog(constants.DialogsId.NONE);
@@ -180,9 +176,7 @@ export default function DirectoryContent() {
         setElementName('');
     };
 
-    /**
-     * Filters dialog: window status value to edit CriteriaBased filters
-     */
+    /** Filters dialog: window status value to edit CriteriaBased filters */
     const [currentCriteriaBasedFilterId, setCurrentCriteriaBasedFilterId] = useState(null);
     const handleCloseCriteriaBasedFilterDialog = () => {
         setOpenDialog(constants.DialogsId.NONE);
@@ -192,9 +186,7 @@ export default function DirectoryContent() {
     };
 
     const [currentExplicitNamingFilterId, setCurrentExplicitNamingFilterId] = useState(null);
-    /**
-     * Filters dialog: window status value to edit ExplicitNaming filters
-     */
+    /** Filters dialog: window status value to edit ExplicitNaming filters */
     const handleCloseExplicitNamingFilterDialog = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setCurrentExplicitNamingFilterId(null);
@@ -202,9 +194,7 @@ export default function DirectoryContent() {
         setElementName('');
     };
 
-    /**
-     * Filters dialog: window status value to edit Expert filters
-     */
+    /** Filters dialog: window status value to edit Expert filters */
     const [currentExpertFilterId, setCurrentExpertFilterId] = useState(null);
     const handleCloseExpertFilterDialog = () => {
         setOpenDialog(constants.DialogsId.NONE);
@@ -213,9 +203,7 @@ export default function DirectoryContent() {
         setElementName('');
     };
 
-    /**
-     * Script contingency list dialog: window status value for editing a script contingency list
-     */
+    /** Script contingency list dialog: window status value for editing a script contingency list */
     const [currentScriptContingencyListId, setCurrentScriptContingencyListId] = useState(null);
     const handleCloseScriptContingency = () => {
         setOpenDialog(constants.DialogsId.NONE);
@@ -224,9 +212,7 @@ export default function DirectoryContent() {
         setElementName('');
     };
 
-    /**
-     * Contextual Menus
-     */
+    /** Contextual Menus */
     const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
     const [openContentMenu, setOpenContentMenu] = useState(false);
 
@@ -242,6 +228,7 @@ export default function DirectoryContent() {
 
     const handleCloseDirectoryMenu = () => {
         setOpenDirectoryMenu(false);
+        dispatch(setActiveDirectory(undefined));
     };
 
     const handleOpenDirectoryMenu = (event: MouseEvent<HTMLDivElement>) => {

@@ -7,7 +7,7 @@
 
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronRight as ChevronRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import { Box, SxProps, Theme, Tooltip, Typography, Zoom } from '@mui/material';
+import { Box, PopoverReference, SxProps, Theme, Tooltip, Typography, Zoom } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { TreeView } from '@mui/x-tree-view';
 import { ElementAttributes } from '@gridsuite/commons-ui';
@@ -26,7 +26,7 @@ const styles = {
         userSelect: 'none',
         '&:focus > .MuiTreeItem-content .MuiTreeItem-label, .focused': {
             borderRadius: theme.spacing(2),
-            backgroundColor: theme.row.primary,
+            backgroundColor: theme.aggrid.highlightColor,
         },
         '&:hover': {
             borderRadius: theme.spacing(2),
@@ -55,6 +55,10 @@ const styles = {
         fontWeight: 'inherit',
         color: 'inherit',
     }),
+    treeItemHovered: (theme) => ({
+        backgroundColor: `${theme.aggrid.highlightColor}!important`,
+        borderRadius: theme.spacing(2),
+    }),
     treeItemLabelRoot: (theme) => ({
         display: 'flex',
         alignItems: 'center',
@@ -74,8 +78,12 @@ const styles = {
 export interface DirectoryTreeViewProps {
     treeViewUuid: UUID;
     mapData: Record<string, IDirectory> | undefined;
-    onContextMenu: (event: ReactMouseEvent<HTMLDivElement, MouseEvent>, nodeId: UUID | undefined) => void;
-    onDirectoryUpdate: (nodeId: UUID, isClose: boolean) => void;
+    onContextMenu: (
+        event: ReactMouseEvent<HTMLDivElement | HTMLButtonElement, MouseEvent>,
+        nodeId: UUID,
+        anchorReference: PopoverReference
+    ) => void;
+    onDirectoryUpdate: (nodeId: UUID, isClose: boolean, isDirectoryMoving: boolean) => void;
 }
 
 export default function DirectoryTreeView({
@@ -130,24 +138,26 @@ export default function DirectoryTreeView({
     );
 
     /* User interaction */
-    function handleContextMenuClick(event: ReactMouseEvent<HTMLDivElement, MouseEvent>, nodeId: UUID | undefined) {
-        onContextMenu(event, nodeId);
-    }
+    const handleLabelClick = useCallback(
+        (nodeId: UUID) => {
+            if (selectedDirectory?.elementUuid !== nodeId) {
+                dispatch(setSelectedDirectory(mapDataRef.current ? mapDataRef.current[nodeId] : null));
+            }
+            if (!expandedRef.current.includes(nodeId)) {
+                // update fold status of item
+                toggleDirectories([nodeId]);
+            }
+        },
+        [dispatch, selectedDirectory?.elementUuid, toggleDirectories]
+    );
 
-    function handleLabelClick(nodeId: UUID) {
-        if (selectedDirectory?.elementUuid !== nodeId) {
-            dispatch(setSelectedDirectory(mapDataRef.current ? mapDataRef.current[nodeId] : null));
-        }
-        if (!expandedRef.current.includes(nodeId)) {
-            // update fold status of item
+    const handleIconClick = useCallback(
+        (nodeId: UUID) => {
+            onDirectoryUpdate(nodeId, expandedRef.current.includes(nodeId), false);
             toggleDirectories([nodeId]);
-        }
-    }
-
-    function handleIconClick(nodeId: UUID) {
-        onDirectoryUpdate(nodeId, expandedRef.current.includes(nodeId));
-        toggleDirectories([nodeId]);
-    }
+        },
+        [onDirectoryUpdate, toggleDirectories]
+    );
 
     useEffect(() => {
         if (currentPath.length === 0) {
@@ -171,7 +181,7 @@ export default function DirectoryTreeView({
                 label={
                     <Box
                         sx={styles.treeItemLabelRoot}
-                        onContextMenu={(e) => handleContextMenuClick(e, node.elementUuid)}
+                        onContextMenu={(e) => onContextMenu(e, node.elementUuid, 'anchorPosition')}
                     >
                         <Tooltip
                             TransitionComponent={Zoom}
@@ -192,17 +202,17 @@ export default function DirectoryTreeView({
                 ContentProps={{
                     onExpand: handleIconClick,
                     onSelect: handleLabelClick,
+                    onAddIconClick: onContextMenu,
                     styles: {
                         root: styles.treeItemRoot,
                         selected: styles.treeItemSelected,
                         label: styles.treeItemLabel,
+                        hovered: styles.treeItemHovered,
                         iconContainer: styles.treeItemIconContainer,
                     },
                 }}
                 endIcon={node.subdirectoriesCount > 0 ? <ChevronRightIcon sx={styles.icon} /> : null}
-                sx={{
-                    content: styles.treeItemContent,
-                }}
+                sx={{ content: styles.treeItemContent }}
             >
                 {Array.isArray(node.children)
                     ? node.children.map((child) => renderTree(mapDataRef.current?.[child.elementUuid]))

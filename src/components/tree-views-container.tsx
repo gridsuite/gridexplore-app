@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     ElementAttributes,
@@ -16,7 +16,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { Box } from '@mui/material';
+import { Box, BoxProps, PopoverOrigin, PopoverPosition, PopoverReference, SxProps, Theme } from '@mui/material';
 import {
     directoryUpdated,
     setActiveDirectory,
@@ -28,27 +28,31 @@ import {
 } from '../redux/actions';
 import { connectNotificationsWsUpdateDirectories } from '../utils/rest-api';
 import DirectoryTreeView from './directory-tree-view';
-import { notificationType } from '../utils/notificationType';
+import { NotificationType } from '../utils/notificationType';
 import * as constants from '../utils/UIconstants';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 import { AppState, IDirectory, ITreeData, UploadingElement } from '../redux/types';
+import { buildPathToFromMap } from './treeview-utils';
 
 const initialMousePosition = {
     mouseX: null,
     mouseY: null,
 };
 
-function buildPathToFromMap(nodeId: UUID | undefined, mapDataRef: Record<string, IDirectory> | undefined) {
-    const path = [];
-    if (mapDataRef && nodeId) {
-        let currentUuid: UUID | null = nodeId ?? null;
-        while (currentUuid != null && mapDataRef[currentUuid] !== undefined) {
-            path.unshift({ ...mapDataRef[currentUuid] });
-            currentUuid = mapDataRef[currentUuid].parentUuid;
-        }
-    }
-    return path;
-}
+const anchorOrigin: PopoverOrigin = {
+    vertical: 'top',
+    horizontal: 'right',
+};
+
+const styles = {
+    treeBox: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        width: '100%',
+        flexGrow: 1,
+    },
+} as const satisfies Record<string, SxProps<Theme>>;
 
 function flattenDownNodes(n: IDirectory, cef: (arg: IDirectory) => any[]): IDirectory[] {
     const subs = cef(n);
@@ -92,11 +96,15 @@ export function updatedTree(
     nodeId: string | null,
     children: IDirectory[]
 ): [IDirectory[], Record<string, IDirectory>] {
+    // In case of node change parent, we store the old parent uuid
+    let oldParentUuidOfReparentedChildren: UUID | null = null;
+
     const nextChildren = children
         .sort((a, b) => a.elementName.localeCompare(b.elementName))
         .map((n) => {
             const pn = prevMap[n.elementUuid];
             if (!pn) {
+                // new child, then add it
                 return { ...n, children: [], parentUuid: nodeId };
             }
             if (
@@ -104,10 +112,16 @@ export function updatedTree(
                 n.subdirectoriesCount === pn.subdirectoriesCount &&
                 nodeId === pn.parentUuid
             ) {
+                // existing child, nothing has changed, keep existing one
                 return pn;
             }
+            // existing child, but something has changed, update it
             if (pn.parentUuid !== nodeId) {
-                console.warn(`reparent ${pn.parentUuid} -> ${nodeId}`);
+                // if the parent has changed, we will need to update the previous parent later
+                console.debug(`reparent ${pn.parentUuid} -> ${nodeId}`);
+                // There can be only one parent because one action move multiple elements from
+                // one directory to another not multiple directories at once
+                oldParentUuidOfReparentedChildren = pn.parentUuid;
             }
             return {
                 ...pn,
@@ -116,7 +130,6 @@ export function updatedTree(
                 parentUuid: nodeId,
             };
         });
-
     const prevChildren = nodeId ? prevMap[nodeId]?.children : prevRoots;
 
     if (prevChildren?.length === nextChildren.length && prevChildren.every((e, i) => e === nextChildren[i])) {
@@ -146,10 +159,32 @@ export function updatedTree(
         subdirectoriesCount: nextChildren.length,
     };
 
+    let oldParentWithUpdatedChildren = null;
+
+    if (oldParentUuidOfReparentedChildren && prevMap) {
+        // if we have oldParentUuidOfReparentedChildren (at least one child has changed their parent), we get the old parent from the previous map
+        const oldParentOfReparentedChildren: IDirectory = prevMap[oldParentUuidOfReparentedChildren];
+
+        // We remove from the children list of the old parent, the children that have been reparented to the current node (nodeId)
+        const nextOldParentChildren = oldParentOfReparentedChildren?.children?.filter(
+            (previousChild) => !nextUuids.has(previousChild.elementUuid)
+        );
+
+        // we create the updated old parent of the reparented children
+        oldParentWithUpdatedChildren = {
+            ...oldParentOfReparentedChildren,
+            children: nextOldParentChildren, // override children
+            subdirectoriesCount: nextOldParentChildren.length, // recompute
+        };
+    }
+
     const nextMap: Record<string, IDirectory> = Object.fromEntries([
         ...Object.entries(prevMap).filter(([k]) => !nonCopyUuids.has(k)),
         ...nextChildren.map((n) => [n.elementUuid, n]),
         ...refreshedUpNodes(prevMap, nextNode as IDirectory).map((n: any) => [n.elementUuid, n]),
+        ...(oldParentWithUpdatedChildren
+            ? refreshedUpNodes(prevMap, oldParentWithUpdatedChildren as IDirectory).map((n: any) => [n.elementUuid, n])
+            : []),
     ]);
 
     const nextRoots: IDirectory[] = (
@@ -185,9 +220,7 @@ export default function TreeViewsContainer() {
     const { snackError, snackWarning } = useSnackMessage();
 
     const directoryUpdatedEvent = useSelector((state: AppState) => state.directoryUpdated);
-    /**
-     * Contextual Menus
-     */
+    /** Contextual Menus */
     const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
 
     const treeData = useSelector((state: AppState) => state.treeData);
@@ -195,31 +228,54 @@ export default function TreeViewsContainer() {
     const treeDataRef = useRef<ITreeData>();
     treeDataRef.current = treeData;
 
-    const handleOpenDirectoryMenu = (event: ReactMouseEvent<HTMLDivElement, MouseEvent>) => {
-        setOpenDirectoryMenu(true);
-        event.stopPropagation();
-    };
-    const handleCloseDirectoryMenu = (e: unknown, nextSelectedDirectoryId: string | null = null) => {
-        setOpenDirectoryMenu(false);
-        if (nextSelectedDirectoryId !== null && treeDataRef.current?.mapData?.[nextSelectedDirectoryId]) {
-            dispatch(setSelectedDirectory(treeDataRef.current.mapData[nextSelectedDirectoryId]));
-        }
-        // so it removes the style that we added ourselves
-        if (DOMFocusedDirectory !== null) {
-            (DOMFocusedDirectory as HTMLElement).classList.remove('focused');
-            setDOMFocusedDirectory(null);
-        }
-    };
+    const handleOpenDirectoryMenu = useCallback(
+        (event: ReactMouseEvent<HTMLDivElement | HTMLButtonElement, MouseEvent>) => {
+            setOpenDirectoryMenu(true);
+            event.stopPropagation();
+        },
+        []
+    );
+    const handleCloseDirectoryMenu = useCallback(
+        (e: unknown, nextSelectedDirectoryId: string | null = null) => {
+            setOpenDirectoryMenu(false);
+            dispatch(setActiveDirectory(undefined));
+            if (nextSelectedDirectoryId !== null && treeDataRef.current?.mapData?.[nextSelectedDirectoryId]) {
+                dispatch(setSelectedDirectory(treeDataRef.current.mapData[nextSelectedDirectoryId]));
+            }
+            // so it removes the style that we added ourselves
+            if (DOMFocusedDirectory !== null) {
+                (DOMFocusedDirectory as HTMLElement).classList.remove('focused');
+                setDOMFocusedDirectory(null);
+            }
+        },
+        [DOMFocusedDirectory, dispatch]
+    );
 
     /* Menu states */
     const [mousePosition, setMousePosition] = useState<{
         mouseX: number | null;
         mouseY: number | null;
     }>(initialMousePosition);
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const [anchorReference, setAnchorReference] = useState<PopoverReference>('anchorPosition');
+    const anchorPosition = useMemo<PopoverPosition | undefined>(
+        () =>
+            mousePosition.mouseY !== null && mousePosition.mouseX !== null
+                ? {
+                      top: mousePosition.mouseY,
+                      left: mousePosition.mouseX,
+                  }
+                : undefined,
+        [mousePosition.mouseX, mousePosition.mouseY]
+    );
 
     /* User interactions */
     const onContextMenu = useCallback(
-        (event: ReactMouseEvent<HTMLDivElement, MouseEvent>, nodeId: UUID | undefined) => {
+        (
+            event: ReactMouseEvent<HTMLDivElement | HTMLButtonElement, MouseEvent>,
+            nodeId: UUID | undefined,
+            anchorReference2: PopoverReference
+        ) => {
             // to keep the focused style (that is normally lost when opening a contextual menu)
             if (event.currentTarget.parentNode) {
                 (event.currentTarget.parentNode as HTMLElement).classList.add('focused');
@@ -227,14 +283,19 @@ export default function TreeViewsContainer() {
             }
 
             dispatch(setActiveDirectory(nodeId));
-
+            setAnchorReference(anchorReference2);
+            setAnchorEl(event.currentTarget);
             setMousePosition({
                 mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
                 mouseY: event.clientY + constants.VERTICAL_SHIFT,
             });
             handleOpenDirectoryMenu(event);
         },
-        [dispatch]
+        [dispatch, handleOpenDirectoryMenu]
+    );
+    const handleOnContextMenuBox = useCallback<NonNullable<BoxProps['onContextMenu']>>(
+        (e) => onContextMenu(e, undefined, 'anchorPosition'),
+        [onContextMenu]
     );
 
     /* RootDirectories management */
@@ -302,7 +363,7 @@ export default function TreeViewsContainer() {
     );
 
     const updateMapData = useCallback(
-        (nodeId: string, children: ElementAttributes[]) => {
+        (nodeId: string, children: ElementAttributes[], isDirectoryMoving: boolean) => {
             const newSubdirectories = children.filter((child) => child.type === ElementType.DIRECTORY);
 
             const prevPath = buildPathToFromMap(
@@ -317,10 +378,12 @@ export default function TreeViewsContainer() {
 
             insertContent(nodeId, newSubdirectories);
             if (hasToChangeSelected) {
-                // if selected directory (possibly via ancestor)
-                // is deleted by another user
-                // we should select (closest still existing) parent directory
-                dispatch(setSelectedDirectory(treeDataRef.current?.mapData[nodeId] as IDirectory));
+                // if selected directory (possibly via ancestor) is deleted by another user, we should select (closest still existing) parent directory
+                dispatch(
+                    setSelectedDirectory(
+                        isDirectoryMoving ? null : (treeDataRef.current?.mapData[nodeId] as IDirectory)
+                    )
+                );
             }
         },
         [insertContent, dispatch]
@@ -390,17 +453,17 @@ export default function TreeViewsContainer() {
     );
 
     const updateDirectoryTreeAndContent = useCallback(
-        (nodeId: UUID) => {
+        (nodeId: UUID, isDirectoryMoving: boolean) => {
             fetchDirectoryContent(nodeId)
                 .then((childrenToBeInserted) => {
                     // update directory Content
                     updateCurrentChildren(childrenToBeInserted);
                     // Update Tree Map data
-                    updateMapData(nodeId, childrenToBeInserted);
+                    updateMapData(nodeId, childrenToBeInserted, isDirectoryMoving);
                 })
                 .catch((error) => {
                     console.warn(`Could not update subs (and content) of '${nodeId}' : ${error.message}`);
-                    updateMapData(nodeId, []);
+                    updateMapData(nodeId, [], false);
                 });
         },
         [updateCurrentChildren, updateMapData]
@@ -414,7 +477,7 @@ export default function TreeViewsContainer() {
     }, [uploadingElements, currentChildrenRef, mergeCurrentAndUploading, dispatch]);
 
     const updateDirectoryTree = useCallback(
-        (nodeId: UUID, isClose = false) => {
+        (nodeId: UUID, isClose = false, isDirectoryMoving = false) => {
             // quite rare occasion to clean up
             if (isClose) {
                 if (treeDataRef.current?.rootDirectories.some((n) => n.elementUuid === nodeId)) {
@@ -435,11 +498,11 @@ export default function TreeViewsContainer() {
             fetchDirectoryContent(nodeId)
                 .then((childrenToBeInserted) => {
                     // Update Tree Map data
-                    updateMapData(nodeId, childrenToBeInserted);
+                    updateMapData(nodeId, childrenToBeInserted, isDirectoryMoving);
                 })
                 .catch((error) => {
                     console.warn(`Could not update subs of '${nodeId}' : ${error.message}`);
-                    updateMapData(nodeId, []);
+                    updateMapData(nodeId, [], false);
                 });
         },
         [dispatch, updateMapData]
@@ -510,11 +573,11 @@ export default function TreeViewsContainer() {
 
     useEffect(() => {
         if (directoryUpdatedEvent.eventData?.headers) {
-            const notificationTypeH = directoryUpdatedEvent.eventData.headers.notificationType;
-            const { isRootDirectory } = directoryUpdatedEvent.eventData.headers;
+            const { notificationType, isRootDirectory } = directoryUpdatedEvent.eventData.headers;
             const directoryUuid = directoryUpdatedEvent.eventData.headers.directoryUuid as UUID;
             const error = directoryUpdatedEvent.eventData.headers.error as string;
             const elementName = directoryUpdatedEvent.eventData.headers.elementName as string;
+            const isDirectoryMoving = directoryUpdatedEvent.eventData.headers.isDirectoryMoving as boolean;
             if (error) {
                 displayErrorIfExist(error, elementName);
                 dispatch(directoryUpdated({}));
@@ -524,7 +587,7 @@ export default function TreeViewsContainer() {
                 updateRootDirectories();
                 if (
                     selectedDirectoryRef.current != null && // nothing to do if nothing already selected
-                    notificationTypeH === notificationType.DELETE_DIRECTORY &&
+                    notificationType === NotificationType.DELETE_DIRECTORY &&
                     selectedDirectoryRef.current.elementUuid === directoryUuid
                 ) {
                     dispatch(setSelectedDirectory(null));
@@ -538,7 +601,7 @@ export default function TreeViewsContainer() {
 
                 // if it's a deleted root directory then do not continue because we don't need
                 // to fetch its content anymore
-                if (notificationTypeH === notificationType.DELETE_DIRECTORY) {
+                if (notificationType === NotificationType.DELETE_DIRECTORY) {
                     return;
                 }
             }
@@ -548,11 +611,11 @@ export default function TreeViewsContainer() {
                 // else expanded or not then updateDirectoryTree
                 if (selectedDirectoryRef.current != null) {
                     if (directoryUuid === selectedDirectoryRef.current.elementUuid) {
-                        updateDirectoryTreeAndContent(directoryUuid);
+                        updateDirectoryTreeAndContent(directoryUuid, isDirectoryMoving);
                         return; // break here
                     }
                 }
-                updateDirectoryTree(directoryUuid);
+                updateDirectoryTree(directoryUuid, false, isDirectoryMoving);
             }
         }
     }, [
@@ -577,61 +640,60 @@ export default function TreeViewsContainer() {
     // To proc only if selectedDirectory?.elementUuid changed, take care of updateDirectoryTreeAndContent dependencies
     useEffect(() => {
         if (selectedDirectory?.elementUuid) {
-            updateDirectoryTreeAndContent(selectedDirectory.elementUuid);
+            updateDirectoryTreeAndContent(selectedDirectory.elementUuid, false);
         }
     }, [selectedDirectory?.elementUuid, updateDirectoryTreeAndContent]);
 
-    const getActiveDirectory = (): ElementAttributes | null => {
+    // TODO is useMemo work with complex object like this one?
+    const getActiveDirectory = useCallback((): ElementAttributes | null => {
         if (treeDataRef.current?.mapData && activeDirectory && treeDataRef.current?.mapData[activeDirectory]) {
             return treeDataRef.current.mapData[activeDirectory];
         }
         return null;
-    };
+    }, [activeDirectory]);
+
+    const handleOnMouseDown = useCallback<NonNullable<BoxProps['onMouseDown']>>(
+        (e) => {
+            if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON && openDialog === constants.DialogsId.NONE) {
+                handleCloseDirectoryMenu(e, null);
+            }
+        },
+        [handleCloseDirectoryMenu, openDialog]
+    );
+
+    // TODO TypeScript say that treeData.mapData is never falsy?...
+    const directoryViews = useMemo(
+        () =>
+            treeData.mapData &&
+            treeData.rootDirectories.map((rootDirectory) => (
+                <DirectoryTreeView
+                    key={rootDirectory.elementUuid}
+                    treeViewUuid={rootDirectory.elementUuid}
+                    mapData={treeDataRef.current?.mapData}
+                    onContextMenu={onContextMenu}
+                    onDirectoryUpdate={updateDirectoryTree}
+                />
+            )),
+        [onContextMenu, treeData.mapData, treeData.rootDirectories, updateDirectoryTree]
+    );
 
     return (
         <>
-            <Box
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '100%',
-                    flexGrow: 1,
-                }}
-                onContextMenu={(e) => onContextMenu(e, undefined)}
-            >
-                {treeData.mapData &&
-                    treeData.rootDirectories.map((rootDirectory) => (
-                        <DirectoryTreeView
-                            key={rootDirectory.elementUuid}
-                            treeViewUuid={rootDirectory.elementUuid}
-                            mapData={treeDataRef.current?.mapData}
-                            onContextMenu={onContextMenu}
-                            onDirectoryUpdate={updateDirectoryTree}
-                        />
-                    ))}
+            <Box style={styles.treeBox} onContextMenu={handleOnContextMenuBox}>
+                {directoryViews}
             </Box>
-            <Box
-                onMouseDown={(e) => {
-                    if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON && openDialog === constants.DialogsId.NONE) {
-                        handleCloseDirectoryMenu(e, null);
-                    }
-                }}
-            >
+            <Box onMouseDown={handleOnMouseDown}>
                 <DirectoryTreeContextualMenu
                     directory={getActiveDirectory()}
                     open={openDirectoryMenu}
                     openDialog={openDialog}
                     setOpenDialog={setOpenDialog}
+                    // TODO why doing a lambda loosing the 2nd parameter here?
                     onClose={(e: unknown) => handleCloseDirectoryMenu(e, null)}
-                    anchorReference="anchorPosition"
-                    anchorPosition={
-                        mousePosition.mouseY !== null && mousePosition.mouseX !== null
-                            ? {
-                                  top: mousePosition.mouseY,
-                                  left: mousePosition.mouseX,
-                              }
-                            : undefined
-                    }
+                    anchorReference={anchorReference}
+                    anchorPosition={anchorPosition}
+                    anchorEl={anchorEl}
+                    anchorOrigin={anchorOrigin}
                     restrictMenuItems={false}
                 />
             </Box>
