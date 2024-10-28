@@ -88,7 +88,7 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                         });
                 } else {
                     const caseName = getValues(FieldConstants.CASE_NAME);
-                    if (caseFileName && !caseName) {
+                    if (caseFileName && (!caseName || caseName !== caseFileName)) {
                         clearErrors(FieldConstants.CASE_NAME);
                         setValue(FieldConstants.CASE_NAME, caseFileName.substring(0, caseFileName.indexOf('.')), {
                             shouldDirty: true,
