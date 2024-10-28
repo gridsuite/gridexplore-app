@@ -50,13 +50,12 @@ const styles = {
     },
 };
 
-export function TypeCellRenderer({
-    data,
-    childrenMetadata,
-}: {
+export type TypeCellRendererProps = {
     data: ElementAttributes;
     childrenMetadata: Record<UUID, ElementAttributes>;
-}) {
+};
+
+export function TypeCellRenderer({ data, childrenMetadata }: Readonly<TypeCellRendererProps>) {
     const intl = useIntl();
 
     const specificMetadata = childrenMetadata[data?.elementUuid]?.specificMetadata;

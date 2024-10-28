@@ -58,6 +58,26 @@ export interface ExportCaseDialogProps {
     ) => Promise<void>;
 }
 
+/* separate in a function because Sonar don't like nested lambda/functions */
+function transformFetchedFormats(fetchedFormats: ExportFormats): ExportFormats {
+    return Array.isArray(fetchedFormats)
+        ? fetchedFormats
+        : Object.fromEntries(
+              Object.entries(fetchedFormats).map(([key, value]) => [
+                  key,
+                  {
+                      ...value,
+                      parameters: value.parameters.map((param) => {
+                          if (param.type === 'STRING_LIST' && param.name.endsWith('extensions')) {
+                              return { ...param, defaultValue: param.possibleValues };
+                          }
+                          return param;
+                      }),
+                  },
+              ])
+          );
+}
+
 export default function ExportCaseDialog({ selectedElements, onClose, onExport }: Readonly<ExportCaseDialogProps>) {
     const [loading, setLoading] = useState<boolean>(false);
     const [formats, setFormats] = useState<ExportFormats>([]);
@@ -92,24 +112,7 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
             // we check if the param is for extension, if it is, we select all possible values by default.
             // the only way for the moment to check if the param is for extension, is by checking his type is name.
             // TODO to be removed when extensions param default value corrected in backend to include all possible values
-            setFormats(
-                Array.isArray(fetchedFormats)
-                    ? fetchedFormats
-                    : Object.fromEntries(
-                          Object.entries(fetchedFormats).map(([key, value]) => [
-                              key,
-                              {
-                                  ...value,
-                                  parameters: value.parameters.map((param) => {
-                                      if (param.type === 'STRING_LIST' && param.name.endsWith('extensions')) {
-                                          return { ...param, defaultValue: param.possibleValues };
-                                      }
-                                      return param;
-                                  }),
-                              },
-                          ])
-                      )
-            );
+            setFormats(transformFetchedFormats(fetchedFormats));
         });
     }, []);
 

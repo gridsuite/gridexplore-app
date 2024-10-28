@@ -12,11 +12,11 @@ import { ElementAttributes, ElementType, getFileIcon, OverflowableText } from '@
 const isElementCaseOrStudy = (objectType: ElementType) =>
     objectType === ElementType.STUDY || objectType === ElementType.CASE;
 
-const getDisplayedElementName = (
+function getDisplayedElementName(
     data: ElementAttributes,
     childrenMetadata: Record<UUID, ElementAttributes>,
     intl: IntlShape
-) => {
+) {
     const { elementName, uploading, elementUuid } = data;
     const { formatMessage } = intl;
     if (uploading) {
@@ -26,7 +26,7 @@ const getDisplayedElementName = (
         return `${elementName}\n${formatMessage({ id: 'creationInProgress' })}`;
     }
     return childrenMetadata[elementUuid].elementName;
-};
+}
 
 const styles = {
     tableCell: {
@@ -55,13 +55,12 @@ const styles = {
     },
 };
 
-export function NameCellRenderer({
-    data,
-    childrenMetadata,
-}: {
+export type NameCellRendererProps = {
     data: ElementAttributes;
     childrenMetadata: Record<UUID, ElementAttributes>;
-}) {
+};
+
+export function NameCellRenderer({ data, childrenMetadata }: Readonly<NameCellRendererProps>) {
     const intl = useIntl();
     return (
         <Box sx={styles.tableCell}>

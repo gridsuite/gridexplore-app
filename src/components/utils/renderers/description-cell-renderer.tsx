@@ -20,7 +20,9 @@ const styles = {
     },
 };
 
-export function DescriptionCellRenderer({ data }: Readonly<{ data: ElementAttributes }>) {
+export type DescriptionCellRendererProps = { data: ElementAttributes };
+
+export function DescriptionCellRenderer({ data }: Readonly<DescriptionCellRendererProps>) {
     const { description } = data;
     const descriptionLines = description?.split('\n');
     if (descriptionLines?.length > 3) {

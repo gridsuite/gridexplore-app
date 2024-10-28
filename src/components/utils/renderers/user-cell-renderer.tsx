@@ -23,7 +23,9 @@ const styles = {
     },
 };
 
-export function UserCellRenderer({ value }: { value: string }) {
+export type UserCellRendererProps = { value: string };
+
+export function UserCellRenderer({ value }: Readonly<UserCellRendererProps>) {
     return (
         <Box>
             <Tooltip title={value} placement="right">
