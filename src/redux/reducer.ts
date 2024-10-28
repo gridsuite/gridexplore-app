@@ -71,6 +71,8 @@ import {
     ThemeAction,
     TREE_DATA,
     TreeDataAction,
+    REMOVE_UPLOADING_ELEMENT,
+    RemoveUploadingElementAction,
 } from './actions';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { AppState } from './types';
@@ -196,6 +198,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_UPLOADING_ELEMENTS, (state, action: SetUploadingElementsAction) => {
         state.uploadingElements = action.uploadingElements;
+    });
+
+    builder.addCase(REMOVE_UPLOADING_ELEMENT, (state, action: RemoveUploadingElementAction) => {
+        delete state.uploadingElements[action.uploadingElement.id];
     });
 
     builder.addCase(DIRECTORY_UPDATED, (state, action: DirectoryUpdatedAction) => {

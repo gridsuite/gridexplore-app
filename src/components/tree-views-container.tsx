@@ -316,9 +316,7 @@ export default function TreeViewsContainer() {
                     })
                 );
             })
-            .catch((error) => {
-                console.warn(`Could not fetch roots ${error.message}`);
-            });
+            .catch((error) => console.warn(`Could not fetch roots ${error.message}`));
     }, [dispatch]);
 
     /* rootDirectories initialization */
@@ -329,17 +327,9 @@ export default function TreeViewsContainer() {
     }, [user, updateRootDirectories]);
 
     /* Manage current path data */
-    const updatePath = useCallback(
-        (nodeId: UUID | undefined) => {
-            const path = buildPathToFromMap(nodeId, treeData.mapData);
-            dispatch(setCurrentPath(path));
-        },
-        [dispatch, treeData.mapData]
-    );
-
     useEffect(() => {
-        updatePath(selectedDirectoryRef.current?.elementUuid);
-    }, [treeData.mapData, updatePath, selectedDirectory?.elementUuid]);
+        dispatch(setCurrentPath(buildPathToFromMap(selectedDirectoryRef.current?.elementUuid, treeData.mapData)));
+    }, [dispatch, treeData.mapData, selectedDirectory?.elementUuid]);
 
     const insertContent = useCallback(
         (nodeId: string, childrenToBeInserted: ElementAttributes[]) => {
@@ -389,6 +379,22 @@ export default function TreeViewsContainer() {
         [insertContent, dispatch]
     );
 
+    const cleanCreationFailedElementInCurrentElements = useCallback(
+        (currentElements: ElementAttributes[], uploadingElements2: UploadingElement[]): ElementAttributes[] =>
+            currentElements.filter(
+                (currentElement) =>
+                    // if the element is present in currentElement as uploading (with the field id) and not in uploadingElement
+                    // it means it's a failed upload that needs to be removed
+                    !(
+                        currentElement.id &&
+                        uploadingElements2.findIndex(
+                            (uploadingElement) => uploadingElement.id.toString() === currentElement.id
+                        ) === -1
+                    )
+            ),
+        []
+    );
+
     const mergeCurrentAndUploading = useCallback(
         (current: ElementAttributes[]): ElementAttributes[] | undefined => {
             const uploadingElementsInSelectedDirectory = Object.values(uploadingElementsRef.current).filter(
@@ -421,23 +427,31 @@ export default function TreeViewsContainer() {
                         [[] as UploadingElement[], [] as UploadingElement[]]
                     );
 
-                // then remove the ghosts if necessary
+                // then remove the ghosts if the upload succeeded
                 if (toRemoveFromUploadingElements.length > 0) {
                     const newUploadingElements = { ...uploadingElementsRef.current };
                     toRemoveFromUploadingElements.forEach((r) => delete newUploadingElements[r.id]);
-
                     dispatch(setUploadingElements(newUploadingElements));
                 }
-
-                return [...current, ...toKeepToUploadingElements].sort((a, b) =>
+                // remove the ghosts if the upload failed
+                const newCurrentElement = cleanCreationFailedElementInCurrentElements(
+                    current,
+                    uploadingElementsInSelectedDirectory
+                );
+                return [...newCurrentElement, ...toKeepToUploadingElements].sort((a, b) =>
                     a.elementName.localeCompare(b.elementName)
                 ) as ElementAttributes[];
             }
-            return current == null
+            // remove the ghosts if the upload failed
+            const newCurrentElement = cleanCreationFailedElementInCurrentElements(
+                current,
+                uploadingElementsInSelectedDirectory
+            );
+            return newCurrentElement == null
                 ? undefined
-                : [...current].sort((a, b) => a.elementName.localeCompare(b.elementName));
+                : [...newCurrentElement].sort((a, b) => a.elementName.localeCompare(b.elementName));
         },
-        [dispatch]
+        [cleanCreationFailedElementInCurrentElements, dispatch]
     );
 
     /* currentChildren management */
@@ -469,9 +483,9 @@ export default function TreeViewsContainer() {
         [updateCurrentChildren, updateMapData]
     );
 
-    // add ghost studies or ghost cases as soon as possible (uploadingElements)
+    // add ghost studies or ghost cases as soon as possible (uploadingElements) and clean them if necessary
     useEffect(() => {
-        if (Object.values(uploadingElements).length > 0) {
+        if (Object.values(uploadingElements).length > 0 || currentChildrenRef.current?.some((c) => c.uploading)) {
             dispatch(setCurrentChildren(mergeCurrentAndUploading(currentChildrenRef.current ?? [])));
         }
     }, [uploadingElements, currentChildrenRef, mergeCurrentAndUploading, dispatch]);
@@ -496,10 +510,7 @@ export default function TreeViewsContainer() {
             }
 
             fetchDirectoryContent(nodeId)
-                .then((childrenToBeInserted) => {
-                    // Update Tree Map data
-                    updateMapData(nodeId, childrenToBeInserted, isDirectoryMoving);
-                })
+                .then((childrenToBeInserted) => updateMapData(nodeId, childrenToBeInserted, isDirectoryMoving)) // Update Tree Map data
                 .catch((error) => {
                     console.warn(`Could not update subs of '${nodeId}' : ${error.message}`);
                     updateMapData(nodeId, [], false);
@@ -536,19 +547,15 @@ export default function TreeViewsContainer() {
         // That's because wsRef.current could be modified outside of this scope.
         const wsToClose = wsRef.current;
         // cleanup at unmount event
-        return () => {
-            wsToClose.close();
-        };
+        return () => wsToClose.close();
     }, []);
 
     const handleUserMessage = useCallback(
-        (eventData: any) => {
-            const messageValues = JSON.parse(eventData.payload);
+        (eventData: any) =>
             snackWarning({
                 messageId: eventData.headers.userMessage,
-                messageValues,
-            });
-        },
+                messageValues: JSON.parse(eventData.payload),
+            }),
         [snackWarning]
     );
 

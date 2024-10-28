@@ -23,7 +23,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { createCase } from '../../../utils/rest-api';
 import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
-import { addUploadingElement } from '../../../redux/actions';
+import { addUploadingElement, removeUploadingElement } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
 import {
     createCaseDialogFormValidationSchema,
@@ -80,6 +80,7 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
         createCase(caseName, description ?? '', caseFile, activeDirectory)
             .then(onClose)
             .catch((err) => {
+                dispatch(removeUploadingElement(uploadingCase));
                 if (!handleMaxElementsExceededError(err, snackError)) {
                     if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                         snackError({

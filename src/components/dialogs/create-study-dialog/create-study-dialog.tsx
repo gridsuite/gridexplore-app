@@ -30,7 +30,7 @@ import UploadNewCase from '../commons/upload-new-case';
 import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
 import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import ImportParametersSection from './importParametersSection';
-import { addUploadingElement, setActiveDirectory } from '../../../redux/actions';
+import { addUploadingElement, removeUploadingElement, setActiveDirectory } from '../../../redux/actions';
 import {
     createStudyDialogFormValidationSchema,
     CreateStudyDialogFormValues,
@@ -185,7 +185,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
         const uploadingStudy: UploadingElement = {
             id: keyGenerator()(),
             elementName: studyName,
-            directory: directory as UUID,
+            directory,
             type: ElementType.STUDY,
             owner: userId,
             lastModifiedBy: userId,
@@ -208,6 +208,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
                     onClose();
                 })
                 .catch((error) => {
+                    dispatch(removeUploadingElement(uploadingStudy));
                     if (handleMaxElementsExceededError(error, snackError)) {
                         return;
                     }
