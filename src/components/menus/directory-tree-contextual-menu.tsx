@@ -50,7 +50,6 @@ import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import MoveDialog from '../dialogs/move-dialog';
-
 import { buildPathToFromMap } from '../treeview-utils';
 
 export interface DirectoryTreeContextualMenuProps {

@@ -10,7 +10,6 @@ import { useFormContext } from 'react-hook-form';
 import { ElementType, FieldConstants, UniqueNameInput } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { elementExists } from '../../../utils/rest-api';
-
 import { AppState } from '../../../redux/types';
 
 export interface PrefilledNameInputProps {

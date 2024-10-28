@@ -70,7 +70,6 @@ import import_parameters_en from '../translations/external/import-parameters-en'
 import import_parameters_fr from '../translations/external/import-parameters-fr';
 import { store } from '../redux/store';
 import { PARAM_THEME } from '../utils/config-params';
-
 import { AppState } from '../redux/types';
 
 const lightTheme = createTheme({

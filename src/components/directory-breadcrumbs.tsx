@@ -11,7 +11,6 @@ import { FolderOpen as FolderOpenIcon } from '@mui/icons-material';
 import { ElementAttributes, mergeSx } from '@gridsuite/commons-ui';
 import { MouseEvent } from 'react';
 import { setSelectedDirectory } from '../redux/actions';
-
 import { AppState } from '../redux/types';
 
 const styles = {

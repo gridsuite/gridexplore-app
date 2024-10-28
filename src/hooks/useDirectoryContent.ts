@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-
 import { AppState } from '../redux/types';
 
 export const useDirectoryContent = () => {

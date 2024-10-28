@@ -9,11 +9,10 @@ import { useController } from 'react-hook-form';
 import AceEditor, { IAceEditorProps, IEditorProps } from 'react-ace';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { AppState } from '../../../redux/types';
 import 'ace-builds/src-noconflict/mode-groovy';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
-
-import { AppState } from '../../../redux/types';
 
 export interface AceInputProps {
     name: string;
