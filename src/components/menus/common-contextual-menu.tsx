@@ -26,13 +26,17 @@ const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} /
     },
 });
 
-export interface MenuItemType {
-    isDivider?: boolean;
-    messageDescriptorId?: string;
-    callback?: () => void;
-    icon?: ReactNode;
-    disabled?: boolean;
-}
+export type MenuItemType =
+    | {
+          isDivider: true;
+      }
+    | {
+          isDivider?: false;
+          messageDescriptorId?: string;
+          callback?: () => void;
+          icon?: ReactNode;
+          disabled?: boolean;
+      };
 
 export interface CommonContextualMenuProps {
     onClose?: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
@@ -72,17 +76,13 @@ export default function CommonContextualMenu(props: Readonly<CommonContextualMen
         );
     }
 
+    let dividerCount = 0;
     return (
         <StyledMenu keepMounted {...others}>
             {menuItems?.map((menuItem, index) => {
                 if (menuItem.isDivider) {
-                    return (
-                        <Divider
-                            key={`${menuItem.isDivider ? 'divider' : 'menu'}-${
-                                menuItem?.messageDescriptorId ?? 'no_msg'
-                            }`}
-                        />
-                    );
+                    dividerCount += 1;
+                    return <Divider key={`divider${dividerCount}`} />;
                 }
                 return makeMenuItem(
                     index,
