@@ -5,12 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 import { CircularProgress, InputAdornment, TextField, TextFieldProps } from '@mui/material';
-import CheckIcon from '@mui/icons-material/Check';
+import { Check as CheckIcon } from '@mui/icons-material';
 import { ElementType, useDebounce } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
+import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 
 const styles = {
     helperText: {
@@ -19,11 +20,11 @@ const styles = {
     },
 };
 
-interface UseTextValueProps extends Omit<TextFieldProps, 'label' | 'defaultValue'> {
+export interface UseTextValueProps extends Omit<TextFieldProps, 'label' | 'defaultValue'> {
     label: string;
     id?: string;
     defaultValue?: string;
-    adornment?: React.ReactNode;
+    adornment?: ReactNode;
 }
 
 export const useTextValue = ({
@@ -32,11 +33,11 @@ export const useTextValue = ({
     defaultValue = '',
     adornment,
     ...formProps
-}: UseTextValueProps): [string, React.ReactNode, (value: string) => void, boolean] => {
+}: UseTextValueProps): [string, ReactNode, (value: string) => void, boolean] => {
     const [value, setValue] = useState(defaultValue);
     const [hasChanged, setHasChanged] = useState(false);
 
-    const handleChangeValue = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeValue = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         setValue(event.target.value);
         setHasChanged(true);
     }, []);
@@ -68,8 +69,8 @@ export const useTextValue = ({
     return [value, field, setValue, hasChanged];
 };
 
-interface UseNameFieldProps extends UseTextValueProps {
-    parentDirectoryId?: string | null;
+export interface UseNameFieldProps extends UseTextValueProps {
+    parentDirectoryId?: UUID | null;
     elementType: ElementType;
     active: boolean;
     alreadyExistingErrorMessage?: string;
@@ -81,7 +82,7 @@ export const useNameField = ({
     active,
     alreadyExistingErrorMessage,
     ...props
-}: UseNameFieldProps): [string, React.ReactNode, string | undefined, boolean, (value: string) => void, boolean] => {
+}: UseNameFieldProps): [string, ReactNode, string | undefined, boolean, (value: string) => void, boolean] => {
     const [error, setError] = useState<string | undefined>();
     const intl = useIntl();
     const [checking, setChecking] = useState<boolean | undefined>(undefined);
@@ -110,33 +111,31 @@ export const useNameField = ({
 
             if (nameFormatted !== '' && name === props.defaultValue) {
                 setError(
-                    alreadyExistingErrorMessage
-                        ? alreadyExistingErrorMessage
-                        : intl.formatMessage({
-                              id: 'nameAlreadyUsed',
-                          })
+                    alreadyExistingErrorMessage ||
+                        intl.formatMessage({
+                            id: 'nameAlreadyUsed',
+                        })
                 );
                 setChecking(false);
             }
             if (nameFormatted !== '') {
-                //If the name is not only white spaces and not defaultValue
+                // If the name is not only white spaces and not defaultValue
                 doesElementExist(name)
                     .then((data) => {
                         setError(
                             data
-                                ? alreadyExistingErrorMessage
-                                    ? alreadyExistingErrorMessage
-                                    : intl.formatMessage({
+                                ? alreadyExistingErrorMessage ||
+                                      intl.formatMessage({
                                           id: 'nameAlreadyUsed',
                                       })
                                 : ''
                         );
                     })
-                    .catch((error) => {
+                    .catch((error2) => {
                         setError(
                             intl.formatMessage({
                                 id: 'nameValidityCheckErrorMsg',
-                            }) + error.message
+                            }) + error2.message
                         );
                     })
                     .finally(() => {
@@ -159,19 +158,18 @@ export const useNameField = ({
                     <CircularProgress size="1rem" />
                 </InputAdornment>
             );
-        } else {
-            return (
-                <InputAdornment position="end">
-                    <CheckIcon style={{ color: 'green' }} />
-                </InputAdornment>
-            );
         }
+        return (
+            <InputAdornment position="end">
+                <CheckIcon style={{ color: 'green' }} />
+            </InputAdornment>
+        );
     }, [checking, error]);
 
     const [name, field, setName, touched] = useTextValue({
         ...props,
         error: !!error,
-        adornment: adornment,
+        adornment,
     });
 
     useEffect(() => {
