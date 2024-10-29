@@ -5,11 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-function fetchMock() {
+export default function fetchMock() {
     return Promise.resolve({
         ok: true,
         json: () => ({ appsMetadataServerUrl: '' }), // just to remove the error logs when fetching env
     });
 }
-
-export default fetchMock;

@@ -7,36 +7,37 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-
+import {
+    Delete as DeleteIcon,
+    DownloadForOffline,
+    DriveFileMove as DriveFileMoveIcon,
+    FileDownload,
+} from '@mui/icons-material';
+import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { deleteElements, moveElementsToDirectory } from '../../utils/rest-api';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar, { CommonToolbarProps } from './common-toolbar';
 import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
-import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import MoveDialog from '../dialogs/move-dialog';
-import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import * as constants from '../../utils/UIconstants';
 import { DialogsId } from '../../utils/UIconstants';
-import { AppState } from 'redux/reducer';
+import { AppState } from '../../redux/types';
 
 export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
     selectedElements: ElementAttributes[];
 };
 
-const ContentToolbar = (props: ContentToolbarProps) => {
+export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
     const { selectedElements, ...others } = props;
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const { downloadElements, handleConvertCases, stopCasesExports } = useDownloadUtils();
-
+    const [deleteError, setDeleteError] = useState('');
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
 
     const handleLastError = useCallback(
@@ -62,23 +63,25 @@ const ContentToolbar = (props: ContentToolbarProps) => {
         handleCloseDialog();
     }, [handleCloseDialog, stopCasesExports]);
 
-    //TODO: duplicate code detected with content-contextual-menu.tsx (moveElementErrorToString, moveElementOnError and moveCB)
+    // TODO: duplicate code detected with content-contextual-menu.tsx (moveElementErrorToString, moveElementOnError and moveCB)
     const moveElementErrorToString = useCallback(
         (HTTPStatusCode: number) => {
             if (HTTPStatusCode === 403) {
                 return intl.formatMessage({
                     id: 'moveElementNotAllowedError',
                 });
-            } else if (HTTPStatusCode === 404) {
+            }
+            if (HTTPStatusCode === 404) {
                 return intl.formatMessage({ id: 'moveElementNotFoundError' });
             }
+            return undefined;
         },
         [intl]
     );
 
     const moveElementOnError = useCallback(
         (errorMessages: string[], params: unknown, paramsOnErrors: unknown[]) => {
-            let msg = intl.formatMessage(
+            const msg = intl.formatMessage(
                 { id: 'moveElementsFailure' },
                 {
                     pbn: errorMessages.length,
@@ -123,7 +126,7 @@ const ContentToolbar = (props: ContentToolbarProps) => {
 
     const allowsDownload = useMemo(() => {
         const allowedTypes = [ElementType.CASE, ElementType.SPREADSHEET_CONFIG];
-        //if selectedElements contains at least one of the allowed types
+        // if selectedElements contains at least one of the allowed types
         return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress;
     }, [selectedElements, noCreationInProgress]);
 
@@ -132,15 +135,14 @@ const ContentToolbar = (props: ContentToolbarProps) => {
         [selectedElements, noCreationInProgress]
     );
 
-    const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(
         (elementsUuids: string[]) => {
             setDeleteError('');
-            //@ts-expect-error TODO: manage null case
+            // @ts-expect-error TODO: manage null case
             deleteElements(elementsUuids, selectedDirectory.elementUuid)
                 .then(handleCloseDialog)
                 .catch((error) => {
-                    //show the error message and don't close the dialog
+                    // show the error message and don't close the dialog
                     setDeleteError(error.message);
                     handleLastError(error.message);
                 });
@@ -191,19 +193,19 @@ const ContentToolbar = (props: ContentToolbarProps) => {
             case DialogsId.DELETE:
                 return (
                     <DeleteDialog
-                        open={true}
+                        open
                         onClose={handleCloseDialog}
                         onClick={() => handleDeleteElements(selectedElements.map((e) => e.elementUuid))}
                         items={selectedElements}
-                        multipleDeleteFormatMessageId={'deleteMultipleItemsDialogMessage'}
-                        simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
+                        multipleDeleteFormatMessageId="deleteMultipleItemsDialogMessage"
+                        simpleDeleteFormatMessageId="deleteItemDialogMessage"
                         error={deleteError}
                     />
                 );
             case DialogsId.MOVE:
                 return (
                     <MoveDialog
-                        open={true}
+                        open
                         onClose={(selectedDir) => {
                             if (selectedDir.length > 0) {
                                 moveCB([[selectedElements.map((element) => element.elementUuid), selectedDir[0].id]]);
@@ -212,12 +214,8 @@ const ContentToolbar = (props: ContentToolbarProps) => {
                         }}
                         title={intl.formatMessage({ id: 'moveItemTitle' })}
                         validationButtonText={intl.formatMessage(
-                            {
-                                id: 'moveItemValidate',
-                            },
-                            {
-                                nbElements: selectedElements.length,
-                            }
+                            { id: 'moveItemValidate' },
+                            { nbElements: selectedElements.length }
                         )}
                     />
                 );
@@ -239,10 +237,4 @@ const ContentToolbar = (props: ContentToolbarProps) => {
             {renderDialog()}
         </>
     );
-};
-
-ContentToolbar.propTypes = {
-    selectedElements: PropTypes.array,
-};
-
-export default ContentToolbar;
+}

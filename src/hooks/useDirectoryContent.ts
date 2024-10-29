@@ -6,10 +6,10 @@
  */
 
 import { useSelector } from 'react-redux';
-import { useRef, useEffect, useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { AppState } from '../redux/reducer';
+import { AppState } from '../redux/types';
 
 export const useDirectoryContent = () => {
     const currentChildren = useSelector((state: AppState) => state.currentChildren);
@@ -38,8 +38,8 @@ export const useDirectoryContent = () => {
             return;
         }
 
-        let metadata: Record<UUID, ElementAttributes> = {};
-        let childrenToFetchElementsInfos = Object.values(currentChildren).map((e) => e.elementUuid);
+        const metadata: Record<UUID, ElementAttributes> = {};
+        const childrenToFetchElementsInfos = Object.values(currentChildren).map((e) => e.elementUuid);
         if (childrenToFetchElementsInfos.length > 0) {
             fetchElementsInfos(childrenToFetchElementsInfos)
                 .then((res) => {

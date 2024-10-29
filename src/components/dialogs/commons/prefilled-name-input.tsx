@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { UniqueNameInput, ElementType, FieldConstants } from '@gridsuite/commons-ui';
-import { elementExists } from '../../../utils/rest-api';
+import { ElementType, FieldConstants, UniqueNameInput } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { elementExists } from '../../../utils/rest-api';
+import { AppState } from '../../../redux/types';
 
-interface PrefilledNameInputProps {
+export interface PrefilledNameInputProps {
     label: string;
     name: string;
     elementType: ElementType;
@@ -22,7 +22,7 @@ interface PrefilledNameInputProps {
  * Input component that automatically fill the field when a case is uploaded
  * Used for CreateCaseDialog and CreateStudyDialog
  */
-const PrefilledNameInput: FunctionComponent<PrefilledNameInputProps> = ({ label, name, elementType }) => {
+export default function PrefilledNameInput({ label, name, elementType }: Readonly<PrefilledNameInputProps>) {
     const {
         setValue,
         clearErrors,
@@ -63,6 +63,4 @@ const PrefilledNameInput: FunctionComponent<PrefilledNameInputProps> = ({ label,
             onManualChangeCallback={() => setModifiedByUser(true)}
         />
     );
-};
-
-export default PrefilledNameInput;
+}

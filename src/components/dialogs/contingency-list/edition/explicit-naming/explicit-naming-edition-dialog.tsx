@@ -14,19 +14,18 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-
-import { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
+import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
+import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     getContingencyListEmptyFormData,
     getExplicitNamingFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
-import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
 import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-form';
 import ExplicitNamingEditionForm from './explicit-naming-edition-form';
-import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
-import { useDispatch, useSelector } from 'react-redux';
 import { setSelectionForCopy } from '../../../../../redux/actions';
-import { AppState } from 'redux/reducer';
+import { AppState } from '../../../../../redux/types';
 
 interface ExplicitNamingEditionFormData {
     [FieldConstants.NAME]: string;
@@ -40,12 +39,12 @@ interface ExplicitNamingEditionFormData {
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().nullable(),
-    ...getExplicitNamingEditSchema(FieldConstants.EQUIPMENT_TABLE),
+    ...getExplicitNamingEditSchema(),
 });
 
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
 
-interface ExplicitNamingEditionDialogProps {
+export interface ExplicitNamingEditionDialogProps {
     contingencyListId: string;
     contingencyListType: string;
     open: boolean;
@@ -55,7 +54,7 @@ interface ExplicitNamingEditionDialogProps {
     broadcastChannel: BroadcastChannel;
 }
 
-const ExplicitNamingEditionDialog: FunctionComponent<ExplicitNamingEditionDialogProps> = ({
+export default function ExplicitNamingEditionDialog({
     contingencyListId,
     contingencyListType,
     open,
@@ -63,7 +62,7 @@ const ExplicitNamingEditionDialog: FunctionComponent<ExplicitNamingEditionDialog
     titleId,
     name,
     broadcastChannel,
-}) => {
+}: Readonly<ExplicitNamingEditionDialogProps>) {
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
     const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
@@ -103,8 +102,8 @@ const ExplicitNamingEditionDialog: FunctionComponent<ExplicitNamingEditionDialog
         onClose(event);
     };
 
-    const editContingencyList = (contingencyListId: string, contingencyList: ExplicitNamingEditionFormData) => {
-        const equipments = prepareContingencyListForBackend(contingencyListId, contingencyList);
+    const editContingencyList = (contingencyListId2: string, contingencyList: ExplicitNamingEditionFormData) => {
+        const equipments = prepareContingencyListForBackend(contingencyListId2, contingencyList);
         return saveExplicitNamingContingencyList(equipments, contingencyList[FieldConstants.NAME]);
     };
 
@@ -136,7 +135,7 @@ const ExplicitNamingEditionDialog: FunctionComponent<ExplicitNamingEditionDialog
             formSchema={schema}
             formMethods={methods}
             titleId={titleId}
-            removeOptional={true}
+            removeOptional
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
             unscrollableFullHeight
@@ -144,6 +143,4 @@ const ExplicitNamingEditionDialog: FunctionComponent<ExplicitNamingEditionDialog
             {!isFetching && <ExplicitNamingEditionForm />}
         </CustomMuiDialog>
     );
-};
-
-export default ExplicitNamingEditionDialog;
+}
