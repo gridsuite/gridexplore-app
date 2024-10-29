@@ -29,19 +29,29 @@ import {
     insertDirectory,
     insertRootDirectory,
     renameElement,
+    moveElementsToDirectory,
     duplicateSpreadsheetConfig,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
-import { ElementAttributes, ElementType, FilterCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ElementAttributes,
+    ElementType,
+    FilterCreationDialog,
+    TreeViewFinderNodeProps,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
-import { PopoverPosition, PopoverReference } from '@mui/material';
+import { PopoverOrigin, PopoverPosition, PopoverReference } from '@mui/material';
 import { AppState } from 'redux/reducer';
+import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
+import MoveDialog from '../dialogs/move-dialog';
+import { buildPathToFromMap } from '../tree-views-container';
 
 interface DirectoryTreeContextualMenuProps {
     directory: ElementAttributes | null;
@@ -52,6 +62,8 @@ interface DirectoryTreeContextualMenuProps {
     restrictMenuItems: boolean;
     anchorReference?: PopoverReference;
     anchorPosition?: PopoverPosition;
+    anchorEl?: HTMLElement | null;
+    anchorOrigin?: PopoverOrigin;
 }
 
 const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = (props) => {
@@ -63,6 +75,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     const [hideMenu, setHideMenu] = useState(false);
     const { snackError } = useSnackMessage();
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
+    const treeData = useSelector((state: AppState) => state.treeData);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -282,6 +295,17 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 { isDivider: true }
             );
 
+            menuItems.push(
+                {
+                    messageDescriptorId: 'moveDirectory',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.MOVE_DIRECTORY);
+                    },
+                    icon: <DriveFileMoveIcon fontSize="small" />,
+                },
+                { isDivider: true }
+            );
+
             menuItems.push({
                 messageDescriptorId: 'createFolder',
                 callback: () => {
@@ -301,6 +325,24 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
 
         return menuItems;
     };
+
+    const handleMoveDirectory = useCallback(
+        (selectedDir: TreeViewFinderNodeProps[]) => {
+            if (selectedDir.length === 1 && directory) {
+                moveElementsToDirectory([directory.elementUuid], selectedDir[0].id).catch(() => {
+                    const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
+                        ?.map((el) => el.elementName)
+                        .join('/');
+                    snackError({
+                        messageId: 'MovingDirectoryError',
+                        messageValues: { elementPath: path },
+                    });
+                });
+            }
+            handleCloseDialog(null);
+        },
+        [directory, handleCloseDialog, snackError, treeData.mapData]
+    );
 
     const renderDialog = () => {
         switch (openDialog) {
@@ -385,6 +427,20 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 );
             case DialogsId.ADD_NEW_CASE:
                 return <CreateCaseDialog open={true} onClose={handleCloseDialog} />;
+            case DialogsId.MOVE_DIRECTORY:
+                return (
+                    <MoveDialog
+                        open={true}
+                        onClose={handleMoveDirectory}
+                        title={intl.formatMessage(
+                            { id: 'moveDirectoryTitle' },
+                            { directoryName: directory?.elementName }
+                        )}
+                        validationButtonText={intl.formatMessage({
+                            id: 'moveDirectoryValidate',
+                        })}
+                    />
+                );
             default:
                 return null;
         }
