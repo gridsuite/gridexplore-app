@@ -10,24 +10,24 @@ import { useMemo } from 'react';
 import { createTheme, responsiveFontSizes, StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { enUS as MuiCoreEnUS, frFR as MuiCoreFrFR } from '@mui/material/locale';
 import {
+    CardErrorBoundary,
     cardErrorBoundaryEn,
     cardErrorBoundaryFr,
-    CardErrorBoundary,
     commonButtonEn,
     commonButtonFr,
+    csvEn,
+    csvFr,
+    descriptionEn,
+    descriptionFr,
     directoryItemsInputEn,
     directoryItemsInputFr,
     elementSearchEn,
     elementSearchFr,
+    equipmentsEn,
+    equipmentsFr,
     filterEn,
     filterExpertEn,
     filterExpertFr,
-    descriptionEn,
-    descriptionFr,
-    equipmentsEn,
-    equipmentsFr,
-    csvEn,
-    csvFr,
     filterFr,
     flatParametersEn,
     flatParametersFr,
@@ -53,8 +53,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
-import network_modification_locale_en from '../translations/dynamic/network-modifications-locale-en';
-import network_modification_locale_fr from '../translations/dynamic/network-modifications-locale-fr';
 import messages_plugins from '../plugins/translations';
 import aggrid_locale_fr from '../translations/external/aggrid-locale-fr';
 import backend_locale_fr from '../translations/external/backend-locale-fr';
@@ -185,7 +183,6 @@ function getMuiTheme(theme: GsTheme, locale: GsLangUser) {
 const messages: Record<GsLangUser, IntlConfig['messages']> = {
     en: {
         ...messages_en,
-        ...network_modification_locale_en,
         ...loginEn,
         ...topBarEn,
         ...tableEn,
@@ -207,7 +204,6 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
     },
     fr: {
         ...messages_fr,
-        ...network_modification_locale_fr,
         ...loginFr,
         ...topBarFr,
         ...tableFr,
