@@ -97,7 +97,7 @@ export default function UploadNewCase({
                         });
                 } else {
                     const caseName = getValues(FieldConstants.CASE_NAME);
-                    if (currentCaseFileName && !caseName) {
+                    if (currentCaseFileName && caseName !== currentCaseFileName) {
                         clearErrors(FieldConstants.CASE_NAME);
                         setValue(
                             FieldConstants.CASE_NAME,
