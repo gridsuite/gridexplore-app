@@ -25,8 +25,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { AppState } from '../../../../redux/types';
 import { useParameterState } from '../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
-import { getCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
-import CompositeModificationEditionForm from './composite-modification-edition-form';
+import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
+import CompositeModificationForm from './composite-modification-form';
 import { setSelectionForCopy } from '../../../../redux/actions';
 
 const schema = yup.object().shape({
@@ -101,7 +101,7 @@ export default function CompositeModificationDialog({
 
     useEffect(() => {
         setIsFetching(true);
-        getCompositeModificationContent(compositeModificationId)
+        fetchCompositeModificationContent(compositeModificationId)
             .then((response) => {
                 if (response) {
                     setModifications(response);
@@ -155,7 +155,7 @@ export default function CompositeModificationDialog({
         >
             {!isFetching && (
                 <Box sx={unscrollableDialogStyles.unscrollableContainer}>
-                    <CompositeModificationEditionForm />
+                    <CompositeModificationForm />
                     {generateNetworkModificationsList()}
                 </Box>
             )}

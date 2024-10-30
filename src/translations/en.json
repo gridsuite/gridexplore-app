@@ -151,7 +151,7 @@
     "download.message.others": "others",
     "download.error": "An error occurred while downloading element {elementName}",
     "MODIFICATION": "Network modification",
-    "compositeModification": "Composite modification",
+    "compositeNetworkModification": "Composite modification",
     "All": "All",
     "restore": "Restore",
     "DeleteRows": "Delete",

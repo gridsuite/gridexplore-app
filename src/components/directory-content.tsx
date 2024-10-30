@@ -529,7 +529,7 @@ export default function DirectoryContent() {
                 return (
                     <CompositeModificationDialog
                         open
-                        titleId="compositeModification"
+                        titleId="compositeNetworkModification"
                         // @ts-expect-error TODO: manage null case(s) here
                         compositeModificationId={currentNetworkModificationId}
                         onClose={handleCloseCompositeModificationDialog}

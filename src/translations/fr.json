@@ -150,7 +150,7 @@
     "download.message.others": "autres",
     "download.error": "Une erreur est survenue lors du téléchargement de l'élément {elementName}.",
     "MODIFICATION": "Modification de réseau",
-    "compositeModification": "Modification composite",
+    "compositeNetworkModification": "Modification composite",
     "All": "Tous",
     "DeleteRows": "Supprimer",
     "restore": "Restaurer",

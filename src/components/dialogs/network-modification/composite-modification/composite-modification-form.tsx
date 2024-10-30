@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/types';
 import Box from '@mui/material/Box';
 
-export default function CompositeModificationEditionForm() {
+export default function CompositeModificationForm() {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
         <Box>
