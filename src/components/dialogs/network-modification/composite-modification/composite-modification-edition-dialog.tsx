@@ -4,9 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
-import { useParameterState } from '../../use-parameters-dialog';
-import { PARAM_LANGUAGE } from '../../../../utils/config-params';
+import { SyntheticEvent, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import { useForm } from 'react-hook-form';
+import { useIntl } from 'react-intl';
+import { List, ListItem } from '@mui/material';
 import {
     CustomMuiDialog,
     FieldConstants,
@@ -17,17 +21,13 @@ import {
     useSnackMessage,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { AppState } from '../../../../redux/types';
+import { useParameterState } from '../../use-parameters-dialog';
+import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 import { getCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationEditionForm from './composite-modification-edition-form';
-import { List, ListItem } from '@mui/material';
-import { useIntl } from 'react-intl';
-import Divider from '@mui/material/Divider';
-import Box from '@mui/material/Box';
 import { setSelectionForCopy } from '../../../../redux/actions';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -50,14 +50,14 @@ interface CompositeModificationEditionDialogProps {
     broadcastChannel: BroadcastChannel;
 }
 
-export const CompositeModificationEditionDialog: FunctionComponent<CompositeModificationEditionDialogProps> = ({
+export default function CompositeModificationEditionDialog({
     compositeModificationId,
     open,
     onClose,
     titleId,
     name,
     broadcastChannel,
-}: Readonly<CompositeModificationEditionDialogProps>) => {
+}: Readonly<CompositeModificationEditionDialogProps>) {
     const intl = useIntl();
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!compositeModificationId);
@@ -77,7 +77,7 @@ export const CompositeModificationEditionDialog: FunctionComponent<CompositeModi
             return null;
         }
         return intl.formatMessage(
-            { id: 'network_modifications.' + modif.type },
+            { id: `network_modifications ${modif.type}` },
             {
                 ...modif,
                 ...computeLabel(modif),
@@ -87,20 +87,17 @@ export const CompositeModificationEditionDialog: FunctionComponent<CompositeModi
 
     const renderNetworkModificationsList = () => {
         return (
-            <>
-                {modifications && (
-                    <List sx={unscrollableDialogStyles.scrollableContent}>
-                        {modifications.map((modification: NetworkModificationMetadata) => (
-                            <>
-                                <ListItem key={modification.uuid}>
-                                    <Box>{getModificationLabel(modification)}</Box>
-                                </ListItem>
-                                <Divider component="li" />
-                            </>
-                        ))}
-                    </List>
-                )}
-            </>
+            <List sx={unscrollableDialogStyles.scrollableContent}>
+                {modifications &&
+                    modifications.map((modification: NetworkModificationMetadata) => (
+                        <Box key={modification.uuid}>
+                            <ListItem>
+                                <Box>{getModificationLabel(modification)}</Box>
+                            </ListItem>
+                            <Divider component="li" />
+                        </Box>
+                    ))}
+            </List>
         );
     };
 
@@ -151,7 +148,7 @@ export const CompositeModificationEditionDialog: FunctionComponent<CompositeModi
             onClose={closeAndClear}
             titleId={titleId}
             onSave={onSubmit}
-            removeOptional={true}
+            removeOptional
             isDataFetching={isFetching}
             language={languageLocal}
             formSchema={schema}
@@ -166,4 +163,4 @@ export const CompositeModificationEditionDialog: FunctionComponent<CompositeModi
             )}
         </CustomMuiDialog>
     );
-};
+}

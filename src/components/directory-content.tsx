@@ -8,9 +8,6 @@
 import { MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import * as constants from '../utils/UIconstants';
-import CircularProgress from '@mui/material/CircularProgress';
-import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import { Box, Button, CircularProgress, Grid, SxProps, Theme } from '@mui/material';
 import {
     CriteriaBasedFilterEditionDialog,
@@ -27,9 +24,9 @@ import {
 import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
 import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
-import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
+import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import * as constants from '../utils/UIconstants';
-import { ContingencyListType, FilterType } from '../utils/elementType';
+import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
 import { elementExists, getFilterById, updateElement } from '../utils/rest-api';
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
@@ -50,9 +47,6 @@ import NoContentDirectory from './no-content-directory';
 import { CUSTOM_ROW_CLASS, DirectoryContentTable } from './directory-content-table';
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
 import EmptyDirectory from './empty-directory';
-import AddIcon from '@mui/icons-material/Add';
-import { AgGridReact } from 'ag-grid-react';
-import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
 import CompositeModificationEditionDialog from './dialogs/network-modification/composite-modification/composite-modification-edition-dialog';
 import { AppState } from '../redux/types';
 
@@ -200,13 +194,13 @@ export default function DirectoryContent() {
         setElementName('');
     };
 
+    const [currentNetworkModificationId, setCurrentNetworkModificationId] = useState(null);
     const handleCloseCompositeModificationDialog = () => {
         setOpenDialog(constants.DialogsId.NONE);
         setCurrentNetworkModificationId(null);
         setActiveElement(null);
         setElementName('');
     };
-    const [currentNetworkModificationId, setCurrentNetworkModificationId] = useState(null);
 
     /**
      * Filters dialog: window status value to edit Expert filters
@@ -534,8 +528,8 @@ export default function DirectoryContent() {
             case NetworkModificationType.COMPOSITE.id:
                 return (
                     <CompositeModificationEditionDialog
-                        open={true}
-                        titleId={'compositeModification'}
+                        open
+                        titleId="compositeModification"
                         // @ts-expect-error TODO: manage null case(s) here
                         compositeModificationId={currentNetworkModificationId}
                         onClose={handleCloseCompositeModificationDialog}

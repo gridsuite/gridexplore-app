@@ -8,22 +8,20 @@
 import { UniqueNameInput, ElementType, FieldConstants } from '@gridsuite/commons-ui';
 import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/types';
 import Box from '@mui/material/Box';
 
-const CompositeModificationEditionForm = () => {
+export default function CompositeModificationEditionForm() {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
         <Box>
             <UniqueNameInput
                 name={FieldConstants.NAME}
-                label={'nameProperty'}
+                label="nameProperty"
                 elementType={ElementType.MODIFICATION}
                 activeDirectory={activeDirectory}
                 elementExists={elementExists}
             />
         </Box>
     );
-};
-
-export default CompositeModificationEditionForm;
+}

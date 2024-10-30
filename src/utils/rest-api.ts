@@ -508,7 +508,7 @@ export interface CriteriaBasedEditionFormData {
  * Get the basic data of the network modifications contained in a composite modification
  */
 export function getCompositeModificationContent(id: string) {
-    const url: string = PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/composite-modification/' + id;
+    const url: string = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modification/${id}`;
 
     return backendFetchJson(url, {
         method: 'get',
@@ -516,11 +516,10 @@ export function getCompositeModificationContent(id: string) {
 }
 
 export function saveCompositeModification(id: string, name: string) {
-    let urlSearchParams = new URLSearchParams();
+    const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
 
-    const url =
-        PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/composite-modification/' + id + '?' + urlSearchParams.toString();
+    const url: string = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modification/${id}?${urlSearchParams.toString()}`;
 
     return backendFetch(url, {
         method: 'put',
