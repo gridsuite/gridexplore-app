@@ -60,8 +60,6 @@ import { Provider, useSelector } from 'react-redux';
 import App from './app';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
-import network_modification_locale_en from '../translations/dynamic/network-modifications-locale-en';
-import network_modification_locale_fr from '../translations/dynamic/network-modifications-locale-fr';
 import messages_plugins from '../plugins/translations';
 import aggrid_locale_fr from '../translations/external/aggrid-locale-fr';
 import backend_locale_fr from '../translations/external/backend-locale-fr';
@@ -190,7 +188,6 @@ function getMuiTheme(theme: GsTheme, locale: GsLangUser) {
 const messages: Record<GsLangUser, IntlConfig['messages']> = {
     en: {
         ...messages_en,
-        ...network_modification_locale_en,
         ...loginEn,
         ...topBarEn,
         ...tableEn,
@@ -212,7 +209,6 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
     },
     fr: {
         ...messages_fr,
-        ...network_modification_locale_fr,
         ...loginFr,
         ...topBarFr,
         ...tableFr,
