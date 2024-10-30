@@ -47,7 +47,7 @@ import NoContentDirectory from './no-content-directory';
 import { CUSTOM_ROW_CLASS, DirectoryContentTable } from './directory-content-table';
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
 import EmptyDirectory from './empty-directory';
-import CompositeModificationEditionDialog from './dialogs/network-modification/composite-modification/composite-modification-edition-dialog';
+import CompositeModificationDialog from './dialogs/network-modification/composite-modification/composite-modification-dialog';
 import { AppState } from '../redux/types';
 
 const circularProgressSize = '70px';
@@ -527,7 +527,7 @@ export default function DirectoryContent() {
         switch (openDialog) {
             case NetworkModificationType.COMPOSITE.id:
                 return (
-                    <CompositeModificationEditionDialog
+                    <CompositeModificationDialog
                         open
                         titleId="compositeModification"
                         // @ts-expect-error TODO: manage null case(s) here

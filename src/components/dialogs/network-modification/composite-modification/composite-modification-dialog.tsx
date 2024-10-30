@@ -41,7 +41,7 @@ interface FormData {
     [FieldConstants.NAME]: string;
 }
 
-interface CompositeModificationEditionDialogProps {
+interface CompositeModificationDialogProps {
     compositeModificationId: string;
     open: boolean;
     onClose: (event?: SyntheticEvent) => void;
@@ -50,14 +50,14 @@ interface CompositeModificationEditionDialogProps {
     broadcastChannel: BroadcastChannel;
 }
 
-export default function CompositeModificationEditionDialog({
+export default function CompositeModificationDialog({
     compositeModificationId,
     open,
     onClose,
     titleId,
     name,
     broadcastChannel,
-}: Readonly<CompositeModificationEditionDialogProps>) {
+}: Readonly<CompositeModificationDialogProps>) {
     const intl = useIntl();
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!compositeModificationId);
@@ -76,16 +76,14 @@ export default function CompositeModificationEditionDialog({
         if (!modif) {
             return null;
         }
-        return intl.formatMessage(
-            { id: `network_modifications ${modif.type}` },
-            {
-                ...modif,
-                ...computeLabel(modif),
-            }
-        );
+        const labelData = {
+            ...modif,
+            ...computeLabel(modif),
+        };
+        return intl.formatMessage({ id: `network_modifications ${modif.type}` }, labelData);
     };
 
-    const renderNetworkModificationsList = () => {
+    const generateNetworkModificationsList = () => {
         return (
             <List sx={unscrollableDialogStyles.scrollableContent}>
                 {modifications &&
@@ -112,7 +110,7 @@ export default function CompositeModificationEditionDialog({
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'cannotRetrieveCompositeModification',
+                    headerId: 'retrieveCompositeModificationError',
                 });
             })
             .finally(() => setIsFetching(false));
@@ -136,7 +134,7 @@ export default function CompositeModificationEditionDialog({
             .catch((errorMessage) => {
                 snackError({
                     messageTxt: errorMessage,
-                    headerId: 'contingencyListEditingError',
+                    headerId: 'compositeModificationEditingError',
                     headerValues: { name },
                 });
             });
@@ -158,7 +156,7 @@ export default function CompositeModificationEditionDialog({
             {!isFetching && (
                 <Box sx={unscrollableDialogStyles.unscrollableContainer}>
                     <CompositeModificationEditionForm />
-                    {renderNetworkModificationsList()}
+                    {generateNetworkModificationsList()}
                 </Box>
             )}
         </CustomMuiDialog>
