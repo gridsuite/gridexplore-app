@@ -44,6 +44,7 @@
     "CASE": "Case",
     "unsupportedItem": "This element is not eligible",
     "move": "Move",
+    "moveDirectory": "Move folder",
     "rename": "Rename",
     "delete": "Delete",
     "duplicate": "Duplicate",
@@ -120,7 +121,9 @@
     "contingencyTablePartiallyDefinedError": "At least one contingency is partially defined",
     "contingencyTableContainAtLeastOneRowError": "Contingency list should contain at least one contingency ",
     "moveItemTitle": "Move element to another folder",
+    "moveDirectoryTitle": "Move folder ''{directoryName}'' to another folder",
     "moveItemValidate": "{nbElements, plural, =0 {Please select a folder} =1 {Move element} other {Move # elements}}",
+    "moveDirectoryValidate": "Move folder",
     "moveItemContentText": "Please choose a folder",
     "moveElementNotFoundError": "The element or the targeted folder was not found",
     "moveElementNotAllowedError": "You cannot move this element to the targeted folder. Unauthorized action",
@@ -163,6 +166,6 @@
     "pathRetrievingError": "An error occurred while retrieving element path",
     "emptyDirContent": "Your directory is empty",
     "createElement": "ADD AN ELEMENT",
+    "MovingDirectoryError": "An error while moving folder. The following folder has not been moved : {elementPath}",
     "casesAlertThreshold": "You have reached {userUsagePercentage}% of your user quota for cases and studies ({casesCount} elements), therefore you will soon be unable to import further cases or create further studies. Please delete old cases or studies."
-
 }

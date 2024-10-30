@@ -6,29 +6,28 @@
  */
 
 import {
-    useSnackMessage,
     CustomMuiDialog,
-    getCriteriaBasedSchema,
     FieldConstants,
+    getCriteriaBasedSchema,
     NO_SELECTION_FOR_COPY,
+    useSnackMessage,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-
-import { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
+import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from '../../../../../redux/types';
 import {
-    CriteriaBasedData,
     getContingencyListEmptyFormData,
     getCriteriaBasedFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
-import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
-import { useDispatch, useSelector } from 'react-redux';
 import { setSelectionForCopy } from '../../../../../redux/actions';
 import { useParameterState } from '../../../use-parameters-dialog';
+import { CriteriaBasedEditionFormData } from '../../../../../utils/rest-api';
 import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
-import { AppState } from 'redux/reducer';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -38,13 +37,7 @@ const schema = yup.object().shape({
 
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
 
-export interface CriteriaBasedEditionFormData {
-    [FieldConstants.NAME]: string;
-    [FieldConstants.EQUIPMENT_TYPE]?: string | null;
-    [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
-}
-
-interface CriteriaBasedEditionDialogProps {
+export interface CriteriaBasedEditionDialogProps {
     contingencyListId: string;
     contingencyListType: string;
     open: boolean;
@@ -53,7 +46,8 @@ interface CriteriaBasedEditionDialogProps {
     name: string;
     broadcastChannel: BroadcastChannel;
 }
-const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogProps> = ({
+
+export default function CriteriaBasedEditionDialog({
     contingencyListId,
     contingencyListType,
     open,
@@ -61,7 +55,7 @@ const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogPr
     titleId,
     name,
     broadcastChannel,
-}) => {
+}: Readonly<CriteriaBasedEditionDialogProps>) {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
@@ -103,12 +97,8 @@ const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogPr
         onClose(event);
     };
 
-    const editContingencyList = (contingencyListId: string, contingencyList: CriteriaBasedEditionFormData) => {
-        return saveCriteriaBasedContingencyList(contingencyListId, contingencyList);
-    };
-
     const onSubmit = (contingencyList: CriteriaBasedEditionFormData) => {
-        editContingencyList(contingencyListId, contingencyList)
+        saveCriteriaBasedContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === contingencyListId) {
                     dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
@@ -135,7 +125,7 @@ const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogPr
             formSchema={schema}
             formMethods={methods}
             titleId={titleId}
-            removeOptional={true}
+            removeOptional
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
             language={languageLocal}
@@ -144,6 +134,4 @@ const CriteriaBasedEditionDialog: FunctionComponent<CriteriaBasedEditionDialogPr
             {!isFetching && <CriteriaBasedEditionForm />}
         </CustomMuiDialog>
     );
-};
-
-export default CriteriaBasedEditionDialog;
+}

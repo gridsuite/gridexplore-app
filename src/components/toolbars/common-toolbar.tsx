@@ -5,13 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
-
-import EditIcon from '@mui/icons-material/Edit';
-
-import IconButton from '@mui/material/IconButton';
-import { Theme, Toolbar, Tooltip } from '@mui/material';
+import { Edit as EditIcon } from '@mui/icons-material';
+import { IconButton, Theme, Toolbar, Tooltip } from '@mui/material';
 
 const styles = {
     icon: (theme: Theme) => ({
@@ -25,7 +22,7 @@ export type ToolbarItem = {
     tooltipTextId: string;
     callback: () => void;
     disabled: boolean;
-    icon?: React.ReactNode;
+    icon?: ReactNode;
 };
 
 export type CommonToolbarProps = {
@@ -36,7 +33,7 @@ export type CommonToolbarProps = {
 /**
  * Generic CommonToolbar
  */
-const CommonToolbar = (props: CommonToolbarProps) => {
+export default function CommonToolbar(props: Readonly<CommonToolbarProps>) {
     const { items, ...others } = props;
 
     function makeToolbarButton(
@@ -44,7 +41,7 @@ const CommonToolbar = (props: CommonToolbarProps) => {
         tooltipTextId: string,
         callback: () => void,
         disabledItem: boolean,
-        icon: React.ReactNode = <EditIcon fontSize="small" />
+        icon: ReactNode = <EditIcon fontSize="small" />
     ) {
         return (
             <Tooltip title={<FormattedMessage id={tooltipTextId} />} key={key} placement="right">
@@ -60,11 +57,9 @@ const CommonToolbar = (props: CommonToolbarProps) => {
 
     return (
         <Toolbar {...others}>
-            {items.map((item, index) => {
-                return makeToolbarButton(index, item.tooltipTextId, item.callback, item.disabled, item.icon);
-            })}
+            {items.map((item, index) =>
+                makeToolbarButton(index, item.tooltipTextId, item.callback, item.disabled, item.icon)
+            )}
         </Toolbar>
     );
-};
-
-export default CommonToolbar;
+}

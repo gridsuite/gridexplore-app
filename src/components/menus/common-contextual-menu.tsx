@@ -5,17 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
-
-import EditIcon from '@mui/icons-material/Edit';
-
-import Menu, { MenuProps } from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
-import { PopoverPosition, PopoverReference, styled } from '@mui/material';
+import { Edit as EditIcon } from '@mui/icons-material';
+import {
+    Divider,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
+    MenuProps,
+    PopoverPosition,
+    PopoverReference,
+    styled,
+} from '@mui/material';
 
 const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} />)({
     '.MuiMenu-paper': {
@@ -23,15 +26,19 @@ const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} /
     },
 });
 
-export interface MenuItemType {
-    isDivider?: boolean;
-    messageDescriptorId?: string;
-    callback?: () => void;
-    icon?: React.ReactNode;
-    disabled?: boolean;
-}
+export type MenuItemType =
+    | {
+          isDivider: true;
+      }
+    | {
+          isDivider?: false;
+          messageDescriptorId?: string;
+          callback?: () => void;
+          icon?: ReactNode;
+          disabled?: boolean;
+      };
 
-interface CommonContextualMenuProps {
+export interface CommonContextualMenuProps {
     onClose?: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     open: boolean;
     anchorReference?: PopoverReference;
@@ -39,14 +46,14 @@ interface CommonContextualMenuProps {
     menuItems?: MenuItemType[];
 }
 
-const CommonContextualMenu: React.FC<CommonContextualMenuProps> = (props) => {
+export default function CommonContextualMenu(props: Readonly<CommonContextualMenuProps>) {
     const { menuItems, ...others } = props;
 
     function makeMenuItem(
         key: number,
         messageDescriptorId?: string,
         callback?: () => void,
-        icon: React.ReactNode = <EditIcon fontSize="small" />,
+        icon: ReactNode = <EditIcon fontSize="small" />,
         disabled: boolean = false
     ) {
         return (
@@ -69,23 +76,22 @@ const CommonContextualMenu: React.FC<CommonContextualMenuProps> = (props) => {
         );
     }
 
+    let dividerCount = 0;
     return (
         <StyledMenu keepMounted {...others}>
             {menuItems?.map((menuItem, index) => {
                 if (menuItem.isDivider) {
-                    return <Divider key={index} />;
-                } else {
-                    return makeMenuItem(
-                        index,
-                        menuItem.messageDescriptorId,
-                        menuItem.callback,
-                        menuItem.icon,
-                        menuItem.disabled
-                    );
+                    dividerCount += 1;
+                    return <Divider key={`divider${dividerCount}`} />;
                 }
+                return makeMenuItem(
+                    index,
+                    menuItem.messageDescriptorId,
+                    menuItem.callback,
+                    menuItem.icon,
+                    menuItem.disabled
+                );
             })}
         </StyledMenu>
     );
-};
-
-export default CommonContextualMenu;
+}
