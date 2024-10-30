@@ -7,7 +7,7 @@
 
 import { Action } from 'redux';
 import { PARAM_LANGUAGE } from '../utils/config-params';
-import { AppState } from './reducer';
+import { AppState } from './types';
 
 export type AppActions =
     | ThemeAction
@@ -33,7 +33,7 @@ export type ThemeAction = Readonly<Action<typeof SELECT_THEME>> & {
 };
 
 export function selectTheme(theme: AppState['theme']): ThemeAction {
-    return { type: SELECT_THEME, theme: theme };
+    return { type: SELECT_THEME, theme };
 }
 
 export const SELECT_LANGUAGE = 'SELECT_LANGUAGE';
@@ -53,7 +53,7 @@ export type ComputedLanguageAction = Readonly<Action<typeof SELECT_COMPUTED_LANG
 export function selectComputedLanguage(computedLanguage: AppState['computedLanguage']): ComputedLanguageAction {
     return {
         type: SELECT_COMPUTED_LANGUAGE,
-        computedLanguage: computedLanguage,
+        computedLanguage,
     };
 }
 
@@ -61,10 +61,11 @@ export const CURRENT_CHILDREN = 'CURRENT_CHILDREN';
 export type CurrentChildrenAction = Readonly<Action<typeof CURRENT_CHILDREN>> & {
     currentChildren: AppState['currentChildren'];
 };
+
 export function setCurrentChildren(currentChildren: AppState['currentChildren']): CurrentChildrenAction {
     return {
         type: CURRENT_CHILDREN,
-        currentChildren: currentChildren,
+        currentChildren,
     };
 }
 
@@ -76,7 +77,7 @@ export type SelectDirectoryAction = Readonly<Action<typeof SELECT_DIRECTORY>> & 
 export function setSelectedDirectory(selectedDirectory: AppState['selectedDirectory']): SelectDirectoryAction {
     return {
         type: SELECT_DIRECTORY,
-        selectedDirectory: selectedDirectory,
+        selectedDirectory,
     };
 }
 
@@ -84,10 +85,11 @@ export const ACTIVE_DIRECTORY = 'ACTIVE_DIRECTORY';
 export type ActiveDirectoryAction = Readonly<Action<typeof ACTIVE_DIRECTORY>> & {
     activeDirectory: AppState['activeDirectory'];
 };
+
 export function setActiveDirectory(activeDirectory: AppState['activeDirectory']): ActiveDirectoryAction {
     return {
         type: ACTIVE_DIRECTORY,
-        activeDirectory: activeDirectory,
+        activeDirectory,
     };
 }
 
@@ -95,10 +97,11 @@ export const SELECTION_FOR_COPY = 'SELECTION_FOR_COPY';
 export type SelectionForCopyAction = Readonly<Action<typeof SELECTION_FOR_COPY>> & {
     selectionForCopy: AppState['selectionForCopy'];
 };
+
 export function setSelectionForCopy(selectionForCopy: AppState['selectionForCopy']): SelectionForCopyAction {
     return {
         type: SELECTION_FOR_COPY,
-        selectionForCopy: selectionForCopy,
+        selectionForCopy,
     };
 }
 
@@ -122,7 +125,7 @@ export type SetAppsAndUrlsAction = Readonly<Action<typeof SET_APPS_AND_URLS>> & 
 export function setAppsAndUrls(appsAndUrls: AppState['appsAndUrls']): SetAppsAndUrlsAction {
     return {
         type: SET_APPS_AND_URLS,
-        appsAndUrls: appsAndUrls,
+        appsAndUrls,
     };
 }
 
@@ -134,7 +137,7 @@ export type AddUploadingElementAction = Readonly<Action<typeof ADD_UPLOADING_ELE
 export function addUploadingElement(
     uploadingElement: AppState['uploadingElements'][number]
 ): AddUploadingElementAction {
-    return { type: ADD_UPLOADING_ELEMENT, uploadingElement: uploadingElement };
+    return { type: ADD_UPLOADING_ELEMENT, uploadingElement };
 }
 
 export const SET_UPLOADING_ELEMENTS = 'SET_UPLOADING_ELEMENTS';
@@ -143,7 +146,7 @@ export type SetUploadingElementsAction = Readonly<Action<typeof SET_UPLOADING_EL
 };
 
 export function setUploadingElements(uploadingElements: AppState['uploadingElements']): SetUploadingElementsAction {
-    return { type: SET_UPLOADING_ELEMENTS, uploadingElements: uploadingElements };
+    return { type: SET_UPLOADING_ELEMENTS, uploadingElements };
 }
 
 export const REMOVE_UPLOADING_ELEMENT = 'REMOVE_UPLOADING_ELEMENTS';
@@ -154,7 +157,7 @@ export type RemoveUploadingElementAction = Readonly<Action<typeof REMOVE_UPLOADI
 export function removeUploadingElement(
     uploadingElement: AppState['uploadingElements'][number]
 ): RemoveUploadingElementAction {
-    return { type: REMOVE_UPLOADING_ELEMENT, uploadingElement: uploadingElement };
+    return { type: REMOVE_UPLOADING_ELEMENT, uploadingElement };
 }
 
 export const DIRECTORY_UPDATED = 'DIRECTORY_UPDATED';
@@ -174,7 +177,7 @@ export type TreeDataAction = Readonly<Action<typeof TREE_DATA>> & {
 export function setTreeData(treeData: AppState['treeData']): TreeDataAction {
     return {
         type: TREE_DATA,
-        treeData: treeData,
+        treeData,
     };
 }
 
@@ -186,7 +189,7 @@ export type SearchedElementAction = Readonly<Action<typeof SEARCHED_ELEMENT>> & 
 export function setSearchedElement(searchedElement: AppState['searchedElement']): SearchedElementAction {
     return {
         type: SEARCHED_ELEMENT,
-        searchedElement: searchedElement,
+        searchedElement,
     };
 }
 

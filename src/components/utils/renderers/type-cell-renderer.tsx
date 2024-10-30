@@ -4,15 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ElementType, OverflowableText, ElementAttributes } from '@gridsuite/commons-ui';
+import { ElementAttributes, ElementType, OverflowableText } from '@gridsuite/commons-ui';
 import { IntlShape, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
 import { Box } from '@mui/material';
 
 // This function is used to lowercase all the characters in a string except the first one
-const toTitleCase = (str: string) => {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-};
+const toTitleCase = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
 export const getElementTypeTranslation = (
     type: ElementType,
@@ -25,7 +23,7 @@ export const getElementTypeTranslation = (
         case ElementType.FILTER:
         case ElementType.CONTINGENCY_LIST:
             translatedType = intl.formatMessage({
-                id: subtype ? subtype + '_' + type : type,
+                id: subtype ? `${subtype}_${type}` : type,
             });
             break;
         case ElementType.MODIFICATION:
@@ -36,7 +34,7 @@ export const getElementTypeTranslation = (
             break;
     }
 
-    const translatedFormat = formatCase ? ' (' + intl.formatMessage({ id: formatCase }) + ')' : '';
+    const translatedFormat = formatCase ? ` (${intl.formatMessage({ id: formatCase })})` : '';
 
     return `${translatedType}${translatedFormat}`;
 };
@@ -52,13 +50,12 @@ const styles = {
     },
 };
 
-export const TypeCellRenderer = ({
-    data,
-    childrenMetadata,
-}: {
+export type TypeCellRendererProps = {
     data: ElementAttributes;
     childrenMetadata: Record<UUID, ElementAttributes>;
-}) => {
+};
+
+export function TypeCellRenderer({ data, childrenMetadata }: Readonly<TypeCellRendererProps>) {
     const intl = useIntl();
 
     const specificMetadata = childrenMetadata[data?.elementUuid]?.specificMetadata;
@@ -80,4 +77,4 @@ export const TypeCellRenderer = ({
             </Box>
         )
     );
-};
+}

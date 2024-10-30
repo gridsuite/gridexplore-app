@@ -5,21 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { Box } from '@mui/material';
 import {
-    UniqueNameInput,
-    ElementType,
     CriteriaBasedForm,
-    getCriteriaBasedFormData,
+    ElementType,
     FieldConstants,
+    getCriteriaBasedFormData,
+    UniqueNameInput,
     unscrollableDialogStyles,
 } from '@gridsuite/commons-ui';
-import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { elementExists } from '../../../../../utils/rest-api';
+import { AppState } from '../../../../../redux/types';
 import { SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS } from '../../contingency-list-utils';
-import Box from '@mui/material/Box';
 
-const CriteriaBasedEditionForm = () => {
+export default function CriteriaBasedEditionForm() {
     const emptyValues = getCriteriaBasedFormData({}, {});
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
@@ -27,7 +27,7 @@ const CriteriaBasedEditionForm = () => {
             <Box sx={unscrollableDialogStyles.unscrollableHeader}>
                 <UniqueNameInput
                     name={FieldConstants.NAME}
-                    label={'nameProperty'}
+                    label="nameProperty"
                     elementType={ElementType.CONTINGENCY_LIST}
                     activeDirectory={activeDirectory}
                     elementExists={elementExists}
@@ -39,6 +39,4 @@ const CriteriaBasedEditionForm = () => {
             />
         </>
     );
-};
-
-export default CriteriaBasedEditionForm;
+}
