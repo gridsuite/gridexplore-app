@@ -5,28 +5,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-
-import FileCopyIcon from '@mui/icons-material/FileCopy';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
-import PhotoLibrary from '@mui/icons-material/PhotoLibrary';
-import FileCopyTwoToneIcon from '@mui/icons-material/FileCopyTwoTone';
-import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
-import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
-
+import {
+    ContentCopyRounded as ContentCopyRoundedIcon,
+    Delete as DeleteIcon,
+    DoNotDisturbAlt as DoNotDisturbAltIcon,
+    DownloadForOffline,
+    DriveFileMove as DriveFileMoveIcon,
+    FileCopy as FileCopyIcon,
+    FileCopyTwoTone as FileCopyTwoToneIcon,
+    FileDownload,
+    InsertDriveFile as InsertDriveFileIcon,
+    PhotoLibrary,
+} from '@mui/icons-material';
+import {
+    ElementAttributes,
+    ElementType,
+    FilterCreationDialog,
+    TreeViewFinderNodeProps,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { PopoverPosition, PopoverReference } from '@mui/material';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
 import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
-
 import { DialogsId } from '../../utils/UIconstants';
-
 import {
     deleteElements,
     duplicateElement,
@@ -39,30 +47,19 @@ import {
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
 } from '../../utils/rest-api';
-
 import { ContingencyListType, FilterType } from '../../utils/elementType';
-import {
-    ElementAttributes,
-    ElementType,
-    FilterCreationDialog,
-    TreeViewFinderNodeProps,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
-
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
-import { DownloadForOffline, FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
-import { AppState } from 'redux/reducer';
-import { PopoverPosition, PopoverReference } from '@mui/material';
+import { AppState } from '../../redux/types';
 
-interface ContentContextualMenuProps {
+export interface ContentContextualMenuProps {
     activeElement: ElementAttributes;
     selectedElements: ElementAttributes[];
     onUpdateSelectedElements: (elements: ElementAttributes[]) => void;
@@ -75,7 +72,7 @@ interface ContentContextualMenuProps {
     anchorPosition?: PopoverPosition;
 }
 
-const ContentContextualMenu = (props: ContentContextualMenuProps) => {
+export default function ContentContextualMenu(props: Readonly<ContentContextualMenuProps>) {
     const {
         activeElement,
         selectedElements,
@@ -92,6 +89,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
     const dispatch = useDispatch();
     const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
+    const [deleteError, setDeleteError] = useState('');
 
     const { snackError } = useSnackMessage();
 
@@ -125,10 +123,10 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
         ) => {
             dispatch(
                 setSelectionForCopy({
-                    sourceItemUuid: sourceItemUuid,
-                    typeItem: typeItem,
-                    nameItem: nameItem,
-                    descriptionItem: descriptionItem,
+                    sourceItemUuid,
+                    typeItem,
+                    nameItem,
+                    descriptionItem,
                     parentDirectoryUuid: parentDirectoryUuid ?? null,
                     specificTypeItem: specificTypeItem ?? null,
                 })
@@ -136,6 +134,13 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
         },
         [dispatch]
     );
+
+    const handleCloseDialog = useCallback(() => {
+        onClose();
+        setOpenDialog(DialogsId.NONE);
+        setHideMenu(false);
+        setDeleteError('');
+    }, [onClose, setOpenDialog]);
 
     function copyElement(
         typeItem: string,
@@ -154,19 +159,19 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
             specificTypeItem
         );
         broadcastChannel.postMessage({
-            typeItem: typeItem,
-            nameItem: nameItem,
-            descriptionItem: descriptionItem,
-            sourceItemUuid: sourceItemUuid,
-            parentDirectoryUuid: parentDirectoryUuid,
-            specificTypeItem: specificTypeItem,
+            typeItem,
+            nameItem,
+            descriptionItem,
+            sourceItemUuid,
+            parentDirectoryUuid,
+            specificTypeItem,
         });
 
         handleCloseDialog();
     }
 
-    const handleDuplicateError = (error: string) => {
-        return handleLastError(
+    const handleDuplicateError = (error: string) =>
+        handleLastError(
             intl.formatMessage(
                 { id: 'duplicateElementFailure' },
                 {
@@ -175,7 +180,6 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                 }
             )
         );
-    };
 
     const copyItem = () => {
         if (activeElement) {
@@ -191,12 +195,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
                 case ElementType.SPREADSHEET_CONFIG:
                     console.info(
-                        activeElement.type +
-                            ' with uuid ' +
-                            activeElement.elementUuid +
-                            ' from directory ' +
-                            selectedDirectory?.elementUuid +
-                            ' selected for copy'
+                        `${activeElement.type} with uuid ${activeElement.elementUuid} from directory ${selectedDirectory?.elementUuid} selected for copy`
                     );
                     copyElement(
                         activeElement.type,
@@ -208,12 +207,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                     break;
                 case ElementType.CONTINGENCY_LIST:
                     console.info(
-                        activeElement.type +
-                            ' with uuid ' +
-                            activeElement.elementUuid +
-                            ' from directory ' +
-                            selectedDirectory?.elementUuid +
-                            ' selected for copy'
+                        `${activeElement.type} with uuid ${activeElement.elementUuid} from directory ${selectedDirectory?.elementUuid} selected for copy`
                     );
                     copyElement(
                         activeElement.type,
@@ -287,26 +281,18 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
         }
     };
 
-    const handleCloseDialog = useCallback(() => {
-        onClose();
-        setOpenDialog(DialogsId.NONE);
-        setHideMenu(false);
-        setDeleteError('');
-    }, [onClose, setOpenDialog]);
-
     const handleCloseExportDialog = useCallback(() => {
         stopCasesExports();
         handleCloseDialog();
     }, [handleCloseDialog, stopCasesExports]);
 
-    const [deleteError, setDeleteError] = useState('');
     const handleDeleteElements = useCallback(
         (elementsUuids: string[]) => {
             setDeleteError('');
             // @ts-expect-error TODO: manage null case
             deleteElements(elementsUuids, selectedDirectory?.elementUuid)
                 .then(() => handleCloseDialog())
-                //show the error message and don't close the dialog
+                // show the error message and don't close the dialog
                 .catch((error) => {
                     setDeleteError(error.message);
                     handleLastError(error.message);
@@ -321,16 +307,18 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                 return intl.formatMessage({
                     id: 'moveElementNotAllowedError',
                 });
-            } else if (HTTPStatusCode === 404) {
+            }
+            if (HTTPStatusCode === 404) {
                 return intl.formatMessage({ id: 'moveElementNotFoundError' });
             }
+            return undefined;
         },
         [intl]
     );
 
     const moveElementOnError = useCallback(
         (errorMessages: string[], params: unknown, paramsOnErrors: unknown[]) => {
-            let msg = intl.formatMessage(
+            const msg = intl.formatMessage(
                 { id: 'moveElementsFailure' },
                 {
                     pbn: errorMessages.length,
@@ -368,7 +356,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                     nameItem: renamedElement[1],
                 });
             }
-            //update selected elements if element is renamed
+            // update selected elements if element is renamed
             const updatedSelectedElements = selectedElements.map((element) => {
                 if (element.elementUuid === renamedElement[0]) {
                     return { ...element, elementName: renamedElement[1] };
@@ -384,10 +372,12 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                 return intl.formatMessage({
                     id: 'renameElementNotAllowedError',
                 });
-            } else if (HTTPStatusCode === 404) {
+            }
+            if (HTTPStatusCode === 404) {
                 // == NOT FOUND
                 return intl.formatMessage({ id: 'renameElementNotFoundError' });
             }
+            return undefined;
         },
         undefined,
         false
@@ -425,31 +415,30 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
         false
     );
 
-    const noCreationInProgress = useCallback(() => {
-        return selectedElements.every((el) => el.hasMetadata);
-    }, [selectedElements]);
+    const noCreationInProgress = useCallback(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
 
     // Allowance
-    const isUserAllowed = useCallback(() => {
-        return selectedElements.every((el) => {
-            return el.owner === userId;
-        });
-    }, [selectedElements, userId]);
+    const isUserAllowed = useCallback(
+        () => selectedElements.every((el) => el.owner === userId),
+        [selectedElements, userId]
+    );
 
-    const allowsDelete = useCallback(() => {
-        return isUserAllowed() && selectedElements.every((el) => el.elementUuid != null);
-    }, [isUserAllowed, selectedElements]);
+    const allowsDelete = useCallback(
+        () => isUserAllowed() && selectedElements.every((el) => el.elementUuid != null),
+        [isUserAllowed, selectedElements]
+    );
 
-    const allowsRename = useCallback(() => {
-        return selectedElements.length === 1 && isUserAllowed() && selectedElements[0].hasMetadata;
-    }, [isUserAllowed, selectedElements]);
+    const allowsRename = useCallback(
+        () => selectedElements.length === 1 && isUserAllowed() && selectedElements[0].hasMetadata,
+        [isUserAllowed, selectedElements]
+    );
 
-    const allowsMove = useCallback(() => {
-        return (
+    const allowsMove = useCallback(
+        () =>
             selectedElements.every((element) => element.type !== ElementType.DIRECTORY && element.hasMetadata) &&
-            isUserAllowed()
-        );
-    }, [isUserAllowed, selectedElements]);
+            isUserAllowed(),
+        [isUserAllowed, selectedElements]
+    );
 
     const allowsDuplicateAndCopy = useCallback(() => {
         const allowedTypes = [
@@ -473,21 +462,21 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
         return hasMetadata && isSingleElement && isAllowedType;
     }, [selectedElements]);
 
-    const allowsCreateNewStudyFromCase = useCallback(() => {
-        return (
+    const allowsCreateNewStudyFromCase = useCallback(
+        () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CASE &&
-            selectedElements[0].hasMetadata
-        );
-    }, [selectedElements]);
+            selectedElements[0].hasMetadata,
+        [selectedElements]
+    );
 
-    const allowsCopyContingencyToScript = useCallback(() => {
-        return (
+    const allowsCopyContingencyToScript = useCallback(
+        () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id
-        );
-    }, [selectedElements]);
+            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id,
+        [selectedElements]
+    );
 
     const allowsReplaceContingencyWithScript = useCallback(() => {
         return (
@@ -498,33 +487,33 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
         );
     }, [isUserAllowed, selectedElements]);
 
-    const allowsConvertFilterIntoExplicitNaming = useCallback(() => {
-        return (
+    const allowsConvertFilterIntoExplicitNaming = useCallback(
+        () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.FILTER &&
             selectedElements[0].subtype !== FilterType.EXPLICIT_NAMING.id &&
-            isUserAllowed()
-        );
-    }, [isUserAllowed, selectedElements]);
+            isUserAllowed(),
+        [isUserAllowed, selectedElements]
+    );
 
     const allowsDownload = useCallback(() => {
         const allowedTypes = [ElementType.CASE, ElementType.SPREADSHEET_CONFIG];
-        //if selectedElements contains at least one of the allowed types
+        // if selectedElements contains at least one of the allowed types
         return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
 
     const allowsExportCase = useCallback(() => {
-        //if selectedElements contains at least one case
+        // if selectedElements contains at least one case
         return selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
 
     const buildMenu = () => {
         if (selectedElements.length === 0) {
-            return;
+            return undefined;
         }
 
         // build menuItems here
-        let menuItems = [];
+        const menuItems = [];
 
         if (allowsRename()) {
             menuItems.push({
@@ -650,11 +639,11 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
             case DialogsId.RENAME:
                 return (
                     <RenameDialog
-                        open={true}
+                        open
                         onClose={handleCloseDialog}
                         onClick={(elementName) => renameCB(activeElement?.elementUuid, elementName)}
                         title={intl.formatMessage({ id: 'renameElement' })}
-                        message={'renameElementMsg'}
+                        message="renameElementMsg"
                         currentName={activeElement ? activeElement.elementName : ''}
                         type={activeElement ? activeElement.type : ('' as ElementType)}
                         error={renameState.errorMessage}
@@ -663,19 +652,19 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
             case DialogsId.DELETE:
                 return (
                     <DeleteDialog
-                        open={true}
+                        open
                         onClose={handleCloseDialog}
                         onClick={() => handleDeleteElements(selectedElements.map((e) => e.elementUuid))}
                         items={selectedElements}
-                        multipleDeleteFormatMessageId={'deleteMultipleItemsDialogMessage'}
-                        simpleDeleteFormatMessageId={'deleteItemDialogMessage'}
+                        multipleDeleteFormatMessageId="deleteMultipleItemsDialogMessage"
+                        simpleDeleteFormatMessageId="deleteItemDialogMessage"
                         error={deleteError}
                     />
                 );
             case DialogsId.MOVE:
                 return (
                     <MoveDialog
-                        open={true}
+                        open
                         onClose={(selectedDir: TreeViewFinderNodeProps[]) => {
                             if (selectedDir.length > 0) {
                                 moveCB([[selectedElements.map((element) => element.elementUuid), selectedDir[0].id]]);
@@ -683,12 +672,8 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                             handleCloseDialog();
                         }}
                         validationButtonText={intl.formatMessage(
-                            {
-                                id: 'moveItemValidate',
-                            },
-                            {
-                                nbElements: selectedElements.length,
-                            }
+                            { id: 'moveItemValidate' },
+                            { nbElements: selectedElements.length }
                         )}
                         title={intl.formatMessage({ id: 'moveItemTitle' })}
                     />
@@ -705,8 +690,9 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                 return (
                     <ReplaceWithScriptDialog
                         id={activeElement ? activeElement.elementUuid : ''}
-                        open={true}
+                        open
                         onClose={handleCloseDialog}
+                        // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
                         onClick={(id) => replaceFormContingencyListWithScriptCB(id, selectedDirectory?.elementUuid)}
                         title={intl.formatMessage({ id: 'replaceList' })}
                     />
@@ -715,13 +701,14 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                 return (
                     <CopyToScriptDialog
                         id={activeElement ? activeElement.elementUuid : ''}
-                        open={true}
+                        open
                         onClose={handleCloseDialog}
                         onValidate={(id, newName) =>
+                            // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
                             newScriptFromFiltersContingencyListCB(id, newName, selectedDirectory?.elementUuid)
                         }
                         currentName={activeElement ? activeElement.elementName : ''}
-                        title={'copyToScriptList'}
+                        title="copyToScriptList"
                         // @ts-expect-error TODO: manage undefined case
                         directoryUuid={selectedDirectory?.elementUuid}
                         elementType={activeElement?.type}
@@ -732,8 +719,9 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                 return (
                     <ReplaceWithScriptDialog
                         id={activeElement ? activeElement.elementUuid : ''}
-                        open={true}
+                        open
                         onClose={handleCloseDialog}
+                        // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
                         onClick={(id) => FiltersReplaceWithScriptCB(id, selectedDirectory?.elementUuid)}
                         title={intl.formatMessage({ id: 'replaceList' })}
                     />
@@ -742,11 +730,12 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                 return (
                     <CopyToScriptDialog
                         id={activeElement ? activeElement.elementUuid : ''}
-                        open={true}
+                        open
                         onClose={handleCloseDialog}
+                        // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
                         onValidate={(id, newName) => newScriptFromFilterCB(id, newName, selectedDirectory?.elementUuid)}
                         currentName={activeElement ? activeElement.elementName : ''}
-                        title={'copyToScriptList'}
+                        title="copyToScriptList"
                         // @ts-expect-error TODO: manage undefined case
                         directoryUuid={selectedDirectory?.elementUuid}
                         elementType={activeElement?.type}
@@ -756,7 +745,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
             case DialogsId.CONVERT_TO_EXPLICIT_NAMING_FILTER:
                 return (
                     <FilterCreationDialog
-                        open={true}
+                        open
                         onClose={handleCloseDialog}
                         sourceFilterForExplicitNamingConversion={{
                             id: activeElement.elementUuid,
@@ -769,9 +758,7 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                     />
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:
-                return (
-                    <CreateStudyDialog open={true} onClose={handleCloseDialog} providedExistingCase={activeElement} />
-                );
+                return <CreateStudyDialog open onClose={handleCloseDialog} providedExistingCase={activeElement} />;
             default:
                 return null;
         }
@@ -784,11 +771,9 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
             {renderDialog()}
         </>
     );
-};
+}
 
 ContentContextualMenu.propTypes = {
     onUpdateSelectedElements: PropTypes.func,
     onClose: PropTypes.func,
 };
-
-export default ContentContextualMenu;

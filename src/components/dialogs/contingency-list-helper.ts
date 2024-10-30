@@ -6,7 +6,7 @@
  */
 import { FieldConstants } from '@gridsuite/commons-ui';
 
-interface ContingencyList {
+export interface ContingencyList {
     [FieldConstants.NAME]: string;
     [FieldConstants.EQUIPMENT_TABLE]?: {
         [FieldConstants.CONTINGENCY_NAME]?: string | null | undefined;
@@ -14,12 +14,12 @@ interface ContingencyList {
     }[];
 }
 
-interface Identifier {
+export interface Identifier {
     type: 'ID_BASED';
     identifier?: string | null;
 }
 
-interface IdentifierList {
+export interface IdentifierList {
     type: 'LIST';
     contingencyId: string;
     identifierList?: Identifier[];
@@ -43,22 +43,20 @@ export const prepareContingencyListForBackend = (
     const identifiersList: IdentifierList[] =
         contingencyList[FieldConstants.EQUIPMENT_TABLE]?.map((contingency) => {
             const identifierList: Identifier[] =
-                contingency[FieldConstants.EQUIPMENT_IDS]?.map((identifier) => {
-                    return {
-                        type: 'ID_BASED',
-                        identifier: identifier ?? null,
-                    };
-                }) ?? [];
+                contingency[FieldConstants.EQUIPMENT_IDS]?.map((identifier) => ({
+                    type: 'ID_BASED',
+                    identifier: identifier ?? null,
+                })) ?? [];
 
             return {
                 type: 'LIST',
                 contingencyId: contingency[FieldConstants.CONTINGENCY_NAME] ?? '',
-                identifierList: identifierList,
+                identifierList,
             };
         }) ?? [];
 
     return {
-        id: id,
+        id,
         identifierContingencyList: {
             type: 'identifier',
             version: '1.2',
