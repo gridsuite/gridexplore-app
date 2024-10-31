@@ -530,8 +530,7 @@ export default function DirectoryContent() {
                     <CompositeModificationDialog
                         open
                         titleId="compositeNetworkModification"
-                        // @ts-expect-error TODO: manage null case(s) here
-                        compositeModificationId={currentNetworkModificationId}
+                        compositeModificationId={currentNetworkModificationId ? currentNetworkModificationId : ''}
                         onClose={handleCloseCompositeModificationDialog}
                         name={name}
                         broadcastChannel={broadcastChannel}
