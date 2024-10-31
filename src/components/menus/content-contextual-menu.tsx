@@ -72,16 +72,8 @@ export interface ContentContextualMenuProps {
 }
 
 export default function ContentContextualMenu(props: Readonly<ContentContextualMenuProps>) {
-    const {
-        activeElement,
-        selectedElements,
-        open,
-        onClose,
-        openDialog,
-        setOpenDialog,
-        broadcastChannel,
-        ...others
-    } = props;
+    const { activeElement, selectedElements, open, onClose, openDialog, setOpenDialog, broadcastChannel, ...others } =
+        props;
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
     const intl = useIntl();
     const dispatch = useDispatch();
