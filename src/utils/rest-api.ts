@@ -25,6 +25,7 @@ import { IncomingHttpHeaders } from 'node:http';
 import { User } from 'oidc-client';
 import { CriteriaBasedEditionFormData } from '../components/dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
+import { UsersIdentities } from './user-identities.type';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/user-admin';
 const PREFIX_CONFIG_NOTIFICATION_WS = import.meta.env.VITE_WS_GATEWAY + '/config-notification';
@@ -183,29 +184,6 @@ export function fetchVersion() {
             return reason;
         });
 }
-
-export type UserIdentity = {
-    firstName: string;
-    lastName: string;
-};
-
-export type UsersIdentitiesMap = {
-    [sub: string]: UserIdentity;
-};
-
-export type UserIdentityError = {
-    sub: string;
-    code: string;
-};
-
-export type UsersIdentitiesErrorMAp = {
-    [sub: string]: UserIdentity;
-};
-
-export type UsersIdentities = {
-    data: UsersIdentitiesMap;
-    errors: UsersIdentitiesErrorMAp;
-};
 
 export function fetchUsersIdentities(elementUuids: string[]) {
     console.info('fetching users identities for elements : %s', elementUuids);
