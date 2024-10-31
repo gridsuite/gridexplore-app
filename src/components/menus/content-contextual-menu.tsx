@@ -62,7 +62,6 @@ import { AppState } from '../../redux/types';
 export interface ContentContextualMenuProps {
     activeElement: ElementAttributes;
     selectedElements: ElementAttributes[];
-    onUpdateSelectedElements: (elements: ElementAttributes[]) => void;
     open: boolean;
     onClose: () => void;
     openDialog: string;
@@ -76,7 +75,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const {
         activeElement,
         selectedElements,
-        onUpdateSelectedElements,
         open,
         onClose,
         openDialog,
@@ -356,14 +354,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     nameItem: renamedElement[1],
                 });
             }
-            // update selected elements if element is renamed
-            const updatedSelectedElements = selectedElements.map((element) => {
-                if (element.elementUuid === renamedElement[0]) {
-                    return { ...element, elementName: renamedElement[1] };
-                }
-                return element;
-            });
-            onUpdateSelectedElements(updatedSelectedElements);
 
             handleCloseDialog();
         },
@@ -774,6 +764,5 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 }
 
 ContentContextualMenu.propTypes = {
-    onUpdateSelectedElements: PropTypes.func,
     onClose: PropTypes.func,
 };
