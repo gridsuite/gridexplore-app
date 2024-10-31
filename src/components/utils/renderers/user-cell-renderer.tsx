@@ -15,14 +15,14 @@ function getAvatarChildren(name: string) {
     return `${splittedName[0][0]}`;
 }
 
-function stringAvatar(name: string, theme: Theme) {
+function stringAvatar(name: string) {
     return {
-        sx: {
+        sx: (theme: Theme) => ({
             cursor: 'pointer',
             height: '32px',
             width: '32px',
             fontSize: theme.typography.fontSize,
-        },
+        }),
         children: getAvatarChildren(name),
     };
 }
