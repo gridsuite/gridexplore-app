@@ -7,7 +7,10 @@
 import { Avatar, Box, Theme, useTheme } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 
-function getAvatarChildren(name: string) {
+function getAbbreviationFromUserName(name: string) {
+    if (name === null) {
+        return '';
+    }
     const splittedName = name.split(' ');
     if (splittedName.length > 1) {
         return `${splittedName[0][0]}${splittedName[splittedName.length - 1][0]}`;
@@ -15,7 +18,7 @@ function getAvatarChildren(name: string) {
     return `${splittedName[0][0]}`;
 }
 
-function stringAvatar(name: string) {
+function avatarProps(name: string) {
     return {
         sx: (theme: Theme) => ({
             cursor: 'pointer',
@@ -23,16 +26,15 @@ function stringAvatar(name: string) {
             width: '32px',
             fontSize: theme.typography.fontSize,
         }),
-        children: getAvatarChildren(name),
+        children: getAbbreviationFromUserName(name),
     };
 }
 
 export const UserCellRenderer = ({ value }: { value: string }) => {
-    const theme = useTheme();
     return (
         <Box sx={{ display: 'inline-flex', verticalAlign: 'middle' }}>
             <Tooltip title={value} placement="right">
-                <Avatar {...stringAvatar(value, theme)} />
+                <Avatar {...avatarProps(value)} />
             </Tooltip>
         </Box>
     );
