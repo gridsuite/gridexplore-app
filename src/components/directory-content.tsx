@@ -530,7 +530,7 @@ export default function DirectoryContent() {
                     <CompositeModificationDialog
                         open
                         titleId="compositeNetworkModification"
-                        compositeModificationId={currentNetworkModificationId ? currentNetworkModificationId : ''}
+                        compositeModificationId={currentNetworkModificationId ?? ''}
                         onClose={handleCloseCompositeModificationDialog}
                         name={name}
                         broadcastChannel={broadcastChannel}
