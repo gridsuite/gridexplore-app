@@ -508,7 +508,7 @@ export interface CriteriaBasedEditionFormData {
  * Get the basic data of the network modifications contained in a composite modification
  */
 export function fetchCompositeModificationContent(id: string) {
-    const url: string = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modification/${id}`;
+    const url: string = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modification/${id}/network-modifications`;
 
     return backendFetchJson(url, {
         method: 'get',
