@@ -10,7 +10,7 @@ import Tooltip from '@mui/material/Tooltip';
 function getAvatarChildren(name: string) {
     const splittedName = name.split(' ');
     if (splittedName.length > 1) {
-        return `${splittedName[0][0]}${splittedName[1][0]}`;
+        return `${splittedName[0][0]}${splittedName[splittedName.length - 1][0]}`;
     }
     return `${splittedName[0][0]}`;
 }
