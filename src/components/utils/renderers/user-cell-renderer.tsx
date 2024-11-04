@@ -8,7 +8,7 @@ import { Avatar, Box, Theme } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 
 function getAbbreviationFromUserName(name: string) {
-    if (name === null) {
+    if (name === null || name.trim() === '') {
         return '';
     }
     const splittedName = name.split(' ');
