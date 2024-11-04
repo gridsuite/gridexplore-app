@@ -175,13 +175,6 @@ const ContentToolbar = (props: ContentToolbarProps) => {
                     icon: <FileDownload fontSize="small" />,
                     disabled: !selectedElements.length || !allowsDownload,
                 }
-                /*  // disabled until fix
-                {
-                    tooltipTextId: 'download.export.button',
-                    callback: () => handleOpenDialog(DialogsId.EXPORT),
-                    icon: <DownloadForOffline fontSize="small" />,
-                    disabled: !selectedElements.length || !allowsExportCases,
-                }*/
             );
         }
         return toolbarItems;

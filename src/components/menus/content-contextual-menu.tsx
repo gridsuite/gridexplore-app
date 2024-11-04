@@ -513,12 +513,6 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
         return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
 
-    // disabled until fix bug from the back side
-    /*    const allowsExportCase = useCallback(() => {
-        //if selectedElements contains at least one case
-        return selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress();
-    }, [selectedElements, noCreationInProgress]);*/
-
     const buildMenu = () => {
         if (selectedElements.length === 0) {
             return;
@@ -606,14 +600,6 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
                 icon: <FileDownload fontSize="small" />,
             });
         }
-        // disabled until fix bug from the back side
-        /*        if (allowsExportCase()) {
-            menuItems.push({
-                messageDescriptorId: 'download.export.button',
-                callback: () => handleOpenDialog(DialogsId.EXPORT),
-                icon: <DownloadForOffline fontSize="small" />,
-            });
-        }*/
 
         if (allowsReplaceContingencyWithScript()) {
             menuItems.push({
