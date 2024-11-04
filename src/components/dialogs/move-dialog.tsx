@@ -5,19 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DirectoryItemSelector, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
+import { DirectoryItemSelector, ElementType, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { ElementType } from '@gridsuite/commons-ui';
-import { FunctionComponent } from 'react';
 
-interface MoveDialogProps {
+export interface MoveDialogProps {
     open: boolean;
     onClose: (selectedDir: TreeViewFinderNodeProps[]) => void;
     validationButtonText: string;
     title: string;
 }
 
-const MoveDialog: FunctionComponent<MoveDialogProps> = ({ open, onClose, validationButtonText, title }) => {
+export default function MoveDialog({ open, onClose, validationButtonText, title }: Readonly<MoveDialogProps>) {
     const intl = useIntl();
 
     return (
@@ -32,6 +30,4 @@ const MoveDialog: FunctionComponent<MoveDialogProps> = ({ open, onClose, validat
             contentText={intl.formatMessage({ id: 'moveItemContentText' })}
         />
     );
-};
-
-export default MoveDialog;
+}

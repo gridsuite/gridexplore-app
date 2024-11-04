@@ -5,28 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef } from 'react';
-
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
-import Zoom from '@mui/material/Zoom';
-
+import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { ChevronRight as ChevronRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import { Box, PopoverReference, SxProps, Theme, Tooltip, Typography, Zoom } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDirectory } from '../redux/actions';
-import CustomTreeItem from './custom-tree-item';
-import { Box, PopoverReference, Theme } from '@mui/material';
 import { TreeView } from '@mui/x-tree-view';
-import { AppState, IDirectory } from '../redux/reducer';
 import { ElementAttributes } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
+// eslint-disable-next-line import/no-extraneous-dependencies -- lib from MUI
+import { Property } from 'csstype';
+import CustomTreeItem from './custom-tree-item';
+import { setSelectedDirectory } from '../redux/actions';
+import { AppState, IDirectory } from '../redux/types';
 
 const styles = {
-    treeViewRoot: (theme: Theme) => ({
+    treeViewRoot: (theme) => ({
         padding: theme.spacing(0.5),
     }),
-    treeItemRoot: (theme: Theme) => ({
+    treeItemRoot: (theme) => ({
         userSelect: 'none',
         '&:focus > .MuiTreeItem-content .MuiTreeItem-label, .focused': {
             borderRadius: theme.spacing(2),
@@ -37,12 +33,12 @@ const styles = {
             backgroundColor: theme.row.primary,
         },
     }),
-    treeItemSelected: (theme: Theme) => ({
+    treeItemSelected: (theme) => ({
         borderRadius: theme.spacing(2),
-        backgroundColor: theme.row.hover,
+        backgroundColor: theme.row.hover as Property.BackgroundColor,
         fontWeight: 'bold',
     }),
-    treeItemContent: (theme: Theme) => ({
+    treeItemContent: (theme) => ({
         paddingRight: theme.spacing(1),
         paddingLeft: theme.spacing(1),
     }),
@@ -51,7 +47,7 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
     },
-    treeItemLabel: (theme: Theme) => ({
+    treeItemLabel: (theme) => ({
         flexGrow: 1,
         overflow: 'hidden',
         paddingRight: theme.spacing(1),
@@ -59,11 +55,11 @@ const styles = {
         fontWeight: 'inherit',
         color: 'inherit',
     }),
-    treeItemHovered: (theme: Theme) => ({
-        backgroundColor: theme.aggrid.highlightColor + '!important',
+    treeItemHovered: (theme) => ({
+        backgroundColor: `${theme.aggrid.highlightColor}!important`,
         borderRadius: theme.spacing(2),
     }),
-    treeItemLabelRoot: (theme: Theme) => ({
+    treeItemLabelRoot: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(0.5, 0),
@@ -72,28 +68,33 @@ const styles = {
         fontWeight: 'inherit',
         flexGrow: 1,
     },
-    icon: (theme: Theme) => ({
+    icon: (theme) => ({
         marginRight: theme.spacing(1),
         width: '18px',
         height: '18px',
     }),
-};
+} satisfies Record<string, SxProps<Theme>>;
 
-interface DirectoryTreeViewProps {
+export interface DirectoryTreeViewProps {
     treeViewUuid: UUID;
     mapData: Record<string, IDirectory> | undefined;
     onContextMenu: (
-        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-        nodeId: UUID | undefined,
+        event: ReactMouseEvent<HTMLDivElement | HTMLButtonElement, MouseEvent>,
+        nodeId: UUID,
         anchorReference: PopoverReference
     ) => void;
     onDirectoryUpdate: (nodeId: UUID, isClose: boolean, isDirectoryMoving: boolean) => void;
 }
 
-const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUpdate }: DirectoryTreeViewProps) => {
+export default function DirectoryTreeView({
+    treeViewUuid,
+    mapData,
+    onContextMenu,
+    onDirectoryUpdate,
+}: Readonly<DirectoryTreeViewProps>) {
     const dispatch = useDispatch();
 
-    const [expanded, setExpanded] = React.useState<UUID[]>([]);
+    const [expanded, setExpanded] = useState<UUID[]>([]);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const currentPath = useSelector((state: AppState) => state.currentPath);
 
@@ -106,14 +107,14 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
 
     const ensureInOutExpansion = useCallback(
         (inIds: any[], outIds: any[] = []) => {
-            let prevAsSet = new Set(expandedRef.current);
+            const prevAsSet = new Set(expandedRef.current);
             // if on both side : no-op
-            let inIdsSet = new Set(inIds.filter((id) => !outIds.includes(id) && !prevAsSet.has(id)));
-            let outIdsSet = new Set(outIds.filter((id) => !inIds.includes(id) && prevAsSet.has(id)));
+            const inIdsSet = new Set(inIds.filter((id) => !outIds.includes(id) && !prevAsSet.has(id)));
+            const outIdsSet = new Set(outIds.filter((id) => !inIds.includes(id) && prevAsSet.has(id)));
 
             if (inIdsSet.size > 0 || outIdsSet.size > 0) {
-                let purged = [...prevAsSet].filter((id) => !outIdsSet.has(id));
-                let grown = purged.concat(...inIdsSet);
+                const purged = [...prevAsSet].filter((id) => !outIdsSet.has(id));
+                const grown = purged.concat(...inIdsSet);
                 setExpanded(grown);
             }
         },
@@ -122,8 +123,8 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
 
     const toggleDirectories = useCallback(
         (ids: UUID[]) => {
-            let ins: UUID[] = [];
-            let outs: UUID[] = [];
+            const ins: UUID[] = [];
+            const outs: UUID[] = [];
             ids.forEach((id) => {
                 if (!expandedRef.current.includes(id)) {
                     ins.push(id);
@@ -137,28 +138,26 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
     );
 
     /* User interaction */
-    function handleContextMenuClick(
-        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-        nodeId: UUID | undefined,
-        anchorReference: PopoverReference
-    ) {
-        onContextMenu(event, nodeId, anchorReference);
-    }
+    const handleLabelClick = useCallback(
+        (nodeId: UUID) => {
+            if (selectedDirectory?.elementUuid !== nodeId) {
+                dispatch(setSelectedDirectory(mapDataRef.current ? mapDataRef.current[nodeId] : null));
+            }
+            if (!expandedRef.current.includes(nodeId)) {
+                // update fold status of item
+                toggleDirectories([nodeId]);
+            }
+        },
+        [dispatch, selectedDirectory?.elementUuid, toggleDirectories]
+    );
 
-    function handleLabelClick(nodeId: UUID) {
-        if (selectedDirectory?.elementUuid !== nodeId) {
-            dispatch(setSelectedDirectory(mapDataRef.current ? mapDataRef.current[nodeId] : null));
-        }
-        if (!expandedRef.current.includes(nodeId)) {
-            // update fold status of item
+    const handleIconClick = useCallback(
+        (nodeId: UUID) => {
+            onDirectoryUpdate(nodeId, expandedRef.current.includes(nodeId), false);
             toggleDirectories([nodeId]);
-        }
-    }
-
-    function handleIconClick(nodeId: UUID) {
-        onDirectoryUpdate(nodeId, expandedRef.current.includes(nodeId), false);
-        toggleDirectories([nodeId]);
-    }
+        },
+        [onDirectoryUpdate, toggleDirectories]
+    );
 
     useEffect(() => {
         if (currentPath.length === 0) {
@@ -173,7 +172,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
     /* Handle Rendering */
     const renderTree = (node: ElementAttributes | undefined) => {
         if (!node) {
-            return;
+            return undefined;
         }
         return (
             <CustomTreeItem
@@ -182,7 +181,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
                 label={
                     <Box
                         sx={styles.treeItemLabelRoot}
-                        onContextMenu={(e) => handleContextMenuClick(e, node.elementUuid, 'anchorPosition')}
+                        onContextMenu={(e) => onContextMenu(e, node.elementUuid, 'anchorPosition')}
                     >
                         <Tooltip
                             TransitionComponent={Zoom}
@@ -203,7 +202,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
                 ContentProps={{
                     onExpand: handleIconClick,
                     onSelect: handleLabelClick,
-                    onAddIconClick: handleContextMenuClick,
+                    onAddIconClick: onContextMenu,
                     styles: {
                         root: styles.treeItemRoot,
                         selected: styles.treeItemSelected,
@@ -213,9 +212,7 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
                     },
                 }}
                 endIcon={node.subdirectoriesCount > 0 ? <ChevronRightIcon sx={styles.icon} /> : null}
-                sx={{
-                    content: styles.treeItemContent,
-                }}
+                sx={{ content: styles.treeItemContent }}
             >
                 {Array.isArray(node.children)
                     ? node.children.map((child) => renderTree(mapDataRef.current?.[child.elementUuid]))
@@ -235,6 +232,4 @@ const DirectoryTreeView = ({ treeViewUuid, mapData, onContextMenu, onDirectoryUp
             {renderTree(mapDataRef.current?.[treeViewUuid])}
         </TreeView>
     );
-};
-
-export default DirectoryTreeView;
+}

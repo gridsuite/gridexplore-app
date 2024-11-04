@@ -4,8 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Avatar, Box, Theme } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
+import { Avatar, Box, Theme, Tooltip } from '@mui/material';
 
 function getAbbreviationFromUserName(name: string) {
     if (name === null || name.trim() === '') {
@@ -30,7 +29,9 @@ function avatarProps(name: string) {
     };
 }
 
-export const UserCellRenderer = ({ value }: { value: string }) => {
+export type UserCellRendererProps = { value: string };
+
+export function UserCellRenderer({ value }: Readonly<UserCellRendererProps>) {
     return (
         <Box sx={{ display: 'inline-flex', verticalAlign: 'middle' }}>
             <Tooltip title={value} placement="right">
@@ -38,4 +39,4 @@ export const UserCellRenderer = ({ value }: { value: string }) => {
             </Tooltip>
         </Box>
     );
-};
+}

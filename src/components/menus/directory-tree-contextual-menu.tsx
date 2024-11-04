@@ -5,36 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-
-import DeleteIcon from '@mui/icons-material/Delete';
-import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
-import AddIcon from '@mui/icons-material/Add';
-import CreateIcon from '@mui/icons-material/Create';
-import ContentPasteIcon from '@mui/icons-material/ContentPaste';
-import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
-import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
-import RenameDialog from '../dialogs/rename-dialog';
-import DeleteDialog from '../dialogs/delete-dialog';
-
-import { DialogsId } from '../../utils/UIconstants';
-
 import {
-    deleteElement,
-    duplicateElement,
-    elementExists,
-    insertDirectory,
-    insertRootDirectory,
-    renameElement,
-    moveElementsToDirectory,
-    duplicateSpreadsheetConfig,
-} from '../../utils/rest-api';
-
-import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
-import { useDeferredFetch } from '../../utils/custom-hooks';
+    Add as AddIcon,
+    ContentPaste as ContentPasteIcon,
+    Create as CreateIcon,
+    CreateNewFolder as CreateNewFolderIcon,
+    Delete as DeleteIcon,
+    DriveFileMove as DriveFileMoveIcon,
+    FolderSpecial as FolderSpecialIcon,
+} from '@mui/icons-material';
 import {
     ElementAttributes,
     ElementType,
@@ -42,18 +24,35 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
+import { PopoverOrigin, PopoverPosition, PopoverReference } from '@mui/material';
+import { UUID } from 'crypto';
+import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
+import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
+import RenameDialog from '../dialogs/rename-dialog';
+import DeleteDialog from '../dialogs/delete-dialog';
+import { DialogsId } from '../../utils/UIconstants';
+import {
+    deleteElement,
+    duplicateElement,
+    duplicateSpreadsheetConfig,
+    elementExists,
+    insertDirectory,
+    insertRootDirectory,
+    moveElementsToDirectory,
+    renameElement,
+} from '../../utils/rest-api';
+import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
+import { useDeferredFetch } from '../../utils/custom-hooks';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
-import { PopoverOrigin, PopoverPosition, PopoverReference } from '@mui/material';
-import { AppState } from 'redux/reducer';
-import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
+import { AppState } from '../../redux/types';
 import MoveDialog from '../dialogs/move-dialog';
-import { buildPathToFromMap } from '../tree-views-container';
+import { buildPathToFromMap } from '../treeview-utils';
 
-interface DirectoryTreeContextualMenuProps {
+export interface DirectoryTreeContextualMenuProps {
     directory: ElementAttributes | null;
     open: boolean;
     onClose: (e: unknown, nextSelectedDirectoryId?: string | null) => void;
@@ -66,11 +65,12 @@ interface DirectoryTreeContextualMenuProps {
     anchorOrigin?: PopoverOrigin;
 }
 
-const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = (props) => {
+export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTreeContextualMenuProps>) {
     const { directory, open, onClose, openDialog, setOpenDialog, restrictMenuItems, ...others } = props;
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const intl = useIntl();
+    const [deleteError, setDeleteError] = useState('');
 
     const [hideMenu, setHideMenu] = useState(false);
     const { snackError } = useSnackMessage();
@@ -101,6 +101,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
             if (HTTPStatusCode === 403) {
                 return intl.formatMessage({ id: 'renameDirectoryError' });
             }
+            return undefined;
         },
         undefined,
         false
@@ -117,14 +118,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
 
     const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
 
-    const handleError = useCallback(
-        (message: string) => {
-            snackError({
-                messageTxt: message,
-            });
-        },
-        [snackError]
-    );
+    const handleError = useCallback((message: string) => snackError({ messageTxt: message }), [snackError]);
 
     const handlePasteError = (error: any) => {
         let msg;
@@ -133,29 +127,28 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 id: 'elementPasteFailed404',
             });
         } else {
-            msg = intl.formatMessage({ id: 'elementPasteFailed' }) + error?.message;
+            msg = intl.formatMessage({ id: 'elementPasteFailed' }) + (error?.message ?? '');
         }
         return handleError(msg);
     };
 
-    function pasteElement(directoryUuid: string, selectionForCopy: any) {
-        if (!selectionForCopy.sourceItemUuid) {
+    function pasteElement(directoryUuid: UUID, selectionForPaste: any) {
+        if (!selectionForPaste.sourceItemUuid) {
             handleError(intl.formatMessage({ id: 'elementPasteFailed404' }));
             handleCloseDialog(null);
         } else {
-            console.info('Pasting element %s into directory %s', selectionForCopy.nameItem, directoryUuid);
+            console.info('Pasting element %s into directory %s', selectionForPaste.nameItem, directoryUuid);
 
-            switch (selectionForCopy.typeItem) {
+            switch (selectionForPaste.typeItem) {
                 case ElementType.CASE:
                 case ElementType.STUDY:
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
-                    duplicateElement(selectionForCopy.sourceItemUuid, directoryUuid, selectionForCopy.typeItem).catch(
+                    duplicateElement(selectionForPaste.sourceItemUuid, directoryUuid, selectionForPaste.typeItem).catch(
                         (error: any) => {
-                            if (handleMaxElementsExceededError(error, snackError)) {
-                                return;
+                            if (!handleMaxElementsExceededError(error, snackError)) {
+                                handlePasteError(error);
                             }
-                            handlePasteError(error);
                         }
                     );
                     break;
@@ -165,28 +158,24 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
                     duplicateElement(
-                        selectionForCopy.sourceItemUuid,
+                        selectionForPaste.sourceItemUuid,
                         directoryUuid,
                         ElementType.PARAMETERS,
-                        selectionForCopy.typeItem
-                    ).catch((error: any) => {
-                        handlePasteError(error);
-                    });
+                        selectionForPaste.typeItem
+                    ).catch((error: any) => handlePasteError(error));
                     break;
                 case ElementType.CONTINGENCY_LIST:
                     duplicateElement(
-                        selectionForCopy.sourceItemUuid,
+                        selectionForPaste.sourceItemUuid,
                         directoryUuid,
-                        selectionForCopy.typeItem,
-                        selectionForCopy.specificTypeItem
-                    ).catch((error: any) => {
-                        handlePasteError(error);
-                    });
+                        selectionForPaste.typeItem,
+                        selectionForPaste.specificTypeItem
+                    ).catch((error: any) => handlePasteError(error));
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
-                    duplicateSpreadsheetConfig(selectionForCopy.sourceItemUuid, directoryUuid).catch((error: any) => {
-                        handlePasteError(error);
-                    });
+                    duplicateSpreadsheetConfig(selectionForPaste.sourceItemUuid, directoryUuid).catch((error: any) =>
+                        handlePasteError(error)
+                    );
                     break;
                 default:
                     handleError(
@@ -200,14 +189,13 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
         }
     }
 
-    const [deleteError, setDeleteError] = useState('');
     const handleDeleteElement = useCallback(
-        (elementsUuid: string) => {
+        (elementsUuid: UUID) => {
             setDeleteError('');
             deleteElement(elementsUuid)
                 .then(() => handleCloseDialog(null, directory?.parentUuid))
                 .catch((error: any) => {
-                    //show the error message and don't close the dialog
+                    // show the error message and don't close the dialog
                     setDeleteError(error.message);
                     handleError(error.message);
                 });
@@ -216,46 +204,34 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     );
 
     // Allowance
-    const showMenuFromEmptyZone = useCallback(() => {
-        return !directory;
-    }, [directory]);
+    const showMenuFromEmptyZone = useCallback(() => !directory, [directory]);
 
-    const isAllowed = useCallback(() => {
-        return directory && directory.owner === userId;
-    }, [directory, userId]);
+    const isAllowed = useCallback(() => directory && directory.owner === userId, [directory, userId]);
 
     const buildMenu = () => {
         // build menuItems here
-        let menuItems: MenuItemType[] = [];
+        const menuItems: MenuItemType[] = [];
 
         if (!showMenuFromEmptyZone()) {
             menuItems.push(
                 {
                     messageDescriptorId: 'createNewStudy',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.ADD_NEW_STUDY);
-                    },
+                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_STUDY),
                     icon: <AddIcon fontSize="small" />,
                 },
                 {
                     messageDescriptorId: 'createNewContingencyList',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.ADD_NEW_CONTINGENCY_LIST);
-                    },
+                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_CONTINGENCY_LIST),
                     icon: <AddIcon fontSize="small" />,
                 },
                 {
                     messageDescriptorId: 'createNewFilter',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.ADD_NEW_FILTER);
-                    },
+                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_FILTER),
                     icon: <AddIcon fontSize="small" />,
                 },
                 {
                     messageDescriptorId: 'ImportNewCase',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.ADD_NEW_CASE);
-                    },
+                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_CASE),
                     icon: <AddIcon fontSize="small" />,
                 }
             );
@@ -266,16 +242,12 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 menuItems.push(
                     {
                         messageDescriptorId: 'renameFolder',
-                        callback: () => {
-                            handleOpenDialog(DialogsId.RENAME_DIRECTORY);
-                        },
+                        callback: () => handleOpenDialog(DialogsId.RENAME_DIRECTORY),
                         icon: <CreateIcon fontSize="small" />,
                     },
                     {
                         messageDescriptorId: 'deleteFolder',
-                        callback: () => {
-                            handleOpenDialog(DialogsId.DELETE_DIRECTORY);
-                        },
+                        callback: () => handleOpenDialog(DialogsId.DELETE_DIRECTORY),
                         icon: <DeleteIcon fontSize="small" />,
                     },
                     { isDivider: true }
@@ -285,10 +257,8 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
             menuItems.push(
                 {
                     messageDescriptorId: 'paste',
-                    callback: () => {
-                        // @ts-expect-error TODO: manage null case
-                        pasteElement(directory.elementUuid, selectionForCopy);
-                    },
+                    // @ts-expect-error TODO: manage null case
+                    callback: () => pasteElement(directory.elementUuid, selectionForCopy),
                     icon: <ContentPasteIcon fontSize="small" />,
                     disabled: !selectionForCopy.sourceItemUuid,
                 },
@@ -298,9 +268,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
             menuItems.push(
                 {
                     messageDescriptorId: 'moveDirectory',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.MOVE_DIRECTORY);
-                    },
+                    callback: () => handleOpenDialog(DialogsId.MOVE_DIRECTORY),
                     icon: <DriveFileMoveIcon fontSize="small" />,
                 },
                 { isDivider: true }
@@ -308,18 +276,14 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
 
             menuItems.push({
                 messageDescriptorId: 'createFolder',
-                callback: () => {
-                    handleOpenDialog(DialogsId.ADD_DIRECTORY);
-                },
+                callback: () => handleOpenDialog(DialogsId.ADD_DIRECTORY),
                 icon: <CreateNewFolderIcon fontSize="small" />,
             });
         }
 
         menuItems.push({
             messageDescriptorId: 'createRootFolder',
-            callback: () => {
-                handleOpenDialog(DialogsId.ADD_ROOT_DIRECTORY);
-            },
+            callback: () => handleOpenDialog(DialogsId.ADD_ROOT_DIRECTORY),
             icon: <FolderSpecialIcon fontSize="small" />,
         });
 
@@ -329,7 +293,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     const handleMoveDirectory = useCallback(
         (selectedDir: TreeViewFinderNodeProps[]) => {
             if (selectedDir.length === 1 && directory) {
-                moveElementsToDirectory([directory.elementUuid], selectedDir[0].id).catch(() => {
+                moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch(() => {
                     const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
                         ?.map((el) => el.elementName)
                         .join('/');
@@ -347,20 +311,21 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
     const renderDialog = () => {
         switch (openDialog) {
             case DialogsId.ADD_NEW_STUDY:
-                return <CreateStudyForm open={true} onClose={handleCloseDialog} />;
+                return <CreateStudyForm open onClose={handleCloseDialog} />;
             case DialogsId.ADD_NEW_CONTINGENCY_LIST:
                 return (
                     <ContingencyListCreationDialog
-                        open={true}
-                        titleId={'createNewContingencyList'}
+                        open
+                        titleId="createNewContingencyList"
                         onClose={handleCloseDialog}
                     />
                 );
             case DialogsId.ADD_DIRECTORY:
                 return (
                     <CreateDirectoryDialog
-                        open={true}
+                        open
                         onClick={(elementName: string) =>
+                            // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
                             insertDirectoryCB(elementName, directory?.elementUuid, userId)
                         }
                         onClose={handleCloseDialog}
@@ -374,7 +339,8 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
             case DialogsId.ADD_ROOT_DIRECTORY:
                 return (
                     <CreateDirectoryDialog
-                        open={true}
+                        open
+                        // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
                         onClick={(elementName: string) => insertRootDirectoryCB(elementName, userId)}
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
@@ -386,10 +352,11 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
             case DialogsId.RENAME_DIRECTORY:
                 return (
                     <RenameDialog
-                        message={'renameElementMsg'}
+                        message="renameElementMsg"
                         // @ts-expect-error TODO: manage null case(s) here
                         currentName={directory.elementName}
-                        open={true}
+                        open
+                        // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
                         onClick={(newName: string) => renameCB(directory?.elementUuid, newName)}
                         onClose={handleCloseDialog}
                         title={intl.formatMessage({
@@ -404,13 +371,11 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                 return (
                     <DeleteDialog
                         items={directory ? [directory] : []}
-                        multipleDeleteFormatMessageId={'deleteMultipleDirectoriesDialogMessage'}
-                        simpleDeleteFormatMessageId={'deleteDirectoryDialogMessage'}
-                        open={true}
-                        onClick={() => {
-                            // @ts-expect-error TODO: manage undefined case
-                            handleDeleteElement(directory.elementUuid);
-                        }}
+                        multipleDeleteFormatMessageId="deleteMultipleDirectoriesDialogMessage"
+                        simpleDeleteFormatMessageId="deleteDirectoryDialogMessage"
+                        open
+                        // @ts-expect-error TODO: manage undefined case
+                        onClick={() => handleDeleteElement(directory.elementUuid)}
                         onClose={handleCloseDialog}
                         error={deleteError}
                     />
@@ -418,7 +383,7 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
             case DialogsId.ADD_NEW_FILTER:
                 return (
                     <FilterCreationDialog
-                        open={true}
+                        open
                         onClose={handleCloseDialog}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
@@ -426,19 +391,17 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
                     />
                 );
             case DialogsId.ADD_NEW_CASE:
-                return <CreateCaseDialog open={true} onClose={handleCloseDialog} />;
+                return <CreateCaseDialog open onClose={handleCloseDialog} />;
             case DialogsId.MOVE_DIRECTORY:
                 return (
                     <MoveDialog
-                        open={true}
+                        open
                         onClose={handleMoveDirectory}
                         title={intl.formatMessage(
                             { id: 'moveDirectoryTitle' },
                             { directoryName: directory?.elementName }
                         )}
-                        validationButtonText={intl.formatMessage({
-                            id: 'moveDirectoryValidate',
-                        })}
+                        validationButtonText={intl.formatMessage({ id: 'moveDirectoryValidate' })}
                     />
                 );
             default:
@@ -453,6 +416,4 @@ const DirectoryTreeContextualMenu: React.FC<DirectoryTreeContextualMenuProps> = 
             {renderDialog()}
         </>
     );
-};
-
-export default DirectoryTreeContextualMenu;
+}

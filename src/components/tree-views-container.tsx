@@ -5,8 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import {
+    ElementAttributes,
+    ElementType,
+    fetchDirectoryContent,
+    fetchRootFolders,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
+import ReconnectingWebSocket from 'reconnecting-websocket';
+import { Box, BoxProps, PopoverOrigin, PopoverPosition, PopoverReference, SxProps, Theme } from '@mui/material';
 import {
     directoryUpdated,
     setActiveDirectory,
@@ -16,50 +26,40 @@ import {
     setTreeData,
     setUploadingElements,
 } from '../redux/actions';
-
 import { connectNotificationsWsUpdateDirectories } from '../utils/rest-api';
 import DirectoryTreeView from './directory-tree-view';
-import {
-    ElementAttributes,
-    ElementType,
-    fetchDirectoryContent,
-    fetchRootFolders,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
-import { notificationType } from '../utils/notificationType';
-
+import { NotificationType } from '../utils/notificationType';
 import * as constants from '../utils/UIconstants';
-// Menu
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
-import { AppState, IDirectory, ITreeData, UploadingElement } from '../redux/reducer';
-import { UUID } from 'crypto';
-import ReconnectingWebSocket from 'reconnecting-websocket';
-import { PopoverReference } from '@mui/material';
+import { AppState, IDirectory, ITreeData, UploadingElement } from '../redux/types';
+import { buildPathToFromMap } from './treeview-utils';
 
 const initialMousePosition = {
     mouseX: null,
     mouseY: null,
 };
 
-export function buildPathToFromMap(nodeId: UUID | undefined, mapDataRef: Record<string, IDirectory> | undefined) {
-    let path = [];
-    if (mapDataRef && nodeId) {
-        let currentUuid: UUID | null = nodeId ?? null;
-        while (currentUuid != null && mapDataRef[currentUuid] !== undefined) {
-            path.unshift({ ...mapDataRef[currentUuid] });
-            currentUuid = mapDataRef[currentUuid].parentUuid;
-        }
-    }
-    return path;
-}
+const anchorOrigin: PopoverOrigin = {
+    vertical: 'top',
+    horizontal: 'right',
+};
+
+const styles = {
+    treeBox: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        width: '100%',
+        flexGrow: 1,
+    },
+} as const satisfies Record<string, SxProps<Theme>>;
 
 function flattenDownNodes(n: IDirectory, cef: (arg: IDirectory) => any[]): IDirectory[] {
     const subs = cef(n);
     if (subs.length === 0) {
         return [n];
     }
-    const ret = Array.prototype.concat([n], ...subs.map((sn) => flattenDownNodes(sn, cef)));
-    return ret;
+    return Array.prototype.concat([n], ...subs.map((sn) => flattenDownNodes(sn, cef)));
 }
 
 function refreshedUpNodes(m: Record<string, IDirectory> | undefined, nn: IDirectory | undefined): IDirectory[] {
@@ -90,7 +90,7 @@ function mapFromRoots(roots: IDirectory[]): Record<string, IDirectory> {
  * @param nodeId uuid of the node to update children, may be null or undefined (means root)
  * @param children new value of the node children (shallow nodes)
  */
-function updatedTree(
+export function updatedTree(
     prevRoots: IDirectory[],
     prevMap: Record<string, IDirectory>,
     nodeId: string | null,
@@ -102,33 +102,33 @@ function updatedTree(
     const nextChildren = children
         .sort((a, b) => a.elementName.localeCompare(b.elementName))
         .map((n) => {
-            let pn = prevMap[n.elementUuid];
+            const pn = prevMap[n.elementUuid];
             if (!pn) {
                 // new child, then add it
                 return { ...n, children: [], parentUuid: nodeId };
-            } else if (
+            }
+            if (
                 n.elementName === pn.elementName &&
                 n.subdirectoriesCount === pn.subdirectoriesCount &&
                 nodeId === pn.parentUuid
             ) {
                 // existing child, nothing has changed, keep existing one
                 return pn;
-            } else {
-                // existing child, but something has changed, update it
-                if (pn.parentUuid !== nodeId) {
-                    // if the parent has changed, we will need to update the previous parent later
-                    console.debug('reparent ' + pn.parentUuid + ' -> ' + nodeId);
-                    // There can be only one parent because one action move multiple elements from
-                    // one directory to another not multiple directories at once
-                    oldParentUuidOfReparentedChildren = pn.parentUuid;
-                }
-                return {
-                    ...pn,
-                    elementName: n.elementName,
-                    subdirectoriesCount: n.subdirectoriesCount,
-                    parentUuid: nodeId,
-                };
             }
+            // existing child, but something has changed, update it
+            if (pn.parentUuid !== nodeId) {
+                // if the parent has changed, we will need to update the previous parent later
+                console.debug(`reparent ${pn.parentUuid} -> ${nodeId}`);
+                // There can be only one parent because one action move multiple elements from
+                // one directory to another not multiple directories at once
+                oldParentUuidOfReparentedChildren = pn.parentUuid;
+            }
+            return {
+                ...pn,
+                elementName: n.elementName,
+                subdirectoriesCount: n.subdirectoriesCount,
+                parentUuid: nodeId,
+            };
         });
     const prevChildren = nodeId ? prevMap[nodeId]?.children : prevRoots;
 
@@ -136,11 +136,11 @@ function updatedTree(
         return [prevRoots, prevMap];
     }
 
-    let nextUuids = new Set(children ? children.map((n) => n.elementUuid) : []);
-    let prevUuids = prevChildren ? prevChildren.map((n) => n.elementUuid) : [];
-    let mayNodeId = nodeId ? [nodeId] : [];
+    const nextUuids = new Set(children ? children.map((n) => n.elementUuid) : []);
+    const prevUuids = prevChildren ? prevChildren.map((n) => n.elementUuid) : [];
+    const mayNodeId = nodeId ? [nodeId] : [];
 
-    let nonCopyUuids = new Set([
+    const nonCopyUuids = new Set([
         ...nextUuids,
         ...mayNodeId,
         ...Array.prototype.concat(
@@ -179,7 +179,7 @@ function updatedTree(
     }
 
     const nextMap: Record<string, IDirectory> = Object.fromEntries([
-        ...Object.entries(prevMap).filter(([k, v], i) => !nonCopyUuids.has(k)),
+        ...Object.entries(prevMap).filter(([k]) => !nonCopyUuids.has(k)),
         ...nextChildren.map((n) => [n.elementUuid, n]),
         ...refreshedUpNodes(prevMap, nextNode as IDirectory).map((n: any) => [n.elementUuid, n]),
         ...(oldParentWithUpdatedChildren
@@ -191,12 +191,10 @@ function updatedTree(
         nodeId === null ? nextChildren : prevRoots?.map((r) => nextMap[r.elementUuid])
     ) as IDirectory[];
 
-    const ret: [IDirectory[], Record<string, IDirectory>] = [nextRoots, nextMap];
-
-    return ret;
+    return [nextRoots, nextMap];
 }
 
-const TreeViewsContainer = () => {
+export default function TreeViewsContainer() {
     const dispatch = useDispatch();
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
@@ -222,57 +220,70 @@ const TreeViewsContainer = () => {
     const { snackError, snackWarning } = useSnackMessage();
 
     const directoryUpdatedEvent = useSelector((state: AppState) => state.directoryUpdated);
-    /**
-     * Contextual Menus
-     */
-    const [openDirectoryMenu, setOpenDirectoryMenu] = React.useState(false);
+    /** Contextual Menus */
+    const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
 
     const treeData = useSelector((state: AppState) => state.treeData);
 
     const treeDataRef = useRef<ITreeData>();
     treeDataRef.current = treeData;
 
-    const handleOpenDirectoryMenu = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        setOpenDirectoryMenu(true);
-        event.stopPropagation();
-    };
-    const handleCloseDirectoryMenu = (e: unknown, nextSelectedDirectoryId: string | null = null) => {
-        setOpenDirectoryMenu(false);
-        dispatch(setActiveDirectory(undefined));
-        if (nextSelectedDirectoryId !== null && treeDataRef.current?.mapData?.[nextSelectedDirectoryId]) {
-            dispatch(setSelectedDirectory(treeDataRef.current.mapData[nextSelectedDirectoryId]));
-        }
-        //so it removes the style that we added ourselves
-        if (DOMFocusedDirectory !== null) {
-            (DOMFocusedDirectory as HTMLElement).classList.remove('focused');
-            setDOMFocusedDirectory(null);
-        }
-    };
+    const handleOpenDirectoryMenu = useCallback(
+        (event: ReactMouseEvent<HTMLDivElement | HTMLButtonElement, MouseEvent>) => {
+            setOpenDirectoryMenu(true);
+            event.stopPropagation();
+        },
+        []
+    );
+    const handleCloseDirectoryMenu = useCallback(
+        (e: unknown, nextSelectedDirectoryId: string | null = null) => {
+            setOpenDirectoryMenu(false);
+            dispatch(setActiveDirectory(undefined));
+            if (nextSelectedDirectoryId !== null && treeDataRef.current?.mapData?.[nextSelectedDirectoryId]) {
+                dispatch(setSelectedDirectory(treeDataRef.current.mapData[nextSelectedDirectoryId]));
+            }
+            // so it removes the style that we added ourselves
+            if (DOMFocusedDirectory !== null) {
+                (DOMFocusedDirectory as HTMLElement).classList.remove('focused');
+                setDOMFocusedDirectory(null);
+            }
+        },
+        [DOMFocusedDirectory, dispatch]
+    );
 
     /* Menu states */
-    const [mousePosition, setMousePosition] = React.useState<{
+    const [mousePosition, setMousePosition] = useState<{
         mouseX: number | null;
         mouseY: number | null;
     }>(initialMousePosition);
-    const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-
-    const [anchorReference, setAnchorReference] = React.useState<PopoverReference>('anchorPosition');
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const [anchorReference, setAnchorReference] = useState<PopoverReference>('anchorPosition');
+    const anchorPosition = useMemo<PopoverPosition | undefined>(
+        () =>
+            mousePosition.mouseY !== null && mousePosition.mouseX !== null
+                ? {
+                      top: mousePosition.mouseY,
+                      left: mousePosition.mouseX,
+                  }
+                : undefined,
+        [mousePosition.mouseX, mousePosition.mouseY]
+    );
 
     /* User interactions */
     const onContextMenu = useCallback(
         (
-            event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+            event: ReactMouseEvent<HTMLDivElement | HTMLButtonElement, MouseEvent>,
             nodeId: UUID | undefined,
-            anchorReference: PopoverReference
+            anchorReference2: PopoverReference
         ) => {
-            //to keep the focused style (that is normally lost when opening a contextual menu)
+            // to keep the focused style (that is normally lost when opening a contextual menu)
             if (event.currentTarget.parentNode) {
                 (event.currentTarget.parentNode as HTMLElement).classList.add('focused');
                 setDOMFocusedDirectory(event.currentTarget.parentNode);
             }
 
             dispatch(setActiveDirectory(nodeId));
-            setAnchorReference(anchorReference);
+            setAnchorReference(anchorReference2);
             setAnchorEl(event.currentTarget);
             setMousePosition({
                 mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
@@ -280,14 +291,18 @@ const TreeViewsContainer = () => {
             });
             handleOpenDirectoryMenu(event);
         },
-        [dispatch]
+        [dispatch, handleOpenDirectoryMenu]
+    );
+    const handleOnContextMenuBox = useCallback<NonNullable<BoxProps['onContextMenu']>>(
+        (e) => onContextMenu(e, undefined, 'anchorPosition'),
+        [onContextMenu]
     );
 
     /* RootDirectories management */
     const updateRootDirectories = useCallback(() => {
         fetchRootFolders([])
             .then((data) => {
-                let [nrs, mdr] = updatedTree(
+                const [nrs, mdr] = updatedTree(
                     treeDataRef.current?.rootDirectories ?? [],
                     treeDataRef.current?.mapData ?? {},
                     null,
@@ -301,9 +316,7 @@ const TreeViewsContainer = () => {
                     })
                 );
             })
-            .catch((error) => {
-                console.warn(`Could not fetch roots ${error.message}`);
-            });
+            .catch((error) => console.warn(`Could not fetch roots ${error.message}`));
     }, [dispatch]);
 
     /* rootDirectories initialization */
@@ -314,22 +327,14 @@ const TreeViewsContainer = () => {
     }, [user, updateRootDirectories]);
 
     /* Manage current path data */
-    const updatePath = useCallback(
-        (nodeId: UUID | undefined) => {
-            let path = buildPathToFromMap(nodeId, treeData.mapData);
-            dispatch(setCurrentPath(path));
-        },
-        [dispatch, treeData.mapData]
-    );
-
     useEffect(() => {
-        updatePath(selectedDirectoryRef.current?.elementUuid);
-    }, [treeData.mapData, updatePath, selectedDirectory?.elementUuid]);
+        dispatch(setCurrentPath(buildPathToFromMap(selectedDirectoryRef.current?.elementUuid, treeData.mapData)));
+    }, [dispatch, treeData.mapData, selectedDirectory?.elementUuid]);
 
     const insertContent = useCallback(
         (nodeId: string, childrenToBeInserted: ElementAttributes[]) => {
             if (treeDataRef.current) {
-                let [nrs, mdr] = updatedTree(
+                const [nrs, mdr] = updatedTree(
                     treeDataRef.current.rootDirectories,
                     treeDataRef.current.mapData,
                     nodeId,
@@ -349,20 +354,21 @@ const TreeViewsContainer = () => {
 
     const updateMapData = useCallback(
         (nodeId: string, children: ElementAttributes[], isDirectoryMoving: boolean) => {
-            let newSubdirectories = children.filter((child) => child.type === ElementType.DIRECTORY);
+            const newSubdirectories = children.filter((child) => child.type === ElementType.DIRECTORY);
 
-            let prevPath = buildPathToFromMap(selectedDirectoryRef.current?.elementUuid, treeDataRef.current?.mapData);
+            const prevPath = buildPathToFromMap(
+                selectedDirectoryRef.current?.elementUuid,
+                treeDataRef.current?.mapData
+            );
 
-            let prevSubInPath = prevPath.find((n) => n.parentUuid === nodeId);
-            let hasToChangeSelected =
+            const prevSubInPath = prevPath.find((n) => n.parentUuid === nodeId);
+            const hasToChangeSelected =
                 prevSubInPath !== undefined &&
                 children.find((n) => n.elementUuid === prevSubInPath?.elementUuid) === undefined;
 
             insertContent(nodeId, newSubdirectories);
             if (hasToChangeSelected) {
-                // if selected directory (possibly via ancestor)
-                // is deleted by another user
-                // we should select (closest still existing) parent directory
+                // if selected directory (possibly via ancestor) is deleted by another user, we should select (closest still existing) parent directory
                 dispatch(
                     setSelectedDirectory(
                         isDirectoryMoving ? null : (treeDataRef.current?.mapData[nodeId] as IDirectory)
@@ -373,9 +379,25 @@ const TreeViewsContainer = () => {
         [insertContent, dispatch]
     );
 
+    const cleanCreationFailedElementInCurrentElements = useCallback(
+        (currentElements: ElementAttributes[], uploadingElements2: UploadingElement[]): ElementAttributes[] =>
+            currentElements.filter(
+                (currentElement) =>
+                    // if the element is present in currentElement as uploading (with the field id) and not in uploadingElement
+                    // it means it's a failed upload that needs to be removed
+                    !(
+                        currentElement.id &&
+                        uploadingElements2.findIndex(
+                            (uploadingElement) => uploadingElement.id.toString() === currentElement.id
+                        ) === -1
+                    )
+            ),
+        []
+    );
+
     const mergeCurrentAndUploading = useCallback(
         (current: ElementAttributes[]): ElementAttributes[] | undefined => {
-            let uploadingElementsInSelectedDirectory = Object.values(uploadingElementsRef.current).filter(
+            const uploadingElementsInSelectedDirectory = Object.values(uploadingElementsRef.current).filter(
                 (e) => e.directory === selectedDirectoryRef.current?.elementUuid
             );
             if (uploadingElementsInSelectedDirectory?.length > 0) {
@@ -385,7 +407,7 @@ const TreeViewsContainer = () => {
                 const [toRemoveFromUploadingElements, toKeepToUploadingElements] =
                     uploadingElementsInSelectedDirectory.reduce(
                         (
-                            [toRemoveFromUploadingElements, toKeepToUploadingElements],
+                            [toRemoveFromUploadingElements2, toKeepToUploadingElements2],
                             uploadingElementInSelectedDirectory
                         ) =>
                             current.some(
@@ -395,36 +417,41 @@ const TreeViewsContainer = () => {
                                     e.elementUuid // if it has an elementUuid then it's not a ghost anymore
                             )
                                 ? [
-                                      [...toRemoveFromUploadingElements, uploadingElementInSelectedDirectory],
-                                      toKeepToUploadingElements,
+                                      [...toRemoveFromUploadingElements2, uploadingElementInSelectedDirectory],
+                                      toKeepToUploadingElements2,
                                   ]
                                 : [
-                                      toRemoveFromUploadingElements,
-                                      [...toKeepToUploadingElements, uploadingElementInSelectedDirectory],
+                                      toRemoveFromUploadingElements2,
+                                      [...toKeepToUploadingElements2, uploadingElementInSelectedDirectory],
                                   ],
                         [[] as UploadingElement[], [] as UploadingElement[]]
                     );
 
-                // then remove the ghosts if necessary
+                // then remove the ghosts if the upload succeeded
                 if (toRemoveFromUploadingElements.length > 0) {
-                    let newUploadingElements = { ...uploadingElementsRef.current };
+                    const newUploadingElements = { ...uploadingElementsRef.current };
                     toRemoveFromUploadingElements.forEach((r) => delete newUploadingElements[r.id]);
-
                     dispatch(setUploadingElements(newUploadingElements));
                 }
-
-                return [...current, ...toKeepToUploadingElements].sort(function (a, b) {
-                    return a.elementName.localeCompare(b.elementName);
-                }) as ElementAttributes[];
-            } else {
-                return current == null
-                    ? undefined
-                    : [...current].sort(function (a, b) {
-                          return a.elementName.localeCompare(b.elementName);
-                      });
+                // remove the ghosts if the upload failed
+                const newCurrentElement = cleanCreationFailedElementInCurrentElements(
+                    current,
+                    uploadingElementsInSelectedDirectory
+                );
+                return [...newCurrentElement, ...toKeepToUploadingElements].sort((a, b) =>
+                    a.elementName.localeCompare(b.elementName)
+                ) as ElementAttributes[];
             }
+            // remove the ghosts if the upload failed
+            const newCurrentElement = cleanCreationFailedElementInCurrentElements(
+                current,
+                uploadingElementsInSelectedDirectory
+            );
+            return newCurrentElement == null
+                ? undefined
+                : [...newCurrentElement].sort((a, b) => a.elementName.localeCompare(b.elementName));
         },
-        [dispatch]
+        [cleanCreationFailedElementInCurrentElements, dispatch]
     );
 
     /* currentChildren management */
@@ -456,9 +483,9 @@ const TreeViewsContainer = () => {
         [updateCurrentChildren, updateMapData]
     );
 
-    // add ghost studies or ghost cases as soon as possible (uploadingElements)
+    // add ghost studies or ghost cases as soon as possible (uploadingElements) and clean them if necessary
     useEffect(() => {
-        if (Object.values(uploadingElements).length > 0) {
+        if (Object.values(uploadingElements).length > 0 || currentChildrenRef.current?.some((c) => c.uploading)) {
             dispatch(setCurrentChildren(mergeCurrentAndUploading(currentChildrenRef.current ?? [])));
         }
     }, [uploadingElements, currentChildrenRef, mergeCurrentAndUploading, dispatch]);
@@ -483,10 +510,7 @@ const TreeViewsContainer = () => {
             }
 
             fetchDirectoryContent(nodeId)
-                .then((childrenToBeInserted) => {
-                    // Update Tree Map data
-                    updateMapData(nodeId, childrenToBeInserted, isDirectoryMoving);
-                })
+                .then((childrenToBeInserted) => updateMapData(nodeId, childrenToBeInserted, isDirectoryMoving)) // Update Tree Map data
                 .catch((error) => {
                     console.warn(`Could not update subs of '${nodeId}' : ${error.message}`);
                     updateMapData(nodeId, [], false);
@@ -502,7 +526,7 @@ const TreeViewsContainer = () => {
                 snackError({
                     messageTxt: error,
                     headerId: 'studyCreatingError',
-                    headerValues: { studyName: studyName },
+                    headerValues: { studyName },
                 });
             }
         },
@@ -513,29 +537,25 @@ const TreeViewsContainer = () => {
         // create ws at mount event
         wsRef.current = connectNotificationsWsUpdateDirectories();
 
-        wsRef.current.onclose = function () {
+        wsRef.current.onclose = function onclose() {
             console.error('Unexpected Notification WebSocket closed');
         };
-        wsRef.current.onerror = function (event) {
+        wsRef.current.onerror = function onerror(event) {
             console.error('Unexpected Notification WebSocket error', event);
         };
         // We must save wsRef.current in a variable to make sure that when close is called it refers to the same instance.
-        // That's because wsRef.current could be modify outside of this scope.
+        // That's because wsRef.current could be modified outside of this scope.
         const wsToClose = wsRef.current;
         // cleanup at unmount event
-        return () => {
-            wsToClose.close();
-        };
+        return () => wsToClose.close();
     }, []);
 
     const handleUserMessage = useCallback(
-        (eventData: any) => {
-            const messageValues = JSON.parse(eventData.payload);
+        (eventData: any) =>
             snackWarning({
-                messageId: eventData.headers['userMessage'],
-                messageValues: messageValues,
-            });
-        },
+                messageId: eventData.headers.userMessage,
+                messageValues: JSON.parse(eventData.payload),
+            }),
         [snackWarning]
     );
 
@@ -543,12 +563,12 @@ const TreeViewsContainer = () => {
         (event: MessageEvent) => {
             console.debug('Received Update directories notification', event);
 
-            let eventData = JSON.parse(event.data);
+            const eventData = JSON.parse(event.data);
             if (!eventData.headers) {
                 return;
             }
 
-            if (eventData.headers.hasOwnProperty('userMessage') && eventData.payload) {
+            if (Object.prototype.hasOwnProperty.call(eventData.headers, 'userMessage') && eventData.payload) {
                 handleUserMessage(eventData);
                 return;
             }
@@ -560,12 +580,11 @@ const TreeViewsContainer = () => {
 
     useEffect(() => {
         if (directoryUpdatedEvent.eventData?.headers) {
-            const notificationTypeH = directoryUpdatedEvent.eventData.headers['notificationType'];
-            const isRootDirectory = directoryUpdatedEvent.eventData.headers['isRootDirectory'];
-            const directoryUuid = directoryUpdatedEvent.eventData.headers['directoryUuid'] as UUID;
-            const error = directoryUpdatedEvent.eventData.headers['error'] as string;
-            const elementName = directoryUpdatedEvent.eventData.headers['elementName'] as string;
-            const isDirectoryMoving = directoryUpdatedEvent.eventData.headers['isDirectoryMoving'] as boolean;
+            const { notificationType, isRootDirectory } = directoryUpdatedEvent.eventData.headers;
+            const directoryUuid = directoryUpdatedEvent.eventData.headers.directoryUuid as UUID;
+            const error = directoryUpdatedEvent.eventData.headers.error as string;
+            const elementName = directoryUpdatedEvent.eventData.headers.elementName as string;
+            const isDirectoryMoving = directoryUpdatedEvent.eventData.headers.isDirectoryMoving as boolean;
             if (error) {
                 displayErrorIfExist(error, elementName);
                 dispatch(directoryUpdated({}));
@@ -575,7 +594,7 @@ const TreeViewsContainer = () => {
                 updateRootDirectories();
                 if (
                     selectedDirectoryRef.current != null && // nothing to do if nothing already selected
-                    notificationTypeH === notificationType.DELETE_DIRECTORY &&
+                    notificationType === NotificationType.DELETE_DIRECTORY &&
                     selectedDirectoryRef.current.elementUuid === directoryUuid
                 ) {
                     dispatch(setSelectedDirectory(null));
@@ -589,12 +608,12 @@ const TreeViewsContainer = () => {
 
                 // if it's a deleted root directory then do not continue because we don't need
                 // to fetch its content anymore
-                if (notificationTypeH === notificationType.DELETE_DIRECTORY) {
+                if (notificationType === NotificationType.DELETE_DIRECTORY) {
                     return;
                 }
             }
             if (directoryUuid) {
-                // Remark : It could be a Uuid of a rootDirectory if we need to update it because its content update
+                // Remark : It could be an Uuid of a rootDirectory if we need to update it because its content update
                 // if dir is actually selected then call updateDirectoryTreeAndContent of this dir
                 // else expanded or not then updateDirectoryTree
                 if (selectedDirectoryRef.current != null) {
@@ -632,71 +651,59 @@ const TreeViewsContainer = () => {
         }
     }, [selectedDirectory?.elementUuid, updateDirectoryTreeAndContent]);
 
-    const getActiveDirectory = (): ElementAttributes | null => {
+    // TODO is useMemo work with complex object like this one?
+    const getActiveDirectory = useCallback((): ElementAttributes | null => {
         if (treeDataRef.current?.mapData && activeDirectory && treeDataRef.current?.mapData[activeDirectory]) {
             return treeDataRef.current.mapData[activeDirectory];
-        } else {
-            return null;
         }
-    };
+        return null;
+    }, [activeDirectory]);
+
+    const handleOnMouseDown = useCallback<NonNullable<BoxProps['onMouseDown']>>(
+        (e) => {
+            if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON && openDialog === constants.DialogsId.NONE) {
+                handleCloseDirectoryMenu(e, null);
+            }
+        },
+        [handleCloseDirectoryMenu, openDialog]
+    );
+
+    // TODO TypeScript say that treeData.mapData is never falsy?...
+    const directoryViews = useMemo(
+        () =>
+            treeData.mapData &&
+            treeData.rootDirectories.map((rootDirectory) => (
+                <DirectoryTreeView
+                    key={rootDirectory.elementUuid}
+                    treeViewUuid={rootDirectory.elementUuid}
+                    mapData={treeDataRef.current?.mapData}
+                    onContextMenu={onContextMenu}
+                    onDirectoryUpdate={updateDirectoryTree}
+                />
+            )),
+        [onContextMenu, treeData.mapData, treeData.rootDirectories, updateDirectoryTree]
+    );
 
     return (
         <>
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '100%',
-                    width: '100%',
-                    flexGrow: 1,
-                }}
-                onContextMenu={(e) => onContextMenu(e, undefined, 'anchorPosition')}
-            >
-                {treeData.mapData &&
-                    treeData.rootDirectories.map((rootDirectory) => (
-                        <DirectoryTreeView
-                            key={rootDirectory.elementUuid}
-                            treeViewUuid={rootDirectory.elementUuid}
-                            mapData={treeDataRef.current?.mapData}
-                            onContextMenu={onContextMenu}
-                            onDirectoryUpdate={updateDirectoryTree}
-                        />
-                    ))}
-            </div>
-
-            <div
-                onMouseDown={(e) => {
-                    if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON && openDialog === constants.DialogsId.NONE) {
-                        handleCloseDirectoryMenu(e, null);
-                    }
-                }}
-            >
+            <Box style={styles.treeBox} onContextMenu={handleOnContextMenuBox}>
+                {directoryViews}
+            </Box>
+            <Box onMouseDown={handleOnMouseDown}>
                 <DirectoryTreeContextualMenu
                     directory={getActiveDirectory()}
                     open={openDirectoryMenu}
                     openDialog={openDialog}
                     setOpenDialog={setOpenDialog}
+                    // TODO why doing a lambda loosing the 2nd parameter here?
                     onClose={(e: unknown) => handleCloseDirectoryMenu(e, null)}
                     anchorReference={anchorReference}
-                    anchorPosition={
-                        mousePosition.mouseY !== null && mousePosition.mouseX !== null
-                            ? {
-                                  top: mousePosition.mouseY,
-                                  left: mousePosition.mouseX,
-                              }
-                            : undefined
-                    }
+                    anchorPosition={anchorPosition}
                     anchorEl={anchorEl}
-                    anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                    }}
+                    anchorOrigin={anchorOrigin}
                     restrictMenuItems={false}
                 />
-            </div>
+            </Box>
         </>
     );
-};
-
-export { updatedTree };
-export default TreeViewsContainer;
+}

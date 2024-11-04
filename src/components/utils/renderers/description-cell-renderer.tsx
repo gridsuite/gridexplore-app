@@ -4,10 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import Tooltip from '@mui/material/Tooltip';
-import { Box } from '@mui/material';
-import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
-import CreateIcon from '@mui/icons-material/Create';
+import { Box, Tooltip } from '@mui/material';
+import { Create as CreateIcon, StickyNote2Outlined as StickyNote2OutlinedIcon } from '@mui/icons-material';
 import { ElementAttributes } from '@gridsuite/commons-ui';
 
 const styles = {
@@ -22,8 +20,10 @@ const styles = {
     },
 };
 
-export const DescriptionCellRenderer = ({ data }: { data: ElementAttributes }) => {
-    const description = data.description;
+export type DescriptionCellRendererProps = { data: ElementAttributes };
+
+export function DescriptionCellRenderer({ data }: Readonly<DescriptionCellRendererProps>) {
+    const { description } = data;
     const descriptionLines = description?.split('\n');
     if (descriptionLines?.length > 3) {
         descriptionLines[2] = '...';
@@ -31,7 +31,7 @@ export const DescriptionCellRenderer = ({ data }: { data: ElementAttributes }) =
     const tooltip = descriptionLines?.join('\n');
 
     const icon = description ? (
-        <Tooltip title={<Box children={tooltip} sx={styles.descriptionTooltip} />} placement="right">
+        <Tooltip title={<Box sx={styles.descriptionTooltip}>{tooltip}</Box>} placement="right">
             <StickyNote2OutlinedIcon />
         </Tooltip>
     ) : (
@@ -48,4 +48,4 @@ export const DescriptionCellRenderer = ({ data }: { data: ElementAttributes }) =
             {icon}
         </Box>
     );
-};
+}

@@ -5,21 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createCase } from '../../../utils/rest-api';
-import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import { Grid } from '@mui/material';
-import { addUploadingElement } from '../../../redux/actions';
-import UploadNewCase from '../commons/upload-new-case';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import {
-    createCaseDialogFormValidationSchema,
-    getCreateCaseDialogFormValidationDefaultValues,
-} from './create-case-dialog-utils';
-import { AppState, UploadingElement } from '../../../redux/reducer';
-import PrefilledNameInput from '../commons/prefilled-name-input';
 import {
     CustomMuiDialog,
     DescriptionField,
@@ -32,8 +21,18 @@ import {
     useConfidentialityWarning,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
+import { createCase } from '../../../utils/rest-api';
+import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
+import { addUploadingElement, removeUploadingElement } from '../../../redux/actions';
+import UploadNewCase from '../commons/upload-new-case';
+import {
+    createCaseDialogFormValidationSchema,
+    getCreateCaseDialogFormValidationDefaultValues,
+} from './create-case-dialog-utils';
+import PrefilledNameInput from '../commons/prefilled-name-input';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
 import { AppDispatch } from '../../../redux/store';
+import { AppState, UploadingElement } from '../../../redux/types';
 
 interface IFormData {
     [FieldConstants.CASE_NAME]: string;
@@ -41,12 +40,12 @@ interface IFormData {
     [FieldConstants.CASE_FILE]: File | null;
 }
 
-interface CreateCaseDialogProps {
+export interface CreateCaseDialogProps {
     onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     open: boolean;
 }
 
-const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onClose, open }) => {
+export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseDialogProps>) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
     const confidentialityWarningKey = useConfidentialityWarning();
@@ -81,20 +80,21 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
         createCase(caseName, description ?? '', caseFile, activeDirectory)
             .then(onClose)
             .catch((err) => {
-                if (handleMaxElementsExceededError(err, snackError)) {
-                    return;
-                } else if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
-                    snackError({
-                        messageId: 'invalidFormatOrName',
-                        headerId: 'caseCreationError',
-                        headerValues: { name: caseName },
-                    });
-                } else {
-                    snackError({
-                        messageTxt: err?.message,
-                        headerId: 'caseCreationError',
-                        headerValues: { name: caseName },
-                    });
+                dispatch(removeUploadingElement(uploadingCase));
+                if (!handleMaxElementsExceededError(err, snackError)) {
+                    if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
+                        snackError({
+                            messageId: 'invalidFormatOrName',
+                            headerId: 'caseCreationError',
+                            headerValues: { name: caseName },
+                        });
+                    } else {
+                        snackError({
+                            messageTxt: err?.message,
+                            headerId: 'caseCreationError',
+                            headerValues: { name: caseName },
+                        });
+                    }
                 }
             });
         // the uploadingCase ghost element will be removed when directory content updated by fetch
@@ -103,21 +103,21 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
 
     return (
         <CustomMuiDialog
-            titleId={'ImportNewCase'}
+            titleId="ImportNewCase"
             formSchema={createCaseDialogFormValidationSchema}
             formMethods={createCaseFormMethods}
-            removeOptional={true}
+            removeOptional
             open={open}
             onClose={onClose}
             onSave={handleCreateNewCase}
             disabledSave={!isFormValid}
             confirmationMessageKey={confidentialityWarningKey}
         >
-            <Grid container spacing={2} marginTop={'auto'} direction="column">
+            <Grid container spacing={2} marginTop="auto" direction="column">
                 <Grid item>
                     <PrefilledNameInput
                         name={FieldConstants.CASE_NAME}
-                        label={'nameProperty'}
+                        label="nameProperty"
                         elementType={ElementType.CASE}
                     />
                 </Grid>
@@ -129,6 +129,4 @@ const CreateCaseDialog: React.FunctionComponent<CreateCaseDialogProps> = ({ onCl
             <UploadNewCase />
         </CustomMuiDialog>
     );
-};
-
-export default CreateCaseDialog;
+}
