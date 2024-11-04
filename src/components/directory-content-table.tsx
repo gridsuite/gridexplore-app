@@ -5,23 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { defaultColumnDefinition } from './utils/directory-content-utils';
 import { CustomAGGrid, ElementAttributes, ElementType } from '@gridsuite/commons-ui';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import {
-    ColDef,
-    RowClassParams,
     AgGridEvent,
-    GetRowIdParams,
-    CellContextMenuEvent,
     CellClickedEvent,
+    CellContextMenuEvent,
+    ColDef,
+    GetRowIdParams,
+    RowClassParams,
 } from 'ag-grid-community';
 import { RefObject, useCallback, useEffect, useState } from 'react';
-import { setReorderedColumns } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/reducer';
+import { setReorderedColumns } from '../redux/actions';
+import { defaultColumnDefinition } from './utils/directory-content-utils';
+import { AppState } from '../redux/types';
 
-interface DirectoryContentTableProps extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
+export interface DirectoryContentTableProps
+    extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
     gridRef: RefObject<AgGridReact<ElementAttributes>>;
     rows: ElementAttributes[];
     handleCellContextualMenu: (event: CellContextMenuEvent) => void;
@@ -67,7 +68,7 @@ const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): 
         });
 };
 
-export const DirectoryContentTable = ({
+export function DirectoryContentTable({
     gridRef,
     rows,
     getRowStyle,
@@ -76,15 +77,13 @@ export const DirectoryContentTable = ({
     handleCellClick,
     onGridReady,
     colDef,
-}: DirectoryContentTableProps) => {
+}: Readonly<DirectoryContentTableProps>) {
     const [columnDefs, setColumnDefs] = useState<ColDef[]>(colDef);
     const getCustomRowStyle = useCallback(
-        (cellData: RowClassParams<ElementAttributes>) => {
-            return {
-                ...getClickableRowStyle(cellData),
-                ...getRowStyle?.(cellData),
-            };
-        },
+        (cellData: RowClassParams<ElementAttributes>) => ({
+            ...getClickableRowStyle(cellData),
+            ...getRowStyle?.(cellData),
+        }),
         [getRowStyle]
     );
 
@@ -92,10 +91,8 @@ export const DirectoryContentTable = ({
     const columnOrder = useSelector((state: AppState) => state.reorderedColumns);
 
     useEffect(() => {
-        const extractColumnOrder = (columnDefs: ColDef[]): string[] => {
-            return columnDefs.filter((col) => col.field).map((col) => col.field as string);
-        };
-
+        const extractColumnOrder = (colDefs: ColDef[]): string[] =>
+            colDefs.filter((col) => col.field).map((col) => col.field as string);
         if (!columnOrder || columnOrder.length === 0) {
             const initialColumnOrder = extractColumnOrder(colDef);
             dispatch(setReorderedColumns(initialColumnOrder));
@@ -106,13 +103,11 @@ export const DirectoryContentTable = ({
     }, [columnOrder, colDef, dispatch]);
 
     const onColumnMoved = useCallback(() => {
-        const extractFieldNames = (currentColumnDefs: ColDef[] | undefined): string[] => {
-            return (currentColumnDefs ?? [])
+        const extractFieldNames = (currentColumnDefs: ColDef[] | undefined): string[] =>
+            (currentColumnDefs ?? [])
                 .filter((obj): obj is ColDef => obj && typeof obj === 'object' && 'field' in obj)
                 .map((def) => def.field)
                 .filter((field): field is string => field !== undefined);
-        };
-
         const currentColumnDefs = gridRef?.current?.api?.getColumnDefs();
         const fieldNames = extractFieldNames(currentColumnDefs);
         dispatch(setReorderedColumns(fieldNames));
@@ -131,11 +126,11 @@ export const DirectoryContentTable = ({
             onRowSelected={handleRowSelected}
             onGridSizeChanged={recomputeOverFlowableCells}
             onColumnMoved={onColumnMoved}
-            animateRows={true}
+            animateRows
             columnDefs={columnDefs}
             getRowStyle={getCustomRowStyle}
-            //We set a custom className for rows in order to easily determine if a context menu event is happening on a row or not
+            // We set a custom className for rows in order to easily determine if a context menu event is happening on a row or not
             rowClass={CUSTOM_ROW_CLASS}
         />
     );
-};
+}

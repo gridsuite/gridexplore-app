@@ -7,38 +7,38 @@
 import { useForm } from 'react-hook-form';
 import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { FunctionComponent, useCallback, useEffect } from 'react';
-import UploadNewCase from '../commons/upload-new-case';
-import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
-import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
+import { useCallback, useEffect } from 'react';
 import {
-    useSnackMessage,
-    ErrorInput,
-    FieldErrorAlert,
-    ElementType,
     CustomMuiDialog,
+    DescriptionField,
+    ElementAttributes,
+    ElementType,
+    ErrorInput,
     FieldConstants,
+    FieldErrorAlert,
     isObjectEmpty,
     keyGenerator,
     ModifyElementSelection,
-    ElementAttributes,
     Parameter,
-    DescriptionField,
     useConfidentialityWarning,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { UUID } from 'crypto';
+import UploadNewCase from '../commons/upload-new-case';
+import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
+import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import ImportParametersSection from './importParametersSection';
-import { addUploadingElement, setActiveDirectory } from '../../../redux/actions';
+import { addUploadingElement, removeUploadingElement, setActiveDirectory } from '../../../redux/actions';
 import {
-    CreateStudyDialogFormValues,
     createStudyDialogFormValidationSchema,
+    CreateStudyDialogFormValues,
     getCreateStudyDialogFormDefaultValues,
 } from './create-study-dialog-utils';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
-import { AppState, UploadingElement } from 'redux/reducer';
-import { UUID } from 'crypto';
+import { AppState, UploadingElement } from '../../../redux/types';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -46,9 +46,9 @@ function customizeCurrentParameters(params: Parameter[]): Record<string, string>
     return params.reduce((obj, parameter) => {
         // we check if the parameter is for extensions. If so, we select all possible values by default.
         // the only way for the moment to check if the parameter is for extension, is by checking his name.
-        //TODO: implement a cleaner way to determine the extensions field
+        // TODO: implement a cleaner way to determine the extensions field
         if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
-            obj[parameter.name] = parameter.possibleValues.toString();
+            return { ...obj, [parameter.name]: parameter.possibleValues.toString() };
         }
         return obj;
     }, {} as Record<string, string>);
@@ -56,19 +56,19 @@ function customizeCurrentParameters(params: Parameter[]): Record<string, string>
 
 function formatCaseImportParameters(params: Parameter[]): Parameter[] {
     // sort possible values alphabetically to display select options sorted
-    return params?.map((parameter) => {
-        parameter.possibleValues = parameter.possibleValues?.sort((a: any, b: any) => a.localeCompare(b));
-        return parameter;
-    });
+    return params?.map((parameter) => ({
+        ...parameter,
+        possibleValues: parameter.possibleValues?.sort((a: any, b: any) => a.localeCompare(b)),
+    }));
 }
 
-interface CreateStudyDialogProps {
+export interface CreateStudyDialogProps {
     open: boolean;
     onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     providedExistingCase?: ElementAttributes;
 }
 
-const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, onClose, providedExistingCase }) => {
+export default function CreateStudyDialog({ open, onClose, providedExistingCase }: Readonly<CreateStudyDialogProps>) {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
@@ -125,7 +125,7 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
     );
 
     const getCurrentCaseImportParams = useCallback(
-        (uuid: string) => {
+        (uuid: UUID) => {
             getCaseImportParameters(uuid)
                 .then((result) => {
                     const formattedParams = formatCaseImportParameters(result.parameters);
@@ -185,7 +185,7 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
         const uploadingStudy: UploadingElement = {
             id: keyGenerator()(),
             elementName: studyName,
-            directory: directory as UUID,
+            directory,
             type: ElementType.STUDY,
             owner: userId,
             lastModifiedBy: userId,
@@ -208,6 +208,7 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
                     onClose();
                 })
                 .catch((error) => {
+                    dispatch(removeUploadingElement(uploadingStudy));
                     if (handleMaxElementsExceededError(error, snackError)) {
                         return;
                     }
@@ -233,17 +234,16 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
     // handle create study from existing case
     useEffect(() => {
         if (providedExistingCase) {
-            const { elementUuid } = providedExistingCase;
-            getCurrentCaseImportParams(elementUuid);
+            getCurrentCaseImportParams(providedExistingCase.elementUuid);
         }
     }, [getCurrentCaseImportParams, providedExistingCase, setValue]);
 
     return (
         <CustomMuiDialog
-            titleId={'createNewStudy'}
+            titleId="createNewStudy"
             formSchema={createStudyDialogFormValidationSchema}
             formMethods={createStudyFormMethods}
-            removeOptional={true}
+            removeOptional
             open={open}
             onClose={onClose}
             onSave={handleCreateNewStudy}
@@ -251,11 +251,11 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
             disabledSave={!isFormValid}
             confirmationMessageKey={confidentialityWarningKey}
         >
-            <Grid container spacing={2} marginTop={'auto'} direction="column">
+            <Grid container spacing={2} marginTop="auto" direction="column">
                 <Grid item>
                     <PrefilledNameInput
                         name={FieldConstants.STUDY_NAME}
-                        label={'nameProperty'}
+                        label="nameProperty"
                         elementType={ElementType.STUDY}
                     />
                 </Grid>
@@ -266,13 +266,13 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
             {providedExistingCase ? (
                 <ModifyElementSelection
                     elementType={ElementType.DIRECTORY}
-                    dialogOpeningButtonLabel={'showSelectDirectoryDialog'}
-                    dialogTitleLabel={'selectDirectoryDialogTitle'}
-                    dialogMessageLabel={'moveItemContentText'}
+                    dialogOpeningButtonLabel="showSelectDirectoryDialog"
+                    dialogTitleLabel="selectDirectoryDialogTitle"
+                    dialogMessageLabel="moveItemContentText"
                 />
             ) : (
                 <UploadNewCase
-                    isNewStudyCreation={true}
+                    isNewStudyCreation
                     getCurrentCaseImportParams={getCurrentCaseImportParams}
                     handleApiCallError={handleApiCallError}
                 />
@@ -284,6 +284,4 @@ const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({ open, on
             </Grid>
         </CustomMuiDialog>
     );
-};
-
-export default CreateStudyDialog;
+}
