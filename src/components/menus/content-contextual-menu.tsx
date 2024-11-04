@@ -13,7 +13,6 @@ import {
     ContentCopyRounded as ContentCopyRoundedIcon,
     Delete as DeleteIcon,
     DoNotDisturbAlt as DoNotDisturbAltIcon,
-    DownloadForOffline,
     DriveFileMove as DriveFileMoveIcon,
     FileCopy as FileCopyIcon,
     FileCopyTwoTone as FileCopyTwoToneIcon,
