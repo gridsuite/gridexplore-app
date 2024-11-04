@@ -52,7 +52,7 @@ import {
 import CommonContextualMenu from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
-import { DownloadForOffline, FileDownload } from '@mui/icons-material';
+import { FileDownload } from '@mui/icons-material';
 import { useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setSelectionForCopy } from '../../redux/actions';
@@ -513,10 +513,11 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
         return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
 
-    const allowsExportCase = useCallback(() => {
+    // disabled until fix bug from the back side
+    /*    const allowsExportCase = useCallback(() => {
         //if selectedElements contains at least one case
         return selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress();
-    }, [selectedElements, noCreationInProgress]);
+    }, [selectedElements, noCreationInProgress]);*/
 
     const buildMenu = () => {
         if (selectedElements.length === 0) {
@@ -606,13 +607,13 @@ const ContentContextualMenu = (props: ContentContextualMenuProps) => {
             });
         }
         // disabled until fix bug from the back side
-        if (!allowsExportCase()) {
+        /*        if (allowsExportCase()) {
             menuItems.push({
                 messageDescriptorId: 'download.export.button',
                 callback: () => handleOpenDialog(DialogsId.EXPORT),
                 icon: <DownloadForOffline fontSize="small" />,
             });
-        }
+        }*/
 
         if (allowsReplaceContingencyWithScript()) {
             menuItems.push({
