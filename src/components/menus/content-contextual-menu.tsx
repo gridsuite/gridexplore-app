@@ -13,7 +13,6 @@ import {
     ContentCopyRounded as ContentCopyRoundedIcon,
     Delete as DeleteIcon,
     DoNotDisturbAlt as DoNotDisturbAltIcon,
-    DownloadForOffline,
     DriveFileMove as DriveFileMoveIcon,
     FileCopy as FileCopyIcon,
     FileCopyTwoTone as FileCopyTwoToneIcon,
@@ -484,11 +483,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
 
-    const allowsExportCase = useCallback(() => {
-        // if selectedElements contains at least one case
-        return selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress();
-    }, [selectedElements, noCreationInProgress]);
-
     const buildMenu = () => {
         if (selectedElements.length === 0) {
             return undefined;
@@ -574,14 +568,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     handleCloseDialog();
                 },
                 icon: <FileDownload fontSize="small" />,
-            });
-        }
-
-        if (allowsExportCase()) {
-            menuItems.push({
-                messageDescriptorId: 'download.export.button',
-                callback: () => handleOpenDialog(DialogsId.EXPORT),
-                icon: <DownloadForOffline fontSize="small" />,
             });
         }
 
