@@ -9,22 +9,24 @@ import { useSelector } from 'react-redux';
 import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
 import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
+import { UsersIdentitiesMap } from 'utils/user-identities.type';
 import { fetchUsersIdentities } from '../utils/rest-api';
 import { AppState } from '../redux/types';
-import { UsersIdentitiesMap } from 'utils/user-identities.type';
 
 const getName = (userId: string, data: UsersIdentitiesMap): string => {
     const firstName = data?.[userId]?.firstName;
     const lastName = data?.[userId]?.lastName;
     if (firstName && lastName) {
-        return firstName + ' ' + lastName;
-    } else if (firstName) {
-        return firstName;
-    } else if (lastName) {
-        return lastName;
-    } else {
-        return userId; // fallback to id
+        return `${firstName} ${lastName}`;
     }
+    if (firstName) {
+        return firstName;
+    }
+    if (lastName) {
+        return lastName;
+    }
+    // fallback to id
+    return userId;
 };
 
 export const useDirectoryContent = () => {
@@ -84,13 +86,12 @@ export const useDirectoryContent = () => {
     const currentChildrenWithOwnerNames = useMemo(() => {
         if (!currentChildren) {
             return currentChildren;
-        } else {
-            return currentChildren.map((x) => ({
-                ...x,
-                owner: childrenMetadata?.[x.elementUuid]?.owner,
-                lastModifiedBy: childrenMetadata?.[x.elementUuid]?.lastModifiedBy,
-            }));
         }
+        return currentChildren.map((x) => ({
+            ...x,
+            owner: childrenMetadata?.[x.elementUuid]?.owner,
+            lastModifiedBy: childrenMetadata?.[x.elementUuid]?.lastModifiedBy,
+        }));
     }, [currentChildren, childrenMetadata]);
 
     return [currentChildrenWithOwnerNames, childrenMetadata] as const;
