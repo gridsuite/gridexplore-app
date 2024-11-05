@@ -8,12 +8,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-import {
-    Delete as DeleteIcon,
-    DownloadForOffline,
-    DriveFileMove as DriveFileMoveIcon,
-    FileDownload,
-} from '@mui/icons-material';
+import { Delete as DeleteIcon, DriveFileMove as DriveFileMoveIcon, FileDownload } from '@mui/icons-material';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { deleteElements, moveElementsToDirectory } from '../../utils/rest-api';
 import DeleteDialog from '../dialogs/delete-dialog';
@@ -176,12 +171,6 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
                     callback: () => downloadElements(selectedElements),
                     icon: <FileDownload fontSize="small" />,
                     disabled: !selectedElements.length || !allowsDownload,
-                },
-                {
-                    tooltipTextId: 'download.export.button',
-                    callback: () => handleOpenDialog(DialogsId.EXPORT),
-                    icon: <DownloadForOffline fontSize="small" />,
-                    disabled: !selectedElements.length || !allowsExportCases,
                 }
             );
         }
