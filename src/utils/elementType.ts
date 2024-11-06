@@ -12,7 +12,7 @@ export const FilterType = {
 };
 
 export const NetworkModificationType = {
-    COMPOSITE: { id: 'COMPOSITE_MODIFICATION', label: 'compositeNetworkModification' },
+    COMPOSITE: { id: 'COMPOSITE_MODIFICATION', label: 'MODIFICATION' },
 };
 
 export const ContingencyListType = {
