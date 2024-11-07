@@ -19,11 +19,11 @@ export type UserIdentityError = {
     code: string;
 };
 
-export type UsersIdentitiesErrorMAp = {
+export type UsersIdentitiesErrorMap = {
     [sub: string]: UserIdentity;
 };
 
 export type UsersIdentities = {
     data: UsersIdentitiesMap;
-    errors: UsersIdentitiesErrorMAp;
+    errors: UsersIdentitiesErrorMap;
 };
