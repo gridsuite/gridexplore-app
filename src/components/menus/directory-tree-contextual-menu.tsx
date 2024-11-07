@@ -351,21 +351,21 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 );
             case DialogsId.RENAME_DIRECTORY:
                 return (
-                    <RenameDialog
-                        message="renameElementMsg"
-                        // @ts-expect-error TODO: manage null case(s) here
-                        currentName={directory.elementName}
-                        open
-                        // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
-                        onClick={(newName: string) => renameCB(directory?.elementUuid, newName)}
-                        onClose={handleCloseDialog}
-                        title={intl.formatMessage({
-                            id: 'renameDirectoryDialogTitle',
-                        })}
-                        error={renameState.errorMessage}
-                        type={ElementType.DIRECTORY}
-                        parentDirectory={directory?.parentUuid}
-                    />
+                    directory && (
+                        <RenameDialog
+                            message="renameElementMsg"
+                            currentName={directory.elementName}
+                            open
+                            onClick={(newName: string) => renameCB(directory.elementUuid, newName)}
+                            onClose={handleCloseDialog}
+                            title={intl.formatMessage({
+                                id: 'renameDirectoryDialogTitle',
+                            })}
+                            error={renameState.errorMessage}
+                            type={ElementType.DIRECTORY}
+                            parentDirectory={directory.parentUuid}
+                        />
+                    )
                 );
             case DialogsId.DELETE_DIRECTORY:
                 return (
