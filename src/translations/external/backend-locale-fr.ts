@@ -22,6 +22,25 @@ const BackendLocaleFr = {
     SCRIPT_CONTINGENCY_LIST: "Liste d'aléas (Script)",
     IDENTIFIER_LIST_FILTER: 'Filtre (Par nommage)',
     CRITERIA_FILTER: 'Filtre (Par critères)',
+
+    // spreadsheet config metadata
+    Load: 'Consommation',
+    Generator: 'Groupe',
+    Battery: 'Batterie',
+    Line: 'Ligne',
+    Two_windings_transformer: 'Transfo à 2 enroulements',
+    Three_windings_transformer: 'Transfo à 3 enroulements',
+    Busbar_section: 'Section de jeux de barre',
+    Bus: 'Noeud électrique',
+    Dangling_line: 'Ligne frontière',
+    Hvdc_line: 'Ligne HVDC',
+    Lcc_converter_station: 'Station de conversion LCC',
+    Vsc_converter_station: 'Station de conversion VSC',
+    Static_var_compensator: 'CSPR',
+    Voltage_level: 'Poste',
+    Tie_line: 'Interconnexion',
+    Shunt_compensator: 'Moyen de compensation',
+    Substation: 'Site',
 };
 
 export default BackendLocaleFr;
