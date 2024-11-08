@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
 import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { UsersIdentitiesMap } from 'utils/user-identities.type';
+import { UsersIdentities, UsersIdentitiesMap } from 'utils/user-identities.type';
 import { fetchUsersIdentities } from '../utils/rest-api';
 import { AppState } from '../redux/types';
 
@@ -58,9 +58,27 @@ export const useDirectoryContent = () => {
 
         const metadata: Record<UUID, ElementAttributes> = {};
         const childrenToFetchElementsInfos = Object.values(currentChildren).map((e) => e.elementUuid);
+
+        const fetchUsersIdentitiesPromise = fetchUsersIdentities(childrenToFetchElementsInfos).catch(() => {
+            // Last resort, server down, error 500, fallback to subs as users Identities
+            // We write this code to have the same behavior as when there are partial results,
+            // (missing users identities), see getName()
+            const fallbackUsersIdentities: UsersIdentities = {
+                data: Object.fromEntries(
+                    [...new Set(currentChildren.flatMap((e) => [e.owner, e.lastModifiedBy]))].map((sub) => [
+                        sub,
+                        { sub, firstName: '', lastName: '' },
+                    ])
+                ),
+                errors: {},
+            };
+
+            return fallbackUsersIdentities;
+        });
+
         if (childrenToFetchElementsInfos.length > 0) {
             Promise.all([
-                fetchUsersIdentities(childrenToFetchElementsInfos), // TODO cache user identities across elements
+                fetchUsersIdentitiesPromise, // TODO cache user identities across elements
                 fetchElementsInfos(childrenToFetchElementsInfos),
             ])
                 .then((res) => {
