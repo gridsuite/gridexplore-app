@@ -383,24 +383,12 @@ export default function DirectoryContent() {
         [childrenMetadata, dispatch, getStudyUrl, handleError, intl, selectedDirectory?.elementUuid]
     );
 
-    useEffect(() => {
-        if (!selectedDirectory?.elementUuid) {
-            return;
-        }
-        setIsMissingDataAfterDirChange(true);
-        setCheckedRows([]);
-    }, [selectedDirectory?.elementUuid]);
-
-    useEffect(() => {
-        setIsMissingDataAfterDirChange(false);
-    }, [childrenMetadata]); // this will change after switching selectedDirectory
-
     const isActiveElementUnchecked = useMemo(
         () => activeElement && !checkedRows.find((children) => children.elementUuid === activeElement.elementUuid),
         [activeElement, checkedRows]
     );
 
-    const handleRowSelected = useCallback(() => {
+    const updateCheckedRows = useCallback(() => {
         setCheckedRows(computeCheckedElements(gridRef, childrenMetadata));
     }, [childrenMetadata]);
 
@@ -480,7 +468,7 @@ export default function DirectoryContent() {
                 gridRef={gridRef}
                 rows={rows}
                 handleCellContextualMenu={onCellContextMenu}
-                handleRowSelected={handleRowSelected}
+                handleRowSelected={updateCheckedRows}
                 handleCellClick={handleCellClick}
                 colDef={getColumnsDefinition(childrenMetadata, intl)}
                 getRowStyle={getRowStyle}
@@ -606,6 +594,21 @@ export default function DirectoryContent() {
         }
     };
 
+    useEffect(() => {
+        if (!selectedDirectory?.elementUuid) {
+            return;
+        }
+        setIsMissingDataAfterDirChange(true);
+        setCheckedRows([]);
+    }, [selectedDirectory?.elementUuid]);
+
+    useEffect(() => {
+        setIsMissingDataAfterDirChange(false);
+        // update checkecRows ElementAttributes objects if metadata changed
+        // ex: when the user renames a selected element
+        updateCheckedRows();
+    }, [childrenMetadata, updateCheckedRows]); // this will change after switching selectedDirectory
+
     return (
         <>
             {
@@ -640,7 +643,6 @@ export default function DirectoryContent() {
                     <ContentContextualMenu
                         activeElement={activeElement}
                         selectedElements={fullSelection}
-                        onUpdateSelectedElements={setCheckedRows}
                         open={openContentMenu}
                         openDialog={openDialog}
                         setOpenDialog={setOpenDialog}
