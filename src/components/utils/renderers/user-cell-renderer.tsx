@@ -7,7 +7,7 @@
 import { Avatar, Box, Theme, Tooltip } from '@mui/material';
 
 function getAbbreviationFromUserName(name: string) {
-    /* null or undefined or only whitespaces */
+    // notice : == null means null or undefined
     if (name == null || name.trim() === '') {
         return '';
     }
