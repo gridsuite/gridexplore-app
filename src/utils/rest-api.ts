@@ -27,6 +27,7 @@ import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 import { AppState } from '../redux/types';
 import { CriteriaBasedData } from '../components/dialogs/contingency-list/contingency-list-utils';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
+import { UsersIdentities } from './user-identities.type';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_CONFIG_NOTIFICATION_WS = `${import.meta.env.VITE_WS_GATEWAY}/config-notification`;
@@ -181,6 +182,15 @@ export function fetchVersion() {
             console.error(`Error while fetching the version : ${reason}`);
             return reason;
         });
+}
+
+export function fetchUsersIdentities(elementUuids: string[]) {
+    console.info('fetching users identities for elements : %s', elementUuids);
+    const idsParams = getRequestParamFromList('ids', elementUuids).toString();
+    const fetchParams = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/users-identities?${idsParams}`;
+    return backendFetchJson(fetchParams, {
+        method: 'get',
+    }) as Promise<UsersIdentities>;
 }
 
 export type ConfigParameter =
