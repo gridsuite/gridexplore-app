@@ -7,7 +7,8 @@
 import { Avatar, Box, Theme, Tooltip } from '@mui/material';
 
 function getAbbreviationFromUserName(name: string) {
-    if (name === null || name.trim() === '') {
+    // notice : == null means null or undefined
+    if (name == null || name.trim() === '') {
         return '';
     }
     const splittedName = name.split(' ');
