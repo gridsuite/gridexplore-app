@@ -24,9 +24,9 @@ import {
 import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
 import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
-import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
+import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import * as constants from '../utils/UIconstants';
-import { ContingencyListType, FilterType } from '../utils/elementType';
+import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
 import { elementExists, getFilterById, updateElement } from '../utils/rest-api';
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
@@ -47,6 +47,7 @@ import NoContentDirectory from './no-content-directory';
 import { CUSTOM_ROW_CLASS, DirectoryContentTable } from './directory-content-table';
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
 import EmptyDirectory from './empty-directory';
+import CompositeModificationDialog from './dialogs/network-modification/composite-modification/composite-modification-dialog';
 import { AppState } from '../redux/types';
 
 const circularProgressSize = '70px';
@@ -193,7 +194,17 @@ export default function DirectoryContent() {
         setElementName('');
     };
 
-    /** Filters dialog: window status value to edit Expert filters */
+    const [currentNetworkModificationId, setCurrentNetworkModificationId] = useState(null);
+    const handleCloseCompositeModificationDialog = () => {
+        setOpenDialog(constants.DialogsId.NONE);
+        setCurrentNetworkModificationId(null);
+        setActiveElement(null);
+        setElementName('');
+    };
+
+    /**
+     * Filters dialog: window status value to edit Expert filters
+     */
     const [currentExpertFilterId, setCurrentExpertFilterId] = useState(null);
     const handleCloseExpertFilterDialog = () => {
         setOpenDialog(constants.DialogsId.NONE);
@@ -375,6 +386,12 @@ export default function DirectoryContent() {
                             setOpenDialog(subtype);
                         }
                         break;
+                    case ElementType.MODIFICATION:
+                        if (subtype === NetworkModificationType.COMPOSITE.id) {
+                            setCurrentNetworkModificationId(event.data.elementUuid);
+                            setOpenDialog(subtype);
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -496,6 +513,17 @@ export default function DirectoryContent() {
         // TODO openDialog should also be aware of the dialog's type, not only its subtype, because
         // if/when two different dialogs have the same subtype, this function will display the wrong dialog.
         switch (openDialog) {
+            case NetworkModificationType.COMPOSITE.id:
+                return (
+                    <CompositeModificationDialog
+                        open
+                        titleId="MODIFICATION"
+                        compositeModificationId={currentNetworkModificationId ?? ''}
+                        onClose={handleCloseCompositeModificationDialog}
+                        name={name}
+                        broadcastChannel={broadcastChannel}
+                    />
+                );
             case ContingencyListType.CRITERIA_BASED.id:
                 return (
                     <CriteriaBasedEditionDialog

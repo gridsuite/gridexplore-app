@@ -515,6 +515,29 @@ export interface CriteriaBasedEditionFormData {
 }
 
 /**
+ * Get the basic data of the network modifications contained in a composite modification
+ */
+export function fetchCompositeModificationContent(id: string) {
+    const url: string = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modification/${id}/network-modifications`;
+
+    return backendFetchJson(url, {
+        method: 'get',
+    });
+}
+
+export function saveCompositeModification(id: string, name: string) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+
+    const url: string = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modification/${id}?${urlSearchParams.toString()}`;
+
+    return backendFetch(url, {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
+
+/**
  * Saves a Filter contingency list
  * @returns {Promise<Response>}
  */

@@ -44,6 +44,8 @@ import {
     LIGHT_THEME,
     loginEn,
     loginFr,
+    networkModificationsEn,
+    networkModificationsFr,
     multipleSelectionDialogEn,
     multipleSelectionDialogFr,
     SnackbarProvider,
@@ -190,6 +192,7 @@ function getMuiTheme(theme: GsTheme, locale: GsLangUser) {
 const messages: Record<GsLangUser, IntlConfig['messages']> = {
     en: {
         ...messages_en,
+        ...networkModificationsEn,
         ...importParamsEn,
         ...exportParamsEn,
         ...loginEn,
@@ -212,6 +215,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
     },
     fr: {
         ...messages_fr,
+        ...networkModificationsFr,
         ...importParamsFr,
         ...exportParamsFr,
         ...loginFr,
