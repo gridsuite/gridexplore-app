@@ -122,7 +122,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         headerName: intl.formatMessage({
             id: 'creator',
         }),
-        field: 'owner',
+        field: 'ownerLabel',
         cellRenderer: UserCellRenderer,
         minWidth: 110,
         flex: 1,
@@ -140,7 +140,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         headerName: intl.formatMessage({
             id: 'modifiedBy',
         }),
-        field: 'lastModifiedBy',
+        field: 'lastModifiedByLabel',
         cellRenderer: UserCellRenderer,
         minWidth: 110,
         flex: 1,
