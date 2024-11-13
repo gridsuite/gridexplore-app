@@ -108,7 +108,7 @@ export const useDirectoryContent = () => {
         return currentChildren.map((x) => ({
             ...x,
             ownerLabel: childrenMetadata?.[x.elementUuid]?.ownerLabel,
-            lastModifiedLabel: childrenMetadata?.[x.elementUuid]?.lastModifiedByLabel,
+            lastModifiedByLabel: childrenMetadata?.[x.elementUuid]?.lastModifiedByLabel,
         }));
     }, [currentChildren, childrenMetadata]);
 
