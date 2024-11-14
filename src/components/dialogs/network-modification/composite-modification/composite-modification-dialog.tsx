@@ -71,6 +71,12 @@ export default function CompositeModificationDialog({
         resolver: yupResolver(schema),
     });
 
+    const {
+        formState: { errors },
+    } = methods;
+    const nameError: any = errors[FieldConstants.NAME];
+    const isValidating = errors.root?.isValidating;
+
     const { computeLabel } = useModificationLabelComputer();
     const getModificationLabel = (modif: NetworkModificationMetadata) => {
         if (!modif) {
@@ -147,6 +153,7 @@ export default function CompositeModificationDialog({
             titleId={titleId}
             onSave={onSubmit}
             removeOptional
+            disabledSave={!!nameError || !!isValidating}
             isDataFetching={isFetching}
             language={languageLocal}
             formSchema={schema}
