@@ -281,7 +281,7 @@ export function insertDirectory(directoryName: string, parentUuid: UUID, ownerId
             elementUuid: null,
             elementName: directoryName,
             type: 'DIRECTORY',
-            ownerId,
+            owner: ownerId,
         }),
     });
 }
@@ -297,7 +297,7 @@ export function insertRootDirectory(directoryName: string, ownerId: string) {
         },
         body: JSON.stringify({
             elementName: directoryName,
-            ownerId,
+            owner: ownerId,
         }),
     });
 }
