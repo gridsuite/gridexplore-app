@@ -268,7 +268,7 @@ export function updateElement(elementUuid: UUID, element: unknown) {
     });
 }
 
-export function insertDirectory(directoryName: string, parentUuid: UUID, ownerId: string) {
+export function insertDirectory(directoryName: string, parentUuid: UUID, owner: string) {
     console.info("Inserting a new folder '%s'", directoryName);
     const insertDirectoryUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${parentUuid}/elements`;
     return backendFetchJson(insertDirectoryUrl, {
@@ -281,12 +281,12 @@ export function insertDirectory(directoryName: string, parentUuid: UUID, ownerId
             elementUuid: null,
             elementName: directoryName,
             type: 'DIRECTORY',
-            ownerId,
+            owner,
         }),
     });
 }
 
-export function insertRootDirectory(directoryName: string, ownerId: string) {
+export function insertRootDirectory(directoryName: string, owner: string) {
     console.info("Inserting a new root folder '%s'", directoryName);
     const insertRootDirectoryUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/root-directories`;
     return backendFetchJson(insertRootDirectoryUrl, {
@@ -297,7 +297,7 @@ export function insertRootDirectory(directoryName: string, ownerId: string) {
         },
         body: JSON.stringify({
             elementName: directoryName,
-            ownerId,
+            owner,
         }),
     });
 }
