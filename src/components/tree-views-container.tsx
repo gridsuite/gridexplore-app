@@ -235,21 +235,15 @@ export default function TreeViewsContainer() {
         },
         []
     );
-    const handleCloseDirectoryMenu = useCallback(
-        (e: unknown, nextSelectedDirectoryId: string | null = null) => {
-            setOpenDirectoryMenu(false);
-            dispatch(setActiveDirectory(undefined));
-            if (nextSelectedDirectoryId !== null && treeDataRef.current?.mapData?.[nextSelectedDirectoryId]) {
-                dispatch(setSelectedDirectory(treeDataRef.current.mapData[nextSelectedDirectoryId]));
-            }
-            // so it removes the style that we added ourselves
-            if (DOMFocusedDirectory !== null) {
-                (DOMFocusedDirectory as HTMLElement).classList.remove('focused');
-                setDOMFocusedDirectory(null);
-            }
-        },
-        [DOMFocusedDirectory, dispatch]
-    );
+    const handleCloseDirectoryMenu = useCallback(() => {
+        setOpenDirectoryMenu(false);
+        dispatch(setActiveDirectory(undefined));
+        // so it removes the style that we added ourselves
+        if (DOMFocusedDirectory !== null) {
+            (DOMFocusedDirectory as HTMLElement).classList.remove('focused');
+            setDOMFocusedDirectory(null);
+        }
+    }, [DOMFocusedDirectory, dispatch]);
 
     /* Menu states */
     const [mousePosition, setMousePosition] = useState<{
@@ -662,7 +656,7 @@ export default function TreeViewsContainer() {
     const handleOnMouseDown = useCallback<NonNullable<BoxProps['onMouseDown']>>(
         (e) => {
             if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON && openDialog === constants.DialogsId.NONE) {
-                handleCloseDirectoryMenu(e, null);
+                handleCloseDirectoryMenu();
             }
         },
         [handleCloseDirectoryMenu, openDialog]
@@ -696,7 +690,7 @@ export default function TreeViewsContainer() {
                     openDialog={openDialog}
                     setOpenDialog={setOpenDialog}
                     // TODO why doing a lambda loosing the 2nd parameter here?
-                    onClose={(e: unknown) => handleCloseDirectoryMenu(e, null)}
+                    onClose={handleCloseDirectoryMenu}
                     anchorReference={anchorReference}
                     anchorPosition={anchorPosition}
                     anchorEl={anchorEl}
