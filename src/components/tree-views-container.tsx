@@ -235,18 +235,15 @@ export default function TreeViewsContainer() {
         },
         []
     );
-    const handleCloseDirectoryMenu = useCallback(
-        () => {
-            setOpenDirectoryMenu(false);
-            dispatch(setActiveDirectory(undefined));
-            // so it removes the style that we added ourselves
-            if (DOMFocusedDirectory !== null) {
-                (DOMFocusedDirectory as HTMLElement).classList.remove('focused');
-                setDOMFocusedDirectory(null);
-            }
-        },
-        [DOMFocusedDirectory, dispatch]
-    );
+    const handleCloseDirectoryMenu = useCallback(() => {
+        setOpenDirectoryMenu(false);
+        dispatch(setActiveDirectory(undefined));
+        // so it removes the style that we added ourselves
+        if (DOMFocusedDirectory !== null) {
+            (DOMFocusedDirectory as HTMLElement).classList.remove('focused');
+            setDOMFocusedDirectory(null);
+        }
+    }, [DOMFocusedDirectory, dispatch]);
 
     /* Menu states */
     const [mousePosition, setMousePosition] = useState<{
