@@ -23,11 +23,11 @@ import {
     Typography,
 } from '@mui/material';
 import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { getExportFormats } from '../../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { CancelButton, ElementAttributes, FlatParameters } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
+import { getExportFormats } from '../../utils/rest-api';
 
 type ExportFormats =
     | {
@@ -47,7 +47,7 @@ type FormatParameters = {
     [parameterName: string]: any;
 };
 
-interface ExportCaseDialogProps {
+export interface ExportCaseDialogProps {
     selectedElements: ElementAttributes[];
     onClose: () => void;
     onExport: (
@@ -58,7 +58,27 @@ interface ExportCaseDialogProps {
     ) => Promise<void>;
 }
 
-const ExportCaseDialog = ({ selectedElements, onClose, onExport }: ExportCaseDialogProps) => {
+/* separate in a function because Sonar don't like nested lambda/functions */
+function transformFetchedFormats(fetchedFormats: ExportFormats): ExportFormats {
+    return Array.isArray(fetchedFormats)
+        ? fetchedFormats
+        : Object.fromEntries(
+              Object.entries(fetchedFormats).map(([key, value]) => [
+                  key,
+                  {
+                      ...value,
+                      parameters: value.parameters.map((param) => {
+                          if (param.type === 'STRING_LIST' && param.name.endsWith('extensions')) {
+                              return { ...param, defaultValue: param.possibleValues };
+                          }
+                          return param;
+                      }),
+                  },
+              ])
+          );
+}
+
+export default function ExportCaseDialog({ selectedElements, onClose, onExport }: Readonly<ExportCaseDialogProps>) {
     const [loading, setLoading] = useState<boolean>(false);
     const [formats, setFormats] = useState<ExportFormats>([]);
     const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
@@ -91,15 +111,8 @@ const ExportCaseDialog = ({ selectedElements, onClose, onExport }: ExportCaseDia
         getExportFormats().then((fetchedFormats: ExportFormats) => {
             // we check if the param is for extension, if it is, we select all possible values by default.
             // the only way for the moment to check if the param is for extension, is by checking his type is name.
-            //TODO to be removed when extensions param default value corrected in backend to include all possible values
-            Object.values(fetchedFormats).forEach((format) =>
-                format.parameters.forEach((param) => {
-                    if (param.type === 'STRING_LIST' && param.name.endsWith('extensions')) {
-                        param.defaultValue = param.possibleValues;
-                    }
-                })
-            );
-            setFormats(fetchedFormats);
+            // TODO to be removed when extensions param default value corrected in backend to include all possible values
+            setFormats(transformFetchedFormats(fetchedFormats));
         });
     }, []);
 
@@ -206,6 +219,4 @@ const ExportCaseDialog = ({ selectedElements, onClose, onExport }: ExportCaseDia
             </DialogActions>
         </Dialog>
     );
-};
-
-export default ExportCaseDialog;
+}

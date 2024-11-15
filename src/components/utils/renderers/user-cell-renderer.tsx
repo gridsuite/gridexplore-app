@@ -4,34 +4,37 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
-import Chip from '@mui/material/Chip';
+import { Avatar, Box, Theme, Tooltip } from '@mui/material';
 
-const abbreviationFromUserName = (name: string | null) => {
-    if (name === null) {
+function getAbbreviationFromUserName(name: string) {
+    // notice : == null means null or undefined
+    if (name == null || name.trim() === '') {
         return '';
     }
-    const tab = name.split(' ').map((x) => x.charAt(0));
-    if (tab.length === 1) {
-        return tab[0];
-    } else {
-        return tab[0] + tab[tab.length - 1];
+    const splittedName = name.split(' ');
+    if (splittedName.length > 1) {
+        return `${splittedName[0][0]}${splittedName[splittedName.length - 1][0]}`;
     }
-};
+    return `${splittedName[0][0]}`;
+}
 
 const styles = {
-    chip: {
+    avatar: (theme: Theme) => ({
         cursor: 'pointer',
-    },
+        height: '32px',
+        width: '32px',
+        fontSize: theme.typography.fontSize,
+    }),
 };
 
-export const UserCellRenderer = ({ value }: { value: string }) => {
+export type UserCellRendererProps = { value: string };
+
+export function UserCellRenderer({ value }: Readonly<UserCellRendererProps>) {
     return (
-        <Box>
+        <Box sx={{ display: 'inline-flex', verticalAlign: 'middle' }}>
             <Tooltip title={value} placement="right">
-                <Chip sx={styles.chip} label={abbreviationFromUserName(value)} />
+                <Avatar sx={styles.avatar}>{getAbbreviationFromUserName(value)}</Avatar>
             </Tooltip>
         </Box>
     );
-};
+}

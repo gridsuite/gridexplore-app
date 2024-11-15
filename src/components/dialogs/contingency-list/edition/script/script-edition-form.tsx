@@ -5,29 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
-import ScriptInputForm from '../../script/script-input-form';
-import { UniqueNameInput, ElementType, FieldConstants } from '@gridsuite/commons-ui';
-import { elementExists } from 'utils/rest-api';
+import { Box } from '@mui/material';
+import { ElementType, FieldConstants, UniqueNameInput, unscrollableDialogStyles } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { elementExists } from '../../../../../utils/rest-api';
+import ScriptInputForm from '../../script/script-input-form';
+import { AppState } from '../../../../../redux/types';
 
-const ScriptEditionForm = () => {
+export default function ScriptEditionForm() {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
-        <Grid container spacing={2} marginTop={'auto'}>
-            <Grid item xs={12}>
+        <>
+            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
                 <UniqueNameInput
                     name={FieldConstants.NAME}
-                    label={'nameProperty'}
+                    label="nameProperty"
                     elementType={ElementType.CONTINGENCY_LIST}
                     activeDirectory={activeDirectory}
                     elementExists={elementExists}
                 />
-            </Grid>
+            </Box>
             <ScriptInputForm />
-        </Grid>
+        </>
     );
-};
-
-export default ScriptEditionForm;
+}

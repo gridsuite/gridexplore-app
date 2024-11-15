@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { updatedTree } from './tree-views-container';
 import { ElementType } from '@gridsuite/commons-ui';
+import { updatedTree } from './tree-views-container';
 
 const otherProperties = {
     description: 'desc',
@@ -24,7 +24,7 @@ const otherProperties = {
 };
 
 test('boot1', () => {
-    let res = updatedTree([], {}, null, [
+    const res = updatedTree([], {}, null, [
         {
             elementUuid: '123e4567-e89b-12d3-a456-426614174000',
             elementName: 'aName',
@@ -37,7 +37,7 @@ test('boot1', () => {
 });
 
 test('boot2', () => {
-    let res1 = updatedTree([], {}, null, [
+    const res1 = updatedTree([], {}, null, [
         {
             elementUuid: '123e4567-e89b-12d3-a456-426614174000',
             elementName: 'b name',
@@ -68,7 +68,7 @@ test('boot2', () => {
     expect(res1[0][1].elementName).toBe('b name');
     expect(res1[0][1].parentUuid).toBe(null);
 
-    let res2 = updatedTree(res1[0], res1[1], '123e4567-e89b-12d3-a456-426614174000', [
+    const res2 = updatedTree(res1[0], res1[1], '123e4567-e89b-12d3-a456-426614174000', [
         {
             elementUuid: '523e4567-e89b-12d3-a456-426614174000',
             elementName: 'b2 name',
@@ -85,7 +85,7 @@ test('boot2', () => {
     expect(Object.keys(res2[1]).length).toBe(5);
     expect(res2[0][1].children[0].parentUuid).toBe('123e4567-e89b-12d3-a456-426614174000');
 
-    let res3 = updatedTree(res2[0], res2[1], '523e4567-e89b-12d3-a456-426614174000', [
+    const res3 = updatedTree(res2[0], res2[1], '523e4567-e89b-12d3-a456-426614174000', [
         {
             elementUuid: '623e4567-e89b-12d3-a456-426614174000',
             elementName: 'b3 name',
@@ -100,7 +100,7 @@ test('boot2', () => {
     expect(res3[0][1].children[0].children[0].elementUuid).toBe('623e4567-e89b-12d3-a456-426614174000');
     expect(res3[0][1].children[0].children[0].parentUuid).toBe('523e4567-e89b-12d3-a456-426614174000');
 
-    let res1_1 = updatedTree(res3[0], res3[1], '323e4567-e89b-12d3-a456-426614174000', [
+    const res1bis = updatedTree(res3[0], res3[1], '323e4567-e89b-12d3-a456-426614174000', [
         {
             elementUuid: '723e4567-e89b-12d3-a456-426614174000',
             elementName: 'a2 name',
@@ -109,7 +109,7 @@ test('boot2', () => {
         },
     ]);
 
-    let res4 = updatedTree(res1_1[0], res1_1[1], null, [
+    const res4 = updatedTree(res1bis[0], res1bis[1], null, [
         {
             elementUuid: '823e4567-e89b-12d3-a456-426614174000',
             elementName: 'e name',
