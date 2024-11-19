@@ -33,7 +33,6 @@ export interface CommonContextualMenuProps extends MenuProps {
 }
 
 export default function CommonContextualMenu({ menuItems, ...menuProps }: Readonly<CommonContextualMenuProps>) {
-
     function makeMenuItem(
         key: number,
         messageDescriptorId?: string,
