@@ -5,8 +5,33 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
+/* eslint
+   no-param-reassign: ["error", {"props": true, "ignorePropertyModificationsFor": ["state"]}],
+   "@typescript-eslint/no-unused-vars": ["error", {"vars": "all", "args": "after-used", "ignoreRestSiblings": true, "argsIgnorePattern": "^action$"}]
+   --------
+   source: https://github.com/airbnb/javascript/blob/main/packages/eslint-config-airbnb-base/
+       and https://github.com/iamturns/eslint-config-airbnb-typescript
+   Special case for redux usage. */
 
+import { createReducer } from '@reduxjs/toolkit';
+import {
+    AuthenticationActions,
+    AuthenticationRouterErrorAction,
+    ElementType,
+    LOGOUT_ERROR,
+    LogoutErrorAction,
+    RESET_AUTHENTICATION_ROUTER_ERROR,
+    SHOW_AUTH_INFO_LOGIN,
+    ShowAuthenticationRouterLoginAction,
+    SIGNIN_CALLBACK_ERROR,
+    SignInCallbackErrorAction,
+    UNAUTHORIZED_USER_INFO,
+    UnauthorizedUserAction,
+    USER,
+    USER_VALIDATION_ERROR,
+    UserAction,
+    UserValidationErrorAction,
+} from '@gridsuite/commons-ui';
 import {
     getLocalStorageComputedLanguage,
     getLocalStorageLanguage,
@@ -14,7 +39,6 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './local-storage';
-
 import {
     ACTIVE_DIRECTORY,
     ActiveDirectoryAction,
@@ -41,100 +65,17 @@ import {
     SELECTION_FOR_COPY,
     SelectionForCopyAction,
     SET_APPS_AND_URLS,
-    SetAppsAndUrlsAction,
     SET_UPLOADING_ELEMENTS,
+    SetAppsAndUrlsAction,
     SetUploadingElementsAction,
     ThemeAction,
     TREE_DATA,
     TreeDataAction,
+    REMOVE_UPLOADING_ELEMENT,
+    RemoveUploadingElementAction,
 } from './actions';
-
-import {
-    AuthenticationActions,
-    AuthenticationRouterErrorAction,
-    AuthenticationRouterErrorState,
-    Metadata,
-    CommonStoreState,
-    ElementAttributes,
-    ElementType,
-    GsLang,
-    GsLangUser,
-    GsTheme,
-    LOGOUT_ERROR,
-    LogoutErrorAction,
-    RESET_AUTHENTICATION_ROUTER_ERROR,
-    SHOW_AUTH_INFO_LOGIN,
-    ShowAuthenticationRouterLoginAction,
-    SIGNIN_CALLBACK_ERROR,
-    SignInCallbackErrorAction,
-    UNAUTHORIZED_USER_INFO,
-    UnauthorizedUserAction,
-    USER,
-    USER_VALIDATION_ERROR,
-    UserAction,
-    UserValidationErrorAction,
-} from '@gridsuite/commons-ui';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
-import { UUID } from 'crypto';
-import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
-
-// IDirectory is exactly an IElement, with a specific type value
-export type IDirectory = ElementAttributes & {
-    type: ElementType.DIRECTORY;
-};
-
-export interface ElementAttributesES {
-    id: UUID;
-    name: string;
-    parentId: UUID;
-    type: ElementType;
-    owner: string;
-    subdirectoriesCount: number;
-    lastModificationDate: string;
-    pathName: string[];
-    pathUuid: UUID[];
-}
-
-export interface ITreeData {
-    rootDirectories: IDirectory[];
-    mapData: Record<string, IDirectory>;
-    initialized: boolean;
-}
-
-export type UploadingElement = {
-    id: number;
-    elementName: string;
-    directory?: UUID;
-    type: ElementType;
-    owner?: string;
-    lastModifiedBy?: string;
-    uploading: boolean;
-    caseFormat?: string;
-};
-
-export interface AppState extends CommonStoreState {
-    [PARAM_THEME]: GsTheme;
-    [PARAM_LANGUAGE]: GsLang;
-    computedLanguage: GsLangUser;
-
-    //userManager: UserManagerState;
-    signInCallbackError: Error | null;
-    authenticationRouterError: AuthenticationRouterErrorState | null;
-    showAuthenticationRouterLogin: boolean;
-
-    appsAndUrls: Metadata[];
-    activeDirectory?: UUID;
-    currentChildren?: ElementAttributes[];
-    selectedDirectory: ElementAttributes | null;
-    searchedElement: ElementAttributesES | null;
-    treeData: ITreeData;
-    currentPath: any[];
-    selectedFile: unknown | null;
-    uploadingElements: Record<string, UploadingElement>;
-    directoryUpdated: { force: number; eventData: Record<string, Record<string, unknown>> };
-    selectionForCopy: SelectionForCopy;
-    reorderedColumns: string[];
-}
+import { AppState } from './types';
 
 const initialState: AppState = {
     // authentication
@@ -172,6 +113,7 @@ const initialState: AppState = {
 export type Actions = AuthenticationActions | AppActions;
 
 export type ArrayFilter<V> = (value: V, index: number, array: V[]) => boolean;
+
 function filterFromObject<K extends string | number | symbol, V>(
     objectToFilter: Record<K, V>,
     filterMethod: ArrayFilter<[K, V]>
@@ -258,6 +200,10 @@ export const reducer = createReducer(initialState, (builder) => {
         state.uploadingElements = action.uploadingElements;
     });
 
+    builder.addCase(REMOVE_UPLOADING_ELEMENT, (state, action: RemoveUploadingElementAction) => {
+        delete state.uploadingElements[action.uploadingElement.id];
+    });
+
     builder.addCase(DIRECTORY_UPDATED, (state, action: DirectoryUpdatedAction) => {
         state.directoryUpdated = {
             force: 1 - state.directoryUpdated.force,
@@ -266,7 +212,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(TREE_DATA, (state, action: TreeDataAction) => {
-        //TODO: remove those filters below when this file has been migrated to Typescript
+        // TODO: remove those filters below when this file has been migrated to Typescript
         // it's only here to prevent regressions due to javascript not checking types
 
         // filtering non DIRECTORY elements from action.treeData
@@ -280,7 +226,7 @@ export const reducer = createReducer(initialState, (builder) => {
         // Object.fromEntries will turn [[elementId1, element1], [elementId2, element2]] back to {<elementId1>: <element1>, <elementId2>: <element2>} which is the initial form
         const filteredTreeDataMapData = filterFromObject(
             action.treeData.mapData,
-            ([elementId, element]) => element.type === ElementType.DIRECTORY
+            ([, element]) => element.type === ElementType.DIRECTORY
         );
 
         state.treeData = {

@@ -6,27 +6,28 @@
  */
 
 import {
-    RadioInput,
-    getCriteriaBasedFormData,
-    CONTINGENCY_LIST_EQUIPMENTS,
     CriteriaBasedForm,
-    FieldConstants,
-    UniqueNameInput,
     DescriptionField,
     ElementType,
+    FieldConstants,
+    getCriteriaBasedFormData,
     gridItem,
+    RadioInput,
+    UniqueNameInput,
+    unscrollableDialogStyles,
 } from '@gridsuite/commons-ui';
-import { ContingencyListType } from '../../../../utils/elementType';
-import { Grid } from '@mui/material';
+import { Box } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { useSelector } from 'react-redux';
+import { ChangeEvent } from 'react';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import ScriptInputForm from '../script/script-input-form';
-import { useSelector } from 'react-redux';
 import { elementExists } from '../../../../utils/rest-api';
-import { ChangeEvent, FunctionComponent } from 'react';
-import { AppState } from 'redux/reducer';
+import { ContingencyListType } from '../../../../utils/elementType';
+import { AppState } from '../../../../redux/types';
+import { SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS } from '../contingency-list-utils';
 
-const ContingencyListCreationForm: FunctionComponent = () => {
+export default function ContingencyListCreationForm() {
     const { setValue } = useFormContext();
 
     const watchContingencyListType = useWatch({
@@ -50,33 +51,27 @@ const ContingencyListCreationForm: FunctionComponent = () => {
 
     const emptyValues = getCriteriaBasedFormData({}, {});
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={12}>
+        <>
+            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
                 <UniqueNameInput
                     name={FieldConstants.NAME}
-                    label={'nameProperty'}
+                    label="nameProperty"
                     elementType={ElementType.CONTINGENCY_LIST}
                     autoFocus
                     activeDirectory={activeDirectory}
                     elementExists={elementExists}
                 />
-            </Grid>
-            <Grid item xs={12}>
                 <DescriptionField />
-            </Grid>
-            <Grid container item>
                 {gridItem(contingencyListTypeField, 12)}
-            </Grid>
+            </Box>
             {watchContingencyListType === ContingencyListType.CRITERIA_BASED.id && (
                 <CriteriaBasedForm
-                    equipments={CONTINGENCY_LIST_EQUIPMENTS}
+                    equipments={SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS}
                     defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
                 />
             )}
             {watchContingencyListType === ContingencyListType.EXPLICIT_NAMING.id && <ExplicitNamingForm />}
             {watchContingencyListType === ContingencyListType.SCRIPT.id && <ScriptInputForm />}
-        </Grid>
+        </>
     );
-};
-
-export default ContingencyListCreationForm;
+}

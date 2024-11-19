@@ -4,19 +4,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import Alert from '@mui/material/Alert';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
+import {
+    Alert,
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Grid,
+} from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { FunctionComponent, SyntheticEvent, useEffect, useRef, useState } from 'react';
-import Grid from '@mui/material/Grid';
-import CircularProgress from '@mui/material/CircularProgress';
+import { SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { CancelButton, ElementAttributes, OverflowableText } from '@gridsuite/commons-ui';
 
-interface DeleteDialogProps {
+export interface DeleteDialogProps {
     open: boolean;
     onClose: () => void;
     onClick: () => void;
@@ -25,6 +27,13 @@ interface DeleteDialogProps {
     simpleDeleteFormatMessageId: string;
     error: string;
 }
+
+const styles = {
+    tooltip: {
+        maxWidth: '1000px',
+    },
+};
+
 /**
  * Dialog to delete an element
  * @param {Boolean} open Is the dialog open ?
@@ -35,12 +44,7 @@ interface DeleteDialogProps {
  * @param {String} simpleDeleteFormatMessageId Format message id for simple delete
  * @param {String} error Error message
  */
-const styles = {
-    tooltip: {
-        maxWidth: '1000px',
-    },
-};
-const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
+export default function DeleteDialog({
     open,
     onClose,
     onClick,
@@ -48,7 +52,7 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
     multipleDeleteFormatMessageId,
     simpleDeleteFormatMessageId,
     error,
-}) => {
+}: Readonly<DeleteDialogProps>) {
     const intl = useIntl();
 
     const [itemsState, setItemsState] = useState<ElementAttributes[]>([]);
@@ -78,12 +82,10 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
         onClick();
     };
 
-    const buildTitle = () => {
-        return intl.formatMessage({ id: 'deleteDialogTitle' });
-    };
+    const buildTitle = () => intl.formatMessage({ id: 'deleteDialogTitle' });
 
-    const renderElement = (items: ElementAttributes[]) => {
-        const isBig = items[0].elementName?.length > 72;
+    const renderElement = (renderItems: ElementAttributes[]) => {
+        const isBig = renderItems[0].elementName?.length > 72;
 
         const style = isBig
             ? { width: '100%', fontWeight: 'bold' }
@@ -94,44 +96,42 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
                   verticalAlign: 'middle',
                   display: 'inline-block',
               };
-        return <OverflowableText text={items[0].elementName} style={style} tooltipSx={styles.tooltip} />;
+        return <OverflowableText text={renderItems[0].elementName} style={style} tooltipSx={styles.tooltip} />;
     };
 
     const buildItemsToDeleteGrid = (
-        items: ElementAttributes[],
-        multipleDeleteFormatMessageId: string,
-        simpleDeleteFormatMessageId: string
-    ) => {
-        return (
-            items &&
-            (items.length > 1 ? (
-                <Grid>
-                    <Grid item>
-                        <span>
-                            {intl.formatMessage({
-                                id: multipleDeleteFormatMessageId,
-                            })}
-                        </span>
-                    </Grid>
+        gridItems: ElementAttributes[],
+        gridMultipleDeleteFormatMessageId: string,
+        gridSimpleDeleteFormatMessageId: string
+    ) =>
+        gridItems &&
+        (gridItems.length > 1 ? (
+            <Grid>
+                <Grid item>
+                    <span>
+                        {intl.formatMessage({
+                            id: gridMultipleDeleteFormatMessageId,
+                        })}
+                    </span>
                 </Grid>
-            ) : (
-                <Grid>
-                    <Grid item>
-                        <span>
-                            {intl.formatMessage(
-                                {
-                                    id: simpleDeleteFormatMessageId,
-                                },
-                                {
-                                    itemName: <span>{items.length === 1 && renderElement(items)}</span>,
-                                }
-                            )}
-                        </span>
-                    </Grid>
+            </Grid>
+        ) : (
+            <Grid>
+                <Grid item>
+                    <span>
+                        {intl.formatMessage(
+                            {
+                                id: gridSimpleDeleteFormatMessageId,
+                            },
+                            {
+                                itemName: <span>{gridItems.length === 1 && renderElement(gridItems)}</span>,
+                            }
+                        )}
+                    </span>
                 </Grid>
-            ))
-        );
-    };
+            </Grid>
+        ));
+
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
             <DialogTitle style={{ display: 'flex' }}>{buildTitle()}</DialogTitle>
@@ -147,6 +147,4 @@ const DeleteDialog: FunctionComponent<DeleteDialogProps> = ({
             </DialogActions>
         </Dialog>
     );
-};
-
-export default DeleteDialog;
+}

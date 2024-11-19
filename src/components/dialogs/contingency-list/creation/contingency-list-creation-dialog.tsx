@@ -16,7 +16,6 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { createContingencyList } from '../../../../utils/rest-api';
-import { FunctionComponent } from 'react';
 import ContingencyListCreationForm from './contingency-list-creation-form';
 import {
     ContingencyListFormData,
@@ -28,7 +27,7 @@ import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form
 import { ContingencyListType } from '../../../../utils/elementType';
 import { useParameterState } from '../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
-import { AppState } from 'redux/reducer';
+import { AppState } from '../../../../redux/types';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -37,26 +36,26 @@ const schema = yup.object().shape({
     [FieldConstants.SCRIPT]: yup.string().nullable(),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().when([FieldConstants.CONTINGENCY_LIST_TYPE], {
         is: ContingencyListType.CRITERIA_BASED.id,
-        then: (schema) => schema.required(),
-        otherwise: (schema) => schema.nullable(),
+        then: (schemaThen) => schemaThen.required(),
+        otherwise: (schemaOtherwise) => schemaOtherwise.nullable(),
     }),
-    ...getExplicitNamingSchema(FieldConstants.EQUIPMENT_TABLE),
+    ...getExplicitNamingSchema(),
     ...getCriteriaBasedSchema({}),
 });
 
 const emptyFormData = getContingencyListEmptyFormData();
 
-interface ContingencyListCreationDialogProps {
+export interface ContingencyListCreationDialogProps {
     onClose: () => void;
     open: boolean;
     titleId: string;
 }
 
-const ContingencyListCreationDialog: FunctionComponent<ContingencyListCreationDialogProps> = ({
+export default function ContingencyListCreationDialog({
     onClose,
     open,
     titleId,
-}) => {
+}: Readonly<ContingencyListCreationDialogProps>) {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const { snackError } = useSnackMessage();
 
@@ -107,13 +106,12 @@ const ContingencyListCreationDialog: FunctionComponent<ContingencyListCreationDi
             formSchema={schema}
             formMethods={methods}
             titleId={titleId}
-            removeOptional={true}
+            removeOptional
             disabledSave={Boolean(nameError || isValidating)}
             language={languageLocal}
+            unscrollableFullHeight
         >
             <ContingencyListCreationForm />
         </CustomMuiDialog>
     );
-};
-
-export default ContingencyListCreationDialog;
+}

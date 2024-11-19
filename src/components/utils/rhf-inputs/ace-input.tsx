@@ -7,21 +7,22 @@
 
 import { useController } from 'react-hook-form';
 import AceEditor, { IAceEditorProps, IEditorProps } from 'react-ace';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { AppState } from '../../../redux/types';
 import 'ace-builds/src-noconflict/mode-groovy';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
-import { AppState } from '../../../redux/reducer';
 
-interface AceInputProps {
+export interface AceInputProps {
     name: string;
     placeholder: string;
     fontSize: Exclude<IAceEditorProps['fontSize'], undefined>;
+    height: Exclude<IAceEditorProps['height'], undefined>;
     editorProps: IEditorProps;
 }
 
-const AceInput = ({ name, ...props }: AceInputProps) => {
+export default function AceInput({ name, ...props }: Readonly<AceInputProps>) {
     const selectedTheme = useSelector((state: AppState) => state.theme);
     const themeForAceEditor = useMemo(() => {
         switch (selectedTheme) {
@@ -41,6 +42,4 @@ const AceInput = ({ name, ...props }: AceInputProps) => {
     return (
         <AceEditor mode="groovy" theme={themeForAceEditor} onChange={(val) => onChange(val)} value={value} {...props} />
     );
-};
-
-export default AceInput;
+}

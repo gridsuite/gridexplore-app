@@ -5,15 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useIntl } from 'react-intl';
-import { Box } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
+import { Box, Tooltip } from '@mui/material';
 
-export const DateCellRenderer = ({ value }: { value: string }) => {
+export type DateCellRendererProps = { value: string };
+
+export function DateCellRenderer({ value }: Readonly<DateCellRendererProps>) {
     const intl = useIntl();
 
     const todayStart = new Date().setHours(0, 0, 0, 0);
     const dateValue = new Date(value);
-    if (!isNaN(dateValue.getDate())) {
+    if (!Number.isNaN(dateValue.getDate())) {
         const cellMidnight = new Date(value).setHours(0, 0, 0, 0);
 
         const time = new Intl.DateTimeFormat(intl.locale, {
@@ -37,4 +38,4 @@ export const DateCellRenderer = ({ value }: { value: string }) => {
             </Box>
         );
     }
-};
+}

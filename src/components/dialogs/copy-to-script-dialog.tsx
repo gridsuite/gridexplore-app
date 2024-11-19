@@ -4,15 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CircularProgress, Grid } from '@mui/material';
-import { UniqueNameInput, ElementType, CustomMuiDialog, FieldConstants, yupConfig as yup } from '@gridsuite/commons-ui';
-import { elementExists, getNameCandidate } from 'utils/rest-api';
+import { CustomMuiDialog, ElementType, FieldConstants, UniqueNameInput, yupConfig as yup } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { elementExists, getNameCandidate } from '../../utils/rest-api';
+import { AppState } from '../../redux/types';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -22,14 +23,14 @@ const emptyFormData = {
     [FieldConstants.NAME]: '',
 };
 
-interface CopyToScriptDialogProps {
+export interface CopyToScriptDialogProps {
     id: string;
     open: boolean;
     onClose: () => void;
     onValidate: (...args: any[]) => void;
     currentName: string;
     title: string;
-    directoryUuid: string;
+    directoryUuid: UUID;
     elementType: ElementType;
     handleError: (...args: any[]) => void;
 }
@@ -50,7 +51,7 @@ interface FormData {
  * @param elementType Type of the element to copy
  * @param handleError Function to call to handle error
  */
-const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
+export default function CopyToScriptDialog({
     id,
     open,
     onClose,
@@ -60,7 +61,7 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
     directoryUuid,
     elementType,
     handleError,
-}) => {
+}: Readonly<CopyToScriptDialogProps>) {
     const [loading, setLoading] = useState(false);
     const intl = useIntl();
     const methods = useForm<FormData>({
@@ -82,22 +83,16 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
         onValidate(id, data[FieldConstants.NAME]);
     };
 
-    const handleGenerateNameError = useCallback(() => {
-        return handleError(
-            intl.formatMessage(
-                { id: 'generateCopyScriptNameError' },
-                {
-                    itemName: currentName,
-                }
-            )
-        );
-    }, [currentName, handleError, intl]);
+    const handleGenerateNameError = useCallback(
+        () => handleError(intl.formatMessage({ id: 'generateCopyScriptNameError' }, { itemName: currentName })),
+        [currentName, handleError, intl]
+    );
 
     useEffect(() => {
         setLoading(true);
         getNameCandidate(directoryUuid, currentName, elementType)
             .then((newName) => {
-                let generatedName: string = newName || '';
+                const generatedName: string = newName || '';
                 setValue(FieldConstants.NAME, generatedName, {
                     shouldDirty: true,
                 });
@@ -118,7 +113,7 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
             formSchema={schema}
             formMethods={methods}
             titleId={title}
-            removeOptional={true}
+            removeOptional
             disabledSave={!!nameError || !!isValidating}
         >
             <Grid container spacing={2}>
@@ -128,7 +123,7 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
                     ) : (
                         <UniqueNameInput
                             name={FieldConstants.NAME}
-                            label={'nameProperty'}
+                            label="nameProperty"
                             elementType={ElementType.CONTINGENCY_LIST}
                             autoFocus
                             activeDirectory={activeDirectory}
@@ -139,6 +134,4 @@ const CopyToScriptDialog: React.FunctionComponent<CopyToScriptDialogProps> = ({
             </Grid>
         </CustomMuiDialog>
     );
-};
-
-export default CopyToScriptDialog;
+}
