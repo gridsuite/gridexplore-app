@@ -5,29 +5,35 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import App from './app';
 import { useMemo } from 'react';
-import { createTheme, responsiveFontSizes, StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
+import {
+    createTheme,
+    CssBaseline,
+    responsiveFontSizes,
+    StyledEngineProvider,
+    Theme,
+    ThemeProvider,
+} from '@mui/material';
 import { enUS as MuiCoreEnUS, frFR as MuiCoreFrFR } from '@mui/material/locale';
 import {
+    CardErrorBoundary,
     cardErrorBoundaryEn,
     cardErrorBoundaryFr,
-    CardErrorBoundary,
     commonButtonEn,
     commonButtonFr,
+    csvEn,
+    csvFr,
+    descriptionEn,
+    descriptionFr,
     directoryItemsInputEn,
     directoryItemsInputFr,
     elementSearchEn,
     elementSearchFr,
+    equipmentsEn,
+    equipmentsFr,
     filterEn,
     filterExpertEn,
     filterExpertFr,
-    descriptionEn,
-    descriptionFr,
-    equipmentsEn,
-    equipmentsFr,
-    csvEn,
-    csvFr,
     filterFr,
     flatParametersEn,
     flatParametersFr,
@@ -38,6 +44,8 @@ import {
     LIGHT_THEME,
     loginEn,
     loginFr,
+    networkModificationsEn,
+    networkModificationsFr,
     multipleSelectionDialogEn,
     multipleSelectionDialogFr,
     SnackbarProvider,
@@ -47,25 +55,24 @@ import {
     topBarFr,
     treeviewFinderEn,
     treeviewFinderFr,
+    importParamsEn,
+    importParamsFr,
+    exportParamsEn,
+    exportParamsFr,
 } from '@gridsuite/commons-ui';
 import { IntlConfig, IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
+import App from './app';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
-import network_modification_locale_en from '../translations/dynamic/network-modifications-locale-en';
-import network_modification_locale_fr from '../translations/dynamic/network-modifications-locale-fr';
 import messages_plugins from '../plugins/translations';
 import aggrid_locale_fr from '../translations/external/aggrid-locale-fr';
 import backend_locale_fr from '../translations/external/backend-locale-fr';
 import backend_locale_en from '../translations/external/backend-locale-en';
-import import_parameters_en from '../translations/external/import-parameters-en';
-import import_parameters_fr from '../translations/external/import-parameters-fr';
 import { store } from '../redux/store';
-import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
-import { AppState } from '../redux/reducer';
-import { Theme } from '@mui/material';
+import { AppState } from '../redux/types';
 
 const lightTheme = createTheme({
     palette: {
@@ -185,13 +192,14 @@ function getMuiTheme(theme: GsTheme, locale: GsLangUser) {
 const messages: Record<GsLangUser, IntlConfig['messages']> = {
     en: {
         ...messages_en,
-        ...network_modification_locale_en,
+        ...networkModificationsEn,
+        ...importParamsEn,
+        ...exportParamsEn,
         ...loginEn,
         ...topBarEn,
         ...tableEn,
         ...treeviewFinderEn,
         ...cardErrorBoundaryEn,
-        ...import_parameters_en,
         ...flatParametersEn,
         ...multipleSelectionDialogEn,
         ...commonButtonEn,
@@ -207,13 +215,14 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
     },
     fr: {
         ...messages_fr,
-        ...network_modification_locale_fr,
+        ...networkModificationsFr,
+        ...importParamsFr,
+        ...exportParamsFr,
         ...loginFr,
         ...topBarFr,
         ...tableFr,
         ...treeviewFinderFr,
         ...cardErrorBoundaryFr,
-        ...import_parameters_fr,
         ...flatParametersFr,
         ...multipleSelectionDialogFr,
         ...commonButtonFr,
@@ -232,7 +241,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
 
 const basename = new URL(document.querySelector('base')!.href).pathname;
 
-const AppWrapperWithRedux = () => {
+function AppWrapperWithRedux() {
     const computedLanguage = useSelector((state: AppState) => state.computedLanguage);
     const theme = useSelector((state: AppState) => state[PARAM_THEME]);
     const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
@@ -253,14 +262,12 @@ const AppWrapperWithRedux = () => {
             </BrowserRouter>
         </IntlProvider>
     );
-};
+}
 
-const AppWrapper = () => {
+export default function AppWrapper() {
     return (
         <Provider store={store}>
             <AppWrapperWithRedux />
         </Provider>
     );
-};
-
-export default AppWrapper;
+}

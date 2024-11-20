@@ -5,19 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
-
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDirectory } from '../redux/actions';
-
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
-import { emphasize } from '@mui/material/styles/';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import { Box, SxProps, Theme, Tooltip } from '@mui/material';
+import { Box, Breadcrumbs, emphasize, Link, SxProps, Theme, Tooltip, Typography } from '@mui/material';
+import { FolderOpen as FolderOpenIcon } from '@mui/icons-material';
 import { ElementAttributes, mergeSx } from '@gridsuite/commons-ui';
-import { AppState } from '../redux/reducer';
+import { MouseEvent } from 'react';
+import { setSelectedDirectory } from '../redux/actions';
+import { AppState } from '../redux/types';
 
 const styles = {
     link: (theme: Theme) => ({
@@ -70,14 +64,14 @@ const styles = {
     },
 };
 
-const DirectoryBreadcrumbs = () => {
+export default function DirectoryBreadcrumbs() {
     const dispatch = useDispatch();
 
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const currentPath = useSelector((state: AppState) => state.currentPath);
 
     /* Handle User interactions */
-    const handleSelect = (event: React.MouseEvent<HTMLElement>, dir: ElementAttributes | null) => {
+    const handleSelect = (event: MouseEvent<HTMLElement>, dir: ElementAttributes | null) => {
         event.preventDefault();
         dispatch(setSelectedDirectory(dir));
     };
@@ -90,8 +84,8 @@ const DirectoryBreadcrumbs = () => {
                     sx={styles.link as SxProps}
                     key={dir.elementUuid}
                     href="/"
-                    onClick={(event: React.MouseEvent<HTMLElement>) => handleSelect(event, dir)}
-                    onDragStart={(event: React.MouseEvent<HTMLElement>) => {
+                    onClick={(event: MouseEvent<HTMLElement>) => handleSelect(event, dir)}
+                    onDragStart={(event: MouseEvent<HTMLElement>) => {
                         event.preventDefault();
                     }}
                     underline="hover"
@@ -105,6 +99,7 @@ const DirectoryBreadcrumbs = () => {
                 </Link>
             ));
         }
+        return undefined;
     };
 
     const renderBreadCrumbsTypography = () => {
@@ -120,18 +115,13 @@ const DirectoryBreadcrumbs = () => {
                 </Tooltip>
             );
         }
+        return undefined;
     };
 
-    return (
-        <>
-            {selectedDirectory !== null && currentPath !== null && currentPath.length > 0 && (
-                <Breadcrumbs aria-label="breadcrumb" sx={styles.breadcrumbs}>
-                    {renderBreadCrumbsLinks()}
-                    {renderBreadCrumbsTypography()}
-                </Breadcrumbs>
-            )}
-        </>
-    );
-};
-
-export default DirectoryBreadcrumbs;
+    return selectedDirectory !== null && currentPath !== null && currentPath.length > 0 ? (
+        <Breadcrumbs aria-label="breadcrumb" sx={styles.breadcrumbs}>
+            {renderBreadCrumbsLinks()}
+            {renderBreadCrumbsTypography()}
+        </Breadcrumbs>
+    ) : undefined;
+}

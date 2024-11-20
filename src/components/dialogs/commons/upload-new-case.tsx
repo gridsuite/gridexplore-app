@@ -5,29 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import { ChangeEvent, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import { Grid, Input } from '@mui/material';
+import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
-import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
 import { FieldConstants } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
+import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
 
-interface UploadNewCaseProps {
+export interface UploadNewCaseProps {
     isNewStudyCreation?: boolean;
-    getCurrentCaseImportParams?: (uuid: string) => void;
+    getCurrentCaseImportParams?: (uuid: UUID) => void;
     handleApiCallError?: ErrorCallback;
 }
 
 const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
 
-const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
+export default function UploadNewCase({
     isNewStudyCreation = false,
     getCurrentCaseImportParams,
     handleApiCallError,
-}) => {
+}: Readonly<UploadNewCaseProps>) {
     const intl = useIntl();
 
     const [caseFileLoading, setCaseFileLoading] = useState(false);
@@ -49,13 +48,23 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
     const caseFile = value as File;
     const { name: caseFileName } = caseFile || {};
 
-    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const gridValue = useMemo(() => {
+        if (caseFileLoading) {
+            return <CircularProgress size="1rem" />;
+        }
+        if (caseFileName) {
+            return <span>{caseFileName}</span>;
+        }
+        return <FormattedMessage id="uploadMessage" />;
+    }, [caseFileLoading, caseFileName]);
+
+    const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
 
         clearErrors(FieldConstants.CASE_FILE);
         clearErrors(`root.${FieldConstants.API_CALL}`);
 
-        const files = event.target.files;
+        const { files } = event.target;
 
         if (files?.length) {
             const currentFile = files[0];
@@ -63,7 +72,7 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
             if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
                 onValueChange(currentFile);
 
-                const { name: caseFileName } = currentFile;
+                const { name: currentCaseFileName } = currentFile;
 
                 if (isNewStudyCreation) {
                     // Create new case
@@ -88,12 +97,16 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                         });
                 } else {
                     const caseName = getValues(FieldConstants.CASE_NAME);
-                    if (caseFileName && !caseName) {
+                    if (currentCaseFileName && caseName !== currentCaseFileName) {
                         clearErrors(FieldConstants.CASE_NAME);
-                        setValue(FieldConstants.CASE_NAME, caseFileName.substring(0, caseFileName.indexOf('.')), {
-                            shouldDirty: true,
-                            shouldValidate: true,
-                        });
+                        setValue(
+                            FieldConstants.CASE_NAME,
+                            currentCaseFileName.substring(0, currentCaseFileName.indexOf('.')),
+                            {
+                                shouldDirty: true,
+                                shouldValidate: true,
+                            }
+                        );
                     }
                 }
             } else {
@@ -123,18 +136,8 @@ const UploadNewCase: React.FunctionComponent<UploadNewCaseProps> = ({
                 </Button>
             </Grid>
             <Grid item sx={{ fontWeight: 'bold' }}>
-                <p>
-                    {caseFileLoading ? (
-                        <CircularProgress size="1rem" />
-                    ) : caseFileName ? (
-                        <span>{caseFileName}</span>
-                    ) : (
-                        <FormattedMessage id="uploadMessage" />
-                    )}
-                </p>
+                <p>{gridValue}</p>
             </Grid>
         </Grid>
     );
-};
-
-export default UploadNewCase;
+}

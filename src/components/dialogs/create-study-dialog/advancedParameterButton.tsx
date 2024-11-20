@@ -5,25 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { Button, Grid } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
-import CheckIcon from '@mui/icons-material/Check';
+import { Check as CheckIcon, Settings as SettingsIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 
-interface AdvancedParameterButtonProps {
+export interface AdvancedParameterButtonProps {
     showOpenIcon: boolean;
     label: string;
     onClick: () => void;
     disabled?: boolean;
 }
 
-const AdvancedParameterButton: React.FunctionComponent<AdvancedParameterButtonProps> = ({
+export default function AdvancedParameterButton({
     showOpenIcon,
     label,
     onClick,
     disabled = false,
-}) => {
+}: Readonly<AdvancedParameterButtonProps>) {
     return (
         <Grid item xs={12} sx={{ marginTop: '30px', marginBottom: '10px' }}>
             <Button
@@ -36,6 +34,4 @@ const AdvancedParameterButton: React.FunctionComponent<AdvancedParameterButtonPr
             </Button>
         </Grid>
     );
-};
-
-export default AdvancedParameterButton;
+}

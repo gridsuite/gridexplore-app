@@ -5,14 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Divider } from '@mui/material';
-import { FlatParameters, FieldConstants } from '@gridsuite/commons-ui';
-import React, { useState, FunctionComponent } from 'react';
-import AdvancedParameterButton from './advancedParameterButton';
+import { Box, Divider } from '@mui/material';
+import { FieldConstants, FlatParameters, Parameter } from '@gridsuite/commons-ui';
+import { useMemo, useState } from 'react';
 import { useController, useWatch } from 'react-hook-form';
-import Box from '@mui/material/Box';
+import AdvancedParameterButton from './advancedParameterButton';
 
-const ImportParametersSection: FunctionComponent = () => {
+// FIXME: To be removed when gridsuite supports subnetworks.
+const IGNORED_PARAMS = ['iidm.import.cgmes.cgm-with-subnetworks', 'iidm.import.cgmes.cgm-with-subnetworks-defined-by'];
+
+export default function ImportParametersSection() {
     const [isParamsDisplayed, setIsParamsDisplayed] = useState(false);
 
     const {
@@ -38,6 +40,14 @@ const ImportParametersSection: FunctionComponent = () => {
         setIsParamsDisplayed((prevIsParamsDisplayed) => !prevIsParamsDisplayed);
     };
 
+    const filteredParams = useMemo(
+        () =>
+            formatWithParameters.filter(
+                (param: Parameter) => !IGNORED_PARAMS || IGNORED_PARAMS.indexOf(param.name) === -1
+            ),
+        [formatWithParameters]
+    );
+
     return (
         <>
             <Divider sx={{ marginTop: '20px' }} />
@@ -48,13 +58,13 @@ const ImportParametersSection: FunctionComponent = () => {
             >
                 <AdvancedParameterButton
                     showOpenIcon={isParamsDisplayed}
-                    label={'importParameters'}
+                    label="importParameters"
                     onClick={handleShowParametersClick}
                     disabled={formatWithParameters.length === 0}
                 />
                 {isParamsDisplayed && (
                     <FlatParameters
-                        paramsAsArray={formatWithParameters}
+                        paramsAsArray={filteredParams}
                         initValues={currentParameters}
                         onChange={handleParamsChange}
                         variant="standard"
@@ -64,6 +74,4 @@ const ImportParametersSection: FunctionComponent = () => {
             </Box>
         </>
     );
-};
-
-export default ImportParametersSection;
+}

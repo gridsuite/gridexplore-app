@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const backend_locale_en = {
+const BackendLocaleEn = {
     DIE: 'ARCADE',
     XIIDM: 'XIIDM',
     CGMES: 'CGMES',
@@ -22,6 +22,25 @@ const backend_locale_en = {
     SCRIPT_CONTINGENCY_LIST: 'Contingency list (Script)',
     IDENTIFIER_LIST_FILTER: 'Filter (Explicit naming)',
     CRITERIA_FILTER: 'Filter (Criteria based)',
+
+    // spreadsheet config metadata
+    Load: 'Load',
+    Generator: 'Generator',
+    Battery: 'Battery',
+    Line: 'Line',
+    Two_windings_transformer: 'Two_windings_transformer',
+    Three_windings_transformer: 'Three_windings_transformer',
+    Busbar_section: 'Busbar_section',
+    Bus: 'Bus',
+    Dangling_line: 'Dangling_line',
+    Hvdc_line: 'Hvdc_line',
+    Lcc_converter_station: 'Lcc_converter_station',
+    Vsc_converter_station: 'Vsc_converter_station',
+    Static_var_compensator: 'Static_var_compensator',
+    Voltage_level: 'Voltage_level',
+    Tie_line: 'Tie_line',
+    Shunt_compensator: 'Shunt_compensator',
+    Substation: 'Substation',
 };
 
-export default backend_locale_en;
+export default BackendLocaleEn;

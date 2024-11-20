@@ -6,10 +6,28 @@
  */
 
 import { useSelector } from 'react-redux';
-import { useRef, useEffect, useCallback, useState } from 'react';
+import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
 import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { AppState } from '../redux/reducer';
+import { UsersIdentities, UsersIdentitiesMap } from 'utils/user-identities.type';
+import { fetchUsersIdentities } from '../utils/rest-api';
+import { AppState } from '../redux/types';
+
+const getName = (userId: string, data: UsersIdentitiesMap): string => {
+    const firstName = data?.[userId]?.firstName;
+    const lastName = data?.[userId]?.lastName;
+    if (firstName && lastName) {
+        return `${firstName} ${lastName}`;
+    }
+    if (firstName) {
+        return firstName;
+    }
+    if (lastName) {
+        return lastName;
+    }
+    // fallback to id
+    return userId;
+};
 
 export const useDirectoryContent = () => {
     const currentChildren = useSelector((state: AppState) => state.currentChildren);
@@ -38,14 +56,37 @@ export const useDirectoryContent = () => {
             return;
         }
 
-        let metadata: Record<UUID, ElementAttributes> = {};
-        let childrenToFetchElementsInfos = Object.values(currentChildren).map((e) => e.elementUuid);
+        const metadata: Record<UUID, ElementAttributes> = {};
+        const childrenToFetchElementsInfos = Object.values(currentChildren).map((e) => e.elementUuid);
+
+        const fetchUsersIdentitiesPromise = fetchUsersIdentities(childrenToFetchElementsInfos).catch(() => {
+            // Last resort, server down, error 500, fallback to subs as users Identities
+            // We write this code to have the same behavior as when there are partial results,
+            // (missing users identities), see getName()
+            const fallbackUsersIdentities: UsersIdentities = {
+                data: Object.fromEntries(
+                    [...new Set(currentChildren.flatMap((e) => [e.owner, e.lastModifiedBy]))].map((sub) => [
+                        sub,
+                        { sub, firstName: '', lastName: '' },
+                    ])
+                ),
+                errors: {},
+            };
+
+            return fallbackUsersIdentities;
+        });
+
         if (childrenToFetchElementsInfos.length > 0) {
-            fetchElementsInfos(childrenToFetchElementsInfos)
+            Promise.all([
+                fetchUsersIdentitiesPromise, // TODO cache user identities across elements
+                fetchElementsInfos(childrenToFetchElementsInfos),
+            ])
                 .then((res) => {
                     // discarding request for older directory
                     if (previousData.current === currentChildren) {
-                        res.forEach((e) => {
+                        res[1].forEach((e) => {
+                            e.ownerLabel = getName(e.owner, res[0].data);
+                            e.lastModifiedByLabel = getName(e.lastModifiedBy, res[0].data);
                             metadata[e.elementUuid] = e;
                         });
                         setChildrenMetadata(metadata);
@@ -59,5 +100,17 @@ export const useDirectoryContent = () => {
         }
     }, [handleError, currentChildren]);
 
-    return [currentChildren, childrenMetadata] as const;
+    // TODO remove this when global user identity caching is implemented
+    const currentChildrenWithOwnerNames = useMemo(() => {
+        if (!currentChildren) {
+            return currentChildren;
+        }
+        return currentChildren.map((x) => ({
+            ...x,
+            ownerLabel: childrenMetadata?.[x.elementUuid]?.ownerLabel,
+            lastModifiedByLabel: childrenMetadata?.[x.elementUuid]?.lastModifiedByLabel,
+        }));
+    }, [currentChildren, childrenMetadata]);
+
+    return [currentChildrenWithOwnerNames, childrenMetadata] as const;
 };

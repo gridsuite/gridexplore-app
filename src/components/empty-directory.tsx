@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { Box, Button, SvgIcon } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import CircleIcon from './icons/circleIcon';
+import { Add as AddIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import { PARAM_THEME } from 'utils/config-params';
+import { AppState } from '../redux/types';
+import CircleIcon from './icons/circleIcon';
+
 const CIRCLE_SIZE = 250;
 
 const styles = {
@@ -39,13 +39,12 @@ const styles = {
         marginTop: theme.spacing(1),
     }),
 };
-
 interface EmptyDirectoryProps {
     onCreateElement: (e: React.MouseEvent<HTMLElement>) => void;
 }
-const EmptyDirectory: React.FC<EmptyDirectoryProps> = ({ onCreateElement }) => {
-    const theme = useSelector((state: AppState) => state[PARAM_THEME]);
 
+export default function EmptyDirectory({ onCreateElement }: Readonly<EmptyDirectoryProps>) {
+    const theme = useSelector((state: AppState) => state[PARAM_THEME]);
     return (
         <Box sx={styles.container}>
             <CircleIcon size={CIRCLE_SIZE} iconStyles={styles.circle}>
@@ -63,14 +62,12 @@ const EmptyDirectory: React.FC<EmptyDirectoryProps> = ({ onCreateElement }) => {
             </CircleIcon>
             <Box sx={styles.text}>
                 <h3>
-                    <FormattedMessage id={'emptyDirContent'} />
+                    <FormattedMessage id="emptyDirContent" />
                 </h3>
                 <Button variant="contained" sx={styles.button} onClick={onCreateElement} endIcon={<AddIcon />}>
-                    <FormattedMessage id={'createElement'} />
+                    <FormattedMessage id="createElement" />
                 </Button>
             </Box>
         </Box>
     );
-};
-
-export default EmptyDirectory;
+}
