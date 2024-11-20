@@ -24,6 +24,7 @@ import {
 import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
 import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
+import { CellContextMenuEvent } from 'ag-grid-community';
 import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import * as constants from '../utils/UIconstants';
 import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
@@ -262,7 +263,7 @@ export default function DirectoryContent() {
                 dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
                 handleOpenDirectoryMenu(event);
             } else {
-                handleOpenContentMenu(event.event);
+                handleOpenContentMenu(event);
             }
         },
         [dispatch, selectedDirectory?.elementUuid]
@@ -279,26 +280,26 @@ export default function DirectoryContent() {
     const contextualMixPolicy = contextualMixPolicies.ALL;
 
     const onCellContextMenu = useCallback(
-        (event: any) => {
-            if (event.data && event.data.uploading !== null) {
-                if (event.data.type !== 'DIRECTORY') {
+        (cellEvent: CellContextMenuEvent) => {
+            if (cellEvent.data && cellEvent.data.uploading !== null) {
+                if (cellEvent.data.type !== 'DIRECTORY') {
                     dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
                     setActiveElement({
-                        hasMetadata: childrenMetadata[event.data.elementUuid] !== undefined,
-                        specificMetadata: childrenMetadata[event.data.elementUuid]?.specificMetadata,
-                        ...event.data,
+                        hasMetadata: childrenMetadata[cellEvent.data.elementUuid] !== undefined,
+                        specificMetadata: childrenMetadata[cellEvent.data.elementUuid]?.specificMetadata,
+                        ...cellEvent.data,
                     });
                     if (contextualMixPolicy === contextualMixPolicies.BIG) {
                         // If some elements were already selected and the active element is not in them, we deselect the already selected elements.
-                        if (isRowUnchecked(event.data, checkedRows)) {
+                        if (isRowUnchecked(cellEvent.data, checkedRows)) {
                             gridRef.current?.api.deselectAll();
                         }
-                    } else if (isRowUnchecked(event.data, checkedRows)) {
+                    } else if (isRowUnchecked(cellEvent.data, checkedRows)) {
                         // If some elements were already selected, we add the active element to the selected list if not already in it.
-                        gridRef.current?.api.getRowNode(event.data.elementUuid)?.setSelected(true);
+                        gridRef.current?.api.getRowNode(cellEvent.data.elementUuid)?.setSelected(true);
                     }
                 }
-                onContextMenu(event.event);
+                onContextMenu(cellEvent.event);
             }
         },
         [
