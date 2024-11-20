@@ -96,7 +96,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
 
     const [renameCB, renameState] = useDeferredFetch(
         renameElement,
-        () => handleCloseDialog(),
+        handleCloseDialog,
         (HTTPStatusCode: number) => {
             if (HTTPStatusCode === 403) {
                 return intl.formatMessage({ id: 'renameDirectoryError' });
@@ -384,7 +384,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 return (
                     <FilterCreationDialog
                         open
-                        onClose={() => handleCloseDialog()}
+                        onClose={handleCloseDialog}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
                         language={languageLocal}
