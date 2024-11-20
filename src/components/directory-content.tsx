@@ -241,6 +241,8 @@ export default function DirectoryContent() {
     const onContextMenu = useCallback(
         (event: any, anchorStates: AnchorStatesType = defaultAnchorStates) => {
             if (anchorStates.anchorReference === 'anchorPosition') {
+                // example : right click on empty space or on an element line
+                // then open popover on mouse position with a little shift
                 setDirectoryMenuAnchorStates({
                     ...anchorStates,
                     anchorPosition: {
@@ -248,8 +250,12 @@ export default function DirectoryContent() {
                         left: event.clientX + constants.HORIZONTAL_SHIFT,
                     },
                 });
-            } // else anchorEl
-            setDirectoryMenuAnchorStates(anchorStates);
+            } else {
+                // else anchorEl
+                // example : left click on a 'create element' button
+                // then open popover attached to the component clicked
+                setDirectoryMenuAnchorStates(anchorStates);
+            }
             // We check if the context menu was triggered from a row to prevent displaying both the directory and the content context menus
             const isRow = !!event.target.closest(`.${CUSTOM_ROW_CLASS}`);
             if (!isRow) {
