@@ -24,7 +24,6 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { PopoverOrigin, PopoverPosition, PopoverReference } from '@mui/material';
 import { UUID } from 'crypto';
 import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
 import CreateDirectoryDialog from '../dialogs/create-directory-dialog';
@@ -41,7 +40,8 @@ import {
     moveElementsToDirectory,
     renameElement,
 } from '../../utils/rest-api';
-import CommonContextualMenu, { MenuItemType } from './common-contextual-menu';
+
+import CommonContextualMenu, { CommonContextualMenuProps, MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
 import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
@@ -52,17 +52,12 @@ import { AppState } from '../../redux/types';
 import MoveDialog from '../dialogs/move-dialog';
 import { buildPathToFromMap } from '../treeview-utils';
 
-export interface DirectoryTreeContextualMenuProps {
+export interface DirectoryTreeContextualMenuProps extends CommonContextualMenuProps {
     directory: ElementAttributes | null;
-    open: boolean;
     onClose: (e: unknown, nextSelectedDirectoryId?: string | null) => void;
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
     restrictMenuItems: boolean;
-    anchorReference?: PopoverReference;
-    anchorPosition?: PopoverPosition;
-    anchorEl?: HTMLElement | null;
-    anchorOrigin?: PopoverOrigin;
 }
 
 export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTreeContextualMenuProps>) {
