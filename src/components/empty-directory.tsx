@@ -40,10 +40,10 @@ const styles = {
     }),
 };
 interface EmptyDirectoryProps {
-    onCreateElement: (e: React.MouseEvent<HTMLElement>) => void;
+    onCreateElementButtonClick: (e: React.MouseEvent<HTMLElement>) => void;
 }
 
-export default function EmptyDirectory({ onCreateElement }: Readonly<EmptyDirectoryProps>) {
+export default function EmptyDirectory({ onCreateElementButtonClick }: Readonly<EmptyDirectoryProps>) {
     const theme = useSelector((state: AppState) => state[PARAM_THEME]);
     return (
         <Box sx={styles.container}>
@@ -64,7 +64,12 @@ export default function EmptyDirectory({ onCreateElement }: Readonly<EmptyDirect
                 <h3>
                     <FormattedMessage id="emptyDirContent" />
                 </h3>
-                <Button variant="contained" sx={styles.button} onClick={onCreateElement} endIcon={<AddIcon />}>
+                <Button
+                    variant="contained"
+                    sx={styles.button}
+                    onClick={onCreateElementButtonClick}
+                    endIcon={<AddIcon />}
+                >
                     <FormattedMessage id="createElement" />
                 </Button>
             </Box>

@@ -433,7 +433,7 @@ export default function DirectoryContent() {
 
     const renderEmptyDirContent = () => (
         <EmptyDirectory
-            onCreateElement={(mouseEvent) =>
+            onCreateElementButtonClick={(mouseEvent) =>
                 onContextMenu(mouseEvent, {
                     anchorReference: 'anchorEl',
                     anchorEl: mouseEvent.currentTarget,
