@@ -7,26 +7,20 @@
 import { mergeSx } from '@gridsuite/commons-ui';
 import { Avatar, Box, Theme, Tooltip } from '@mui/material';
 
+const FERMAT_PRIME = 65537;
 // This function is a copy/paste of the MUI demo sample here :
 // https://mui.com/material-ui/react-avatar/#letter-avatars
+// hash function improved to generate more distinct values for similar strings using FERMAT_PRIME
+// Use hsl to manage saturation and softer colors
 function stringToColor(string: string) {
     let hash = 0;
-    let i;
-
     /* eslint-disable no-bitwise */
-    for (i = 0; i < string.length; i += 1) {
-        hash = string.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    let color = '#';
-
-    for (i = 0; i < 3; i += 1) {
-        const value = (hash >> (i * 8)) & 0xff;
-        color += `00${value.toString(16)}`.slice(-2);
-    }
+    const stringUniqueHash = [...string].reduce((acc, char) => {
+        hash = char.charCodeAt(0) + ((acc << 5) - acc) * FERMAT_PRIME;
+        return hash & hash;
+    }, 0);
     /* eslint-enable no-bitwise */
-
-    return color;
+    return `hsl(${stringUniqueHash % 360}, 50%, 50%)`;
 }
 
 function getAbbreviationFromUserName(name: string) {
@@ -47,6 +41,7 @@ const styles = {
         height: '32px',
         width: '32px',
         fontSize: theme.typography.fontSize,
+        backgroundColor: theme.row.hover as string,
     }),
 };
 
@@ -56,7 +51,7 @@ export function UserCellRenderer({ value }: Readonly<UserCellRendererProps>) {
     return (
         <Box sx={{ display: 'inline-flex', verticalAlign: 'middle' }}>
             <Tooltip title={value} placement="right">
-                <Avatar sx={mergeSx(styles.avatar, { bgcolor: stringToColor(value) })}>
+                <Avatar sx={mergeSx(styles.avatar, value ? { backgroundColor: stringToColor(value) } : null)}>
                     {getAbbreviationFromUserName(value)}
                 </Avatar>
             </Tooltip>
