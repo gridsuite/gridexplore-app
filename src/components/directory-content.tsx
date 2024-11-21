@@ -24,10 +24,12 @@ import {
 import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
 import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
+import { CellContextMenuEvent } from 'ag-grid-community';
 import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import * as constants from '../utils/UIconstants';
 import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
 import { elementExists, getFilterById, updateElement } from '../utils/rest-api';
+import { AnchorStatesType, defaultAnchorStates } from './menus/common-contextual-menu';
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
@@ -91,11 +93,6 @@ const styles = {
     },
 };
 
-const initialMousePosition = {
-    mouseX: null,
-    mouseY: null,
-};
-
 const isStudyMetadata = (metadata: Metadata): metadata is StudyMetadata => metadata.name === 'Study';
 
 export default function DirectoryContent() {
@@ -111,7 +108,6 @@ export default function DirectoryContent() {
     const [onGridReady, getRowStyle] = useHighlightSearchedElement(gridRef?.current?.api ?? null);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
-    const selectedTheme = useSelector((state: AppState) => state.theme);
 
     const dispatchSelectionForCopy = useCallback(
         (selection: SelectionForCopy) => {
@@ -150,10 +146,7 @@ export default function DirectoryContent() {
     const [checkedRows, setCheckedRows] = useState<ElementAttributes[]>([]);
 
     /* Menu states */
-    const [mousePosition, setMousePosition] = useState<{
-        mouseX: number | null;
-        mouseY: number | null;
-    }>(initialMousePosition);
+    const [directoryMenuAnchorStates, setDirectoryMenuAnchorStates] = useState<AnchorStatesType>(defaultAnchorStates);
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
     const [elementName, setElementName] = useState('');
@@ -246,6 +239,36 @@ export default function DirectoryContent() {
         event.stopPropagation();
     };
 
+    const onContextMenu = useCallback(
+        (event: any, anchorStates: AnchorStatesType = defaultAnchorStates) => {
+            if (anchorStates.anchorReference === 'anchorPosition') {
+                // example : right click on empty space or on an element line
+                // then open popover on mouse position with a little shift
+                setDirectoryMenuAnchorStates({
+                    ...anchorStates,
+                    anchorPosition: {
+                        top: event.clientY + constants.VERTICAL_SHIFT,
+                        left: event.clientX + constants.HORIZONTAL_SHIFT,
+                    },
+                });
+            } else {
+                // else anchorEl
+                // example : left click on a 'create element' button
+                // then open popover attached to the component clicked
+                setDirectoryMenuAnchorStates(anchorStates);
+            }
+            // We check if the context menu was triggered from a row to prevent displaying both the directory and the content context menus
+            const isRow = !!event.target.closest(`.${CUSTOM_ROW_CLASS}`);
+            if (!isRow) {
+                dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
+                handleOpenDirectoryMenu(event);
+            } else {
+                handleOpenContentMenu(event);
+            }
+        },
+        [dispatch, selectedDirectory?.elementUuid]
+    );
+
     /* User interactions */
     const contextualMixPolicies = useMemo(
         () => ({
@@ -257,30 +280,26 @@ export default function DirectoryContent() {
     const contextualMixPolicy = contextualMixPolicies.ALL;
 
     const onCellContextMenu = useCallback(
-        (event: any) => {
-            if (event.data && event.data.uploading !== null) {
-                if (event.data.type !== 'DIRECTORY') {
+        (cellEvent: CellContextMenuEvent) => {
+            if (cellEvent.data && cellEvent.data.uploading !== null) {
+                if (cellEvent.data.type !== 'DIRECTORY') {
                     dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
                     setActiveElement({
-                        hasMetadata: childrenMetadata[event.data.elementUuid] !== undefined,
-                        specificMetadata: childrenMetadata[event.data.elementUuid]?.specificMetadata,
-                        ...event.data,
+                        hasMetadata: childrenMetadata[cellEvent.data.elementUuid] !== undefined,
+                        specificMetadata: childrenMetadata[cellEvent.data.elementUuid]?.specificMetadata,
+                        ...cellEvent.data,
                     });
                     if (contextualMixPolicy === contextualMixPolicies.BIG) {
                         // If some elements were already selected and the active element is not in them, we deselect the already selected elements.
-                        if (isRowUnchecked(event.data, checkedRows)) {
+                        if (isRowUnchecked(cellEvent.data, checkedRows)) {
                             gridRef.current?.api.deselectAll();
                         }
-                    } else if (isRowUnchecked(event.data, checkedRows)) {
+                    } else if (isRowUnchecked(cellEvent.data, checkedRows)) {
                         // If some elements were already selected, we add the active element to the selected list if not already in it.
-                        gridRef.current?.api.getRowNode(event.data.elementUuid)?.setSelected(true);
+                        gridRef.current?.api.getRowNode(cellEvent.data.elementUuid)?.setSelected(true);
                     }
                 }
-                setMousePosition({
-                    mouseX: event.event.clientX + constants.HORIZONTAL_SHIFT,
-                    mouseY: event.event.clientY + constants.VERTICAL_SHIFT,
-                });
-                handleOpenContentMenu(event.event);
+                onContextMenu(cellEvent.event);
             }
         },
         [
@@ -290,24 +309,8 @@ export default function DirectoryContent() {
             contextualMixPolicy,
             dispatch,
             selectedDirectory?.elementUuid,
+            onContextMenu,
         ]
-    );
-
-    const onContextMenu = useCallback(
-        (event: any) => {
-            // We check if the context menu was triggered from a row to prevent displaying both the directory and the content context menus
-            const isRow = !!event.target.closest(`.${CUSTOM_ROW_CLASS}`);
-            if (!isRow) {
-                dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-
-                setMousePosition({
-                    mouseX: event.clientX + constants.HORIZONTAL_SHIFT,
-                    mouseY: event.clientY + constants.VERTICAL_SHIFT,
-                });
-                handleOpenDirectoryMenu(event);
-            }
-        },
-        [dispatch, selectedDirectory?.elementUuid]
     );
 
     const handleError = useCallback(
@@ -428,36 +431,20 @@ export default function DirectoryContent() {
         </Box>
     );
 
-    const handleMousePosition = useCallback(
-        (coordinates: DOMRect, isEmpty: boolean): { mouseX: number | null; mouseY: number | null } => {
-            if (isEmpty) {
-                return {
-                    mouseX: coordinates.right,
-                    mouseY: coordinates.top + 25 * constants.VERTICAL_SHIFT,
-                };
-            }
-            return {
-                mouseX: coordinates.left,
-                mouseY: coordinates.bottom,
-            };
-        },
-        []
-    );
-
-    const handleDialog = useCallback(
-        (mouseEvent: MouseEvent<HTMLElement>, isEmpty: boolean) => {
-            const coordinates: DOMRect = (mouseEvent.target as HTMLElement).getBoundingClientRect();
-            // set the contextualMenu position
-            setMousePosition(handleMousePosition(coordinates, isEmpty));
-            setOpenDirectoryMenu(true);
-
-            dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-        },
-        [dispatch, selectedDirectory?.elementUuid, handleMousePosition]
-    );
-
     const renderEmptyDirContent = () => (
-        <EmptyDirectory openDialog={(mouseEvent) => handleDialog(mouseEvent, true)} theme={selectedTheme} />
+        <EmptyDirectory
+            onCreateElementButtonClick={(mouseEvent) =>
+                onContextMenu(mouseEvent, {
+                    anchorReference: 'anchorEl',
+                    anchorEl: mouseEvent.currentTarget,
+                    anchorOrigin: { vertical: 'center', horizontal: 'right' },
+                    transformOrigin: {
+                        vertical: 'center',
+                        horizontal: 'left',
+                    },
+                })
+            }
+        />
     );
 
     const renderContent = () => {
@@ -649,7 +636,14 @@ export default function DirectoryContent() {
                             variant="contained"
                             endIcon={<AddIcon />}
                             sx={styles.button}
-                            onClick={(mouseEvent) => handleDialog(mouseEvent, false)}
+                            onClick={(mouseEvent) =>
+                                onContextMenu(mouseEvent, {
+                                    anchorReference: 'anchorEl',
+                                    anchorEl: mouseEvent.currentTarget,
+                                    anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
+                                    transformOrigin: { vertical: 'top', horizontal: 'left' },
+                                })
+                            }
                         >
                             <FormattedMessage id="createElement" />
                         </Button>
@@ -675,15 +669,7 @@ export default function DirectoryContent() {
                         openDialog={openDialog}
                         setOpenDialog={setOpenDialog}
                         onClose={handleCloseContentMenu}
-                        anchorReference="anchorPosition"
-                        anchorPosition={
-                            mousePosition.mouseY !== null && mousePosition.mouseX !== null
-                                ? {
-                                      top: mousePosition.mouseY,
-                                      left: mousePosition.mouseX,
-                                  }
-                                : undefined
-                        }
+                        {...directoryMenuAnchorStates}
                         broadcastChannel={broadcastChannel}
                     />
                 )}
@@ -693,15 +679,7 @@ export default function DirectoryContent() {
                     openDialog={openDialog}
                     setOpenDialog={setOpenDialog}
                     onClose={handleCloseDirectoryMenu}
-                    anchorReference="anchorPosition"
-                    anchorPosition={
-                        mousePosition.mouseY !== null && mousePosition.mouseX !== null
-                            ? {
-                                  top: mousePosition.mouseY,
-                                  left: mousePosition.mouseX,
-                              }
-                            : undefined
-                    }
+                    {...directoryMenuAnchorStates}
                     restrictMenuItems
                 />
             </Box>

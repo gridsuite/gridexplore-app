@@ -8,7 +8,19 @@
 import { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Edit as EditIcon } from '@mui/icons-material';
-import { Divider, ListItemIcon, ListItemText, Menu, MenuItem, MenuProps, styled } from '@mui/material';
+import {
+    Divider,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
+    MenuProps,
+    PopoverOrigin,
+    PopoverPosition,
+    PopoverProps,
+    PopoverReference,
+    styled,
+} from '@mui/material';
 
 const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} />)({
     '.MuiMenu-paper': {
@@ -31,6 +43,18 @@ export type MenuItemType =
 export interface CommonContextualMenuProps extends MenuProps {
     menuItems?: MenuItemType[];
 }
+
+export interface AnchorStatesType {
+    anchorEl?: PopoverProps['anchorEl'];
+    anchorReference?: PopoverReference;
+    anchorPosition?: PopoverPosition;
+    anchorOrigin?: PopoverOrigin;
+    transformOrigin?: PopoverOrigin;
+}
+
+export const defaultAnchorStates: AnchorStatesType = {
+    anchorReference: 'anchorPosition',
+};
 
 export default function CommonContextualMenu({ menuItems, ...menuProps }: Readonly<CommonContextualMenuProps>) {
     function makeMenuItem(
