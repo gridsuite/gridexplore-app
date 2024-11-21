@@ -5,11 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MouseEvent } from 'react';
 import { Box, Button, SvgIcon } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
+import { useSelector } from 'react-redux';
+import { PARAM_THEME } from 'utils/config-params';
+import { AppState } from '../redux/types';
 import CircleIcon from './icons/circleIcon';
 
 const CIRCLE_SIZE = 250;
@@ -37,13 +39,12 @@ const styles = {
         marginTop: theme.spacing(1),
     }),
 };
-
-export interface EmptyFolderProps {
-    openDialog: (e: MouseEvent<HTMLElement>) => void;
-    theme: string;
+interface EmptyDirectoryProps {
+    onCreateElementButtonClick: (e: React.MouseEvent<HTMLElement>) => void;
 }
 
-export default function EmptyDirectory({ openDialog, theme }: Readonly<EmptyFolderProps>) {
+export default function EmptyDirectory({ onCreateElementButtonClick }: Readonly<EmptyDirectoryProps>) {
+    const theme = useSelector((state: AppState) => state[PARAM_THEME]);
     return (
         <Box sx={styles.container}>
             <CircleIcon size={CIRCLE_SIZE} iconStyles={styles.circle}>
@@ -63,7 +64,12 @@ export default function EmptyDirectory({ openDialog, theme }: Readonly<EmptyFold
                 <h3>
                     <FormattedMessage id="emptyDirContent" />
                 </h3>
-                <Button variant="contained" sx={styles.button} onClick={openDialog} endIcon={<AddIcon />}>
+                <Button
+                    variant="contained"
+                    sx={styles.button}
+                    onClick={onCreateElementButtonClick}
+                    endIcon={<AddIcon />}
+                >
                     <FormattedMessage id="createElement" />
                 </Button>
             </Box>

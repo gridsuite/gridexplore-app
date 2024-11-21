@@ -15,7 +15,9 @@ import {
     Menu,
     MenuItem,
     MenuProps,
+    PopoverOrigin,
     PopoverPosition,
+    PopoverProps,
     PopoverReference,
     styled,
 } from '@mui/material';
@@ -38,13 +40,22 @@ export type MenuItemType =
           disabled?: boolean;
       };
 
-export interface CommonContextualMenuProps {
+export interface CommonContextualMenuProps extends MenuProps {
     onClose?: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
-    open: boolean;
-    anchorReference?: PopoverReference;
-    anchorPosition?: PopoverPosition;
     menuItems?: MenuItemType[];
 }
+
+export interface AnchorStatesType {
+    anchorEl?: PopoverProps['anchorEl'];
+    anchorReference?: PopoverReference;
+    anchorPosition?: PopoverPosition;
+    anchorOrigin?: PopoverOrigin;
+    transformOrigin?: PopoverOrigin;
+}
+
+export const defaultAnchorStates: AnchorStatesType = {
+    anchorReference: 'anchorPosition',
+};
 
 export default function CommonContextualMenu(props: Readonly<CommonContextualMenuProps>) {
     const { menuItems, ...others } = props;

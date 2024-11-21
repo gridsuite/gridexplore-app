@@ -27,7 +27,6 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { PopoverPosition, PopoverReference } from '@mui/material';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
@@ -47,7 +46,7 @@ import {
     replaceFormContingencyListWithScript,
 } from '../../utils/rest-api';
 import { ContingencyListType, FilterType } from '../../utils/elementType';
-import CommonContextualMenu from './common-contextual-menu';
+import CommonContextualMenu, { CommonContextualMenuProps } from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
 import { useDownloadUtils } from '../utils/downloadUtils';
@@ -58,16 +57,13 @@ import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 
-export interface ContentContextualMenuProps {
+interface ContentContextualMenuProps extends CommonContextualMenuProps {
     activeElement: ElementAttributes;
     selectedElements: ElementAttributes[];
-    open: boolean;
     onClose: () => void;
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
     broadcastChannel: BroadcastChannel;
-    anchorReference?: PopoverReference;
-    anchorPosition?: PopoverPosition;
 }
 
 export default function ContentContextualMenu(props: Readonly<ContentContextualMenuProps>) {
