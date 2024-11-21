@@ -15,7 +15,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/types';
@@ -41,7 +41,7 @@ export interface CriteriaBasedEditionDialogProps {
     contingencyListId: string;
     contingencyListType: string;
     open: boolean;
-    onClose: (event?: SyntheticEvent) => void;
+    onClose: () => void;
     titleId: string;
     name: string;
     broadcastChannel: BroadcastChannel;
@@ -92,9 +92,9 @@ export default function CriteriaBasedEditionDialog({
             .finally(() => setIsFetching(false));
     }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
-    const closeAndClear = (event?: SyntheticEvent) => {
+    const closeAndClear = () => {
         reset(emptyFormData());
-        onClose(event);
+        onClose();
     };
 
     const onSubmit = (contingencyList: CriteriaBasedEditionFormData) => {

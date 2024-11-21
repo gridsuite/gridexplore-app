@@ -15,7 +15,6 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import { SyntheticEvent } from 'react';
 import { createContingencyList } from '../../../../utils/rest-api';
 import ContingencyListCreationForm from './contingency-list-creation-form';
 import {
@@ -47,7 +46,7 @@ const schema = yup.object().shape({
 const emptyFormData = getContingencyListEmptyFormData();
 
 export interface ContingencyListCreationDialogProps {
-    onClose: (event?: SyntheticEvent) => void;
+    onClose: () => void;
     open: boolean;
     titleId: string;
 }
@@ -75,9 +74,9 @@ export default function ContingencyListCreationDialog({
     const nameError = errors[FieldConstants.NAME];
     const isValidating = errors.root?.isValidating;
 
-    const closeAndClear = (event?: SyntheticEvent) => {
+    const closeAndClear = () => {
         reset(emptyFormData);
-        onClose(event);
+        onClose();
     };
 
     const onSubmit = (data: ContingencyListFormDataWithRequiredCriteria) => {

@@ -41,7 +41,6 @@ export type MenuItemType =
       };
 
 export interface CommonContextualMenuProps extends MenuProps {
-    onClose?: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
     menuItems?: MenuItemType[];
 }
 
@@ -57,9 +56,7 @@ export const defaultAnchorStates: AnchorStatesType = {
     anchorReference: 'anchorPosition',
 };
 
-export default function CommonContextualMenu(props: Readonly<CommonContextualMenuProps>) {
-    const { menuItems, ...others } = props;
-
+export default function CommonContextualMenu({ menuItems, ...menuProps }: Readonly<CommonContextualMenuProps>) {
     function makeMenuItem(
         key: number,
         messageDescriptorId?: string,
@@ -89,7 +86,7 @@ export default function CommonContextualMenu(props: Readonly<CommonContextualMen
 
     let dividerCount = 0;
     return (
-        <StyledMenu keepMounted {...others}>
+        <StyledMenu keepMounted {...menuProps}>
             {menuItems?.map((menuItem, index) => {
                 if (menuItem.isDivider) {
                     dividerCount += 1;

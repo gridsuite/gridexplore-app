@@ -17,7 +17,7 @@ export interface RenameDialogProps {
     /** Is the dialog open ? */
     open: boolean;
     /** Event to close the dialog */
-    onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
+    onClose: () => void;
     /** Event to submit the renaming */
     onClick: (newName: string) => void;
     /** Title of the dialog */

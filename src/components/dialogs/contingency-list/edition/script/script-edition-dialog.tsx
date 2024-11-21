@@ -14,7 +14,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import { getContingencyListEmptyFormData, getScriptFormDataFromFetchedElement } from '../../contingency-list-utils';
@@ -40,7 +40,7 @@ export interface ScriptEditionDialogProps {
     contingencyListId: string;
     contingencyListType: string;
     open: boolean;
-    onClose: (event?: SyntheticEvent) => void;
+    onClose: () => void;
     titleId: string;
     name: string;
     broadcastChannel: BroadcastChannel;
@@ -91,9 +91,9 @@ export default function ScriptEditionDialog({
             .finally(() => setIsFetching(false));
     }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
-    const closeAndClear = (event?: SyntheticEvent) => {
+    const closeAndClear = () => {
         reset(emptyFormData());
-        onClose(event);
+        onClose();
     };
 
     const editContingencyList = (contingencyListId2: string, contingencyList: ScriptEditionFormData) => {
