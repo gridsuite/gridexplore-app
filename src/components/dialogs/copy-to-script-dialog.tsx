@@ -26,7 +26,7 @@ const emptyFormData = {
 export interface CopyToScriptDialogProps {
     id: string;
     open: boolean;
-    onClose: (...args: any[]) => void;
+    onClose: () => void;
     onValidate: (...args: any[]) => void;
     currentName: string;
     title: string;
@@ -83,10 +83,6 @@ export default function CopyToScriptDialog({
         onValidate(id, data[FieldConstants.NAME]);
     };
 
-    const handleClose = () => {
-        onClose();
-    };
-
     const handleGenerateNameError = useCallback(
         () => handleError(intl.formatMessage({ id: 'generateCopyScriptNameError' }, { itemName: currentName })),
         [currentName, handleError, intl]
@@ -112,7 +108,7 @@ export default function CopyToScriptDialog({
     return (
         <CustomMuiDialog
             open={open}
-            onClose={handleClose}
+            onClose={onClose}
             onSave={onSubmit}
             formSchema={schema}
             formMethods={methods}

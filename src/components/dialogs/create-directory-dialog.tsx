@@ -14,7 +14,7 @@ import { useNameField } from './field-hook';
 
 export interface CreateDirectoryDialogProps {
     open: boolean;
-    onClose: (e?: unknown, nextSelectedDirectoryId?: string | null) => void;
+    onClose: () => void;
     onClick: (newName: string) => void;
     title: string;
     parentDirectory?: UUID;

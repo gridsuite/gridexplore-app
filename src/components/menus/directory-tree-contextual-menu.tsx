@@ -52,16 +52,16 @@ import { AppState } from '../../redux/types';
 import MoveDialog from '../dialogs/move-dialog';
 import { buildPathToFromMap } from '../treeview-utils';
 
-export interface DirectoryTreeContextualMenuProps extends CommonContextualMenuProps {
+export interface DirectoryTreeContextualMenuProps extends Omit<CommonContextualMenuProps, 'onClose'> {
     directory: ElementAttributes | null;
-    onClose: (e: unknown, nextSelectedDirectoryId?: string | null) => void;
+    onClose: (nextSelectedDirectoryId?: string | null) => void;
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
     restrictMenuItems: boolean;
 }
 
 export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTreeContextualMenuProps>) {
-    const { directory, open, onClose, openDialog, setOpenDialog, restrictMenuItems, ...others } = props;
+    const { directory, open, onClose, openDialog, setOpenDialog, restrictMenuItems, ...otherProps } = props;
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const intl = useIntl();
@@ -80,8 +80,8 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     };
 
     const handleCloseDialog = useCallback(
-        (e: unknown, nextSelectedDirectoryId: string | null = null) => {
-            onClose(e, nextSelectedDirectoryId);
+        (nextSelectedDirectoryId: string | null = null) => {
+            onClose(nextSelectedDirectoryId);
             setOpenDialog(DialogsId.NONE);
             setHideMenu(false);
             setDeleteError('');
@@ -91,7 +91,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
 
     const [renameCB, renameState] = useDeferredFetch(
         renameElement,
-        () => handleCloseDialog(null, null),
+        handleCloseDialog,
         (HTTPStatusCode: number) => {
             if (HTTPStatusCode === 403) {
                 return intl.formatMessage({ id: 'renameDirectoryError' });
@@ -103,12 +103,12 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     );
 
     const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, (response: ElementAttributes) =>
-        handleCloseDialog(null, response?.elementUuid)
+        handleCloseDialog(response?.elementUuid)
     );
 
     const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(
         insertRootDirectory,
-        (response: ElementAttributes) => handleCloseDialog(null, response?.elementUuid)
+        (response: ElementAttributes) => handleCloseDialog(response?.elementUuid)
     );
 
     const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
@@ -130,7 +130,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     function pasteElement(directoryUuid: UUID, selectionForPaste: any) {
         if (!selectionForPaste.sourceItemUuid) {
             handleError(intl.formatMessage({ id: 'elementPasteFailed404' }));
-            handleCloseDialog(null);
+            handleCloseDialog();
         } else {
             console.info('Pasting element %s into directory %s', selectionForPaste.nameItem, directoryUuid);
 
@@ -180,7 +180,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     );
             }
 
-            handleCloseDialog(null);
+            handleCloseDialog();
         }
     }
 
@@ -188,7 +188,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         (elementsUuid: UUID) => {
             setDeleteError('');
             deleteElement(elementsUuid)
-                .then(() => handleCloseDialog(null, directory?.parentUuid))
+                .then(() => handleCloseDialog(directory?.parentUuid))
                 .catch((error: any) => {
                     // show the error message and don't close the dialog
                     setDeleteError(error.message);
@@ -406,7 +406,12 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     return (
         <>
             {open && (
-                <CommonContextualMenu {...others} menuItems={buildMenu()} open={open && !hideMenu} onClose={onClose} />
+                <CommonContextualMenu
+                    {...otherProps}
+                    menuItems={buildMenu()}
+                    open={open && !hideMenu}
+                    onClose={() => onClose()}
+                />
             )}
             {renderDialog()}
         </>

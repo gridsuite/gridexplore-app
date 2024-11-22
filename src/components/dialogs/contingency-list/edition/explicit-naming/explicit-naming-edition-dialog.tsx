@@ -14,7 +14,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
 import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -48,7 +48,7 @@ export interface ExplicitNamingEditionDialogProps {
     contingencyListId: string;
     contingencyListType: string;
     open: boolean;
-    onClose: (event?: SyntheticEvent) => void;
+    onClose: () => void;
     titleId: string;
     name: string;
     broadcastChannel: BroadcastChannel;
@@ -97,9 +97,9 @@ export default function ExplicitNamingEditionDialog({
             .finally(() => setIsFetching(false));
     }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
-    const closeAndClear = (event?: SyntheticEvent) => {
+    const closeAndClear = () => {
         reset(emptyFormData());
-        onClose(event);
+        onClose();
     };
 
     const editContingencyList = (contingencyListId2: string, contingencyList: ExplicitNamingEditionFormData) => {
