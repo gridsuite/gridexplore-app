@@ -109,12 +109,6 @@ export default function DirectoryContent() {
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
-    const dispatchSelectionForCopy = useCallback(
-        (selection: SelectionForCopy) => {
-            dispatch(setSelectionForCopy(selection));
-        },
-        [dispatch]
-    );
     const [broadcastChannel] = useState(() => {
         const broadcast = new BroadcastChannel('itemCopyChannel');
         broadcast.onmessage = (event) => {
@@ -122,14 +116,16 @@ export default function DirectoryContent() {
             if (JSON.stringify(NO_SELECTION_FOR_COPY) === JSON.stringify(event.data)) {
                 dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
             } else {
-                dispatchSelectionForCopy({
-                    typeItem: event.data.typeItem,
-                    nameItem: event.data.nameItem,
-                    descriptionItem: event.data.descriptionItem,
-                    sourceItemUuid: event.data.sourceItemUuid,
-                    parentDirectoryUuid: event.data.parentDirectoryUuid,
-                    specificTypeItem: event.data.specificTypeItem,
-                });
+                dispatch(
+                    setSelectionForCopy({
+                        typeItem: event.data.typeItem,
+                        nameItem: event.data.nameItem,
+                        descriptionItem: event.data.descriptionItem,
+                        sourceItemUuid: event.data.sourceItemUuid,
+                        parentDirectoryUuid: event.data.parentDirectoryUuid,
+                        specificTypeItem: event.data.specificTypeItem,
+                    })
+                );
             }
         };
         return broadcast;

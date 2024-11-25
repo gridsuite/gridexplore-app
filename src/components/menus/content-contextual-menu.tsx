@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -93,11 +93,22 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         [snackError]
     );
 
-    const handleOpenDialog = (dialogId: string) => {
-        setHideMenu(true);
-        setOpenDialog(dialogId);
-    };
-    const dispatchSelectionForCopy = useCallback(
+    const handleOpenDialog = useCallback(
+        (dialogId: string) => {
+            setHideMenu(true);
+            setOpenDialog(dialogId);
+        },
+        [setOpenDialog]
+    );
+
+    const handleCloseDialog = useCallback(() => {
+        onClose();
+        setOpenDialog(DialogsId.NONE);
+        setHideMenu(false);
+        setDeleteError('');
+    }, [onClose, setOpenDialog]);
+
+    const copyElement = useCallback(
         (
             typeItem: string,
             nameItem: string,
@@ -116,57 +127,35 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     specificTypeItem: specificTypeItem ?? null,
                 })
             );
+            broadcastChannel.postMessage({
+                typeItem,
+                nameItem,
+                descriptionItem,
+                sourceItemUuid,
+                parentDirectoryUuid,
+                specificTypeItem,
+            });
+
+            handleCloseDialog();
         },
-        [dispatch]
+        [broadcastChannel, dispatch, handleCloseDialog]
     );
 
-    const handleCloseDialog = useCallback(() => {
-        onClose();
-        setOpenDialog(DialogsId.NONE);
-        setHideMenu(false);
-        setDeleteError('');
-    }, [onClose, setOpenDialog]);
+    const handleDuplicateError = useCallback(
+        (error: string) =>
+            handleLastError(
+                intl.formatMessage(
+                    { id: 'duplicateElementFailure' },
+                    {
+                        itemName: activeElement.elementName,
+                        errorMessage: error,
+                    }
+                )
+            ),
+        [activeElement.elementName, handleLastError, intl]
+    );
 
-    function copyElement(
-        typeItem: string,
-        nameItem: string,
-        descriptionItem: string,
-        sourceItemUuid: string,
-        parentDirectoryUuid?: string,
-        specificTypeItem?: string
-    ) {
-        dispatchSelectionForCopy(
-            typeItem,
-            nameItem,
-            descriptionItem,
-            sourceItemUuid,
-            parentDirectoryUuid,
-            specificTypeItem
-        );
-        broadcastChannel.postMessage({
-            typeItem,
-            nameItem,
-            descriptionItem,
-            sourceItemUuid,
-            parentDirectoryUuid,
-            specificTypeItem,
-        });
-
-        handleCloseDialog();
-    }
-
-    const handleDuplicateError = (error: string) =>
-        handleLastError(
-            intl.formatMessage(
-                { id: 'duplicateElementFailure' },
-                {
-                    itemName: activeElement.elementName,
-                    errorMessage: error,
-                }
-            )
-        );
-
-    const copyItem = () => {
+    const copyItem = useCallback(() => {
         if (activeElement) {
             switch (activeElement.type) {
                 case ElementType.CASE:
@@ -209,8 +198,9 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     handleLastError(intl.formatMessage({ id: 'unsupportedItem' }));
             }
         }
-    };
-    const duplicateItem = () => {
+    }, [activeElement, copyElement, handleLastError, intl, selectedDirectory?.elementUuid]);
+
+    const duplicateItem = useCallback(() => {
         if (activeElement) {
             switch (activeElement.type) {
                 case ElementType.CASE:
@@ -231,9 +221,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         activeElement.type,
                         // @ts-expect-error TODO: seems to be an object but we await a string???
                         activeElement.specificMetadata.type
-                    ).catch((error) => {
-                        handleDuplicateError(error.message);
-                    });
+                    ).catch((error) => handleDuplicateError(error.message));
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
@@ -245,9 +233,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         undefined,
                         ElementType.PARAMETERS,
                         activeElement.type
-                    ).catch((error) => {
-                        handleDuplicateError(error.message);
-                    });
+                    ).catch((error) => handleDuplicateError(error.message));
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
                     duplicateSpreadsheetConfig(activeElement.elementUuid).catch((error) => {
@@ -255,16 +241,12 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     });
                     break;
                 default: {
-                    handleLastError(
-                        intl.formatMessage({
-                            id: 'unsupportedItem',
-                        })
-                    );
+                    handleLastError(intl.formatMessage({ id: 'unsupportedItem' }));
                 }
             }
             handleCloseDialog();
         }
-    };
+    }, [activeElement, handleCloseDialog, handleDuplicateError, handleLastError, intl, snackError]);
 
     const handleCloseExportDialog = useCallback(() => {
         stopCasesExports();
@@ -289,9 +271,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const moveElementErrorToString = useCallback(
         (HTTPStatusCode: number) => {
             if (HTTPStatusCode === 403) {
-                return intl.formatMessage({
-                    id: 'moveElementNotAllowedError',
-                });
+                return intl.formatMessage({ id: 'moveElementNotAllowedError' });
             }
             if (HTTPStatusCode === 404) {
                 return intl.formatMessage({ id: 'moveElementNotFoundError' });
@@ -346,9 +326,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         },
         (HTTPStatusCode: number) => {
             if (HTTPStatusCode === 403) {
-                return intl.formatMessage({
-                    id: 'renameElementNotAllowedError',
-                });
+                return intl.formatMessage({ id: 'renameElementNotAllowedError' });
             }
             if (HTTPStatusCode === 404) {
                 // == NOT FOUND
@@ -479,7 +457,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
 
-    const buildMenu = () => {
+    const buildMenu = useMemo(() => {
         if (selectedElements.length === 0) {
             return undefined;
         }
@@ -520,16 +498,12 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         if (allowsDuplicateAndCopy()) {
             menuItems.push({
                 messageDescriptorId: 'duplicate',
-                callback: () => {
-                    duplicateItem();
-                },
+                callback: duplicateItem,
                 icon: <FileCopyTwoToneIcon fontSize="small" />,
             });
             menuItems.push({
                 messageDescriptorId: 'copy',
-                callback: () => {
-                    copyItem();
-                },
+                callback: copyItem,
                 icon: <ContentCopyRoundedIcon fontSize="small" />,
             });
         }
@@ -596,7 +570,24 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         }
 
         return menuItems;
-    };
+    }, [
+        allowsConvertFilterIntoExplicitNaming,
+        allowsCopyContingencyToScript,
+        allowsCreateNewStudyFromCase,
+        allowsDelete,
+        allowsDownload,
+        allowsDuplicateAndCopy,
+        allowsMove,
+        allowsRename,
+        allowsReplaceContingencyWithScript,
+        copyItem,
+        downloadElements,
+        duplicateItem,
+        handleCloseDialog,
+        handleOpenDialog,
+        noCreationInProgress,
+        selectedElements,
+    ]);
 
     const renderDialog = () => {
         switch (openDialog) {
@@ -730,7 +721,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     return (
         <>
             {open && (
-                <CommonContextualMenu {...others} menuItems={buildMenu()} open={open && !hideMenu} onClose={onClose} />
+                <CommonContextualMenu {...others} menuItems={buildMenu} open={open && !hideMenu} onClose={onClose} />
             )}
             {renderDialog()}
         </>
