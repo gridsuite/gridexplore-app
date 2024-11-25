@@ -16,10 +16,9 @@ import {
     ElementType,
     ExpertFilterEditionDialog,
     ExplicitNamingFilterEditionDialog,
-    Metadata,
+    isStudyMetadata,
     NO_SELECTION_FOR_COPY,
     SelectionForCopy,
-    StudyMetadata,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Add as AddIcon } from '@mui/icons-material';
@@ -92,8 +91,6 @@ const styles = {
         alignItems: 'center',
     },
 };
-
-const isStudyMetadata = (metadata: Metadata): metadata is StudyMetadata => metadata.name === 'Study';
 
 export default function DirectoryContent() {
     const treeData = useSelector((state: AppState) => state.treeData);
