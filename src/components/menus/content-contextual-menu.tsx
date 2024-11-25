@@ -51,7 +51,7 @@ import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-h
 import MoveDialog from '../dialogs/move-dialog';
 import { useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
-import { setSelectionForCopy } from '../../redux/actions';
+import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
@@ -72,7 +72,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
     const intl = useIntl();
     const dispatch = useDispatch();
-    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
+    const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const [deleteError, setDeleteError] = useState('');
 
@@ -118,7 +118,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             specificTypeItem?: string
         ) => {
             dispatch(
-                setSelectionForCopy({
+                setItemSelectionForCopy({
                     sourceItemUuid,
                     typeItem,
                     nameItem,
@@ -311,7 +311,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             // if copied element is renamed
             if (selectionForCopy.sourceItemUuid === renamedElement[0]) {
                 dispatch(
-                    setSelectionForCopy({
+                    setItemSelectionForCopy({
                         ...selectionForCopy,
                         nameItem: renamedElement[1],
                     })

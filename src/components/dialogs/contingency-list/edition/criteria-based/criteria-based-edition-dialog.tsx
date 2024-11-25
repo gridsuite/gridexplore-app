@@ -24,7 +24,7 @@ import {
     getCriteriaBasedFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
-import { setSelectionForCopy } from '../../../../../redux/actions';
+import { setItemSelectionForCopy } from '../../../../../redux/actions';
 import { useParameterState } from '../../../use-parameters-dialog';
 import { CriteriaBasedEditionFormData } from '../../../../../utils/rest-api';
 import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
@@ -59,7 +59,7 @@ export default function CriteriaBasedEditionDialog({
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
-    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
+    const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const dispatch = useDispatch();
     const methods = useForm<CriteriaBasedEditionFormData>({
         defaultValues: emptyFormData(name),
@@ -101,7 +101,7 @@ export default function CriteriaBasedEditionDialog({
         saveCriteriaBasedContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === contingencyListId) {
-                    dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
+                    dispatch(setItemSelectionForCopy(NO_SELECTION_FOR_COPY));
                     broadcastChannel.postMessage({ NO_SELECTION_FOR_COPY });
                 }
                 closeAndClear();

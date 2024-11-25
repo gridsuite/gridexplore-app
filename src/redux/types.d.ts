@@ -73,6 +73,6 @@ export interface AppState extends CommonStoreState {
     selectedFile: unknown | null;
     uploadingElements: Record<string, UploadingElement>;
     directoryUpdated: { force: number; eventData: Record<string, Record<string, unknown>> };
-    selectionForCopy: SelectionForCopy;
+    itemSelectionForCopy: SelectionForCopy;
     reorderedColumns: string[];
 }

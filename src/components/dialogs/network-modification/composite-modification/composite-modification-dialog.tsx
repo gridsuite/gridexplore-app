@@ -27,7 +27,7 @@ import { useParameterState } from '../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
-import { setSelectionForCopy } from '../../../../redux/actions';
+import { setItemSelectionForCopy } from '../../../../redux/actions';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -62,7 +62,7 @@ export default function CompositeModificationDialog({
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!compositeModificationId);
     const { snackError } = useSnackMessage();
-    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
+    const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
     const dispatch = useDispatch();
 
@@ -130,7 +130,7 @@ export default function CompositeModificationDialog({
         saveCompositeModification(compositeModificationId, formData[FieldConstants.NAME])
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === compositeModificationId) {
-                    dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
+                    dispatch(setItemSelectionForCopy(NO_SELECTION_FOR_COPY));
                     broadcastChannel.postMessage({ NO_SELECTION_FOR_COPY });
                 }
                 closeAndClear();
