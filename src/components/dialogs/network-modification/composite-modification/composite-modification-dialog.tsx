@@ -131,9 +131,7 @@ export default function CompositeModificationDialog({
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === compositeModificationId) {
                     dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
-                    broadcastChannel.postMessage({
-                        NO_SELECTION_FOR_COPY,
-                    });
+                    broadcastChannel.postMessage({ NO_SELECTION_FOR_COPY });
                 }
                 closeAndClear();
             })

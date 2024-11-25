@@ -112,9 +112,7 @@ export default function ExplicitNamingEditionDialog({
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === contingencyListId) {
                     dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
-                    broadcastChannel.postMessage({
-                        NO_SELECTION_FOR_COPY,
-                    });
+                    broadcastChannel.postMessage({ NO_SELECTION_FOR_COPY });
                 }
                 closeAndClear();
             })
