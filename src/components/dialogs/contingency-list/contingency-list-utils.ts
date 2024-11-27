@@ -8,6 +8,7 @@
 import { v4 as uuid4 } from 'uuid';
 import {
     CONTINGENCY_LIST_EQUIPMENTS,
+    type CriteriaBasedData,
     EquipmentType,
     FieldConstants,
     getCriteriaBasedFormData,
@@ -25,23 +26,6 @@ export interface IdentifierList {
     type: 'LIST';
     contingencyId: string;
     identifierList: Identifier[];
-}
-
-export interface RangeInputData {
-    [FieldConstants.OPERATION_TYPE]: string;
-    [FieldConstants.VALUE_1]: number | null;
-    [FieldConstants.VALUE_2]: number | null;
-}
-
-export interface CriteriaBasedData {
-    [FieldConstants.COUNTRIES]?: string[];
-    [FieldConstants.COUNTRIES_1]?: string[];
-    [FieldConstants.COUNTRIES_2]?: string[];
-    [FieldConstants.NOMINAL_VOLTAGE]?: RangeInputData | null;
-    [FieldConstants.NOMINAL_VOLTAGE_1]?: RangeInputData | null;
-    [FieldConstants.NOMINAL_VOLTAGE_2]?: RangeInputData | null;
-    [FieldConstants.NOMINAL_VOLTAGE_3]?: RangeInputData | null;
-    [key: string]: any;
 }
 
 export type ContingencyListFormData = {

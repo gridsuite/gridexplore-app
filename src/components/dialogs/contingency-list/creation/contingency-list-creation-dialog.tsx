@@ -104,6 +104,7 @@ export default function ContingencyListCreationDialog({
             onClose={closeAndClear}
             onSave={onSubmit}
             formSchema={schema}
+            // @ts-expect-error TODO: formSchema is of type ContingencyListFormDataWithRequiredCriteria but formMethods of type ContingencyListFormData
             formMethods={methods}
             titleId={titleId}
             removeOptional
