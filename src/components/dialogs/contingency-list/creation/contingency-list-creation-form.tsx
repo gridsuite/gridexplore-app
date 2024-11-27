@@ -49,7 +49,7 @@ export default function ContingencyListCreationForm() {
         />
     );
 
-    const emptyValues = getCriteriaBasedFormData({}, {});
+    const emptyValues = getCriteriaBasedFormData();
     return (
         <>
             <Box sx={unscrollableDialogStyles.unscrollableHeader}>

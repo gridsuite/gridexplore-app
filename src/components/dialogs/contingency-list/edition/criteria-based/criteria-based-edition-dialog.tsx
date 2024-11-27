@@ -32,7 +32,7 @@ import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().required(),
-    ...getCriteriaBasedSchema(null),
+    ...getCriteriaBasedSchema(),
 });
 
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);

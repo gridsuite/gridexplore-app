@@ -77,14 +77,14 @@ export const getContingencyListEmptyFormData = (name = '') => ({
     [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [FieldConstants.SCRIPT]: '',
     [FieldConstants.EQUIPMENT_TYPE]: null,
-    ...getCriteriaBasedFormData({}, {}),
+    ...getCriteriaBasedFormData(),
 });
 
 export const getCriteriaBasedFormDataFromFetchedElement = (response: any, name: string) => ({
     [FieldConstants.NAME]: name,
     [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [FieldConstants.EQUIPMENT_TYPE]: response.equipmentType,
-    ...getCriteriaBasedFormData(response, {}),
+    ...getCriteriaBasedFormData(response),
 });
 
 export const getExplicitNamingFormDataFromFetchedElement = (response: any) => {

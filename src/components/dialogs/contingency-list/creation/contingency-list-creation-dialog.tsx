@@ -40,7 +40,7 @@ const schema = yup.object().shape({
         otherwise: (schemaOtherwise) => schemaOtherwise.nullable(),
     }),
     ...getExplicitNamingSchema(),
-    ...getCriteriaBasedSchema({}),
+    ...getCriteriaBasedSchema(),
 });
 
 const emptyFormData = getContingencyListEmptyFormData();
