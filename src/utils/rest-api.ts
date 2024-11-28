@@ -9,12 +9,13 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 import {
     backendFetch,
     backendFetchJson,
+    type CriteriaBasedData,
     ElementType,
     fetchEnv,
     FieldConstants,
     getRequestParamFromList,
-    GsLang,
-    GsTheme,
+    type GsLang,
+    type GsTheme,
 } from '@gridsuite/commons-ui';
 import { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
@@ -25,7 +26,6 @@ import { store } from '../redux/store';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 import { AppState } from '../redux/types';
-import { CriteriaBasedData } from '../components/dialogs/contingency-list/contingency-list-utils';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
 
