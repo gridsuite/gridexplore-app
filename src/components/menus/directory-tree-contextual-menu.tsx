@@ -111,7 +111,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         (response: ElementAttributes) => handleCloseDialog(response?.elementUuid)
     );
 
-    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
+    const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
 
     const handleError = useCallback((message: string) => snackError({ messageTxt: message }), [snackError]);
 
