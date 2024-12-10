@@ -14,14 +14,13 @@ const BackendLocaleEn = {
     MATPOWER: 'MATPOWER',
     POWERFACTORY: 'POWERFACTORY',
     'IEEE CDF': 'IEEE CDF',
-    EXPERT_FILTER: 'Filter (Expert)',
+    EXPERT_FILTER: 'Filter (Criteria based)',
     FORM_FILTER: 'Filter (Form)',
     IDENTIFIERS_CONTINGENCY_LIST: 'Contingency list (Explicit naming)',
     FORM_CONTINGENCY_LIST: 'Contingency list (Criteria based)',
     SCRIPT_FILTER: 'Filter (Script)',
     SCRIPT_CONTINGENCY_LIST: 'Contingency list (Script)',
     IDENTIFIER_LIST_FILTER: 'Filter (Explicit naming)',
-    CRITERIA_FILTER: 'Filter (Criteria based)',
 
     // spreadsheet config metadata
     Load: 'Load',
