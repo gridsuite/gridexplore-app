@@ -75,6 +75,7 @@
     "editFilter": "Edit filter",
     "STUDY": "Study",
     "SPREADSHEET_CONFIG": "Spreadsheet model",
+    "SPREADSHEET_CONFIG_COLLECTION": "Spreadsheet model collection",
     "VOLTAGE_INIT_PARAMETERS": "Settings (Voltage profile initialization)",
     "SECURITY_ANALYSIS_PARAMETERS": "Settings (Security analysis)",
     "SENSITIVITY_PARAMETERS": "Settings (Sensitivity analysis)",

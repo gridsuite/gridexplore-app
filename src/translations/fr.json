@@ -74,6 +74,7 @@
     "editFilter": "Éditer le filtre",
     "STUDY": "Étude",
     "SPREADSHEET_CONFIG": "Modèle de tableur",
+    "SPREADSHEET_CONFIG_COLLECTION": "Modèles de tableur",
     "VOLTAGE_INIT_PARAMETERS": "Paramètres (Initialisation du plan de tension)",
     "SECURITY_ANALYSIS_PARAMETERS": "Paramètres (Analyse de sécurité)",
     "SENSITIVITY_PARAMETERS": "Paramètres (Analyse de sensibilité)",

@@ -432,9 +432,37 @@ export function duplicateSpreadsheetConfig(sourceCaseUuid: UUID, parentDirectory
     });
 }
 
+export function duplicateSpreadsheetConfigCollection(sourceCaseUuid: UUID, parentDirectoryUuid?: UUID) {
+    console.info('Duplicating a spreadsheet config collection...');
+    const queryParams = new URLSearchParams();
+    queryParams.append('duplicateFrom', sourceCaseUuid);
+    if (parentDirectoryUuid) {
+        queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    }
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-config-collections/duplicate?${queryParams.toString()}`;
+
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
+    });
+}
+
 export function downloadSpreadsheetConfig(configId: string) {
     console.info(`Downloading spreadsheet config with id: ${configId}`);
     const fetchUrl = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/spreadsheet-configs/${configId}`;
+
+    return backendFetch(fetchUrl, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function downloadSpreadsheetConfigCollection(collectionId: string) {
+    console.info(`Downloading spreadsheet config collection with id: ${collectionId}`);
+    const fetchUrl = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/spreadsheet-config-collections/${collectionId}`;
 
     return backendFetch(fetchUrl, {
         method: 'GET',

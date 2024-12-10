@@ -120,7 +120,11 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
     );
 
     const allowsDownload = useMemo(() => {
-        const allowedTypes = [ElementType.CASE, ElementType.SPREADSHEET_CONFIG];
+        const allowedTypes = [
+            ElementType.CASE,
+            ElementType.SPREADSHEET_CONFIG,
+            ElementType.SPREADSHEET_CONFIG_COLLECTION,
+        ];
         // if selectedElements contains at least one of the allowed types
         return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress;
     }, [selectedElements, noCreationInProgress]);
