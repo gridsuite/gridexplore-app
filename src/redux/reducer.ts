@@ -62,8 +62,8 @@ import {
     SELECT_LANGUAGE,
     SELECT_THEME,
     SelectDirectoryAction,
-    SELECTION_FOR_COPY,
-    SelectionForCopyAction,
+    ITEM_SELECTION_FOR_COPY,
+    ItemSelectionForCopyAction,
     SET_APPS_AND_URLS,
     SET_UPLOADING_ELEMENTS,
     SetAppsAndUrlsAction,
@@ -99,7 +99,7 @@ const initialState: AppState = {
     uploadingElements: {},
     directoryUpdated: { force: 0, eventData: {} },
     treeData: { mapData: {}, rootDirectories: [], initialized: false },
-    selectionForCopy: {
+    itemSelectionForCopy: {
         sourceItemUuid: null,
         typeItem: null,
         nameItem: null,
@@ -243,8 +243,8 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
-    builder.addCase(SELECTION_FOR_COPY, (state, action: SelectionForCopyAction) => {
-        state.selectionForCopy = action.selectionForCopy;
+    builder.addCase(ITEM_SELECTION_FOR_COPY, (state, action: ItemSelectionForCopyAction) => {
+        state.itemSelectionForCopy = action.itemSelectionForCopy;
     });
 
     builder.addCase(REORDERED_COLUMNS, (state, action: ReorderedColumnsAction) => {

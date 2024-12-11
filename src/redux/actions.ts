@@ -16,7 +16,7 @@ export type AppActions =
     | CurrentChildrenAction
     | SelectDirectoryAction
     | ActiveDirectoryAction
-    | SelectionForCopyAction
+    | ItemSelectionForCopyAction
     | CurrentPathAction
     | SetAppsAndUrlsAction
     | AddUploadingElementAction
@@ -93,15 +93,17 @@ export function setActiveDirectory(activeDirectory: AppState['activeDirectory'])
     };
 }
 
-export const SELECTION_FOR_COPY = 'SELECTION_FOR_COPY';
-export type SelectionForCopyAction = Readonly<Action<typeof SELECTION_FOR_COPY>> & {
-    selectionForCopy: AppState['selectionForCopy'];
+export const ITEM_SELECTION_FOR_COPY = 'SELECTION_FOR_COPY';
+export type ItemSelectionForCopyAction = Readonly<Action<typeof ITEM_SELECTION_FOR_COPY>> & {
+    itemSelectionForCopy: AppState['itemSelectionForCopy'];
 };
 
-export function setSelectionForCopy(selectionForCopy: AppState['selectionForCopy']): SelectionForCopyAction {
+export function setItemSelectionForCopy(
+    selectionForCopy: AppState['itemSelectionForCopy']
+): ItemSelectionForCopyAction {
     return {
-        type: SELECTION_FOR_COPY,
-        selectionForCopy,
+        type: ITEM_SELECTION_FOR_COPY,
+        itemSelectionForCopy: selectionForCopy,
     };
 }
 
