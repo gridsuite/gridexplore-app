@@ -32,10 +32,8 @@ import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().required(),
-    ...getCriteriaBasedSchema(null),
+    ...getCriteriaBasedSchema(),
 });
-
-const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
 
 export interface CriteriaBasedEditionDialogProps {
     contingencyListId: string;
@@ -62,7 +60,7 @@ export default function CriteriaBasedEditionDialog({
     const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const dispatch = useDispatch();
     const methods = useForm<CriteriaBasedEditionFormData>({
-        defaultValues: emptyFormData(name),
+        defaultValues: getContingencyListEmptyFormData(name),
         resolver: yupResolver<CriteriaBasedEditionFormData>(schema),
     });
 
@@ -93,7 +91,7 @@ export default function CriteriaBasedEditionDialog({
     }, [contingencyListId, contingencyListType, name, reset, snackError]);
 
     const closeAndClear = () => {
-        reset(emptyFormData());
+        reset(getContingencyListEmptyFormData());
         onClose();
     };
 

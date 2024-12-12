@@ -20,7 +20,7 @@ import { AppState } from '../../../../../redux/types';
 import { SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS } from '../../contingency-list-utils';
 
 export default function CriteriaBasedEditionForm() {
-    const emptyValues = getCriteriaBasedFormData({}, {});
+    const emptyValues = getCriteriaBasedFormData();
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
         <>
