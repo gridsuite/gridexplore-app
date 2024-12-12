@@ -15,7 +15,7 @@ import {
     CustomMuiDialog,
     FieldConstants,
     NetworkModificationMetadata,
-    NO_SELECTION_FOR_COPY,
+    NO_ITEM_SELECTION_FOR_COPY,
     unscrollableDialogStyles,
     useModificationLabelComputer,
     useSnackMessage,
@@ -130,8 +130,8 @@ export default function CompositeModificationDialog({
         saveCompositeModification(compositeModificationId, formData[FieldConstants.NAME])
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === compositeModificationId) {
-                    dispatch(setItemSelectionForCopy(NO_SELECTION_FOR_COPY));
-                    broadcastChannel.postMessage({ NO_SELECTION_FOR_COPY });
+                    dispatch(setItemSelectionForCopy(NO_ITEM_SELECTION_FOR_COPY));
+                    broadcastChannel.postMessage({ NO_ITEM_SELECTION_FOR_COPY });
                 }
                 closeAndClear();
             })

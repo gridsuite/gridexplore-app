@@ -17,7 +17,7 @@ import {
     ExpertFilterEditionDialog,
     ExplicitNamingFilterEditionDialog,
     isStudyMetadata,
-    NO_SELECTION_FOR_COPY,
+    NO_ITEM_SELECTION_FOR_COPY,
     SelectionForCopy,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -110,8 +110,8 @@ export default function DirectoryContent() {
         const broadcast = new BroadcastChannel('itemCopyChannel');
         broadcast.onmessage = (event: MessageEvent<SelectionForCopy>) => {
             console.info('message received from broadcast channel');
-            if (JSON.stringify(NO_SELECTION_FOR_COPY) === JSON.stringify(event.data)) {
-                dispatch(setItemSelectionForCopy(NO_SELECTION_FOR_COPY));
+            if (JSON.stringify(NO_ITEM_SELECTION_FOR_COPY) === JSON.stringify(event.data)) {
+                dispatch(setItemSelectionForCopy(NO_ITEM_SELECTION_FOR_COPY));
             } else {
                 dispatch(setItemSelectionForCopy(event.data));
             }

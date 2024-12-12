@@ -8,7 +8,7 @@
 import {
     CustomMuiDialog,
     FieldConstants,
-    NO_SELECTION_FOR_COPY,
+    NO_ITEM_SELECTION_FOR_COPY,
     useSnackMessage,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
@@ -111,8 +111,8 @@ export default function ExplicitNamingEditionDialog({
         editContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === contingencyListId) {
-                    dispatch(setItemSelectionForCopy(NO_SELECTION_FOR_COPY));
-                    broadcastChannel.postMessage({ NO_SELECTION_FOR_COPY });
+                    dispatch(setItemSelectionForCopy(NO_ITEM_SELECTION_FOR_COPY));
+                    broadcastChannel.postMessage({ NO_ITEM_SELECTION_FOR_COPY });
                 }
                 closeAndClear();
             })
