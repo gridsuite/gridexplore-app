@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { type UUID } from 'crypto';
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -113,8 +114,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             typeItem: string,
             nameItem: string,
             descriptionItem: string,
-            sourceItemUuid: string,
-            parentDirectoryUuid?: string,
+            sourceItemUuid: UUID,
+            parentDirectoryUuid?: UUID,
             specificTypeItem?: string
         ) => {
             dispatch(
