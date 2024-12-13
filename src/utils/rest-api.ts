@@ -788,3 +788,11 @@ export function searchElementsInfos(searchTerm: string, currentDirectoryUuid: UU
         }
     );
 }
+
+export const getBaseName = (caseName: string) => {
+    const caseNameUrl = `${PREFIX_CASE_QUERIES}/v1/cases/caseBaseName?caseName=${caseName}`;
+    console.debug(caseNameUrl);
+    return backendFetchText(caseNameUrl, {
+        method: 'GET',
+    });
+};
