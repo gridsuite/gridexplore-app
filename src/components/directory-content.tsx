@@ -9,35 +9,16 @@ import { MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'r
 import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, type BoxProps, Button, CircularProgress, Grid, type SxProps, type Theme } from '@mui/material';
-import {
-    CriteriaBasedFilterEditionDialog,
-    DescriptionModificationDialog,
-    ElementAttributes,
-    ElementType,
-    ExpertFilterEditionDialog,
-    ExplicitNamingFilterEditionDialog,
-    isStudyMetadata,
-    type ItemSelectionForCopy,
-    NO_ITEM_SELECTION_FOR_COPY,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { type ElementAttributes, type ItemSelectionForCopy, NO_ITEM_SELECTION_FOR_COPY } from '@gridsuite/commons-ui';
 import { Add as AddIcon } from '@mui/icons-material';
-import { type UUID } from 'crypto';
 import { AgGridReact } from 'ag-grid-react';
-import { CellContextMenuEvent } from 'ag-grid-community';
-import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
+import type { CellClickedEvent, CellContextMenuEvent } from 'ag-grid-community';
 import * as constants from '../utils/UIconstants';
 import { setActiveDirectory, setItemSelectionForCopy } from '../redux/actions';
-import { elementExists, getFilterById, updateElement } from '../utils/rest-api';
 import { AnchorStatesType, defaultAnchorStates } from './menus/common-contextual-menu';
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
-import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
-import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
-import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
-import { useParameterState } from './dialogs/use-parameters-dialog';
-import { PARAM_LANGUAGE } from '../utils/config-params';
 import { useDirectoryContent } from '../hooks/useDirectoryContent';
 import {
     computeCheckedElements,
@@ -49,8 +30,8 @@ import NoContentDirectory from './no-content-directory';
 import { CUSTOM_ROW_CLASS, DirectoryContentTable, type DirectoryContentTableProps } from './directory-content-table';
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
 import EmptyDirectory from './empty-directory';
-import CompositeModificationDialog from './dialogs/network-modification/composite-modification/composite-modification-dialog';
 import { AppState } from '../redux/types';
+import DirectoryContentDialog from './directory-content-dialog';
 
 const circularProgressSize = '70px';
 
@@ -95,17 +76,9 @@ const styles = {
 
 export default function DirectoryContent() {
     const treeData = useSelector((state: AppState) => state.treeData);
-    const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
-
-    const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
-    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
-
     const gridRef = useRef<AgGridReact | null>(null);
-
     const [onGridReady, getRowStyle] = useHighlightSearchedElement(gridRef?.current?.api ?? null);
-
-    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const [broadcastChannel] = useState(() => {
         const broadcast = new BroadcastChannel('itemCopyChannel');
@@ -120,10 +93,9 @@ export default function DirectoryContent() {
         return broadcast;
     });
 
-    const appsAndUrls = useSelector((state: AppState) => state.appsAndUrls);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
 
-    const [activeElement, setActiveElement] = useState<ElementAttributes | null>(null);
+    const [activeElement, setActiveElement] = useState<ElementAttributes>();
     const [isMissingDataAfterDirChange, setIsMissingDataAfterDirChange] = useState(true);
 
     const intl = useIntl();
@@ -134,71 +106,6 @@ export default function DirectoryContent() {
     const [directoryMenuAnchorStates, setDirectoryMenuAnchorStates] = useState<AnchorStatesType>(defaultAnchorStates);
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
-    const [elementName, setElementName] = useState('');
-
-    /** Filters contingency list dialog: window status value for editing a filters contingency list */
-    const [currentFiltersContingencyListId, setCurrentFiltersContingencyListId] = useState<UUID>();
-    const handleCloseFiltersContingency = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
-        setActiveElement(null);
-        setCurrentFiltersContingencyListId(undefined);
-        setElementName('');
-    }, []);
-
-    /** Explicit Naming contingency list dialog: window status value for editing an explicit naming contingency list */
-    const [currentExplicitNamingContingencyListId, setCurrentExplicitNamingContingencyListId] = useState<UUID>();
-    const handleCloseExplicitNamingContingency = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
-        setActiveElement(null);
-        setCurrentExplicitNamingContingencyListId(undefined);
-        setElementName('');
-    }, []);
-
-    /** Filters dialog: window status value to edit CriteriaBased filters */
-    const [currentCriteriaBasedFilterId, setCurrentCriteriaBasedFilterId] = useState<UUID>();
-    const handleCloseCriteriaBasedFilterDialog = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
-        setCurrentCriteriaBasedFilterId(undefined);
-        setActiveElement(null);
-        setElementName('');
-    }, []);
-
-    const [currentExplicitNamingFilterId, setCurrentExplicitNamingFilterId] = useState<UUID>();
-    /** Filters dialog: window status value to edit ExplicitNaming filters */
-    const handleCloseExplicitNamingFilterDialog = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
-        setCurrentExplicitNamingFilterId(undefined);
-        setActiveElement(null);
-        setElementName('');
-    }, []);
-
-    const [currentNetworkModificationId, setCurrentNetworkModificationId] = useState<UUID>();
-    const handleCloseCompositeModificationDialog = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
-        setCurrentNetworkModificationId(undefined);
-        setActiveElement(null);
-        setElementName('');
-    }, []);
-
-    /**
-     * Filters dialog: window status value to edit Expert filters
-     */
-    const [currentExpertFilterId, setCurrentExpertFilterId] = useState<UUID>();
-    const handleCloseExpertFilterDialog = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
-        setCurrentExpertFilterId(undefined);
-        setActiveElement(null);
-        setElementName('');
-    }, []);
-
-    /** Script contingency list dialog: window status value for editing a script contingency list */
-    const [currentScriptContingencyListId, setCurrentScriptContingencyListId] = useState<UUID>();
-    const handleCloseScriptContingency = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
-        setActiveElement(null);
-        setCurrentScriptContingencyListId(undefined);
-        setElementName('');
-    }, []);
 
     /** Contextual Menus */
     const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
@@ -211,7 +118,7 @@ export default function DirectoryContent() {
 
     const handleCloseContentMenu = useCallback(() => {
         setOpenContentMenu(false);
-        setActiveElement(null);
+        setActiveElement(undefined);
     }, []);
 
     const handleCloseDirectoryMenu = useCallback(() => {
@@ -238,7 +145,7 @@ export default function DirectoryContent() {
                 });
             } else {
                 // else anchorEl
-                // example : left click on a 'create element' button
+                // example : left-click on a 'create element' button
                 // then open popover attached to the component clicked
                 setDirectoryMenuAnchorStates(anchorStates);
             }
@@ -275,92 +182,10 @@ export default function DirectoryContent() {
         [checkedRows, childrenMetadata, dispatch, selectedDirectory?.elementUuid, onContextMenu]
     );
 
-    const handleError = useCallback(
-        (message: string) => {
-            snackError({
-                messageTxt: message,
-            });
-        },
-        [snackError]
-    );
-
-    const getStudyUrl = useCallback(
-        (elementUuid: string): string | null => {
-            const appStudy = appsAndUrls.find(isStudyMetadata);
-            if (appStudy) {
-                const studyResource = appStudy.resources?.find((resource) =>
-                    resource.types.includes(ElementType.STUDY)
-                );
-                if (studyResource) {
-                    return appStudy.url + studyResource.path.replace('{elementUuid}', elementUuid);
-                }
-            }
-            return null;
-        },
-        [appsAndUrls]
-    );
-
-    const [openDescModificationDialog, setOpenDescModificationDialog] = useState(false);
+    const [cellClicked, setCellClicked] = useState<CellClickedEvent>();
     const handleCellClick = useCallback<DirectoryContentTableProps['handleCellClick']>(
-        (event) => {
-            console.debug('=====================================================');
-            console.debug('handleCellClick', event);
-            console.debug('childrenMetadata', childrenMetadata[event.data.elementUuid]);
-            if (event.colDef.field === 'description') {
-                setActiveElement(event.data);
-                setOpenDescModificationDialog(true);
-            } else if (childrenMetadata[event.data.elementUuid] !== undefined) {
-                setElementName(childrenMetadata[event.data.elementUuid]?.elementName);
-                const subtype: string = childrenMetadata[event.data.elementUuid].specificMetadata
-                    .type as unknown as string;
-                /** set active directory on the store because it will be used while editing the contingency name */
-                dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
-                switch (event.data.type) {
-                    case ElementType.STUDY: {
-                        const url = getStudyUrl(event.data.elementUuid);
-                        if (url) {
-                            window.open(url, '_blank');
-                        } else {
-                            handleError(intl.formatMessage({ id: 'getAppLinkError' }, { type: event.data.type }));
-                        }
-                        break;
-                    }
-                    case ElementType.CONTINGENCY_LIST:
-                        if (subtype === ContingencyListType.CRITERIA_BASED.id) {
-                            setCurrentFiltersContingencyListId(event.data.elementUuid);
-                            setOpenDialog(subtype);
-                        } else if (subtype === ContingencyListType.SCRIPT.id) {
-                            setCurrentScriptContingencyListId(event.data.elementUuid);
-                            setOpenDialog(subtype);
-                        } else if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
-                            setCurrentExplicitNamingContingencyListId(event.data.elementUuid);
-                            setOpenDialog(subtype);
-                        }
-                        break;
-                    case ElementType.FILTER:
-                        if (subtype === FilterType.EXPLICIT_NAMING.id) {
-                            setCurrentExplicitNamingFilterId(event.data.elementUuid);
-                            setOpenDialog(subtype);
-                        } else if (subtype === FilterType.CRITERIA_BASED.id) {
-                            setCurrentCriteriaBasedFilterId(event.data.elementUuid);
-                            setOpenDialog(subtype);
-                        } else if (subtype === FilterType.EXPERT.id) {
-                            setCurrentExpertFilterId(event.data.elementUuid);
-                            setOpenDialog(subtype);
-                        }
-                        break;
-                    case ElementType.MODIFICATION:
-                        if (subtype === NetworkModificationType.COMPOSITE.id) {
-                            setCurrentNetworkModificationId(event.data.elementUuid);
-                            setOpenDialog(subtype);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-        },
-        [childrenMetadata, dispatch, getStudyUrl, handleError, intl, selectedDirectory?.elementUuid]
+        (event) => setCellClicked(event),
+        []
     );
 
     const isActiveElementUnchecked = useMemo(
@@ -381,34 +206,13 @@ export default function DirectoryContent() {
         return selection;
     }, [activeElement, checkedRows, childrenMetadata, isActiveElementUnchecked]);
 
-    const handleOpenDialog = useCallback(() => {
-        setOpenDialog(constants.DialogsId.ADD_ROOT_DIRECTORY);
-    }, []);
-
-    console.debug(
-        '======================================================================================================'
-    );
-    console.debug('renderDialog:', elementName);
-    console.debug('openDescModificationDialog:', openDescModificationDialog);
-    console.debug('activeElement:', activeElement);
-    console.debug('openDialog:', openDialog);
-    console.debug('id =', currentExpertFilterId);
-    console.debug('onClose =', handleCloseExpertFilterDialog);
-    console.debug('name =', elementName);
-    console.debug('broadcastChannel =', broadcastChannel);
-    console.debug('selectionForCopy =', itemSelectionForCopy);
-    console.debug('setSelectionForCopy =', setItemSelectionForCopy);
-    console.debug('getFilterById =', getFilterById);
-    console.debug('activeDirectory =', activeDirectory);
-    console.debug('elementExists =', elementExists);
-    console.debug('language =', languageLocal);
+    const handleOpenDialog = useCallback(() => setOpenDialog(constants.DialogsId.ADD_ROOT_DIRECTORY), []);
 
     useEffect(() => {
-        if (!selectedDirectory?.elementUuid) {
-            return;
+        if (selectedDirectory?.elementUuid) {
+            setIsMissingDataAfterDirChange(true);
+            setCheckedRows([]);
         }
-        setIsMissingDataAfterDirChange(true);
-        setCheckedRows([]);
     }, [selectedDirectory?.elementUuid]);
 
     useEffect(() => {
@@ -444,8 +248,8 @@ export default function DirectoryContent() {
                     </div>
                 )
             }
-            {/* eslint-disable no-nested-ternary -- TODO split into sub components */}
             <Grid item sx={styles.highlightedElementAnimation as SxProps} xs={12} onContextMenu={onContextMenu}>
+                {/* eslint-disable no-nested-ternary -- TODO split into sub components */}
                 {
                     // Here we wait for Metadata for the folder content
                     isMissingDataAfterDirChange ? (
@@ -528,105 +332,16 @@ export default function DirectoryContent() {
                     restrictMenuItems
                 />
             </Box>
-            {openDescModificationDialog && activeElement ? (
-                <DescriptionModificationDialog
-                    open
-                    description={activeElement.description}
-                    elementUuid={activeElement.elementUuid}
-                    onClose={() => {
-                        setActiveElement(null);
-                        setOpenDescModificationDialog(false);
-                    }}
-                    // @ts-expect-error TODO: set UUID as parameter type in commons-ui
-                    updateElement={updateElement}
-                />
-            ) : // TODO openDialog should also be aware of the dialog's type, not only its subtype, because if/when two different dialogs have the same subtype, this function will display the wrong dialog.
-            // NOSONAR typescript:S3358
-            openDialog === NetworkModificationType.COMPOSITE.id ? (
-                <CompositeModificationDialog
-                    open
-                    titleId="MODIFICATION"
-                    compositeModificationId={currentNetworkModificationId ?? ''}
-                    onClose={handleCloseCompositeModificationDialog}
-                    name={elementName}
-                    broadcastChannel={broadcastChannel}
-                />
-            ) : openDialog === ContingencyListType.CRITERIA_BASED.id ? (
-                <CriteriaBasedEditionDialog
-                    open
-                    titleId="editContingencyList"
-                    contingencyListId={currentFiltersContingencyListId!}
-                    contingencyListType={ContingencyListType.CRITERIA_BASED.id}
-                    onClose={handleCloseFiltersContingency}
-                    name={elementName}
-                    broadcastChannel={broadcastChannel}
-                />
-            ) : openDialog === ContingencyListType.SCRIPT.id ? (
-                <ScriptEditionDialog
-                    open
-                    titleId="editContingencyList"
-                    contingencyListId={currentScriptContingencyListId!}
-                    contingencyListType={ContingencyListType.SCRIPT.id}
-                    onClose={handleCloseScriptContingency}
-                    name={elementName}
-                    broadcastChannel={broadcastChannel}
-                />
-            ) : openDialog === ContingencyListType.EXPLICIT_NAMING.id ? (
-                <ExplicitNamingEditionDialog
-                    open
-                    titleId="editContingencyList"
-                    contingencyListId={currentExplicitNamingContingencyListId!}
-                    contingencyListType={ContingencyListType.EXPLICIT_NAMING.id}
-                    onClose={handleCloseExplicitNamingContingency}
-                    name={elementName}
-                    broadcastChannel={broadcastChannel}
-                />
-            ) : openDialog === FilterType.EXPLICIT_NAMING.id ? (
-                <ExplicitNamingFilterEditionDialog
-                    id={currentExplicitNamingFilterId! /* TODO */}
-                    open
-                    onClose={handleCloseExplicitNamingFilterDialog}
-                    titleId="editFilter"
-                    name={elementName}
-                    broadcastChannel={broadcastChannel}
-                    itemSelectionForCopy={itemSelectionForCopy}
-                    setItemSelectionForCopy={setItemSelectionForCopy}
-                    getFilterById={getFilterById}
-                    activeDirectory={activeDirectory}
-                    elementExists={elementExists}
-                    language={languageLocal}
-                />
-            ) : openDialog === FilterType.CRITERIA_BASED.id ? (
-                <CriteriaBasedFilterEditionDialog
-                    id={currentCriteriaBasedFilterId! /* TODO */}
-                    open
-                    onClose={handleCloseCriteriaBasedFilterDialog}
-                    titleId="editFilter"
-                    name={elementName}
-                    broadcastChannel={broadcastChannel}
-                    getFilterById={getFilterById}
-                    itemSelectionForCopy={itemSelectionForCopy}
-                    setItemSelectionForCopy={setItemSelectionForCopy}
-                    activeDirectory={activeDirectory}
-                    elementExists={elementExists}
-                    language={languageLocal}
-                />
-            ) : openDialog === FilterType.EXPERT.id ? (
-                <ExpertFilterEditionDialog
-                    id={currentExpertFilterId! /* TODO */}
-                    open
-                    onClose={handleCloseExpertFilterDialog}
-                    titleId="editFilter"
-                    name={elementName}
-                    broadcastChannel={broadcastChannel}
-                    itemSelectionForCopy={itemSelectionForCopy}
-                    setItemSelectionForCopy={setItemSelectionForCopy}
-                    getFilterById={getFilterById}
-                    activeDirectory={activeDirectory}
-                    elementExists={elementExists}
-                    language={languageLocal}
-                />
-            ) : null}
+            <DirectoryContentDialog
+                broadcastChannel={broadcastChannel}
+                setCellClicked={setCellClicked}
+                cellClicked={cellClicked}
+                activeElement={activeElement}
+                setActiveElement={setActiveElement}
+                setOpenDialog={setOpenDialog}
+                selectedDirectoryElementUuid={selectedDirectory?.elementUuid}
+                childrenMetadata={childrenMetadata}
+            />
         </>
     );
 }
