@@ -15,9 +15,9 @@ import {
     GsLang,
     GsLangUser,
     GsTheme,
+    type ItemSelectionForCopy,
     Metadata,
 } from '@gridsuite/commons-ui';
-import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
 import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 
 export type IDirectory = ElementAttributes & {
@@ -73,6 +73,6 @@ export interface AppState extends CommonStoreState {
     selectedFile: unknown | null;
     uploadingElements: Record<string, UploadingElement>;
     directoryUpdated: { force: number; eventData: Record<string, Record<string, unknown>> };
-    selectionForCopy: SelectionForCopy;
+    itemSelectionForCopy: ItemSelectionForCopy;
     reorderedColumns: string[];
 }

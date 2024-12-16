@@ -16,18 +16,17 @@ import {
     ElementType,
     ExpertFilterEditionDialog,
     ExplicitNamingFilterEditionDialog,
-    Metadata,
-    NO_SELECTION_FOR_COPY,
-    StudyMetadata,
+    isStudyMetadata,
+    type ItemSelectionForCopy,
+    NO_ITEM_SELECTION_FOR_COPY,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
-import { SelectionForCopy } from '@gridsuite/commons-ui/dist/components/filter/filter.type';
 import { CellContextMenuEvent } from 'ag-grid-community';
 import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import * as constants from '../utils/UIconstants';
-import { setActiveDirectory, setSelectionForCopy } from '../redux/actions';
+import { setActiveDirectory, setItemSelectionForCopy } from '../redux/actions';
 import { elementExists, getFilterById, updateElement } from '../utils/rest-api';
 import { AnchorStatesType, defaultAnchorStates } from './menus/common-contextual-menu';
 import ContentContextualMenu from './menus/content-contextual-menu';
@@ -93,14 +92,12 @@ const styles = {
     },
 };
 
-const isStudyMetadata = (metadata: Metadata): metadata is StudyMetadata => metadata.name === 'Study';
-
 export default function DirectoryContent() {
     const treeData = useSelector((state: AppState) => state.treeData);
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
-    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
+    const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
 
     const gridRef = useRef<AgGridReact | null>(null);
@@ -109,27 +106,14 @@ export default function DirectoryContent() {
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
-    const dispatchSelectionForCopy = useCallback(
-        (selection: SelectionForCopy) => {
-            dispatch(setSelectionForCopy(selection));
-        },
-        [dispatch]
-    );
     const [broadcastChannel] = useState(() => {
         const broadcast = new BroadcastChannel('itemCopyChannel');
-        broadcast.onmessage = (event) => {
+        broadcast.onmessage = (event: MessageEvent<ItemSelectionForCopy>) => {
             console.info('message received from broadcast channel');
-            if (JSON.stringify(NO_SELECTION_FOR_COPY) === JSON.stringify(event.data)) {
-                dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
+            if (JSON.stringify(NO_ITEM_SELECTION_FOR_COPY) === JSON.stringify(event.data)) {
+                dispatch(setItemSelectionForCopy(NO_ITEM_SELECTION_FOR_COPY));
             } else {
-                dispatchSelectionForCopy({
-                    typeItem: event.data.typeItem,
-                    nameItem: event.data.nameItem,
-                    descriptionItem: event.data.descriptionItem,
-                    sourceItemUuid: event.data.sourceItemUuid,
-                    parentDirectoryUuid: event.data.parentDirectoryUuid,
-                    specificTypeItem: event.data.specificTypeItem,
-                });
+                dispatch(setItemSelectionForCopy(event.data));
             }
         };
         return broadcast;
@@ -561,7 +545,7 @@ export default function DirectoryContent() {
                         name={name}
                         broadcastChannel={broadcastChannel}
                         selectionForCopy={selectionForCopy}
-                        setSelectionForCopy={setSelectionForCopy}
+                        setSelectionForCopy={setItemSelectionForCopy}
                         getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
@@ -580,7 +564,7 @@ export default function DirectoryContent() {
                         broadcastChannel={broadcastChannel}
                         getFilterById={getFilterById}
                         selectionForCopy={selectionForCopy}
-                        setSelectionForCopy={setSelectionForCopy}
+                        setSelectionForCopy={setItemSelectionForCopy}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
                         language={languageLocal}
@@ -597,7 +581,7 @@ export default function DirectoryContent() {
                         name={name}
                         broadcastChannel={broadcastChannel}
                         selectionForCopy={selectionForCopy}
-                        setSelectionForCopy={setSelectionForCopy}
+                        setSelectionForCopy={setItemSelectionForCopy}
                         getFilterById={getFilterById}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
