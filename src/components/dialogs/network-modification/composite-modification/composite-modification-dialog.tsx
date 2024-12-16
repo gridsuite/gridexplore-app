@@ -62,7 +62,7 @@ export default function CompositeModificationDialog({
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!compositeModificationId);
     const { snackError } = useSnackMessage();
-    const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
+    const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
     const dispatch = useDispatch();
 
@@ -129,7 +129,7 @@ export default function CompositeModificationDialog({
     const onSubmit = (formData: FormData) => {
         saveCompositeModification(compositeModificationId, formData[FieldConstants.NAME])
             .then(() => {
-                if (selectionForCopy.sourceItemUuid === compositeModificationId) {
+                if (itemSelectionForCopy.sourceItemUuid === compositeModificationId) {
                     dispatch(setItemSelectionForCopy(NO_ITEM_SELECTION_FOR_COPY));
                     broadcastChannel.postMessage({ NO_ITEM_SELECTION_FOR_COPY });
                 }

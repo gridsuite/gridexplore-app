@@ -57,7 +57,7 @@ export default function CriteriaBasedEditionDialog({
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
-    const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
+    const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const dispatch = useDispatch();
     const methods = useForm<CriteriaBasedEditionFormData>({
         defaultValues: getContingencyListEmptyFormData(name),
@@ -98,7 +98,7 @@ export default function CriteriaBasedEditionDialog({
     const onSubmit = (contingencyList: CriteriaBasedEditionFormData) => {
         saveCriteriaBasedContingencyList(contingencyListId, contingencyList)
             .then(() => {
-                if (selectionForCopy.sourceItemUuid === contingencyListId) {
+                if (itemSelectionForCopy.sourceItemUuid === contingencyListId) {
                     dispatch(setItemSelectionForCopy(NO_ITEM_SELECTION_FOR_COPY));
                     broadcastChannel.postMessage({ NO_ITEM_SELECTION_FOR_COPY });
                 }
