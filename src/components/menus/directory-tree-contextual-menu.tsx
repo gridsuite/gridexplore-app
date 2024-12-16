@@ -111,7 +111,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         (response: ElementAttributes) => handleCloseDialog(response?.elementUuid)
     );
 
-    const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
+    const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
 
     const handleError = useCallback((message: string) => snackError({ messageTxt: message }), [snackError]);
 
@@ -253,9 +253,9 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 {
                     messageDescriptorId: 'paste',
                     // @ts-expect-error TODO: manage null case
-                    callback: () => pasteElement(directory.elementUuid, selectionForCopy),
+                    callback: () => pasteElement(directory.elementUuid, itemSelectionForCopy),
                     icon: <ContentPasteIcon fontSize="small" />,
-                    disabled: !selectionForCopy.sourceItemUuid,
+                    disabled: !itemSelectionForCopy.sourceItemUuid,
                 },
                 { isDivider: true }
             );
