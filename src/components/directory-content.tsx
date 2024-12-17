@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { UUID } from 'crypto';
+import { type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Button, CircularProgress, Grid, SxProps, Theme } from '@mui/material';
+import { Box, Button, CircularProgress, Grid, type SxProps, type Theme } from '@mui/material';
 import {
     CriteriaBasedFilterEditionDialog,
     DescriptionModificationDialog,
@@ -97,7 +98,7 @@ export default function DirectoryContent() {
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
 
-    const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
+    const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
 
     const gridRef = useRef<AgGridReact | null>(null);
@@ -136,45 +137,45 @@ export default function DirectoryContent() {
     const [elementName, setElementName] = useState('');
 
     /** Filters contingency list dialog: window status value for editing a filters contingency list */
-    const [currentFiltersContingencyListId, setCurrentFiltersContingencyListId] = useState(null);
+    const [currentFiltersContingencyListId, setCurrentFiltersContingencyListId] = useState<UUID>();
     const handleCloseFiltersContingency = () => {
         setOpenDialog(constants.DialogsId.NONE);
+        setCurrentFiltersContingencyListId(undefined);
         setActiveElement(null);
-        setCurrentFiltersContingencyListId(null);
         setElementName('');
     };
 
     /** Explicit Naming contingency list dialog: window status value for editing an explicit naming contingency list */
-    const [currentExplicitNamingContingencyListId, setCurrentExplicitNamingContingencyListId] = useState(null);
+    const [currentExplicitNamingContingencyListId, setCurrentExplicitNamingContingencyListId] = useState<UUID>();
     const handleCloseExplicitNamingContingency = () => {
         setOpenDialog(constants.DialogsId.NONE);
+        setCurrentExplicitNamingContingencyListId(undefined);
         setActiveElement(null);
-        setCurrentExplicitNamingContingencyListId(null);
         setElementName('');
     };
 
     /** Filters dialog: window status value to edit CriteriaBased filters */
-    const [currentCriteriaBasedFilterId, setCurrentCriteriaBasedFilterId] = useState(null);
+    const [currentCriteriaBasedFilterId, setCurrentCriteriaBasedFilterId] = useState<UUID>();
     const handleCloseCriteriaBasedFilterDialog = () => {
         setOpenDialog(constants.DialogsId.NONE);
-        setCurrentCriteriaBasedFilterId(null);
+        setCurrentCriteriaBasedFilterId(undefined);
         setActiveElement(null);
         setElementName('');
     };
 
-    const [currentExplicitNamingFilterId, setCurrentExplicitNamingFilterId] = useState(null);
+    const [currentExplicitNamingFilterId, setCurrentExplicitNamingFilterId] = useState<UUID>();
     /** Filters dialog: window status value to edit ExplicitNaming filters */
     const handleCloseExplicitNamingFilterDialog = () => {
         setOpenDialog(constants.DialogsId.NONE);
-        setCurrentExplicitNamingFilterId(null);
+        setCurrentExplicitNamingFilterId(undefined);
         setActiveElement(null);
         setElementName('');
     };
 
-    const [currentNetworkModificationId, setCurrentNetworkModificationId] = useState(null);
+    const [currentNetworkModificationId, setCurrentNetworkModificationId] = useState<UUID>();
     const handleCloseCompositeModificationDialog = () => {
         setOpenDialog(constants.DialogsId.NONE);
-        setCurrentNetworkModificationId(null);
+        setCurrentNetworkModificationId(undefined);
         setActiveElement(null);
         setElementName('');
     };
@@ -182,20 +183,20 @@ export default function DirectoryContent() {
     /**
      * Filters dialog: window status value to edit Expert filters
      */
-    const [currentExpertFilterId, setCurrentExpertFilterId] = useState(null);
+    const [currentExpertFilterId, setCurrentExpertFilterId] = useState<UUID>();
     const handleCloseExpertFilterDialog = () => {
         setOpenDialog(constants.DialogsId.NONE);
-        setCurrentExpertFilterId(null);
+        setCurrentExpertFilterId(undefined);
         setActiveElement(null);
         setElementName('');
     };
 
     /** Script contingency list dialog: window status value for editing a script contingency list */
-    const [currentScriptContingencyListId, setCurrentScriptContingencyListId] = useState(null);
+    const [currentScriptContingencyListId, setCurrentScriptContingencyListId] = useState<UUID>();
     const handleCloseScriptContingency = () => {
         setOpenDialog(constants.DialogsId.NONE);
+        setCurrentScriptContingencyListId(undefined);
         setActiveElement(null);
-        setCurrentScriptContingencyListId(null);
         setElementName('');
     };
 
@@ -465,7 +466,8 @@ export default function DirectoryContent() {
         );
     };
 
-    const renderDialog = (name: string) => {
+    // TODO: move to a sub component
+    const renderDialog = () => {
         if (openDescModificationDialog && activeElement) {
             return (
                 <DescriptionModificationDialog
@@ -481,116 +483,114 @@ export default function DirectoryContent() {
                 />
             );
         }
-        // TODO openDialog should also be aware of the dialog's type, not only its subtype, because
-        // if/when two different dialogs have the same subtype, this function will display the wrong dialog.
-        switch (openDialog) {
-            case NetworkModificationType.COMPOSITE.id:
-                return (
-                    <CompositeModificationDialog
-                        open
-                        titleId="MODIFICATION"
-                        compositeModificationId={currentNetworkModificationId ?? ''}
-                        onClose={handleCloseCompositeModificationDialog}
-                        name={name}
-                        broadcastChannel={broadcastChannel}
-                    />
-                );
-            case ContingencyListType.CRITERIA_BASED.id:
-                return (
-                    <CriteriaBasedEditionDialog
-                        open
-                        titleId="editContingencyList"
-                        // @ts-expect-error TODO: manage null case(s) here
-                        contingencyListId={currentFiltersContingencyListId}
-                        contingencyListType={ContingencyListType.CRITERIA_BASED.id}
-                        onClose={handleCloseFiltersContingency}
-                        name={name}
-                        broadcastChannel={broadcastChannel}
-                    />
-                );
-            case ContingencyListType.SCRIPT.id:
-                return (
-                    <ScriptEditionDialog
-                        open
-                        titleId="editContingencyList"
-                        // @ts-expect-error TODO: manage null case(s) here
-                        contingencyListId={currentScriptContingencyListId}
-                        contingencyListType={ContingencyListType.SCRIPT.id}
-                        onClose={handleCloseScriptContingency}
-                        name={name}
-                        broadcastChannel={broadcastChannel}
-                    />
-                );
-            case ContingencyListType.EXPLICIT_NAMING.id:
-                return (
-                    <ExplicitNamingEditionDialog
-                        open
-                        titleId="editContingencyList"
-                        // @ts-expect-error TODO: manage null case(s) here
-                        contingencyListId={currentExplicitNamingContingencyListId}
-                        contingencyListType={ContingencyListType.EXPLICIT_NAMING.id}
-                        onClose={handleCloseExplicitNamingContingency}
-                        name={name}
-                        broadcastChannel={broadcastChannel}
-                    />
-                );
-            case FilterType.EXPLICIT_NAMING.id:
-                return (
-                    <ExplicitNamingFilterEditionDialog
-                        // @ts-expect-error TODO: manage null case(s) here
-                        id={currentExplicitNamingFilterId}
-                        open
-                        onClose={handleCloseExplicitNamingFilterDialog}
-                        titleId="editFilter"
-                        name={name}
-                        broadcastChannel={broadcastChannel}
-                        selectionForCopy={selectionForCopy}
-                        setSelectionForCopy={setItemSelectionForCopy}
-                        getFilterById={getFilterById}
-                        activeDirectory={activeDirectory}
-                        elementExists={elementExists}
-                        language={languageLocal}
-                    />
-                );
-            case FilterType.CRITERIA_BASED.id:
-                return (
-                    <CriteriaBasedFilterEditionDialog
-                        // @ts-expect-error TODO: manage null case(s) here
-                        id={currentCriteriaBasedFilterId}
-                        open
-                        onClose={handleCloseCriteriaBasedFilterDialog}
-                        titleId="editFilter"
-                        name={name}
-                        broadcastChannel={broadcastChannel}
-                        getFilterById={getFilterById}
-                        selectionForCopy={selectionForCopy}
-                        setSelectionForCopy={setItemSelectionForCopy}
-                        activeDirectory={activeDirectory}
-                        elementExists={elementExists}
-                        language={languageLocal}
-                    />
-                );
-            case FilterType.EXPERT.id:
-                return (
-                    <ExpertFilterEditionDialog
-                        // @ts-expect-error TODO: manage null case(s) here
-                        id={currentExpertFilterId}
-                        open
-                        onClose={handleCloseExpertFilterDialog}
-                        titleId="editFilter"
-                        name={name}
-                        broadcastChannel={broadcastChannel}
-                        selectionForCopy={selectionForCopy}
-                        setSelectionForCopy={setItemSelectionForCopy}
-                        getFilterById={getFilterById}
-                        activeDirectory={activeDirectory}
-                        elementExists={elementExists}
-                        language={languageLocal}
-                    />
-                );
-            default:
-                return null;
+        /* TODO openDialog should also be aware of the dialog's type, not only its subtype, because
+         * if/when two different dialogs have the same subtype, this function will display the wrong dialog. */
+        if (currentNetworkModificationId !== undefined) {
+            return (
+                <CompositeModificationDialog
+                    open
+                    titleId="MODIFICATION"
+                    compositeModificationId={currentNetworkModificationId}
+                    onClose={handleCloseCompositeModificationDialog}
+                    name={elementName}
+                    broadcastChannel={broadcastChannel}
+                />
+            );
         }
+        if (currentFiltersContingencyListId !== undefined) {
+            return (
+                <CriteriaBasedEditionDialog
+                    open
+                    titleId="editContingencyList"
+                    contingencyListId={currentFiltersContingencyListId}
+                    contingencyListType={ContingencyListType.CRITERIA_BASED.id}
+                    onClose={handleCloseFiltersContingency}
+                    name={elementName}
+                    broadcastChannel={broadcastChannel}
+                />
+            );
+        }
+        if (currentScriptContingencyListId !== undefined) {
+            return (
+                <ScriptEditionDialog
+                    open
+                    titleId="editContingencyList"
+                    contingencyListId={currentScriptContingencyListId}
+                    contingencyListType={ContingencyListType.SCRIPT.id}
+                    onClose={handleCloseScriptContingency}
+                    name={elementName}
+                    broadcastChannel={broadcastChannel}
+                />
+            );
+        }
+        if (currentExplicitNamingContingencyListId !== undefined) {
+            return (
+                <ExplicitNamingEditionDialog
+                    open
+                    titleId="editContingencyList"
+                    contingencyListId={currentExplicitNamingContingencyListId}
+                    contingencyListType={ContingencyListType.EXPLICIT_NAMING.id}
+                    onClose={handleCloseExplicitNamingContingency}
+                    name={elementName}
+                    broadcastChannel={broadcastChannel}
+                />
+            );
+        }
+        if (currentExplicitNamingFilterId !== undefined) {
+            return (
+                <ExplicitNamingFilterEditionDialog
+                    id={currentExplicitNamingFilterId}
+                    open
+                    onClose={handleCloseExplicitNamingFilterDialog}
+                    titleId="editFilter"
+                    name={elementName}
+                    broadcastChannel={broadcastChannel}
+                    itemSelectionForCopy={itemSelectionForCopy}
+                    setItemSelectionForCopy={setItemSelectionForCopy}
+                    getFilterById={getFilterById}
+                    activeDirectory={activeDirectory}
+                    elementExists={elementExists}
+                    language={languageLocal}
+                />
+            );
+        }
+        if (currentCriteriaBasedFilterId !== undefined) {
+            return (
+                <CriteriaBasedFilterEditionDialog
+                    id={currentCriteriaBasedFilterId}
+                    open
+                    onClose={handleCloseCriteriaBasedFilterDialog}
+                    titleId="editFilter"
+                    name={elementName}
+                    broadcastChannel={broadcastChannel}
+                    getFilterById={getFilterById}
+                    itemSelectionForCopy={itemSelectionForCopy}
+                    setItemSelectionForCopy={setItemSelectionForCopy}
+                    activeDirectory={activeDirectory}
+                    elementExists={elementExists}
+                    language={languageLocal}
+                />
+            );
+        }
+        if (currentExpertFilterId !== undefined) {
+            return (
+                <ExpertFilterEditionDialog
+                    id={currentExpertFilterId}
+                    open
+                    onClose={handleCloseExpertFilterDialog}
+                    titleId="editFilter"
+                    name={elementName}
+                    broadcastChannel={broadcastChannel}
+                    itemSelectionForCopy={itemSelectionForCopy}
+                    setItemSelectionForCopy={setItemSelectionForCopy}
+                    getFilterById={getFilterById}
+                    activeDirectory={activeDirectory}
+                    elementExists={elementExists}
+                    language={languageLocal}
+                />
+            );
+        }
+        return undefined;
     };
 
     useEffect(() => {
@@ -667,7 +667,7 @@ export default function DirectoryContent() {
                     restrictMenuItems
                 />
             </Box>
-            {renderDialog(elementName)}
+            {renderDialog()}
         </>
     );
 }
