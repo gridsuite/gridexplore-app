@@ -65,7 +65,7 @@ export default function ExplicitNamingEditionDialog({
 }: Readonly<ExplicitNamingEditionDialogProps>) {
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
-    const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
+    const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const dispatch = useDispatch();
     const methods = useForm({
         defaultValues: emptyFormData(name),
@@ -110,7 +110,7 @@ export default function ExplicitNamingEditionDialog({
     const onSubmit = (contingencyList: ExplicitNamingEditionFormData) => {
         editContingencyList(contingencyListId, contingencyList)
             .then(() => {
-                if (selectionForCopy.sourceItemUuid === contingencyListId) {
+                if (itemSelectionForCopy.sourceItemUuid === contingencyListId) {
                     dispatch(setItemSelectionForCopy(NO_ITEM_SELECTION_FOR_COPY));
                     broadcastChannel.postMessage({ NO_ITEM_SELECTION_FOR_COPY });
                 }

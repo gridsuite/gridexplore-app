@@ -73,7 +73,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
     const intl = useIntl();
     const dispatch = useDispatch();
-    const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
+    const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const [deleteError, setDeleteError] = useState('');
 
@@ -310,15 +310,15 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         renameElement,
         (elementUuid: string, renamedElement: any[]) => {
             // if copied element is renamed
-            if (selectionForCopy.sourceItemUuid === renamedElement[0]) {
+            if (itemSelectionForCopy.sourceItemUuid === renamedElement[0]) {
                 dispatch(
                     setItemSelectionForCopy({
-                        ...selectionForCopy,
+                        ...itemSelectionForCopy,
                         nameItem: renamedElement[1],
                     })
                 );
                 broadcastChannel.postMessage({
-                    ...selectionForCopy,
+                    ...itemSelectionForCopy,
                     nameItem: renamedElement[1],
                 });
             }

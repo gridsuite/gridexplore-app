@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { type MouseEvent } from 'react';
 import { Box, Button, SvgIcon } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
@@ -39,9 +40,10 @@ const styles = {
         marginTop: theme.spacing(1),
     }),
 };
-interface EmptyDirectoryProps {
-    onCreateElementButtonClick: (e: React.MouseEvent<HTMLElement>) => void;
-}
+
+export type EmptyDirectoryProps = {
+    onCreateElementButtonClick: (e: MouseEvent<HTMLElement>) => void;
+};
 
 export default function EmptyDirectory({ onCreateElementButtonClick }: Readonly<EmptyDirectoryProps>) {
     const theme = useSelector((state: AppState) => state[PARAM_THEME]);
