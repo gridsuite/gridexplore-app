@@ -8,7 +8,7 @@
 import {
     CustomMuiDialog,
     FieldConstants,
-    NO_SELECTION_FOR_COPY,
+    NO_ITEM_SELECTION_FOR_COPY,
     useSnackMessage,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
@@ -24,7 +24,7 @@ import {
 } from '../../contingency-list-utils';
 import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-form';
 import ExplicitNamingEditionForm from './explicit-naming-edition-form';
-import { setSelectionForCopy } from '../../../../../redux/actions';
+import { setItemSelectionForCopy } from '../../../../../redux/actions';
 import { AppState } from '../../../../../redux/types';
 
 interface ExplicitNamingEditionFormData {
@@ -65,7 +65,7 @@ export default function ExplicitNamingEditionDialog({
 }: Readonly<ExplicitNamingEditionDialogProps>) {
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
-    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
+    const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const dispatch = useDispatch();
     const methods = useForm({
         defaultValues: emptyFormData(name),
@@ -111,10 +111,8 @@ export default function ExplicitNamingEditionDialog({
         editContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === contingencyListId) {
-                    dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
-                    broadcastChannel.postMessage({
-                        NO_SELECTION_FOR_COPY,
-                    });
+                    dispatch(setItemSelectionForCopy(NO_ITEM_SELECTION_FOR_COPY));
+                    broadcastChannel.postMessage({ NO_ITEM_SELECTION_FOR_COPY });
                 }
                 closeAndClear();
             })

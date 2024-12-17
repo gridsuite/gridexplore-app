@@ -8,7 +8,7 @@
 import {
     CustomMuiDialog,
     FieldConstants,
-    NO_SELECTION_FOR_COPY,
+    NO_ITEM_SELECTION_FOR_COPY,
     useSnackMessage,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
@@ -19,7 +19,7 @@ import { getContingencyList, saveScriptContingencyList } from 'utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import { getContingencyListEmptyFormData, getScriptFormDataFromFetchedElement } from '../../contingency-list-utils';
 import ScriptEditionForm from './script-edition-form';
-import { setSelectionForCopy } from '../../../../../redux/actions';
+import { setItemSelectionForCopy } from '../../../../../redux/actions';
 import { AppState } from '../../../../../redux/types';
 
 interface ScriptEditionFormData {
@@ -57,7 +57,7 @@ export default function ScriptEditionDialog({
 }: Readonly<ScriptEditionDialogProps>) {
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
-    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
+    const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const dispatch = useDispatch();
 
     const methods = useForm({
@@ -107,10 +107,8 @@ export default function ScriptEditionDialog({
         editContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 if (selectionForCopy.sourceItemUuid === contingencyListId) {
-                    dispatch(setSelectionForCopy(NO_SELECTION_FOR_COPY));
-                    broadcastChannel.postMessage({
-                        NO_SELECTION_FOR_COPY,
-                    });
+                    dispatch(setItemSelectionForCopy(NO_ITEM_SELECTION_FOR_COPY));
+                    broadcastChannel.postMessage({ NO_ITEM_SELECTION_FOR_COPY });
                 }
                 closeAndClear();
             })
