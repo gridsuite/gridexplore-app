@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Button, CircularProgress, Grid, SxProps, Theme } from '@mui/material';
 import {
-    CriteriaBasedFilterEditionDialog,
     DescriptionModificationDialog,
     ElementAttributes,
     ElementType,
@@ -150,15 +149,6 @@ export default function DirectoryContent() {
         setOpenDialog(constants.DialogsId.NONE);
         setActiveElement(null);
         setCurrentExplicitNamingContingencyListId(null);
-        setElementName('');
-    };
-
-    /** Filters dialog: window status value to edit CriteriaBased filters */
-    const [currentCriteriaBasedFilterId, setCurrentCriteriaBasedFilterId] = useState(null);
-    const handleCloseCriteriaBasedFilterDialog = () => {
-        setOpenDialog(constants.DialogsId.NONE);
-        setCurrentCriteriaBasedFilterId(null);
-        setActiveElement(null);
         setElementName('');
     };
 
@@ -365,9 +355,6 @@ export default function DirectoryContent() {
                         if (subtype === FilterType.EXPLICIT_NAMING.id) {
                             setCurrentExplicitNamingFilterId(event.data.elementUuid);
                             setOpenDialog(subtype);
-                        } else if (subtype === FilterType.CRITERIA_BASED.id) {
-                            setCurrentCriteriaBasedFilterId(event.data.elementUuid);
-                            setOpenDialog(subtype);
                         } else if (subtype === FilterType.EXPERT.id) {
                             setCurrentExpertFilterId(event.data.elementUuid);
                             setOpenDialog(subtype);
@@ -547,24 +534,6 @@ export default function DirectoryContent() {
                         selectionForCopy={selectionForCopy}
                         setSelectionForCopy={setItemSelectionForCopy}
                         getFilterById={getFilterById}
-                        activeDirectory={activeDirectory}
-                        elementExists={elementExists}
-                        language={languageLocal}
-                    />
-                );
-            case FilterType.CRITERIA_BASED.id:
-                return (
-                    <CriteriaBasedFilterEditionDialog
-                        // @ts-expect-error TODO: manage null case(s) here
-                        id={currentCriteriaBasedFilterId}
-                        open
-                        onClose={handleCloseCriteriaBasedFilterDialog}
-                        titleId="editFilter"
-                        name={name}
-                        broadcastChannel={broadcastChannel}
-                        getFilterById={getFilterById}
-                        selectionForCopy={selectionForCopy}
-                        setSelectionForCopy={setItemSelectionForCopy}
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
                         language={languageLocal}
