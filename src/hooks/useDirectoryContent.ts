@@ -31,6 +31,7 @@ const getName = (userId: string, data: UsersIdentitiesMap): string => {
 
 export const useDirectoryContent = () => {
     const currentChildren = useSelector((state: AppState) => state.currentChildren);
+    const knownUsersIdentitiesRef = useRef<UsersIdentitiesMap>({});
     const [childrenMetadata, setChildrenMetadata] = useState<Record<UUID, ElementAttributes>>({});
     const { snackError } = useSnackMessage();
     const previousData = useRef<ElementAttributes[]>();
@@ -58,8 +59,14 @@ export const useDirectoryContent = () => {
 
         const metadata: Record<UUID, ElementAttributes> = {};
         const childrenToFetchElementsInfos = Object.values(currentChildren).map((e) => e.elementUuid);
-
-        const fetchUsersIdentitiesPromise = fetchUsersIdentities(childrenToFetchElementsInfos).catch(() => {
+        const childrenToFetchUsersIdentitiesInfos = Object.values(currentChildren)
+            .filter(
+                (e) =>
+                    knownUsersIdentitiesRef.current?.[e.owner] === undefined &&
+                    knownUsersIdentitiesRef.current?.[e.lastModifiedBy] === undefined
+            )
+            .map((e) => e.elementUuid);
+        const fetchUsersIdentitiesPromise = fetchUsersIdentities(childrenToFetchUsersIdentitiesInfos).catch(() => {
             // Last resort, server down, error 500, fallback to subs as users Identities
             // We write this code to have the same behavior as when there are partial results,
             // (missing users identities), see getName()
@@ -77,16 +84,19 @@ export const useDirectoryContent = () => {
         });
 
         if (childrenToFetchElementsInfos.length > 0) {
-            Promise.all([
-                fetchUsersIdentitiesPromise, // TODO cache user identities across elements
-                fetchElementsInfos(childrenToFetchElementsInfos),
-            ])
+            Promise.all([fetchUsersIdentitiesPromise, fetchElementsInfos(childrenToFetchElementsInfos)])
                 .then((res) => {
+                    if (res[0] && res[0].data) {
+                        Object.entries(res[0].data).forEach(([k, v]) => {
+                            knownUsersIdentitiesRef.current[k] = v;
+                        });
+                    }
+
                     // discarding request for older directory
                     if (previousData.current === currentChildren) {
                         res[1].forEach((e) => {
-                            e.ownerLabel = getName(e.owner, res[0].data);
-                            e.lastModifiedByLabel = getName(e.lastModifiedBy, res[0].data);
+                            e.ownerLabel = getName(e.owner, knownUsersIdentitiesRef.current);
+                            e.lastModifiedByLabel = getName(e.lastModifiedBy, knownUsersIdentitiesRef.current);
                             metadata[e.elementUuid] = e;
                         });
                         setChildrenMetadata(metadata);
@@ -100,7 +110,7 @@ export const useDirectoryContent = () => {
         }
     }, [handleError, currentChildren]);
 
-    // TODO remove this when global user identity caching is implemented
+    // TODO remove this when currentChildren and metadata are fetched at once
     const currentChildrenWithOwnerNames = useMemo(() => {
         if (!currentChildren) {
             return currentChildren;
