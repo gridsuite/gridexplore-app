@@ -8,7 +8,6 @@
 import type { UUID } from 'crypto';
 import { type Dispatch, type SetStateAction, useCallback, useEffect, useState } from 'react';
 import {
-    CriteriaBasedFilterEditionDialog,
     DescriptionModificationDialog,
     type ElementAttributes,
     ElementType,
@@ -103,15 +102,6 @@ export default function DirectoryContentDialog({
         setElementName('');
     }, [setActiveElement, setOpenDialog]);
 
-    /* Filters dialog: window status value to edit CriteriaBased filters */
-    const [currentCriteriaBasedFilterId, setCurrentCriteriaBasedFilterId] = useState<UUID>();
-    const handleCloseCriteriaBasedFilterDialog = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
-        setCurrentCriteriaBasedFilterId(undefined);
-        setActiveElement(undefined);
-        setElementName('');
-    }, [setActiveElement, setOpenDialog]);
-
     const [currentExplicitNamingFilterId, setCurrentExplicitNamingFilterId] = useState<UUID>();
     /* Filters dialog: window status value to edit ExplicitNaming filters */
     const handleCloseExplicitNamingFilterDialog = useCallback(() => {
@@ -184,9 +174,6 @@ export default function DirectoryContentDialog({
                     case ElementType.FILTER:
                         if (subtype === FilterType.EXPLICIT_NAMING.id) {
                             setCurrentExplicitNamingFilterId(event.data.elementUuid);
-                            setOpenDialog(subtype);
-                        } else if (subtype === FilterType.CRITERIA_BASED.id) {
-                            setCurrentCriteriaBasedFilterId(event.data.elementUuid);
                             setOpenDialog(subtype);
                         } else if (subtype === FilterType.EXPERT.id) {
                             setCurrentExpertFilterId(event.data.elementUuid);
@@ -293,24 +280,6 @@ export default function DirectoryContentDialog({
                 itemSelectionForCopy={itemSelectionForCopy}
                 setItemSelectionForCopy={setItemSelectionForCopy}
                 getFilterById={getFilterById}
-                activeDirectory={activeDirectory}
-                elementExists={elementExists}
-                language={languageLocal}
-            />
-        );
-    }
-    if (currentCriteriaBasedFilterId !== undefined) {
-        return (
-            <CriteriaBasedFilterEditionDialog
-                id={currentCriteriaBasedFilterId}
-                open
-                onClose={handleCloseCriteriaBasedFilterDialog}
-                titleId="editFilter"
-                name={elementName}
-                broadcastChannel={broadcastChannel}
-                getFilterById={getFilterById}
-                itemSelectionForCopy={itemSelectionForCopy}
-                setItemSelectionForCopy={setItemSelectionForCopy}
                 activeDirectory={activeDirectory}
                 elementExists={elementExists}
                 language={languageLocal}
