@@ -194,6 +194,15 @@ export function updatedTree(
     return [nextRoots, nextMap];
 }
 
+function pathHasChanged(currentPath: ElementAttributes[], newPath: ElementAttributes[]) {
+    return (
+        currentPath.length !== newPath.length ||
+        !currentPath.every((elem, index) => {
+            return elem.elementUuid === newPath[index].elementUuid && elem.elementName === newPath[index].elementName;
+        })
+    );
+}
+
 export default function TreeViewsContainer() {
     const dispatch = useDispatch();
 
@@ -202,6 +211,9 @@ export default function TreeViewsContainer() {
     const user = useSelector((state: AppState) => state.user);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
+    const currentPath = useSelector((state: AppState) => state.currentPath);
+    const currentPathRef = useRef<ElementAttributes[]>([]);
+    currentPathRef.current = currentPath;
 
     const uploadingElements = useSelector((state: AppState) => state.uploadingElements);
     const uploadingElementsRef = useRef<Record<string, UploadingElement>>({});
@@ -322,7 +334,12 @@ export default function TreeViewsContainer() {
 
     /* Manage current path data */
     useEffect(() => {
-        dispatch(setCurrentPath(buildPathToFromMap(selectedDirectoryRef.current?.elementUuid, treeData.mapData)));
+        // Do not change currentPath everytime mapData changed
+        // if it's the same path (same uuids same names in order) then do not dispatch
+        const newPath = buildPathToFromMap(selectedDirectoryRef.current?.elementUuid, treeData.mapData);
+        if (pathHasChanged(currentPathRef.current, newPath)) {
+            dispatch(setCurrentPath(newPath));
+        }
     }, [dispatch, treeData.mapData, selectedDirectory?.elementUuid]);
 
     const insertContent = useCallback(

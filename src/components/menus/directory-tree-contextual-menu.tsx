@@ -34,6 +34,7 @@ import {
     deleteElement,
     duplicateElement,
     duplicateSpreadsheetConfig,
+    duplicateSpreadsheetConfigCollection,
     elementExists,
     insertDirectory,
     insertRootDirectory,
@@ -111,7 +112,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         (response: ElementAttributes) => handleCloseDialog(response?.elementUuid)
     );
 
-    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
+    const selectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
 
     const handleError = useCallback((message: string) => snackError({ messageTxt: message }), [snackError]);
 
@@ -170,6 +171,11 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 case ElementType.SPREADSHEET_CONFIG:
                     duplicateSpreadsheetConfig(selectionForPaste.sourceItemUuid, directoryUuid).catch((error: any) =>
                         handlePasteError(error)
+                    );
+                    break;
+                case ElementType.SPREADSHEET_CONFIG_COLLECTION:
+                    duplicateSpreadsheetConfigCollection(selectionForPaste.sourceItemUuid, directoryUuid).catch(
+                        (error: any) => handlePasteError(error)
                     );
                     break;
                 default:
