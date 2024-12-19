@@ -38,6 +38,7 @@ import {
     deleteElements,
     duplicateElement,
     duplicateSpreadsheetConfig,
+    duplicateSpreadsheetConfigCollection,
     elementExists,
     moveElementsToDirectory,
     newScriptFromFilter,
@@ -169,6 +170,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
                 case ElementType.SPREADSHEET_CONFIG:
+                case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                     console.info(
                         `${activeElement.type} with uuid ${activeElement.elementUuid} from directory ${selectedDirectory?.elementUuid} selected for copy`
                     );
@@ -238,6 +240,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
                     duplicateSpreadsheetConfig(activeElement.elementUuid).catch((error) => {
+                        handleDuplicateError(error.message);
+                    });
+                    break;
+                case ElementType.SPREADSHEET_CONFIG_COLLECTION:
+                    duplicateSpreadsheetConfigCollection(activeElement.elementUuid).catch((error) => {
                         handleDuplicateError(error.message);
                     });
                     break;
@@ -409,6 +416,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             ElementType.SHORT_CIRCUIT_PARAMETERS,
             ElementType.LOADFLOW_PARAMETERS,
             ElementType.SPREADSHEET_CONFIG,
+            ElementType.SPREADSHEET_CONFIG_COLLECTION,
         ];
 
         const hasMetadata = selectedElements[0]?.hasMetadata;
@@ -453,7 +461,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     );
 
     const allowsDownload = useCallback(() => {
-        const allowedTypes = [ElementType.CASE, ElementType.SPREADSHEET_CONFIG];
+        const allowedTypes = [
+            ElementType.CASE,
+            ElementType.SPREADSHEET_CONFIG,
+            ElementType.SPREADSHEET_CONFIG_COLLECTION,
+        ];
         // if selectedElements contains at least one of the allowed types
         return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
