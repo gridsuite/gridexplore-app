@@ -5,14 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, type BoxProps, Button, CircularProgress, Grid, type SxProps, type Theme } from '@mui/material';
+import {
+    Box,
+    type BoxProps,
+    Button,
+    type ButtonProps,
+    CircularProgress,
+    Grid,
+    type SxProps,
+    type Theme,
+} from '@mui/material';
 import { type ElementAttributes, type ItemSelectionForCopy, NO_ITEM_SELECTION_FOR_COPY } from '@gridsuite/commons-ui';
 import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
-import type { CellClickedEvent, CellContextMenuEvent } from 'ag-grid-community';
+import type { CellClickedEvent } from 'ag-grid-community';
 import * as constants from '../utils/UIconstants';
 import { setActiveDirectory, setItemSelectionForCopy } from '../redux/actions';
 import { AnchorStatesType, defaultAnchorStates } from './menus/common-contextual-menu';
@@ -29,7 +38,7 @@ import {
 import NoContentDirectory from './no-content-directory';
 import { CUSTOM_ROW_CLASS, DirectoryContentTable, type DirectoryContentTableProps } from './directory-content-table';
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
-import EmptyDirectory from './empty-directory';
+import EmptyDirectory, { type EmptyDirectoryProps } from './empty-directory';
 import { AppState } from '../redux/types';
 import DirectoryContentDialog from './directory-content-dialog';
 
@@ -113,7 +122,7 @@ export default function DirectoryContent() {
 
     const handleOpenContentMenu = useCallback((event: MouseEvent<HTMLDivElement>) => {
         setOpenContentMenu(true);
-        event?.stopPropagation();
+        event.stopPropagation();
     }, []);
 
     const handleCloseContentMenu = useCallback(() => {
@@ -132,7 +141,7 @@ export default function DirectoryContent() {
     }, []);
 
     const onContextMenu = useCallback(
-        (event: any, anchorStates: AnchorStatesType = defaultAnchorStates) => {
+        (event: MouseEvent<HTMLDivElement>, anchorStates = defaultAnchorStates) => {
             if (anchorStates.anchorReference === 'anchorPosition') {
                 // example : right click on empty space or on an element line
                 // then open popover on mouse position with a little shift
@@ -150,7 +159,7 @@ export default function DirectoryContent() {
                 setDirectoryMenuAnchorStates(anchorStates);
             }
             // We check if the context menu was triggered from a row to prevent displaying both the directory and the content context menus
-            const isRow = !!event.target.closest(`.${CUSTOM_ROW_CLASS}`);
+            const isRow = !!(event.target as Element).closest(`.${CUSTOM_ROW_CLASS}`);
             if (!isRow) {
                 dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
                 handleOpenDirectoryMenu(event);
@@ -161,8 +170,9 @@ export default function DirectoryContent() {
         [dispatch, handleOpenContentMenu, handleOpenDirectoryMenu, selectedDirectory?.elementUuid]
     );
 
-    const onCellContextMenu = useCallback(
-        (cellEvent: CellContextMenuEvent) => {
+    /* User interactions */
+    const onCellContextMenu = useCallback<DirectoryContentTableProps['handleCellContextualMenu']>(
+        (cellEvent) => {
             if (cellEvent.data && cellEvent.data.uploading !== null) {
                 if (cellEvent.data.type !== 'DIRECTORY') {
                     dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
@@ -176,7 +186,7 @@ export default function DirectoryContent() {
                         gridRef.current?.api.getRowNode(cellEvent.data.elementUuid)?.setSelected(true);
                     }
                 }
-                onContextMenu(cellEvent.event);
+                onContextMenu(cellEvent.event as unknown as MouseEvent<HTMLDivElement>);
             }
         },
         [checkedRows, childrenMetadata, dispatch, selectedDirectory?.elementUuid, onContextMenu]
@@ -188,25 +198,53 @@ export default function DirectoryContent() {
         []
     );
 
-    const isActiveElementUnchecked = useMemo(
-        () => activeElement && !checkedRows.find((children) => children.elementUuid === activeElement.elementUuid),
-        [activeElement, checkedRows]
+    const updateCheckedRows = useCallback(
+        () => setCheckedRows(computeCheckedElements(gridRef, childrenMetadata)),
+        [childrenMetadata]
     );
 
-    const updateCheckedRows = useCallback(() => {
-        setCheckedRows(computeCheckedElements(gridRef, childrenMetadata));
-    }, [childrenMetadata]);
-
     // It includes checked rows and the row with its context menu open
-    const fullSelection: ElementAttributes[] = useMemo(() => {
+    const fullSelection = useMemo(() => {
         const selection = [...checkedRows];
-        if (isActiveElementUnchecked && activeElement) {
+        if (activeElement && !checkedRows.find((children) => children.elementUuid === activeElement.elementUuid)) {
             selection.push(formatMetadata(activeElement, childrenMetadata));
         }
         return selection;
-    }, [activeElement, checkedRows, childrenMetadata, isActiveElementUnchecked]);
+    }, [activeElement, checkedRows, childrenMetadata]);
 
     const handleOpenDialog = useCallback(() => setOpenDialog(constants.DialogsId.ADD_ROOT_DIRECTORY), []);
+
+    const handleButtonClick = useCallback<NonNullable<ButtonProps['onClick']>>(
+        (mouseEvent) =>
+            onContextMenu(mouseEvent as unknown as MouseEvent<HTMLDivElement>, {
+                anchorReference: 'anchorEl',
+                anchorEl: mouseEvent.currentTarget,
+                anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
+                transformOrigin: { vertical: 'top', horizontal: 'left' },
+            }),
+        [onContextMenu]
+    );
+
+    const handleEmptyDirectoryClick = useCallback<EmptyDirectoryProps['onCreateElementButtonClick']>(
+        (mouseEvent) =>
+            onContextMenu(mouseEvent as unknown as MouseEvent<HTMLDivElement>, {
+                anchorReference: 'anchorEl',
+                anchorEl: mouseEvent.currentTarget,
+                anchorOrigin: { vertical: 'center', horizontal: 'right' },
+                transformOrigin: { vertical: 'center', horizontal: 'left' },
+            }),
+        [onContextMenu]
+    );
+
+    const handleBoxDownClick = useCallback<NonNullable<BoxProps['onMouseDown']>>(
+        (e) => {
+            if (e.button === constants.MOUSE_EVENT_RIGHT_BUTTON && openDialog === constants.DialogsId.NONE) {
+                handleCloseContentMenu();
+                handleCloseDirectoryMenu();
+            }
+        },
+        [handleCloseContentMenu, handleCloseDirectoryMenu, openDialog]
+    );
 
     useEffect(() => {
         if (selectedDirectory?.elementUuid) {
@@ -217,7 +255,7 @@ export default function DirectoryContent() {
 
     useEffect(() => {
         setIsMissingDataAfterDirChange(false);
-        // update checkecRows ElementAttributes objects if metadata changed
+        // update checkedRows ElementAttributes objects if metadata changed
         // ex: when the user renames a selected element
         updateCheckedRows();
     }, [childrenMetadata, updateCheckedRows]); // this will change after switching selectedDirectory
@@ -234,14 +272,7 @@ export default function DirectoryContent() {
                             variant="contained"
                             endIcon={<AddIcon />}
                             sx={styles.button}
-                            onClick={(mouseEvent) =>
-                                onContextMenu(mouseEvent, {
-                                    anchorReference: 'anchorEl',
-                                    anchorEl: mouseEvent.currentTarget,
-                                    anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
-                                    transformOrigin: { vertical: 'top', horizontal: 'left' },
-                                })
-                            }
+                            onClick={handleButtonClick}
                         >
                             <FormattedMessage id="createElement" />
                         </Button>
@@ -268,19 +299,7 @@ export default function DirectoryContent() {
                         ) : undefined
                     ) : // If empty dir then render an appropriate content
                     rows.length === 0 ? (
-                        <EmptyDirectory
-                            onCreateElementButtonClick={(mouseEvent) =>
-                                onContextMenu(mouseEvent, {
-                                    anchorReference: 'anchorEl',
-                                    anchorEl: mouseEvent.currentTarget,
-                                    anchorOrigin: { vertical: 'center', horizontal: 'right' },
-                                    transformOrigin: {
-                                        vertical: 'center',
-                                        horizontal: 'left',
-                                    },
-                                })
-                            }
-                        />
+                        <EmptyDirectory onCreateElementButtonClick={handleEmptyDirectoryClick} />
                     ) : (
                         // Finally if we have elements then render the table
                         <DirectoryContentTable
@@ -296,20 +315,7 @@ export default function DirectoryContent() {
                     )
                 }
             </Grid>
-            <Box
-                onMouseDown={useCallback<NonNullable<BoxProps['onMouseDown']>>(
-                    (e) => {
-                        if (
-                            e.button === constants.MOUSE_EVENT_RIGHT_BUTTON &&
-                            openDialog === constants.DialogsId.NONE
-                        ) {
-                            handleCloseContentMenu();
-                            handleCloseDirectoryMenu();
-                        }
-                    },
-                    [handleCloseContentMenu, handleCloseDirectoryMenu, openDialog]
-                )}
-            >
+            <Box onMouseDown={handleBoxDownClick}>
                 {activeElement && (
                     <ContentContextualMenu
                         activeElement={activeElement}
@@ -334,8 +340,8 @@ export default function DirectoryContent() {
             </Box>
             <DirectoryContentDialog
                 broadcastChannel={broadcastChannel}
-                setCellClicked={setCellClicked}
                 cellClicked={cellClicked}
+                setCellClicked={setCellClicked}
                 activeElement={activeElement}
                 setActiveElement={setActiveElement}
                 setOpenDialog={setOpenDialog}

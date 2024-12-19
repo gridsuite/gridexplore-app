@@ -64,7 +64,7 @@ export default function DirectoryContentDialog({
 
     const appsAndUrls = useSelector((state: AppState) => state.appsAndUrls);
     const getStudyUrl = useCallback(
-        (elementUuid: string): string | null => {
+        (elementUuid: string) => {
             const appStudy = appsAndUrls.find(isStudyMetadata);
             if (appStudy) {
                 const studyResource = appStudy.resources?.find((resource) =>
@@ -142,8 +142,8 @@ export default function DirectoryContentDialog({
     const [currentScriptContingencyListId, setCurrentScriptContingencyListId] = useState<UUID>();
     const handleCloseScriptContingency = useCallback(() => {
         setOpenDialog(constants.DialogsId.NONE);
-        setActiveElement(undefined);
         setCurrentScriptContingencyListId(undefined);
+        setActiveElement(undefined);
         setElementName('');
     }, [setActiveElement, setOpenDialog]);
 
