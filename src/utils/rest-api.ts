@@ -818,9 +818,11 @@ export function searchElementsInfos(searchTerm: string, currentDirectoryUuid: UU
 }
 
 export const getBaseName = (caseName: string) => {
-    const caseNameUrl = `${PREFIX_CASE_QUERIES}/v1/cases/caseBaseName?caseName=${caseName}`;
-    console.debug(caseNameUrl);
+    const caseNameUrl = `${PREFIX_CASE_QUERIES}/v1/cases/caseBaseName?caseName=${encodeURIComponent(caseName)}`;
+    console.info('Get base name for case', caseName);
     return backendFetchText(caseNameUrl, {
         method: 'GET',
+    }).catch((error) => {
+        console.error('Error fetching base name:', error);
     });
 };

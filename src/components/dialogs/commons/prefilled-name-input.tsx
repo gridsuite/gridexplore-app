@@ -45,13 +45,11 @@ export default function PrefilledNameInput({ label, name, elementType }: Readonl
 
             if (caseName) {
                 clearErrors(name);
-                if (caseName.length > 0) {
-                    getBaseName(caseName).then((response) => {
-                        setValue(name, response, {
-                            shouldDirty: true,
-                        });
+                getBaseName(caseName).then((response) => {
+                    setValue(name, response, {
+                        shouldDirty: true,
                     });
-                }
+                });
             }
         }
     }, [caseFile, modifiedByUser, apiCallErrorMessage, caseFileErrorMessage, setValue, clearErrors, name]);
