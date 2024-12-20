@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { ElementType, FieldConstants, UniqueNameInput } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { elementExists } from '../../../utils/rest-api';
+import { elementExists, getBaseName } from '../../../utils/rest-api';
 import { AppState } from '../../../redux/types';
 
 export interface PrefilledNameInputProps {
@@ -45,9 +45,15 @@ export default function PrefilledNameInput({ label, name, elementType }: Readonl
 
             if (caseName) {
                 clearErrors(name);
-                setValue(name, caseName?.substring(0, caseName.indexOf('.')), {
-                    shouldDirty: true,
-                });
+                getBaseName(caseName)
+                    .then((response) => {
+                        setValue(name, response, {
+                            shouldDirty: true,
+                        });
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching base name:', error);
+                    });
             }
         }
     }, [caseFile, modifiedByUser, apiCallErrorMessage, caseFileErrorMessage, setValue, clearErrors, name]);
