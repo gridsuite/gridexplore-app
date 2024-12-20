@@ -822,7 +822,5 @@ export const getBaseName = (caseName: string) => {
     console.info('Get base name for case', caseName);
     return backendFetchText(caseNameUrl, {
         method: 'GET',
-    }).catch((error) => {
-        console.error('Error fetching base name:', error);
     });
 };
