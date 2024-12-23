@@ -6,7 +6,15 @@
  */
 
 import type { UUID } from 'crypto';
-import { type Dispatch, type SetStateAction, useCallback, useEffect, useState } from 'react';
+import {
+    type Dispatch,
+    ForwardedRef,
+    forwardRef,
+    type SetStateAction,
+    useCallback,
+    useImperativeHandle,
+    useState,
+} from 'react';
 import {
     DescriptionModificationDialog,
     type ElementAttributes,
@@ -32,9 +40,11 @@ import { useParameterState } from './dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../utils/config-params';
 import type { useDirectoryContent } from '../hooks/useDirectoryContent';
 
+export type DirectoryContentDialogApi = {
+    handleClick: (event: CellClickedEvent) => void;
+};
+
 export type DirectoryContentDialogProps = {
-    cellClicked?: CellClickedEvent;
-    setCellClicked: Dispatch<SetStateAction<CellClickedEvent | undefined>>;
     broadcastChannel: BroadcastChannel;
     setOpenDialog: Dispatch<SetStateAction<string>>;
     activeElement?: ElementAttributes;
@@ -43,16 +53,17 @@ export type DirectoryContentDialogProps = {
     childrenMetadata: ReturnType<typeof useDirectoryContent>[1];
 };
 
-export default function DirectoryContentDialog({
-    cellClicked: event,
-    setCellClicked: setEvent,
-    setOpenDialog,
-    activeElement,
-    setActiveElement,
-    broadcastChannel,
-    selectedDirectoryElementUuid,
-    childrenMetadata,
-}: Readonly<DirectoryContentDialogProps>) {
+function DirectoryContentDialog(
+    {
+        setOpenDialog,
+        activeElement,
+        setActiveElement,
+        broadcastChannel,
+        selectedDirectoryElementUuid,
+        childrenMetadata,
+    }: Readonly<DirectoryContentDialogProps>,
+    refApi: ForwardedRef<DirectoryContentDialogApi>
+) {
     const intl = useIntl();
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
@@ -137,73 +148,77 @@ export default function DirectoryContentDialog({
         setElementName('');
     }, [setActiveElement, setOpenDialog]);
 
-    useEffect(() => {
-        if (event !== undefined) {
-            if (event.colDef.field === 'description') {
-                setActiveElement(event.data);
-                setOpenDescModificationDialog(true);
-            } else if (childrenMetadata[event.data.elementUuid] !== undefined) {
-                setElementName(childrenMetadata[event.data.elementUuid].elementName);
-                const subtype = childrenMetadata[event.data.elementUuid].specificMetadata.type as unknown as string;
-                /** set active directory on the store because it will be used while editing the contingency name */
-                dispatch(setActiveDirectory(selectedDirectoryElementUuid));
-                switch (event.data.type) {
-                    case ElementType.STUDY: {
-                        const url = getStudyUrl(event.data.elementUuid);
-                        if (url) {
-                            window.open(url, '_blank');
-                        } else {
-                            snackError({
-                                messageTxt: intl.formatMessage({ id: 'getAppLinkError' }, { type: event.data.type }),
-                            });
+    useImperativeHandle(
+        refApi,
+        () => ({
+            handleClick: (event: CellClickedEvent) => {
+                if (event.colDef.field === 'description') {
+                    setActiveElement(event.data);
+                    setOpenDescModificationDialog(true);
+                } else if (childrenMetadata[event.data.elementUuid] !== undefined) {
+                    setElementName(childrenMetadata[event.data.elementUuid].elementName);
+                    const subtype = childrenMetadata[event.data.elementUuid].specificMetadata.type as unknown as string;
+                    /** set active directory on the store because it will be used while editing the contingency name */
+                    dispatch(setActiveDirectory(selectedDirectoryElementUuid));
+                    switch (event.data.type) {
+                        case ElementType.STUDY: {
+                            const url = getStudyUrl(event.data.elementUuid);
+                            if (url) {
+                                window.open(url, '_blank');
+                            } else {
+                                snackError({
+                                    messageTxt: intl.formatMessage(
+                                        { id: 'getAppLinkError' },
+                                        { type: event.data.type }
+                                    ),
+                                });
+                            }
+                            break;
                         }
-                        break;
+                        case ElementType.CONTINGENCY_LIST:
+                            if (subtype === ContingencyListType.CRITERIA_BASED.id) {
+                                setCurrentFiltersContingencyListId(event.data.elementUuid);
+                                setOpenDialog(subtype);
+                            } else if (subtype === ContingencyListType.SCRIPT.id) {
+                                setCurrentScriptContingencyListId(event.data.elementUuid);
+                                setOpenDialog(subtype);
+                            } else if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
+                                setCurrentExplicitNamingContingencyListId(event.data.elementUuid);
+                                setOpenDialog(subtype);
+                            }
+                            break;
+                        case ElementType.FILTER:
+                            if (subtype === FilterType.EXPLICIT_NAMING.id) {
+                                setCurrentExplicitNamingFilterId(event.data.elementUuid);
+                                setOpenDialog(subtype);
+                            } else if (subtype === FilterType.EXPERT.id) {
+                                setCurrentExpertFilterId(event.data.elementUuid);
+                                setOpenDialog(subtype);
+                            }
+                            break;
+                        case ElementType.MODIFICATION:
+                            if (subtype === NetworkModificationType.COMPOSITE.id) {
+                                setCurrentNetworkModificationId(event.data.elementUuid);
+                                setOpenDialog(subtype);
+                            }
+                            break;
+                        default:
+                            break;
                     }
-                    case ElementType.CONTINGENCY_LIST:
-                        if (subtype === ContingencyListType.CRITERIA_BASED.id) {
-                            setCurrentFiltersContingencyListId(event.data.elementUuid);
-                            setOpenDialog(subtype);
-                        } else if (subtype === ContingencyListType.SCRIPT.id) {
-                            setCurrentScriptContingencyListId(event.data.elementUuid);
-                            setOpenDialog(subtype);
-                        } else if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
-                            setCurrentExplicitNamingContingencyListId(event.data.elementUuid);
-                            setOpenDialog(subtype);
-                        }
-                        break;
-                    case ElementType.FILTER:
-                        if (subtype === FilterType.EXPLICIT_NAMING.id) {
-                            setCurrentExplicitNamingFilterId(event.data.elementUuid);
-                            setOpenDialog(subtype);
-                        } else if (subtype === FilterType.EXPERT.id) {
-                            setCurrentExpertFilterId(event.data.elementUuid);
-                            setOpenDialog(subtype);
-                        }
-                        break;
-                    case ElementType.MODIFICATION:
-                        if (subtype === NetworkModificationType.COMPOSITE.id) {
-                            setCurrentNetworkModificationId(event.data.elementUuid);
-                            setOpenDialog(subtype);
-                        }
-                        break;
-                    default:
-                        break;
                 }
-            }
-            setEvent(undefined); // acknowledge parent event
-        }
-    }, [
-        childrenMetadata,
-        dispatch,
-        event,
-        getStudyUrl,
-        intl,
-        selectedDirectoryElementUuid,
-        setActiveElement,
-        setEvent,
-        setOpenDialog,
-        snackError,
-    ]);
+            },
+        }),
+        [
+            childrenMetadata,
+            dispatch,
+            getStudyUrl,
+            intl,
+            selectedDirectoryElementUuid,
+            setActiveElement,
+            setOpenDialog,
+            snackError,
+        ]
+    );
 
     if (openDescModificationDialog && activeElement) {
         return (
@@ -305,3 +320,5 @@ export default function DirectoryContentDialog({
         );
     }
 }
+
+export default forwardRef(DirectoryContentDialog);

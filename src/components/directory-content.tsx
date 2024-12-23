@@ -21,7 +21,6 @@ import {
 import { type ElementAttributes, type ItemSelectionForCopy, NO_ITEM_SELECTION_FOR_COPY } from '@gridsuite/commons-ui';
 import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
-import type { CellClickedEvent } from 'ag-grid-community';
 import * as constants from '../utils/UIconstants';
 import { setActiveDirectory, setItemSelectionForCopy } from '../redux/actions';
 import { AnchorStatesType, defaultAnchorStates } from './menus/common-contextual-menu';
@@ -40,7 +39,7 @@ import { CUSTOM_ROW_CLASS, DirectoryContentTable, type DirectoryContentTableProp
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
 import EmptyDirectory, { type EmptyDirectoryProps } from './empty-directory';
 import { AppState } from '../redux/types';
-import DirectoryContentDialog from './directory-content-dialog';
+import DirectoryContentDialog, { type DirectoryContentDialogApi } from './directory-content-dialog';
 
 const circularProgressSize = '70px';
 
@@ -192,9 +191,11 @@ export default function DirectoryContent() {
         [checkedRows, childrenMetadata, dispatch, selectedDirectory?.elementUuid, onContextMenu]
     );
 
-    const [cellClicked, setCellClicked] = useState<CellClickedEvent>();
+    const dialogsApi = useRef<DirectoryContentDialogApi>(null);
     const handleCellClick = useCallback<DirectoryContentTableProps['handleCellClick']>(
-        (event) => setCellClicked(event),
+        /* The `window.open()` call MUST be inside the on-click callback, or else navigators like Firefox will
+         * block it with their anti-popup, and user must explicitly whitelist the url/domain */
+        (event) => dialogsApi.current?.handleClick(event),
         []
     );
 
@@ -339,9 +340,8 @@ export default function DirectoryContent() {
                 />
             </Box>
             <DirectoryContentDialog
+                ref={dialogsApi}
                 broadcastChannel={broadcastChannel}
-                cellClicked={cellClicked}
-                setCellClicked={setCellClicked}
                 activeElement={activeElement}
                 setActiveElement={setActiveElement}
                 setOpenDialog={setOpenDialog}
