@@ -6,7 +6,15 @@
  */
 
 import type { UUID } from 'crypto';
-import { type Dispatch, type RefObject, type SetStateAction, useCallback, useImperativeHandle, useState } from 'react';
+import {
+    type Dispatch,
+    ForwardedRef,
+    forwardRef,
+    type SetStateAction,
+    useCallback,
+    useImperativeHandle,
+    useState,
+} from 'react';
 import {
     DescriptionModificationDialog,
     type ElementAttributes,
@@ -37,7 +45,6 @@ export type DirectoryContentDialogApi = {
 };
 
 export type DirectoryContentDialogProps = {
-    refApi: RefObject<DirectoryContentDialogApi>;
     broadcastChannel: BroadcastChannel;
     setOpenDialog: Dispatch<SetStateAction<string>>;
     activeElement?: ElementAttributes;
@@ -46,15 +53,17 @@ export type DirectoryContentDialogProps = {
     childrenMetadata: ReturnType<typeof useDirectoryContent>[1];
 };
 
-export default function DirectoryContentDialog({
-    refApi,
-    setOpenDialog,
-    activeElement,
-    setActiveElement,
-    broadcastChannel,
-    selectedDirectoryElementUuid,
-    childrenMetadata,
-}: Readonly<DirectoryContentDialogProps>) {
+function DirectoryContentDialog(
+    {
+        setOpenDialog,
+        activeElement,
+        setActiveElement,
+        broadcastChannel,
+        selectedDirectoryElementUuid,
+        childrenMetadata,
+    }: Readonly<DirectoryContentDialogProps>,
+    refApi: ForwardedRef<DirectoryContentDialogApi>
+) {
     const intl = useIntl();
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
@@ -311,3 +320,5 @@ export default function DirectoryContentDialog({
         );
     }
 }
+
+export default forwardRef(DirectoryContentDialog);

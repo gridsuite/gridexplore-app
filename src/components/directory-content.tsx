@@ -340,8 +340,8 @@ export default function DirectoryContent() {
                 />
             </Box>
             <DirectoryContentDialog
+                ref={dialogsApi}
                 broadcastChannel={broadcastChannel}
-                refApi={dialogsApi}
                 activeElement={activeElement}
                 setActiveElement={setActiveElement}
                 setOpenDialog={setOpenDialog}
