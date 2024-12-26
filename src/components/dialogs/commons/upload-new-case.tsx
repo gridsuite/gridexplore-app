@@ -43,7 +43,7 @@ export default function UploadNewCase({
         name: FieldConstants.CASE_UUID,
     });
 
-    const { clearErrors, setError, getValues, setValue } = useFormContext();
+    const { clearErrors, setError, getValues } = useFormContext();
 
     const caseFile = value as File;
     const { name: caseFileName } = caseFile || {};
@@ -99,14 +99,6 @@ export default function UploadNewCase({
                     const caseName = getValues(FieldConstants.CASE_NAME);
                     if (currentCaseFileName && caseName !== currentCaseFileName) {
                         clearErrors(FieldConstants.CASE_NAME);
-                        setValue(
-                            FieldConstants.CASE_NAME,
-                            currentCaseFileName.substring(0, currentCaseFileName.indexOf('.')),
-                            {
-                                shouldDirty: true,
-                                shouldValidate: true,
-                            }
-                        );
                     }
                 }
             } else {
