@@ -25,6 +25,7 @@ export interface PrefilledNameInputProps {
 export default function PrefilledNameInput({ label, name, elementType }: Readonly<PrefilledNameInputProps>) {
     const {
         setValue,
+        getValues,
         clearErrors,
         watch,
         formState: { errors },
@@ -43,8 +44,9 @@ export default function PrefilledNameInput({ label, name, elementType }: Readonl
         // we replace the name only if some conditions are respected
         if (caseFile && !modifiedByUser && !apiCallErrorMessage && !caseFileErrorMessage) {
             const { name: caseName } = caseFile;
+            const currentCaseName = getValues(name);
 
-            if (caseName) {
+            if (caseName && caseName !== currentCaseName) {
                 clearErrors(name);
                 getBaseName(caseName)
                     .then((response) => {
@@ -59,7 +61,17 @@ export default function PrefilledNameInput({ label, name, elementType }: Readonl
                     });
             }
         }
-    }, [caseFile, modifiedByUser, apiCallErrorMessage, caseFileErrorMessage, setValue, clearErrors, name, snackError]);
+    }, [
+        caseFile,
+        modifiedByUser,
+        apiCallErrorMessage,
+        caseFileErrorMessage,
+        setValue,
+        getValues,
+        clearErrors,
+        name,
+        snackError,
+    ]);
 
     return (
         <UniqueNameInput

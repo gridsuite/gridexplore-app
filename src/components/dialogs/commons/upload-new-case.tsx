@@ -72,8 +72,6 @@ export default function UploadNewCase({
             if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
                 onValueChange(currentFile);
 
-                const { name: currentCaseFileName } = currentFile;
-
                 if (isNewStudyCreation) {
                     // Create new case
                     setCaseFileLoading(true);
@@ -95,11 +93,6 @@ export default function UploadNewCase({
                         .finally(() => {
                             setCaseFileLoading(false);
                         });
-                } else {
-                    const caseName = getValues(FieldConstants.CASE_NAME);
-                    if (currentCaseFileName && caseName !== currentCaseFileName) {
-                        clearErrors(FieldConstants.CASE_NAME);
-                    }
                 }
             } else {
                 setError(FieldConstants.CASE_FILE, {
