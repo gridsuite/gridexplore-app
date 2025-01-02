@@ -137,7 +137,7 @@ export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
             elementsFound={elementsFound}
             getOptionLabel={(element) => element.name}
             isOptionEqualToValue={(element1, element2) => element1.id === element2.id}
-            onSearchTermChange={updateSearchTerm}
+            onSearchTermChange={(value) => updateSearchTerm(value?.trim())}
             onSelectionChange={handleMatchingElement}
             renderElement={renderOptionItem}
             searchTerm={searchTerm}
