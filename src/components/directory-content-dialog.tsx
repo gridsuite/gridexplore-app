@@ -156,6 +156,7 @@ function DirectoryContentDialog(
                     setActiveElement(event.data);
                     setOpenDescModificationDialog(true);
                 } else if (childrenMetadata[event.data.elementUuid] !== undefined) {
+                    setActiveElement(event.data);
                     setElementName(childrenMetadata[event.data.elementUuid].elementName);
                     const subtype = childrenMetadata[event.data.elementUuid].specificMetadata.type as unknown as string;
                     /** set active directory on the store because it will be used while editing the contingency name */
@@ -283,7 +284,7 @@ function DirectoryContentDialog(
             />
         );
     }
-    if (currentExplicitNamingFilterId !== undefined) {
+    if (currentExplicitNamingFilterId !== undefined && activeElement) {
         return (
             <ExplicitNamingFilterEditionDialog
                 id={currentExplicitNamingFilterId}
@@ -298,10 +299,12 @@ function DirectoryContentDialog(
                 activeDirectory={activeDirectory}
                 elementExists={elementExists}
                 language={languageLocal}
+                description={activeElement.description}
+                elementUuid={activeElement.elementUuid}
             />
         );
     }
-    if (currentExpertFilterId !== undefined) {
+    if (currentExpertFilterId !== undefined && activeElement) {
         return (
             <ExpertFilterEditionDialog
                 id={currentExpertFilterId}
@@ -316,6 +319,8 @@ function DirectoryContentDialog(
                 activeDirectory={activeDirectory}
                 elementExists={elementExists}
                 language={languageLocal}
+                description={activeElement.description}
+                elementUuid={activeElement.elementUuid}
             />
         );
     }
