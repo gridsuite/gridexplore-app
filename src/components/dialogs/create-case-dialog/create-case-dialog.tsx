@@ -126,7 +126,7 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
                 </Grid>
             </Grid>
             <ErrorInput name={FieldConstants.CASE_FILE} InputField={FieldErrorAlert} />
-            <UploadNewCase isNewStudyCreation />
+            <UploadNewCase />
         </CustomMuiDialog>
     );
 }
