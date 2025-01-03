@@ -44,9 +44,7 @@ export default function PrefilledNameInput({ label, name, elementType }: Readonl
         // we replace the name only if some conditions are respected
         if (caseFile && !modifiedByUser && !apiCallErrorMessage && !caseFileErrorMessage) {
             const { name: caseName } = caseFile;
-            const currentCaseName = getValues(name);
-
-            if (caseName && caseName !== currentCaseName) {
+            if (caseName) {
                 clearErrors(name);
                 getBaseName(caseName)
                     .then((response) => {
