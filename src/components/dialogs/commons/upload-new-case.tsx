@@ -43,7 +43,7 @@ export default function UploadNewCase({
         name: FieldConstants.CASE_UUID,
     });
 
-    const { clearErrors, setError, getValues, setValue } = useFormContext();
+    const { clearErrors, setError, getValues } = useFormContext();
 
     const caseFile = value as File;
     const { name: caseFileName } = caseFile || {};
@@ -72,8 +72,6 @@ export default function UploadNewCase({
             if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
                 onValueChange(currentFile);
 
-                const { name: currentCaseFileName } = currentFile;
-
                 if (isNewStudyCreation) {
                     // Create new case
                     setCaseFileLoading(true);
@@ -95,19 +93,6 @@ export default function UploadNewCase({
                         .finally(() => {
                             setCaseFileLoading(false);
                         });
-                } else {
-                    const caseName = getValues(FieldConstants.CASE_NAME);
-                    if (currentCaseFileName && caseName !== currentCaseFileName) {
-                        clearErrors(FieldConstants.CASE_NAME);
-                        setValue(
-                            FieldConstants.CASE_NAME,
-                            currentCaseFileName.substring(0, currentCaseFileName.indexOf('.')),
-                            {
-                                shouldDirty: true,
-                                shouldValidate: true,
-                            }
-                        );
-                    }
                 }
             } else {
                 setError(FieldConstants.CASE_FILE, {
