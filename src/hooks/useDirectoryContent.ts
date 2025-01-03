@@ -62,7 +62,7 @@ export const useDirectoryContent = () => {
         const childrenToFetchUsersIdentitiesInfos = Object.values(currentChildren)
             .filter(
                 (e) =>
-                    knownUsersIdentitiesRef.current?.[e.owner] === undefined &&
+                    knownUsersIdentitiesRef.current?.[e.owner] === undefined ||
                     knownUsersIdentitiesRef.current?.[e.lastModifiedBy] === undefined
             )
             .map((e) => e.elementUuid);
