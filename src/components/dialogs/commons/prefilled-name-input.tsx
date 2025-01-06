@@ -42,7 +42,12 @@ export default function PrefilledNameInput({ label, name, elementType }: Readonl
 
     useEffect(() => {
         // we replace the name only if some conditions are respected
-        if (caseFile && !modifiedByUser && !apiCallErrorMessage && !caseFileErrorMessage) {
+        if (
+            caseFile &&
+            (!modifiedByUser || elementType === ElementType.CASE) &&
+            !apiCallErrorMessage &&
+            !caseFileErrorMessage
+        ) {
             const { name: caseName } = caseFile;
             if (caseName) {
                 clearErrors(name);
@@ -69,6 +74,7 @@ export default function PrefilledNameInput({ label, name, elementType }: Readonl
         clearErrors,
         name,
         snackError,
+        elementType,
     ]);
 
     return (
