@@ -6,11 +6,9 @@
  */
 import { SyntheticEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
+import { Box, Divider, List, ListItem } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { List, ListItem } from '@mui/material';
 import {
     CustomMuiDialog,
     FieldConstants,
