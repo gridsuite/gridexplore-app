@@ -7,7 +7,7 @@
 import { useForm } from 'react-hook-form';
 import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
     CustomMuiDialog,
     DescriptionField,
@@ -20,6 +20,7 @@ import {
     keyGenerator,
     ModifyElementSelection,
     Parameter,
+    UniqueNameInput,
     useConfidentialityWarning,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -27,7 +28,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { UUID } from 'crypto';
 import UploadNewCase from '../commons/upload-new-case';
-import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
+import { createStudy, deleteCase, elementExists, getCaseImportParameters } from '../../../utils/rest-api';
 import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import ImportParametersSection from './importParametersSection';
 import { addUploadingElement, removeUploadingElement, setActiveDirectory } from '../../../redux/actions';
@@ -36,7 +37,6 @@ import {
     CreateStudyDialogFormValues,
     getCreateStudyDialogFormDefaultValues,
 } from './create-study-dialog-utils';
-import PrefilledNameInput from '../commons/prefilled-name-input';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
 import { AppState, UploadingElement } from '../../../redux/types';
 
@@ -77,7 +77,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
-
+    const [modifiedByUser, setModifiedByUser] = useState(false);
     const { elementUuid, elementName } = providedExistingCase || {};
 
     const createStudyFormMethods = useForm<CreateStudyDialogFormValues>({
@@ -237,7 +237,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
             getCurrentCaseImportParams(providedExistingCase.elementUuid);
         }
     }, [getCurrentCaseImportParams, providedExistingCase, setValue]);
-
+    const caseFileStudy = getValues(FieldConstants.CASE_FILE);
     return (
         <CustomMuiDialog
             titleId="createNewStudy"
@@ -253,10 +253,14 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
         >
             <Grid container spacing={2} marginTop="auto" direction="column">
                 <Grid item>
-                    <PrefilledNameInput
+                    <UniqueNameInput
                         name={FieldConstants.STUDY_NAME}
                         label="nameProperty"
                         elementType={ElementType.STUDY}
+                        elementExists={elementExists}
+                        activeDirectory={activeDirectory}
+                        autoFocus={!caseFileStudy}
+                        onManualChangeCallback={() => setModifiedByUser(true)}
                     />
                 </Grid>
                 <Grid item>
@@ -272,6 +276,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
                 />
             ) : (
                 <UploadNewCase
+                    modifiedByUser={modifiedByUser}
                     isNewStudyCreation
                     getCurrentCaseImportParams={getCurrentCaseImportParams}
                     handleApiCallError={handleApiCallError}

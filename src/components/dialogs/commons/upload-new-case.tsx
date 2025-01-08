@@ -14,6 +14,7 @@ import { UUID } from 'crypto';
 import { createCaseWithoutDirectoryElementCreation, deleteCase, getBaseName } from '../../../utils/rest-api';
 
 export interface UploadNewCaseProps {
+    modifiedByUser?: boolean;
     isNewStudyCreation?: boolean;
     getCurrentCaseImportParams?: (uuid: UUID) => void;
     handleApiCallError?: ErrorCallback;
@@ -23,6 +24,7 @@ const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
 
 export default function UploadNewCase({
+    modifiedByUser = false,
     isNewStudyCreation = false,
     getCurrentCaseImportParams,
     handleApiCallError,
@@ -61,7 +63,7 @@ export default function UploadNewCase({
     const fetchBaseName = (currentFile: any) => {
         const { name: currentCaseFileName } = currentFile;
         const name = isNewStudyCreation ? FieldConstants.STUDY_NAME : FieldConstants.CASE_NAME;
-        if (currentCaseFileName) {
+        if (currentCaseFileName && !modifiedByUser) {
             getBaseName(currentCaseFileName)
                 .then((response) => {
                     setValue(name, response, {
