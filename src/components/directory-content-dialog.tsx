@@ -300,7 +300,6 @@ function DirectoryContentDialog(
                 elementExists={elementExists}
                 language={languageLocal}
                 description={activeElement.description}
-                elementUuid={activeElement.elementUuid}
             />
         );
     }
@@ -320,7 +319,6 @@ function DirectoryContentDialog(
                 elementExists={elementExists}
                 language={languageLocal}
                 description={activeElement.description}
-                elementUuid={activeElement.elementUuid}
             />
         );
     }
