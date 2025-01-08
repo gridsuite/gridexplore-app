@@ -14,7 +14,6 @@ import {
     downloadSpreadsheetConfig,
     downloadSpreadsheetConfigCollection,
     fetchConvertedCase,
-    getCaseOriginalName,
 } from '../../utils/rest-api';
 
 interface DownloadData {
@@ -36,13 +35,7 @@ const triggerDownload = ({ blob, filename }: DownloadData): void => {
 const downloadStrategies: { [key in ElementType]?: (element: ElementAttributes) => Promise<DownloadData> } = {
     [ElementType.CASE]: async (element: ElementAttributes) => {
         const result = await downloadCase(element.elementUuid);
-        const caseOriginalName = await getCaseOriginalName(element.elementUuid);
-        const extension =
-            typeof caseOriginalName === 'string' && caseOriginalName.includes('.')
-                ? caseOriginalName.substring(caseOriginalName.indexOf('.') + 1)
-                : 'xiidm';
-        const caseName = element.elementName;
-        const filename = `${caseName}.${extension}`;
+        const filename = result.headers.get('Content-Disposition');
         return { blob: await result.blob(), filename };
     },
     [ElementType.SPREADSHEET_CONFIG]: async (element: ElementAttributes) => {
