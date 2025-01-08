@@ -11,7 +11,7 @@ import {
     CssBaseline,
     responsiveFontSizes,
     StyledEngineProvider,
-    Theme,
+    type ThemeOptions,
     ThemeProvider,
 } from '@mui/material';
 import { enUS as MuiCoreEnUS, frFR as MuiCoreFrFR } from '@mui/material/locale';
@@ -31,6 +31,8 @@ import {
     elementSearchFr,
     equipmentsEn,
     equipmentsFr,
+    exportParamsEn,
+    exportParamsFr,
     filterEn,
     filterExpertEn,
     filterExpertFr,
@@ -39,15 +41,17 @@ import {
     flatParametersFr,
     GsLangUser,
     GsTheme,
+    importParamsEn,
+    importParamsFr,
     LANG_ENGLISH,
     LANG_FRENCH,
     LIGHT_THEME,
     loginEn,
     loginFr,
-    networkModificationsEn,
-    networkModificationsFr,
     multipleSelectionDialogEn,
     multipleSelectionDialogFr,
+    networkModificationsEn,
+    networkModificationsFr,
     SnackbarProvider,
     tableEn,
     tableFr,
@@ -55,10 +59,6 @@ import {
     topBarFr,
     treeviewFinderEn,
     treeviewFinderFr,
-    importParamsEn,
-    importParamsFr,
-    exportParamsEn,
-    exportParamsFr,
 } from '@gridsuite/commons-ui';
 import { IntlConfig, IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -78,40 +78,20 @@ const lightTheme = createTheme({
     palette: {
         mode: 'light',
     },
-    arrow: {
-        fill: '#212121',
-        stroke: '#212121',
-    },
-    arrow_hover: {
-        fill: 'white',
-        stroke: 'white',
-    },
-    circle: {
-        stroke: 'white',
-        fill: 'white',
-    },
-    circle_hover: {
-        stroke: '#212121',
-        fill: '#212121',
-    },
     link: {
         color: 'black',
     },
     row: {
         primary: '#E8E8E8',
-        secondary: '#F4F4F4',
         hover: '#8E9C9B',
     },
     aggrid: {
         theme: 'ag-theme-alpine',
         highlightColor: '#CFDFFB',
-    },
-    agGridBackground: {
-        color: 'white',
-    },
-    typography: {
-        button: {
-            textTransform: 'none',
+        valueChangeHighlightBackgroundColor: 'initial', // TODO value?
+        overlay: { background: {} }, // TODO value?
+        background: {
+            color: 'white',
         },
     },
 });
@@ -120,52 +100,37 @@ const darkTheme = createTheme({
     palette: {
         mode: 'dark',
     },
-    arrow: {
-        fill: 'white',
-        stroke: 'white',
-    },
-    arrow_hover: {
-        fill: '#424242',
-        stroke: '#424242',
-    },
-    circle: {
-        stroke: '#424242',
-        fill: '#424242',
-    },
-    circle_hover: {
-        stroke: 'white',
-        fill: 'white',
-    },
     link: {
         color: 'white',
     },
     row: {
         primary: '#272727',
-        secondary: '#323232',
         hover: '#545C5B',
     },
     aggrid: {
         theme: 'ag-theme-alpine-dark',
         highlightColor: '#1F3B5B',
-    },
-    agGridBackground: {
-        color: '#383838',
-    },
-    typography: {
-        button: {
-            textTransform: 'none',
+        valueChangeHighlightBackgroundColor: 'initial', // TODO value?
+        overlay: { background: {} }, // TODO value?
+        background: {
+            color: '#383838',
         },
     },
 });
 
 // no other way to copy style: https://mui.com/material-ui/customization/theming/#api
-function createThemeWithComponents(baseTheme: Theme, ...args: object[]) {
+function createThemeWithComponents(baseTheme: ThemeOptions, ...args: object[]) {
     return createTheme(
         baseTheme,
         {
+            typography: {
+                button: {
+                    textTransform: 'none',
+                },
+            },
             palette: {
                 cancelButtonColor: {
-                    main: baseTheme.palette.text.secondary,
+                    main: baseTheme.palette?.text?.secondary,
                 },
             },
             components: {
