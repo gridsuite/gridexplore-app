@@ -185,7 +185,10 @@ export function fetchVersion() {
 }
 
 export function fetchUsersIdentities(elementUuids: string[]) {
-    console.info('fetching users identities for elements : %s', elementUuids);
+    if (elementUuids.length === 0) {
+        return Promise.resolve();
+    }
+    console.info('fetching users identities for %s elements.', elementUuids.length);
     const idsParams = getRequestParamFromList('ids', elementUuids).toString();
     const fetchParams = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/users-identities?${idsParams}`;
     return backendFetchJson(fetchParams, {
