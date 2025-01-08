@@ -4,15 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { mergeSx } from '@gridsuite/commons-ui';
-import { Avatar, Box, Theme, Tooltip } from '@mui/material';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
+import { Avatar, Box, Tooltip } from '@mui/material';
+import type { Property } from 'csstype';
 
 const FERMAT_PRIME = 65537;
-// This function is a copy/paste of the MUI demo sample here :
-// https://mui.com/material-ui/react-avatar/#letter-avatars
-// hash function improved to generate more distinct values for similar strings using FERMAT_PRIME
+// This function is a copy/paste of the MUI demo sample here :  https://mui.com/material-ui/react-avatar/#letter-avatars
+// Hash function improved to generate more distinct values for similar strings using FERMAT_PRIME
 // Use hsl to manage saturation and softer colors
-function stringToColor(string: string) {
+function stringToBgColor(string: string) {
     let hash = 0;
     /* eslint-disable no-bitwise */
     const stringUniqueHash = [...string].reduce((acc, char) => {
@@ -20,7 +20,7 @@ function stringToColor(string: string) {
         return hash & hash;
     }, 0);
     /* eslint-enable no-bitwise */
-    return `hsl(${stringUniqueHash % 360}, 50%, 50%)`;
+    return `hsl(${stringUniqueHash % 360}, 50%, 50%)` satisfies Property.BackgroundColor;
 }
 
 function getAbbreviationFromUserName(name: string) {
@@ -36,14 +36,14 @@ function getAbbreviationFromUserName(name: string) {
 }
 
 const styles = {
-    avatar: (theme: Theme) => ({
+    avatar: (theme) => ({
         cursor: 'pointer',
         height: '32px',
         width: '32px',
         fontSize: theme.typography.fontSize,
-        backgroundColor: theme.row.hover as string,
+        backgroundColor: theme.row.hover,
     }),
-};
+} as const as MuiStyles;
 
 export type UserCellRendererProps = { value: string };
 
@@ -51,7 +51,7 @@ export function UserCellRenderer({ value }: Readonly<UserCellRendererProps>) {
     return (
         <Box sx={{ display: 'inline-flex', verticalAlign: 'middle' }}>
             <Tooltip title={value} placement="right">
-                <Avatar sx={mergeSx(styles.avatar, value ? { backgroundColor: stringToColor(value) } : null)}>
+                <Avatar sx={mergeSx(styles.avatar, value ? { backgroundColor: stringToBgColor(value) } : null)}>
                     {getAbbreviationFromUserName(value)}
                 </Avatar>
             </Tooltip>

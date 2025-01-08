@@ -44,7 +44,7 @@ import DirectoryContentDialog, { type DirectoryContentDialogApi } from './direct
 const circularProgressSize = '70px';
 
 const styles = {
-    link: (theme: Theme) => ({
+    link: (theme) => ({
         color: theme.link.color,
         textDecoration: 'none',
     }),
@@ -60,7 +60,7 @@ const styles = {
     centeredCircularProgress: {
         alignSelf: 'center',
     },
-    highlightedElementAnimation: (theme: Theme) => ({
+    highlightedElementAnimation: (theme) => ({
         '@keyframes highlighted-element': {
             'from, 24%': {
                 backgroundColor: 'inherit',
@@ -70,7 +70,7 @@ const styles = {
             },
         },
     }),
-    button: (theme: Theme) => ({
+    button: (theme) => ({
         marginRight: theme.spacing(9),
         borderRadius: '20px',
     }),
@@ -80,7 +80,7 @@ const styles = {
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-};
+} as const satisfies MuiStyles;
 
 export default function DirectoryContent() {
     const treeData = useSelector((state: AppState) => state.treeData);

@@ -12,11 +12,12 @@ import {
     ElementType,
     fetchDirectoryContent,
     fetchRootFolders,
+    type MuiStyles,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { Box, BoxProps, PopoverOrigin, PopoverPosition, PopoverReference, SxProps, Theme } from '@mui/material';
+import { Box, type BoxProps, type PopoverOrigin, type PopoverPosition, type PopoverReference } from '@mui/material';
 import {
     directoryUpdated,
     setActiveDirectory,
@@ -52,7 +53,7 @@ const styles = {
         width: '100%',
         flexGrow: 1,
     },
-} as const satisfies Record<string, SxProps<Theme>>;
+} as const satisfies MuiStyles;
 
 function flattenDownNodes(n: IDirectory, cef: (arg: IDirectory) => any[]): IDirectory[] {
     const subs = cef(n);

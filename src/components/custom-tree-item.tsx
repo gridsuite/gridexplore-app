@@ -8,32 +8,23 @@
 import { forwardRef, MouseEvent, MouseEventHandler, useCallback, useEffect } from 'react';
 import clsx from 'clsx';
 import { UUID } from 'crypto';
-import {
-    Box,
-    BoxProps,
-    IconButton,
-    PopoverReference,
-    SxProps,
-    Theme,
-    Typography,
-    TypographyProps,
-} from '@mui/material';
+import { Box, BoxProps, IconButton, PopoverReference, Typography, TypographyProps } from '@mui/material';
 import { Add as AddIcon, AddBoxOutlined as AddBoxOutlinedIcon } from '@mui/icons-material';
 import { TreeItem, TreeItemContentProps, TreeItemProps, useTreeItem } from '@mui/x-tree-view';
-import { mergeSx, useStateBoolean } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyle, useStateBoolean } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 
 export interface TreeItemCustomContentProps {
     styles?: {
-        root?: SxProps<Theme>;
-        expanded?: SxProps<Theme>;
-        selected?: SxProps<Theme>;
-        focused?: SxProps<Theme>;
-        disabled?: SxProps<Theme>;
-        hovered?: SxProps<Theme>;
-        label?: SxProps<Theme>;
-        iconContainer?: SxProps<Theme>;
+        root?: MuiStyle;
+        expanded?: MuiStyle;
+        selected?: MuiStyle;
+        focused?: MuiStyle;
+        disabled?: MuiStyle;
+        hovered?: MuiStyle;
+        label?: MuiStyle;
+        iconContainer?: MuiStyle;
     };
     onExpand: (nodeId: UUID) => void;
     onSelect: (nodeId: UUID) => void;

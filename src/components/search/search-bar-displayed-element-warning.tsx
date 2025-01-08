@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Paper, Theme, Typography } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { HTMLAttributes } from 'react';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 export type SearchBarPaperDisplayedElementWarningProps = HTMLAttributes<HTMLElement> & {
     elementFoundLength: number;
@@ -16,13 +17,13 @@ export type SearchBarPaperDisplayedElementWarningProps = HTMLAttributes<HTMLElem
 };
 
 const styles = {
-    displayedElementWarning: (theme: Theme) => ({
+    displayedElementWarning: (theme) => ({
         color: theme.palette.info.main,
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
         marginLeft: theme.spacing(2),
     }),
-};
+} as const as MuiStyles;
 
 export function SearchBarPaperDisplayedElementWarning(props: Readonly<SearchBarPaperDisplayedElementWarningProps>) {
     const { elementFoundLength, elementFoundTotal, isLoading, children, ...other } = props;
