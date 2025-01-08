@@ -86,10 +86,9 @@ const lightTheme = createTheme({
         hover: '#8E9C9B',
     },
     aggrid: {
-        theme: 'ag-theme-alpine',
         highlightColor: '#CFDFFB',
         valueChangeHighlightBackgroundColor: 'initial', // TODO value?
-        overlay: { background: {} }, // TODO value?
+        overlay: { background: 'initial' }, // TODO value?
         background: {
             color: 'white',
         },
@@ -108,10 +107,9 @@ const darkTheme = createTheme({
         hover: '#545C5B',
     },
     aggrid: {
-        theme: 'ag-theme-alpine-dark',
         highlightColor: '#1F3B5B',
         valueChangeHighlightBackgroundColor: 'initial', // TODO value?
-        overlay: { background: {} }, // TODO value?
+        overlay: { background: 'initial' }, // TODO value?
         background: {
             color: '#383838',
         },

@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { UUID } from 'crypto';
+import { type CSSProperties } from 'react';
 import { IntlShape, useIntl } from 'react-intl';
 import { Box, CircularProgress } from '@mui/material';
 import {
@@ -51,6 +52,9 @@ const styles = {
     tooltip: {
         maxWidth: '1000px',
     },
+} as const as MuiStyles;
+
+const rawStyles = {
     overflow: {
         display: 'inline-block',
         whiteSpace: 'pre',
@@ -59,7 +63,7 @@ const styles = {
         lineHeight: 'initial',
         verticalAlign: 'middle',
     },
-} as const as MuiStyles;
+} as const satisfies Record<string, CSSProperties>;
 
 export type NameCellRendererProps = {
     data: ElementAttributes;
@@ -79,7 +83,7 @@ export function NameCellRenderer({ data, childrenMetadata }: Readonly<NameCellRe
             <OverflowableText
                 text={getDisplayedElementName(data, childrenMetadata, intl)}
                 tooltipSx={styles.tooltip}
-                style={styles.overflow}
+                style={rawStyles.overflow}
             />
         </Box>
     );

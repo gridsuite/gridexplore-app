@@ -39,7 +39,7 @@ export const isRowUnchecked = (row: ElementAttributes, checkedRows: ElementAttri
     row?.elementUuid &&
     !checkedRows.find((checkedRow) => checkedRow.elementUuid === row.elementUuid);
 
-export const defaultColumnDefinition: ColDef<unknown> = {
+export const defaultColumnDefinition: ColDef<ElementAttributes> = {
     sortable: true,
     resizable: true,
     lockPinned: true,
