@@ -6,7 +6,7 @@
  */
 
 import { ElementAttributes } from '@gridsuite/commons-ui';
-import { GridApi, GridReadyEvent, RowClassParams, RowStyle } from 'ag-grid-community';
+import type { GridApi, GridOptions, RowClassParams, RowStyle } from 'ag-grid-community';
 import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSearchedElement } from '../../redux/actions';
@@ -15,7 +15,9 @@ import { AppState } from '../../redux/types';
 
 const SEARCH_HIGHLIGHT_DURATION_S = 4;
 
-export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
+type GetGridOpt<TOption extends keyof GridOptions> = NonNullable<GridOptions<ElementAttributes>[TOption]>;
+
+export function useHighlightSearchedElement(gridApi: GridApi<ElementAttributes> | undefined) {
     const searchedElement = useSelector((state: AppState) => state.searchedElement);
     const dispatch = useDispatch<AppDispatch>();
     const timeout = useRef<ReturnType<typeof setTimeout>>();
@@ -38,12 +40,7 @@ export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
         [searchedElement, dispatch]
     );
 
-    const onGridReady = useCallback(
-        ({ api }: GridReadyEvent<ElementAttributes>) => {
-            highlightElement(api);
-        },
-        [highlightElement]
-    );
+    const onGridReady = useCallback<GetGridOpt<'onGridReady'>>(({ api }) => highlightElement(api), [highlightElement]);
 
     useEffect(() => {
         if (gridApi) {
@@ -51,7 +48,7 @@ export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
         }
     }, [highlightElement, gridApi]);
 
-    const getRowStyle = useCallback(
+    const getRowStyle = useCallback<GetGridOpt<'getRowStyle'>>(
         (cellData: RowClassParams<ElementAttributes, unknown>) => {
             const style: RowStyle = { fontSize: '1rem' };
             if (cellData?.data?.elementUuid === searchedElement?.id) {
@@ -64,4 +61,4 @@ export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
     );
 
     return [onGridReady, getRowStyle] as const;
-};
+}

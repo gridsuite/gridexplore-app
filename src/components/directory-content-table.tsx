@@ -7,13 +7,13 @@
 
 import { CustomAGGrid, ElementAttributes, ElementType } from '@gridsuite/commons-ui';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
-import {
-    AgGridEvent,
+import type {
     CellClickedEvent,
     CellContextMenuEvent,
     ColDef,
+    ColDefField,
     GetRowIdParams,
-    RowClassParams,
+    GridOptions,
 } from 'ag-grid-community';
 import { RefObject, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,20 +25,22 @@ export interface DirectoryContentTableProps
     extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
     gridRef: RefObject<AgGridReact<ElementAttributes>>;
     rows: ElementAttributes[];
-    handleCellContextualMenu: (event: CellContextMenuEvent) => void;
+    handleCellContextualMenu: (event: CellContextMenuEvent<ElementAttributes>) => void;
     handleRowSelected: () => void;
-    handleCellClick: (event: CellClickedEvent) => void;
-    colDef: ColDef[];
+    handleCellClick: (event: CellClickedEvent<ElementAttributes>) => void;
+    colDef: ColDef<ElementAttributes>[];
 }
 
-const getRowId = (params: GetRowIdParams<ElementAttributes>) => params.data?.elementUuid;
+type GetGridOpt<TOption extends keyof GridOptions> = NonNullable<GridOptions<ElementAttributes>[TOption]>;
 
-const recomputeOverFlowableCells = ({ api }: AgGridEvent) =>
+const getRowId: GetGridOpt<'getRowId'> = (params: GetRowIdParams<ElementAttributes>) => params.data?.elementUuid;
+
+const recomputeOverFlowableCells: GetGridOpt<'onGridSizeChanged'> = ({ api }) =>
     api.refreshCells({ force: true, columns: ['elementName', 'type'] });
 
 export const CUSTOM_ROW_CLASS = 'custom-row-class';
 
-const getClickableRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
+const getClickableRowStyle: GetGridOpt<'getRowStyle'> = (cellData) => {
     const style: Record<string, string> = { fontSize: '1rem' };
     if (
         cellData.data &&
@@ -58,7 +60,10 @@ const getClickableRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
     return style;
 };
 
-const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): ColDef[] => {
+const reorderColumns = (
+    colDef: ColDef<ElementAttributes>[],
+    newFieldOrder: string[] | undefined
+): ColDef<ElementAttributes>[] => {
     const fieldIndexMap = new Map(newFieldOrder?.map((field, index) => [field, index]));
     return colDef
         .filter((col) => fieldIndexMap.has(col.field ?? ''))
@@ -68,6 +73,19 @@ const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): 
             return indexA - indexB;
         });
 };
+
+function extractColumnOrder(colDefs: ColDef<ElementAttributes>[]): string[] {
+    return colDefs
+        .map((col) => col.field)
+        .filter((field): field is ColDefField<ElementAttributes> => field !== undefined);
+}
+
+function extractFieldNames(currentColumnDefs: ColDef<ElementAttributes>[] = []): string[] {
+    return currentColumnDefs
+        .filter((obj): obj is ColDef<ElementAttributes> => obj && typeof obj === 'object' && 'field' in obj)
+        .map((def) => def.field)
+        .filter((field): field is ColDefField<ElementAttributes> => field !== undefined);
+}
 
 export function DirectoryContentTable({
     gridRef,
@@ -79,9 +97,9 @@ export function DirectoryContentTable({
     onGridReady,
     colDef,
 }: Readonly<DirectoryContentTableProps>) {
-    const [columnDefs, setColumnDefs] = useState<ColDef[]>(colDef);
-    const getCustomRowStyle = useCallback(
-        (cellData: RowClassParams<ElementAttributes>) => ({
+    const [columnDefs, setColumnDefs] = useState(colDef);
+    const getCustomRowStyle = useCallback<NonNullable<GridOptions<ElementAttributes>['getRowStyle']>>(
+        (cellData) => ({
             ...getClickableRowStyle(cellData),
             ...getRowStyle?.(cellData),
         }),
@@ -92,27 +110,17 @@ export function DirectoryContentTable({
     const columnOrder = useSelector((state: AppState) => state.reorderedColumns);
 
     useEffect(() => {
-        const extractColumnOrder = (colDefs: ColDef[]): string[] =>
-            colDefs.filter((col) => col.field).map((col) => col.field as string);
         if (!columnOrder || columnOrder.length === 0) {
-            const initialColumnOrder = extractColumnOrder(colDef);
-            dispatch(setReorderedColumns(initialColumnOrder));
+            dispatch(setReorderedColumns(extractColumnOrder(colDef)));
         } else {
-            const orderedColumnDefs = reorderColumns(colDef, columnOrder);
-            setColumnDefs(orderedColumnDefs);
+            setColumnDefs(reorderColumns(colDef, columnOrder));
         }
     }, [columnOrder, colDef, dispatch]);
 
-    const onColumnMoved = useCallback(() => {
-        const extractFieldNames = (currentColumnDefs: ColDef[] | undefined): string[] =>
-            (currentColumnDefs ?? [])
-                .filter((obj): obj is ColDef => obj && typeof obj === 'object' && 'field' in obj)
-                .map((def) => def.field)
-                .filter((field): field is string => field !== undefined);
-        const currentColumnDefs = gridRef?.current?.api?.getColumnDefs();
-        const fieldNames = extractFieldNames(currentColumnDefs);
-        dispatch(setReorderedColumns(fieldNames));
+    const onColumnMoved = useCallback<GetGridOpt<'onColumnMoved'>>(() => {
+        dispatch(setReorderedColumns(extractFieldNames(gridRef?.current?.api?.getColumnDefs())));
     }, [dispatch, gridRef]);
+
     return (
         <CustomAGGrid
             ref={gridRef}

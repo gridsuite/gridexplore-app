@@ -8,17 +8,13 @@
 import { type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { Box, type BoxProps, Button, type ButtonProps, CircularProgress, Grid } from '@mui/material';
 import {
-    Box,
-    type BoxProps,
-    Button,
-    type ButtonProps,
-    CircularProgress,
-    Grid,
-    type SxProps,
-    type Theme,
-} from '@mui/material';
-import { type ElementAttributes, type ItemSelectionForCopy, NO_ITEM_SELECTION_FOR_COPY } from '@gridsuite/commons-ui';
+    type ElementAttributes,
+    type ItemSelectionForCopy,
+    type MuiStyles,
+    NO_ITEM_SELECTION_FOR_COPY,
+} from '@gridsuite/commons-ui';
 import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
 import * as constants from '../utils/UIconstants';
@@ -85,8 +81,8 @@ const styles = {
 export default function DirectoryContent() {
     const treeData = useSelector((state: AppState) => state.treeData);
     const dispatch = useDispatch();
-    const gridRef = useRef<AgGridReact | null>(null);
-    const [onGridReady, getRowStyle] = useHighlightSearchedElement(gridRef?.current?.api ?? null);
+    const gridRef = useRef<AgGridReact<ElementAttributes> | null>(null);
+    const [onGridReady, getRowStyle] = useHighlightSearchedElement(gridRef?.current?.api);
 
     const [broadcastChannel] = useState(() => {
         const broadcast = new BroadcastChannel('itemCopyChannel');
@@ -177,6 +173,7 @@ export default function DirectoryContent() {
                     dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
                     setActiveElement({
                         hasMetadata: childrenMetadata[cellEvent.data.elementUuid] !== undefined,
+                        // @ts-expect-error TODO TS2783: specificMetadata is specified more than once, so this usage will be overwritten.
                         specificMetadata: childrenMetadata[cellEvent.data.elementUuid]?.specificMetadata,
                         ...cellEvent.data,
                     });
@@ -280,7 +277,7 @@ export default function DirectoryContent() {
                     </div>
                 )
             }
-            <Grid item sx={styles.highlightedElementAnimation as SxProps} xs={12} onContextMenu={onContextMenu}>
+            <Grid item sx={styles.highlightedElementAnimation} xs={12} onContextMenu={onContextMenu}>
                 {/* eslint-disable no-nested-ternary -- TODO split into sub components */}
                 {
                     // Here we wait for Metadata for the folder content

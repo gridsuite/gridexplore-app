@@ -13,7 +13,7 @@ import { LIGHT_THEME, type MuiStyles } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { PARAM_THEME } from 'utils/config-params';
 import { AppState } from '../redux/types';
-import CircleIcon from './icons/circleIcon';
+import RoundBox from './icons/round-box';
 
 const CIRCLE_SIZE = 250;
 
@@ -49,7 +49,7 @@ export default function EmptyDirectory({ onCreateElementButtonClick }: Readonly<
     const theme = useSelector((state: AppState) => state[PARAM_THEME]);
     return (
         <Box sx={styles.container}>
-            <CircleIcon size={CIRCLE_SIZE} iconStyles={styles.circle}>
+            <RoundBox size={CIRCLE_SIZE} sx={styles.circle}>
                 <SvgIcon sx={styles.iconSize}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -61,7 +61,7 @@ export default function EmptyDirectory({ onCreateElementButtonClick }: Readonly<
                         <path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640H447l-80-80H160v480l96-320h684L837-217q-8 26-29.5 41.5T760-160H160Zm84-80h516l72-240H316l-72 240Zm0 0 72-240-72 240Zm-84-400v-80 80Z" />
                     </svg>
                 </SvgIcon>
-            </CircleIcon>
+            </RoundBox>
             <Box sx={styles.text}>
                 <h3>
                     <FormattedMessage id="emptyDirContent" />

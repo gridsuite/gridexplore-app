@@ -9,7 +9,7 @@ import { Box, Button } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { CreateNewFolderOutlined as CreateNewFolderOutlinedIcon } from '@mui/icons-material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import CircleIcon from './icons/circleIcon';
+import RoundBox from './icons/round-box';
 
 const CIRCLE_SIZE = 200;
 
@@ -43,9 +43,9 @@ export interface NoContentDirectoryProps {
 export default function NoContentDirectory({ handleOpenDialog }: Readonly<NoContentDirectoryProps>) {
     return (
         <Box sx={styles.noContentContainer}>
-            <CircleIcon size={CIRCLE_SIZE} iconStyles={stylesIcon.circle}>
+            <RoundBox size={CIRCLE_SIZE} sx={styles.circleIcon}>
                 <CreateNewFolderOutlinedIcon sx={styles.iconSize} />
-            </CircleIcon>
+            </RoundBox>
             <Box sx={styles.noContentText}>
                 <h1>
                     <FormattedMessage id="createFirstDir" />
