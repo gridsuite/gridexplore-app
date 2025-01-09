@@ -285,7 +285,7 @@ function DirectoryContentDialog(
             />
         );
     }
-    if (currentExplicitNamingFilterId !== undefined) {
+    if (currentExplicitNamingFilterId !== undefined && activeElement) {
         return (
             <ExplicitNamingFilterEditionDialog
                 id={currentExplicitNamingFilterId}
@@ -300,10 +300,11 @@ function DirectoryContentDialog(
                 activeDirectory={activeDirectory}
                 elementExists={elementExists}
                 language={languageLocal}
+                description={activeElement.description}
             />
         );
     }
-    if (currentExpertFilterId !== undefined) {
+    if (currentExpertFilterId !== undefined && activeElement) {
         return (
             <ExpertFilterEditionDialog
                 id={currentExpertFilterId}
@@ -318,6 +319,7 @@ function DirectoryContentDialog(
                 activeDirectory={activeDirectory}
                 elementExists={elementExists}
                 language={languageLocal}
+                description={activeElement.description}
             />
         );
     }
