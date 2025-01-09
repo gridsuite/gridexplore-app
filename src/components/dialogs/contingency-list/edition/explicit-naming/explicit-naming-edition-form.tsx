@@ -6,7 +6,13 @@
  */
 
 import { Box } from '@mui/material';
-import { ElementType, FieldConstants, UniqueNameInput, unscrollableDialogStyles } from '@gridsuite/commons-ui';
+import {
+    DescriptionField,
+    ElementType,
+    FieldConstants,
+    UniqueNameInput,
+    unscrollableDialogStyles,
+} from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { elementExists } from '../../../../../utils/rest-api';
 import ExplicitNamingForm from '../../explicit-naming/explicit-naming-form';
@@ -24,6 +30,7 @@ export default function ExplicitNamingEditionForm() {
                     activeDirectory={activeDirectory}
                     elementExists={elementExists}
                 />
+                <DescriptionField />
             </Box>
             <ExplicitNamingForm />
         </>

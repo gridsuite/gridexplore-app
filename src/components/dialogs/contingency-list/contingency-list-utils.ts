@@ -50,6 +50,7 @@ export const makeDefaultRowData = () => ({
     [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
     [FieldConstants.CONTINGENCY_NAME]: '',
     [FieldConstants.EQUIPMENT_IDS]: [],
+    [FieldConstants.DESCRIPTION]: '',
 });
 
 export const makeDefaultTableRows = () => [makeDefaultRowData(), makeDefaultRowData(), makeDefaultRowData()];
@@ -64,15 +65,15 @@ export const getContingencyListEmptyFormData = (name = '') => ({
     ...getCriteriaBasedFormData(),
 });
 
-export const getCriteriaBasedFormDataFromFetchedElement = (response: any, name: string, description?: string) => ({
+export const getCriteriaBasedFormDataFromFetchedElement = (response: any, name: string, description: string) => ({
     [FieldConstants.NAME]: name,
     [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [FieldConstants.EQUIPMENT_TYPE]: response.equipmentType,
-    [FieldConstants.DESCRIPTION]: description,
+    [FieldConstants.DESCRIPTION]: description || '',
     ...getCriteriaBasedFormData(response),
 });
 
-export const getExplicitNamingFormDataFromFetchedElement = (response: any) => {
+export const getExplicitNamingFormDataFromFetchedElement = (response: any, name: string, description: string) => {
     let result;
     if (response.identifierContingencyList?.identifiers?.length) {
         result = response.identifierContingencyList?.identifiers?.map((identifiers: IdentifierList) => ({
@@ -86,11 +87,15 @@ export const getExplicitNamingFormDataFromFetchedElement = (response: any) => {
     }
     return {
         [FieldConstants.EQUIPMENT_TABLE]: result,
+        [FieldConstants.DESCRIPTION]: description,
+        [FieldConstants.NAME]: name,
     };
 };
 
-export const getScriptFormDataFromFetchedElement = (response: any) => ({
+export const getScriptFormDataFromFetchedElement = (response: any, name: string, description: string) => ({
     [FieldConstants.SCRIPT]: response.script,
+    [FieldConstants.NAME]: name,
+    [FieldConstants.DESCRIPTION]: description,
 });
 
 export const getFormContent = (

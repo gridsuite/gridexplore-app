@@ -81,7 +81,7 @@ export default function CriteriaBasedEditionDialog({
         getContingencyList(contingencyListType, contingencyListId)
             .then((response) => {
                 if (response) {
-                    const formData = getCriteriaBasedFormDataFromFetchedElement(response, name, description);
+                    const formData = getCriteriaBasedFormDataFromFetchedElement(response, name, description || '');
                     reset({
                         ...formData,
                     });

@@ -34,8 +34,6 @@ export default function CriteriaBasedEditionForm() {
                         activeDirectory={activeDirectory}
                         elementExists={elementExists}
                     />
-                </Box>
-                <Box sx={unscrollableDialogStyles.unscrollableHeader}>
                     <DescriptionField />
                 </Box>
             </Grid>

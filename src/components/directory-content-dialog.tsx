@@ -255,7 +255,7 @@ function DirectoryContentDialog(
                 onClose={handleCloseFiltersContingency}
                 name={elementName}
                 broadcastChannel={broadcastChannel}
-                description={activeElement?.description}
+                description={activeElement?.description || ''}
             />
         );
     }
@@ -269,6 +269,7 @@ function DirectoryContentDialog(
                 onClose={handleCloseScriptContingency}
                 name={elementName}
                 broadcastChannel={broadcastChannel}
+                description={activeElement?.description}
             />
         );
     }
@@ -282,6 +283,7 @@ function DirectoryContentDialog(
                 onClose={handleCloseExplicitNamingContingency}
                 name={elementName}
                 broadcastChannel={broadcastChannel}
+                description={activeElement?.description}
             />
         );
     }
