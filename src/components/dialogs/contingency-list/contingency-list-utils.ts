@@ -64,10 +64,11 @@ export const getContingencyListEmptyFormData = (name = '') => ({
     ...getCriteriaBasedFormData(),
 });
 
-export const getCriteriaBasedFormDataFromFetchedElement = (response: any, name: string) => ({
+export const getCriteriaBasedFormDataFromFetchedElement = (response: any, name: string, description?: string) => ({
     [FieldConstants.NAME]: name,
     [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [FieldConstants.EQUIPMENT_TYPE]: response.equipmentType,
+    [FieldConstants.DESCRIPTION]: description,
     ...getCriteriaBasedFormData(response),
 });
 

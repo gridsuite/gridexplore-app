@@ -541,6 +541,7 @@ export function getContingencyList(type: string, id: string) {
 
 export interface CriteriaBasedEditionFormData {
     [FieldConstants.NAME]: string;
+    [FieldConstants.DESCRIPTION]: string;
     [FieldConstants.EQUIPMENT_TYPE]?: string | null;
     [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
 }
@@ -573,9 +574,10 @@ export function saveCompositeModification(id: string, name: string) {
  * @returns {Promise<Response>}
  */
 export function saveCriteriaBasedContingencyList(id: string, form: CriteriaBasedEditionFormData) {
-    const { name, equipmentType, criteriaBased } = form;
+    const { name, description, equipmentType, criteriaBased } = form;
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
     urlSearchParams.append('contingencyListType', ContingencyListType.CRITERIA_BASED.id);
 
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/contingency-lists/${id}?${urlSearchParams.toString()}`;
