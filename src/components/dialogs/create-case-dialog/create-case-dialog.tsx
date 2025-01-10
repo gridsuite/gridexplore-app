@@ -18,10 +18,12 @@ import {
     FieldErrorAlert,
     isObjectEmpty,
     keyGenerator,
+    UniqueNameInput,
     useConfidentialityWarning,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { createCase } from '../../../utils/rest-api';
+import { useState } from 'react';
+import { createCase, elementExists } from '../../../utils/rest-api';
 import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import { addUploadingElement, removeUploadingElement } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
@@ -29,7 +31,6 @@ import {
     createCaseDialogFormValidationSchema,
     getCreateCaseDialogFormValidationDefaultValues,
 } from './create-case-dialog-utils';
-import PrefilledNameInput from '../commons/prefilled-name-input';
 import { handleMaxElementsExceededError } from '../../utils/rest-errors';
 import { AppDispatch } from '../../../redux/store';
 import { AppState, UploadingElement } from '../../../redux/types';
@@ -57,12 +58,14 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
 
     const {
         formState: { errors, isValid },
+        getValues,
     } = createCaseFormMethods;
 
     const isFormValid = isObjectEmpty(errors) && isValid;
 
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
+    const [modifiedByUser, setModifiedByUser] = useState(false);
 
     const handleCreateNewCase = ({ caseName, description, caseFile }: IFormData): void => {
         const uploadingCase: UploadingElement = {
@@ -100,6 +103,7 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
         // the uploadingCase ghost element will be removed when directory content updated by fetch
         dispatch(addUploadingElement(uploadingCase));
     };
+    const caseFileStudy = getValues(FieldConstants.CASE_FILE);
 
     return (
         <CustomMuiDialog
@@ -115,10 +119,14 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
         >
             <Grid container spacing={2} marginTop="auto" direction="column">
                 <Grid item>
-                    <PrefilledNameInput
+                    <UniqueNameInput
                         name={FieldConstants.CASE_NAME}
                         label="nameProperty"
                         elementType={ElementType.CASE}
+                        elementExists={elementExists}
+                        activeDirectory={activeDirectory}
+                        autoFocus={!caseFileStudy}
+                        onManualChangeCallback={() => setModifiedByUser(true)}
                     />
                 </Grid>
                 <Grid item>
@@ -126,7 +134,7 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
                 </Grid>
             </Grid>
             <ErrorInput name={FieldConstants.CASE_FILE} InputField={FieldErrorAlert} />
-            <UploadNewCase />
+            <UploadNewCase modifiedByUser={modifiedByUser} />
         </CustomMuiDialog>
     );
 }

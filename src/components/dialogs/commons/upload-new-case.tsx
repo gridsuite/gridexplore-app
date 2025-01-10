@@ -9,11 +9,12 @@ import { ChangeEvent, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
-import { FieldConstants } from '@gridsuite/commons-ui';
+import { FieldConstants, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
+import { createCaseWithoutDirectoryElementCreation, deleteCase, getBaseName } from '../../../utils/rest-api';
 
 export interface UploadNewCaseProps {
+    modifiedByUser?: boolean;
     isNewStudyCreation?: boolean;
     getCurrentCaseImportParams?: (uuid: UUID) => void;
     handleApiCallError?: ErrorCallback;
@@ -23,12 +24,13 @@ const MAX_FILE_SIZE_IN_MO = 100;
 const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
 
 export default function UploadNewCase({
+    modifiedByUser = false,
     isNewStudyCreation = false,
     getCurrentCaseImportParams,
     handleApiCallError,
 }: Readonly<UploadNewCaseProps>) {
     const intl = useIntl();
-
+    const { snackError } = useSnackMessage();
     const [caseFileLoading, setCaseFileLoading] = useState(false);
 
     const {
@@ -58,6 +60,24 @@ export default function UploadNewCase({
         return <FormattedMessage id="uploadMessage" />;
     }, [caseFileLoading, caseFileName]);
 
+    const fetchBaseName = (currentFile: any) => {
+        const { name: currentCaseFileName } = currentFile;
+        const name = isNewStudyCreation ? FieldConstants.STUDY_NAME : FieldConstants.CASE_NAME;
+        if (currentCaseFileName && !modifiedByUser) {
+            getBaseName(currentCaseFileName)
+                .then((response) => {
+                    setValue(name, response, {
+                        shouldValidate: true,
+                    });
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                    });
+                });
+        }
+    };
+
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
 
@@ -71,9 +91,7 @@ export default function UploadNewCase({
 
             if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
                 onValueChange(currentFile);
-
-                const { name: currentCaseFileName } = currentFile;
-
+                fetchBaseName(currentFile);
                 if (isNewStudyCreation) {
                     // Create new case
                     setCaseFileLoading(true);
@@ -95,19 +113,6 @@ export default function UploadNewCase({
                         .finally(() => {
                             setCaseFileLoading(false);
                         });
-                } else {
-                    const caseName = getValues(FieldConstants.CASE_NAME);
-                    if (currentCaseFileName && caseName !== currentCaseFileName) {
-                        clearErrors(FieldConstants.CASE_NAME);
-                        setValue(
-                            FieldConstants.CASE_NAME,
-                            currentCaseFileName.substring(0, currentCaseFileName.indexOf('.')),
-                            {
-                                shouldDirty: true,
-                                shouldValidate: true,
-                            }
-                        );
-                    }
                 }
             } else {
                 setError(FieldConstants.CASE_FILE, {
