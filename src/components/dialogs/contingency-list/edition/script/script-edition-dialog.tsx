@@ -83,7 +83,7 @@ export default function ScriptEditionDialog({
         getContingencyList(contingencyListType, contingencyListId)
             .then((response) => {
                 if (response) {
-                    const formData = getScriptFormDataFromFetchedElement(response, name, description || '');
+                    const formData = getScriptFormDataFromFetchedElement(response, name, description ?? '');
                     reset({ ...formData });
                 }
             })
@@ -109,7 +109,7 @@ export default function ScriptEditionDialog({
         return saveScriptContingencyList(
             newScript,
             contingencyList[FieldConstants.NAME],
-            contingencyList[FieldConstants.DESCRIPTION] || ''
+            contingencyList[FieldConstants.DESCRIPTION] ?? ''
         );
     };
     const onSubmit = (contingencyList: ScriptEditionFormData) => {

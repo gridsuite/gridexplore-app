@@ -255,7 +255,7 @@ function DirectoryContentDialog(
                 onClose={handleCloseFiltersContingency}
                 name={elementName}
                 broadcastChannel={broadcastChannel}
-                description={activeElement?.description || ''}
+                description={activeElement?.description}
             />
         );
     }

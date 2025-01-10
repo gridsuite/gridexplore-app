@@ -89,7 +89,7 @@ export default function ExplicitNamingEditionDialog({
         getContingencyList(contingencyListType, contingencyListId)
             .then((response) => {
                 if (response) {
-                    const formData = getExplicitNamingFormDataFromFetchedElement(response, name, description || '');
+                    const formData = getExplicitNamingFormDataFromFetchedElement(response, name, description ?? '');
                     reset({ ...formData });
                 }
             })
