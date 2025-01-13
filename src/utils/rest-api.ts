@@ -389,7 +389,7 @@ const getDuplicateEndpoint = (type: ElementType) => {
         case ElementType.PARAMETERS:
             return '/parameters';
         case ElementType.MODIFICATION:
-            return '/modifications';
+            return '/composite-modifications';
         default:
             return undefined;
     }
