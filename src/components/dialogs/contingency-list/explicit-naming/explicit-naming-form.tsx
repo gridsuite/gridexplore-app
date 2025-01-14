@@ -8,12 +8,7 @@
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo } from 'react';
 import { v4 as uuid4 } from 'uuid';
-import {
-    CustomAgGridTable,
-    FieldConstants,
-    ROW_DRAGGING_SELECTION_COLUMN_DEF,
-    yupConfig as yup,
-} from '@gridsuite/commons-ui';
+import { CustomAgGridTable, FieldConstants, yupConfig as yup } from '@gridsuite/commons-ui';
 import { ColDef, SuppressKeyboardEventParams } from 'ag-grid-community';
 import { ContingencyListType } from '../../../../utils/elementType';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
@@ -66,11 +61,11 @@ export default function ExplicitNamingForm() {
     const intl = useIntl();
     const columnDefs = useMemo<ColDef[]>(
         () => [
-            ...ROW_DRAGGING_SELECTION_COLUMN_DEF,
             {
                 headerName: intl.formatMessage({ id: 'elementName' }),
                 field: FieldConstants.CONTINGENCY_NAME,
                 editable: true,
+                rowDrag: true,
                 singleClickEdit: true,
             },
             {
@@ -137,7 +132,12 @@ export default function ExplicitNamingForm() {
             makeDefaultRowData={makeDefaultRowData}
             pagination
             paginationPageSize={100}
-            suppressRowClickSelection
+            rowSelection={{
+                mode: 'multiRow',
+                enableClickSelection: false,
+                checkboxes: true,
+                headerCheckbox: true,
+            }}
             defaultColDef={defaultColDef}
             alwaysShowVerticalScroll
             stopEditingWhenCellsLoseFocus

@@ -67,8 +67,9 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         cellRendererParams: {
             childrenMetadata,
         },
-        headerCheckboxSelection: true,
-        checkboxSelection: true,
+        cellStyle: {
+            display: 'flex',
+        },
         minWidth: 400,
     },
     {
