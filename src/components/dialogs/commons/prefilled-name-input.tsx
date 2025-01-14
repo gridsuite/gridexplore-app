@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { ElementType, FieldConstants, UniqueNameInput } from '@gridsuite/commons-ui';
+import { ElementType, FieldConstants, UniqueNameInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { elementExists, getBaseName } from '../../../utils/rest-api';
 import { AppState } from '../../../redux/types';
@@ -23,28 +23,18 @@ export interface PrefilledNameInputProps {
  * Used for CreateCaseDialog and CreateStudyDialog
  */
 export default function PrefilledNameInput({ label, name, elementType }: Readonly<PrefilledNameInputProps>) {
-    const {
-        setValue,
-        clearErrors,
-        watch,
-        formState: { errors },
-    } = useFormContext();
+    const { setValue, watch } = useFormContext();
 
     const [modifiedByUser, setModifiedByUser] = useState(false);
+    const { snackError } = useSnackMessage();
 
     const caseFile = watch(FieldConstants.CASE_FILE) as File;
-    const caseFileErrorMessage = errors.caseFile?.message;
-    const apiCallErrorMessage = errors.root?.apiCall?.message;
-
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
 
     useEffect(() => {
-        // we replace the name only if some conditions are respected
-        if (caseFile && !modifiedByUser && !apiCallErrorMessage && !caseFileErrorMessage) {
+        if (caseFile && !modifiedByUser) {
             const { name: caseName } = caseFile;
-
             if (caseName) {
-                clearErrors(name);
                 getBaseName(caseName)
                     .then((response) => {
                         setValue(name, response, {
@@ -52,11 +42,13 @@ export default function PrefilledNameInput({ label, name, elementType }: Readonl
                         });
                     })
                     .catch((error) => {
-                        console.error('Error fetching base name:', error);
+                        snackError({
+                            messageTxt: error.message,
+                        });
                     });
             }
         }
-    }, [caseFile, modifiedByUser, apiCallErrorMessage, caseFileErrorMessage, setValue, clearErrors, name]);
+    }, [caseFile, modifiedByUser, setValue, name, snackError]);
 
     return (
         <UniqueNameInput
