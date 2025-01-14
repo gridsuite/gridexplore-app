@@ -23,7 +23,6 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
 import * as constants from '../utils/UIconstants';
 import { setActiveDirectory, setItemSelectionForCopy } from '../redux/actions';
-import { AnchorStatesType, defaultAnchorStates } from './menus/common-contextual-menu';
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
@@ -40,6 +39,7 @@ import { useHighlightSearchedElement } from './search/use-highlight-searched-ele
 import EmptyDirectory, { type EmptyDirectoryProps } from './empty-directory';
 import { AppState } from '../redux/types';
 import DirectoryContentDialog, { type DirectoryContentDialogApi } from './directory-content-dialog';
+import { AnchorStatesType, defaultAnchorStates } from './menus/anchor-utils';
 
 const circularProgressSize = '70px';
 

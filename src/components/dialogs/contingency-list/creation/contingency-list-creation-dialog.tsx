@@ -23,11 +23,11 @@ import {
     getContingencyListEmptyFormData,
     getFormContent,
 } from '../contingency-list-utils';
-import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-form';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { useParameterState } from '../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 import { AppState } from '../../../../redux/types';
+import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-utils';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
