@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid } from '@mui/material';
+import { Box } from '@mui/material';
 import {
     CriteriaBasedForm,
     DescriptionField,
