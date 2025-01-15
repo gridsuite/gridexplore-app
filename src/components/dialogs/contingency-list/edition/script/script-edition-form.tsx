@@ -22,7 +22,7 @@ export default function ScriptEditionForm() {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
         <>
-            <Box sx={[unscrollableDialogStyles.unscrollableHeader, { spacing: 8 }]}>
+            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
                 <UniqueNameInput
                     name={FieldConstants.NAME}
                     label="nameProperty"
@@ -30,6 +30,8 @@ export default function ScriptEditionForm() {
                     activeDirectory={activeDirectory}
                     elementExists={elementExists}
                 />
+            </Box>
+            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
                 <DescriptionField />
             </Box>
             <ScriptInputForm />

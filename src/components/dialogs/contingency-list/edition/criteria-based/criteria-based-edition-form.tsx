@@ -24,25 +24,24 @@ export default function CriteriaBasedEditionForm() {
     const emptyValues = getCriteriaBasedFormData();
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={12}>
-                <Box sx={unscrollableDialogStyles.unscrollableHeader}>
-                    <UniqueNameInput
-                        name={FieldConstants.NAME}
-                        label="nameProperty"
-                        elementType={ElementType.CONTINGENCY_LIST}
-                        activeDirectory={activeDirectory}
-                        elementExists={elementExists}
-                    />
-                    <DescriptionField />
-                </Box>
-            </Grid>
-            <Grid item xs={12}>
-                <CriteriaBasedForm
-                    equipments={SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS}
-                    defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
+        <>
+            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
+                <UniqueNameInput
+                    name={FieldConstants.NAME}
+                    label="nameProperty"
+                    elementType={ElementType.CONTINGENCY_LIST}
+                    activeDirectory={activeDirectory}
+                    elementExists={elementExists}
                 />
-            </Grid>
-        </Grid>
+            </Box>
+            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
+                <DescriptionField />
+            </Box>
+
+            <CriteriaBasedForm
+                equipments={SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS}
+                defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}
+            />
+        </>
     );
 }

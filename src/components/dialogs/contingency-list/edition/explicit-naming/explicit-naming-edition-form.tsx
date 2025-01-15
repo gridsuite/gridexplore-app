@@ -30,6 +30,8 @@ export default function ExplicitNamingEditionForm() {
                     activeDirectory={activeDirectory}
                     elementExists={elementExists}
                 />
+            </Box>
+            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
                 <DescriptionField />
             </Box>
             <ExplicitNamingForm />
