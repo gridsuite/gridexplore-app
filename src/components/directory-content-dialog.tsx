@@ -245,7 +245,7 @@ function DirectoryContentDialog(
             />
         );
     }
-    if (currentFiltersContingencyListId !== undefined) {
+    if (currentFiltersContingencyListId !== undefined && activeElement) {
         return (
             <CriteriaBasedEditionDialog
                 open
@@ -255,11 +255,11 @@ function DirectoryContentDialog(
                 onClose={handleCloseFiltersContingency}
                 name={elementName}
                 broadcastChannel={broadcastChannel}
-                description={activeElement?.description}
+                description={activeElement.description}
             />
         );
     }
-    if (currentScriptContingencyListId !== undefined) {
+    if (currentScriptContingencyListId !== undefined && activeElement) {
         return (
             <ScriptEditionDialog
                 open
@@ -269,11 +269,11 @@ function DirectoryContentDialog(
                 onClose={handleCloseScriptContingency}
                 name={elementName}
                 broadcastChannel={broadcastChannel}
-                description={activeElement?.description}
+                description={activeElement.description}
             />
         );
     }
-    if (currentExplicitNamingContingencyListId !== undefined) {
+    if (currentExplicitNamingContingencyListId !== undefined && activeElement) {
         return (
             <ExplicitNamingEditionDialog
                 open
@@ -283,7 +283,7 @@ function DirectoryContentDialog(
                 onClose={handleCloseExplicitNamingContingency}
                 name={elementName}
                 broadcastChannel={broadcastChannel}
-                description={activeElement?.description}
+                description={activeElement.description}
             />
         );
     }

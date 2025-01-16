@@ -33,7 +33,7 @@ import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().required(),
-    [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION, 'descriptionLimitError'),
+    [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     ...getCriteriaBasedSchema(),
 });
 
@@ -45,7 +45,7 @@ export interface CriteriaBasedEditionDialogProps {
     titleId: string;
     name: string;
     broadcastChannel: BroadcastChannel;
-    description?: string;
+    description: string;
 }
 
 export default function CriteriaBasedEditionDialog({
@@ -81,7 +81,7 @@ export default function CriteriaBasedEditionDialog({
         getContingencyList(contingencyListType, contingencyListId)
             .then((response) => {
                 if (response) {
-                    const formData = getCriteriaBasedFormDataFromFetchedElement(response, name, description ?? '');
+                    const formData = getCriteriaBasedFormDataFromFetchedElement(response, name, description);
                     reset({
                         ...formData,
                     });

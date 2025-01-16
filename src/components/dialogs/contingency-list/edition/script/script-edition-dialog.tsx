@@ -34,7 +34,7 @@ const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().nullable(),
     [FieldConstants.SCRIPT]: yup.string().nullable(),
-    [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION, 'descriptionLimitError'),
+    [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
 });
 
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
@@ -47,7 +47,7 @@ export interface ScriptEditionDialogProps {
     titleId: string;
     name: string;
     broadcastChannel: BroadcastChannel;
-    description?: string;
+    description: string;
 }
 
 export default function ScriptEditionDialog({
@@ -83,7 +83,7 @@ export default function ScriptEditionDialog({
         getContingencyList(contingencyListType, contingencyListId)
             .then((response) => {
                 if (response) {
-                    const formData = getScriptFormDataFromFetchedElement(response, name, description ?? '');
+                    const formData = getScriptFormDataFromFetchedElement(response, name, description);
                     reset({ ...formData });
                 }
             })

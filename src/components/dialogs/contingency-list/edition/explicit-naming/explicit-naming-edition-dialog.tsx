@@ -41,7 +41,7 @@ interface ExplicitNamingEditionFormData {
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().nullable(),
-    [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION, 'descriptionLimitError'),
+    [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     ...getExplicitNamingEditSchema(),
 });
 
@@ -55,7 +55,7 @@ export interface ExplicitNamingEditionDialogProps {
     titleId: string;
     name: string;
     broadcastChannel: BroadcastChannel;
-    description?: string;
+    description: string;
 }
 
 export default function ExplicitNamingEditionDialog({
@@ -89,7 +89,7 @@ export default function ExplicitNamingEditionDialog({
         getContingencyList(contingencyListType, contingencyListId)
             .then((response) => {
                 if (response) {
-                    const formData = getExplicitNamingFormDataFromFetchedElement(response, name, description ?? '');
+                    const formData = getExplicitNamingFormDataFromFetchedElement(response, name, description);
                     reset({ ...formData });
                 }
             })
