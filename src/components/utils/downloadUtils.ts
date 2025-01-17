@@ -120,6 +120,7 @@ export function useDownloadUtils() {
                     abortController2
                 );
 
+                // @ts-ignore
                 let downloadFileName = result.headers.get('Content-Disposition').split('filename=')[1];
                 // We remove quotes
                 downloadFileName = downloadFileName.substring(1, downloadFileName.length - 1);

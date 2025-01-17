@@ -314,6 +314,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     );
 
     const [renameCB, renameState] = useDeferredFetch(
+        // @ts-ignore
         renameElement,
         (elementUuid: string, renamedElement: any[]) => {
             // if copied element is renamed
