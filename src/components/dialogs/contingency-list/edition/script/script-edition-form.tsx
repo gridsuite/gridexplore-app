@@ -6,7 +6,13 @@
  */
 
 import { Box } from '@mui/material';
-import { ElementType, FieldConstants, UniqueNameInput, unscrollableDialogStyles } from '@gridsuite/commons-ui';
+import {
+    DescriptionField,
+    ElementType,
+    FieldConstants,
+    UniqueNameInput,
+    unscrollableDialogStyles,
+} from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { elementExists } from '../../../../../utils/rest-api';
 import ScriptInputForm from '../../script/script-input-form';
@@ -24,6 +30,9 @@ export default function ScriptEditionForm() {
                     activeDirectory={activeDirectory}
                     elementExists={elementExists}
                 />
+            </Box>
+            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
+                <DescriptionField />
             </Box>
             <ScriptInputForm />
         </>

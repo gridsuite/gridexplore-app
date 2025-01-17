@@ -8,6 +8,7 @@
 import { Box } from '@mui/material';
 import {
     CriteriaBasedForm,
+    DescriptionField,
     ElementType,
     FieldConstants,
     getCriteriaBasedFormData,
@@ -33,6 +34,10 @@ export default function CriteriaBasedEditionForm() {
                     elementExists={elementExists}
                 />
             </Box>
+            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
+                <DescriptionField />
+            </Box>
+
             <CriteriaBasedForm
                 equipments={SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS}
                 defaultValues={emptyValues[FieldConstants.CRITERIA_BASED]}

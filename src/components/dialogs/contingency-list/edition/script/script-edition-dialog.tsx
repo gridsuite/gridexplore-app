@@ -8,6 +8,7 @@
 import {
     CustomMuiDialog,
     FieldConstants,
+    MAX_CHAR_DESCRIPTION,
     NO_ITEM_SELECTION_FOR_COPY,
     useSnackMessage,
     yupConfig as yup,
@@ -24,6 +25,7 @@ import { AppState } from '../../../../../redux/types';
 
 interface ScriptEditionFormData {
     [FieldConstants.NAME]: string;
+    [FieldConstants.DESCRIPTION]?: string;
     [FieldConstants.SCRIPT]?: string | null;
     [FieldConstants.EQUIPMENT_TYPE]?: string | null;
 }
@@ -32,6 +34,7 @@ const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().nullable(),
     [FieldConstants.SCRIPT]: yup.string().nullable(),
+    [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
 });
 
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
@@ -44,6 +47,7 @@ export interface ScriptEditionDialogProps {
     titleId: string;
     name: string;
     broadcastChannel: BroadcastChannel;
+    description: string;
 }
 
 export default function ScriptEditionDialog({
@@ -54,6 +58,7 @@ export default function ScriptEditionDialog({
     titleId,
     name,
     broadcastChannel,
+    description,
 }: Readonly<ScriptEditionDialogProps>) {
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
@@ -78,8 +83,8 @@ export default function ScriptEditionDialog({
         getContingencyList(contingencyListType, contingencyListId)
             .then((response) => {
                 if (response) {
-                    const formData = getScriptFormDataFromFetchedElement(response);
-                    reset({ ...formData, [FieldConstants.NAME]: name });
+                    const formData = getScriptFormDataFromFetchedElement(response, name, description);
+                    reset({ ...formData });
                 }
             })
             .catch((error) => {
@@ -89,7 +94,7 @@ export default function ScriptEditionDialog({
                 });
             })
             .finally(() => setIsFetching(false));
-    }, [contingencyListId, contingencyListType, name, reset, snackError]);
+    }, [contingencyListId, contingencyListType, name, reset, snackError, description]);
 
     const closeAndClear = () => {
         reset(emptyFormData());
@@ -101,7 +106,11 @@ export default function ScriptEditionDialog({
             id: contingencyListId2,
             script: contingencyList[FieldConstants.SCRIPT],
         };
-        return saveScriptContingencyList(newScript, contingencyList[FieldConstants.NAME]);
+        return saveScriptContingencyList(
+            newScript,
+            contingencyList[FieldConstants.NAME],
+            contingencyList[FieldConstants.DESCRIPTION] ?? ''
+        );
     };
     const onSubmit = (contingencyList: ScriptEditionFormData) => {
         editContingencyList(contingencyListId, contingencyList)
