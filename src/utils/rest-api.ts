@@ -541,6 +541,7 @@ export function getContingencyList(type: string, id: string) {
 
 export interface CriteriaBasedEditionFormData {
     [FieldConstants.NAME]: string;
+    [FieldConstants.DESCRIPTION]?: string;
     [FieldConstants.EQUIPMENT_TYPE]?: string | null;
     [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
 }
@@ -573,9 +574,10 @@ export function saveCompositeModification(id: string, name: string) {
  * @returns {Promise<Response>}
  */
 export function saveCriteriaBasedContingencyList(id: string, form: CriteriaBasedEditionFormData) {
-    const { name, equipmentType, criteriaBased } = form;
+    const { name, description, equipmentType, criteriaBased } = form;
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description ?? '');
     urlSearchParams.append('contingencyListType', ContingencyListType.CRITERIA_BASED.id);
 
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/contingency-lists/${id}?${urlSearchParams.toString()}`;
@@ -595,9 +597,10 @@ export function saveCriteriaBasedContingencyList(id: string, form: CriteriaBased
  * Saves a script contingency list
  * @returns {Promise<Response>}
  */
-export function saveScriptContingencyList(scriptContingencyList: Script, name: string) {
+export function saveScriptContingencyList(scriptContingencyList: Script, name: string, description: string) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
     urlSearchParams.append('contingencyListType', ContingencyListType.SCRIPT.id);
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/contingency-lists/${
         scriptContingencyList.id
@@ -615,10 +618,12 @@ export function saveScriptContingencyList(scriptContingencyList: Script, name: s
  */
 export function saveExplicitNamingContingencyList(
     explicitNamingContingencyList: PrepareContingencyListForBackend,
-    name: string
+    name: string,
+    description: string
 ) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
     urlSearchParams.append('contingencyListType', ContingencyListType.EXPLICIT_NAMING.id);
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/contingency-lists/${
         explicitNamingContingencyList.id
