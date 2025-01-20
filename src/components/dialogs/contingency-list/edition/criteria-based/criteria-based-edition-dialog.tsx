@@ -9,6 +9,7 @@ import {
     CustomMuiDialog,
     FieldConstants,
     getCriteriaBasedSchema,
+    MAX_CHAR_DESCRIPTION,
     NO_ITEM_SELECTION_FOR_COPY,
     useSnackMessage,
     yupConfig as yup,
@@ -32,6 +33,7 @@ import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().required(),
+    [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     ...getCriteriaBasedSchema(),
 });
 
@@ -43,6 +45,7 @@ export interface CriteriaBasedEditionDialogProps {
     titleId: string;
     name: string;
     broadcastChannel: BroadcastChannel;
+    description: string;
 }
 
 export default function CriteriaBasedEditionDialog({
@@ -53,6 +56,7 @@ export default function CriteriaBasedEditionDialog({
     titleId,
     name,
     broadcastChannel,
+    description,
 }: Readonly<CriteriaBasedEditionDialogProps>) {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
@@ -77,8 +81,10 @@ export default function CriteriaBasedEditionDialog({
         getContingencyList(contingencyListType, contingencyListId)
             .then((response) => {
                 if (response) {
-                    const formData = getCriteriaBasedFormDataFromFetchedElement(response, name);
-                    reset({ ...formData, [FieldConstants.NAME]: name });
+                    const formData = getCriteriaBasedFormDataFromFetchedElement(response, name, description);
+                    reset({
+                        ...formData,
+                    });
                 }
             })
             .catch((error) => {
@@ -88,7 +94,7 @@ export default function CriteriaBasedEditionDialog({
                 });
             })
             .finally(() => setIsFetching(false));
-    }, [contingencyListId, contingencyListType, name, reset, snackError]);
+    }, [contingencyListId, contingencyListType, name, reset, snackError, description]);
 
     const closeAndClear = () => {
         reset(getContingencyListEmptyFormData());
