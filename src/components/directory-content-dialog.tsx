@@ -156,6 +156,7 @@ function DirectoryContentDialog(
                     setActiveElement(event.data);
                     setOpenDescModificationDialog(true);
                 } else if (childrenMetadata[event.data.elementUuid] !== undefined) {
+                    setActiveElement(event.data);
                     setElementName(childrenMetadata[event.data.elementUuid].elementName);
                     const subtype = childrenMetadata[event.data.elementUuid].specificMetadata.type as unknown as string;
                     /** set active directory on the store because it will be used while editing the contingency name */
@@ -244,7 +245,7 @@ function DirectoryContentDialog(
             />
         );
     }
-    if (currentFiltersContingencyListId !== undefined) {
+    if (currentFiltersContingencyListId !== undefined && activeElement) {
         return (
             <CriteriaBasedEditionDialog
                 open
@@ -254,10 +255,11 @@ function DirectoryContentDialog(
                 onClose={handleCloseFiltersContingency}
                 name={elementName}
                 broadcastChannel={broadcastChannel}
+                description={activeElement.description}
             />
         );
     }
-    if (currentScriptContingencyListId !== undefined) {
+    if (currentScriptContingencyListId !== undefined && activeElement) {
         return (
             <ScriptEditionDialog
                 open
@@ -267,10 +269,11 @@ function DirectoryContentDialog(
                 onClose={handleCloseScriptContingency}
                 name={elementName}
                 broadcastChannel={broadcastChannel}
+                description={activeElement.description}
             />
         );
     }
-    if (currentExplicitNamingContingencyListId !== undefined) {
+    if (currentExplicitNamingContingencyListId !== undefined && activeElement) {
         return (
             <ExplicitNamingEditionDialog
                 open
@@ -280,10 +283,11 @@ function DirectoryContentDialog(
                 onClose={handleCloseExplicitNamingContingency}
                 name={elementName}
                 broadcastChannel={broadcastChannel}
+                description={activeElement.description}
             />
         );
     }
-    if (currentExplicitNamingFilterId !== undefined) {
+    if (currentExplicitNamingFilterId !== undefined && activeElement) {
         return (
             <ExplicitNamingFilterEditionDialog
                 id={currentExplicitNamingFilterId}
@@ -298,10 +302,11 @@ function DirectoryContentDialog(
                 activeDirectory={activeDirectory}
                 elementExists={elementExists}
                 language={languageLocal}
+                description={activeElement.description}
             />
         );
     }
-    if (currentExpertFilterId !== undefined) {
+    if (currentExpertFilterId !== undefined && activeElement) {
         return (
             <ExpertFilterEditionDialog
                 id={currentExpertFilterId}
@@ -316,6 +321,7 @@ function DirectoryContentDialog(
                 activeDirectory={activeDirectory}
                 elementExists={elementExists}
                 language={languageLocal}
+                description={activeElement.description}
             />
         );
     }

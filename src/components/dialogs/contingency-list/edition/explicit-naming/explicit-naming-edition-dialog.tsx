@@ -8,6 +8,7 @@
 import {
     CustomMuiDialog,
     FieldConstants,
+    MAX_CHAR_DESCRIPTION,
     NO_ITEM_SELECTION_FOR_COPY,
     useSnackMessage,
     yupConfig as yup,
@@ -29,6 +30,7 @@ import { AppState } from '../../../../../redux/types';
 
 interface ExplicitNamingEditionFormData {
     [FieldConstants.NAME]: string;
+    [FieldConstants.DESCRIPTION]?: string;
     [FieldConstants.EQUIPMENT_TYPE]?: string | null;
     [FieldConstants.EQUIPMENT_TABLE]?: {
         [FieldConstants.CONTINGENCY_NAME]?: string | null;
@@ -39,6 +41,7 @@ interface ExplicitNamingEditionFormData {
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().nullable(),
+    [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     ...getExplicitNamingEditSchema(),
 });
 
@@ -52,6 +55,7 @@ export interface ExplicitNamingEditionDialogProps {
     titleId: string;
     name: string;
     broadcastChannel: BroadcastChannel;
+    description: string;
 }
 
 export default function ExplicitNamingEditionDialog({
@@ -62,6 +66,7 @@ export default function ExplicitNamingEditionDialog({
     titleId,
     name,
     broadcastChannel,
+    description,
 }: Readonly<ExplicitNamingEditionDialogProps>) {
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
@@ -84,8 +89,8 @@ export default function ExplicitNamingEditionDialog({
         getContingencyList(contingencyListType, contingencyListId)
             .then((response) => {
                 if (response) {
-                    const formData = getExplicitNamingFormDataFromFetchedElement(response);
-                    reset({ ...formData, [FieldConstants.NAME]: name });
+                    const formData = getExplicitNamingFormDataFromFetchedElement(response, name, description);
+                    reset({ ...formData });
                 }
             })
             .catch((error) => {
@@ -95,7 +100,7 @@ export default function ExplicitNamingEditionDialog({
                 });
             })
             .finally(() => setIsFetching(false));
-    }, [contingencyListId, contingencyListType, name, reset, snackError]);
+    }, [contingencyListId, contingencyListType, name, reset, snackError, description]);
 
     const closeAndClear = () => {
         reset(emptyFormData());
@@ -104,7 +109,11 @@ export default function ExplicitNamingEditionDialog({
 
     const editContingencyList = (contingencyListId2: string, contingencyList: ExplicitNamingEditionFormData) => {
         const equipments = prepareContingencyListForBackend(contingencyListId2, contingencyList);
-        return saveExplicitNamingContingencyList(equipments, contingencyList[FieldConstants.NAME]);
+        return saveExplicitNamingContingencyList(
+            equipments,
+            contingencyList[FieldConstants.NAME],
+            contingencyList[FieldConstants.DESCRIPTION] ?? ''
+        );
     };
 
     const onSubmit = (contingencyList: ExplicitNamingEditionFormData) => {
