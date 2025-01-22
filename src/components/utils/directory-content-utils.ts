@@ -67,9 +67,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         cellRendererParams: {
             childrenMetadata,
         },
-        cellStyle: {
-            display: 'flex',
-        },
+        cellStyle: { display: 'flex' },
         minWidth: 400,
     },
     {

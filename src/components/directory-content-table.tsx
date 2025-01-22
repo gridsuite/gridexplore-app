@@ -125,9 +125,7 @@ export function DirectoryContentTable({
                 checkboxes: true,
                 headerCheckbox: true,
             }}
-            selectionColumnDef={{
-                pinned: 'left',
-            }}
+            selectionColumnDef={{ pinned: 'left' }}
             onGridReady={onGridReady}
             onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
