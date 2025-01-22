@@ -63,6 +63,7 @@ import {
 import { IntlConfig, IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
+import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
 import App from './app';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
@@ -73,6 +74,12 @@ import backend_locale_en from '../translations/external/backend-locale-en';
 import { store } from '../redux/store';
 import { PARAM_THEME } from '../utils/config-params';
 import { AppState } from '../redux/types';
+
+// Register all community features (migration to V33)
+ModuleRegistry.registerModules([AllCommunityModule]);
+
+// Mark all grids as using legacy themes (migration to V33)
+provideGlobalGridOptions({ theme: 'legacy' });
 
 const lightTheme = createTheme({
     palette: {
