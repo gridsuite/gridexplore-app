@@ -5,39 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ElementAttributes, ElementType, OverflowableText } from '@gridsuite/commons-ui';
-import { IntlShape, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { UUID } from 'crypto';
 import { Box } from '@mui/material';
+import { getElementTypeTranslation } from '../translation-utils';
 
 // This function is used to lowercase all the characters in a string except the first one
 const toTitleCase = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-
-export const getElementTypeTranslation = (
-    type: ElementType,
-    subtype: string | null,
-    formatCase: string | null,
-    intl: IntlShape
-) => {
-    let translatedType;
-    switch (type) {
-        case ElementType.FILTER:
-        case ElementType.CONTINGENCY_LIST:
-            translatedType = intl.formatMessage({
-                id: subtype ? `${subtype}_${type}` : type,
-            });
-            break;
-        case ElementType.MODIFICATION:
-            translatedType = intl.formatMessage({ id: type });
-            break;
-        default:
-            translatedType = type ? intl.formatMessage({ id: type }) : '';
-            break;
-    }
-
-    const translatedFormat = formatCase ? ` (${intl.formatMessage({ id: formatCase })})` : '';
-
-    return `${translatedType}${translatedFormat}`;
-};
 
 const styles = {
     tooltip: {
