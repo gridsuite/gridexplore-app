@@ -119,8 +119,13 @@ export function DirectoryContentTable({
             rowData={rows}
             getRowId={getRowId}
             defaultColDef={defaultColumnDefinition}
-            rowSelection="multiple"
-            suppressRowClickSelection
+            rowSelection={{
+                mode: 'multiRow',
+                enableClickSelection: false,
+                checkboxes: true,
+                headerCheckbox: true,
+            }}
+            selectionColumnDef={{ pinned: 'left' }}
             onGridReady={onGridReady}
             onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
