@@ -51,6 +51,7 @@ const getClickableRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
             ElementType.SHORT_CIRCUIT_PARAMETERS,
             ElementType.SPREADSHEET_CONFIG,
             ElementType.SPREADSHEET_CONFIG_COLLECTION,
+            ElementType.NETWORK_VISUALIZATIONS_PARAMETERS,
         ].includes(cellData.data.type)
     ) {
         style.cursor = 'pointer';
