@@ -91,6 +91,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     );
 
     const [renameCB, renameState] = useDeferredFetch(
+        // @ts-expect-error refacto typing of useDefferedFetch
         renameElement,
         handleCloseDialog,
         (HTTPStatusCode: number) => {
@@ -252,6 +253,11 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         callback: () => handleOpenDialog(DialogsId.DELETE_DIRECTORY),
                         icon: <DeleteIcon fontSize="small" />,
                     },
+                    {
+                        messageDescriptorId: 'moveDirectory',
+                        callback: () => handleOpenDialog(DialogsId.MOVE_DIRECTORY),
+                        icon: <DriveFileMoveIcon fontSize="small" />,
+                    },
                     { isDivider: true }
                 );
             }
@@ -263,15 +269,6 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     callback: () => pasteElement(directory.elementUuid, itemSelectionForCopy),
                     icon: <ContentPasteIcon fontSize="small" />,
                     disabled: !itemSelectionForCopy.sourceItemUuid,
-                },
-                { isDivider: true }
-            );
-
-            menuItems.push(
-                {
-                    messageDescriptorId: 'moveDirectory',
-                    callback: () => handleOpenDialog(DialogsId.MOVE_DIRECTORY),
-                    icon: <DriveFileMoveIcon fontSize="small" />,
                 },
                 { isDivider: true }
             );
