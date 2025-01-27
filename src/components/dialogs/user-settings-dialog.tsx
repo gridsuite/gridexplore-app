@@ -6,17 +6,32 @@
  */
 import { useState, SyntheticEvent } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Alert, Dialog, Grid, Switch, Button, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Alert, Dialog, Grid, Switch, Button, DialogActions, DialogContent, DialogTitle, Box } from '@mui/material';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { CancelButton } from '@gridsuite/commons-ui';
 import { useDispatch } from 'react-redux';
 import { selectEnableDeveloperMode } from '../../redux/actions';
-import {useParameterState} from "./use-parameters-dialog";
+import { useParameterState } from './use-parameters-dialog';
 
 export interface UserSettingsDialogProps {
     open: boolean;
     onClose: () => void;
 }
+
+export const styles = {
+    parameterName: (theme: Theme) => ({
+        fontWeight: 'bold',
+        marginTop: theme.spacing(1),
+        flexGrow: 1,
+    }),
+    controlItem: {
+        flexGrow: 1,
+    },
+    parameterLine: {
+        display: 'flex',
+    },
+    parameterValue: {},
+};
 
 /**
  * Dialog to display user settings
@@ -50,26 +65,24 @@ export default function UserSettingsDialog({ open, onClose }: Readonly<UserSetti
                 <FormattedMessage id="UserSettings" />
             </DialogTitle>
             <DialogContent>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Grid item xs={8} sx={{}}>
-                            <FormattedMessage id="EnableDeveloperMode" />
-                        </Grid>
-                        <Grid item container xs={4} sx={{}}>
-                            <Switch
-                                checked={developerMode}
-                                onChange={(_event, isChecked) => setDeveloperMode(isChecked)}
-                                value={developerMode}
-                                inputProps={{ 'aria-label': 'primary checkbox' }}
-                            />
-                        </Grid>
-                        {developerMode && (
-                            <Alert severity={'warning'}>
-                                <FormattedMessage id="DeveloperModeWarningMsg" />
-                            </Alert>
-                        )}
-                    </Grid>
-                </Grid>
+                <Box sx={styles.parameterLine}>
+                    <Box sx={styles.parameterName}>
+                        <FormattedMessage id="EnableDeveloperMode" />
+                    </Box>
+                    <Box sx={styles.parameterValue}>
+                        <Switch
+                            checked={developerMode}
+                            onChange={(_event, isChecked) => setDeveloperMode(isChecked)}
+                            value={developerMode}
+                            inputProps={{ 'aria-label': 'primary checkbox' }}
+                        />
+                    </Box>
+                </Box>
+                {developerMode && (
+                    <Alert severity={'warning'}>
+                        <FormattedMessage id="DeveloperModeWarningMsg" />
+                    </Alert>
+                )}
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
