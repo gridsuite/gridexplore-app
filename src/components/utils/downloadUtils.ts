@@ -35,7 +35,7 @@ const triggerDownload = ({ blob, filename }: DownloadData): void => {
 const downloadStrategies: { [key in ElementType]?: (element: ElementAttributes) => Promise<DownloadData> } = {
     [ElementType.CASE]: async (element: ElementAttributes) => {
         const result = await downloadCase(element.elementUuid);
-        const filename = result.headers.get('caseName');
+        const filename = result.headers.get('caseName') ?? element.elementName;
         return { blob: await result.blob(), filename };
     },
     [ElementType.SPREADSHEET_CONFIG]: async (element: ElementAttributes) => {
@@ -113,7 +113,10 @@ export function useDownloadUtils() {
                     abortController2
                 );
 
-                let downloadFileName = result.headers.get('Content-Disposition').split('filename=')[1];
+                let downloadFileName =
+                    result.headers.get('Content-Disposition')?.split('filename=')[1] ??
+                    fileName ??
+                    caseElement.elementName;
                 // We remove quotes
                 downloadFileName = downloadFileName.substring(1, downloadFileName.length - 1);
 

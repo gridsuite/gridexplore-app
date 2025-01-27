@@ -91,6 +91,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     );
 
     const [renameCB, renameState] = useDeferredFetch(
+        // @ts-expect-error refacto typing of useDefferedFetch
         renameElement,
         handleCloseDialog,
         (HTTPStatusCode: number) => {

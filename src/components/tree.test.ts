@@ -20,7 +20,10 @@ const otherProperties = {
     lastModifiedBy: 'user1',
     children: [],
     parentUuid: null,
-    specificMetadata: {},
+    specificMetadata: {
+        type: '',
+        equipmentType: '',
+    },
 };
 
 test('boot1', () => {
