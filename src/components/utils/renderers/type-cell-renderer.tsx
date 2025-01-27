@@ -67,8 +67,8 @@ export function TypeCellRenderer({ data, childrenMetadata }: Readonly<TypeCellRe
                     text={getElementTypeTranslation(
                         data?.type,
                         specificMetadata?.type?.toString(),
-                        data?.type === ElementType.SPREADSHEET_CONFIG && specificMetadata.sheetType !== undefined
-                            ? toTitleCase(specificMetadata.sheetType) ?? null
+                        data?.type === ElementType.SPREADSHEET_CONFIG
+                            ? toTitleCase(specificMetadata.sheetType ?? 'no-type') ?? null
                             : specificMetadata.format?.toString() ?? null,
                         intl
                     )}
