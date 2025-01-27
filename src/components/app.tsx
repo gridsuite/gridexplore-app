@@ -71,7 +71,8 @@ export default function App() {
                         dispatch(selectComputedLanguage(getComputedLanguage(param.value) as GsLangUser));
                         break;
                     case PARAM_DEVELOPER_MODE:
-                        dispatch(selectEnableDeveloperMode(param.value === 'true'));
+                        const developerMode = String(param.value) === 'true';
+                        dispatch(selectEnableDeveloperMode(developerMode));
                         break;
                     default:
                         break;

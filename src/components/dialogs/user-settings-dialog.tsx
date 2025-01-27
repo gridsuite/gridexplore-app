@@ -6,7 +6,7 @@
  */
 import { useState, SyntheticEvent } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Alert, Dialog, Switch, Button, DialogActions, DialogContent, DialogTitle, Box } from '@mui/material';
+import { Alert, Dialog, Switch, Button, DialogActions, DialogContent, DialogTitle, Box, Theme } from '@mui/material';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { CancelButton } from '@gridsuite/commons-ui';
 import { useDispatch } from 'react-redux';
