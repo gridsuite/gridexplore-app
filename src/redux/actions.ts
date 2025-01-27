@@ -6,7 +6,7 @@
  */
 
 import { Action } from 'redux';
-import { PARAM_DEVELOPER_MODE, PARAM_LANGUAGE } from '../utils/config-params';
+import { PARAM_LANGUAGE } from '../utils/config-params';
 import { AppState } from './types';
 
 export type AppActions =
@@ -59,12 +59,12 @@ export function selectComputedLanguage(computedLanguage: AppState['computedLangu
 
 export const ENABLE_DEVELOPER_MODE = 'ENABLE_DEVELOPER_MODE';
 export type EnableDeveloperModeAction = Readonly<Action<typeof ENABLE_DEVELOPER_MODE>> & {
-    [PARAM_DEVELOPER_MODE]: boolean;
+    enableDeveloperMode: boolean;
 };
 export function selectEnableDeveloperMode(developerMode: boolean): EnableDeveloperModeAction {
     return {
         type: ENABLE_DEVELOPER_MODE,
-        [PARAM_DEVELOPER_MODE]: developerMode,
+        enableDeveloperMode: developerMode,
     };
 }
 

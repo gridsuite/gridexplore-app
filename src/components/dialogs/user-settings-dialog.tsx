@@ -6,7 +6,7 @@
  */
 import { useState, SyntheticEvent } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Alert, Dialog, Grid, Switch, Button, DialogActions, DialogContent, DialogTitle, Box } from '@mui/material';
+import { Alert, Dialog, Switch, Button, DialogActions, DialogContent, DialogTitle, Box } from '@mui/material';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { CancelButton } from '@gridsuite/commons-ui';
 import { useDispatch } from 'react-redux';
@@ -44,7 +44,7 @@ export default function UserSettingsDialog({ open, onClose }: Readonly<UserSetti
     const [enableDeveloperMode, handleChangeEnableDeveloperModeLocal] = useParameterState(PARAM_DEVELOPER_MODE);
 
     //const enableDeveloperMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
-    const [developerMode, setDeveloperMode] = useState(enableDeveloperMode);
+    const [developerMode, setDeveloperMode] = useState<boolean>(enableDeveloperMode);
 
     const handleValidate = () => {
         dispatch(selectEnableDeveloperMode(developerMode));

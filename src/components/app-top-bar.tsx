@@ -46,9 +46,7 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
 
     const [languageLocal, handleChangeLanguage] = useParameterState(PARAM_LANGUAGE);
 
-    const [enableDeveloperModeLocal, handleChangeEnableDeveloperModeLocal] = useParameterState(PARAM_DEVELOPER_MODE);
-
-    //const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [enableDeveloperModeLocal] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const [isUserSettingsDialogOpen, setIsUserSettingsDialogOpen] = useState(false);
 
