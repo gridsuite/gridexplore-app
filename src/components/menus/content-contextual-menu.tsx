@@ -192,7 +192,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         activeElement.description,
                         activeElement.elementUuid,
                         selectedDirectory?.elementUuid,
-                        // @ts-expect-error TODO: seems to be an object but we await a string???
                         activeElement.specificMetadata.type
                     );
                     break;
@@ -222,7 +221,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         activeElement.elementUuid,
                         undefined,
                         activeElement.type,
-                        // @ts-expect-error TODO: seems to be an object but we await a string???
                         activeElement.specificMetadata.type
                     ).catch((error) => handleDuplicateError(error.message));
                     break;
@@ -314,6 +312,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     );
 
     const [renameCB, renameState] = useDeferredFetch(
+        // @ts-expect-error refacto typing of useDefferedFetch
         renameElement,
         (elementUuid: string, renamedElement: any[]) => {
             // if copied element is renamed
@@ -716,7 +715,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         onClose={handleCloseDialog}
                         sourceFilterForExplicitNamingConversion={{
                             id: activeElement.elementUuid,
-                            // @ts-expect-error TODO: seems to be an object but we await a string???
                             equipmentType: activeElement.specificMetadata.equipmentType,
                         }}
                         activeDirectory={activeDirectory}
