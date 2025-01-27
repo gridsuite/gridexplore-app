@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     fetchAppsMetadata,
     GridSuiteModule,
@@ -15,7 +15,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
+import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME, PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { fetchVersion, getServersInfos } from '../utils/rest-api';
 import GridExploreLogoLight from '../images/GridExplore_logo_light.svg?react';
 import GridExploreLogoDark from '../images/GridExplore_logo_dark.svg?react';
@@ -25,6 +25,7 @@ import { SearchBar } from './search/search-bar';
 import { AppDispatch } from '../redux/store';
 import { useParameterState } from './dialogs/use-parameters-dialog';
 import { AppState } from '../redux/types';
+import UserSettingsDialog from './dialogs/user-settings-dialog';
 
 export type AppTopBarProps = {
     userManagerInstance: UserManagerState['instance'];
@@ -44,6 +45,12 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
     const [languageLocal, handleChangeLanguage] = useParameterState(PARAM_LANGUAGE);
+
+    const [enableDeveloperModeLocal, handleChangeEnableDeveloperModeLocal] = useParameterState(PARAM_DEVELOPER_MODE);
+
+    //const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
+    const [isUserSettingsDialogOpen, setIsUserSettingsDialogOpen] = useState(false);
 
     const searchInputRef = useRef<any | null>(null);
 
@@ -81,13 +88,21 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
             user={user ?? undefined}
             appsAndUrls={appsAndUrls}
             onThemeClick={handleChangeTheme}
+            onUserSettingsClick={() => setIsUserSettingsDialogOpen(true)}
             theme={themeLocal}
+            developerMode={enableDeveloperModeLocal}
             onLanguageClick={handleChangeLanguage}
             language={languageLocal}
             globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
             additionalModulesPromise={getServersInfos as () => Promise<GridSuiteModule[]>}
         >
             {user && <SearchBar inputRef={searchInputRef} />}
+            {isUserSettingsDialogOpen && (
+                <UserSettingsDialog
+                    open={isUserSettingsDialogOpen}
+                    onClose={() => setIsUserSettingsDialogOpen(false)}
+                />
+            )}
         </TopBar>
     );
 }

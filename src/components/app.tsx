@@ -20,7 +20,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
-import { selectComputedLanguage, selectLanguage, selectTheme } from '../redux/actions';
+import { selectComputedLanguage, selectEnableDeveloperMode, selectLanguage, selectTheme } from '../redux/actions';
 import {
     ConfigParameters,
     connectNotificationsWsUpdateConfig,
@@ -29,7 +29,7 @@ import {
     fetchIdpSettings,
     fetchValidateUser,
 } from '../utils/rest-api';
-import { APP_NAME, COMMON_APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
+import { APP_NAME, COMMON_APP_NAME, PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import AppTopBar from './app-top-bar';
 import TreeViewsContainer from './tree-views-container';
 import DirectoryContent from './directory-content';
@@ -69,6 +69,9 @@ export default function App() {
                         dispatch(selectLanguage(param.value));
                         // TODO remove cast when prototype is fixed in commons-ui
                         dispatch(selectComputedLanguage(getComputedLanguage(param.value) as GsLangUser));
+                        break;
+                    case PARAM_DEVELOPER_MODE:
+                        dispatch(selectEnableDeveloperMode(param.value === 'true'));
                         break;
                     default:
                         break;

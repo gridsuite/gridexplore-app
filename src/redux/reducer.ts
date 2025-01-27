@@ -36,8 +36,10 @@ import {
     getLocalStorageComputedLanguage,
     getLocalStorageLanguage,
     getLocalStorageTheme,
+    getLocalStorageDeveloperMode,
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
+    saveLocalStorageDeveloperMode,
 } from './local-storage';
 import {
     ACTIVE_DIRECTORY,
@@ -52,6 +54,8 @@ import {
     CurrentPathAction,
     DIRECTORY_UPDATED,
     DirectoryUpdatedAction,
+    ENABLE_DEVELOPER_MODE,
+    EnableDeveloperModeAction,
     LanguageAction,
     REORDERED_COLUMNS,
     ReorderedColumnsAction,
@@ -74,7 +78,7 @@ import {
     REMOVE_UPLOADING_ELEMENT,
     RemoveUploadingElementAction,
 } from './actions';
-import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
+import { PARAM_LANGUAGE, PARAM_THEME, PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { AppState } from './types';
 
 const initialState: AppState = {
@@ -88,6 +92,7 @@ const initialState: AppState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     [PARAM_THEME]: getLocalStorageTheme(),
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
+    [PARAM_DEVELOPER_MODE]: getLocalStorageDeveloperMode(),
 
     currentChildren: undefined,
     selectedDirectory: null,
@@ -130,6 +135,11 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SELECT_LANGUAGE, (state, action: LanguageAction) => {
         state.language = action.language;
         saveLocalStorageLanguage(state.language);
+    });
+
+    builder.addCase(ENABLE_DEVELOPER_MODE, (state, action: EnableDeveloperModeAction) => {
+        state[PARAM_DEVELOPER_MODE] = action[PARAM_DEVELOPER_MODE];
+        saveLocalStorageDeveloperMode(state[PARAM_DEVELOPER_MODE]);
     });
 
     builder.addCase(USER, (state, action: UserAction) => {
