@@ -455,9 +455,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.FILTER &&
-            selectedElements[0].subtype !== FilterType.EXPLICIT_NAMING.id &&
-            isUserAllowed(),
-        [isUserAllowed, selectedElements]
+            selectedElements[0].subtype !== FilterType.EXPLICIT_NAMING.id,
+        [selectedElements]
     );
 
     const allowsDownload = useCallback(() => {
