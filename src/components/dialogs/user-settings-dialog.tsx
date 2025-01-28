@@ -8,8 +8,8 @@ import { useState, SyntheticEvent } from 'react';
 import { useDispatch } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { Alert, Dialog, Switch, Button, DialogActions, DialogContent, DialogTitle, Box, Theme } from '@mui/material';
-import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { CancelButton } from '@gridsuite/commons-ui';
+import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { selectEnableDeveloperMode } from '../../redux/actions';
 import { useParameterState } from './use-parameters-dialog';
 

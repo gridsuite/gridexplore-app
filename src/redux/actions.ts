@@ -67,7 +67,7 @@ export function selectEnableDeveloperMode(
 ): EnableDeveloperModeAction {
     return {
         type: ENABLE_DEVELOPER_MODE,
-        enableDeveloperMode: enableDeveloperMode,
+        enableDeveloperMode,
     };
 }
 
