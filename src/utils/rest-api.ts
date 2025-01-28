@@ -390,7 +390,12 @@ const getDuplicateEndpoint = (type: ElementType) => {
             return '/filters';
         case ElementType.CONTINGENCY_LIST:
             return '/contingency-lists';
-        case ElementType.PARAMETERS:
+        case ElementType.VOLTAGE_INIT_PARAMETERS:
+        case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+        case ElementType.SENSITIVITY_PARAMETERS:
+        case ElementType.LOADFLOW_PARAMETERS:
+        case ElementType.SHORT_CIRCUIT_PARAMETERS:
+        case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
             return '/parameters';
         case ElementType.MODIFICATION:
             return '/modifications';

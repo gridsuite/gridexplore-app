@@ -169,6 +169,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                 case ElementType.SPREADSHEET_CONFIG:
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                     console.info(
@@ -229,10 +230,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                     duplicateElement(
                         activeElement.elementUuid,
                         undefined,
-                        ElementType.PARAMETERS,
+                        activeElement.type,
                         activeElement.type
                     ).catch((error) => handleDuplicateError(error.message));
                     break;
@@ -288,7 +290,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     );
 
     const moveElementOnError = useCallback(
-        (errorMessages: string[], params: unknown, paramsOnErrors: unknown[]) => {
+        (errorMessages: string[], _params: unknown, paramsOnErrors: unknown[]) => {
             const msg = intl.formatMessage(
                 { id: 'moveElementsFailure' },
                 {
@@ -314,7 +316,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const [renameCB, renameState] = useDeferredFetch(
         // @ts-expect-error refacto typing of useDefferedFetch
         renameElement,
-        (elementUuid: string, renamedElement: any[]) => {
+        (_elementUuid: string, renamedElement: any[]) => {
             // if copied element is renamed
             if (itemSelectionForCopy.sourceItemUuid === renamedElement[0]) {
                 dispatch(
@@ -414,6 +416,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             ElementType.SENSITIVITY_PARAMETERS,
             ElementType.SHORT_CIRCUIT_PARAMETERS,
             ElementType.LOADFLOW_PARAMETERS,
+            ElementType.NETWORK_VISUALIZATIONS_PARAMETERS,
             ElementType.SPREADSHEET_CONFIG,
             ElementType.SPREADSHEET_CONFIG_COLLECTION,
         ];
