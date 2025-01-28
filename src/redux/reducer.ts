@@ -36,10 +36,8 @@ import {
     getLocalStorageComputedLanguage,
     getLocalStorageLanguage,
     getLocalStorageTheme,
-    getLocalStorageDeveloperMode,
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
-    saveLocalStorageDeveloperMode,
 } from './local-storage';
 import {
     ACTIVE_DIRECTORY,
@@ -92,7 +90,7 @@ const initialState: AppState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     [PARAM_THEME]: getLocalStorageTheme(),
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
-    enableDeveloperMode: getLocalStorageDeveloperMode(),
+    enableDeveloperMode: false,
 
     currentChildren: undefined,
     selectedDirectory: null,
@@ -139,7 +137,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(ENABLE_DEVELOPER_MODE, (state, action: EnableDeveloperModeAction) => {
         state.enableDeveloperMode = action.enableDeveloperMode;
-        saveLocalStorageDeveloperMode(state.enableDeveloperMode);
     });
 
     builder.addCase(USER, (state, action: UserAction) => {
