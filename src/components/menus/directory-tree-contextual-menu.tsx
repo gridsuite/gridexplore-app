@@ -154,10 +154,11 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                     duplicateElement(
                         selectionForPaste.sourceItemUuid,
                         directoryUuid,
-                        ElementType.PARAMETERS,
+                        selectionForPaste.typeItem,
                         selectionForPaste.typeItem
                     ).catch((error: any) => handlePasteError(error));
                     break;
