@@ -325,7 +325,7 @@ export function renameElement(elementUuid: UUID, newElementName: string) {
     });
 }
 
-export function updateConfigParameter(name: string, value: string) {
+export function updateConfigParameter(name: string, value: string | boolean) {
     const appName = getAppName(name);
     console.info("Updating config parameter '%s=%s' for app '%s' ", name, value, appName);
     const updateParams = `${PREFIX_CONFIG_QUERIES}/v1/applications/${appName}/parameters/${name}?value=${encodeURIComponent(

@@ -25,7 +25,8 @@ export type AppActions =
     | DirectoryUpdatedAction
     | TreeDataAction
     | SearchedElementAction
-    | ReorderedColumnsAction;
+    | ReorderedColumnsAction
+    | EnableDeveloperModeAction;
 
 export const SELECT_THEME = 'SELECT_THEME';
 export type ThemeAction = Readonly<Action<typeof SELECT_THEME>> & {
@@ -61,10 +62,12 @@ export const ENABLE_DEVELOPER_MODE = 'ENABLE_DEVELOPER_MODE';
 export type EnableDeveloperModeAction = Readonly<Action<typeof ENABLE_DEVELOPER_MODE>> & {
     enableDeveloperMode: boolean;
 };
-export function selectEnableDeveloperMode(developerMode: boolean): EnableDeveloperModeAction {
+export function selectEnableDeveloperMode(
+    enableDeveloperMode: AppState['enableDeveloperMode']
+): EnableDeveloperModeAction {
     return {
         type: ENABLE_DEVELOPER_MODE,
-        enableDeveloperMode: developerMode,
+        enableDeveloperMode: enableDeveloperMode,
     };
 }
 
