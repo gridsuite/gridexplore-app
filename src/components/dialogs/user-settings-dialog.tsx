@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useState, SyntheticEvent } from 'react';
+import { useDispatch } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { Alert, Dialog, Switch, Button, DialogActions, DialogContent, DialogTitle, Box, Theme } from '@mui/material';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { CancelButton } from '@gridsuite/commons-ui';
-import { useDispatch } from 'react-redux';
 import { selectEnableDeveloperMode } from '../../redux/actions';
 import { useParameterState } from './use-parameters-dialog';
 
@@ -43,7 +43,6 @@ export default function UserSettingsDialog({ open, onClose }: Readonly<UserSetti
 
     const [enableDeveloperMode, handleChangeEnableDeveloperModeLocal] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    //const enableDeveloperMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const [developerMode, setDeveloperMode] = useState<boolean>(enableDeveloperMode);
 
     const handleValidate = () => {
@@ -79,7 +78,7 @@ export default function UserSettingsDialog({ open, onClose }: Readonly<UserSetti
                     </Box>
                 </Box>
                 {developerMode && (
-                    <Alert severity={'warning'}>
+                    <Alert severity="warning">
                         <FormattedMessage id="DeveloperModeWarningMsg" />
                     </Alert>
                 )}

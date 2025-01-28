@@ -78,7 +78,7 @@ import {
     REMOVE_UPLOADING_ELEMENT,
     RemoveUploadingElementAction,
 } from './actions';
-import { PARAM_LANGUAGE, PARAM_THEME, PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { AppState } from './types';
 
 const initialState: AppState = {
