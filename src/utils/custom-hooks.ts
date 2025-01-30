@@ -67,10 +67,9 @@ interface MultipleAction<T> {
  */
 export const useDeferredFetch = <T, TArgs extends unknown[] = any[]>(
     fetchFunction: GenericFunction<T, TArgs>,
-    onSuccess?: (data: T, args: TArgs) => void,
+    onSuccess?: (args: TArgs, data?: T) => void,
     errorToString?: (status: number) => string | undefined,
-    onError?: (errorMessage: string, args: TArgs) => void,
-    hasResult: boolean = true
+    onError?: (errorMessage: string, args: TArgs) => void
 ): [(...args: TArgs) => void, FetchState<T>] => {
     const initialState: FetchState<T> = {
         status: FetchStatus.IDLE,
@@ -124,25 +123,13 @@ export const useDeferredFetch = <T, TArgs extends unknown[] = any[]>(
             dispatch({ type: ActionType.START });
             try {
                 // Params resolution
-                const response = await fetchFunction(...args);
-
-                if (hasResult) {
-                    const data = response;
-                    dispatch({
-                        type: ActionType.SUCCESS,
-                        payload: data,
-                    });
-                    if (onSuccess) {
-                        onSuccess(data, args);
-                    }
-                } else {
-                    dispatch({
-                        type: ActionType.SUCCESS,
-                    });
-                    if (onSuccess) {
-                        onSuccess(null as unknown as T, args);
-                    }
-                }
+                const data = await fetchFunction(...args);
+                console.log(`deffered data: ${JSON.stringify(data)}`);
+                dispatch({
+                    type: ActionType.SUCCESS,
+                    payload: data,
+                });
+                onSuccess?.(args, data);
             } catch (error: any) {
                 if (!error.status) {
                     // an http error
@@ -153,7 +140,7 @@ export const useDeferredFetch = <T, TArgs extends unknown[] = any[]>(
                 }
             }
         },
-        [fetchFunction, onSuccess, handleError, hasResult]
+        [fetchFunction, onSuccess, handleError]
     );
 
     const fetchCallback = useCallback((...args: TArgs) => fetchData(...args), [fetchData]);
@@ -186,8 +173,7 @@ export const useMultipleDeferredFetch = <T>(
     fetchFunction: GenericFunction<T>,
     onSuccess?: (data: T[]) => void,
     errorToString?: (status: number) => string | undefined,
-    onError?: (errorMessages: string[], params: unknown[], paramsOnError: unknown[]) => void,
-    hasResult: boolean = true
+    onError?: (errorMessages: string[], params: unknown[], paramsOnError: unknown[]) => void
 ): [(cbParamsList: unknown[][]) => void] => {
     const initialState: MultipleFetchState<T> = {
         public: {
@@ -253,7 +239,7 @@ export const useMultipleDeferredFetch = <T>(
 
     const [paramList, setParamList] = useState<unknown[][]>([]);
 
-    const onInstanceSuccess = useCallback((data: T, paramsOnSuccess: unknown[]) => {
+    const onInstanceSuccess = useCallback((paramsOnSuccess: unknown[], data?: T) => {
         dispatch({
             type: ActionType.ADD_SUCCESS,
             payload: data,
@@ -271,7 +257,7 @@ export const useMultipleDeferredFetch = <T>(
         });
     }, []);
 
-    const [fetchCB] = useDeferredFetch(fetchFunction, onInstanceSuccess, errorToString, onInstanceError, hasResult);
+    const [fetchCB] = useDeferredFetch(fetchFunction, onInstanceSuccess, errorToString, onInstanceError);
 
     const fetchCallback = useCallback(
         (cbParamsList: unknown[][]) => {
