@@ -94,8 +94,7 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         moveElementsToDirectory,
         undefined,
         moveElementErrorToString,
-        moveElementOnError,
-        false
+        moveElementOnError
     );
 
     // Allowance
