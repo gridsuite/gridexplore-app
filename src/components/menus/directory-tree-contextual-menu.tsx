@@ -94,11 +94,9 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         return undefined;
     });
 
-    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, () => handleCloseDialog());
+    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, handleCloseDialog);
 
-    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(insertRootDirectory, () =>
-        handleCloseDialog()
-    );
+    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(insertRootDirectory, handleCloseDialog);
 
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
 
@@ -183,7 +181,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         (elementsUuid: UUID) => {
             setDeleteError('');
             deleteElement(elementsUuid)
-                .then(() => handleCloseDialog())
+                .then(handleCloseDialog)
                 .catch((error: any) => {
                     // show the error message and don't close the dialog
                     setDeleteError(error.message);

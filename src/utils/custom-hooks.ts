@@ -124,7 +124,6 @@ export const useDeferredFetch = <T, TArgs extends unknown[] = any[]>(
             try {
                 // Params resolution
                 const data = await fetchFunction(...args);
-                console.log(`deffered data: ${JSON.stringify(data)}`);
                 dispatch({
                     type: ActionType.SUCCESS,
                     payload: data,
