@@ -168,8 +168,5 @@
     "emptyDirContent": "Your directory is empty",
     "createElement": "ADD AN ELEMENT",
     "MovingDirectoryError": "An error while moving folder. The following folder has not been moved : {elementPath}",
-    "casesAlertThreshold": "You have reached {userUsagePercentage}% of your user quota for cases and studies ({casesCount} elements), therefore you will soon be unable to import further cases or create further studies. Please delete old cases or studies.",
-    "UserSettings": "User settings",
-    "EnableDeveloperMode": "Enable developer mode",
-    "DeveloperModeWarningMsg": "Some of the features are not complete, so they may not work as expected. To hide these features, disable developer mode"
+    "casesAlertThreshold": "You have reached {userUsagePercentage}% of your user quota for cases and studies ({casesCount} elements), therefore you will soon be unable to import further cases or create further studies. Please delete old cases or studies."
 }

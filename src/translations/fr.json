@@ -169,8 +169,5 @@
     "emptyDirContent": "Votre dossier est vide",
     "createElement": "AJOUTER UN ELEMENT",
     "MovingDirectoryError": "Une erreur survenue lors du déplacement de dossier. Le dossier suivant n'a pas été déplacé : {elementPath}",
-    "casesAlertThreshold": "Vous avez atteint {userUsagePercentage}% de votre quota utilisateur en termes de situations et d'études ({casesCount} éléments), vous ne pourrez donc bientôt plus importer des situations ou créer des études. Merci de supprimer des situations ou études anciennes.",
-    "UserSettings": "Paramètres utilisateur",
-    "EnableDeveloperMode": "Activer mode développeur",
-    "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur"
+    "casesAlertThreshold": "Vous avez atteint {userUsagePercentage}% de votre quota utilisateur en termes de situations et d'études ({casesCount} éléments), vous ne pourrez donc bientôt plus importer des situations ou créer des études. Merci de supprimer des situations ou études anciennes."
 }

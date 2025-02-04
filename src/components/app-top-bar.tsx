@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import {
     fetchAppsMetadata,
     GridSuiteModule,
@@ -25,7 +25,6 @@ import { SearchBar } from './search/search-bar';
 import { AppDispatch } from '../redux/store';
 import { useParameterState } from './dialogs/use-parameters-dialog';
 import { AppState } from '../redux/types';
-import UserSettingsDialog from './dialogs/user-settings-dialog';
 
 export type AppTopBarProps = {
     userManagerInstance: UserManagerState['instance'];
@@ -46,9 +45,7 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
 
     const [languageLocal, handleChangeLanguage] = useParameterState(PARAM_LANGUAGE);
 
-    const [enableDeveloperModeLocal] = useParameterState(PARAM_DEVELOPER_MODE);
-
-    const [isUserSettingsDialogOpen, setIsUserSettingsDialogOpen] = useState(false);
+    const [enableDeveloperModeLocal, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const searchInputRef = useRef<any | null>(null);
 
@@ -86,8 +83,8 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
             user={user ?? undefined}
             appsAndUrls={appsAndUrls}
             onThemeClick={handleChangeTheme}
-            onUserSettingsClick={() => setIsUserSettingsDialogOpen(true)}
             theme={themeLocal}
+            onDeveloperModeClick={handleChangeDeveloperMode}
             developerMode={enableDeveloperModeLocal}
             onLanguageClick={handleChangeLanguage}
             language={languageLocal}
@@ -95,12 +92,6 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
             additionalModulesPromise={getServersInfos as () => Promise<GridSuiteModule[]>}
         >
             {user && <SearchBar inputRef={searchInputRef} />}
-            {isUserSettingsDialogOpen && (
-                <UserSettingsDialog
-                    open={isUserSettingsDialogOpen}
-                    onClose={() => setIsUserSettingsDialogOpen(false)}
-                />
-            )}
         </TopBar>
     );
 }
