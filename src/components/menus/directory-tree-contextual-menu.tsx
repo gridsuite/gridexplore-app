@@ -55,7 +55,7 @@ import { buildPathToFromMap } from '../treeview-utils';
 
 export interface DirectoryTreeContextualMenuProps extends Omit<CommonContextualMenuProps, 'onClose'> {
     directory: ElementAttributes | null;
-    onClose: (nextSelectedDirectoryId?: string | null) => void;
+    onClose: () => void;
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
     restrictMenuItems: boolean;
@@ -80,38 +80,23 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         setOpenDialog(dialogId);
     };
 
-    const handleCloseDialog = useCallback(
-        (nextSelectedDirectoryId: string | null = null) => {
-            onClose(nextSelectedDirectoryId);
-            setOpenDialog(DialogsId.NONE);
-            setHideMenu(false);
-            setDeleteError('');
-        },
-        [onClose, setOpenDialog]
-    );
+    const handleCloseDialog = useCallback(() => {
+        onClose();
+        setOpenDialog(DialogsId.NONE);
+        setHideMenu(false);
+        setDeleteError('');
+    }, [onClose, setOpenDialog]);
 
-    const [renameCB, renameState] = useDeferredFetch(
-        // @ts-expect-error refacto typing of useDefferedFetch
-        renameElement,
-        handleCloseDialog,
-        (HTTPStatusCode: number) => {
-            if (HTTPStatusCode === 403) {
-                return intl.formatMessage({ id: 'renameDirectoryError' });
-            }
-            return undefined;
-        },
-        undefined,
-        false
-    );
+    const [renameCB, renameState] = useDeferredFetch(renameElement, handleCloseDialog, (HTTPStatusCode: number) => {
+        if (HTTPStatusCode === 403) {
+            return intl.formatMessage({ id: 'renameDirectoryError' });
+        }
+        return undefined;
+    });
 
-    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, (response: ElementAttributes) =>
-        handleCloseDialog(response?.elementUuid)
-    );
+    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, handleCloseDialog);
 
-    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(
-        insertRootDirectory,
-        (response: ElementAttributes) => handleCloseDialog(response?.elementUuid)
-    );
+    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(insertRootDirectory, handleCloseDialog);
 
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
 
@@ -196,14 +181,14 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         (elementsUuid: UUID) => {
             setDeleteError('');
             deleteElement(elementsUuid)
-                .then(() => handleCloseDialog(directory?.parentUuid))
+                .then(handleCloseDialog)
                 .catch((error: any) => {
                     // show the error message and don't close the dialog
                     setDeleteError(error.message);
                     handleError(error.message);
                 });
         },
-        [handleCloseDialog, directory?.parentUuid, handleError]
+        [handleCloseDialog, handleError]
     );
 
     // Allowance
@@ -302,7 +287,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     });
                 });
             }
-            handleCloseDialog(null);
+            handleCloseDialog();
         },
         [directory, handleCloseDialog, snackError, treeData.mapData]
     );

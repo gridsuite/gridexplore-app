@@ -309,14 +309,12 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         moveElementsToDirectory,
         undefined,
         moveElementErrorToString,
-        moveElementOnError,
-        false
+        moveElementOnError
     );
 
     const [renameCB, renameState] = useDeferredFetch(
-        // @ts-expect-error refacto typing of useDefferedFetch
         renameElement,
-        (_elementUuid: string, renamedElement: any[]) => {
+        (renamedElement: any[]) => {
             // if copied element is renamed
             if (itemSelectionForCopy.sourceItemUuid === renamedElement[0]) {
                 dispatch(
@@ -342,41 +340,35 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 return intl.formatMessage({ id: 'renameElementNotFoundError' });
             }
             return undefined;
-        },
-        undefined,
-        false
+        }
     );
 
     const [FiltersReplaceWithScriptCB] = useDeferredFetch(
         replaceFiltersWithScript,
         handleCloseDialog,
         undefined,
-        handleLastError,
-        false
+        handleLastError
     );
 
     const [newScriptFromFiltersContingencyListCB] = useDeferredFetch(
         newScriptFromFiltersContingencyList,
         handleCloseDialog,
         undefined,
-        handleLastError,
-        false
+        handleLastError
     );
 
     const [replaceFormContingencyListWithScriptCB] = useDeferredFetch(
         replaceFormContingencyListWithScript,
         handleCloseDialog,
         undefined,
-        handleLastError,
-        false
+        handleLastError
     );
 
     const [newScriptFromFilterCB] = useDeferredFetch(
         newScriptFromFilter,
         handleCloseDialog,
         undefined,
-        handleLastError,
-        false
+        handleLastError
     );
 
     const noCreationInProgress = useCallback(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
