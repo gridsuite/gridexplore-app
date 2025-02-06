@@ -82,6 +82,7 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
             appsAndUrls={appsAndUrls}
             onThemeClick={handleChangeTheme}
             theme={themeLocal}
+            developerMode={false}
             onLanguageClick={handleChangeLanguage}
             language={languageLocal}
             globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
