@@ -21,7 +21,7 @@ import { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
 import { User } from 'oidc-client';
 import { UUID } from 'crypto';
-import { APP_NAME, getAppName, PARAM_LANGUAGE, PARAM_THEME } from './config-params';
+import { APP_NAME, getAppName, PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME } from './config-params';
 import { store } from '../redux/store';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
@@ -204,6 +204,10 @@ export type ConfigParameter =
     | {
           readonly name: typeof PARAM_THEME;
           value: GsTheme;
+      }
+    | {
+          readonly name: typeof PARAM_DEVELOPER_MODE;
+          value: boolean;
       };
 export type ConfigParameters = ConfigParameter[];
 
@@ -321,7 +325,7 @@ export function renameElement(elementUuid: UUID, newElementName: string) {
     });
 }
 
-export function updateConfigParameter(name: string, value: string) {
+export function updateConfigParameter(name: string, value: string | boolean) {
     const appName = getAppName(name);
     console.info("Updating config parameter '%s=%s' for app '%s' ", name, value, appName);
     const updateParams = `${PREFIX_CONFIG_QUERIES}/v1/applications/${appName}/parameters/${name}?value=${encodeURIComponent(
