@@ -169,6 +169,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                 case ElementType.SPREADSHEET_CONFIG:
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                     console.info(
@@ -192,7 +193,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         activeElement.description,
                         activeElement.elementUuid,
                         selectedDirectory?.elementUuid,
-                        // @ts-expect-error TODO: seems to be an object but we await a string???
                         activeElement.specificMetadata.type
                     );
                     break;
@@ -222,7 +222,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         activeElement.elementUuid,
                         undefined,
                         activeElement.type,
-                        // @ts-expect-error TODO: seems to be an object but we await a string???
                         activeElement.specificMetadata.type
                     ).catch((error) => handleDuplicateError(error.message));
                     break;
@@ -231,10 +230,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                     duplicateElement(
                         activeElement.elementUuid,
                         undefined,
-                        ElementType.PARAMETERS,
+                        activeElement.type,
                         activeElement.type
                     ).catch((error) => handleDuplicateError(error.message));
                     break;
@@ -290,7 +290,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     );
 
     const moveElementOnError = useCallback(
-        (errorMessages: string[], params: unknown, paramsOnErrors: unknown[]) => {
+        (errorMessages: string[], _params: unknown, paramsOnErrors: unknown[]) => {
             const msg = intl.formatMessage(
                 { id: 'moveElementsFailure' },
                 {
@@ -309,13 +309,12 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         moveElementsToDirectory,
         undefined,
         moveElementErrorToString,
-        moveElementOnError,
-        false
+        moveElementOnError
     );
 
     const [renameCB, renameState] = useDeferredFetch(
         renameElement,
-        (elementUuid: string, renamedElement: any[]) => {
+        (renamedElement: any[]) => {
             // if copied element is renamed
             if (itemSelectionForCopy.sourceItemUuid === renamedElement[0]) {
                 dispatch(
@@ -341,41 +340,35 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 return intl.formatMessage({ id: 'renameElementNotFoundError' });
             }
             return undefined;
-        },
-        undefined,
-        false
+        }
     );
 
     const [FiltersReplaceWithScriptCB] = useDeferredFetch(
         replaceFiltersWithScript,
         handleCloseDialog,
         undefined,
-        handleLastError,
-        false
+        handleLastError
     );
 
     const [newScriptFromFiltersContingencyListCB] = useDeferredFetch(
         newScriptFromFiltersContingencyList,
         handleCloseDialog,
         undefined,
-        handleLastError,
-        false
+        handleLastError
     );
 
     const [replaceFormContingencyListWithScriptCB] = useDeferredFetch(
         replaceFormContingencyListWithScript,
         handleCloseDialog,
         undefined,
-        handleLastError,
-        false
+        handleLastError
     );
 
     const [newScriptFromFilterCB] = useDeferredFetch(
         newScriptFromFilter,
         handleCloseDialog,
         undefined,
-        handleLastError,
-        false
+        handleLastError
     );
 
     const noCreationInProgress = useCallback(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
@@ -415,6 +408,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             ElementType.SENSITIVITY_PARAMETERS,
             ElementType.SHORT_CIRCUIT_PARAMETERS,
             ElementType.LOADFLOW_PARAMETERS,
+            ElementType.NETWORK_VISUALIZATIONS_PARAMETERS,
             ElementType.SPREADSHEET_CONFIG,
             ElementType.SPREADSHEET_CONFIG_COLLECTION,
         ];
@@ -455,9 +449,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.FILTER &&
-            selectedElements[0].subtype !== FilterType.EXPLICIT_NAMING.id &&
-            isUserAllowed(),
-        [isUserAllowed, selectedElements]
+            selectedElements[0].subtype !== FilterType.EXPLICIT_NAMING.id,
+        [selectedElements]
     );
 
     const allowsDownload = useCallback(() => {
@@ -717,7 +710,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         onClose={handleCloseDialog}
                         sourceFilterForExplicitNamingConversion={{
                             id: activeElement.elementUuid,
-                            // @ts-expect-error TODO: seems to be an object but we await a string???
                             equipmentType: activeElement.specificMetadata.equipmentType,
                         }}
                         activeDirectory={activeDirectory}

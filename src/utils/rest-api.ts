@@ -21,7 +21,7 @@ import { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
 import { User } from 'oidc-client';
 import { UUID } from 'crypto';
-import { APP_NAME, getAppName, PARAM_LANGUAGE, PARAM_THEME } from './config-params';
+import { APP_NAME, getAppName, PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME } from './config-params';
 import { store } from '../redux/store';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
@@ -204,6 +204,10 @@ export type ConfigParameter =
     | {
           readonly name: typeof PARAM_THEME;
           value: GsTheme;
+      }
+    | {
+          readonly name: typeof PARAM_DEVELOPER_MODE;
+          value: boolean;
       };
 export type ConfigParameters = ConfigParameter[];
 
@@ -321,7 +325,7 @@ export function renameElement(elementUuid: UUID, newElementName: string) {
     });
 }
 
-export function updateConfigParameter(name: string, value: string) {
+export function updateConfigParameter(name: string, value: string | boolean) {
     const appName = getAppName(name);
     console.info("Updating config parameter '%s=%s' for app '%s' ", name, value, appName);
     const updateParams = `${PREFIX_CONFIG_QUERIES}/v1/applications/${appName}/parameters/${name}?value=${encodeURIComponent(
@@ -386,7 +390,12 @@ const getDuplicateEndpoint = (type: ElementType) => {
             return '/filters';
         case ElementType.CONTINGENCY_LIST:
             return '/contingency-lists';
-        case ElementType.PARAMETERS:
+        case ElementType.VOLTAGE_INIT_PARAMETERS:
+        case ElementType.SECURITY_ANALYSIS_PARAMETERS:
+        case ElementType.SENSITIVITY_PARAMETERS:
+        case ElementType.LOADFLOW_PARAMETERS:
+        case ElementType.SHORT_CIRCUIT_PARAMETERS:
+        case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
             return '/parameters';
         case ElementType.MODIFICATION:
             return '/composite-modifications';
@@ -541,6 +550,7 @@ export function getContingencyList(type: string, id: string) {
 
 export interface CriteriaBasedEditionFormData {
     [FieldConstants.NAME]: string;
+    [FieldConstants.DESCRIPTION]?: string;
     [FieldConstants.EQUIPMENT_TYPE]?: string | null;
     [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
 }
@@ -573,9 +583,10 @@ export function saveCompositeModification(id: string, name: string) {
  * @returns {Promise<Response>}
  */
 export function saveCriteriaBasedContingencyList(id: string, form: CriteriaBasedEditionFormData) {
-    const { name, equipmentType, criteriaBased } = form;
+    const { name, description, equipmentType, criteriaBased } = form;
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description ?? '');
     urlSearchParams.append('contingencyListType', ContingencyListType.CRITERIA_BASED.id);
 
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/contingency-lists/${id}?${urlSearchParams.toString()}`;
@@ -595,9 +606,10 @@ export function saveCriteriaBasedContingencyList(id: string, form: CriteriaBased
  * Saves a script contingency list
  * @returns {Promise<Response>}
  */
-export function saveScriptContingencyList(scriptContingencyList: Script, name: string) {
+export function saveScriptContingencyList(scriptContingencyList: Script, name: string, description: string) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
     urlSearchParams.append('contingencyListType', ContingencyListType.SCRIPT.id);
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/contingency-lists/${
         scriptContingencyList.id
@@ -615,10 +627,12 @@ export function saveScriptContingencyList(scriptContingencyList: Script, name: s
  */
 export function saveExplicitNamingContingencyList(
     explicitNamingContingencyList: PrepareContingencyListForBackend,
-    name: string
+    name: string,
+    description: string
 ) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
     urlSearchParams.append('contingencyListType', ContingencyListType.EXPLICIT_NAMING.id);
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/contingency-lists/${
         explicitNamingContingencyList.id

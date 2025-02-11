@@ -9,10 +9,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { updateConfigParameter } from '../../utils/rest-api';
-import { PARAM_LANGUAGE, PARAM_THEME } from '../../utils/config-params';
+import { PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME } from '../../utils/config-params';
 import { AppState } from '../../redux/types';
 
-type ParamName = typeof PARAM_THEME | typeof PARAM_LANGUAGE;
+type ParamName = typeof PARAM_THEME | typeof PARAM_LANGUAGE | typeof PARAM_DEVELOPER_MODE;
 
 export function useParameterState<TParamName extends ParamName>(
     paramName: TParamName

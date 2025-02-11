@@ -10,6 +10,7 @@ import {
     CustomMuiDialog,
     FieldConstants,
     getCriteriaBasedSchema,
+    MAX_CHAR_DESCRIPTION,
     useSnackMessage,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
@@ -31,7 +32,7 @@ import { AppState } from '../../../../redux/types';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
-    [FieldConstants.DESCRIPTION]: yup.string().max(500, 'descriptionLimitError'),
+    [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     [FieldConstants.CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
     [FieldConstants.SCRIPT]: yup.string().nullable(),
     [FieldConstants.EQUIPMENT_TYPE]: yup.string().when([FieldConstants.CONTINGENCY_LIST_TYPE], {

@@ -22,7 +22,6 @@ export const formatMetadata = (
     childrenMetadata: Record<UUID, ElementAttributes>
 ): ElementAttributes => ({
     ...data,
-    // @ts-expect-error TODO: "Type `object` is not assignable to type `string`"
     subtype: childrenMetadata[data.elementUuid]?.specificMetadata.type,
     hasMetadata: !!childrenMetadata[data.elementUuid],
 });
@@ -67,8 +66,7 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         cellRendererParams: {
             childrenMetadata,
         },
-        headerCheckboxSelection: true,
-        checkboxSelection: true,
+        cellStyle: { display: 'flex' },
         minWidth: 400,
     },
     {

@@ -10,6 +10,7 @@ export const APP_NAME = 'Explore';
 
 export const PARAM_THEME = 'theme';
 export const PARAM_LANGUAGE = 'language';
+export const PARAM_DEVELOPER_MODE = 'enableDeveloperMode';
 
 const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE]);
 

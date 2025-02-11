@@ -15,7 +15,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
+import { APP_NAME, PARAM_LANGUAGE, PARAM_THEME, PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { fetchVersion, getServersInfos } from '../utils/rest-api';
 import GridExploreLogoLight from '../images/GridExplore_logo_light.svg?react';
 import GridExploreLogoDark from '../images/GridExplore_logo_dark.svg?react';
@@ -44,6 +44,8 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
     const [languageLocal, handleChangeLanguage] = useParameterState(PARAM_LANGUAGE);
+
+    const [enableDeveloperModeLocal, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const searchInputRef = useRef<any | null>(null);
 
@@ -82,6 +84,8 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
             appsAndUrls={appsAndUrls}
             onThemeClick={handleChangeTheme}
             theme={themeLocal}
+            onDeveloperModeClick={handleChangeDeveloperMode}
+            developerMode={enableDeveloperModeLocal}
             onLanguageClick={handleChangeLanguage}
             language={languageLocal}
             globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}

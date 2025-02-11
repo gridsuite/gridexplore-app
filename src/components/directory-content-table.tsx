@@ -51,6 +51,7 @@ const getClickableRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
             ElementType.SHORT_CIRCUIT_PARAMETERS,
             ElementType.SPREADSHEET_CONFIG,
             ElementType.SPREADSHEET_CONFIG_COLLECTION,
+            ElementType.NETWORK_VISUALIZATIONS_PARAMETERS,
         ].includes(cellData.data.type)
     ) {
         style.cursor = 'pointer';
@@ -119,8 +120,13 @@ export function DirectoryContentTable({
             rowData={rows}
             getRowId={getRowId}
             defaultColDef={defaultColumnDefinition}
-            rowSelection="multiple"
-            suppressRowClickSelection
+            rowSelection={{
+                mode: 'multiRow',
+                enableClickSelection: false,
+                checkboxes: true,
+                headerCheckbox: true,
+            }}
+            selectionColumnDef={{ pinned: 'left' }}
             onGridReady={onGridReady}
             onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}

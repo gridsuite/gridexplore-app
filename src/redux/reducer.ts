@@ -52,6 +52,8 @@ import {
     CurrentPathAction,
     DIRECTORY_UPDATED,
     DirectoryUpdatedAction,
+    ENABLE_DEVELOPER_MODE,
+    EnableDeveloperModeAction,
     LanguageAction,
     REORDERED_COLUMNS,
     ReorderedColumnsAction,
@@ -88,6 +90,7 @@ const initialState: AppState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     [PARAM_THEME]: getLocalStorageTheme(),
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
+    enableDeveloperMode: false,
 
     currentChildren: undefined,
     selectedDirectory: null,
@@ -130,6 +133,10 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SELECT_LANGUAGE, (state, action: LanguageAction) => {
         state.language = action.language;
         saveLocalStorageLanguage(state.language);
+    });
+
+    builder.addCase(ENABLE_DEVELOPER_MODE, (state, action: EnableDeveloperModeAction) => {
+        state.enableDeveloperMode = action.enableDeveloperMode;
     });
 
     builder.addCase(USER, (state, action: UserAction) => {
