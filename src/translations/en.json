@@ -152,6 +152,7 @@
     "download.message.studies": "studies",
     "download.message.others": "others",
     "download.error": "An error occurred while downloading element {elementName}",
+    "createSpreadsheetCollection": "Create a spreadsheet model collection",
     "MODIFICATION": "Composite modification",
     "All": "All",
     "restore": "Restore",

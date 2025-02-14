@@ -17,6 +17,7 @@ import {
     DriveFileMove as DriveFileMoveIcon,
     FileCopy as FileCopyIcon,
     FileCopyTwoTone as FileCopyTwoToneIcon,
+    TableView as TableViewIcon,
     FileDownload,
     InsertDriveFile as InsertDriveFileIcon,
     PhotoLibrary,
@@ -35,6 +36,7 @@ import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
 import { DialogsId } from '../../utils/UIconstants';
 import {
+    createSpreadsheetConfigCollectionFromConfigIds,
     deleteElements,
     duplicateElement,
     duplicateSpreadsheetConfig,
@@ -256,6 +258,30 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         }
     }, [activeElement, handleCloseDialog, handleDuplicateError, handleLastError, intl, snackError]);
 
+    const createCollection = useCallback(() => {
+        if (selectedElements?.length > 0 && selectedDirectory?.elementUuid) {
+            console.log('DBG DBR', selectedElements);
+            const configIds = selectedElements.map((e) => e.elementUuid);
+            createSpreadsheetConfigCollectionFromConfigIds(
+                'toto',
+                'desc',
+                selectedDirectory.elementUuid,
+                configIds
+            ).catch((error) => {
+                handleLastError(
+                    intl.formatMessage(
+                        { id: 'TODOErrorMsg' },
+                        {
+                            itemName: 'toto',
+                            errorMessage: error.message,
+                        }
+                    )
+                );
+            });
+        }
+        handleCloseDialog();
+    }, [handleCloseDialog, handleLastError, intl, selectedDirectory?.elementUuid, selectedElements]);
+
     const handleCloseExportDialog = useCallback(() => {
         stopCasesExports();
         handleCloseDialog();
@@ -463,6 +489,10 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
 
+    const allowsSpreadsheetCollection = useCallback(() => {
+        return selectedElements.every((element) => ElementType.SPREADSHEET_CONFIG === element.type);
+    }, [selectedElements]);
+
     const buildMenu = useMemo(() => {
         if (selectedElements.length === 0) {
             return undefined;
@@ -547,6 +577,14 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
+        if (allowsSpreadsheetCollection()) {
+            menuItems.push({
+                messageDescriptorId: 'createSpreadsheetCollection',
+                callback: createCollection,
+                icon: <TableViewIcon fontSize="small" />,
+            });
+        }
+
         if (allowsReplaceContingencyWithScript()) {
             menuItems.push({
                 messageDescriptorId: 'replaceWithScript',
@@ -582,6 +620,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         allowsCreateNewStudyFromCase,
         allowsDelete,
         allowsDownload,
+        allowsSpreadsheetCollection,
         allowsDuplicateAndCopy,
         allowsMove,
         allowsRename,
@@ -593,6 +632,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         handleOpenDialog,
         noCreationInProgress,
         selectedElements,
+        createCollection,
     ]);
 
     const renderDialog = () => {
@@ -717,6 +757,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         language={languageLocal}
                     />
                 );
+            case DialogsId.CREATE_SPREADSHEET_COLLECTION:
+                return null; // TODO DBR
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:
                 return <CreateStudyDialog open onClose={handleCloseDialog} providedExistingCase={activeElement} />;
             default:

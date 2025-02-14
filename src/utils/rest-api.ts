@@ -484,6 +484,26 @@ export function downloadSpreadsheetConfigCollection(collectionId: string) {
     });
 }
 
+export function createSpreadsheetConfigCollectionFromConfigIds(
+    name: string,
+    description: string,
+    directoryUuid: UUID,
+    configUuidList: string[]
+) {
+    console.info(`Creating a spreadsheet config collection from models ids: ${configUuidList}`);
+    const queryParams = new URLSearchParams();
+    queryParams.append('name', name);
+    queryParams.append('description', description);
+    queryParams.append('parentDirectoryUuid', directoryUuid);
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-config-collections/collect?${queryParams.toString()}`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'post',
+        body: JSON.stringify(configUuidList),
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
+
 export function elementExists(directoryUuid: UUID | null | undefined, elementName: string, type: string) {
     const elementNameEncoded = encodeURIComponent(elementName);
     const existsElementUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/elements/${elementNameEncoded}/types/${type}`;
