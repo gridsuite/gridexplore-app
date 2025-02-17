@@ -116,7 +116,6 @@
     "Max": "Max",
     "cannotRetrieveContingencyList": "Could not retrieve contingency list: ",
     "retrieveCompositeModificationError": "Could not retrieve composite modification content: ",
-    "AddDescription": "Add a description (optional)",
     "PropertyName": "Property name",
     "getAppLinkError": "Error getting application link for type = {type}",
     "missingEquipmentsIdsError": "ID is required field for all equipments",
