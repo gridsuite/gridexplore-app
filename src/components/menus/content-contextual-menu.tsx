@@ -36,7 +36,6 @@ import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
 import { DialogsId } from '../../utils/UIconstants';
 import {
-    createSpreadsheetConfigCollectionFromConfigIds,
     deleteElements,
     duplicateElement,
     duplicateSpreadsheetConfig,
@@ -60,6 +59,7 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
+import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 
 interface ContentContextualMenuProps extends CommonContextualMenuProps {
     activeElement: ElementAttributes;
@@ -257,30 +257,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             handleCloseDialog();
         }
     }, [activeElement, handleCloseDialog, handleDuplicateError, handleLastError, intl, snackError]);
-
-    const createCollection = useCallback(() => {
-        if (selectedElements?.length > 0 && selectedDirectory?.elementUuid) {
-            console.log('DBG DBR', selectedElements);
-            const configIds = selectedElements.map((e) => e.elementUuid);
-            createSpreadsheetConfigCollectionFromConfigIds(
-                'toto',
-                'desc',
-                selectedDirectory.elementUuid,
-                configIds
-            ).catch((error) => {
-                handleLastError(
-                    intl.formatMessage(
-                        { id: 'TODOErrorMsg' },
-                        {
-                            itemName: 'toto',
-                            errorMessage: error.message,
-                        }
-                    )
-                );
-            });
-        }
-        handleCloseDialog();
-    }, [handleCloseDialog, handleLastError, intl, selectedDirectory?.elementUuid, selectedElements]);
 
     const handleCloseExportDialog = useCallback(() => {
         stopCasesExports();
@@ -580,7 +556,9 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         if (allowsSpreadsheetCollection()) {
             menuItems.push({
                 messageDescriptorId: 'createSpreadsheetCollection',
-                callback: createCollection,
+                callback: () => {
+                    handleOpenDialog(DialogsId.CREATE_SPREADSHEET_COLLECTION);
+                },
                 icon: <TableViewIcon fontSize="small" />,
             });
         }
@@ -632,7 +610,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         handleOpenDialog,
         noCreationInProgress,
         selectedElements,
-        createCollection,
     ]);
 
     const renderDialog = () => {
@@ -758,7 +735,14 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     />
                 );
             case DialogsId.CREATE_SPREADSHEET_COLLECTION:
-                return null; // TODO DBR
+                return (
+                    <CreateSpreadsheetCollectionDialog
+                        open
+                        onClose={handleCloseDialog}
+                        initDirectory={selectedDirectory ?? undefined}
+                        spreadsheetConfigIds={selectedElements?.map((e) => e.elementUuid)}
+                    />
+                );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:
                 return <CreateStudyDialog open onClose={handleCloseDialog} providedExistingCase={activeElement} />;
             default:
