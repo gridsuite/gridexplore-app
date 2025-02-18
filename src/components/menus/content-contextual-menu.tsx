@@ -40,7 +40,6 @@ import {
     duplicateElement,
     duplicateSpreadsheetConfig,
     duplicateSpreadsheetConfigCollection,
-    elementExists,
     moveElementsToDirectory,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,
@@ -730,7 +729,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                             equipmentType: activeElement.specificMetadata.equipmentType,
                         }}
                         activeDirectory={activeDirectory}
-                        elementExists={elementExists}
                         language={languageLocal}
                     />
                 );
