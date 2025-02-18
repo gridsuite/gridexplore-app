@@ -13,7 +13,7 @@ import {
     FieldConstants,
     getCriteriaBasedFormData,
 } from '@gridsuite/commons-ui';
-import { SetRequired } from 'type-fest';
+import type { SetRequired } from 'type-fest';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { ContingencyListType } from '../../../utils/elementType';
 
