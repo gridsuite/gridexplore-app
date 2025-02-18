@@ -67,6 +67,7 @@ export default function ExplicitNamingForm() {
                 editable: true,
                 rowDrag: true,
                 singleClickEdit: true,
+                flex: 1,
             },
             {
                 headerName: intl.formatMessage({ id: 'equipments' }),
@@ -82,6 +83,7 @@ export default function ExplicitNamingForm() {
                     name: FieldConstants.EQUIPMENT_TABLE,
                 },
                 cellStyle: { padding: 0 },
+                flex: 1,
             },
         ],
         [intl]
