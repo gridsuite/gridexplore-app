@@ -495,7 +495,7 @@ export function createSpreadsheetConfigCollectionFromConfigIds(
     queryParams.append('name', name);
     queryParams.append('description', description);
     queryParams.append('parentDirectoryUuid', directoryUuid);
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-config-collections/collect?${queryParams.toString()}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-config-collections/merge?${queryParams.toString()}`;
     console.debug(url);
     return backendFetch(url, {
         method: 'post',
