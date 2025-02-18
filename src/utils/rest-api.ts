@@ -398,7 +398,7 @@ const getDuplicateEndpoint = (type: ElementType) => {
         case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
             return '/parameters';
         case ElementType.MODIFICATION:
-            return '/modifications';
+            return '/composite-modifications';
         default:
             return undefined;
     }
