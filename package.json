@@ -5,8 +5,8 @@
     "private": true,
     "type": "module",
     "engines": {
-        "node": ">=20",
-        "npm": "^10.8.2"
+        "node": ">=22",
+        "npm": "^10.9.2"
     },
     "dependencies": {
         "@emotion/react": "^11.14.0",
@@ -65,7 +65,7 @@
         "@types/json-logic-js": "^2.0.8",
         "@types/license-checker": "^25.0.6",
         "@types/localized-countries": "^2.0.3",
-        "@types/node": "^20.17.19",
+        "@types/node": "^22.13.4",
         "@types/prop-types": "^15.7.14",
         "@types/react": "^18.3.18",
         "@types/react-beautiful-dnd": "^13.1.8",
