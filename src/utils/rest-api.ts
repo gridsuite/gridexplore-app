@@ -826,7 +826,7 @@ export function searchElementsInfos(searchTerm: string, currentDirectoryUuid: UU
         urlSearchParams.append('directoryUuid', currentDirectoryUuid);
     }
     return backendFetchJson(
-        `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/elements/indexation-infos?${urlSearchParams.toString()}`,
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/elements/indexation-infos?${urlSearchParams.toString()}`,
         {
             method: 'get',
         }
