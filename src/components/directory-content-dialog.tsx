@@ -27,7 +27,7 @@ import {
 import type { CellClickedEvent } from 'ag-grid-community';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { elementExists, getFilterById, updateElement } from '../utils/rest-api';
+import { getFilterById, updateElement } from '../utils/rest-api';
 import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import CompositeModificationDialog from './dialogs/network-modification/composite-modification/composite-modification-dialog';
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
@@ -300,7 +300,6 @@ function DirectoryContentDialog(
                 setItemSelectionForCopy={setItemSelectionForCopy}
                 getFilterById={getFilterById}
                 activeDirectory={activeDirectory}
-                elementExists={elementExists}
                 language={languageLocal}
                 description={activeElement.description}
             />
@@ -319,7 +318,6 @@ function DirectoryContentDialog(
                 setItemSelectionForCopy={setItemSelectionForCopy}
                 getFilterById={getFilterById}
                 activeDirectory={activeDirectory}
-                elementExists={elementExists}
                 language={languageLocal}
                 description={activeElement.description}
             />

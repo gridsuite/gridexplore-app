@@ -6,7 +6,6 @@
  */
 
 import { UniqueNameInput, ElementType, FieldConstants } from '@gridsuite/commons-ui';
-import { elementExists } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/types';
 import Box from '@mui/material/Box';
@@ -20,7 +19,6 @@ export default function CompositeModificationForm() {
                 label="nameProperty"
                 elementType={ElementType.MODIFICATION}
                 activeDirectory={activeDirectory}
-                elementExists={elementExists}
             />
         </Box>
     );

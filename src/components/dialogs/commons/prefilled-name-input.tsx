@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { ElementType, FieldConstants, UniqueNameInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { elementExists, getBaseName } from '../../../utils/rest-api';
+import { getBaseName } from '../../../utils/rest-api';
 import { AppState } from '../../../redux/types';
 
 export interface PrefilledNameInputProps {
@@ -55,7 +55,6 @@ export default function PrefilledNameInput({ label, name, elementType }: Readonl
             name={name}
             label={label}
             elementType={elementType}
-            elementExists={elementExists}
             activeDirectory={activeDirectory}
             autoFocus={!caseFile}
             onManualChangeCallback={() => setModifiedByUser(true)}
