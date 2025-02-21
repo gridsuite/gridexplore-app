@@ -35,7 +35,6 @@ import {
     duplicateElement,
     duplicateSpreadsheetConfig,
     duplicateSpreadsheetConfigCollection,
-    elementExists,
     insertDirectory,
     insertRootDirectory,
     moveElementsToDirectory,
@@ -370,7 +369,6 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         open
                         onClose={handleCloseDialog}
                         activeDirectory={activeDirectory}
-                        elementExists={elementExists}
                         language={languageLocal}
                     />
                 );

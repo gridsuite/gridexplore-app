@@ -22,7 +22,6 @@ import { useSelector } from 'react-redux';
 import { ChangeEvent } from 'react';
 import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 import ScriptInputForm from '../script/script-input-form';
-import { elementExists } from '../../../../utils/rest-api';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { AppState } from '../../../../redux/types';
 import { SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS } from '../contingency-list-utils';
@@ -59,7 +58,6 @@ export default function ContingencyListCreationForm() {
                     elementType={ElementType.CONTINGENCY_LIST}
                     autoFocus
                     activeDirectory={activeDirectory}
-                    elementExists={elementExists}
                 />
                 <DescriptionField />
                 {gridItem(contingencyListTypeField, 12)}

@@ -12,7 +12,7 @@ import { CircularProgress, Grid } from '@mui/material';
 import { CustomMuiDialog, ElementType, FieldConstants, UniqueNameInput, yupConfig as yup } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
-import { elementExists, getNameCandidate } from '../../utils/rest-api';
+import { getNameCandidate } from '../../utils/rest-api';
 import { AppState } from '../../redux/types';
 
 const schema = yup.object().shape({
@@ -127,7 +127,6 @@ export default function CopyToScriptDialog({
                             elementType={ElementType.CONTINGENCY_LIST}
                             autoFocus
                             activeDirectory={activeDirectory}
-                            elementExists={elementExists}
                         />
                     )}
                 </Grid>
