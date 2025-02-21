@@ -23,10 +23,10 @@ import {
     getContingencyListEmptyFormData,
     getExplicitNamingFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
-import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-form';
 import ExplicitNamingEditionForm from './explicit-naming-edition-form';
 import { setItemSelectionForCopy } from '../../../../../redux/actions';
 import { AppState } from '../../../../../redux/types';
+import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-utils';
 
 interface ExplicitNamingEditionFormData {
     [FieldConstants.NAME]: string;

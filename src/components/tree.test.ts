@@ -6,7 +6,7 @@
  */
 
 import { ElementType } from '@gridsuite/commons-ui';
-import { updatedTree } from './tree-views-container';
+import { updatedTree } from './treeview-utils';
 
 const otherProperties = {
     description: 'desc',
