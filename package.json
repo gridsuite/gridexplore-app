@@ -4,10 +4,14 @@
     "license": "MPL-2.0",
     "private": true,
     "type": "module",
+    "engines": {
+        "node": ">=22",
+        "npm": "^10.9.2"
+    },
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
-        "@gridsuite/commons-ui": "0.84.0",
+        "@gridsuite/commons-ui": "0.85.1",
         "@hookform/resolvers": "^4.0.0",
         "@mui/icons-material": "^5.16.14",
         "@mui/lab": "5.0.0-alpha.175",
@@ -61,7 +65,7 @@
         "@types/json-logic-js": "^2.0.8",
         "@types/license-checker": "^25.0.6",
         "@types/localized-countries": "^2.0.3",
-        "@types/node": "^18.19.75",
+        "@types/node": "^22.13.4",
         "@types/prop-types": "^15.7.14",
         "@types/react": "^18.3.18",
         "@types/react-beautiful-dnd": "^13.1.8",
