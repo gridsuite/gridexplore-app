@@ -464,7 +464,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
 
-    const allowsSpreadsheetCollection = useCallback(() => {
+    const allowsSpreadsheetCollection = useMemo(() => {
         return selectedElements.every((element) => ElementType.SPREADSHEET_CONFIG === element.type);
     }, [selectedElements]);
 
@@ -552,7 +552,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (allowsSpreadsheetCollection()) {
+        if (allowsSpreadsheetCollection) {
             menuItems.push({
                 messageDescriptorId: 'createSpreadsheetCollection',
                 callback: () => {
@@ -734,12 +734,14 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 );
             case DialogsId.CREATE_SPREADSHEET_COLLECTION:
                 return (
-                    <CreateSpreadsheetCollectionDialog
-                        open
-                        onClose={handleCloseDialog}
-                        initDirectory={selectedDirectory ?? undefined}
-                        spreadsheetConfigIds={selectedElements?.map((e) => e.elementUuid)}
-                    />
+                    selectedDirectory && (
+                        <CreateSpreadsheetCollectionDialog
+                            open
+                            onClose={handleCloseDialog}
+                            initDirectory={selectedDirectory}
+                            spreadsheetConfigIds={selectedElements?.map((e) => e.elementUuid)}
+                        />
+                    )
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:
                 return <CreateStudyDialog open onClose={handleCloseDialog} providedExistingCase={activeElement} />;

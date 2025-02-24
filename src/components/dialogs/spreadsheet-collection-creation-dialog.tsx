@@ -5,15 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { useCallback } from 'react';
 import { UUID } from 'crypto';
 import { ElementCreationDialog, ElementType, IElementCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { ElementAttributes } from '@gridsuite/commons-ui/dist/utils';
 import { createSpreadsheetConfigCollectionFromConfigIds } from '../../utils/rest-api';
 
-interface CreateSpreadsheetCollectionProps {
+export interface CreateSpreadsheetCollectionProps {
     open: boolean;
     onClose: () => void;
-    initDirectory: ElementAttributes | undefined;
+    initDirectory: ElementAttributes;
     spreadsheetConfigIds: UUID[];
 }
 
@@ -25,25 +26,33 @@ function CreateSpreadsheetCollectionDialog({
 }: Readonly<CreateSpreadsheetCollectionProps>) {
     const { snackError, snackInfo } = useSnackMessage();
 
-    const createCollection = ({ name, description, folderId, folderName }: IElementCreationDialog) => {
-        createSpreadsheetConfigCollectionFromConfigIds(name, description, folderId, spreadsheetConfigIds)
-            .then(() => {
-                snackInfo({
-                    headerId: 'createCollectionMsg',
-                    headerValues: {
-                        nbModels: String(spreadsheetConfigIds?.length),
-                        directory: folderName,
-                    },
+    const createCollection = useCallback(
+        (element: IElementCreationDialog) => {
+            createSpreadsheetConfigCollectionFromConfigIds(
+                element.name,
+                element.description,
+                element.folderId,
+                spreadsheetConfigIds
+            )
+                .then(() => {
+                    snackInfo({
+                        headerId: 'createCollectionMsg',
+                        headerValues: {
+                            nbModels: String(spreadsheetConfigIds?.length),
+                            directory: element.folderName,
+                        },
+                    });
+                })
+                .catch((error) => {
+                    console.error(error);
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'createCollectionError',
+                    });
                 });
-            })
-            .catch((error) => {
-                console.error(error);
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'createCollectionError',
-                });
-            });
-    };
+        },
+        [snackError, snackInfo, spreadsheetConfigIds]
+    );
 
     return (
         <ElementCreationDialog

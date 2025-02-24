@@ -253,12 +253,14 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
                 );
             case DialogsId.CREATE_SPREADSHEET_COLLECTION:
                 return (
-                    <CreateSpreadsheetCollectionDialog
-                        open
-                        onClose={handleCloseDialog}
-                        initDirectory={selectedDirectory ?? undefined}
-                        spreadsheetConfigIds={selectedElements?.map((e) => e.elementUuid)}
-                    />
+                    selectedDirectory && (
+                        <CreateSpreadsheetCollectionDialog
+                            open
+                            onClose={handleCloseDialog}
+                            initDirectory={selectedDirectory}
+                            spreadsheetConfigIds={selectedElements?.map((e) => e.elementUuid)}
+                        />
+                    )
                 );
             default:
                 return null;
