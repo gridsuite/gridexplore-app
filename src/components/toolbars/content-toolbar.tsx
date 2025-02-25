@@ -8,7 +8,12 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { Delete as DeleteIcon, DriveFileMove as DriveFileMoveIcon, FileDownload } from '@mui/icons-material';
+import {
+    Delete as DeleteIcon,
+    DriveFileMove as DriveFileMoveIcon,
+    FileDownload,
+    TableView as TableViewIcon,
+} from '@mui/icons-material';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { deleteElements, moveElementsToDirectory } from '../../utils/rest-api';
 import DeleteDialog from '../dialogs/delete-dialog';
@@ -20,6 +25,7 @@ import ExportCaseDialog from '../dialogs/export-case-dialog';
 import * as constants from '../../utils/UIconstants';
 import { DialogsId } from '../../utils/UIconstants';
 import { AppState } from '../../redux/types';
+import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 
 export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
     selectedElements: ElementAttributes[];
@@ -128,6 +134,10 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress;
     }, [selectedElements, noCreationInProgress]);
 
+    const allowsSpreadsheetCollection = useMemo(() => {
+        return selectedElements.every((element) => ElementType.SPREADSHEET_CONFIG === element.type);
+    }, [selectedElements]);
+
     const allowsExportCases = useMemo(
         () => selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress,
         [selectedElements, noCreationInProgress]
@@ -151,34 +161,56 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
     const items = useMemo(() => {
         const toolbarItems = [];
 
-        if (selectedElements.length && (allowsDelete || allowsMove || allowsDownload || allowsExportCases)) {
-            toolbarItems.push(
-                {
-                    tooltipTextId: 'delete',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.DELETE);
+        if (selectedElements.length) {
+            if (allowsDelete || allowsMove || allowsDownload || allowsExportCases) {
+                // actions callable for several element types
+                toolbarItems.push(
+                    {
+                        tooltipTextId: 'delete',
+                        callback: () => {
+                            handleOpenDialog(DialogsId.DELETE);
+                        },
+                        icon: <DeleteIcon fontSize="small" />,
+                        disabled: !allowsDelete,
                     },
-                    icon: <DeleteIcon fontSize="small" />,
-                    disabled: !selectedElements.length || !allowsDelete,
-                },
-                {
-                    tooltipTextId: 'move',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.MOVE);
+                    {
+                        tooltipTextId: 'move',
+                        callback: () => {
+                            handleOpenDialog(DialogsId.MOVE);
+                        },
+                        icon: <DriveFileMoveIcon fontSize="small" />,
+                        disabled: !allowsMove,
                     },
-                    icon: <DriveFileMoveIcon fontSize="small" />,
-                    disabled: !selectedElements.length || !allowsMove,
-                },
-                {
-                    tooltipTextId: 'download.button',
-                    callback: () => downloadElements(selectedElements),
-                    icon: <FileDownload fontSize="small" />,
-                    disabled: !selectedElements.length || !allowsDownload,
-                }
-            );
+                    {
+                        tooltipTextId: 'download.button',
+                        callback: () => downloadElements(selectedElements),
+                        icon: <FileDownload fontSize="small" />,
+                        disabled: !allowsDownload,
+                    }
+                );
+            }
+            if (allowsSpreadsheetCollection) {
+                // action specific to spreadsheet models
+                toolbarItems.push({
+                    tooltipTextId: 'createSpreadsheetCollection',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.CREATE_SPREADSHEET_COLLECTION);
+                    },
+                    icon: <TableViewIcon fontSize="small" />,
+                    disabled: false,
+                });
+            }
         }
         return toolbarItems;
-    }, [allowsDelete, allowsDownload, allowsExportCases, allowsMove, downloadElements, selectedElements]);
+    }, [
+        allowsDelete,
+        allowsDownload,
+        allowsExportCases,
+        allowsMove,
+        allowsSpreadsheetCollection,
+        downloadElements,
+        selectedElements,
+    ]);
 
     const renderDialog = () => {
         switch (openDialog) {
@@ -218,6 +250,17 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
                         onClose={handleCloseExportDialog}
                         onExport={handleConvertCases}
                     />
+                );
+            case DialogsId.CREATE_SPREADSHEET_COLLECTION:
+                return (
+                    selectedDirectory && (
+                        <CreateSpreadsheetCollectionDialog
+                            open
+                            onClose={handleCloseDialog}
+                            initDirectory={selectedDirectory}
+                            spreadsheetConfigIds={selectedElements?.map((e) => e.elementUuid)}
+                        />
+                    )
                 );
             default:
                 return null;

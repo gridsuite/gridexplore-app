@@ -16,7 +16,6 @@ import {
     unscrollableDialogStyles,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { elementExists } from '../../../../../utils/rest-api';
 import { AppState } from '../../../../../redux/types';
 import { SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS } from '../../contingency-list-utils';
 
@@ -31,7 +30,6 @@ export default function CriteriaBasedEditionForm() {
                     label="nameProperty"
                     elementType={ElementType.CONTINGENCY_LIST}
                     activeDirectory={activeDirectory}
-                    elementExists={elementExists}
                 />
             </Box>
             <Box sx={unscrollableDialogStyles.unscrollableHeader}>
