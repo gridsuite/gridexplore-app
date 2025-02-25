@@ -8,49 +8,10 @@
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo } from 'react';
 import { v4 as uuid4 } from 'uuid';
-import { CustomAgGridTable, FieldConstants, yupConfig as yup } from '@gridsuite/commons-ui';
+import { CustomAgGridTable, FieldConstants } from '@gridsuite/commons-ui';
 import { ColDef, SuppressKeyboardEventParams } from 'ag-grid-community';
-import { ContingencyListType } from '../../../../utils/elementType';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { makeDefaultRowData } from '../contingency-list-utils';
-
-const getExplicitNamingConditionSchema = (schema: yup.ArraySchema<any, any, any, any>) =>
-    schema
-        .min(1, 'contingencyTableContainAtLeastOneRowError')
-        .test(
-            'rowWithoutName',
-            'contingencyTablePartiallyDefinedError',
-            (array) => !array.some((row: any) => !row[FieldConstants.CONTINGENCY_NAME]?.trim())
-        )
-        .test(
-            'rowWithoutEquipments',
-            'contingencyTablePartiallyDefinedError',
-            (array) => !array.some((row: any) => !row[FieldConstants.EQUIPMENT_IDS]?.length)
-        );
-
-const getSchema = () =>
-    yup
-        .array()
-        .of(
-            yup.object().shape({
-                [FieldConstants.CONTINGENCY_NAME]: yup.string().nullable(),
-                [FieldConstants.EQUIPMENT_IDS]: yup.array().of(yup.string().nullable()),
-            })
-        ) // we remove empty lines
-        .compact((row) => !row[FieldConstants.CONTINGENCY_NAME] && !row[FieldConstants.EQUIPMENT_IDS]?.length);
-
-export const getExplicitNamingSchema = () => ({
-    [FieldConstants.EQUIPMENT_TABLE]: getSchema().when([FieldConstants.CONTINGENCY_LIST_TYPE], {
-        is: ContingencyListType.EXPLICIT_NAMING.id,
-        then: (schema) => getExplicitNamingConditionSchema(schema),
-    }),
-});
-
-export const getExplicitNamingEditSchema = () => {
-    return {
-        [FieldConstants.EQUIPMENT_TABLE]: getExplicitNamingConditionSchema(getSchema()),
-    };
-};
 
 const suppressKeyboardEvent = (params: SuppressKeyboardEventParams) => {
     const { key } = params.event;
@@ -67,6 +28,7 @@ export default function ExplicitNamingForm() {
                 editable: true,
                 rowDrag: true,
                 singleClickEdit: true,
+                flex: 1,
             },
             {
                 headerName: intl.formatMessage({ id: 'equipments' }),
@@ -82,6 +44,7 @@ export default function ExplicitNamingForm() {
                     name: FieldConstants.EQUIPMENT_TABLE,
                 },
                 cellStyle: { padding: 0 },
+                flex: 1,
             },
         ],
         [intl]

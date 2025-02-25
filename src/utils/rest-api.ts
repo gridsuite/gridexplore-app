@@ -17,7 +17,7 @@ import {
     type GsLang,
     type GsTheme,
 } from '@gridsuite/commons-ui';
-import { LiteralUnion } from 'type-fest';
+import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
 import { User } from 'oidc-client';
 import { UUID } from 'crypto';
@@ -398,7 +398,7 @@ const getDuplicateEndpoint = (type: ElementType) => {
         case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
             return '/parameters';
         case ElementType.MODIFICATION:
-            return '/modifications';
+            return '/composite-modifications';
         default:
             return undefined;
     }
