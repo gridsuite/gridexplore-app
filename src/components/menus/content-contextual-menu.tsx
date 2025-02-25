@@ -17,6 +17,7 @@ import {
     DriveFileMove as DriveFileMoveIcon,
     FileCopy as FileCopyIcon,
     FileCopyTwoTone as FileCopyTwoToneIcon,
+    TableView as TableViewIcon,
     FileDownload,
     InsertDriveFile as InsertDriveFileIcon,
     PhotoLibrary,
@@ -39,7 +40,6 @@ import {
     duplicateElement,
     duplicateSpreadsheetConfig,
     duplicateSpreadsheetConfigCollection,
-    elementExists,
     moveElementsToDirectory,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,
@@ -58,6 +58,7 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { handleMaxElementsExceededError } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
+import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 
 interface ContentContextualMenuProps extends CommonContextualMenuProps {
     activeElement: ElementAttributes;
@@ -463,6 +464,10 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
 
+    const allowsSpreadsheetCollection = useMemo(() => {
+        return selectedElements.every((element) => ElementType.SPREADSHEET_CONFIG === element.type);
+    }, [selectedElements]);
+
     const buildMenu = useMemo(() => {
         if (selectedElements.length === 0) {
             return undefined;
@@ -547,6 +552,16 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
+        if (allowsSpreadsheetCollection) {
+            menuItems.push({
+                messageDescriptorId: 'createSpreadsheetCollection',
+                callback: () => {
+                    handleOpenDialog(DialogsId.CREATE_SPREADSHEET_COLLECTION);
+                },
+                icon: <TableViewIcon fontSize="small" />,
+            });
+        }
+
         if (allowsReplaceContingencyWithScript()) {
             menuItems.push({
                 messageDescriptorId: 'replaceWithScript',
@@ -582,6 +597,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         allowsCreateNewStudyFromCase,
         allowsDelete,
         allowsDownload,
+        allowsSpreadsheetCollection,
         allowsDuplicateAndCopy,
         allowsMove,
         allowsRename,
@@ -713,9 +729,19 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                             equipmentType: activeElement.specificMetadata.equipmentType,
                         }}
                         activeDirectory={activeDirectory}
-                        elementExists={elementExists}
                         language={languageLocal}
                     />
+                );
+            case DialogsId.CREATE_SPREADSHEET_COLLECTION:
+                return (
+                    selectedDirectory && (
+                        <CreateSpreadsheetCollectionDialog
+                            open
+                            onClose={handleCloseDialog}
+                            initDirectory={selectedDirectory}
+                            spreadsheetConfigIds={selectedElements?.map((e) => e.elementUuid)}
+                        />
+                    )
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:
                 return <CreateStudyDialog open onClose={handleCloseDialog} providedExistingCase={activeElement} />;
