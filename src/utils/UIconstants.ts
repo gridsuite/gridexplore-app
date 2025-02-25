@@ -23,6 +23,7 @@ export const DialogsId = {
     REPLACE_FILTER_BY_SCRIPT: 'replace_filter_by_script',
     COPY_FILTER_TO_SCRIPT: 'copy_filter_to_script',
     CONVERT_TO_EXPLICIT_NAMING_FILTER: 'convert_to_explicit_naming_filter',
+    CREATE_SPREADSHEET_COLLECTION: 'create_spreadsheet_collection',
     GENERIC_FILTER: 'generic_filter',
     ADD_ROOT_DIRECTORY: 'add_root_directory',
     ADD_DIRECTORY: 'add_directory',

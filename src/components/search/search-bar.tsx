@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { TextFieldProps } from '@mui/material';
 import { searchElementsInfos } from '../../utils/rest-api';
 import { setSearchedElement, setSelectedDirectory, setTreeData } from '../../redux/actions';
-import { updatedTree } from '../tree-views-container';
+import { updatedTree } from '../treeview-utils';
 import { SearchItem } from './search-item';
 import { AppState, ElementAttributesES, IDirectory, ITreeData } from '../../redux/types';
 import { SearchBarRenderInput } from './search-bar-render-input';
