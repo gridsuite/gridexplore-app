@@ -32,6 +32,7 @@ import { UsersIdentities } from './user-identities.type';
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_CONFIG_NOTIFICATION_WS = `${import.meta.env.VITE_WS_GATEWAY}/config-notification`;
 const PREFIX_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/config`;
+const PREFIX_DIRECTORY_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/directory`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
 const PREFIX_ACTIONS_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/actions`;
 const PREFIX_CASE_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/case`;
@@ -276,7 +277,7 @@ export function updateElement(elementUuid: UUID, element: unknown) {
 
 export function insertDirectory(directoryName: string, parentUuid: UUID, ownerId: string) {
     console.info("Inserting a new folder '%s'", directoryName);
-    const insertDirectoryUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${parentUuid}/directories`;
+    const insertDirectoryUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${parentUuid}/elements`;
     return backendFetchJson(insertDirectoryUrl, {
         method: 'POST',
         headers: {
@@ -294,7 +295,7 @@ export function insertDirectory(directoryName: string, parentUuid: UUID, ownerId
 
 export function insertRootDirectory(directoryName: string, ownerId: string) {
     console.info("Inserting a new root folder '%s'", directoryName);
-    const insertRootDirectoryUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/root-directories`;
+    const insertRootDirectoryUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/root-directories`;
     return backendFetchJson(insertRootDirectoryUrl, {
         method: 'POST',
         headers: {
@@ -485,7 +486,7 @@ export function downloadSpreadsheetConfigCollection(collectionId: string) {
 
 export function elementExists(directoryUuid: UUID | null | undefined, elementName: string, type: string) {
     const elementNameEncoded = encodeURIComponent(elementName);
-    const existsElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${directoryUuid}/elements/${elementNameEncoded}/types/${type}`;
+    const existsElementUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/elements/${elementNameEncoded}/types/${type}`;
     console.debug(existsElementUrl);
     return backendFetch(existsElementUrl, { method: 'head' }).then(
         (response) => response.status !== 204 // HTTP 204 : No-content
@@ -493,7 +494,7 @@ export function elementExists(directoryUuid: UUID | null | undefined, elementNam
 }
 
 export function getNameCandidate(directoryUuid: UUID, elementName: string, type: string) {
-    const nameCandidateUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${directoryUuid}/${elementName}/newNameCandidate?type=${type}`;
+    const nameCandidateUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/${elementName}/newNameCandidate?type=${type}`;
     console.debug(nameCandidateUrl);
     return backendFetchText(nameCandidateUrl, {
         method: 'GET',
@@ -501,9 +502,9 @@ export function getNameCandidate(directoryUuid: UUID, elementName: string, type:
 }
 
 export function rootDirectoryExists(directoryName: string) {
-    const existsRootDirectoryUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/root-directories?${new URLSearchParams(
-        { directoryName }
-    ).toString()}`;
+    const existsRootDirectoryUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/root-directories?${new URLSearchParams({
+        directoryName,
+    }).toString()}`;
     console.debug(existsRootDirectoryUrl);
     return backendFetch(existsRootDirectoryUrl, { method: 'head' }).then(
         (response) => response.status !== 204 // HTTP 204 : No-content
@@ -826,7 +827,7 @@ export function searchElementsInfos(searchTerm: string, currentDirectoryUuid: UU
         urlSearchParams.append('directoryUuid', currentDirectoryUuid);
     }
     return backendFetchJson(
-        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/elements/indexation-infos?${urlSearchParams.toString()}`,
+        `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/elements/indexation-infos?${urlSearchParams.toString()}`,
         {
             method: 'get',
         }
