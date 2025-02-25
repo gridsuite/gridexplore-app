@@ -434,7 +434,7 @@ export function duplicateSpreadsheetConfig(sourceCaseUuid: UUID, parentDirectory
     if (parentDirectoryUuid) {
         queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
     }
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-configs/duplicate?${queryParams.toString()}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-configs?${queryParams.toString()}`;
 
     console.debug(url);
 
@@ -450,7 +450,7 @@ export function duplicateSpreadsheetConfigCollection(sourceCaseUuid: UUID, paren
     if (parentDirectoryUuid) {
         queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
     }
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-config-collections/duplicate?${queryParams.toString()}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-config-collections?${queryParams.toString()}`;
 
     console.debug(url);
 
