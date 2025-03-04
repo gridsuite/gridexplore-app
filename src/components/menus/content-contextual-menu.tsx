@@ -72,7 +72,6 @@ interface ContentContextualMenuProps extends CommonContextualMenuProps {
 export default function ContentContextualMenu(props: Readonly<ContentContextualMenuProps>) {
     const { activeElement, selectedElements, open, onClose, openDialog, setOpenDialog, broadcastChannel, ...others } =
         props;
-    const userId = useSelector((state: AppState) => state.user?.profile.sub);
     const intl = useIntl();
     const dispatch = useDispatch();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
@@ -374,29 +373,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
     const noCreationInProgress = useCallback(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
 
-    // Allowance
-    const isUserAllowed = useCallback(
-        () => selectedElements.every((el) => el.owner === userId),
-        [selectedElements, userId]
-    );
-
-    const allowsDelete = useCallback(
-        () => isUserAllowed() && selectedElements.every((el) => el.elementUuid != null),
-        [isUserAllowed, selectedElements]
-    );
-
-    const allowsRename = useCallback(
-        () => selectedElements.length === 1 && isUserAllowed() && selectedElements[0].hasMetadata,
-        [isUserAllowed, selectedElements]
-    );
-
-    const allowsMove = useCallback(
-        () =>
-            selectedElements.every((element) => element.type !== ElementType.DIRECTORY && element.hasMetadata) &&
-            isUserAllowed(),
-        [isUserAllowed, selectedElements]
-    );
-
     const allowsDuplicateAndCopy = useCallback(() => {
         const allowedTypes = [
             ElementType.CASE,
@@ -441,10 +417,9 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return (
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id &&
-            isUserAllowed()
+            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id
         );
-    }, [isUserAllowed, selectedElements]);
+    }, [selectedElements]);
 
     const allowsConvertFilterIntoExplicitNaming = useCallback(
         () =>
@@ -476,25 +451,21 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         // build menuItems here
         const menuItems = [];
 
-        if (allowsRename()) {
-            menuItems.push({
-                messageDescriptorId: 'rename',
-                callback: () => {
-                    handleOpenDialog(DialogsId.RENAME);
-                },
-            });
-        }
+        menuItems.push({
+            messageDescriptorId: 'rename',
+            callback: () => {
+                handleOpenDialog(DialogsId.RENAME);
+            },
+        });
 
-        if (allowsMove()) {
-            menuItems.push({
-                messageDescriptorId: 'move',
-                callback: () => {
-                    handleOpenDialog(DialogsId.MOVE);
-                },
-                icon: <DriveFileMoveIcon fontSize="small" />,
-                withDivider: true,
-            });
-        }
+        menuItems.push({
+            messageDescriptorId: 'move',
+            callback: () => {
+                handleOpenDialog(DialogsId.MOVE);
+            },
+            icon: <DriveFileMoveIcon fontSize="small" />,
+            withDivider: true,
+        });
 
         if (allowsCreateNewStudyFromCase()) {
             menuItems.push({
@@ -519,16 +490,14 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (allowsDelete()) {
-            menuItems.push({
-                messageDescriptorId: 'delete',
-                callback: () => {
-                    handleOpenDialog(DialogsId.DELETE);
-                },
-                icon: <DeleteIcon fontSize="small" />,
-                withDivider: true,
-            });
-        }
+        menuItems.push({
+            messageDescriptorId: 'delete',
+            callback: () => {
+                handleOpenDialog(DialogsId.DELETE);
+            },
+            icon: <DeleteIcon fontSize="small" />,
+            withDivider: true,
+        });
 
         if (allowsCopyContingencyToScript()) {
             menuItems.push({ isDivider: true });
@@ -595,12 +564,9 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         allowsConvertFilterIntoExplicitNaming,
         allowsCopyContingencyToScript,
         allowsCreateNewStudyFromCase,
-        allowsDelete,
         allowsDownload,
         allowsSpreadsheetCollection,
         allowsDuplicateAndCopy,
-        allowsMove,
-        allowsRename,
         allowsReplaceContingencyWithScript,
         copyItem,
         downloadElements,

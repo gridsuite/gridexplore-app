@@ -193,8 +193,6 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     // Allowance
     const showMenuFromEmptyZone = useCallback(() => !directory, [directory]);
 
-    const isAllowed = useCallback(() => directory && directory.owner === userId, [directory, userId]);
-
     const buildMenu = () => {
         // build menuItems here
         const menuItems: MenuItemType[] = [];
@@ -225,7 +223,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
 
             menuItems.push({ isDivider: true });
 
-            if (isAllowed() && !restrictMenuItems) {
+            if (!restrictMenuItems) {
                 menuItems.push(
                     {
                         messageDescriptorId: 'renameFolder',
