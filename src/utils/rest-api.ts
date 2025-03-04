@@ -398,6 +398,8 @@ const getDuplicateEndpoint = (type: ElementType) => {
             return '/parameters';
         case ElementType.MODIFICATION:
             return '/composite-modifications';
+        case ElementType.DIAGRAM_CONFIG:
+            return '/diagram-config';
         default:
             return undefined;
     }
