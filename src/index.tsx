@@ -10,7 +10,10 @@ import 'typeface-roboto';
 import './index.css';
 
 import { createRoot } from 'react-dom/client';
+import { polyfillIntl } from '@gridsuite/commons-ui';
 import AppWrapper from './components/app-wrapper';
 
 const container = document.getElementById('root');
-createRoot(container!).render(<AppWrapper />);
+polyfillIntl(['en', 'en-GB', 'fr'], import.meta.env.VITE_DEFAULT_TIMEZONE).finally(() => {
+    createRoot(container!).render(<AppWrapper />);
+});
