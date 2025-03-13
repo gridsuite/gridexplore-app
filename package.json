@@ -8,10 +8,20 @@
         "node": ">=22",
         "npm": "^10.9.2"
     },
+    "scripts": {
+        "start": "vite",
+        "start:open": "vite --open",
+        "build": "tsc && vite build",
+        "serve": "vite preview",
+        "test": "jest",
+        "test:coverage": "jest --coverage",
+        "lint": "eslint . --ext js,mjs,jsx,ts,mts,tsx --max-warnings 0",
+        "licenses-check": "license-checker --summary --excludePrivatePackages --production --onlyAllow \"$( jq -r .onlyAllow[] license-checker-config.json | tr '\n' ';')\" --excludePackages \"$( jq -r .excludePackages[] license-checker-config.json | tr '\n' ';')\""
+    },
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
-        "@gridsuite/commons-ui": "0.88.2",
+        "@gridsuite/commons-ui": "file:../commons-ui/gridsuite-commons-ui-0.88.2.tgz",
         "@hookform/resolvers": "^4.0.0",
         "@mui/icons-material": "^5.16.14",
         "@mui/lab": "5.0.0-alpha.175",
@@ -29,7 +39,7 @@
         "react-ace": "^13.0.0",
         "react-dom": "^18.3.1",
         "react-hook-form": "^7.54.2",
-        "react-intl": "^6.8.9",
+        "react-intl": "^7.1.6",
         "react-papaparse": "^4.4.0",
         "react-redux": "^9.2.0",
         "react-router-dom": "^6.29.0",
@@ -38,16 +48,6 @@
         "typeface-roboto": "^1.1.13",
         "uuid": "^11.0.5",
         "yup": "^1.6.1"
-    },
-    "scripts": {
-        "start": "vite",
-        "start:open": "vite --open",
-        "build": "tsc && vite build",
-        "serve": "vite preview",
-        "test": "jest",
-        "test:coverage": "jest --coverage",
-        "lint": "eslint . --ext js,mjs,jsx,ts,mts,tsx --max-warnings 0",
-        "licenses-check": "license-checker --summary --excludePrivatePackages --production --onlyAllow \"$( jq -r .onlyAllow[] license-checker-config.json | tr '\n' ';')\" --excludePackages \"$( jq -r .excludePackages[] license-checker-config.json | tr '\n' ';')\""
     },
     "devDependencies": {
         "@babel/helper-builder-react-jsx": "^7.25.9",
