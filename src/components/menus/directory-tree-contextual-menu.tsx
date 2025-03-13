@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import {
@@ -51,6 +51,7 @@ import { handleMaxElementsExceededError } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import MoveDialog from '../dialogs/move-dialog';
 import { buildPathToFromMap } from '../treeview-utils';
+import { checkPermissionOnDirectory } from './menus-utils';
 
 export interface DirectoryTreeContextualMenuProps extends Omit<CommonContextualMenuProps, 'onClose'> {
     directory: ElementAttributes | null;
@@ -71,6 +72,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     const { snackError } = useSnackMessage();
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const treeData = useSelector((state: AppState) => state.treeData);
+    const [directoryWritable, setDirectoryWritable] = useState(false);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -210,73 +212,90 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     // Allowance
     const showMenuFromEmptyZone = useCallback(() => !directory, [directory]);
 
+    useEffect(() => {
+        if (directory !== null) {
+            checkPermissionOnDirectory(directory, 'WRITE').then((b) => {
+                setDirectoryWritable(b);
+            });
+        }
+    }, [directory]);
+
     const buildMenu = () => {
         // build menuItems here
         const menuItems: MenuItemType[] = [];
 
         if (!showMenuFromEmptyZone()) {
-            menuItems.push(
-                {
-                    messageDescriptorId: 'createNewStudy',
-                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_STUDY),
-                    icon: <AddIcon fontSize="small" />,
-                },
-                {
-                    messageDescriptorId: 'createNewContingencyList',
-                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_CONTINGENCY_LIST),
-                    icon: <AddIcon fontSize="small" />,
-                },
-                {
-                    messageDescriptorId: 'createNewFilter',
-                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_FILTER),
-                    icon: <AddIcon fontSize="small" />,
-                },
-                {
-                    messageDescriptorId: 'ImportNewCase',
-                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_CASE),
-                    icon: <AddIcon fontSize="small" />,
-                }
-            );
+            if (directory && directoryWritable) {
+                menuItems.push(
+                    {
+                        messageDescriptorId: 'createNewStudy',
+                        callback: () => handleOpenDialog(DialogsId.ADD_NEW_STUDY),
+                        icon: <AddIcon fontSize="small" />,
+                    },
+                    {
+                        messageDescriptorId: 'createNewContingencyList',
+                        callback: () => handleOpenDialog(DialogsId.ADD_NEW_CONTINGENCY_LIST),
+                        icon: <AddIcon fontSize="small" />,
+                    },
+                    {
+                        messageDescriptorId: 'createNewFilter',
+                        callback: () => handleOpenDialog(DialogsId.ADD_NEW_FILTER),
+                        icon: <AddIcon fontSize="small" />,
+                    },
+                    {
+                        messageDescriptorId: 'ImportNewCase',
+                        callback: () => handleOpenDialog(DialogsId.ADD_NEW_CASE),
+                        icon: <AddIcon fontSize="small" />,
+                    }
+                );
+            }
 
             menuItems.push({ isDivider: true });
 
             if (!restrictMenuItems) {
+                if (directory && directoryWritable) {
+                    menuItems.push(
+                        {
+                            messageDescriptorId: 'renameFolder',
+                            callback: () => handleOpenDialog(DialogsId.RENAME_DIRECTORY),
+                            icon: <CreateIcon fontSize="small" />,
+                        },
+                        {
+                            messageDescriptorId: 'deleteFolder',
+                            callback: () => handleOpenDialog(DialogsId.DELETE_DIRECTORY),
+                            icon: <DeleteIcon fontSize="small" />,
+                        }
+                    );
+                    menuItems.push(
+                        {
+                            messageDescriptorId: 'moveDirectory',
+                            callback: () => handleOpenDialog(DialogsId.MOVE_DIRECTORY),
+                            icon: <DriveFileMoveIcon fontSize="small" />,
+                        },
+                        { isDivider: true }
+                    );
+                }
+            }
+
+            if (directory && directoryWritable) {
                 menuItems.push(
                     {
-                        messageDescriptorId: 'renameFolder',
-                        callback: () => handleOpenDialog(DialogsId.RENAME_DIRECTORY),
-                        icon: <CreateIcon fontSize="small" />,
-                    },
-                    {
-                        messageDescriptorId: 'deleteFolder',
-                        callback: () => handleOpenDialog(DialogsId.DELETE_DIRECTORY),
-                        icon: <DeleteIcon fontSize="small" />,
-                    },
-                    {
-                        messageDescriptorId: 'moveDirectory',
-                        callback: () => handleOpenDialog(DialogsId.MOVE_DIRECTORY),
-                        icon: <DriveFileMoveIcon fontSize="small" />,
+                        messageDescriptorId: 'paste',
+                        callback: () => pasteElement(directory.elementUuid, itemSelectionForCopy),
+                        icon: <ContentPasteIcon fontSize="small" />,
+                        disabled: !itemSelectionForCopy.sourceItemUuid,
                     },
                     { isDivider: true }
                 );
             }
 
-            menuItems.push(
-                {
-                    messageDescriptorId: 'paste',
-                    // @ts-expect-error TODO: manage null case
-                    callback: () => pasteElement(directory.elementUuid, itemSelectionForCopy),
-                    icon: <ContentPasteIcon fontSize="small" />,
-                    disabled: !itemSelectionForCopy.sourceItemUuid,
-                },
-                { isDivider: true }
-            );
-
-            menuItems.push({
-                messageDescriptorId: 'createFolder',
-                callback: () => handleOpenDialog(DialogsId.ADD_DIRECTORY),
-                icon: <CreateNewFolderIcon fontSize="small" />,
-            });
+            if (directory && directoryWritable) {
+                menuItems.push({
+                    messageDescriptorId: 'createFolder',
+                    callback: () => handleOpenDialog(DialogsId.ADD_DIRECTORY),
+                    icon: <CreateNewFolderIcon fontSize="small" />,
+                });
+            }
         }
 
         menuItems.push({

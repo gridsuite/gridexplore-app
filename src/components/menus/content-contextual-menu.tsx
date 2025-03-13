@@ -6,7 +6,7 @@
  */
 
 import { type UUID } from 'crypto';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -17,10 +17,10 @@ import {
     DriveFileMove as DriveFileMoveIcon,
     FileCopy as FileCopyIcon,
     FileCopyTwoTone as FileCopyTwoToneIcon,
-    TableView as TableViewIcon,
     FileDownload,
     InsertDriveFile as InsertDriveFileIcon,
     PhotoLibrary,
+    TableView as TableViewIcon,
 } from '@mui/icons-material';
 import {
     ElementAttributes,
@@ -59,6 +59,7 @@ import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { CustomError, handleMaxElementsExceededError, handleNotAllowedError } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
+import { checkPermissionOnDirectory } from './menus-utils';
 
 interface ContentContextualMenuProps extends CommonContextualMenuProps {
     activeElement: ElementAttributes;
@@ -77,6 +78,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const [deleteError, setDeleteError] = useState('');
+    const [directoryWritable, setDirectoryWritable] = useState(false);
+    const [directoryReadable, setDirectoryReadable] = useState(false);
 
     const { snackError } = useSnackMessage();
 
@@ -407,39 +410,43 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         const isSingleElement = selectedElements.length === 1;
         const isAllowedType = allowedTypes.includes(selectedElements[0]?.type);
 
-        return hasMetadata && isSingleElement && isAllowedType;
-    }, [selectedElements]);
+        return hasMetadata && isSingleElement && isAllowedType && directoryWritable;
+    }, [selectedElements, directoryWritable]);
 
     const allowsCreateNewStudyFromCase = useCallback(
         () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CASE &&
-            selectedElements[0].hasMetadata,
-        [selectedElements]
+            selectedElements[0].hasMetadata &&
+            directoryWritable,
+        [selectedElements, directoryWritable]
     );
 
     const allowsCopyContingencyToScript = useCallback(
         () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id,
-        [selectedElements]
+            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id &&
+            directoryWritable,
+        [selectedElements, directoryWritable]
     );
 
     const allowsReplaceContingencyWithScript = useCallback(() => {
         return (
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id
+            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id &&
+            directoryWritable
         );
-    }, [selectedElements]);
+    }, [selectedElements, directoryWritable]);
 
     const allowsConvertFilterIntoExplicitNaming = useCallback(
         () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.FILTER &&
-            selectedElements[0].subtype !== FilterType.EXPLICIT_NAMING.id,
-        [selectedElements]
+            selectedElements[0].subtype !== FilterType.EXPLICIT_NAMING.id &&
+            directoryWritable,
+        [selectedElements, directoryWritable]
     );
 
     const allowsDownload = useCallback(() => {
@@ -456,6 +463,17 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return selectedElements.every((element) => ElementType.SPREADSHEET_CONFIG === element.type);
     }, [selectedElements]);
 
+    useEffect(() => {
+        if (selectedDirectory !== null) {
+            checkPermissionOnDirectory(selectedDirectory, 'READ').then((b) => {
+                setDirectoryReadable(b);
+            });
+            checkPermissionOnDirectory(selectedDirectory, 'WRITE').then((b) => {
+                setDirectoryWritable(b);
+            });
+        }
+    }, [selectedDirectory]);
+
     const buildMenu = useMemo(() => {
         if (selectedElements.length === 0) {
             return undefined;
@@ -464,12 +482,14 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         // build menuItems here
         const menuItems = [];
 
-        menuItems.push({
-            messageDescriptorId: 'rename',
-            callback: () => {
-                handleOpenDialog(DialogsId.RENAME);
-            },
-        });
+        if (selectedElements.length === 1 && directoryWritable) {
+            menuItems.push({
+                messageDescriptorId: 'rename',
+                callback: () => {
+                    handleOpenDialog(DialogsId.RENAME);
+                },
+            });
+        }
 
         menuItems.push({
             messageDescriptorId: 'move',
@@ -496,6 +516,9 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 callback: duplicateItem,
                 icon: <FileCopyTwoToneIcon fontSize="small" />,
             });
+        }
+
+        if (directoryReadable) {
             menuItems.push({
                 messageDescriptorId: 'copy',
                 callback: copyItem,
@@ -503,14 +526,16 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        menuItems.push({
-            messageDescriptorId: 'delete',
-            callback: () => {
-                handleOpenDialog(DialogsId.DELETE);
-            },
-            icon: <DeleteIcon fontSize="small" />,
-            withDivider: true,
-        });
+        if (selectedElements.length === 1 && directoryWritable) {
+            menuItems.push({
+                messageDescriptorId: 'delete',
+                callback: () => {
+                    handleOpenDialog(DialogsId.DELETE);
+                },
+                icon: <DeleteIcon fontSize="small" />,
+                withDivider: true,
+            });
+        }
 
         if (allowsCopyContingencyToScript()) {
             menuItems.push({ isDivider: true });
@@ -588,6 +613,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         handleOpenDialog,
         noCreationInProgress,
         selectedElements,
+        directoryReadable,
+        directoryWritable,
     ]);
 
     const renderDialog = () => {

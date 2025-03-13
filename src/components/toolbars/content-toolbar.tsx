@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import {
@@ -26,6 +26,7 @@ import * as constants from '../../utils/UIconstants';
 import { DialogsId } from '../../utils/UIconstants';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
+import { checkPermissionOnDirectory } from '../menus/menus-utils';
 
 export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
     selectedElements: ElementAttributes[];
@@ -33,13 +34,21 @@ export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
 
 export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
     const { selectedElements, ...others } = props;
-    const userId = useSelector((state: AppState) => state.user?.profile.sub);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const { downloadElements, handleConvertCases, stopCasesExports } = useDownloadUtils();
     const [deleteError, setDeleteError] = useState('');
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
+    const [directoryWritable, setDirectoryWritable] = useState(false);
+
+    useEffect(() => {
+        if (selectedDirectory !== null) {
+            checkPermissionOnDirectory(selectedDirectory, 'WRITE').then((b) => {
+                setDirectoryWritable(b);
+            });
+        }
+    }, [selectedDirectory]);
 
     const handleLastError = useCallback(
         (message: string) => {
@@ -103,25 +112,13 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         moveElementOnError
     );
 
-    // Allowance
-    const isUserAllowed = useMemo(
-        () => selectedElements.every((el) => el.owner === userId),
-        [selectedElements, userId]
-    );
-
     const noCreationInProgress = useMemo(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
 
-    const allowsDelete = useMemo(
-        () => isUserAllowed && selectedElements.every((el) => el.elementUuid != null),
-        [isUserAllowed, selectedElements]
-    );
+    const allowsDelete = useMemo(() => selectedElements.every((el) => el.elementUuid != null), [selectedElements]);
 
     const allowsMove = useMemo(
-        () =>
-            selectedElements.every((element) => element.type !== ElementType.DIRECTORY) &&
-            isUserAllowed &&
-            noCreationInProgress,
-        [isUserAllowed, selectedElements, noCreationInProgress]
+        () => selectedElements.every((element) => element.type !== ElementType.DIRECTORY) && noCreationInProgress,
+        [selectedElements, noCreationInProgress]
     );
 
     const allowsDownload = useMemo(() => {
@@ -164,30 +161,33 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         if (selectedElements.length) {
             if (allowsDelete || allowsMove || allowsDownload || allowsExportCases) {
                 // actions callable for several element types
-                toolbarItems.push(
-                    {
+                if (directoryWritable) {
+                    toolbarItems.push({
                         tooltipTextId: 'delete',
                         callback: () => {
                             handleOpenDialog(DialogsId.DELETE);
                         },
                         icon: <DeleteIcon fontSize="small" />,
                         disabled: !allowsDelete,
+                    });
+                }
+                toolbarItems.push({
+                    tooltipTextId: 'move',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.MOVE);
                     },
-                    {
-                        tooltipTextId: 'move',
-                        callback: () => {
-                            handleOpenDialog(DialogsId.MOVE);
-                        },
-                        icon: <DriveFileMoveIcon fontSize="small" />,
-                        disabled: !allowsMove,
-                    },
-                    {
+                    icon: <DriveFileMoveIcon fontSize="small" />,
+                    disabled: !allowsMove,
+                });
+
+                if (allowsDownload) {
+                    toolbarItems.push({
                         tooltipTextId: 'download.button',
                         callback: () => downloadElements(selectedElements),
                         icon: <FileDownload fontSize="small" />,
                         disabled: !allowsDownload,
-                    }
-                );
+                    });
+                }
             }
             if (allowsSpreadsheetCollection) {
                 // action specific to spreadsheet models
@@ -210,6 +210,7 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         allowsSpreadsheetCollection,
         downloadElements,
         selectedElements,
+        directoryWritable,
     ]);
 
     const renderDialog = () => {
