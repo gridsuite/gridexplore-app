@@ -35,7 +35,7 @@ const triggerDownload = ({ blob, filename }: DownloadData): void => {
 const downloadStrategies: { [key in ElementType]?: (element: ElementAttributes) => Promise<DownloadData> } = {
     [ElementType.CASE]: async (element: ElementAttributes) => {
         const result = await downloadCase(element.elementUuid);
-        const extension = result.headers.get('extension') ?? 'xiidm';
+        const extension = result.headers.get('extension') ?? '';
         const filename = `${element.elementName}${extension}`;
         return { blob: await result.blob(), filename };
     },
