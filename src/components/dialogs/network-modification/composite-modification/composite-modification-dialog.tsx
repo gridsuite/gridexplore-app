@@ -86,7 +86,7 @@ export default function CompositeModificationDialog({
             ...modif,
             ...computeLabel(modif),
         };
-        return intl.formatMessage({ id: `network_modifications.${modif.type}` }, labelData);
+        return intl.formatMessage({ id: `network_modifications.${modif.messageType}` }, labelData);
     };
 
     const generateNetworkModificationsList = () => {
