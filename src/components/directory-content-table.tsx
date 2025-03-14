@@ -44,6 +44,7 @@ const getClickableRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
         cellData.data &&
         ![
             ElementType.CASE,
+            ElementType.DIAGRAM_CONFIG,
             ElementType.LOADFLOW_PARAMETERS,
             ElementType.SENSITIVITY_PARAMETERS,
             ElementType.SECURITY_ANALYSIS_PARAMETERS,
