@@ -489,16 +489,16 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     handleOpenDialog(DialogsId.RENAME);
                 },
             });
-        }
 
-        menuItems.push({
-            messageDescriptorId: 'move',
-            callback: () => {
-                handleOpenDialog(DialogsId.MOVE);
-            },
-            icon: <DriveFileMoveIcon fontSize="small" />,
-            withDivider: true,
-        });
+            menuItems.push({
+                messageDescriptorId: 'move',
+                callback: () => {
+                    handleOpenDialog(DialogsId.MOVE);
+                },
+                icon: <DriveFileMoveIcon fontSize="small" />,
+                withDivider: true,
+            });
+        }
 
         if (allowsCreateNewStudyFromCase()) {
             menuItems.push({
