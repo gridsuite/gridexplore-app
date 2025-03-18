@@ -56,7 +56,7 @@ import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { CustomError, handleMaxElementsExceededError } from '../utils/rest-errors';
+import { CustomError, handleMaxElementsExceededError, handleNotAllowedError } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 
@@ -155,17 +155,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
     const handleDuplicateError = useCallback(
         (error: CustomError) => {
-            if (error.status === 'Forbidden') {
-                handleLastError(
-                    intl.formatMessage(
-                        { id: 'duplicateElementFailure' },
-                        {
-                            itemName: activeElement.elementName,
-                            errorMessage: intl.formatMessage({ id: 'genericPermissionDeniedError' }),
-                        }
-                    )
-                );
-            } else {
+            if (!handleNotAllowedError(error, snackError)) {
                 handleLastError(
                     intl.formatMessage(
                         { id: 'duplicateElementFailure' },
@@ -177,7 +167,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 );
             }
         },
-        [activeElement.elementName, handleLastError, intl]
+        [activeElement.elementName, handleLastError, intl, snackError]
     );
 
     const copyItem = useCallback(() => {
