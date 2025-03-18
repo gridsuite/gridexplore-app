@@ -36,7 +36,7 @@ const downloadStrategies: { [key in ElementType]?: (element: ElementAttributes) 
     [ElementType.CASE]: async (element: ElementAttributes) => {
         const result = await downloadCase(element.elementUuid);
         const extension = result.headers.get('extension') ?? '';
-        const filename = `${element.elementName}${extension}`;
+        const filename = `${element.elementName}.${extension}`;
         return { blob: await result.blob(), filename };
     },
     [ElementType.SPREADSHEET_CONFIG]: async (element: ElementAttributes) => {
