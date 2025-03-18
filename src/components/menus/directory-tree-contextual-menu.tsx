@@ -86,6 +86,16 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         setDeleteError('');
     }, [onClose, setOpenDialog]);
 
+    const handleGenericPermissionDeniedError = useCallback(
+        (HTTPStatus: string) => {
+            if (HTTPStatus === 'Forbidden') {
+                return intl.formatMessage({ id: 'genericPermissionDeniedError' });
+            }
+            return undefined;
+        },
+        [intl]
+    );
+
     const [renameCB, renameState] = useDeferredFetch(renameElement, handleCloseDialog, (HTTPStatus: string) => {
         if (HTTPStatus === 'Forbidden') {
             return intl.formatMessage({ id: 'renameDirectoryError' });
@@ -93,7 +103,11 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         return undefined;
     });
 
-    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, handleCloseDialog);
+    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(
+        insertDirectory,
+        handleCloseDialog,
+        handleGenericPermissionDeniedError
+    );
 
     const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(insertRootDirectory, handleCloseDialog);
 
@@ -184,12 +198,13 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             deleteElement(elementsUuid)
                 .then(handleCloseDialog)
                 .catch((error: any) => {
+                    const errorMessage = handleGenericPermissionDeniedError(error.status) ?? error.message;
                     // show the error message and don't close the dialog
-                    setDeleteError(error.message);
-                    handleError(error.message);
+                    setDeleteError(errorMessage);
+                    handleError(errorMessage);
                 });
         },
-        [handleCloseDialog, handleError]
+        [handleCloseDialog, handleError, handleGenericPermissionDeniedError]
     );
 
     // Allowance
