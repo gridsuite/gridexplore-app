@@ -29,6 +29,7 @@ import { useParameterState } from '../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 import { AppState } from '../../../../redux/types';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-utils';
+import { handleNotAllowedError } from '../../../utils/rest-errors';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -92,11 +93,13 @@ export default function ContingencyListCreationDialog({
         )
             .then(() => closeAndClear())
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'contingencyListCreationError',
-                    headerValues: { name: data[FieldConstants.NAME] },
-                });
+                if (!handleNotAllowedError(error, snackError)) {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'contingencyListCreationError',
+                        headerValues: { name: data[FieldConstants.NAME] },
+                    });
+                }
             });
     };
     return (
