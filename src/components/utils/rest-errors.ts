@@ -7,11 +7,11 @@
 import { HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE } from 'utils/UIconstants';
 
 export interface CustomError extends Error {
-    status?: number;
+    status?: string;
 }
 
 export const handleMaxElementsExceededError = (error: CustomError, snackError: Function): boolean => {
-    if (error.status === 403 && error.message.includes(HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE)) {
+    if (error.status === 'Forbidden' && error.message.includes(HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE)) {
         const limit = error.message.split(/[: ]+/).pop();
         snackError({
             messageId: 'maxElementExceededError',

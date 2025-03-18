@@ -86,8 +86,8 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         setDeleteError('');
     }, [onClose, setOpenDialog]);
 
-    const [renameCB, renameState] = useDeferredFetch(renameElement, handleCloseDialog, (HTTPStatusCode: number) => {
-        if (HTTPStatusCode === 403) {
+    const [renameCB, renameState] = useDeferredFetch(renameElement, handleCloseDialog, (HTTPStatus: string) => {
+        if (HTTPStatus === 'Forbidden') {
             return intl.formatMessage({ id: 'renameDirectoryError' });
         }
         return undefined;
@@ -103,10 +103,12 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
 
     const handlePasteError = (error: any) => {
         let msg;
-        if (error.status === 404) {
+        if (error.status === 'Not Found') {
             msg = intl.formatMessage({
                 id: 'elementPasteFailed404',
             });
+        } else if (error.status === 'Forbidden') {
+            msg = intl.formatMessage({ id: 'genericPermissionDeniedError' });
         } else {
             msg = intl.formatMessage({ id: 'elementPasteFailed' }) + (error?.message ?? '');
         }

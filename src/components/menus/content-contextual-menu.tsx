@@ -56,7 +56,7 @@ import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { CustomError, handleMaxElementsExceededError } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 
@@ -143,17 +143,40 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         [broadcastChannel, dispatch, handleCloseDialog]
     );
 
+    const handleGenericPermissionDeniedError = useCallback(
+        (HTTPStatus: string) => {
+            if (HTTPStatus === 'Forbidden') {
+                return intl.formatMessage({ id: 'genericPermissionDeniedError' });
+            }
+            return undefined;
+        },
+        [intl]
+    );
+
     const handleDuplicateError = useCallback(
-        (error: string) =>
-            handleLastError(
-                intl.formatMessage(
-                    { id: 'duplicateElementFailure' },
-                    {
-                        itemName: activeElement.elementName,
-                        errorMessage: error,
-                    }
-                )
-            ),
+        (error: CustomError) => {
+            if (error.status === 'Forbidden') {
+                handleLastError(
+                    intl.formatMessage(
+                        { id: 'duplicateElementFailure' },
+                        {
+                            itemName: activeElement.elementName,
+                            errorMessage: intl.formatMessage({ id: 'genericPermissionDeniedError' }),
+                        }
+                    )
+                );
+            } else {
+                handleLastError(
+                    intl.formatMessage(
+                        { id: 'duplicateElementFailure' },
+                        {
+                            itemName: activeElement.elementName,
+                            errorMessage: error.message,
+                        }
+                    )
+                );
+            }
+        },
         [activeElement.elementName, handleLastError, intl]
     );
 
@@ -214,7 +237,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         if (handleMaxElementsExceededError(error, snackError)) {
                             return;
                         }
-                        handleDuplicateError(error.message);
+                        handleDuplicateError(error);
                     });
                     break;
                 case ElementType.CONTINGENCY_LIST:
@@ -223,7 +246,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         undefined,
                         activeElement.type,
                         activeElement.specificMetadata.type
-                    ).catch((error) => handleDuplicateError(error.message));
+                    ).catch((error) => handleDuplicateError(error));
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
@@ -236,16 +259,16 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         undefined,
                         activeElement.type,
                         activeElement.type
-                    ).catch((error) => handleDuplicateError(error.message));
+                    ).catch((error) => handleDuplicateError(error));
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
                     duplicateSpreadsheetConfig(activeElement.elementUuid).catch((error) => {
-                        handleDuplicateError(error.message);
+                        handleDuplicateError(error);
                     });
                     break;
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                     duplicateSpreadsheetConfigCollection(activeElement.elementUuid).catch((error) => {
-                        handleDuplicateError(error.message);
+                        handleDuplicateError(error);
                     });
                     break;
                 default: {
@@ -269,19 +292,20 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 .then(() => handleCloseDialog())
                 // show the error message and don't close the dialog
                 .catch((error) => {
-                    setDeleteError(error.message);
-                    handleLastError(error.message);
+                    const errorMessage = handleGenericPermissionDeniedError(error.status) ?? error.message;
+                    setDeleteError(errorMessage);
+                    handleLastError(errorMessage);
                 });
         },
-        [selectedDirectory, handleCloseDialog, handleLastError]
+        [selectedDirectory, handleCloseDialog, handleLastError, handleGenericPermissionDeniedError]
     );
 
     const moveElementErrorToString = useCallback(
-        (HTTPStatusCode: number) => {
-            if (HTTPStatusCode === 403) {
+        (HTTPStatus: string) => {
+            if (HTTPStatus === 'Forbidden') {
                 return intl.formatMessage({ id: 'moveElementNotAllowedError' });
             }
-            if (HTTPStatusCode === 404) {
+            if (HTTPStatus === 'Not Found') {
                 return intl.formatMessage({ id: 'moveElementNotFoundError' });
             }
             return undefined;
@@ -331,12 +355,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
             handleCloseDialog();
         },
-        (HTTPStatusCode: number) => {
-            if (HTTPStatusCode === 403) {
+        (HTTPStatus: string) => {
+            if (HTTPStatus === 'Forbidden') {
                 return intl.formatMessage({ id: 'renameElementNotAllowedError' });
             }
-            if (HTTPStatusCode === 404) {
-                // == NOT FOUND
+            if (HTTPStatus === 'Not Found') {
                 return intl.formatMessage({ id: 'renameElementNotFoundError' });
             }
             return undefined;
@@ -346,28 +369,28 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const [FiltersReplaceWithScriptCB] = useDeferredFetch(
         replaceFiltersWithScript,
         handleCloseDialog,
-        undefined,
+        handleGenericPermissionDeniedError,
         handleLastError
     );
 
     const [newScriptFromFiltersContingencyListCB] = useDeferredFetch(
         newScriptFromFiltersContingencyList,
         handleCloseDialog,
-        undefined,
+        handleGenericPermissionDeniedError,
         handleLastError
     );
 
     const [replaceFormContingencyListWithScriptCB] = useDeferredFetch(
         replaceFormContingencyListWithScript,
         handleCloseDialog,
-        undefined,
+        handleGenericPermissionDeniedError,
         handleLastError
     );
 
     const [newScriptFromFilterCB] = useDeferredFetch(
         newScriptFromFilter,
         handleCloseDialog,
-        undefined,
+        handleGenericPermissionDeniedError,
         handleLastError
     );
 
