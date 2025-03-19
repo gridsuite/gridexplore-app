@@ -177,6 +177,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.STUDY:
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
+                case ElementType.DIAGRAM_CONFIG:
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
@@ -223,6 +224,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.STUDY:
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
+                case ElementType.DIAGRAM_CONFIG:
                     duplicateElement(activeElement.elementUuid, undefined, activeElement.type).catch((error) => {
                         if (handleMaxElementsExceededError(error, snackError)) {
                             return;
@@ -401,6 +403,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             ElementType.NETWORK_VISUALIZATIONS_PARAMETERS,
             ElementType.SPREADSHEET_CONFIG,
             ElementType.SPREADSHEET_CONFIG_COLLECTION,
+            ElementType.DIAGRAM_CONFIG,
         ];
 
         const hasMetadata = selectedElements[0]?.hasMetadata;
