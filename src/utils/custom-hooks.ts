@@ -68,7 +68,7 @@ interface MultipleAction<T> {
 export const useDeferredFetch = <T, TArgs extends unknown[] = any[]>(
     fetchFunction: GenericFunction<T, TArgs>,
     onSuccess?: (args: TArgs, data?: T) => void,
-    errorToString?: (status: number) => string | undefined,
+    errorToString?: (status: string) => string | undefined,
     onError?: (errorMessage: string, args: TArgs) => void
 ): [(...args: TArgs) => void, FetchState<T>] => {
     const initialState: FetchState<T> = {
@@ -171,7 +171,7 @@ export type GenericFunction<T, TArgs extends unknown[] = any[]> = (...args: TArg
 export const useMultipleDeferredFetch = <T>(
     fetchFunction: GenericFunction<T>,
     onSuccess?: (data: T[]) => void,
-    errorToString?: (status: number) => string | undefined,
+    errorToString?: (status: string) => string | undefined,
     onError?: (errorMessages: string[], params: unknown[], paramsOnError: unknown[]) => void
 ): [(cbParamsList: unknown[][]) => void] => {
     const initialState: MultipleFetchState<T> = {

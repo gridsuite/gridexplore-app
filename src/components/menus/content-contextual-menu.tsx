@@ -56,7 +56,7 @@ import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { CustomError, handleMaxElementsExceededError, handleNotAllowedError } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 
@@ -72,7 +72,6 @@ interface ContentContextualMenuProps extends CommonContextualMenuProps {
 export default function ContentContextualMenu(props: Readonly<ContentContextualMenuProps>) {
     const { activeElement, selectedElements, open, onClose, openDialog, setOpenDialog, broadcastChannel, ...others } =
         props;
-    const userId = useSelector((state: AppState) => state.user?.profile.sub);
     const intl = useIntl();
     const dispatch = useDispatch();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
@@ -144,18 +143,31 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         [broadcastChannel, dispatch, handleCloseDialog]
     );
 
+    const handleGenericPermissionDeniedError = useCallback(
+        (HTTPStatus: string) => {
+            if (HTTPStatus === 'Forbidden') {
+                return intl.formatMessage({ id: 'genericPermissionDeniedError' });
+            }
+            return undefined;
+        },
+        [intl]
+    );
+
     const handleDuplicateError = useCallback(
-        (error: string) =>
-            handleLastError(
-                intl.formatMessage(
-                    { id: 'duplicateElementFailure' },
-                    {
-                        itemName: activeElement.elementName,
-                        errorMessage: error,
-                    }
-                )
-            ),
-        [activeElement.elementName, handleLastError, intl]
+        (error: CustomError) => {
+            if (!handleNotAllowedError(error, snackError)) {
+                handleLastError(
+                    intl.formatMessage(
+                        { id: 'duplicateElementFailure' },
+                        {
+                            itemName: activeElement.elementName,
+                            errorMessage: error.message,
+                        }
+                    )
+                );
+            }
+        },
+        [activeElement.elementName, handleLastError, intl, snackError]
     );
 
     const copyItem = useCallback(() => {
@@ -217,7 +229,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         if (handleMaxElementsExceededError(error, snackError)) {
                             return;
                         }
-                        handleDuplicateError(error.message);
+                        handleDuplicateError(error);
                     });
                     break;
                 case ElementType.CONTINGENCY_LIST:
@@ -226,7 +238,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         undefined,
                         activeElement.type,
                         activeElement.specificMetadata.type
-                    ).catch((error) => handleDuplicateError(error.message));
+                    ).catch((error) => handleDuplicateError(error));
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
@@ -239,16 +251,16 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         undefined,
                         activeElement.type,
                         activeElement.type
-                    ).catch((error) => handleDuplicateError(error.message));
+                    ).catch((error) => handleDuplicateError(error));
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
                     duplicateSpreadsheetConfig(activeElement.elementUuid).catch((error) => {
-                        handleDuplicateError(error.message);
+                        handleDuplicateError(error);
                     });
                     break;
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                     duplicateSpreadsheetConfigCollection(activeElement.elementUuid).catch((error) => {
-                        handleDuplicateError(error.message);
+                        handleDuplicateError(error);
                     });
                     break;
                 default: {
@@ -272,19 +284,20 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 .then(() => handleCloseDialog())
                 // show the error message and don't close the dialog
                 .catch((error) => {
-                    setDeleteError(error.message);
-                    handleLastError(error.message);
+                    const errorMessage = handleGenericPermissionDeniedError(error.status) ?? error.message;
+                    setDeleteError(errorMessage);
+                    handleLastError(errorMessage);
                 });
         },
-        [selectedDirectory, handleCloseDialog, handleLastError]
+        [selectedDirectory, handleCloseDialog, handleLastError, handleGenericPermissionDeniedError]
     );
 
     const moveElementErrorToString = useCallback(
-        (HTTPStatusCode: number) => {
-            if (HTTPStatusCode === 403) {
+        (HTTPStatus: string) => {
+            if (HTTPStatus === 'Forbidden') {
                 return intl.formatMessage({ id: 'moveElementNotAllowedError' });
             }
-            if (HTTPStatusCode === 404) {
+            if (HTTPStatus === 'Not Found') {
                 return intl.formatMessage({ id: 'moveElementNotFoundError' });
             }
             return undefined;
@@ -334,12 +347,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
             handleCloseDialog();
         },
-        (HTTPStatusCode: number) => {
-            if (HTTPStatusCode === 403) {
+        (HTTPStatus: string) => {
+            if (HTTPStatus === 'Forbidden') {
                 return intl.formatMessage({ id: 'renameElementNotAllowedError' });
             }
-            if (HTTPStatusCode === 404) {
-                // == NOT FOUND
+            if (HTTPStatus === 'Not Found') {
                 return intl.formatMessage({ id: 'renameElementNotFoundError' });
             }
             return undefined;
@@ -349,55 +361,32 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const [FiltersReplaceWithScriptCB] = useDeferredFetch(
         replaceFiltersWithScript,
         handleCloseDialog,
-        undefined,
+        handleGenericPermissionDeniedError,
         handleLastError
     );
 
     const [newScriptFromFiltersContingencyListCB] = useDeferredFetch(
         newScriptFromFiltersContingencyList,
         handleCloseDialog,
-        undefined,
+        handleGenericPermissionDeniedError,
         handleLastError
     );
 
     const [replaceFormContingencyListWithScriptCB] = useDeferredFetch(
         replaceFormContingencyListWithScript,
         handleCloseDialog,
-        undefined,
+        handleGenericPermissionDeniedError,
         handleLastError
     );
 
     const [newScriptFromFilterCB] = useDeferredFetch(
         newScriptFromFilter,
         handleCloseDialog,
-        undefined,
+        handleGenericPermissionDeniedError,
         handleLastError
     );
 
     const noCreationInProgress = useCallback(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
-
-    // Allowance
-    const isUserAllowed = useCallback(
-        () => selectedElements.every((el) => el.owner === userId),
-        [selectedElements, userId]
-    );
-
-    const allowsDelete = useCallback(
-        () => isUserAllowed() && selectedElements.every((el) => el.elementUuid != null),
-        [isUserAllowed, selectedElements]
-    );
-
-    const allowsRename = useCallback(
-        () => selectedElements.length === 1 && isUserAllowed() && selectedElements[0].hasMetadata,
-        [isUserAllowed, selectedElements]
-    );
-
-    const allowsMove = useCallback(
-        () =>
-            selectedElements.every((element) => element.type !== ElementType.DIRECTORY && element.hasMetadata) &&
-            isUserAllowed(),
-        [isUserAllowed, selectedElements]
-    );
 
     const allowsDuplicateAndCopy = useCallback(() => {
         const allowedTypes = [
@@ -444,10 +433,9 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return (
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id &&
-            isUserAllowed()
+            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id
         );
-    }, [isUserAllowed, selectedElements]);
+    }, [selectedElements]);
 
     const allowsConvertFilterIntoExplicitNaming = useCallback(
         () =>
@@ -479,25 +467,21 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         // build menuItems here
         const menuItems = [];
 
-        if (allowsRename()) {
-            menuItems.push({
-                messageDescriptorId: 'rename',
-                callback: () => {
-                    handleOpenDialog(DialogsId.RENAME);
-                },
-            });
-        }
+        menuItems.push({
+            messageDescriptorId: 'rename',
+            callback: () => {
+                handleOpenDialog(DialogsId.RENAME);
+            },
+        });
 
-        if (allowsMove()) {
-            menuItems.push({
-                messageDescriptorId: 'move',
-                callback: () => {
-                    handleOpenDialog(DialogsId.MOVE);
-                },
-                icon: <DriveFileMoveIcon fontSize="small" />,
-                withDivider: true,
-            });
-        }
+        menuItems.push({
+            messageDescriptorId: 'move',
+            callback: () => {
+                handleOpenDialog(DialogsId.MOVE);
+            },
+            icon: <DriveFileMoveIcon fontSize="small" />,
+            withDivider: true,
+        });
 
         if (allowsCreateNewStudyFromCase()) {
             menuItems.push({
@@ -522,16 +506,14 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (allowsDelete()) {
-            menuItems.push({
-                messageDescriptorId: 'delete',
-                callback: () => {
-                    handleOpenDialog(DialogsId.DELETE);
-                },
-                icon: <DeleteIcon fontSize="small" />,
-                withDivider: true,
-            });
-        }
+        menuItems.push({
+            messageDescriptorId: 'delete',
+            callback: () => {
+                handleOpenDialog(DialogsId.DELETE);
+            },
+            icon: <DeleteIcon fontSize="small" />,
+            withDivider: true,
+        });
 
         if (allowsCopyContingencyToScript()) {
             menuItems.push({ isDivider: true });
@@ -598,12 +580,9 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         allowsConvertFilterIntoExplicitNaming,
         allowsCopyContingencyToScript,
         allowsCreateNewStudyFromCase,
-        allowsDelete,
         allowsDownload,
         allowsSpreadsheetCollection,
         allowsDuplicateAndCopy,
-        allowsMove,
-        allowsRename,
         allowsReplaceContingencyWithScript,
         copyItem,
         downloadElements,
