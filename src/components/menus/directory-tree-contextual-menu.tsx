@@ -47,7 +47,7 @@ import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { handleMaxElementsExceededError, handleNotAllowedError } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import MoveDialog from '../dialogs/move-dialog';
 import { buildPathToFromMap } from '../treeview-utils';
@@ -143,6 +143,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 case ElementType.STUDY:
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
+                case ElementType.DIAGRAM_CONFIG:
                     duplicateElement(selectionForPaste.sourceItemUuid, directoryUuid, selectionForPaste.typeItem).catch(
                         (error: any) => {
                             if (!handleMaxElementsExceededError(error, snackError)) {
@@ -310,14 +311,16 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     const handleMoveDirectory = useCallback(
         (selectedDir: TreeViewFinderNodeProps[]) => {
             if (selectedDir.length === 1 && directory) {
-                moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch(() => {
-                    const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
-                        ?.map((el) => el.elementName)
-                        .join('/');
-                    snackError({
-                        messageId: 'MovingDirectoryError',
-                        messageValues: { elementPath: path },
-                    });
+                moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch((error) => {
+                    if (!handleNotAllowedError(error, snackError)) {
+                        const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
+                            ?.map((el) => el.elementName)
+                            .join('/');
+                        snackError({
+                            messageId: 'MovingDirectoryError',
+                            messageValues: { elementPath: path },
+                        });
+                    }
                 });
             }
             handleCloseDialog();
