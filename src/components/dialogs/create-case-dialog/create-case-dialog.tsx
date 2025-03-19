@@ -8,7 +8,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Grid } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
     CustomMuiDialog,
     DescriptionField,
