@@ -6,7 +6,7 @@
  */
 
 import { type UUID } from 'crypto';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -17,10 +17,10 @@ import {
     DriveFileMove as DriveFileMoveIcon,
     FileCopy as FileCopyIcon,
     FileCopyTwoTone as FileCopyTwoToneIcon,
-    TableView as TableViewIcon,
     FileDownload,
     InsertDriveFile as InsertDriveFileIcon,
     PhotoLibrary,
+    TableView as TableViewIcon,
 } from '@mui/icons-material';
 import {
     ElementAttributes,
@@ -56,9 +56,10 @@ import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { CustomError, handleMaxElementsExceededError, handleNotAllowedError } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
+import { checkPermissionOnDirectory } from './menus-utils';
 
 interface ContentContextualMenuProps extends CommonContextualMenuProps {
     activeElement: ElementAttributes;
@@ -72,12 +73,13 @@ interface ContentContextualMenuProps extends CommonContextualMenuProps {
 export default function ContentContextualMenu(props: Readonly<ContentContextualMenuProps>) {
     const { activeElement, selectedElements, open, onClose, openDialog, setOpenDialog, broadcastChannel, ...others } =
         props;
-    const userId = useSelector((state: AppState) => state.user?.profile.sub);
     const intl = useIntl();
     const dispatch = useDispatch();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const [deleteError, setDeleteError] = useState('');
+    const [directoryWritable, setDirectoryWritable] = useState(false);
+    const [directoryReadable, setDirectoryReadable] = useState(false);
 
     const { snackError } = useSnackMessage();
 
@@ -144,18 +146,31 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         [broadcastChannel, dispatch, handleCloseDialog]
     );
 
+    const handleGenericPermissionDeniedError = useCallback(
+        (HTTPStatus: string) => {
+            if (HTTPStatus === 'Forbidden') {
+                return intl.formatMessage({ id: 'genericPermissionDeniedError' });
+            }
+            return undefined;
+        },
+        [intl]
+    );
+
     const handleDuplicateError = useCallback(
-        (error: string) =>
-            handleLastError(
-                intl.formatMessage(
-                    { id: 'duplicateElementFailure' },
-                    {
-                        itemName: activeElement.elementName,
-                        errorMessage: error,
-                    }
-                )
-            ),
-        [activeElement.elementName, handleLastError, intl]
+        (error: CustomError) => {
+            if (!handleNotAllowedError(error, snackError)) {
+                handleLastError(
+                    intl.formatMessage(
+                        { id: 'duplicateElementFailure' },
+                        {
+                            itemName: activeElement.elementName,
+                            errorMessage: error.message,
+                        }
+                    )
+                );
+            }
+        },
+        [activeElement.elementName, handleLastError, intl, snackError]
     );
 
     const copyItem = useCallback(() => {
@@ -217,7 +232,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         if (handleMaxElementsExceededError(error, snackError)) {
                             return;
                         }
-                        handleDuplicateError(error.message);
+                        handleDuplicateError(error);
                     });
                     break;
                 case ElementType.CONTINGENCY_LIST:
@@ -226,7 +241,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         undefined,
                         activeElement.type,
                         activeElement.specificMetadata.type
-                    ).catch((error) => handleDuplicateError(error.message));
+                    ).catch((error) => handleDuplicateError(error));
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
@@ -239,16 +254,16 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         undefined,
                         activeElement.type,
                         activeElement.type
-                    ).catch((error) => handleDuplicateError(error.message));
+                    ).catch((error) => handleDuplicateError(error));
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
                     duplicateSpreadsheetConfig(activeElement.elementUuid).catch((error) => {
-                        handleDuplicateError(error.message);
+                        handleDuplicateError(error);
                     });
                     break;
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                     duplicateSpreadsheetConfigCollection(activeElement.elementUuid).catch((error) => {
-                        handleDuplicateError(error.message);
+                        handleDuplicateError(error);
                     });
                     break;
                 default: {
@@ -272,19 +287,20 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 .then(() => handleCloseDialog())
                 // show the error message and don't close the dialog
                 .catch((error) => {
-                    setDeleteError(error.message);
-                    handleLastError(error.message);
+                    const errorMessage = handleGenericPermissionDeniedError(error.status) ?? error.message;
+                    setDeleteError(errorMessage);
+                    handleLastError(errorMessage);
                 });
         },
-        [selectedDirectory, handleCloseDialog, handleLastError]
+        [selectedDirectory, handleCloseDialog, handleLastError, handleGenericPermissionDeniedError]
     );
 
     const moveElementErrorToString = useCallback(
-        (HTTPStatusCode: number) => {
-            if (HTTPStatusCode === 403) {
+        (HTTPStatus: string) => {
+            if (HTTPStatus === 'Forbidden') {
                 return intl.formatMessage({ id: 'moveElementNotAllowedError' });
             }
-            if (HTTPStatusCode === 404) {
+            if (HTTPStatus === 'Not Found') {
                 return intl.formatMessage({ id: 'moveElementNotFoundError' });
             }
             return undefined;
@@ -334,12 +350,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
             handleCloseDialog();
         },
-        (HTTPStatusCode: number) => {
-            if (HTTPStatusCode === 403) {
+        (HTTPStatus: string) => {
+            if (HTTPStatus === 'Forbidden') {
                 return intl.formatMessage({ id: 'renameElementNotAllowedError' });
             }
-            if (HTTPStatusCode === 404) {
-                // == NOT FOUND
+            if (HTTPStatus === 'Not Found') {
                 return intl.formatMessage({ id: 'renameElementNotFoundError' });
             }
             return undefined;
@@ -349,55 +364,32 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const [FiltersReplaceWithScriptCB] = useDeferredFetch(
         replaceFiltersWithScript,
         handleCloseDialog,
-        undefined,
+        handleGenericPermissionDeniedError,
         handleLastError
     );
 
     const [newScriptFromFiltersContingencyListCB] = useDeferredFetch(
         newScriptFromFiltersContingencyList,
         handleCloseDialog,
-        undefined,
+        handleGenericPermissionDeniedError,
         handleLastError
     );
 
     const [replaceFormContingencyListWithScriptCB] = useDeferredFetch(
         replaceFormContingencyListWithScript,
         handleCloseDialog,
-        undefined,
+        handleGenericPermissionDeniedError,
         handleLastError
     );
 
     const [newScriptFromFilterCB] = useDeferredFetch(
         newScriptFromFilter,
         handleCloseDialog,
-        undefined,
+        handleGenericPermissionDeniedError,
         handleLastError
     );
 
     const noCreationInProgress = useCallback(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
-
-    // Allowance
-    const isUserAllowed = useCallback(
-        () => selectedElements.every((el) => el.owner === userId),
-        [selectedElements, userId]
-    );
-
-    const allowsDelete = useCallback(
-        () => isUserAllowed() && selectedElements.every((el) => el.elementUuid != null),
-        [isUserAllowed, selectedElements]
-    );
-
-    const allowsRename = useCallback(
-        () => selectedElements.length === 1 && isUserAllowed() && selectedElements[0].hasMetadata,
-        [isUserAllowed, selectedElements]
-    );
-
-    const allowsMove = useCallback(
-        () =>
-            selectedElements.every((element) => element.type !== ElementType.DIRECTORY && element.hasMetadata) &&
-            isUserAllowed(),
-        [isUserAllowed, selectedElements]
-    );
 
     const allowsDuplicateAndCopy = useCallback(() => {
         const allowedTypes = [
@@ -421,23 +413,25 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         const isSingleElement = selectedElements.length === 1;
         const isAllowedType = allowedTypes.includes(selectedElements[0]?.type);
 
-        return hasMetadata && isSingleElement && isAllowedType;
-    }, [selectedElements]);
+        return hasMetadata && isSingleElement && isAllowedType && directoryWritable;
+    }, [selectedElements, directoryWritable]);
 
     const allowsCreateNewStudyFromCase = useCallback(
         () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CASE &&
-            selectedElements[0].hasMetadata,
-        [selectedElements]
+            selectedElements[0].hasMetadata &&
+            directoryWritable,
+        [selectedElements, directoryWritable]
     );
 
     const allowsCopyContingencyToScript = useCallback(
         () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id,
-        [selectedElements]
+            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id &&
+            directoryWritable,
+        [selectedElements, directoryWritable]
     );
 
     const allowsReplaceContingencyWithScript = useCallback(() => {
@@ -445,16 +439,17 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
             selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id &&
-            isUserAllowed()
+            directoryWritable
         );
-    }, [isUserAllowed, selectedElements]);
+    }, [selectedElements, directoryWritable]);
 
     const allowsConvertFilterIntoExplicitNaming = useCallback(
         () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.FILTER &&
-            selectedElements[0].subtype !== FilterType.EXPLICIT_NAMING.id,
-        [selectedElements]
+            selectedElements[0].subtype !== FilterType.EXPLICIT_NAMING.id &&
+            directoryWritable,
+        [selectedElements, directoryWritable]
     );
 
     const allowsDownload = useCallback(() => {
@@ -471,6 +466,17 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return selectedElements.every((element) => ElementType.SPREADSHEET_CONFIG === element.type);
     }, [selectedElements]);
 
+    useEffect(() => {
+        if (selectedDirectory !== null) {
+            checkPermissionOnDirectory(selectedDirectory, 'READ').then((b) => {
+                setDirectoryReadable(b);
+            });
+            checkPermissionOnDirectory(selectedDirectory, 'WRITE').then((b) => {
+                setDirectoryWritable(b);
+            });
+        }
+    }, [selectedDirectory]);
+
     const buildMenu = useMemo(() => {
         if (selectedElements.length === 0) {
             return undefined;
@@ -479,16 +485,14 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         // build menuItems here
         const menuItems = [];
 
-        if (allowsRename()) {
+        if (selectedElements.length === 1 && directoryWritable) {
             menuItems.push({
                 messageDescriptorId: 'rename',
                 callback: () => {
                     handleOpenDialog(DialogsId.RENAME);
                 },
             });
-        }
 
-        if (allowsMove()) {
             menuItems.push({
                 messageDescriptorId: 'move',
                 callback: () => {
@@ -515,6 +519,9 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 callback: duplicateItem,
                 icon: <FileCopyTwoToneIcon fontSize="small" />,
             });
+        }
+
+        if (directoryReadable) {
             menuItems.push({
                 messageDescriptorId: 'copy',
                 callback: copyItem,
@@ -522,7 +529,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (allowsDelete()) {
+        if (selectedElements.length === 1 && directoryWritable) {
             menuItems.push({
                 messageDescriptorId: 'delete',
                 callback: () => {
@@ -598,12 +605,9 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         allowsConvertFilterIntoExplicitNaming,
         allowsCopyContingencyToScript,
         allowsCreateNewStudyFromCase,
-        allowsDelete,
         allowsDownload,
         allowsSpreadsheetCollection,
         allowsDuplicateAndCopy,
-        allowsMove,
-        allowsRename,
         allowsReplaceContingencyWithScript,
         copyItem,
         downloadElements,
@@ -612,6 +616,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         handleOpenDialog,
         noCreationInProgress,
         selectedElements,
+        directoryReadable,
+        directoryWritable,
     ]);
 
     const renderDialog = () => {

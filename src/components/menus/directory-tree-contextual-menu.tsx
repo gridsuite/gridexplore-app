@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import {
@@ -47,10 +47,11 @@ import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { handleMaxElementsExceededError, handleNotAllowedError } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import MoveDialog from '../dialogs/move-dialog';
 import { buildPathToFromMap } from '../treeview-utils';
+import { checkPermissionOnDirectory } from './menus-utils';
 
 export interface DirectoryTreeContextualMenuProps extends Omit<CommonContextualMenuProps, 'onClose'> {
     directory: ElementAttributes | null;
@@ -71,6 +72,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     const { snackError } = useSnackMessage();
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const treeData = useSelector((state: AppState) => state.treeData);
+    const [directoryWritable, setDirectoryWritable] = useState(false);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -86,14 +88,28 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         setDeleteError('');
     }, [onClose, setOpenDialog]);
 
-    const [renameCB, renameState] = useDeferredFetch(renameElement, handleCloseDialog, (HTTPStatusCode: number) => {
-        if (HTTPStatusCode === 403) {
+    const handleGenericPermissionDeniedError = useCallback(
+        (HTTPStatus: string) => {
+            if (HTTPStatus === 'Forbidden') {
+                return intl.formatMessage({ id: 'genericPermissionDeniedError' });
+            }
+            return undefined;
+        },
+        [intl]
+    );
+
+    const [renameCB, renameState] = useDeferredFetch(renameElement, handleCloseDialog, (HTTPStatus: string) => {
+        if (HTTPStatus === 'Forbidden') {
             return intl.formatMessage({ id: 'renameDirectoryError' });
         }
         return undefined;
     });
 
-    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, handleCloseDialog);
+    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(
+        insertDirectory,
+        handleCloseDialog,
+        handleGenericPermissionDeniedError
+    );
 
     const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(insertRootDirectory, handleCloseDialog);
 
@@ -103,10 +119,12 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
 
     const handlePasteError = (error: any) => {
         let msg;
-        if (error.status === 404) {
+        if (error.status === 'Not Found') {
             msg = intl.formatMessage({
                 id: 'elementPasteFailed404',
             });
+        } else if (error.status === 'Forbidden') {
+            msg = intl.formatMessage({ id: 'genericPermissionDeniedError' });
         } else {
             msg = intl.formatMessage({ id: 'elementPasteFailed' }) + (error?.message ?? '');
         }
@@ -183,86 +201,102 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             deleteElement(elementsUuid)
                 .then(handleCloseDialog)
                 .catch((error: any) => {
+                    const errorMessage = handleGenericPermissionDeniedError(error.status) ?? error.message;
                     // show the error message and don't close the dialog
-                    setDeleteError(error.message);
-                    handleError(error.message);
+                    setDeleteError(errorMessage);
+                    handleError(errorMessage);
                 });
         },
-        [handleCloseDialog, handleError]
+        [handleCloseDialog, handleError, handleGenericPermissionDeniedError]
     );
 
     // Allowance
     const showMenuFromEmptyZone = useCallback(() => !directory, [directory]);
 
-    const isAllowed = useCallback(() => directory && directory.owner === userId, [directory, userId]);
+    useEffect(() => {
+        if (directory !== null) {
+            checkPermissionOnDirectory(directory, 'WRITE').then((b) => {
+                setDirectoryWritable(b);
+            });
+        }
+    }, [directory]);
 
     const buildMenu = () => {
         // build menuItems here
         const menuItems: MenuItemType[] = [];
 
         if (!showMenuFromEmptyZone()) {
-            menuItems.push(
-                {
-                    messageDescriptorId: 'createNewStudy',
-                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_STUDY),
-                    icon: <AddIcon fontSize="small" />,
-                },
-                {
-                    messageDescriptorId: 'createNewContingencyList',
-                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_CONTINGENCY_LIST),
-                    icon: <AddIcon fontSize="small" />,
-                },
-                {
-                    messageDescriptorId: 'createNewFilter',
-                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_FILTER),
-                    icon: <AddIcon fontSize="small" />,
-                },
-                {
-                    messageDescriptorId: 'ImportNewCase',
-                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_CASE),
-                    icon: <AddIcon fontSize="small" />,
-                }
-            );
+            if (directory && directoryWritable) {
+                menuItems.push(
+                    {
+                        messageDescriptorId: 'createNewStudy',
+                        callback: () => handleOpenDialog(DialogsId.ADD_NEW_STUDY),
+                        icon: <AddIcon fontSize="small" />,
+                    },
+                    {
+                        messageDescriptorId: 'createNewContingencyList',
+                        callback: () => handleOpenDialog(DialogsId.ADD_NEW_CONTINGENCY_LIST),
+                        icon: <AddIcon fontSize="small" />,
+                    },
+                    {
+                        messageDescriptorId: 'createNewFilter',
+                        callback: () => handleOpenDialog(DialogsId.ADD_NEW_FILTER),
+                        icon: <AddIcon fontSize="small" />,
+                    },
+                    {
+                        messageDescriptorId: 'ImportNewCase',
+                        callback: () => handleOpenDialog(DialogsId.ADD_NEW_CASE),
+                        icon: <AddIcon fontSize="small" />,
+                    }
+                );
+            }
 
             menuItems.push({ isDivider: true });
 
-            if (isAllowed() && !restrictMenuItems) {
+            if (!restrictMenuItems) {
+                if (directory && directoryWritable) {
+                    menuItems.push(
+                        {
+                            messageDescriptorId: 'renameFolder',
+                            callback: () => handleOpenDialog(DialogsId.RENAME_DIRECTORY),
+                            icon: <CreateIcon fontSize="small" />,
+                        },
+                        {
+                            messageDescriptorId: 'deleteFolder',
+                            callback: () => handleOpenDialog(DialogsId.DELETE_DIRECTORY),
+                            icon: <DeleteIcon fontSize="small" />,
+                        }
+                    );
+                    menuItems.push(
+                        {
+                            messageDescriptorId: 'moveDirectory',
+                            callback: () => handleOpenDialog(DialogsId.MOVE_DIRECTORY),
+                            icon: <DriveFileMoveIcon fontSize="small" />,
+                        },
+                        { isDivider: true }
+                    );
+                }
+            }
+
+            if (directory && directoryWritable) {
                 menuItems.push(
                     {
-                        messageDescriptorId: 'renameFolder',
-                        callback: () => handleOpenDialog(DialogsId.RENAME_DIRECTORY),
-                        icon: <CreateIcon fontSize="small" />,
-                    },
-                    {
-                        messageDescriptorId: 'deleteFolder',
-                        callback: () => handleOpenDialog(DialogsId.DELETE_DIRECTORY),
-                        icon: <DeleteIcon fontSize="small" />,
-                    },
-                    {
-                        messageDescriptorId: 'moveDirectory',
-                        callback: () => handleOpenDialog(DialogsId.MOVE_DIRECTORY),
-                        icon: <DriveFileMoveIcon fontSize="small" />,
+                        messageDescriptorId: 'paste',
+                        callback: () => pasteElement(directory.elementUuid, itemSelectionForCopy),
+                        icon: <ContentPasteIcon fontSize="small" />,
+                        disabled: !itemSelectionForCopy.sourceItemUuid,
                     },
                     { isDivider: true }
                 );
             }
 
-            menuItems.push(
-                {
-                    messageDescriptorId: 'paste',
-                    // @ts-expect-error TODO: manage null case
-                    callback: () => pasteElement(directory.elementUuid, itemSelectionForCopy),
-                    icon: <ContentPasteIcon fontSize="small" />,
-                    disabled: !itemSelectionForCopy.sourceItemUuid,
-                },
-                { isDivider: true }
-            );
-
-            menuItems.push({
-                messageDescriptorId: 'createFolder',
-                callback: () => handleOpenDialog(DialogsId.ADD_DIRECTORY),
-                icon: <CreateNewFolderIcon fontSize="small" />,
-            });
+            if (directory && directoryWritable) {
+                menuItems.push({
+                    messageDescriptorId: 'createFolder',
+                    callback: () => handleOpenDialog(DialogsId.ADD_DIRECTORY),
+                    icon: <CreateNewFolderIcon fontSize="small" />,
+                });
+            }
         }
 
         menuItems.push({
@@ -277,14 +311,16 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     const handleMoveDirectory = useCallback(
         (selectedDir: TreeViewFinderNodeProps[]) => {
             if (selectedDir.length === 1 && directory) {
-                moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch(() => {
-                    const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
-                        ?.map((el) => el.elementName)
-                        .join('/');
-                    snackError({
-                        messageId: 'MovingDirectoryError',
-                        messageValues: { elementPath: path },
-                    });
+                moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch((error) => {
+                    if (!handleNotAllowedError(error, snackError)) {
+                        const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
+                            ?.map((el) => el.elementName)
+                            .join('/');
+                        snackError({
+                            messageId: 'MovingDirectoryError',
+                            messageValues: { elementPath: path },
+                        });
+                    }
                 });
             }
             handleCloseDialog();
