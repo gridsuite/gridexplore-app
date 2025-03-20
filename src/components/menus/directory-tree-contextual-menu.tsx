@@ -47,7 +47,7 @@ import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { handleMaxElementsExceededError } from '../utils/rest-errors';
+import { handleMaxElementsExceededError, handleNotAllowedError } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import MoveDialog from '../dialogs/move-dialog';
 import { buildPathToFromMap } from '../treeview-utils';
@@ -86,14 +86,28 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         setDeleteError('');
     }, [onClose, setOpenDialog]);
 
-    const [renameCB, renameState] = useDeferredFetch(renameElement, handleCloseDialog, (HTTPStatusCode: number) => {
-        if (HTTPStatusCode === 403) {
+    const handleGenericPermissionDeniedError = useCallback(
+        (HTTPStatus: string) => {
+            if (HTTPStatus === 'Forbidden') {
+                return intl.formatMessage({ id: 'genericPermissionDeniedError' });
+            }
+            return undefined;
+        },
+        [intl]
+    );
+
+    const [renameCB, renameState] = useDeferredFetch(renameElement, handleCloseDialog, (HTTPStatus: string) => {
+        if (HTTPStatus === 'Forbidden') {
             return intl.formatMessage({ id: 'renameDirectoryError' });
         }
         return undefined;
     });
 
-    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(insertDirectory, handleCloseDialog);
+    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(
+        insertDirectory,
+        handleCloseDialog,
+        handleGenericPermissionDeniedError
+    );
 
     const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(insertRootDirectory, handleCloseDialog);
 
@@ -103,10 +117,12 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
 
     const handlePasteError = (error: any) => {
         let msg;
-        if (error.status === 404) {
+        if (error.status === 'Not Found') {
             msg = intl.formatMessage({
                 id: 'elementPasteFailed404',
             });
+        } else if (error.status === 'Forbidden') {
+            msg = intl.formatMessage({ id: 'genericPermissionDeniedError' });
         } else {
             msg = intl.formatMessage({ id: 'elementPasteFailed' }) + (error?.message ?? '');
         }
@@ -125,6 +141,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 case ElementType.STUDY:
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
+                case ElementType.DIAGRAM_CONFIG:
                     duplicateElement(selectionForPaste.sourceItemUuid, directoryUuid, selectionForPaste.typeItem).catch(
                         (error: any) => {
                             if (!handleMaxElementsExceededError(error, snackError)) {
@@ -182,18 +199,17 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             deleteElement(elementsUuid)
                 .then(handleCloseDialog)
                 .catch((error: any) => {
+                    const errorMessage = handleGenericPermissionDeniedError(error.status) ?? error.message;
                     // show the error message and don't close the dialog
-                    setDeleteError(error.message);
-                    handleError(error.message);
+                    setDeleteError(errorMessage);
+                    handleError(errorMessage);
                 });
         },
-        [handleCloseDialog, handleError]
+        [handleCloseDialog, handleError, handleGenericPermissionDeniedError]
     );
 
     // Allowance
     const showMenuFromEmptyZone = useCallback(() => !directory, [directory]);
-
-    const isAllowed = useCallback(() => directory && directory.owner === userId, [directory, userId]);
 
     const buildMenu = () => {
         // build menuItems here
@@ -225,7 +241,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
 
             menuItems.push({ isDivider: true });
 
-            if (isAllowed() && !restrictMenuItems) {
+            if (!restrictMenuItems) {
                 menuItems.push(
                     {
                         messageDescriptorId: 'renameFolder',
@@ -276,14 +292,16 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     const handleMoveDirectory = useCallback(
         (selectedDir: TreeViewFinderNodeProps[]) => {
             if (selectedDir.length === 1 && directory) {
-                moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch(() => {
-                    const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
-                        ?.map((el) => el.elementName)
-                        .join('/');
-                    snackError({
-                        messageId: 'MovingDirectoryError',
-                        messageValues: { elementPath: path },
-                    });
+                moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch((error) => {
+                    if (!handleNotAllowedError(error, snackError)) {
+                        const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
+                            ?.map((el) => el.elementName)
+                            .join('/');
+                        snackError({
+                            messageId: 'MovingDirectoryError',
+                            messageValues: { elementPath: path },
+                        });
+                    }
                 });
             }
             handleCloseDialog();

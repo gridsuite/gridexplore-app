@@ -22,7 +22,7 @@
     "maxElementExceededError": "Vous avez atteint votre quota utilisateur en termes de situations et d'études, vous ne pouvez donc plus importer des situations ou créer des études pour le moment. Merci de supprimer des situations ou études anciennes afin de redescendre sous le seuil de {limit} éléments.",
     "renameElement": "Renommer l'élément",
     "renameElementMsg": "Nouveau nom de l'élément",
-    "renameElementNotAllowedError": "Vous ne pouvez pas renommer un élément dont vous n'êtes pas propriétaire",
+    "renameElementNotAllowedError": "Vous ne possédez pas les privilèges nécessaires pour renommer cet élément",
     "renameElementNotFoundError": "L'élément n'a pas été trouvé",
     "additionalItems": "... et {itemsCount} éléments supplémentaires non affichés",
     "moveElementsFailure": "Problème au déplacement {stn, plural, one {d'un élément} other {d'éléments}}. Pas {pbn, plural, one {déplacé} other {déplacés}} : {problematic}",
@@ -81,6 +81,7 @@
     "LOADFLOW_PARAMETERS": "Paramètres (Calcul de répartition)",
     "SHORT_CIRCUIT_PARAMETERS": "Paramètres (Analyse de court-circuit)",
     "NETWORK_VISUALIZATIONS_PARAMETERS": "Paramètres (Images réseau)",
+    "DIAGRAM_CONFIG": "Image nodale de réseau",
     "contingencyList.criteriaBased": "Par critères",
     "contingencyList.script": "Script",
     "contingencyList.explicitNaming": "Par nommage",
@@ -172,5 +173,6 @@
     "emptyDirContent": "Votre dossier est vide",
     "createElement": "AJOUTER UN ELEMENT",
     "MovingDirectoryError": "Une erreur survenue lors du déplacement de dossier. Le dossier suivant n'a pas été déplacé : {elementPath}",
-    "casesAlertThreshold": "Vous avez atteint {userUsagePercentage}% de votre quota utilisateur en termes de situations et d'études ({casesCount} éléments), vous ne pourrez donc bientôt plus importer des situations ou créer des études. Merci de supprimer des situations ou études anciennes."
+    "casesAlertThreshold": "Vous avez atteint {userUsagePercentage}% de votre quota utilisateur en termes de situations et d'études ({casesCount} éléments), vous ne pourrez donc bientôt plus importer des situations ou créer des études. Merci de supprimer des situations ou études anciennes.",
+    "genericPermissionDeniedError": "Vous n'avez pas les privilèges nécessaires pour effectuer cette action"
 }

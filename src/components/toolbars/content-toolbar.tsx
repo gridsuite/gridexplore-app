@@ -66,13 +66,13 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
 
     // TODO: duplicate code detected with content-contextual-menu.tsx (moveElementErrorToString, moveElementOnError and moveCB)
     const moveElementErrorToString = useCallback(
-        (HTTPStatusCode: number) => {
-            if (HTTPStatusCode === 403) {
+        (HTTPStatus: string) => {
+            if (HTTPStatus === 'Forbidden') {
                 return intl.formatMessage({
                     id: 'moveElementNotAllowedError',
                 });
             }
-            if (HTTPStatusCode === 404) {
+            if (HTTPStatus === 'Not Found') {
                 return intl.formatMessage({ id: 'moveElementNotFoundError' });
             }
             return undefined;

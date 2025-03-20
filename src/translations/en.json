@@ -23,7 +23,7 @@
     "directoryUpdateWarning": "Could not update subs (and content) of: {directoryUuid}",
     "renameElement": "Rename the element",
     "renameElementMsg": "Element new name",
-    "renameElementNotAllowedError": "Cannot rename the element if you are not the owner",
+    "renameElementNotAllowedError": "Cannot rename the element, not enough privileges",
     "renameElementNotFoundError": "The element was not found",
     "additionalItems": "... and {itemsCount} additional items not displayed",
     "moveElementsFailure": "Problem encountered while moving {stn, plural, one {an element} other {elements}}. Not moved : {problematic}",
@@ -82,6 +82,7 @@
     "LOADFLOW_PARAMETERS": "Settings (LoadFlow)",
     "SHORT_CIRCUIT_PARAMETERS": "Settings (Short circuit analysis)",
     "NETWORK_VISUALIZATIONS_PARAMETERS": "Settings (Network visualizations)",
+    "DIAGRAM_CONFIG": "Network area diagram",
     "contingencyList.criteriaBased": "Criteria based",
     "contingencyList.script": "Script",
     "contingencyList.explicitNaming": "Explicit naming",
@@ -171,5 +172,6 @@
     "emptyDirContent": "Your directory is empty",
     "createElement": "ADD AN ELEMENT",
     "MovingDirectoryError": "An error while moving folder. The following folder has not been moved : {elementPath}",
-    "casesAlertThreshold": "You have reached {userUsagePercentage}% of your user quota for cases and studies ({casesCount} elements), therefore you will soon be unable to import further cases or create further studies. Please delete old cases or studies."
+    "casesAlertThreshold": "You have reached {userUsagePercentage}% of your user quota for cases and studies ({casesCount} elements), therefore you will soon be unable to import further cases or create further studies. Please delete old cases or studies.",
+    "genericPermissionDeniedError": "You don't have enough privileges to perform this action"
 }
