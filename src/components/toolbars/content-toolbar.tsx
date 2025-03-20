@@ -170,15 +170,16 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
                         icon: <DeleteIcon fontSize="small" />,
                         disabled: !allowsDelete,
                     });
+
+                    toolbarItems.push({
+                        tooltipTextId: 'move',
+                        callback: () => {
+                            handleOpenDialog(DialogsId.MOVE);
+                        },
+                        icon: <DriveFileMoveIcon fontSize="small" />,
+                        disabled: !allowsMove,
+                    });
                 }
-                toolbarItems.push({
-                    tooltipTextId: 'move',
-                    callback: () => {
-                        handleOpenDialog(DialogsId.MOVE);
-                    },
-                    icon: <DriveFileMoveIcon fontSize="small" />,
-                    disabled: !allowsMove,
-                });
 
                 if (allowsDownload) {
                     toolbarItems.push({
