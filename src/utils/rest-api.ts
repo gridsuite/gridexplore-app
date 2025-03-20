@@ -862,3 +862,11 @@ export const getBaseName = (caseName: string) => {
         method: 'GET',
     });
 };
+
+export function hasPermission(directoryUuid: UUID, permission: string) {
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${directoryUuid}?permission=${permission}`;
+    console.debug(url);
+    return backendFetch(url, { method: 'head' }).then(
+        (response) => response.status !== 204 // HTTP 204 : No-content
+    );
+}
