@@ -274,6 +274,7 @@ export default function DirectoryContent() {
                             endIcon={<AddIcon />}
                             sx={styles.button}
                             onClick={handleButtonClick}
+                            data-testid="AddElementInDirectoryContentButton"
                         >
                             <FormattedMessage id="createElement" />
                         </Button>

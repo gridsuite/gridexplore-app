@@ -24,7 +24,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { UUID } from 'crypto';
 import UploadNewCase from '../commons/upload-new-case';
 import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
@@ -37,7 +37,7 @@ import {
     getCreateStudyDialogFormDefaultValues,
 } from './create-study-dialog-utils';
 import PrefilledNameInput from '../commons/prefilled-name-input';
-import { handleMaxElementsExceededError } from '../../utils/rest-errors';
+import { handleMaxElementsExceededError, handleNotAllowedError } from '../../utils/rest-errors';
 import { AppState, UploadingElement } from '../../../redux/types';
 
 const STRING_LIST = 'STRING_LIST';
@@ -210,6 +210,9 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
                 .catch((error) => {
                     dispatch(removeUploadingElement(uploadingStudy));
                     if (handleMaxElementsExceededError(error, snackError)) {
+                        return;
+                    }
+                    if (handleNotAllowedError(error, snackError)) {
                         return;
                     }
                     snackError({

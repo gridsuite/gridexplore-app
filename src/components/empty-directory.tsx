@@ -71,6 +71,7 @@ export default function EmptyDirectory({ onCreateElementButtonClick }: Readonly<
                     sx={styles.button}
                     onClick={onCreateElementButtonClick}
                     endIcon={<AddIcon />}
+                    data-testid="AddElementInEmptyDirectoryButton"
                 >
                     <FormattedMessage id="createElement" />
                 </Button>

@@ -7,8 +7,13 @@
 
 import { useCallback } from 'react';
 import { UUID } from 'crypto';
-import { ElementCreationDialog, ElementType, IElementCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
-import { ElementAttributes } from '@gridsuite/commons-ui/dist/utils';
+import {
+    type ElementAttributes,
+    ElementCreationDialog,
+    ElementType,
+    type IElementCreationDialog,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { createSpreadsheetConfigCollectionFromConfigIds } from '../../utils/rest-api';
 
 export interface CreateSpreadsheetCollectionProps {

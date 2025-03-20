@@ -8,7 +8,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Grid } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
     CustomMuiDialog,
     DescriptionField,
@@ -30,7 +30,7 @@ import {
     getCreateCaseDialogFormValidationDefaultValues,
 } from './create-case-dialog-utils';
 import PrefilledNameInput from '../commons/prefilled-name-input';
-import { handleMaxElementsExceededError } from '../../utils/rest-errors';
+import { handleMaxElementsExceededError, handleNotAllowedError } from '../../utils/rest-errors';
 import { AppDispatch } from '../../../redux/store';
 import { AppState, UploadingElement } from '../../../redux/types';
 
@@ -81,7 +81,7 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
             .then(onClose)
             .catch((err) => {
                 dispatch(removeUploadingElement(uploadingCase));
-                if (!handleMaxElementsExceededError(err, snackError)) {
+                if (!handleMaxElementsExceededError(err, snackError) && !handleNotAllowedError(err, snackError)) {
                     if (err?.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                         snackError({
                             messageId: 'invalidFormatOrName',
