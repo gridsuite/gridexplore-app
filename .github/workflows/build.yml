@@ -7,37 +7,57 @@ on:
   pull_request:
 
 jobs:
-  license-headers:
-    name: Check licenses headers
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Check License Header (Check Mode)
-        uses: apache/skywalking-eyes/header@v0.5.0
-        with:
-          config: .github/config/.licenserc.yaml
+    license-headers:
+      name: Check licenses headers
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout sources
+          uses: actions/checkout@v4
+          with:
+              persist-credentials: false
+        - uses: actions/setup-node@v4
+          with:
+              node-version: 22
+        - name: Check License Header (Check Mode)
+          uses: apache/skywalking-eyes/header@v0.5.0
+          with:
+            config: .github/config/.licenserc.yaml
 
-  build-and-deploy:
-    runs-on: ubuntu-latest
+    build-and-deploy:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  persist-credentials: false
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
 
-      - name: Broadcast update event
-        uses: gridsuite/broadcast-event@main
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          event-type: gridexplore_app_updated
-#push
+            - name: Install and Build
+              run: |
+                  npm ci
+                  npm run licenses-check
+                  npm run lint
+                  npm run test:coverage
+                  npm run build
+
+            - name: SonarCloud Scan
+              uses: SonarSource/sonarcloud-github-action@v3.0.0
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+            - name: Build and publish Docker image - Main
+              uses: elgohr/Publish-Docker-Github-Action@33a481be3e179353cb7793a92b57cf9a6c985860 # v4
+              with:
+                  name: gridsuite/gridexplore-app
+                  username: gridsuiteci
+                  password: ${{ secrets.DOCKERHUB_RO_TOKEN }}
+
+            - name: Broadcast update event
+              uses: gridsuite/broadcast-event@main
+              with:
+                  token: ${{ secrets.REPO_ACCESS_TOKEN }}
+                  event-type: gridexplore_app_updated
