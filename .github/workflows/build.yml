@@ -35,6 +35,20 @@ jobs:
               with:
                   node-version: 22
 
+            - name: Install and Build
+              run: |
+                  npm ci
+                  npm run licenses-check
+                  npm run lint
+                  npm run test:coverage
+                  npm run build
+
+            - name: SonarCloud Scan
+              uses: SonarSource/sonarcloud-github-action@v3.0.0
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
             - name: Broadcast update event
               uses: gridsuite/broadcast-event@main
               with:
