@@ -7,14 +7,37 @@ on:
   pull_request:
 
 jobs:
-  build:
-    uses: powsybl/github-ci/.github/workflows/build-frontend-app-generic.yml@8197c006b729cfd664ffa3f3fe4bb603fb574c69
-    with:
-      dockerImage: gridsuite/gridexplore-app
-      dockerUsername: gridsuiteci
-      eventType: gridexplore_app_updated
-      licensercPath: .github/config/.licenserc.yaml
-    secrets:
-      sonar-token: ${{ secrets.SONAR_TOKEN }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-      repo-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+  license-headers:
+    name: Check licenses headers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check License Header (Check Mode)
+        uses: apache/skywalking-eyes/header@v0.5.0
+        with:
+          config: .github/config/.licenserc.yaml
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Broadcast update event
+        uses: gridsuite/broadcast-event@main
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          event-type: gridexplore_app_updated
+#push
