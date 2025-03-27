@@ -12,9 +12,13 @@ import {
     ElementSaveDialog,
     ElementType,
     type IElementCreationDialog,
+    type IElementUpdateDialog,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { createSpreadsheetConfigCollectionFromConfigIds } from '../../utils/rest-api';
+import {
+    createSpreadsheetConfigCollectionFromConfigIds,
+    replaceAllSpreadsheetConfigsInCollection,
+} from '../../utils/rest-api';
 
 export interface CreateSpreadsheetCollectionProps {
     open: boolean;
@@ -59,15 +63,49 @@ function CreateSpreadsheetCollectionDialog({
         [snackError, snackInfo, spreadsheetConfigIds]
     );
 
+    const updateCollection = useCallback(
+        (element: IElementUpdateDialog) => {
+            replaceAllSpreadsheetConfigsInCollection(
+                element.id,
+                element.name,
+                element.description,
+                spreadsheetConfigIds
+            )
+                .then(() => {
+                    snackInfo({
+                        headerId: 'updateCollectionMsg',
+                        headerValues: {
+                            nbModels: String(spreadsheetConfigIds?.length),
+                            item: element.elementFullPath,
+                        },
+                    });
+                })
+                .catch((error) => {
+                    console.error(error);
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'updateCollectionError',
+                        headerValues: {
+                            item: element.elementFullPath,
+                        },
+                    });
+                });
+        },
+        [snackError, snackInfo, spreadsheetConfigIds]
+    );
+
     return (
         <ElementSaveDialog
             open={open}
             onClose={onClose}
             onSave={createCollection}
+            OnUpdate={updateCollection}
             type={ElementType.SPREADSHEET_CONFIG_COLLECTION}
-            titleId="createSpreadsheetCollection"
+            titleId="createSpreadsheetCollectionTitle"
             initDirectory={initDirectory}
-            legacySaveMode
+            selectorTitleId="selectSpreadsheetCollectionTitle"
+            createLabelId="createSpreadsheetCollection"
+            updateLabelId="updateSpreadsheetCollection"
         />
     );
 }
