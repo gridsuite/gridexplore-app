@@ -9,7 +9,7 @@ import { useCallback } from 'react';
 import { UUID } from 'crypto';
 import {
     type ElementAttributes,
-    ElementCreationDialog,
+    ElementSaveDialog,
     ElementType,
     type IElementCreationDialog,
     useSnackMessage,
@@ -60,13 +60,14 @@ function CreateSpreadsheetCollectionDialog({
     );
 
     return (
-        <ElementCreationDialog
+        <ElementSaveDialog
             open={open}
             onClose={onClose}
             onSave={createCollection}
             type={ElementType.SPREADSHEET_CONFIG_COLLECTION}
             titleId="createSpreadsheetCollection"
             initDirectory={initDirectory}
+            legacySaveMode
         />
     );
 }
