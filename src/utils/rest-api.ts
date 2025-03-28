@@ -66,6 +66,9 @@ export interface ErrorWithStatus extends Error {
     status?: number;
 }
 
+export const HTTP_FORBIDDEN = 403;
+export const HTTP_CONFLICT = 409;
+
 export function getToken(): Token | null {
     const state: AppState = store.getState();
     return state.user?.id_token ?? null;
@@ -161,7 +164,7 @@ export function fetchValidateUser(user: User) {
             return response.status === 200;
         })
         .catch((error) => {
-            if (error.status === 403) {
+            if (error.status === HTTP_FORBIDDEN) {
                 return false;
             }
             throw error;

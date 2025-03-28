@@ -174,5 +174,7 @@
     "createElement": "AJOUTER UN ELEMENT",
     "MovingDirectoryError": "Une erreur survenue lors du déplacement de dossier. Le dossier suivant n'a pas été déplacé : {elementPath}",
     "casesAlertThreshold": "Vous avez atteint {userUsagePercentage}% de votre quota utilisateur en termes de situations et d'études ({casesCount} éléments), vous ne pourrez donc bientôt plus importer des situations ou créer des études. Merci de supprimer des situations ou études anciennes.",
-    "genericPermissionDeniedError": "Vous n'avez pas les privilèges nécessaires pour effectuer cette action"
+    "genericPermissionDeniedError": "Vous n'avez pas les privilèges nécessaires pour effectuer cette action",
+    "moveConflictError": "Vous ne pouvez pas déplacer ce dossier puisqu'il contient au moins un sous-dossier pour lequel vous n'avez pas les droits d'écriture.",
+    "deleteConflictError": "Vous ne pouvez pas supprimer ce dossier puisqu'il contient au moins un sous-dossier pour lequel vous n'avez pas les droits d'écriture."
 }
