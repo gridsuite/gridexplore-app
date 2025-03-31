@@ -32,6 +32,7 @@ export const DialogsId = {
     ADD_NEW_CASE: 'add_new_case',
     RENAME_DIRECTORY: 'rename_directory',
     DELETE_DIRECTORY: 'delete_directory',
+    DIRECTORY_PROPERTIES: 'directory_properties',
     NONE: 'none',
 };
 export const HTTP_UNPROCESSABLE_ENTITY_STATUS = 422;
