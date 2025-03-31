@@ -82,7 +82,7 @@
     "LOADFLOW_PARAMETERS": "Paramètres (Calcul de répartition)",
     "SHORT_CIRCUIT_PARAMETERS": "Paramètres (Analyse de court-circuit)",
     "NETWORK_VISUALIZATIONS_PARAMETERS": "Paramètres (Images réseau)",
-    "DIAGRAM_CONFIG": "Image nodale de réseau",
+    "DIAGRAM_CONFIG": "Image nodale de zone",
     "contingencyList.criteriaBased": "Par critères",
     "contingencyList.script": "Script",
     "contingencyList.explicitNaming": "Par nommage",
