@@ -501,6 +501,25 @@ export function createSpreadsheetConfigCollectionFromConfigIds(
     });
 }
 
+export function replaceAllSpreadsheetConfigsInCollection(
+    collectionId: string,
+    name: string,
+    description: string,
+    configUuidList: string[]
+) {
+    console.info(`Replacing all spreadsheet configs in collection with id: ${collectionId}`);
+    const queryParams = new URLSearchParams();
+    queryParams.append('name', name);
+    queryParams.append('description', description);
+    const url = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/spreadsheet-config-collections/${collectionId}/spreadsheet-configs/replace-all?${queryParams.toString()}`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'put',
+        body: JSON.stringify(configUuidList),
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
+
 export function elementExists(directoryUuid: UUID | null | undefined, elementName: string, type: string) {
     const elementNameEncoded = encodeURIComponent(elementName);
     const existsElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${directoryUuid}/elements/${elementNameEncoded}/types/${type}`;
