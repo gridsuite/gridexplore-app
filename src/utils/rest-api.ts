@@ -66,6 +66,24 @@ export interface ErrorWithStatus extends Error {
     status?: number;
 }
 
+export interface PermissionDTO {
+    allUsers: boolean;
+    groups: UUID[];
+    type: PermissionType;
+}
+
+export interface GroupDTO {
+    id: UUID;
+    name: string;
+    users: string[];
+}
+
+export enum PermissionType {
+    READ = 'READ',
+    WRITE = 'WRITE',
+    MANAGE = 'MANAGE',
+}
+
 export function getToken(): Token | null {
     const state: AppState = store.getState();
     return state.user?.id_token ?? null;
@@ -505,6 +523,25 @@ export function createSpreadsheetConfigCollectionFromConfigIds(
     });
 }
 
+export function replaceAllSpreadsheetConfigsInCollection(
+    collectionId: string,
+    name: string,
+    description: string,
+    configUuidList: string[]
+) {
+    console.info(`Replacing all spreadsheet configs in collection with id: ${collectionId}`);
+    const queryParams = new URLSearchParams();
+    queryParams.append('name', name);
+    queryParams.append('description', description);
+    const url = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/spreadsheet-config-collections/${collectionId}/spreadsheet-configs/replace-all?${queryParams.toString()}`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'put',
+        body: JSON.stringify(configUuidList),
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
+
 export function elementExists(directoryUuid: UUID | null | undefined, elementName: string, type: string) {
     const elementNameEncoded = encodeURIComponent(elementName);
     const existsElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${directoryUuid}/elements/${elementNameEncoded}/types/${type}`;
@@ -869,4 +906,37 @@ export function hasPermission(directoryUuid: UUID, permission: string) {
     return backendFetch(url, { method: 'head' }).then(
         (response) => response.status !== 204 // HTTP 204 : No-content
     );
+}
+
+export function fetchDirectoryPermissions(directoryUuid: UUID): Promise<PermissionDTO[]> {
+    console.info(`Fetching permissions for directory ${directoryUuid}`);
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${directoryUuid}/permissions`;
+    return backendFetchJson(url, {
+        method: 'get',
+    }) as Promise<PermissionDTO[]>;
+}
+
+export function updateDirectoryPermissions(directoryUuid: UUID, permissions: PermissionDTO[]): Promise<Response> {
+    console.info(`Updating permissions for directory ${directoryUuid}`);
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${directoryUuid}/permissions`;
+    return backendFetch(url, {
+        method: 'put',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(permissions),
+    });
+}
+
+export function fetchGroups(): Promise<GroupDTO[]> {
+    console.info('Fetching groups from user-admin server');
+    const url = `${PREFIX_USER_ADMIN_SERVER_QUERIES}/v1/groups`;
+    return backendFetchJson(url, {
+        method: 'get',
+    }) as Promise<GroupDTO[]>;
+}
+
+// Function to check if user has MANAGE permission on directory
+export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
+    return hasPermission(directoryUuid, 'MANAGE');
 }
