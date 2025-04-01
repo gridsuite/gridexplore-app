@@ -179,5 +179,16 @@
     "createElement": "ADD AN ELEMENT",
     "MovingDirectoryError": "An error while moving folder. The following folder has not been moved : {elementPath}",
     "casesAlertThreshold": "You have reached {userUsagePercentage}% of your user quota for cases and studies ({casesCount} elements), therefore you will soon be unable to import further cases or create further studies. Please delete old cases or studies.",
-    "genericPermissionDeniedError": "You don't have enough privileges to perform this action"
+    "genericPermissionDeniedError": "You don't have enough privileges to perform this action",
+    "properties": "Properties",
+    "directoryProperties": "Directory Properties: {name}",
+    "directoryPermissions": "Manage access",
+    "directoryPermissionsViewOnly": "You can view but not modify the permissions of this directory",
+    "directoryPermissionsFetchError": "Error while fetching directory permissions",
+    "directoryPermissionsUpdateError": "Error while updating directory permissions",
+    "readOnly": "Read only",
+    "read&Write": "Read / Write",
+    "allUsers": "Anyone",
+    "restricted": "Restricted",
+    "selectGroups": "Select one or more groups"
 }
