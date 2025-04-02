@@ -42,8 +42,8 @@ export function TypeCellRenderer({ data, childrenMetadata }: Readonly<TypeCellRe
                         data?.type,
                         specificMetadata?.type?.toString(),
                         data?.type === ElementType.SPREADSHEET_CONFIG
-                            ? toTitleCase(specificMetadata.sheetType ?? 'no-type') ?? null
-                            : specificMetadata.format?.toString() ?? null,
+                            ? (toTitleCase(specificMetadata.sheetType ?? 'no-type') ?? null)
+                            : (specificMetadata.format?.toString() ?? null),
                         intl
                     )}
                     tooltipSx={styles.tooltip}
