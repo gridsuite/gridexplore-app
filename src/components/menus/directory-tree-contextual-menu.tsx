@@ -439,7 +439,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         onClose={handleCloseDialog}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
-                        filterType={FilterType.EXPLICIT_NAMING.id}
+                        filterType={FilterType.EXPLICIT_NAMING}
                     />
                 );
             case DialogsId.ADD_NEW_EXPERT_FILTER:
@@ -449,7 +449,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         onClose={handleCloseDialog}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
-                        filterType={FilterType.EXPERT.id}
+                        filterType={FilterType.EXPERT}
                     />
                 );
             case DialogsId.ADD_NEW_CASE:
