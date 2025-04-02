@@ -64,7 +64,6 @@ export interface ErrorWithStatus extends Error {
     status?: number;
 }
 
-
 export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
 
 export function getUrlWithToken(baseUrl: string) {
