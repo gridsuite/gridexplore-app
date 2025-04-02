@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ReactNode } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { ReactNode, useCallback } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Edit as EditIcon } from '@mui/icons-material';
 import { Divider, ListItemIcon, ListItemText, Menu, MenuItem, MenuProps, styled } from '@mui/material';
+import { CustomNestedMenuItem } from '../utils/custom-nested-menu';
 
 const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} />)({
     '.MuiMenu-paper': {
@@ -26,6 +27,7 @@ export type MenuItemType =
           callback?: () => void;
           icon?: ReactNode;
           disabled?: boolean;
+          subMenuItems?: MenuItemType[];
       };
 
 export interface CommonContextualMenuProps extends MenuProps {
@@ -33,6 +35,8 @@ export interface CommonContextualMenuProps extends MenuProps {
 }
 
 export default function CommonContextualMenu({ menuItems, ...menuProps }: Readonly<CommonContextualMenuProps>) {
+    const intl = useIntl();
+
     function makeMenuItem(
         key: number,
         messageDescriptorId?: string,
@@ -60,22 +64,40 @@ export default function CommonContextualMenu({ menuItems, ...menuProps }: Readon
         );
     }
 
-    let dividerCount = 0;
-    return (
-        <StyledMenu keepMounted {...menuProps}>
-            {menuItems?.map((menuItem, index) => {
+    const renderMenuItems = useCallback(
+        (nodeMenuItems: MenuItemType[] | undefined) => {
+            return nodeMenuItems?.map((menuItem, index) => {
                 if (menuItem.isDivider) {
                     dividerCount += 1;
                     return <Divider key={`divider${dividerCount}`} />;
                 }
-                return makeMenuItem(
-                    index,
-                    menuItem.messageDescriptorId,
-                    menuItem.callback,
-                    menuItem.icon,
-                    menuItem.disabled
+                if (menuItem.subMenuItems === undefined) {
+                    return makeMenuItem(
+                        index,
+                        menuItem.messageDescriptorId,
+                        menuItem.callback,
+                        menuItem.icon,
+                        menuItem.disabled
+                    );
+                }
+                return (
+                    <CustomNestedMenuItem
+                        key={menuItem.messageDescriptorId}
+                        label={intl.formatMessage({ id: menuItem.messageDescriptorId })}
+                        disabled={menuItem.disabled}
+                    >
+                        {renderMenuItems(menuItem.subMenuItems)}
+                    </CustomNestedMenuItem>
                 );
-            })}
+            });
+        },
+        [intl]
+    );
+
+    let dividerCount = 0;
+    return (
+        <StyledMenu keepMounted {...menuProps}>
+            {renderMenuItems(menuItems)}
         </StyledMenu>
     );
 }
