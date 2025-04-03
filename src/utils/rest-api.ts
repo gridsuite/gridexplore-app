@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import ReconnectingWebSocket from 'reconnecting-websocket';
 import {
     backendFetch,
     backendFetchJson,
@@ -14,6 +13,7 @@ import {
     fetchEnv,
     FieldConstants,
     getRequestParamFromList,
+    getUserToken,
     type GsLang,
     type GsTheme,
 } from '@gridsuite/commons-ui';
@@ -21,7 +21,7 @@ import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
 import { User } from 'oidc-client';
 import { UUID } from 'crypto';
-import { APP_NAME, getAppName, PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME } from './config-params';
+import { getAppName, PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME } from './config-params';
 import { store } from '../redux/store';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
@@ -30,13 +30,11 @@ import { PrepareContingencyListForBackend } from '../components/dialogs/continge
 import { UsersIdentities } from './user-identities.type';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
-const PREFIX_CONFIG_NOTIFICATION_WS = `${import.meta.env.VITE_WS_GATEWAY}/config-notification`;
 const PREFIX_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/config`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
 const PREFIX_ACTIONS_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/actions`;
 const PREFIX_CASE_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/case`;
 const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/network-conversion`;
-const PREFIX_NOTIFICATION_WS = `${import.meta.env.VITE_WS_GATEWAY}/directory-notification`;
 const PREFIX_FILTERS_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/filter/v1/filters`;
 const PREFIX_STUDY_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study`;
 const PREFIX_SPREADSHEET_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study-config`;
@@ -69,20 +67,36 @@ export interface ErrorWithStatus extends Error {
 export const HTTP_FORBIDDEN = 403;
 export const HTTP_CONFLICT = 409;
 
+export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
+
+export function getUrlWithToken(baseUrl: string) {
+    if (baseUrl.includes('?')) {
+        return `${baseUrl}&access_token=${getUserToken()}`;
+    }
+    return `${baseUrl}?access_token=${getUserToken()}`;
+}
+
+export interface PermissionDTO {
+    allUsers: boolean;
+    groups: UUID[];
+    type: PermissionType;
+}
+
+export interface GroupDTO {
+    id: UUID;
+    name: string;
+    users: string[];
+}
+
+export enum PermissionType {
+    READ = 'READ',
+    WRITE = 'WRITE',
+    MANAGE = 'MANAGE',
+}
+
 export function getToken(): Token | null {
     const state: AppState = store.getState();
     return state.user?.id_token ?? null;
-}
-
-export function connectNotificationsWsUpdateConfig() {
-    const webSocketBaseUrl = document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
-    const webSocketUrl = `${webSocketBaseUrl + PREFIX_CONFIG_NOTIFICATION_WS}/notify?appName=${APP_NAME}`;
-
-    const reconnectingWebSocket = new ReconnectingWebSocket(() => `${webSocketUrl}&access_token=${getToken()}`);
-    reconnectingWebSocket.onopen = function onopen() {
-        console.info(`Connected Websocket update config ui ${webSocketUrl} ...`);
-    };
-    return reconnectingWebSocket;
 }
 
 function parseError(text: string) {
@@ -722,21 +736,6 @@ export function newScriptFromFiltersContingencyList(id: string, newName: string,
 }
 
 /**
- * Function will be called to connect with notification websocket to update directories list
- * @returns {ReconnectingWebSocket}
- */
-export function connectNotificationsWsUpdateDirectories() {
-    const webSocketBaseUrl = document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
-    const webSocketUrl = `${webSocketBaseUrl + PREFIX_NOTIFICATION_WS}/notify?updateType=directories`;
-
-    const reconnectingWebSocket = new ReconnectingWebSocket(() => `${webSocketUrl}&access_token=${getToken()}`);
-    reconnectingWebSocket.onopen = function onopen() {
-        console.info(`Connected Websocket update studies ${webSocketUrl} ...`);
-    };
-    return reconnectingWebSocket;
-}
-
-/**
  * Get filter by id
  * @returns {Promise<Response>}
  */
@@ -891,4 +890,37 @@ export function hasPermission(directoryUuid: UUID, permission: string) {
     return backendFetch(url, { method: 'head' }).then(
         (response) => response.status !== 204 // HTTP 204 : No-content
     );
+}
+
+export function fetchDirectoryPermissions(directoryUuid: UUID): Promise<PermissionDTO[]> {
+    console.info(`Fetching permissions for directory ${directoryUuid}`);
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${directoryUuid}/permissions`;
+    return backendFetchJson(url, {
+        method: 'get',
+    }) as Promise<PermissionDTO[]>;
+}
+
+export function updateDirectoryPermissions(directoryUuid: UUID, permissions: PermissionDTO[]): Promise<Response> {
+    console.info(`Updating permissions for directory ${directoryUuid}`);
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${directoryUuid}/permissions`;
+    return backendFetch(url, {
+        method: 'put',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(permissions),
+    });
+}
+
+export function fetchGroups(): Promise<GroupDTO[]> {
+    console.info('Fetching groups from user-admin server');
+    const url = `${PREFIX_USER_ADMIN_SERVER_QUERIES}/v1/groups`;
+    return backendFetchJson(url, {
+        method: 'get',
+    }) as Promise<GroupDTO[]>;
+}
+
+// Function to check if user has MANAGE permission on directory
+export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
+    return hasPermission(directoryUuid, 'MANAGE');
 }

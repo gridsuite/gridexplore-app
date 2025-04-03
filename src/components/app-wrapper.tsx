@@ -59,11 +59,13 @@ import {
     importParamsFr,
     exportParamsEn,
     exportParamsFr,
+    NotificationsProvider,
 } from '@gridsuite/commons-ui';
 import { IntlConfig, IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
+import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
 import App from './app';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
@@ -253,6 +255,8 @@ function AppWrapperWithRedux() {
     const theme = useSelector((state: AppState) => state[PARAM_THEME]);
     const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
 
+    const urlMapper = useNotificationsUrlGenerator();
+
     return (
         <IntlProvider locale={computedLanguage} defaultLocale={LANG_ENGLISH} messages={messages[computedLanguage]}>
             <BrowserRouter basename={basename}>
@@ -261,7 +265,9 @@ function AppWrapperWithRedux() {
                         <SnackbarProvider hideIconVariant={false}>
                             <CssBaseline />
                             <CardErrorBoundary>
-                                <App />
+                                <NotificationsProvider urls={urlMapper}>
+                                    <App />
+                                </NotificationsProvider>
                             </CardErrorBoundary>
                         </SnackbarProvider>
                     </ThemeProvider>
