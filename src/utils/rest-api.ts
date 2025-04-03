@@ -65,7 +65,6 @@ export interface ErrorWithStatus extends Error {
 }
 
 export const HTTP_FORBIDDEN = 403;
-export const HTTP_CONFLICT = 409;
 
 export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
 
