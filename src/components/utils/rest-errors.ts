@@ -24,8 +24,17 @@ export const handleMaxElementsExceededError = (error: CustomError, snackError: F
 };
 
 export const handleNotAllowedError = (error: CustomError, snackError: Function): boolean => {
-    console.log(Object.values(PermissionCheckResult).some(permissionCheckResult => error.message.includes(permissionCheckResult)));
-    if (error.status === HTTP_FORBIDDEN && Object.values(PermissionCheckResult).some(permissionCheckResult => error.message.includes(permissionCheckResult))) {
+    console.log(
+        Object.values(PermissionCheckResult).some((permissionCheckResult) =>
+            error.message.includes(permissionCheckResult)
+        )
+    );
+    if (
+        error.status === HTTP_FORBIDDEN &&
+        Object.values(PermissionCheckResult).some((permissionCheckResult) =>
+            error.message.includes(permissionCheckResult)
+        )
+    ) {
         snackError({
             messageId: 'genericPermissionDeniedError',
         });
