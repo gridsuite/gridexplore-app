@@ -340,7 +340,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         (selectedDir: TreeViewFinderNodeProps[]) => {
             if (selectedDir.length === 1 && directory) {
                 moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch((error) => {
-                    if (!handleNotAllowedError(error, snackError) && !handleMoveConflictError(error, snackError)) {
+                    if (!handleMoveConflictError(error, snackError) && !handleNotAllowedError(error, snackError)) {
                         const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
                             ?.map((el) => el.elementName)
                             .join('/');
