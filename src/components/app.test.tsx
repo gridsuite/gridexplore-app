@@ -9,7 +9,7 @@ import { createRoot } from 'react-dom/client';
 import { act } from 'react-dom/test-utils';
 import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import { createTheme, CssBaseline, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { SnackbarProvider } from '@gridsuite/commons-ui';
 import { store } from '../redux/store';

@@ -62,7 +62,7 @@ import {
     NotificationsProvider,
 } from '@gridsuite/commons-ui';
 import { IntlConfig, IntlProvider } from 'react-intl';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import { Provider, useSelector } from 'react-redux';
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
 import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
