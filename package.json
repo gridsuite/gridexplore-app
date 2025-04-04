@@ -34,6 +34,7 @@
         "ag-grid-react": "^33.1.0",
         "clsx": "^2.1.1",
         "core-js": "^3.40.0",
+        "mui-nested-menu": "^4.0.1",
         "oidc-client": "^1.11.5",
         "prop-types": "^15.8.1",
         "react": "^18.3.1",
