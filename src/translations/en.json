@@ -180,6 +180,8 @@
     "MovingDirectoryError": "An error while moving folder. The following folder has not been moved : {elementPath}",
     "casesAlertThreshold": "You have reached {userUsagePercentage}% of your user quota for cases and studies ({casesCount} elements), therefore you will soon be unable to import further cases or create further studies. Please delete old cases or studies.",
     "genericPermissionDeniedError": "You don't have enough privileges to perform this action",
+    "moveConflictError": "You cannot move this folder since it contains at least one subfolder for which you do not have write permission",
+    "deleteConflictError": "You cannot delete this folder since it contains at least one subfolder for which you do not have write permission",
     "properties": "Properties",
     "directoryProperties": "Directory Properties: {name}",
     "directoryPermissions": "Manage access",
