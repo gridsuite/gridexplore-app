@@ -48,7 +48,12 @@ import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { handleMaxElementsExceededError, handleNotAllowedError } from '../utils/rest-errors';
+import {
+    handleDeleteConflictError,
+    handleMaxElementsExceededError,
+    handleMoveConflictError,
+    handleNotAllowedError,
+} from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import MoveDialog from '../dialogs/move-dialog';
 import { buildPathToFromMap } from '../treeview-utils';
@@ -204,13 +209,17 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             deleteElement(elementsUuid)
                 .then(handleCloseDialog)
                 .catch((error: any) => {
+                    if (handleDeleteConflictError(error, snackError)) {
+                        setDeleteError(intl.formatMessage({ id: 'deleteConflictError' }));
+                        return;
+                    }
                     const errorMessage = handleGenericPermissionDeniedError(error.status) ?? error.message;
                     // show the error message and don't close the dialog
                     setDeleteError(errorMessage);
                     handleError(errorMessage);
                 });
         },
-        [handleCloseDialog, handleError, handleGenericPermissionDeniedError]
+        [handleCloseDialog, handleError, handleGenericPermissionDeniedError, intl, snackError]
     );
 
     // Allowance
@@ -344,7 +353,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         (selectedDir: TreeViewFinderNodeProps[]) => {
             if (selectedDir.length === 1 && directory) {
                 moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch((error) => {
-                    if (!handleNotAllowedError(error, snackError)) {
+                    if (!handleMoveConflictError(error, snackError) && !handleNotAllowedError(error, snackError)) {
                         const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
                             ?.map((el) => el.elementName)
                             .join('/');
