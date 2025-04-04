@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useState } from 'react';
-import { NestedMenuItem } from 'mui-nested-menu';
-import { Box, MenuItem, MenuItemProps } from '@mui/material';
+import { useState, PropsWithChildren } from 'react';
+import { NestedMenuItem, NestedMenuItemProps } from 'mui-nested-menu';
+import { Box, MenuItem, MenuItemProps, SxProps, Theme } from '@mui/material';
 import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {
@@ -23,6 +23,10 @@ const styles = {
         },
     },
 };
+
+interface CustomNestedMenuItemProps extends PropsWithChildren, Omit<NestedMenuItemProps, 'parentMenuOpen'> {
+    sx?: SxProps<Theme>;
+}
 
 export const CustomNestedMenuItem = (props: CustomNestedMenuItemProps) => {
     const { sx, children, ...other } = props;
