@@ -13,10 +13,7 @@
     "ignorePatterns": [
         // node_modules is implicitly always ignored
         "build",
-        "coverage",
-        "vite.config.ts",
-        "jest.config.ts",
-        "jest.setup.ts"
+        "coverage"
     ],
     "plugins": ["react-refresh"],
     "rules": {
@@ -43,7 +40,7 @@
                     "**/*{.,_}{test,spec}.{js,jsx,ts,tsx}", // tests where the extension or filename suffix denotes that it is a test
                     "**/jest.config.ts", // jest config
                     "**/jest.setup.ts", // jest setup
-                    "**/prettier.config.ts",
+                    "**/prettier.config.js",
                     "**/vite.config.ts"
                 ],
                 "optionalDependencies": false

@@ -15,6 +15,7 @@ import {
     getPreLoginPath,
     GsLangUser,
     initializeAuthenticationProd,
+    useNotificationsListener,
     UserManagerState,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -23,7 +24,6 @@ import { Grid } from '@mui/material';
 import { selectComputedLanguage, selectEnableDeveloperMode, selectLanguage, selectTheme } from '../redux/actions';
 import {
     ConfigParameters,
-    connectNotificationsWsUpdateConfig,
     fetchConfigParameter,
     fetchConfigParameters,
     fetchIdpSettings,
@@ -36,6 +36,7 @@ import DirectoryContent from './directory-content';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
 import { AppDispatch } from '../redux/store';
 import { AppState } from '../redux/types';
+import { NotificationUrlKeys } from '../utils/notificationsProvider-utils';
 
 export default function App() {
     const { snackError } = useSnackMessage();
@@ -92,10 +93,8 @@ export default function App() {
         );
     });
 
-    const connectNotificationsUpdateConfig = useCallback(() => {
-        const ws = connectNotificationsWsUpdateConfig();
-
-        ws.onmessage = function onmessage(event) {
+    const getConfigParameter = useCallback(
+        (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
             if (eventData.headers?.parameterName) {
                 fetchConfigParameter(eventData.headers.parameterName)
@@ -107,12 +106,13 @@ export default function App() {
                         })
                     );
             }
-        };
-        ws.onerror = function onerror(event) {
-            console.error('Unexpected Notification WebSocket error', event);
-        };
-        return ws;
-    }, [updateParams, snackError]);
+        },
+        [updateParams, snackError]
+    );
+
+    useNotificationsListener(NotificationUrlKeys.CONFIG, {
+        listenerCallbackMessage: getConfigParameter,
+    });
 
     // Can't use lazy initializer because useMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(
@@ -167,14 +167,9 @@ export default function App() {
                         headerId: 'paramsRetrievingError',
                     })
                 );
-
-            const ws = connectNotificationsUpdateConfig();
-            return function closeWS() {
-                ws.close();
-            };
         }
         return undefined;
-    }, [user, dispatch, updateParams, snackError, connectNotificationsUpdateConfig]);
+    }, [user, dispatch, updateParams, snackError]);
 
     return (
         <div

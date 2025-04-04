@@ -12,10 +12,10 @@ import {
     ElementType,
     fetchDirectoryContent,
     fetchRootFolders,
+    useNotificationsListener,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import ReconnectingWebSocket from 'reconnecting-websocket';
 import { Box, BoxProps, PopoverOrigin, PopoverPosition, PopoverReference, SxProps, Theme } from '@mui/material';
 import {
     directoryUpdated,
@@ -26,13 +26,13 @@ import {
     setTreeData,
     setUploadingElements,
 } from '../redux/actions';
-import { connectNotificationsWsUpdateDirectories } from '../utils/rest-api';
 import DirectoryTreeView from './directory-tree-view';
 import { NotificationType } from '../utils/notificationType';
 import * as constants from '../utils/UIconstants';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 import { AppState, IDirectory, ITreeData, UploadingElement } from '../redux/types';
 import { buildPathToFromMap, updatedTree } from './treeview-utils';
+import { NotificationUrlKeys } from '../utils/notificationsProvider-utils';
 
 const initialMousePosition = {
     mouseX: null,
@@ -102,8 +102,6 @@ export default function TreeViewsContainer() {
     selectedDirectoryRef.current = selectedDirectory;
 
     const [DOMFocusedDirectory, setDOMFocusedDirectory] = useState<ParentNode | null>(null);
-
-    const wsRef = useRef<ReconnectingWebSocket>();
 
     const { snackError, snackWarning } = useSnackMessage();
 
@@ -420,23 +418,6 @@ export default function TreeViewsContainer() {
         [snackError]
     );
 
-    useEffect(() => {
-        // create ws at mount event
-        wsRef.current = connectNotificationsWsUpdateDirectories();
-
-        wsRef.current.onclose = function onclose() {
-            console.error('Unexpected Notification WebSocket closed');
-        };
-        wsRef.current.onerror = function onerror(event) {
-            console.error('Unexpected Notification WebSocket error', event);
-        };
-        // We must save wsRef.current in a variable to make sure that when close is called it refers to the same instance.
-        // That's because wsRef.current could be modified outside of this scope.
-        const wsToClose = wsRef.current;
-        // cleanup at unmount event
-        return () => wsToClose.close();
-    }, []);
-
     const handleUserMessage = useCallback(
         (eventData: any) =>
             snackWarning({
@@ -464,6 +445,10 @@ export default function TreeViewsContainer() {
         },
         [dispatch, handleUserMessage]
     );
+
+    useNotificationsListener(NotificationUrlKeys.DIRECTORY, {
+        listenerCallbackMessage: onUpdateDirectories,
+    });
 
     useEffect(() => {
         if (directoryUpdatedEvent.eventData?.headers) {
@@ -520,15 +505,6 @@ export default function TreeViewsContainer() {
         updateDirectoryTreeAndContent,
         updateRootDirectories,
     ]);
-
-    useEffect(() => {
-        if (!wsRef.current) {
-            return;
-        }
-
-        // Update onmessage of ws when needed.
-        wsRef.current.onmessage = onUpdateDirectories;
-    }, [onUpdateDirectories]);
 
     /* Handle components synchronization */
     // To proc only if selectedDirectory?.elementUuid changed, take care of updateDirectoryTreeAndContent dependencies
