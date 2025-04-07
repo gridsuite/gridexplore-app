@@ -28,6 +28,7 @@ import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 import { AppState } from '../redux/types';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
+import { HTTP_FORBIDDEN } from './UIconstants';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/config`;
@@ -63,9 +64,6 @@ export type InitRequest = HttpMethod | Partial<RequestInitExt>;
 export interface ErrorWithStatus extends Error {
     status?: number;
 }
-
-export const HTTP_FORBIDDEN = 403;
-export const HTTP_NOT_FOUND = 404;
 
 export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
 

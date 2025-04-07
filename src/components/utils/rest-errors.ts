@@ -4,9 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE, PermissionCheckResult } from 'utils/UIconstants';
+import {
+    HTTP_FORBIDDEN,
+    HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE,
+    HTTP_NOT_FOUND,
+    PermissionCheckResult,
+} from 'utils/UIconstants';
 import { IntlShape } from 'react-intl';
-import { HTTP_FORBIDDEN, HTTP_NOT_FOUND } from '../../utils/rest-api';
 import { ErrorMessageByHttpError } from '../../utils/custom-hooks';
 
 export interface CustomError extends Error {
@@ -32,6 +36,12 @@ export const generatePasteErrorMessages = (intl: IntlShape): ErrorMessageByHttpE
     [HTTP_NOT_FOUND]: intl.formatMessage({ id: 'elementPasteFailed404' }),
 });
 
+export const handleGenericError = (error: string, snackError: Function): boolean | void => {
+    snackError({
+        messageId: error,
+    });
+};
+
 export const handleMaxElementsExceededError = (error: CustomError, snackError: Function): boolean => {
     if (error.status === HTTP_FORBIDDEN && error.message.includes(HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE)) {
         const limit = error.message.split(/[: ]+/).pop();
@@ -51,9 +61,7 @@ export const handleNotAllowedError = (error: CustomError, snackError: Function):
             error.message.includes(permissionCheckResult)
         )
     ) {
-        snackError({
-            messageId: 'genericPermissionDeniedError',
-        });
+        handleGenericError('genericPermissionDeniedError', snackError);
         return true;
     }
     return false;
@@ -61,9 +69,7 @@ export const handleNotAllowedError = (error: CustomError, snackError: Function):
 
 export const handleMoveConflictError = (error: CustomError, snackError: Function): boolean => {
     if (error.status === HTTP_FORBIDDEN && error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)) {
-        snackError({
-            messageId: 'moveConflictError',
-        });
+        handleGenericError('moveConflictError', snackError);
         return true;
     }
     return false;
@@ -71,22 +77,13 @@ export const handleMoveConflictError = (error: CustomError, snackError: Function
 
 export const handleDeleteConflictError = (error: CustomError, snackError: Function): boolean => {
     if (error.status === HTTP_FORBIDDEN && error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)) {
-        snackError({
-            messageId: 'deleteConflictError',
-        });
+        handleGenericError('deleteConflictError', snackError);
         return true;
     }
     return false;
 };
 
-export const handleGenericError = (error: string, snackError: Function): boolean | void => {
-    snackError({
-        messageId: error,
-    });
-};
-
 export const handlePasteError = (error: CustomError, intl: IntlShape, snackError: Function) => {
-    console.log(generatePasteErrorMessages(intl), error.status);
     const message =
         generatePasteErrorMessages(intl)[error.status] ??
         intl.formatMessage({ id: 'elementPasteFailed' }) + (error?.message ?? '');
