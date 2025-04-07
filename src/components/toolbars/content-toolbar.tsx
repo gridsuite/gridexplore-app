@@ -27,6 +27,7 @@ import { DialogsId } from '../../utils/UIconstants';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import { checkPermissionOnDirectory } from '../menus/menus-utils';
+import { generateMoveErrorMessages, handleGenericError } from '../utils/rest-errors';
 
 export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
     selectedElements: ElementAttributes[];
@@ -50,15 +51,6 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         }
     }, [selectedDirectory]);
 
-    const handleLastError = useCallback(
-        (message: string) => {
-            snackError({
-                messageTxt: message,
-            });
-        },
-        [snackError]
-    );
-
     const handleOpenDialog = (DialogId: string) => {
         setOpenDialog(DialogId);
     };
@@ -73,24 +65,8 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         handleCloseDialog();
     }, [handleCloseDialog, stopCasesExports]);
 
-    // TODO: duplicate code detected with content-contextual-menu.tsx (moveElementErrorToString, moveElementOnError and moveCB)
-    const moveElementErrorToString = useCallback(
-        (HTTPStatus: string) => {
-            if (HTTPStatus === 'Forbidden') {
-                return intl.formatMessage({
-                    id: 'moveElementNotAllowedError',
-                });
-            }
-            if (HTTPStatus === 'Not Found') {
-                return intl.formatMessage({ id: 'moveElementNotFoundError' });
-            }
-            return undefined;
-        },
-        [intl]
-    );
-
     const moveElementOnError = useCallback(
-        (errorMessages: string[], params: unknown, paramsOnErrors: unknown[]) => {
+        (errorMessages: string[], paramsOnErrors: unknown[]) => {
             const msg = intl.formatMessage(
                 { id: 'moveElementsFailure' },
                 {
@@ -100,15 +76,15 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
                 }
             );
             console.debug(msg);
-            handleLastError(msg);
+            handleGenericError(msg, snackError);
         },
-        [handleLastError, intl]
+        [intl, snackError]
     );
 
     const [moveCB] = useMultipleDeferredFetch(
         moveElementsToDirectory,
         undefined,
-        moveElementErrorToString,
+        generateMoveErrorMessages(intl),
         moveElementOnError
     );
 
@@ -149,10 +125,10 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
                 .catch((error) => {
                     // show the error message and don't close the dialog
                     setDeleteError(error.message);
-                    handleLastError(error.message);
+                    handleGenericError(error.message, snackError);
                 });
         },
-        [selectedDirectory, handleCloseDialog, handleLastError]
+        [selectedDirectory?.elementUuid, handleCloseDialog, snackError]
     );
 
     const items = useMemo(() => {
