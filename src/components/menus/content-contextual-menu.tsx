@@ -42,7 +42,7 @@ import {
     duplicateSpreadsheetConfigCollection,
     moveElementsToDirectory,
     newScriptFromFilter,
-    newScriptFromFiltersContingencyList,
+    newScriptFromFiltersContingencyList, PermissionType,
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
@@ -60,7 +60,7 @@ import {
     CustomError,
     generateGenericPermissionErrorMessages,
     generateMoveErrorMessages,
-    generateRenameErrorMessages,
+    generateRenameErrorMessages, handleDeleteError,
     handleGenericError,
     handleMaxElementsExceededError,
     handleNotAllowedError,
@@ -147,18 +147,19 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
     const handleDuplicateError = useCallback(
         (error: CustomError) => {
-            if (!handleNotAllowedError(error, snackError)) {
-                handleGenericError(
-                    intl.formatMessage(
-                        { id: 'duplicateElementFailure' },
-                        {
-                            itemName: activeElement.elementName,
-                            errorMessage: error.message,
-                        }
-                    ),
-                    snackError
-                );
+            if (handleNotAllowedError(error, snackError)) {
+                return;
             }
+            handleGenericError(
+                intl.formatMessage(
+                    { id: 'duplicateElementFailure' },
+                    {
+                        itemName: activeElement.elementName,
+                        errorMessage: error.message,
+                    }
+                ),
+                snackError
+            );
         },
         [activeElement.elementName, intl, snackError]
     );
@@ -277,9 +278,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 .then(() => handleCloseDialog())
                 // show the error message and don't close the dialog
                 .catch((error) => {
-                    const errorMessage = generateGenericPermissionErrorMessages(intl)[error.status] ?? error.message;
-                    setDeleteError(errorMessage);
-                    handleGenericError(errorMessage, snackError);
+                    handleDeleteError(setDeleteError, error, intl, snackError);
                 });
         },
         [selectedDirectory?.elementUuid, handleCloseDialog, intl, snackError]
@@ -437,10 +436,10 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
     useEffect(() => {
         if (selectedDirectory !== null) {
-            checkPermissionOnDirectory(selectedDirectory, 'READ').then((b) => {
+            checkPermissionOnDirectory(selectedDirectory, PermissionType.READ).then((b) => {
                 setDirectoryReadable(b);
             });
-            checkPermissionOnDirectory(selectedDirectory, 'WRITE').then((b) => {
+            checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
                 setDirectoryWritable(b);
             });
         }

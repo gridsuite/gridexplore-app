@@ -27,7 +27,7 @@ import { DialogsId } from '../../utils/UIconstants';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import { checkPermissionOnDirectory } from '../menus/menus-utils';
-import { generateMoveErrorMessages, handleGenericError } from '../utils/rest-errors';
+import { generateMoveErrorMessages, handleDeleteError, handleGenericError } from '../utils/rest-errors';
 
 export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
     selectedElements: ElementAttributes[];
@@ -123,12 +123,10 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
             deleteElements(elementsUuids, selectedDirectory.elementUuid)
                 .then(handleCloseDialog)
                 .catch((error) => {
-                    // show the error message and don't close the dialog
-                    setDeleteError(error.message);
-                    handleGenericError(error.message, snackError);
+                    handleDeleteError(setDeleteError, error, intl, snackError);
                 });
         },
-        [selectedDirectory?.elementUuid, handleCloseDialog, snackError]
+        [selectedDirectory?.elementUuid, handleCloseDialog, intl, snackError]
     );
 
     const items = useMemo(() => {

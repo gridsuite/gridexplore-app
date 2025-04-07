@@ -39,6 +39,7 @@ import {
     insertDirectory,
     insertRootDirectory,
     moveElementsToDirectory,
+    PermissionType,
     renameElement,
 } from '../../utils/rest-api';
 
@@ -52,7 +53,7 @@ import {
     CustomError,
     generateGenericPermissionErrorMessages,
     generateRenameErrorMessages,
-    handleDeleteConflictError,
+    handleDeleteError,
     handleGenericError,
     handleMaxElementsExceededError,
     handleMoveConflictError,
@@ -134,9 +135,10 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 case ElementType.DIAGRAM_CONFIG:
                     duplicateElement(selectionForPaste.sourceItemUuid, directoryUuid, selectionForPaste.typeItem).catch(
                         (error: CustomError) => {
-                            if (!handleMaxElementsExceededError(error, snackError)) {
-                                handlePasteError(error, intl, snackError);
+                            if (handleMaxElementsExceededError(error, snackError)) {
+                                return;
                             }
+                            handlePasteError(error, intl, snackError);
                         }
                     );
                     break;
@@ -189,15 +191,8 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             setDeleteError('');
             deleteElement(elementsUuid)
                 .then(handleCloseDialog)
-                .catch((error: any) => {
-                    if (handleDeleteConflictError(error, snackError)) {
-                        setDeleteError(intl.formatMessage({ id: 'deleteConflictError' }));
-                        return;
-                    }
-                    const errorMessage = generateGenericPermissionErrorMessages(intl)[error.status] ?? error.message;
-                    // show the error message and don't close the dialog
-                    setDeleteError(errorMessage);
-                    handleGenericError(errorMessage, snackError);
+                .catch((error: CustomError) => {
+                    handleDeleteError(setDeleteError, error, intl, snackError);
                 });
         },
         [handleCloseDialog, intl, snackError]
@@ -208,7 +203,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
 
     useEffect(() => {
         if (directory !== null) {
-            checkPermissionOnDirectory(directory, 'WRITE').then((b) => {
+            checkPermissionOnDirectory(directory, PermissionType.WRITE).then((b) => {
                 setDirectoryWritable(b);
             });
         }
@@ -322,15 +317,19 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         (selectedDir: TreeViewFinderNodeProps[]) => {
             if (selectedDir.length === 1 && directory) {
                 moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch((error) => {
-                    if (!handleMoveConflictError(error, snackError) && !handleNotAllowedError(error, snackError)) {
-                        const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
-                            ?.map((el) => el.elementName)
-                            .join('/');
-                        snackError({
-                            messageId: 'MovingDirectoryError',
-                            messageValues: { elementPath: path },
-                        });
+                    if (handleMoveConflictError(error, snackError)) {
+                        return;
                     }
+                    if (handleNotAllowedError(error, snackError)) {
+                        return;
+                    }
+                    const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
+                        ?.map((el) => el.elementName)
+                        .join('/');
+                    snackError({
+                        messageId: 'MovingDirectoryError',
+                        messageValues: { elementPath: path },
+                    });
                 });
             }
             handleCloseDialog();

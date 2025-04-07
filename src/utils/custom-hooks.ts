@@ -7,6 +7,7 @@
 
 import { useCallback, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { SnackError } from '../components/utils/rest-errors';
 
 export type GenericFunction<T, TArgs extends unknown[] = any[]> = (...args: TArgs) => Promise<T>;
 
@@ -36,7 +37,7 @@ export const useDeferredFetch = <T, TArgs extends unknown[] = any[]>(
     fetchFunction: GenericFunction<T, TArgs>,
     onSuccess?: (args: TArgs, data?: T) => void,
     errorsMessageIds: ErrorMessageByHttpError = {},
-    onError?: (error: string, snackError: Function) => void
+    onError?: (error: string, snackError: SnackError) => void
 ): [(...args: TArgs) => Promise<void>, string] => {
     const { snackError } = useSnackMessage();
     const [errorMessage, setErrorMessage] = useState<string>('');
