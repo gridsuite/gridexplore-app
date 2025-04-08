@@ -43,7 +43,7 @@ export default function PrefilledNameInput({ label, name, elementType }: Readonl
                         });
                     })
                     .catch((error) => {
-                        handleGenericTxtError(error.message);
+                        handleGenericTxtError(error.message, snackError);
                     });
             }
         }
