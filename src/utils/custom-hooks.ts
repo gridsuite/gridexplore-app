@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useState } from 'react';
+import { IntlShape, useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ErrorMessageByHttpError, SnackError } from '../components/utils/rest-errors';
 
@@ -70,8 +71,11 @@ export const useMultipleDeferredFetch = <T>(
     fetchFunction: GenericFunction<T>,
     onSuccess?: (data: T[]) => void,
     errorsMessageIds: ErrorMessageByHttpError = {},
-    onError?: (errorMessages: string[], params: unknown[][]) => void
+    onError?: (errorMessages: string[], params: unknown[][], intl: IntlShape, snackError: SnackError) => void
 ): [(paramsList: unknown[][]) => Promise<void>] => {
+    const { snackError } = useSnackMessage();
+    const intl = useIntl();
+
     const fetch = useCallback(
         async (paramsList: unknown[][]) => {
             const results = await Promise.allSettled(
@@ -97,12 +101,12 @@ export const useMultipleDeferredFetch = <T>(
             });
 
             if (errors.length > 0) {
-                onError?.(errors, paramsList);
+                onError?.(errors, paramsList, intl, snackError);
             } else {
                 onSuccess?.(successes);
             }
         },
-        [fetchFunction, errorsMessageIds, onError, onSuccess]
+        [fetchFunction, errorsMessageIds, onError, intl, snackError, onSuccess]
     );
     return [fetch];
 };

@@ -27,7 +27,7 @@ import { DialogsId } from '../../utils/UIconstants';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import { checkPermissionOnDirectory } from '../menus/menus-utils';
-import { generateMoveErrorMessages, handleDeleteError, handleGenericTxtError } from '../utils/rest-errors';
+import { generateMoveErrorMessages, handleDeleteError, handleMoveError } from '../utils/rest-errors';
 
 export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
     selectedElements: ElementAttributes[];
@@ -65,27 +65,11 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         handleCloseDialog();
     }, [handleCloseDialog, stopCasesExports]);
 
-    const moveElementOnError = useCallback(
-        (errorMessages: string[], paramsOnErrors: unknown[]) => {
-            const msg = intl.formatMessage(
-                { id: 'moveElementsFailure' },
-                {
-                    pbn: errorMessages.length,
-                    stn: paramsOnErrors.length,
-                    problematic: paramsOnErrors.map((p) => (p as string[])[0]).join(' '),
-                }
-            );
-            console.debug(msg);
-            handleGenericTxtError(msg, snackError);
-        },
-        [intl, snackError]
-    );
-
     const [moveCB] = useMultipleDeferredFetch(
         moveElementsToDirectory,
         undefined,
         generateMoveErrorMessages(intl),
-        moveElementOnError
+        handleMoveError
     );
 
     const noCreationInProgress = useMemo(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);

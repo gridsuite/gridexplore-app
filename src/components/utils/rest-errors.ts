@@ -123,3 +123,21 @@ export const handleDeleteError = (
     // show the error message and don't close the underlying dialog
     setDeleteError(message);
 };
+
+export const handleMoveError = (
+    errorMessages: string[],
+    paramsOnErrors: unknown[],
+    intl: IntlShape,
+    snackError: SnackError
+) => {
+    const msg = intl.formatMessage(
+        { id: 'moveElementsFailure' },
+        {
+            pbn: errorMessages.length,
+            stn: paramsOnErrors.length,
+            problematic: paramsOnErrors.map((p) => (p as string[])[0]).join(' '),
+        }
+    );
+    console.debug(msg);
+    handleGenericTxtError(msg, snackError);
+};

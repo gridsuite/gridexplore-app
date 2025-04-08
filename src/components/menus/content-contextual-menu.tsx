@@ -65,6 +65,7 @@ import {
     handleDeleteError,
     handleGenericTxtError,
     handleMaxElementsExceededError,
+    handleMoveError,
     handleNotAllowedError,
 } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
@@ -286,27 +287,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         [selectedDirectory?.elementUuid, handleCloseDialog, intl, snackError]
     );
 
-    const moveElementOnError = useCallback(
-        (errorMessages: string[], paramsOnErrors: unknown[]) => {
-            const msg = intl.formatMessage(
-                { id: 'moveElementsFailure' },
-                {
-                    pbn: errorMessages.length,
-                    stn: paramsOnErrors.length,
-                    problematic: paramsOnErrors.map((p) => (p as string[])[0]).join(' '),
-                }
-            );
-            console.debug(msg);
-            handleGenericTxtError(msg, snackError);
-        },
-        [intl, snackError]
-    );
-
     const [moveCB] = useMultipleDeferredFetch(
         moveElementsToDirectory,
         undefined,
         generateMoveErrorMessages(intl),
-        moveElementOnError
+        handleMoveError
     );
 
     const [renameCB, renameErrorMessage] = useDeferredFetch(
