@@ -84,7 +84,7 @@ export const useMultipleDeferredFetch = <T>(
                         (data) => ({ data }),
                         (error) => {
                             const errorMessageId = errorsMessageIds[error.message] ?? error.message;
-                            return Promise.reject(errorMessageId);
+                            return Promise.reject(new Error(errorMessageId));
                         }
                     )
                 )
