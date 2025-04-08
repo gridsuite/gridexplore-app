@@ -35,6 +35,8 @@ export const DialogsId = {
     DIRECTORY_PROPERTIES: 'directory_properties',
     NONE: 'none',
 };
+
+export const HTTP_OK = 200;
 export const HTTP_UNPROCESSABLE_ENTITY_STATUS = 422;
 export const HTTP_FORBIDDEN = 403;
 export const HTTP_NOT_FOUND = 404;
