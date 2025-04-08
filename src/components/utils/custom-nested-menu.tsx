@@ -1,12 +1,12 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { PropsWithChildren, useState } from 'react';
 import { NestedMenuItem, NestedMenuItemProps } from 'mui-nested-menu';
-import { Box, SxProps, Theme } from '@mui/material';
+import { Box, MenuItem, SxProps, Theme, MenuItemProps } from '@mui/material';
 import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {
@@ -24,7 +24,7 @@ const styles = {
     },
     label: {
         '.MuiMenuItem-root, .MuiTypography-root': {
-            paddingLeft: '4px',
+            paddingLeft: 0.5,
         },
         paddingLeft: 2,
     },
@@ -48,4 +48,8 @@ export function CustomNestedMenuItem({ sx, children, ...other }: Readonly<Custom
             </Box>
         </NestedMenuItem>
     );
+}
+
+export function CustomMenuItem({ sx, ...other }: Readonly<MenuItemProps>) {
+    return <MenuItem sx={mergeSx(styles.highlightedLine, sx)} {...other} />;
 }

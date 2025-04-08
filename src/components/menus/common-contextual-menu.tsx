@@ -8,8 +8,8 @@
 import { ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Edit as EditIcon } from '@mui/icons-material';
-import { Divider, ListItemIcon, ListItemText, Menu, MenuItem, MenuProps, styled } from '@mui/material';
-import { CustomNestedMenuItem } from '../utils/custom-nested-menu';
+import { Divider, ListItemIcon, ListItemText, Menu, MenuProps, styled } from '@mui/material';
+import { CustomMenuItem, CustomNestedMenuItem } from '../utils/custom-nested-menu';
 
 const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} />)({
     '.MuiMenu-paper': {
@@ -45,7 +45,7 @@ export default function CommonContextualMenu({ menuItems, ...menuProps }: Readon
         disabled: boolean = false
     ) {
         return (
-            <MenuItem
+            <CustomMenuItem
                 key={key}
                 onClick={() => {
                     callback?.();
@@ -60,7 +60,7 @@ export default function CommonContextualMenu({ menuItems, ...menuProps }: Readon
                     {icon}
                 </ListItemIcon>
                 <ListItemText primary={<FormattedMessage id={messageDescriptorId} />} />
-            </MenuItem>
+            </CustomMenuItem>
         );
     }
 
