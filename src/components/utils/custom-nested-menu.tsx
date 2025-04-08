@@ -22,6 +22,12 @@ const styles = {
             color: 'primary.main',
         },
     },
+    label: {
+        '.MuiMenuItem-root, .MuiTypography-root': {
+            paddingLeft: '4px',
+        },
+        paddingLeft: 2,
+    },
 };
 
 interface CustomNestedMenuItemProps extends PropsWithChildren, Omit<NestedMenuItemProps, 'parentMenuOpen'> {
@@ -35,7 +41,7 @@ export function CustomNestedMenuItem({ sx, children, ...other }: Readonly<Custom
         <NestedMenuItem
             {...other}
             parentMenuOpen
-            sx={mergeSx(isSubMenuActive ? styles.highlightedParentLine : styles.highlightedLine, sx)}
+            sx={mergeSx(isSubMenuActive ? styles.highlightedParentLine : styles.highlightedLine, styles.label, sx)}
         >
             <Box onMouseEnter={() => setSubMenuActive(true)} onMouseLeave={() => setSubMenuActive(false)}>
                 {children}

@@ -86,6 +86,7 @@ export default function CommonContextualMenu({ menuItems, ...menuProps }: Readon
                         key={menuItem.messageDescriptorId}
                         label={intl.formatMessage({ id: menuItem.messageDescriptorId })}
                         disabled={menuItem.disabled}
+                        leftIcon={menuItem.icon}
                     >
                         {renderMenuItems(menuItem.subMenuItems)}
                     </CustomNestedMenuItem>
