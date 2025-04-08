@@ -6,10 +6,10 @@
  */
 
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { ChevronRight as ChevronRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import { ChevronRight as ChevronRightIcon } from '@mui/icons-material';
 import { Box, PopoverReference, SxProps, Theme, Tooltip, Typography, Zoom } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { TreeView } from '@mui/x-tree-view';
+import { SimpleTreeView } from '@mui/x-tree-view';
 import { ElementAttributes } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 // eslint-disable-next-line import/no-extraneous-dependencies -- lib from MUI
@@ -177,7 +177,7 @@ export default function DirectoryTreeView({
         return (
             <CustomTreeItem
                 key={node.elementUuid}
-                nodeId={node.elementUuid}
+                itemId={node.elementUuid}
                 label={
                     <Box
                         sx={styles.treeItemLabelRoot}
@@ -222,14 +222,12 @@ export default function DirectoryTreeView({
     };
 
     return (
-        <TreeView
+        <SimpleTreeView
             sx={styles.treeViewRoot}
-            defaultCollapseIcon={<ExpandMoreIcon sx={styles.icon} />}
-            defaultExpandIcon={<ChevronRightIcon sx={styles.icon} />}
-            expanded={expanded}
-            selected={selectedDirectory ? selectedDirectory.elementUuid : null}
+            expandedItems={expanded}
+            selectedItems={selectedDirectory ? selectedDirectory.elementUuid : null}
         >
             {renderTree(mapDataRef.current?.[treeViewUuid])}
-        </TreeView>
+        </SimpleTreeView>
     );
 }

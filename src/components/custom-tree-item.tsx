@@ -19,7 +19,7 @@ import {
     TypographyProps,
 } from '@mui/material';
 import { Add as AddIcon, AddBoxOutlined as AddBoxOutlinedIcon } from '@mui/icons-material';
-import { TreeItem, TreeItemContentProps, TreeItemProps, useTreeItem } from '@mui/x-tree-view';
+import { TreeItem, TreeItemContentProps, TreeItemProps, useTreeItemState } from '@mui/x-tree-view';
 import { mergeSx, useStateBoolean } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
@@ -35,19 +35,19 @@ export interface TreeItemCustomContentProps {
         label?: SxProps<Theme>;
         iconContainer?: SxProps<Theme>;
     };
-    onExpand: (nodeId: UUID) => void;
-    onSelect: (nodeId: UUID) => void;
-    onAddIconClick: (e: MouseEvent<HTMLButtonElement>, nodeId: UUID, anchor: PopoverReference) => void;
+    onExpand: (itemId: UUID) => void;
+    onSelect: (itemId: UUID) => void;
+    onAddIconClick: (e: MouseEvent<HTMLButtonElement>, itemId: UUID, anchor: PopoverReference) => void;
 }
 
 export type CustomTreeItemProps = Omit<TreeItemProps, 'ContentProps' | 'ContentComponent'> & {
     ContentProps: TreeItemCustomContentProps;
-    nodeId: UUID;
+    itemId: UUID;
 };
 
 type CustomContentProps = TreeItemContentProps &
     TreeItemCustomContentProps & {
-        nodeId: CustomTreeItemProps['nodeId'];
+        itemId: CustomTreeItemProps['itemId'];
     };
 
 const CustomContent = forwardRef(function CustomContent(props: CustomContentProps, ref) {
@@ -56,7 +56,7 @@ const CustomContent = forwardRef(function CustomContent(props: CustomContentProp
         classes,
         styles,
         label,
-        nodeId,
+        itemId,
         icon: iconProp,
         expansionIcon,
         displayIcon,
@@ -65,22 +65,22 @@ const CustomContent = forwardRef(function CustomContent(props: CustomContentProp
         onAddIconClick,
     } = props;
 
-    const { disabled, expanded, selected, focused, preventSelection } = useTreeItem(nodeId);
+    const { disabled, expanded, selected, focused, preventSelection } = useTreeItemState(itemId);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
-    const isMenuOpen = activeDirectory === nodeId;
+    const isMenuOpen = activeDirectory === itemId;
     const { value: hover, setTrue: enableHover, setFalse: disableHover, setValue: setHover } = useStateBoolean(false);
 
     const handleExpansionClick = useCallback<NonNullable<BoxProps['onClick']>>(
-        () => onExpand(nodeId),
-        [nodeId, onExpand]
+        () => onExpand(itemId),
+        [itemId, onExpand]
     );
     const handleSelectionClick = useCallback<NonNullable<TypographyProps['onClick']>>(
-        () => onSelect(nodeId),
-        [nodeId, onSelect]
+        () => onSelect(itemId),
+        [itemId, onSelect]
     );
     const handleAddIconClick = useCallback<MouseEventHandler<HTMLButtonElement>>(
-        (event) => onAddIconClick(event, nodeId, 'anchorEl'), // used to open the menu
-        [nodeId, onAddIconClick]
+        (event) => onAddIconClick(event, itemId, 'anchorEl'), // used to open the menu
+        [itemId, onAddIconClick]
     );
 
     // We don't get a onMouseLeave event when using or leaving the contextual menu by
