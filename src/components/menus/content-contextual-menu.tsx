@@ -58,15 +58,14 @@ import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import {
-    CustomError,
     generateGenericPermissionErrorMessages,
     generateMoveErrorMessages,
     generateRenameErrorMessages,
     handleDeleteError,
+    handleDuplicateError,
     handleGenericTxtError,
     handleMaxElementsExceededError,
     handleMoveError,
-    handleNotAllowedError,
 } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
@@ -148,25 +147,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         [broadcastChannel, dispatch, handleCloseDialog]
     );
 
-    const handleDuplicateError = useCallback(
-        (error: CustomError) => {
-            if (handleNotAllowedError(error, snackError)) {
-                return;
-            }
-            handleGenericTxtError(
-                intl.formatMessage(
-                    { id: 'duplicateElementFailure' },
-                    {
-                        itemName: activeElement.elementName,
-                        errorMessage: error.message,
-                    }
-                ),
-                snackError
-            );
-        },
-        [activeElement.elementName, intl, snackError]
-    );
-
     const copyItem = useCallback(() => {
         if (activeElement) {
             switch (activeElement.type) {
@@ -226,7 +206,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         if (handleMaxElementsExceededError(error, snackError)) {
                             return;
                         }
-                        handleDuplicateError(error);
+                        handleDuplicateError(error, activeElement, intl, snackError);
                     });
                     break;
                 case ElementType.CONTINGENCY_LIST:
@@ -235,7 +215,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         undefined,
                         activeElement.type,
                         activeElement.specificMetadata.type
-                    ).catch((error) => handleDuplicateError(error));
+                    ).catch((error) => handleDuplicateError(error, activeElement, intl, snackError));
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
@@ -248,16 +228,16 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         undefined,
                         activeElement.type,
                         activeElement.type
-                    ).catch((error) => handleDuplicateError(error));
+                    ).catch((error) => handleDuplicateError(error, activeElement, intl, snackError));
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
                     duplicateSpreadsheetConfig(activeElement.elementUuid).catch((error) => {
-                        handleDuplicateError(error);
+                        handleDuplicateError(error, activeElement, intl, snackError);
                     });
                     break;
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                     duplicateSpreadsheetConfigCollection(activeElement.elementUuid).catch((error) => {
-                        handleDuplicateError(error);
+                        handleDuplicateError(error, activeElement, intl, snackError);
                     });
                     break;
                 default: {
@@ -266,7 +246,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             }
             handleCloseDialog();
         }
-    }, [activeElement, handleCloseDialog, handleDuplicateError, intl, snackError]);
+    }, [activeElement, handleCloseDialog, intl, snackError]);
 
     const handleCloseExportDialog = useCallback(() => {
         stopCasesExports();

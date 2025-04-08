@@ -10,7 +10,7 @@ import {
     HTTP_NOT_FOUND,
     PermissionCheckResult,
 } from 'utils/UIconstants';
-import { UseSnackMessageReturn } from '@gridsuite/commons-ui';
+import { ElementAttributes, UseSnackMessageReturn } from '@gridsuite/commons-ui';
 import { IntlShape } from 'react-intl';
 import { type Dispatch, SetStateAction } from 'react';
 
@@ -139,4 +139,20 @@ export const handleMoveError = (
     );
     console.debug(msg);
     handleGenericTxtError(msg, snackError);
+};
+
+export const handleDuplicateError = (error: CustomError, activeElement: ElementAttributes, intl: IntlShape, snackError: SnackError) => {
+    if (handleNotAllowedError(error, snackError)) {
+        return;
+    }
+    handleGenericTxtError(
+        intl.formatMessage(
+            { id: 'duplicateElementFailure' },
+            {
+                itemName: activeElement.elementName,
+                errorMessage: error.message,
+            }
+        ),
+        snackError
+    );
 };
