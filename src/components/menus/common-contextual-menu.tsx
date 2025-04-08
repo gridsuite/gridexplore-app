@@ -17,6 +17,18 @@ const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} /
     },
 });
 
+const styles = {
+    nestedItem: {
+        '.MuiMenuItem-root, .MuiTypography-root': {
+            paddingLeft: 0.5, // customize padding for text
+        },
+        '.MuiMenuItem-root, .MuiSvgIcon-root': {
+            marginTop: '2px', // customize margin for icon
+        },
+        paddingLeft: 2, // customize padding for the whole menu item
+    },
+};
+
 export type MenuItemType =
     | {
           isDivider: true;
@@ -87,6 +99,7 @@ export default function CommonContextualMenu({ menuItems, ...menuProps }: Readon
                         label={intl.formatMessage({ id: menuItem.messageDescriptorId })}
                         disabled={menuItem.disabled}
                         leftIcon={menuItem.icon}
+                        sx={styles.nestedItem}
                     >
                         {renderMenuItems(menuItem.subMenuItems)}
                     </CustomNestedMenuItem>

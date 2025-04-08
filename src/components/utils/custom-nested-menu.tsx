@@ -6,7 +6,7 @@
  */
 import { PropsWithChildren, useState } from 'react';
 import { NestedMenuItem, NestedMenuItemProps } from 'mui-nested-menu';
-import { Box, MenuItem, SxProps, Theme, MenuItemProps } from '@mui/material';
+import { Box, MenuItem, MenuItemProps, SxProps, Theme } from '@mui/material';
 import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {
@@ -22,12 +22,6 @@ const styles = {
             color: 'primary.main',
         },
     },
-    label: {
-        '.MuiMenuItem-root, .MuiTypography-root': {
-            paddingLeft: 0.5,
-        },
-        paddingLeft: 2,
-    },
 };
 
 interface CustomNestedMenuItemProps extends PropsWithChildren, Omit<NestedMenuItemProps, 'parentMenuOpen'> {
@@ -41,7 +35,7 @@ export function CustomNestedMenuItem({ sx, children, ...other }: Readonly<Custom
         <NestedMenuItem
             {...other}
             parentMenuOpen
-            sx={mergeSx(isSubMenuActive ? styles.highlightedParentLine : styles.highlightedLine, styles.label, sx)}
+            sx={mergeSx(isSubMenuActive ? styles.highlightedParentLine : styles.highlightedLine, sx)}
         >
             <Box onMouseEnter={() => setSubMenuActive(true)} onMouseLeave={() => setSubMenuActive(false)}>
                 {children}
