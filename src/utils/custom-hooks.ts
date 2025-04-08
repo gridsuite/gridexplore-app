@@ -7,7 +7,7 @@
 
 import { useCallback, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { CustomError, ErrorMessageByHttpError, SnackError } from '../components/utils/rest-errors';
+import { ErrorMessageByHttpError, SnackError } from '../components/utils/rest-errors';
 
 export type GenericFunction<T, TArgs extends unknown[] = any[]> = (...args: TArgs) => Promise<T>;
 
