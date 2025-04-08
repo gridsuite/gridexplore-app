@@ -141,7 +141,12 @@ export const handleMoveError = (
     handleGenericTxtError(msg, snackError);
 };
 
-export const handleDuplicateError = (error: CustomError, activeElement: ElementAttributes, intl: IntlShape, snackError: SnackError) => {
+export const handleDuplicateError = (
+    error: CustomError,
+    activeElement: ElementAttributes,
+    intl: IntlShape,
+    snackError: SnackError
+) => {
     if (handleNotAllowedError(error, snackError)) {
         return;
     }
