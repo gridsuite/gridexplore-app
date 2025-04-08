@@ -45,9 +45,3 @@ export const CustomNestedMenuItem = (props: CustomNestedMenuItemProps) => {
         </NestedMenuItem>
     );
 };
-
-export const CustomMenuItem = (props: MenuItemProps) => {
-    const { sx, ...other } = props;
-
-    return <MenuItem sx={mergeSx(styles.highlightedLine, sx)} {...other} />;
-};

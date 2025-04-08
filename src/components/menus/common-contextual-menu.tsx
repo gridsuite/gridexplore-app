@@ -66,6 +66,7 @@ export default function CommonContextualMenu({ menuItems, ...menuProps }: Readon
 
     const renderMenuItems = useCallback(
         (nodeMenuItems: MenuItemType[] | undefined) => {
+            let dividerCount = 0;
             return nodeMenuItems?.map((menuItem, index) => {
                 if (menuItem.isDivider) {
                     dividerCount += 1;
@@ -93,8 +94,6 @@ export default function CommonContextualMenu({ menuItems, ...menuProps }: Readon
         },
         [intl]
     );
-
-    let dividerCount = 0;
     return (
         <StyledMenu keepMounted {...menuProps}>
             {renderMenuItems(menuItems)}
