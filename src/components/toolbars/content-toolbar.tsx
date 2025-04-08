@@ -15,7 +15,7 @@ import {
     TableView as TableViewIcon,
 } from '@mui/icons-material';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
-import { deleteElements, moveElementsToDirectory } from '../../utils/rest-api';
+import { deleteElements, moveElementsToDirectory, PermissionType } from '../../utils/rest-api';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar, { CommonToolbarProps } from './common-toolbar';
 import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
@@ -27,7 +27,7 @@ import { DialogsId } from '../../utils/UIconstants';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import { checkPermissionOnDirectory } from '../menus/menus-utils';
-import { generateMoveErrorMessages, handleDeleteError, handleGenericError } from '../utils/rest-errors';
+import { generateMoveErrorMessages, handleDeleteError, handleGenericTxtError } from '../utils/rest-errors';
 
 export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
     selectedElements: ElementAttributes[];
@@ -45,7 +45,7 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
 
     useEffect(() => {
         if (selectedDirectory !== null) {
-            checkPermissionOnDirectory(selectedDirectory, 'WRITE').then((b) => {
+            checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
                 setDirectoryWritable(b);
             });
         }
@@ -76,7 +76,7 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
                 }
             );
             console.debug(msg);
-            handleGenericError(msg, snackError);
+            handleGenericTxtError(msg, snackError);
         },
         [intl, snackError]
     );

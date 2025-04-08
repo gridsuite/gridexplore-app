@@ -42,7 +42,8 @@ import {
     duplicateSpreadsheetConfigCollection,
     moveElementsToDirectory,
     newScriptFromFilter,
-    newScriptFromFiltersContingencyList, PermissionType,
+    newScriptFromFiltersContingencyList,
+    PermissionType,
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
@@ -60,8 +61,9 @@ import {
     CustomError,
     generateGenericPermissionErrorMessages,
     generateMoveErrorMessages,
-    generateRenameErrorMessages, handleDeleteError,
-    handleGenericError,
+    generateRenameErrorMessages,
+    handleDeleteError,
+    handleGenericTxtError,
     handleMaxElementsExceededError,
     handleNotAllowedError,
 } from '../utils/rest-errors';
@@ -150,7 +152,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             if (handleNotAllowedError(error, snackError)) {
                 return;
             }
-            handleGenericError(
+            handleGenericTxtError(
                 intl.formatMessage(
                     { id: 'duplicateElementFailure' },
                     {
@@ -206,7 +208,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     break;
 
                 default:
-                    handleGenericError(intl.formatMessage({ id: 'unsupportedItem' }), snackError);
+                    handleGenericTxtError(intl.formatMessage({ id: 'unsupportedItem' }), snackError);
             }
         }
     }, [activeElement, copyElement, intl, selectedDirectory?.elementUuid, snackError]);
@@ -258,7 +260,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     });
                     break;
                 default: {
-                    handleGenericError(intl.formatMessage({ id: 'unsupportedItem' }), snackError);
+                    handleGenericTxtError(intl.formatMessage({ id: 'unsupportedItem' }), snackError);
                 }
             }
             handleCloseDialog();
@@ -295,7 +297,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 }
             );
             console.debug(msg);
-            handleGenericError(msg, snackError);
+            handleGenericTxtError(msg, snackError);
         },
         [intl, snackError]
     );
@@ -333,28 +335,28 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         replaceFiltersWithScript,
         handleCloseDialog,
         generateGenericPermissionErrorMessages(intl),
-        handleGenericError
+        handleGenericTxtError
     );
 
     const [newScriptFromFiltersContingencyListCB] = useDeferredFetch(
         newScriptFromFiltersContingencyList,
         handleCloseDialog,
         generateGenericPermissionErrorMessages(intl),
-        handleGenericError
+        handleGenericTxtError
     );
 
     const [replaceFormContingencyListWithScriptCB] = useDeferredFetch(
         replaceFormContingencyListWithScript,
         handleCloseDialog,
         generateGenericPermissionErrorMessages(intl),
-        handleGenericError
+        handleGenericTxtError
     );
 
     const [newScriptFromFilterCB] = useDeferredFetch(
         newScriptFromFilter,
         handleCloseDialog,
         generateGenericPermissionErrorMessages(intl),
-        handleGenericError
+        handleGenericTxtError
     );
 
     const noCreationInProgress = useCallback(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);

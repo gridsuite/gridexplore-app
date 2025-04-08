@@ -21,7 +21,7 @@ import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
 import { getNameCandidate } from '../../utils/rest-api';
 import { AppState } from '../../redux/types';
-import { handleGenericError } from '../utils/rest-errors';
+import { handleGenericTxtError } from '../utils/rest-errors';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -91,7 +91,7 @@ export default function CopyToScriptDialog({
 
     const handleGenerateNameError = useCallback(
         () =>
-            handleGenericError(
+            handleGenericTxtError(
                 intl.formatMessage({ id: 'generateCopyScriptNameError' }, { itemName: currentName }),
                 snackError
             ),

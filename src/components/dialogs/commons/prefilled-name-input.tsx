@@ -11,7 +11,7 @@ import { ElementType, FieldConstants, UniqueNameInput, useSnackMessage } from '@
 import { useSelector } from 'react-redux';
 import { getBaseName } from '../../../utils/rest-api';
 import { AppState } from '../../../redux/types';
-import { handleGenericError } from '../../utils/rest-errors';
+import { handleGenericTxtError } from '../../utils/rest-errors';
 
 export interface PrefilledNameInputProps {
     label: string;
@@ -43,7 +43,7 @@ export default function PrefilledNameInput({ label, name, elementType }: Readonl
                         });
                     })
                     .catch((error) => {
-                        handleGenericError(error.message);
+                        handleGenericTxtError(error.message);
                     });
             }
         }

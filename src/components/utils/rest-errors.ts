@@ -13,7 +13,10 @@ import {
 import { UseSnackMessageReturn } from '@gridsuite/commons-ui';
 import { IntlShape } from 'react-intl';
 import { type Dispatch, SetStateAction } from 'react';
-import { ErrorMessageByHttpError } from '../../utils/custom-hooks';
+
+export interface ErrorMessageByHttpError {
+    [httpCode: string]: string;
+}
 
 export interface CustomError extends Error {
     status: number;
@@ -40,11 +43,10 @@ export const generatePasteErrorMessages = (intl: IntlShape): ErrorMessageByHttpE
     [HTTP_NOT_FOUND]: intl.formatMessage({ id: 'elementPasteFailed404' }),
 });
 
-export const handleGenericError = (error: string, snackError: SnackError) => {
+export const handleGenericTxtError = (error: string, snackError: SnackError) => {
     snackError({
-        messageId: error,
+        messageTxt: error,
     });
-    return true;
 };
 
 export const handleMaxElementsExceededError = (error: CustomError, snackError: SnackError): boolean => {
@@ -68,7 +70,7 @@ export const handleNotAllowedError = (error: CustomError, snackError: SnackError
             error.message.includes(permissionCheckResult)
         )
     ) {
-        handleGenericError('genericPermissionDeniedError', snackError);
+        snackError({ messageId: 'genericPermissionDeniedError' });
         return true;
     }
     return false;
@@ -76,7 +78,7 @@ export const handleNotAllowedError = (error: CustomError, snackError: SnackError
 
 export const handleMoveConflictError = (error: CustomError, snackError: SnackError): boolean => {
     if (error.status === HTTP_FORBIDDEN && error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)) {
-        handleGenericError('moveConflictError', snackError);
+        snackError({ messageId: 'moveConflictError' });
         return true;
     }
     return false;
@@ -84,18 +86,20 @@ export const handleMoveConflictError = (error: CustomError, snackError: SnackErr
 
 export const handleDeleteConflictError = (error: CustomError, snackError: SnackError): boolean => {
     if (error.status === HTTP_FORBIDDEN && error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)) {
-        handleGenericError('deleteConflictError', snackError);
+        snackError({ messageId: 'deleteConflictError' });
         return true;
     }
     return false;
 };
 
 export const handlePasteError = (error: CustomError, intl: IntlShape, snackError: SnackError) => {
-    const message =
-        generatePasteErrorMessages(intl)[error.status] ??
-        intl.formatMessage({ id: 'elementPasteFailed' }) + (error?.message ?? '');
-
-    return handleGenericError(message, snackError);
+    const message = generatePasteErrorMessages(intl)[error.status];
+    if (message) {
+        snackError({ messageId: message });
+    } else {
+        snackError({ messageTxt: intl.formatMessage({ id: 'elementPasteFailed' }) + (error?.message ?? '') });
+    }
+    return true;
 };
 
 export const handleDeleteError = (
@@ -106,10 +110,16 @@ export const handleDeleteError = (
 ) => {
     if (handleDeleteConflictError(error, snackError)) {
         setDeleteError(intl.formatMessage({ id: 'deleteConflictError' }));
-        return true;
+        return;
     }
-    const message = generateGenericPermissionErrorMessages(intl)[error.status] ?? error.message;
+
+    let message = generateGenericPermissionErrorMessages(intl)[error.status];
+    if (message) {
+        snackError({ messageId: message });
+    } else {
+        message = error.message;
+        snackError({ messageTxt: error.message });
+    }
     // show the error message and don't close the underlying dialog
     setDeleteError(message);
-    return handleGenericError(message, snackError);
 };

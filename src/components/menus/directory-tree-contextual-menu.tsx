@@ -54,7 +54,7 @@ import {
     generateGenericPermissionErrorMessages,
     generateRenameErrorMessages,
     handleDeleteError,
-    handleGenericError,
+    handleGenericTxtError,
     handleMaxElementsExceededError,
     handleMoveConflictError,
     handleNotAllowedError,
@@ -122,7 +122,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
 
     function pasteElement(directoryUuid: UUID, selectionForPaste: any) {
         if (!selectionForPaste.sourceItemUuid) {
-            handleGenericError(intl.formatMessage({ id: 'elementPasteFailed404' }), snackError);
+            handleGenericTxtError(intl.formatMessage({ id: 'elementPasteFailed404' }), snackError);
             handleCloseDialog();
         } else {
             console.info('Pasting element %s into directory %s', selectionForPaste.nameItem, directoryUuid);
@@ -174,7 +174,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     );
                     break;
                 default:
-                    handleGenericError(
+                    handleGenericTxtError(
                         intl.formatMessage({
                             id: 'unsupportedItem',
                         }),
