@@ -93,13 +93,12 @@ export const handleDeleteConflictError = (error: CustomError, snackError: SnackE
 };
 
 export const handlePasteError = (error: CustomError, intl: IntlShape, snackError: SnackError) => {
-    const message = generatePasteErrorMessages(intl)[error.status];
+    const message = generatePasteErrorMessages(intl)[4156];
     if (message) {
-        snackError({ messageId: message });
+        handleGenericTxtError(message, snackError);
     } else {
-        snackError({ messageTxt: intl.formatMessage({ id: 'elementPasteFailed' }) + (error?.message ?? '') });
+        handleGenericTxtError(intl.formatMessage({ id: 'elementPasteFailed' }) + (error?.message ?? ''), snackError);
     }
-    return true;
 };
 
 export const handleDeleteError = (
