@@ -264,14 +264,12 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     icon: <AddIcon fontSize="small" />,
                     subMenuItems: [
                         {
-                            messageDescriptorId: 'createNewExplicitNamingFilter',
+                            messageDescriptorId: FilterType.EXPLICIT_NAMING.label,
                             callback: () => handleOpenDialog(DialogsId.ADD_NEW_EXPLICIT_NAMING_FILTER),
-                            icon: <AddIcon fontSize="small" />,
                         },
                         {
-                            messageDescriptorId: 'createNewExpertFilter',
+                            messageDescriptorId: FilterType.EXPERT.label,
                             callback: () => handleOpenDialog(DialogsId.ADD_NEW_CRITERIA_FILTER),
-                            icon: <AddIcon fontSize="small" />,
                         },
                     ],
                 },
