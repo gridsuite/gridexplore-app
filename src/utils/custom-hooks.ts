@@ -81,7 +81,9 @@ export const useMultipleDeferredFetch = <T>(
                     fetchFunction(...params).then(
                         (data) => ({ data }),
                         (error) => {
-                            return Promise.reject(error);
+                            const customError = new Error('Error fetching data.');
+                            customError.cause = error;
+                            return Promise.reject(customError);
                         }
                     )
                 )
@@ -93,7 +95,7 @@ export const useMultipleDeferredFetch = <T>(
                 if (result.status === PromiseStatus.FULFILLED) {
                     successes.push(result.value.data);
                 } else {
-                    errors.push(result.reason);
+                    errors.push(result.reason.cause);
                 }
             });
 
