@@ -59,7 +59,6 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import {
     generateGenericPermissionErrorMessages,
-    generateMoveErrorMessages,
     generateRenameErrorMessages,
     handleDeleteError,
     handleDuplicateError,
@@ -267,12 +266,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         [selectedDirectory?.elementUuid, handleCloseDialog, intl, snackError]
     );
 
-    const [moveCB] = useMultipleDeferredFetch(
-        moveElementsToDirectory,
-        undefined,
-        generateMoveErrorMessages(intl),
-        handleMoveError
-    );
+    const [moveCB] = useMultipleDeferredFetch(moveElementsToDirectory, undefined, handleMoveError);
 
     const [renameCB, renameErrorMessage] = useDeferredFetch(
         renameElement,

@@ -56,7 +56,7 @@ import {
     handleDeleteError,
     handleGenericTxtError,
     handleMaxElementsExceededError,
-    handleMoveConflictError,
+    handleMoveDirectoryConflictError,
     handleNotAllowedError,
     handlePasteError,
 } from '../utils/rest-errors';
@@ -317,7 +317,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         (selectedDir: TreeViewFinderNodeProps[]) => {
             if (selectedDir.length === 1 && directory) {
                 moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch((error) => {
-                    if (handleMoveConflictError(error, snackError)) {
+                    if (handleMoveDirectoryConflictError(error, snackError)) {
                         return;
                     }
                     if (handleNotAllowedError(error, snackError)) {

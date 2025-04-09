@@ -8,7 +8,7 @@
 import { useCallback, useState } from 'react';
 import { IntlShape, useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { ErrorMessageByHttpError, SnackError } from '../components/utils/rest-errors';
+import { CustomError, ErrorMessageByHttpError, SnackError } from '../components/utils/rest-errors';
 
 export type GenericFunction<T, TArgs extends unknown[] = any[]> = (...args: TArgs) => Promise<T>;
 
@@ -61,7 +61,6 @@ export const useDeferredFetch = <T, TArgs extends unknown[] = any[]>(
  * It also returns a unique state which concatenate all fetch results independently.
  * @param {function} fetchFunction the fetch function to call for each request
  * @param {function} onSuccess callback to call on all request success
- * @param errorsMessageIds
  * @param {function} onError callback to call if one or more requests failed
  * @returns {function} fetchCallback The callback to call to execute the collection of requests.
  *                      It accepts params array as arguments which define the number of fetch to execute.
@@ -70,8 +69,7 @@ export const useDeferredFetch = <T, TArgs extends unknown[] = any[]>(
 export const useMultipleDeferredFetch = <T>(
     fetchFunction: GenericFunction<T>,
     onSuccess?: (data: T[]) => void,
-    errorsMessageIds: ErrorMessageByHttpError = {},
-    onError?: (errorMessages: string[], params: unknown[][], intl: IntlShape, snackError: SnackError) => void
+    onError?: (errors: CustomError[], params: unknown[][], intl: IntlShape, snackError: SnackError) => void
 ): [(paramsList: unknown[][]) => Promise<void>] => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
@@ -83,15 +81,14 @@ export const useMultipleDeferredFetch = <T>(
                     fetchFunction(...params).then(
                         (data) => ({ data }),
                         (error) => {
-                            const errorMessageId = errorsMessageIds[error.message] ?? error.message;
-                            return Promise.reject(new Error(errorMessageId));
+                            return Promise.reject(error);
                         }
                     )
                 )
             );
 
             const successes: T[] = [];
-            const errors: string[] = [];
+            const errors: CustomError[] = [];
             results.forEach((result) => {
                 if (result.status === PromiseStatus.FULFILLED) {
                     successes.push(result.value.data);
@@ -106,7 +103,7 @@ export const useMultipleDeferredFetch = <T>(
                 onSuccess?.(successes);
             }
         },
-        [fetchFunction, errorsMessageIds, onError, intl, snackError, onSuccess]
+        [fetchFunction, onError, intl, snackError, onSuccess]
     );
     return [fetch];
 };

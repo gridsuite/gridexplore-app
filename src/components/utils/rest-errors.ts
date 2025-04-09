@@ -76,7 +76,7 @@ export const handleNotAllowedError = (error: CustomError, snackError: SnackError
     return false;
 };
 
-export const handleMoveConflictError = (error: CustomError, snackError: SnackError): boolean => {
+export const handleMoveDirectoryConflictError = (error: CustomError, snackError: SnackError): boolean => {
     if (error.status === HTTP_FORBIDDEN && error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)) {
         snackError({ messageId: 'moveConflictError' });
         return true;
@@ -84,7 +84,7 @@ export const handleMoveConflictError = (error: CustomError, snackError: SnackErr
     return false;
 };
 
-export const handleDeleteConflictError = (error: CustomError, snackError: SnackError): boolean => {
+export const handleDeleteDirectoryConflictError = (error: CustomError, snackError: SnackError): boolean => {
     if (error.status === HTTP_FORBIDDEN && error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)) {
         snackError({ messageId: 'deleteConflictError' });
         return true;
@@ -107,7 +107,7 @@ export const handleDeleteError = (
     intl: IntlShape,
     snackError: SnackError
 ) => {
-    if (handleDeleteConflictError(error, snackError)) {
+    if (handleDeleteDirectoryConflictError(error, snackError)) {
         setDeleteError(intl.formatMessage({ id: 'deleteConflictError' }));
         return;
     }
@@ -117,22 +117,29 @@ export const handleDeleteError = (
         snackError({ messageId: message });
     } else {
         message = error.message;
-        snackError({ messageTxt: error.message });
+        handleGenericTxtError(message, snackError);
     }
     // show the error message and don't close the underlying dialog
     setDeleteError(message);
 };
 
 export const handleMoveError = (
-    errorMessages: string[],
+    errors: CustomError[],
     paramsOnErrors: unknown[],
     intl: IntlShape,
     snackError: SnackError
 ) => {
+    const predefinedMessages = generateMoveErrorMessages(intl);
+    const eligibleError = errors.find((error) => predefinedMessages[error.status.toString()]);
+    if (eligibleError) {
+        handleGenericTxtError(predefinedMessages[eligibleError.status.toString()], snackError);
+        return;
+    }
+
     const msg = intl.formatMessage(
         { id: 'moveElementsFailure' },
         {
-            pbn: errorMessages.length,
+            pbn: errors.length,
             stn: paramsOnErrors.length,
             problematic: paramsOnErrors.map((p) => (p as string[])[0]).join(' '),
         }
