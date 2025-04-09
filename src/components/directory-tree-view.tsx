@@ -75,6 +75,13 @@ const styles = {
     }),
 } satisfies Record<string, SxProps<Theme>>;
 
+function CustomEndIcon() {
+    return <ChevronRightIcon sx={styles.icon} />;
+}
+function CustomNoEndIcon() {
+    return null;
+}
+
 export interface DirectoryTreeViewProps {
     treeViewUuid: UUID;
     mapData: Record<string, IDirectory> | undefined;
@@ -211,7 +218,7 @@ export default function DirectoryTreeView({
                         iconContainer: styles.treeItemIconContainer,
                     },
                 }}
-                endIcon={node.subdirectoriesCount > 0 ? <ChevronRightIcon sx={styles.icon} /> : null}
+                slots={{ endIcon: !node || node.subdirectoriesCount === 0 ? CustomNoEndIcon : CustomEndIcon }}
                 sx={{ content: styles.treeItemContent }}
             >
                 {Array.isArray(node.children)
