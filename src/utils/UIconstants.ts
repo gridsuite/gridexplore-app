@@ -29,7 +29,7 @@ export const DialogsId = {
     ADD_DIRECTORY: 'add_directory',
     ADD_NEW_CONTINGENCY_LIST: 'add_new_contingency_list',
     ADD_NEW_FILTER: 'add_new_filter',
-    ADD_NEW_EXPERT_FILTER: 'add_new_expert_filter',
+    ADD_NEW_CRITERIA_FILTER: 'add_new_criteria_filter',
     ADD_NEW_EXPLICIT_NAMING_FILTER: 'add_new_explicit_naming_filter',
     ADD_NEW_CASE: 'add_new_case',
     RENAME_DIRECTORY: 'rename_directory',

@@ -270,7 +270,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         },
                         {
                             messageDescriptorId: 'createNewExpertFilter',
-                            callback: () => handleOpenDialog(DialogsId.ADD_NEW_EXPERT_FILTER),
+                            callback: () => handleOpenDialog(DialogsId.ADD_NEW_CRITERIA_FILTER),
                             icon: <AddIcon fontSize="small" />,
                         },
                     ],
@@ -451,7 +451,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         filterType={FilterType.EXPLICIT_NAMING}
                     />
                 );
-            case DialogsId.ADD_NEW_EXPERT_FILTER:
+            case DialogsId.ADD_NEW_CRITERIA_FILTER:
                 return (
                     <FilterCreationDialog
                         open

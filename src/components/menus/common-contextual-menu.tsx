@@ -9,7 +9,7 @@ import { ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Edit as EditIcon } from '@mui/icons-material';
 import { Divider, ListItemIcon, ListItemText, Menu, MenuProps, styled } from '@mui/material';
-import { CustomMenuItem, CustomNestedMenuItem } from '../utils/custom-nested-menu';
+import { CustomMenuItem, CustomNestedMenuItem } from './custom-nested-menu';
 
 const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} />)({
     '.MuiMenu-paper': {
