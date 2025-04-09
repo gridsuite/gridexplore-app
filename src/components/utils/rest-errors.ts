@@ -93,7 +93,7 @@ export const handleDeleteDirectoryConflictError = (error: CustomError, snackErro
 };
 
 export const handlePasteError = (error: CustomError, intl: IntlShape, snackError: SnackError) => {
-    const message = generatePasteErrorMessages(intl)[4156];
+    const message = generatePasteErrorMessages(intl)[error.status];
     if (message) {
         handleGenericTxtError(message, snackError);
     } else {
