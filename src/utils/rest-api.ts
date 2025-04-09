@@ -28,6 +28,7 @@ import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 import { AppState } from '../redux/types';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
+import { HTTP_FORBIDDEN, HTTP_OK } from './UIconstants';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/config`;
@@ -63,8 +64,6 @@ export type InitRequest = HttpMethod | Partial<RequestInitExt>;
 export interface ErrorWithStatus extends Error {
     status?: number;
 }
-
-export const HTTP_FORBIDDEN = 403;
 
 export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
 
@@ -173,8 +172,7 @@ export function fetchValidateUser(user: User) {
         user?.id_token
     )
         .then((response) => {
-            // if the response is ok, the responseCode will be either 200 or 204 otherwise it's a Http error and it will be caught
-            return response.status === 200;
+            return response.status === HTTP_OK;
         })
         .catch((error) => {
             if (error.status === HTTP_FORBIDDEN) {
@@ -826,22 +824,6 @@ export const downloadCase = (caseUuid: string) =>
         headers: { 'Content-Type': 'application/json' },
     });
 
-/**
- * Retrieves the original name of a case using its UUID.
- * @param {string} caseUuid - The UUID of the element.
- * @returns {Promise<string|boolean>} - A promise that resolves to the original name of the case if found, or false if not found.
- */
-export function getCaseOriginalName(caseUuid: UUID) {
-    const caseNameUrl = `${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}/name`;
-    console.debug(caseNameUrl);
-    return backendFetchText(caseNameUrl, { method: 'GET' }).catch((error) => {
-        if (error.status === 404) {
-            return false;
-        }
-        throw error;
-    });
-}
-
 export function getServersInfos() {
     console.info('get backend servers informations');
     return backendFetchJson(`${PREFIX_STUDY_QUERIES}/v1/servers/about?view=explore`, { method: 'get' }).catch(
@@ -888,7 +870,7 @@ export function hasPermission(directoryUuid: UUID, permission: string) {
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${directoryUuid}?permission=${permission}`;
     console.debug(url);
     return backendFetch(url, { method: 'head' })
-        .then((response) => response.status === 200)
+        .then((response) => response.status === HTTP_OK)
         .catch(() => {
             console.info(`Permission to ${permission} in directory ${directoryUuid} denied`);
             return false;
