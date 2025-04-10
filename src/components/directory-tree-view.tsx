@@ -6,7 +6,7 @@
  */
 
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { ChevronRight as ChevronRightIcon } from '@mui/icons-material';
+import { ChevronRight as ChevronRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { Box, PopoverReference, SxProps, Theme, Tooltip, Typography, Zoom } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { SimpleTreeView } from '@mui/x-tree-view';
@@ -20,7 +20,7 @@ import { AppState, IDirectory } from '../redux/types';
 
 const styles = {
     treeViewRoot: (theme) => ({
-        padding: theme.spacing(0.5),
+        padding: theme.spacing(0.0),
     }),
     treeItemRoot: (theme) => ({
         userSelect: 'none',
@@ -51,7 +51,7 @@ const styles = {
         flexGrow: 1,
         overflow: 'hidden',
         paddingRight: theme.spacing(1),
-        paddingLeft: theme.spacing(1),
+        paddingLeft: theme.spacing(0),
         fontWeight: 'inherit',
         color: 'inherit',
     }),
@@ -62,14 +62,14 @@ const styles = {
     treeItemLabelRoot: (theme) => ({
         display: 'flex',
         alignItems: 'center',
-        padding: theme.spacing(0.5, 0),
+        padding: theme.spacing(0.3, 0),
     }),
     treeItemLabelText: {
         fontWeight: 'inherit',
         flexGrow: 1,
     },
     icon: (theme) => ({
-        marginRight: theme.spacing(1),
+        marginRight: theme.spacing(0),
         width: '18px',
         height: '18px',
     }),
@@ -80,6 +80,9 @@ function CustomEndIcon() {
 }
 function CustomNoEndIcon() {
     return null;
+}
+function CustomCollapseIcon() {
+    return <ExpandMoreIcon sx={styles.icon} />;
 }
 
 export interface DirectoryTreeViewProps {
@@ -233,6 +236,7 @@ export default function DirectoryTreeView({
             sx={styles.treeViewRoot}
             expandedItems={expanded}
             selectedItems={selectedDirectory ? selectedDirectory.elementUuid : null}
+            slots={{ collapseIcon: CustomCollapseIcon, expandIcon: CustomEndIcon }}
         >
             {renderTree(mapDataRef.current?.[treeViewUuid])}
         </SimpleTreeView>
