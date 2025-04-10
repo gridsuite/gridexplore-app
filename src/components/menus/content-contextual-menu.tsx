@@ -43,6 +43,7 @@ import {
     moveElementsToDirectory,
     newScriptFromFilter,
     newScriptFromFiltersContingencyList,
+    PermissionType,
     renameElement,
     replaceFiltersWithScript,
     replaceFormContingencyListWithScript,
@@ -56,7 +57,15 @@ import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { CustomError, handleMaxElementsExceededError, handleNotAllowedError } from '../utils/rest-errors';
+import {
+    generateGenericPermissionErrorMessages,
+    generateRenameErrorMessages,
+    handleDeleteError,
+    handleDuplicateError,
+    handleGenericTxtError,
+    handleMaxElementsExceededError,
+    handleMoveError,
+} from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import { checkPermissionOnDirectory } from './menus-utils';
@@ -88,15 +97,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const { downloadElements, handleConvertCases, stopCasesExports } = useDownloadUtils();
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
-
-    const handleLastError = useCallback(
-        (message: string) => {
-            snackError({
-                messageTxt: message,
-            });
-        },
-        [snackError]
-    );
 
     const handleOpenDialog = useCallback(
         (dialogId: string) => {
@@ -146,33 +146,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         [broadcastChannel, dispatch, handleCloseDialog]
     );
 
-    const handleGenericPermissionDeniedError = useCallback(
-        (HTTPStatus: string) => {
-            if (HTTPStatus === 'Forbidden') {
-                return intl.formatMessage({ id: 'genericPermissionDeniedError' });
-            }
-            return undefined;
-        },
-        [intl]
-    );
-
-    const handleDuplicateError = useCallback(
-        (error: CustomError) => {
-            if (!handleNotAllowedError(error, snackError)) {
-                handleLastError(
-                    intl.formatMessage(
-                        { id: 'duplicateElementFailure' },
-                        {
-                            itemName: activeElement.elementName,
-                            errorMessage: error.message,
-                        }
-                    )
-                );
-            }
-        },
-        [activeElement.elementName, handleLastError, intl, snackError]
-    );
-
     const copyItem = useCallback(() => {
         if (activeElement) {
             switch (activeElement.type) {
@@ -215,10 +188,10 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     break;
 
                 default:
-                    handleLastError(intl.formatMessage({ id: 'unsupportedItem' }));
+                    handleGenericTxtError(intl.formatMessage({ id: 'unsupportedItem' }), snackError);
             }
         }
-    }, [activeElement, copyElement, handleLastError, intl, selectedDirectory?.elementUuid]);
+    }, [activeElement, copyElement, intl, selectedDirectory?.elementUuid, snackError]);
 
     const duplicateItem = useCallback(() => {
         if (activeElement) {
@@ -232,7 +205,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         if (handleMaxElementsExceededError(error, snackError)) {
                             return;
                         }
-                        handleDuplicateError(error);
+                        handleDuplicateError(error, activeElement, intl, snackError);
                     });
                     break;
                 case ElementType.CONTINGENCY_LIST:
@@ -241,7 +214,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         undefined,
                         activeElement.type,
                         activeElement.specificMetadata.type
-                    ).catch((error) => handleDuplicateError(error));
+                    ).catch((error) => handleDuplicateError(error, activeElement, intl, snackError));
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
@@ -254,25 +227,25 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         undefined,
                         activeElement.type,
                         activeElement.type
-                    ).catch((error) => handleDuplicateError(error));
+                    ).catch((error) => handleDuplicateError(error, activeElement, intl, snackError));
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
                     duplicateSpreadsheetConfig(activeElement.elementUuid).catch((error) => {
-                        handleDuplicateError(error);
+                        handleDuplicateError(error, activeElement, intl, snackError);
                     });
                     break;
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                     duplicateSpreadsheetConfigCollection(activeElement.elementUuid).catch((error) => {
-                        handleDuplicateError(error);
+                        handleDuplicateError(error, activeElement, intl, snackError);
                     });
                     break;
                 default: {
-                    handleLastError(intl.formatMessage({ id: 'unsupportedItem' }));
+                    handleGenericTxtError(intl.formatMessage({ id: 'unsupportedItem' }), snackError);
                 }
             }
             handleCloseDialog();
         }
-    }, [activeElement, handleCloseDialog, handleDuplicateError, handleLastError, intl, snackError]);
+    }, [activeElement, handleCloseDialog, intl, snackError]);
 
     const handleCloseExportDialog = useCallback(() => {
         stopCasesExports();
@@ -287,51 +260,15 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 .then(() => handleCloseDialog())
                 // show the error message and don't close the dialog
                 .catch((error) => {
-                    const errorMessage = handleGenericPermissionDeniedError(error.status) ?? error.message;
-                    setDeleteError(errorMessage);
-                    handleLastError(errorMessage);
+                    handleDeleteError(setDeleteError, error, intl, snackError);
                 });
         },
-        [selectedDirectory, handleCloseDialog, handleLastError, handleGenericPermissionDeniedError]
+        [selectedDirectory?.elementUuid, handleCloseDialog, intl, snackError]
     );
 
-    const moveElementErrorToString = useCallback(
-        (HTTPStatus: string) => {
-            if (HTTPStatus === 'Forbidden') {
-                return intl.formatMessage({ id: 'moveElementNotAllowedError' });
-            }
-            if (HTTPStatus === 'Not Found') {
-                return intl.formatMessage({ id: 'moveElementNotFoundError' });
-            }
-            return undefined;
-        },
-        [intl]
-    );
+    const [moveCB] = useMultipleDeferredFetch(moveElementsToDirectory, undefined, handleMoveError);
 
-    const moveElementOnError = useCallback(
-        (errorMessages: string[], _params: unknown, paramsOnErrors: unknown[]) => {
-            const msg = intl.formatMessage(
-                { id: 'moveElementsFailure' },
-                {
-                    pbn: errorMessages.length,
-                    stn: paramsOnErrors.length,
-                    problematic: paramsOnErrors.map((p) => (p as string[])[0]).join(' '),
-                }
-            );
-            console.debug(msg);
-            handleLastError(msg);
-        },
-        [handleLastError, intl]
-    );
-
-    const [moveCB] = useMultipleDeferredFetch(
-        moveElementsToDirectory,
-        undefined,
-        moveElementErrorToString,
-        moveElementOnError
-    );
-
-    const [renameCB, renameState] = useDeferredFetch(
+    const [renameCB, renameErrorMessage] = useDeferredFetch(
         renameElement,
         (renamedElement: any[]) => {
             // if copied element is renamed
@@ -350,43 +287,35 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
             handleCloseDialog();
         },
-        (HTTPStatus: string) => {
-            if (HTTPStatus === 'Forbidden') {
-                return intl.formatMessage({ id: 'renameElementNotAllowedError' });
-            }
-            if (HTTPStatus === 'Not Found') {
-                return intl.formatMessage({ id: 'renameElementNotFoundError' });
-            }
-            return undefined;
-        }
+        generateRenameErrorMessages(intl)
     );
 
-    const [FiltersReplaceWithScriptCB] = useDeferredFetch(
+    const [filtersReplaceWithScriptCB] = useDeferredFetch(
         replaceFiltersWithScript,
         handleCloseDialog,
-        handleGenericPermissionDeniedError,
-        handleLastError
+        generateGenericPermissionErrorMessages(intl),
+        handleGenericTxtError
     );
 
     const [newScriptFromFiltersContingencyListCB] = useDeferredFetch(
         newScriptFromFiltersContingencyList,
         handleCloseDialog,
-        handleGenericPermissionDeniedError,
-        handleLastError
+        generateGenericPermissionErrorMessages(intl),
+        handleGenericTxtError
     );
 
     const [replaceFormContingencyListWithScriptCB] = useDeferredFetch(
         replaceFormContingencyListWithScript,
         handleCloseDialog,
-        handleGenericPermissionDeniedError,
-        handleLastError
+        generateGenericPermissionErrorMessages(intl),
+        handleGenericTxtError
     );
 
     const [newScriptFromFilterCB] = useDeferredFetch(
         newScriptFromFilter,
         handleCloseDialog,
-        handleGenericPermissionDeniedError,
-        handleLastError
+        generateGenericPermissionErrorMessages(intl),
+        handleGenericTxtError
     );
 
     const noCreationInProgress = useCallback(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
@@ -468,10 +397,10 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
     useEffect(() => {
         if (selectedDirectory !== null) {
-            checkPermissionOnDirectory(selectedDirectory, 'READ').then((b) => {
+            checkPermissionOnDirectory(selectedDirectory, PermissionType.READ).then((b) => {
                 setDirectoryReadable(b);
             });
-            checkPermissionOnDirectory(selectedDirectory, 'WRITE').then((b) => {
+            checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
                 setDirectoryWritable(b);
             });
         }
@@ -632,7 +561,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         message="renameElementMsg"
                         currentName={activeElement ? activeElement.elementName : ''}
                         type={activeElement ? activeElement.type : ('' as ElementType)}
-                        error={renameState.errorMessage}
+                        error={renameErrorMessage}
                     />
                 );
             case DialogsId.DELETE:
@@ -698,7 +627,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         // @ts-expect-error TODO: manage undefined case
                         directoryUuid={selectedDirectory?.elementUuid}
                         elementType={activeElement?.type}
-                        handleError={handleLastError}
                     />
                 );
             case DialogsId.REPLACE_FILTER_BY_SCRIPT:
@@ -708,7 +636,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         open
                         onClose={handleCloseDialog}
                         // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
-                        onClick={(id) => FiltersReplaceWithScriptCB(id, selectedDirectory?.elementUuid)}
+                        onClick={(id) => filtersReplaceWithScriptCB(id, selectedDirectory?.elementUuid)}
                         title={intl.formatMessage({ id: 'replaceList' })}
                     />
                 );
@@ -725,7 +653,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         // @ts-expect-error TODO: manage undefined case
                         directoryUuid={selectedDirectory?.elementUuid}
                         elementType={activeElement?.type}
-                        handleError={handleLastError}
                     />
                 );
             case DialogsId.CONVERT_TO_EXPLICIT_NAMING_FILTER:

@@ -39,6 +39,7 @@ import {
     insertDirectory,
     insertRootDirectory,
     moveElementsToDirectory,
+    PermissionType,
     renameElement,
 } from '../../utils/rest-api';
 
@@ -49,10 +50,15 @@ import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import {
-    handleDeleteConflictError,
+    CustomError,
+    generateGenericPermissionErrorMessages,
+    generateRenameErrorMessages,
+    handleDeleteError,
+    handleGenericTxtError,
     handleMaxElementsExceededError,
-    handleMoveConflictError,
+    handleMoveDirectoryConflictError,
     handleNotAllowedError,
+    handlePasteError,
 } from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import MoveDialog from '../dialogs/move-dialog';
@@ -96,52 +102,28 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         setDeleteError('');
     }, [onClose, setOpenDialog]);
 
-    const handleGenericPermissionDeniedError = useCallback(
-        (HTTPStatus: string) => {
-            if (HTTPStatus === 'Forbidden') {
-                return intl.formatMessage({ id: 'genericPermissionDeniedError' });
-            }
-            return undefined;
-        },
-        [intl]
+    const [renameCB, renameErrorMessage] = useDeferredFetch(
+        renameElement,
+        handleCloseDialog,
+        generateRenameErrorMessages(intl)
     );
 
-    const [renameCB, renameState] = useDeferredFetch(renameElement, handleCloseDialog, (HTTPStatus: string) => {
-        if (HTTPStatus === 'Forbidden') {
-            return intl.formatMessage({ id: 'renameDirectoryError' });
-        }
-        return undefined;
-    });
-
-    const [insertDirectoryCB, insertDirectoryState] = useDeferredFetch(
+    const [insertDirectoryCB, insertDirectoryErrorMessage] = useDeferredFetch(
         insertDirectory,
         handleCloseDialog,
-        handleGenericPermissionDeniedError
+        generateGenericPermissionErrorMessages(intl)
     );
 
-    const [insertRootDirectoryCB, insertRootDirectoryState] = useDeferredFetch(insertRootDirectory, handleCloseDialog);
+    const [insertRootDirectoryCB, insertRootDirectoryErrorMessage] = useDeferredFetch(
+        insertRootDirectory,
+        handleCloseDialog
+    );
 
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
 
-    const handleError = useCallback((message: string) => snackError({ messageTxt: message }), [snackError]);
-
-    const handlePasteError = (error: any) => {
-        let msg;
-        if (error.status === 'Not Found') {
-            msg = intl.formatMessage({
-                id: 'elementPasteFailed404',
-            });
-        } else if (error.status === 'Forbidden') {
-            msg = intl.formatMessage({ id: 'genericPermissionDeniedError' });
-        } else {
-            msg = intl.formatMessage({ id: 'elementPasteFailed' }) + (error?.message ?? '');
-        }
-        return handleError(msg);
-    };
-
     function pasteElement(directoryUuid: UUID, selectionForPaste: any) {
         if (!selectionForPaste.sourceItemUuid) {
-            handleError(intl.formatMessage({ id: 'elementPasteFailed404' }));
+            handleGenericTxtError(intl.formatMessage({ id: 'elementPasteFailed404' }), snackError);
             handleCloseDialog();
         } else {
             console.info('Pasting element %s into directory %s', selectionForPaste.nameItem, directoryUuid);
@@ -153,10 +135,11 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
                     duplicateElement(selectionForPaste.sourceItemUuid, directoryUuid, selectionForPaste.typeItem).catch(
-                        (error: any) => {
-                            if (!handleMaxElementsExceededError(error, snackError)) {
-                                handlePasteError(error);
+                        (error: CustomError) => {
+                            if (handleMaxElementsExceededError(error, snackError)) {
+                                return;
                             }
+                            handlePasteError(error, intl, snackError);
                         }
                     );
                     break;
@@ -171,7 +154,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         directoryUuid,
                         selectionForPaste.typeItem,
                         selectionForPaste.typeItem
-                    ).catch((error: any) => handlePasteError(error));
+                    ).catch((error: CustomError) => handlePasteError(error, intl, snackError));
                     break;
                 case ElementType.CONTINGENCY_LIST:
                     duplicateElement(
@@ -179,23 +162,24 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         directoryUuid,
                         selectionForPaste.typeItem,
                         selectionForPaste.specificTypeItem
-                    ).catch((error: any) => handlePasteError(error));
+                    ).catch((error: CustomError) => handlePasteError(error, intl, snackError));
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
-                    duplicateSpreadsheetConfig(selectionForPaste.sourceItemUuid, directoryUuid).catch((error: any) =>
-                        handlePasteError(error)
+                    duplicateSpreadsheetConfig(selectionForPaste.sourceItemUuid, directoryUuid).catch(
+                        (error: CustomError) => handlePasteError(error, intl, snackError)
                     );
                     break;
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                     duplicateSpreadsheetConfigCollection(selectionForPaste.sourceItemUuid, directoryUuid).catch(
-                        (error: any) => handlePasteError(error)
+                        (error: CustomError) => handlePasteError(error, intl, snackError)
                     );
                     break;
                 default:
-                    handleError(
+                    handleGenericTxtError(
                         intl.formatMessage({
                             id: 'unsupportedItem',
-                        })
+                        }),
+                        snackError
                     );
             }
 
@@ -208,18 +192,11 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             setDeleteError('');
             deleteElement(elementsUuid)
                 .then(handleCloseDialog)
-                .catch((error: any) => {
-                    if (handleDeleteConflictError(error, snackError)) {
-                        setDeleteError(intl.formatMessage({ id: 'deleteConflictError' }));
-                        return;
-                    }
-                    const errorMessage = handleGenericPermissionDeniedError(error.status) ?? error.message;
-                    // show the error message and don't close the dialog
-                    setDeleteError(errorMessage);
-                    handleError(errorMessage);
+                .catch((error: CustomError) => {
+                    handleDeleteError(setDeleteError, error, intl, snackError);
                 });
         },
-        [handleCloseDialog, handleError, handleGenericPermissionDeniedError, intl, snackError]
+        [handleCloseDialog, intl, snackError]
     );
 
     // Allowance
@@ -227,7 +204,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
 
     useEffect(() => {
         if (directory !== null) {
-            checkPermissionOnDirectory(directory, 'WRITE').then((b) => {
+            checkPermissionOnDirectory(directory, PermissionType.WRITE).then((b) => {
                 setDirectoryWritable(b);
             });
         }
@@ -351,15 +328,19 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         (selectedDir: TreeViewFinderNodeProps[]) => {
             if (selectedDir.length === 1 && directory) {
                 moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch((error) => {
-                    if (!handleMoveConflictError(error, snackError) && !handleNotAllowedError(error, snackError)) {
-                        const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
-                            ?.map((el) => el.elementName)
-                            .join('/');
-                        snackError({
-                            messageId: 'MovingDirectoryError',
-                            messageValues: { elementPath: path },
-                        });
+                    if (handleMoveDirectoryConflictError(error, snackError)) {
+                        return;
                     }
+                    if (handleNotAllowedError(error, snackError)) {
+                        return;
+                    }
+                    const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
+                        ?.map((el) => el.elementName)
+                        .join('/');
+                    snackError({
+                        messageId: 'MovingDirectoryError',
+                        messageValues: { elementPath: path },
+                    });
                 });
             }
             handleCloseDialog();
@@ -392,7 +373,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                             id: 'insertNewDirectoryDialogTitle',
                         })}
                         parentDirectory={directory?.elementUuid}
-                        error={insertDirectoryState?.errorMessage}
+                        error={insertDirectoryErrorMessage}
                     />
                 );
             case DialogsId.ADD_ROOT_DIRECTORY:
@@ -405,7 +386,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         title={intl.formatMessage({
                             id: 'insertNewRootDirectoryDialogTitle',
                         })}
-                        error={insertRootDirectoryState?.errorMessage}
+                        error={insertRootDirectoryErrorMessage}
                     />
                 );
             case DialogsId.RENAME_DIRECTORY:
@@ -420,7 +401,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                             title={intl.formatMessage({
                                 id: 'renameDirectoryDialogTitle',
                             })}
-                            error={renameState.errorMessage}
+                            error={renameErrorMessage}
                             type={ElementType.DIRECTORY}
                             parentDirectory={directory.parentUuid}
                         />
