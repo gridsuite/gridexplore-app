@@ -243,10 +243,12 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         {
                             messageDescriptorId: FilterType.EXPLICIT_NAMING.label,
                             callback: () => handleOpenDialog(DialogsId.ADD_NEW_EXPLICIT_NAMING_FILTER),
+                            icon: null,
                         },
                         {
                             messageDescriptorId: FilterType.EXPERT.label,
                             callback: () => handleOpenDialog(DialogsId.ADD_NEW_CRITERIA_FILTER),
+                            icon: null,
                         },
                     ],
                 },

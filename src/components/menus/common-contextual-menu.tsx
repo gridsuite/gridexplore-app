@@ -64,13 +64,15 @@ export default function CommonContextualMenu({ menuItems, ...menuProps }: Readon
                 }}
                 disabled={disabled}
             >
-                <ListItemIcon
-                    style={{
-                        minWidth: '25px',
-                    }}
-                >
-                    {icon}
-                </ListItemIcon>
+                {icon && (
+                    <ListItemIcon
+                        style={{
+                            minWidth: '25px',
+                        }}
+                    >
+                        {icon}
+                    </ListItemIcon>
+                )}
                 <ListItemText primary={<FormattedMessage id={messageDescriptorId} />} />
             </CustomMenuItem>
         );
