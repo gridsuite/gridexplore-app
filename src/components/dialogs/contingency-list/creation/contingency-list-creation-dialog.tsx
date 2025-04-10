@@ -93,13 +93,14 @@ export default function ContingencyListCreationDialog({
         )
             .then(() => closeAndClear())
             .catch((error) => {
-                if (!handleNotAllowedError(error, snackError)) {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'contingencyListCreationError',
-                        headerValues: { name: data[FieldConstants.NAME] },
-                    });
+                if (handleNotAllowedError(error, snackError)) {
+                    return;
                 }
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'contingencyListCreationError',
+                    headerValues: { name: data[FieldConstants.NAME] },
+                });
             });
     };
     return (

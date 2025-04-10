@@ -35,10 +35,13 @@ export const DialogsId = {
     DIRECTORY_PROPERTIES: 'directory_properties',
     NONE: 'none',
 };
+
+export const HTTP_OK = 200;
 export const HTTP_UNPROCESSABLE_ENTITY_STATUS = 422;
+export const HTTP_FORBIDDEN = 403;
+export const HTTP_NOT_FOUND = 404;
 export const HTTP_CONNECTION_FAILED_MESSAGE = 'failed: Connection refused';
 export const HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE = 'MAX_ELEMENTS_EXCEEDED';
-export const HTTP_NOT_ALLOWED_MESSAGE = 'NOT_ALLOWED';
 
 export enum PermissionCheckResult {
     PARENT_PERMISSION_DENIED = 'PARENT_PERMISSION_DENIED',
