@@ -173,7 +173,7 @@
     "path": "emplacement : ",
     "searchPlaceholder": "Rechercher des éléments (ex.: étude, filtre...)",
     "elementsSearchingError": "Une erreur s'est produite lors de la recherche des éléments",
-    "pathRetrievingError": "Une erreur est survenue lors de la récupération du chemin de l'élement",
+    "pathRetrievingError": "Une erreur est survenue lors de la récupération du chemin de l'élément",
     "grid.ariaUnchecked": "Non sélectionné",
     "grid.ariaRowToggleSelection": "grid.ariaRowToggleSelection",
     "emptyDirContent": "Votre dossier est vide",
@@ -190,7 +190,7 @@
     "directoryPermissionsFetchError": "Erreur lors de la récupération des permissions du dossier",
     "directoryPermissionsUpdateError": "Erreur lors de la mise à jour des permissions du dossier",
     "readOnly": "Lecture seule",
-    "read&Write": "Lecture / Ecriture",
+    "read&Write": "Lecture / Écriture",
     "allUsers": "Tout le monde",
     "restricted": "Restreint",
     "selectGroups": "Sélectionner un ou plusieurs groupes"
