@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SimpleTreeView } from '@mui/x-tree-view';
 import { ElementAttributes } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
+// eslint-disable-next-line import/no-extraneous-dependencies -- lib from MUI
+import { Property } from 'csstype';
 import CustomTreeItem from './custom-tree-item';
 import { setSelectedDirectory } from '../redux/actions';
 import { AppState, IDirectory } from '../redux/types';
@@ -33,7 +35,7 @@ const styles = {
     }),
     treeItemSelected: (theme) => ({
         borderRadius: `${theme.spacing(2)}!important`,
-        backgroundColor: `${theme.aggrid.highlightColor}!important`,
+        backgroundColor: theme.row.hover as Property.BackgroundColor,
         fontWeight: 'bold',
     }),
     treeItemContent: (theme) => ({
