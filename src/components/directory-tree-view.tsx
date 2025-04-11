@@ -9,18 +9,16 @@ import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState
 import { ChevronRight as ChevronRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { Box, PopoverReference, SxProps, Theme, Tooltip, Typography, Zoom } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { TreeView } from '@mui/x-tree-view';
+import { SimpleTreeView } from '@mui/x-tree-view';
 import { ElementAttributes } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-// eslint-disable-next-line import/no-extraneous-dependencies -- lib from MUI
-import { Property } from 'csstype';
 import CustomTreeItem from './custom-tree-item';
 import { setSelectedDirectory } from '../redux/actions';
 import { AppState, IDirectory } from '../redux/types';
 
 const styles = {
     treeViewRoot: (theme) => ({
-        padding: theme.spacing(0.5),
+        padding: theme.spacing(0.0),
     }),
     treeItemRoot: (theme) => ({
         userSelect: 'none',
@@ -34,8 +32,8 @@ const styles = {
         },
     }),
     treeItemSelected: (theme) => ({
-        borderRadius: theme.spacing(2),
-        backgroundColor: theme.row.hover as Property.BackgroundColor,
+        borderRadius: `${theme.spacing(2)}!important`,
+        backgroundColor: `${theme.aggrid.highlightColor}!important`,
         fontWeight: 'bold',
     }),
     treeItemContent: (theme) => ({
@@ -51,7 +49,7 @@ const styles = {
         flexGrow: 1,
         overflow: 'hidden',
         paddingRight: theme.spacing(1),
-        paddingLeft: theme.spacing(1),
+        paddingLeft: theme.spacing(0),
         fontWeight: 'inherit',
         color: 'inherit',
     }),
@@ -62,18 +60,28 @@ const styles = {
     treeItemLabelRoot: (theme) => ({
         display: 'flex',
         alignItems: 'center',
-        padding: theme.spacing(0.5, 0),
+        padding: theme.spacing(0.3, 0),
     }),
     treeItemLabelText: {
         fontWeight: 'inherit',
         flexGrow: 1,
     },
     icon: (theme) => ({
-        marginRight: theme.spacing(1),
+        marginRight: theme.spacing(0),
         width: '18px',
         height: '18px',
     }),
 } satisfies Record<string, SxProps<Theme>>;
+
+function CustomEndIcon() {
+    return <ChevronRightIcon sx={styles.icon} />;
+}
+function CustomNoEndIcon() {
+    return null;
+}
+function CustomCollapseIcon() {
+    return <ExpandMoreIcon sx={styles.icon} />;
+}
 
 export interface DirectoryTreeViewProps {
     treeViewUuid: UUID;
@@ -177,7 +185,7 @@ export default function DirectoryTreeView({
         return (
             <CustomTreeItem
                 key={node.elementUuid}
-                nodeId={node.elementUuid}
+                itemId={node.elementUuid}
                 label={
                     <Box
                         sx={styles.treeItemLabelRoot}
@@ -211,7 +219,7 @@ export default function DirectoryTreeView({
                         iconContainer: styles.treeItemIconContainer,
                     },
                 }}
-                endIcon={node.subdirectoriesCount > 0 ? <ChevronRightIcon sx={styles.icon} /> : null}
+                slots={{ endIcon: !node || node.subdirectoriesCount === 0 ? CustomNoEndIcon : CustomEndIcon }}
                 sx={{ content: styles.treeItemContent }}
             >
                 {Array.isArray(node.children)
@@ -222,14 +230,13 @@ export default function DirectoryTreeView({
     };
 
     return (
-        <TreeView
+        <SimpleTreeView
             sx={styles.treeViewRoot}
-            defaultCollapseIcon={<ExpandMoreIcon sx={styles.icon} />}
-            defaultExpandIcon={<ChevronRightIcon sx={styles.icon} />}
-            expanded={expanded}
-            selected={selectedDirectory ? selectedDirectory.elementUuid : null}
+            expandedItems={expanded}
+            selectedItems={selectedDirectory ? selectedDirectory.elementUuid : null}
+            slots={{ collapseIcon: CustomCollapseIcon, expandIcon: CustomEndIcon }}
         >
             {renderTree(mapDataRef.current?.[treeViewUuid])}
-        </TreeView>
+        </SimpleTreeView>
     );
 }
