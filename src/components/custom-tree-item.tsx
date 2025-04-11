@@ -6,7 +6,6 @@
  */
 
 import { forwardRef, MouseEvent, MouseEventHandler, useCallback, useEffect } from 'react';
-import clsx from 'clsx';
 import { UUID } from 'crypto';
 import {
     Box,
@@ -27,10 +26,7 @@ import { AppState } from '../redux/types';
 export interface TreeItemCustomContentProps {
     styles?: {
         root?: SxProps<Theme>;
-        expanded?: SxProps<Theme>;
         selected?: SxProps<Theme>;
-        focused?: SxProps<Theme>;
-        disabled?: SxProps<Theme>;
         hovered?: SxProps<Theme>;
         label?: SxProps<Theme>;
         iconContainer?: SxProps<Theme>;
@@ -53,7 +49,6 @@ type CustomContentProps = TreeItemContentProps &
 const CustomContent = forwardRef(function CustomContent(props: CustomContentProps, ref) {
     const {
         className,
-        classes,
         styles,
         label,
         itemId,
@@ -65,7 +60,7 @@ const CustomContent = forwardRef(function CustomContent(props: CustomContentProp
         onAddIconClick,
     } = props;
 
-    const { disabled, expanded, selected, focused, preventSelection } = useTreeItemState(itemId);
+    const { selected, preventSelection } = useTreeItemState(itemId);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const isMenuOpen = activeDirectory === itemId;
     const { value: hover, setTrue: enableHover, setFalse: disableHover, setValue: setHover } = useStateBoolean(false);
@@ -93,22 +88,8 @@ const CustomContent = forwardRef(function CustomContent(props: CustomContentProp
 
     return (
         <Box
-            className={clsx(
-                className,
-                classes?.root,
-                expanded && classes?.expanded,
-                selected && classes?.selected,
-                focused && classes?.focused,
-                disabled && classes?.disabled
-            )}
-            sx={mergeSx(
-                styles?.root,
-                expanded ? styles?.expanded : undefined,
-                selected ? styles?.selected : undefined,
-                focused ? styles?.focused : undefined,
-                disabled ? styles?.disabled : undefined,
-                hover ? styles?.hovered : undefined
-            )}
+            className={className}
+            sx={mergeSx(styles?.root, selected ? styles?.selected : undefined, hover ? styles?.hovered : undefined)}
             onMouseDown={preventSelection}
             /* It's not a good idea to rely on the hover state provided by those mouse events
                because those events could be skipped with the web-browser's html optimization.
@@ -121,10 +102,10 @@ const CustomContent = forwardRef(function CustomContent(props: CustomContentProp
             onMouseLeave={disableHover}
             ref={ref}
         >
-            <Box onClick={handleExpansionClick} className={classes?.iconContainer} sx={styles?.iconContainer}>
+            <Box onClick={handleExpansionClick} sx={styles?.iconContainer}>
                 {iconProp || expansionIcon || displayIcon}
             </Box>
-            <Typography onClick={handleSelectionClick} component="div" className={classes?.label} sx={styles?.label}>
+            <Typography onClick={handleSelectionClick} component="div" sx={styles?.label}>
                 {label}
             </Typography>
             {hover && (
