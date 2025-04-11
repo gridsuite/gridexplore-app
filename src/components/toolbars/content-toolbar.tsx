@@ -15,7 +15,7 @@ import {
     TableView as TableViewIcon,
 } from '@mui/icons-material';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
-import { deleteElements, moveElementsToDirectory } from '../../utils/rest-api';
+import { deleteElements, moveElementsToDirectory, PermissionType } from '../../utils/rest-api';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar, { CommonToolbarProps } from './common-toolbar';
 import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
@@ -27,6 +27,7 @@ import { DialogsId } from '../../utils/UIconstants';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import { checkPermissionOnDirectory } from '../menus/menus-utils';
+import { handleDeleteError, handleMoveError } from '../utils/rest-errors';
 
 export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
     selectedElements: ElementAttributes[];
@@ -44,20 +45,11 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
 
     useEffect(() => {
         if (selectedDirectory !== null) {
-            checkPermissionOnDirectory(selectedDirectory, 'WRITE').then((b) => {
+            checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
                 setDirectoryWritable(b);
             });
         }
     }, [selectedDirectory]);
-
-    const handleLastError = useCallback(
-        (message: string) => {
-            snackError({
-                messageTxt: message,
-            });
-        },
-        [snackError]
-    );
 
     const handleOpenDialog = (DialogId: string) => {
         setOpenDialog(DialogId);
@@ -73,44 +65,7 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         handleCloseDialog();
     }, [handleCloseDialog, stopCasesExports]);
 
-    // TODO: duplicate code detected with content-contextual-menu.tsx (moveElementErrorToString, moveElementOnError and moveCB)
-    const moveElementErrorToString = useCallback(
-        (HTTPStatus: string) => {
-            if (HTTPStatus === 'Forbidden') {
-                return intl.formatMessage({
-                    id: 'moveElementNotAllowedError',
-                });
-            }
-            if (HTTPStatus === 'Not Found') {
-                return intl.formatMessage({ id: 'moveElementNotFoundError' });
-            }
-            return undefined;
-        },
-        [intl]
-    );
-
-    const moveElementOnError = useCallback(
-        (errorMessages: string[], params: unknown, paramsOnErrors: unknown[]) => {
-            const msg = intl.formatMessage(
-                { id: 'moveElementsFailure' },
-                {
-                    pbn: errorMessages.length,
-                    stn: paramsOnErrors.length,
-                    problematic: paramsOnErrors.map((p) => (p as string[])[0]).join(' '),
-                }
-            );
-            console.debug(msg);
-            handleLastError(msg);
-        },
-        [handleLastError, intl]
-    );
-
-    const [moveCB] = useMultipleDeferredFetch(
-        moveElementsToDirectory,
-        undefined,
-        moveElementErrorToString,
-        moveElementOnError
-    );
+    const [moveCB] = useMultipleDeferredFetch(moveElementsToDirectory, undefined, handleMoveError);
 
     const noCreationInProgress = useMemo(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
 
@@ -147,12 +102,10 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
             deleteElements(elementsUuids, selectedDirectory.elementUuid)
                 .then(handleCloseDialog)
                 .catch((error) => {
-                    // show the error message and don't close the dialog
-                    setDeleteError(error.message);
-                    handleLastError(error.message);
+                    handleDeleteError(setDeleteError, error, intl, snackError);
                 });
         },
-        [selectedDirectory, handleCloseDialog, handleLastError]
+        [selectedDirectory?.elementUuid, handleCloseDialog, intl, snackError]
     );
 
     const items = useMemo(() => {
