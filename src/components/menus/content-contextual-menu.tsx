@@ -666,6 +666,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         }}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
+                        filterType={FilterType.EXPLICIT_NAMING}
                     />
                 );
             case DialogsId.CREATE_SPREADSHEET_COLLECTION:

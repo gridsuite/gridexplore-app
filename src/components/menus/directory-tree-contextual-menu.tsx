@@ -65,6 +65,7 @@ import MoveDialog from '../dialogs/move-dialog';
 import { buildPathToFromMap } from '../treeview-utils';
 import { checkPermissionOnDirectory } from './menus-utils';
 import DirectoryPropertiesDialog from '../dialogs/directory-properties/directory-properties-dialog';
+import { FilterType } from '../../utils/elementType';
 
 export interface DirectoryTreeContextualMenuProps extends Omit<CommonContextualMenuProps, 'onClose'> {
     directory: ElementAttributes | null;
@@ -238,6 +239,18 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     messageDescriptorId: 'createNewFilter',
                     callback: () => handleOpenDialog(DialogsId.ADD_NEW_FILTER),
                     icon: <AddIcon fontSize="small" />,
+                    subMenuItems: [
+                        {
+                            messageDescriptorId: FilterType.EXPLICIT_NAMING.label,
+                            callback: () => handleOpenDialog(DialogsId.ADD_NEW_EXPLICIT_NAMING_FILTER),
+                            icon: null,
+                        },
+                        {
+                            messageDescriptorId: FilterType.EXPERT.label,
+                            callback: () => handleOpenDialog(DialogsId.ADD_NEW_CRITERIA_FILTER),
+                            icon: null,
+                        },
+                    ],
                 },
                 {
                     messageDescriptorId: 'ImportNewCase',
@@ -409,13 +422,24 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         error={deleteError}
                     />
                 );
-            case DialogsId.ADD_NEW_FILTER:
+            case DialogsId.ADD_NEW_EXPLICIT_NAMING_FILTER:
                 return (
                     <FilterCreationDialog
                         open
                         onClose={handleCloseDialog}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
+                        filterType={FilterType.EXPLICIT_NAMING}
+                    />
+                );
+            case DialogsId.ADD_NEW_CRITERIA_FILTER:
+                return (
+                    <FilterCreationDialog
+                        open
+                        onClose={handleCloseDialog}
+                        activeDirectory={activeDirectory}
+                        language={languageLocal}
+                        filterType={FilterType.EXPERT}
                     />
                 );
             case DialogsId.ADD_NEW_CASE:
