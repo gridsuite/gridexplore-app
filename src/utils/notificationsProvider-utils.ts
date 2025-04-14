@@ -7,6 +7,7 @@
 export enum NotificationUrlKeys {
     CONFIG = 'CONFIG',
     DIRECTORY = 'DIRECTORY',
+    GLOBAL_CONFIG = 'GLOBAL_CONFIG',
 }
 
 export const PREFIX_CONFIG_NOTIFICATION_WS = `${import.meta.env.VITE_WS_GATEWAY}/config-notification`;

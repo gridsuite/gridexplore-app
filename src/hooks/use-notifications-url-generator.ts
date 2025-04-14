@@ -31,6 +31,11 @@ const useNotificationsUrlGenerator = (): Record<NotificationUrlKeys, string | un
                       })}`
                   )
                 : undefined,
+            [NotificationUrlKeys.GLOBAL_CONFIG]: tokenId
+                ? getUrlWithToken(
+                    `${wsBase}${PREFIX_CONFIG_NOTIFICATION_WS}/global`
+                )
+                : undefined,
             [NotificationUrlKeys.DIRECTORY]: tokenId
                 ? getUrlWithToken(`${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=directories`)
                 : undefined,

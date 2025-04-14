@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     fetchAppsMetadata,
     GridSuiteModule,
@@ -12,6 +12,8 @@ import {
     logout,
     TopBar,
     UserManagerState,
+    useNotificationsListener,
+    AnnouncementProps,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -25,6 +27,7 @@ import { SearchBar } from './search/search-bar';
 import { AppDispatch } from '../redux/store';
 import { useParameterState } from './dialogs/use-parameters-dialog';
 import { AppState } from '../redux/types';
+import {NotificationUrlKeys} from "../utils/notificationsProvider-utils";
 
 export type AppTopBarProps = {
     userManagerInstance: UserManagerState['instance'];
@@ -48,6 +51,30 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
     const [enableDeveloperModeLocal, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const searchInputRef = useRef<any | null>(null);
+
+    const [announcementInfos, setAnnouncementInfos] = useState<AnnouncementProps | null>(null);
+
+    useNotificationsListener(NotificationUrlKeys.GLOBAL_CONFIG, {
+        listenerCallbackMessage: (event) => {
+            const eventData = JSON.parse(event.data);
+            if (eventData.headers.messageType === "announcement") {
+                if (announcementInfos != null && announcementInfos.announcementId == eventData.headers.announcementId) {
+                    //If we receive a notification for an announcement that we already received we ignore it
+                    return;
+                } else {
+                    const announcement = {
+                        announcementId: eventData.headers.announcementId,
+                        message: eventData.payload,
+                        severity: eventData.headers.severity,
+                        duration: eventData.headers.duration,
+                    } as AnnouncementProps;
+                    setAnnouncementInfos(announcement);
+                }
+            } else if (eventData.headers.messageType === "cancelAnnouncement") {
+                    setAnnouncementInfos(null);
+            }
+        },
+    });
 
     useEffect(() => {
         if (user !== null) {
@@ -90,6 +117,7 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
             language={languageLocal}
             globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
             additionalModulesPromise={getServersInfos as () => Promise<GridSuiteModule[]>}
+            announcementInfos={announcementInfos}
         >
             {user && <SearchBar inputRef={searchInputRef} />}
         </TopBar>
