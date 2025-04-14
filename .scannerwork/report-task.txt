@@ -1,0 +1,7 @@
+organization=gridsuite
+projectKey=gridsuite_gridexplore-app
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.61895
+dashboardUrl=https://sonarcloud.io/dashboard?id=gridsuite_gridexplore-app
+ceTaskId=AZY0SEMSObjEt46HVWyt
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZY0SEMSObjEt46HVWyt
