@@ -78,9 +78,6 @@ const styles = {
 function CustomEndIcon() {
     return <ChevronRightIcon sx={styles.icon} />;
 }
-function CustomNoEndIcon() {
-    return null;
-}
 function CustomCollapseIcon() {
     return <ExpandMoreIcon sx={styles.icon} />;
 }
@@ -221,7 +218,7 @@ export default function DirectoryTreeView({
                         iconContainer: styles.treeItemIconContainer,
                     },
                 }}
-                slots={{ endIcon: !node || node.subdirectoriesCount === 0 ? CustomNoEndIcon : CustomEndIcon }}
+                slots={{ endIcon: node.subdirectoriesCount > 0 ? CustomEndIcon : undefined }}
                 sx={{ content: styles.treeItemContent }}
             >
                 {Array.isArray(node.children)
