@@ -9,11 +9,19 @@ import { useIntl } from 'react-intl';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CircularProgress, Grid } from '@mui/material';
-import { CustomMuiDialog, ElementType, FieldConstants, UniqueNameInput, yupConfig as yup } from '@gridsuite/commons-ui';
+import {
+    CustomMuiDialog,
+    ElementType,
+    FieldConstants,
+    UniqueNameInput,
+    useSnackMessage,
+    yupConfig as yup,
+} from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
 import { getNameCandidate } from '../../utils/rest-api';
 import { AppState } from '../../redux/types';
+import { handleGenericTxtError } from '../utils/rest-errors';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -32,7 +40,6 @@ export interface CopyToScriptDialogProps {
     title: string;
     directoryUuid: UUID;
     elementType: ElementType;
-    handleError: (...args: any[]) => void;
 }
 
 interface FormData {
@@ -49,7 +56,6 @@ interface FormData {
  * @param title Title of the dialog
  * @param directoryUuid Directory uuid of the list or filter to copy
  * @param elementType Type of the element to copy
- * @param handleError Function to call to handle error
  */
 export default function CopyToScriptDialog({
     id,
@@ -60,9 +66,9 @@ export default function CopyToScriptDialog({
     title,
     directoryUuid,
     elementType,
-    handleError,
 }: Readonly<CopyToScriptDialogProps>) {
     const [loading, setLoading] = useState(false);
+    const { snackError } = useSnackMessage();
     const intl = useIntl();
     const methods = useForm<FormData>({
         defaultValues: emptyFormData,
@@ -84,8 +90,12 @@ export default function CopyToScriptDialog({
     };
 
     const handleGenerateNameError = useCallback(
-        () => handleError(intl.formatMessage({ id: 'generateCopyScriptNameError' }, { itemName: currentName })),
-        [currentName, handleError, intl]
+        () =>
+            handleGenericTxtError(
+                intl.formatMessage({ id: 'generateCopyScriptNameError' }, { itemName: currentName }),
+                snackError
+            ),
+        [currentName, intl, snackError]
     );
 
     useEffect(() => {

@@ -29,16 +29,21 @@ export const DialogsId = {
     ADD_DIRECTORY: 'add_directory',
     ADD_NEW_CONTINGENCY_LIST: 'add_new_contingency_list',
     ADD_NEW_FILTER: 'add_new_filter',
+    ADD_NEW_CRITERIA_FILTER: 'add_new_criteria_filter',
+    ADD_NEW_EXPLICIT_NAMING_FILTER: 'add_new_explicit_naming_filter',
     ADD_NEW_CASE: 'add_new_case',
     RENAME_DIRECTORY: 'rename_directory',
     DELETE_DIRECTORY: 'delete_directory',
     DIRECTORY_PROPERTIES: 'directory_properties',
     NONE: 'none',
 };
+
+export const HTTP_OK = 200;
 export const HTTP_UNPROCESSABLE_ENTITY_STATUS = 422;
+export const HTTP_FORBIDDEN = 403;
+export const HTTP_NOT_FOUND = 404;
 export const HTTP_CONNECTION_FAILED_MESSAGE = 'failed: Connection refused';
 export const HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE = 'MAX_ELEMENTS_EXCEEDED';
-export const HTTP_NOT_ALLOWED_MESSAGE = 'NOT_ALLOWED';
 
 export enum PermissionCheckResult {
     PARENT_PERMISSION_DENIED = 'PARENT_PERMISSION_DENIED',
