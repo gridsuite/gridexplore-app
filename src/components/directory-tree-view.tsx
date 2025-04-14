@@ -61,14 +61,14 @@ const styles = {
     treeItemLabelRoot: (theme) => ({
         display: 'flex',
         alignItems: 'center',
-        padding: theme.spacing(0.3, 0),
+        padding: theme.spacing(0.5, 0),
     }),
     treeItemLabelText: {
         fontWeight: 'inherit',
         flexGrow: 1,
     },
     icon: (theme) => ({
-        marginRight: theme.spacing(0),
+        marginRight: theme.spacing(1),
         width: '18px',
         height: '18px',
     }),
