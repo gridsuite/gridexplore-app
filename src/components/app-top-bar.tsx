@@ -27,7 +27,7 @@ import { SearchBar } from './search/search-bar';
 import { AppDispatch } from '../redux/store';
 import { useParameterState } from './dialogs/use-parameters-dialog';
 import { AppState } from '../redux/types';
-import {NotificationUrlKeys} from "../utils/notificationsProvider-utils";
+import { NotificationUrlKeys } from '../utils/notificationsProvider-utils';
 
 export type AppTopBarProps = {
     userManagerInstance: UserManagerState['instance'];
@@ -57,21 +57,23 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
     useNotificationsListener(NotificationUrlKeys.GLOBAL_CONFIG, {
         listenerCallbackMessage: (event) => {
             const eventData = JSON.parse(event.data);
-            if (eventData.headers.messageType === "announcement") {
-                if (announcementInfos != null && announcementInfos.announcementId == eventData.headers.announcementId) {
-                    //If we receive a notification for an announcement that we already received we ignore it
+            if (eventData.headers.messageType === 'announcement') {
+                if (
+                    announcementInfos != null &&
+                    announcementInfos.announcementId === eventData.headers.announcementId
+                ) {
+                    // If we receive a notification for an announcement that we already received we ignore it
                     return;
-                } else {
-                    const announcement = {
-                        announcementId: eventData.headers.announcementId,
-                        message: eventData.payload,
-                        severity: eventData.headers.severity,
-                        duration: eventData.headers.duration,
-                    } as AnnouncementProps;
-                    setAnnouncementInfos(announcement);
                 }
-            } else if (eventData.headers.messageType === "cancelAnnouncement") {
-                    setAnnouncementInfos(null);
+                const announcement = {
+                    announcementId: eventData.headers.announcementId,
+                    message: eventData.payload,
+                    severity: eventData.headers.severity,
+                    duration: eventData.headers.duration,
+                } as AnnouncementProps;
+                setAnnouncementInfos(announcement);
+            } else if (eventData.headers.messageType === 'cancelAnnouncement') {
+                setAnnouncementInfos(null);
             }
         },
     });
