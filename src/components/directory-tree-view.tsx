@@ -35,7 +35,6 @@ const styles = {
     treeItemSelected: (theme) => ({
         borderRadius: `${theme.spacing(2)}!important`,
         backgroundColor: theme.aggrid.highlightColor,
-        fontWeight: 'bold',
     }),
     treeItemContent: (theme) => ({
         paddingRight: theme.spacing(1),
