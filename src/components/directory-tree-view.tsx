@@ -9,18 +9,17 @@ import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState
 import { ChevronRight as ChevronRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { Box, PopoverReference, SxProps, Theme, Tooltip, Typography, Zoom } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { TreeView } from '@mui/x-tree-view';
+import { SimpleTreeView } from '@mui/x-tree-view';
 import { ElementAttributes } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 // eslint-disable-next-line import/no-extraneous-dependencies -- lib from MUI
-import { Property } from 'csstype';
 import CustomTreeItem from './custom-tree-item';
 import { setSelectedDirectory } from '../redux/actions';
 import { AppState, IDirectory } from '../redux/types';
 
 const styles = {
     treeViewRoot: (theme) => ({
-        padding: theme.spacing(0.5),
+        padding: theme.spacing(0.0),
     }),
     treeItemRoot: (theme) => ({
         userSelect: 'none',
@@ -34,9 +33,8 @@ const styles = {
         },
     }),
     treeItemSelected: (theme) => ({
-        borderRadius: theme.spacing(2),
-        backgroundColor: theme.row.hover as Property.BackgroundColor,
-        fontWeight: 'bold',
+        borderRadius: `${theme.spacing(2)}!important`,
+        backgroundColor: theme.aggrid.highlightColor,
     }),
     treeItemContent: (theme) => ({
         paddingRight: theme.spacing(1),
@@ -51,7 +49,7 @@ const styles = {
         flexGrow: 1,
         overflow: 'hidden',
         paddingRight: theme.spacing(1),
-        paddingLeft: theme.spacing(1),
+        paddingLeft: theme.spacing(0),
         fontWeight: 'inherit',
         color: 'inherit',
     }),
@@ -74,6 +72,13 @@ const styles = {
         height: '18px',
     }),
 } satisfies Record<string, SxProps<Theme>>;
+
+function CustomEndIcon() {
+    return <ChevronRightIcon sx={styles.icon} />;
+}
+function CustomCollapseIcon() {
+    return <ExpandMoreIcon sx={styles.icon} />;
+}
 
 export interface DirectoryTreeViewProps {
     treeViewUuid: UUID;
@@ -177,7 +182,7 @@ export default function DirectoryTreeView({
         return (
             <CustomTreeItem
                 key={node.elementUuid}
-                nodeId={node.elementUuid}
+                itemId={node.elementUuid}
                 label={
                     <Box
                         sx={styles.treeItemLabelRoot}
@@ -211,7 +216,7 @@ export default function DirectoryTreeView({
                         iconContainer: styles.treeItemIconContainer,
                     },
                 }}
-                endIcon={node.subdirectoriesCount > 0 ? <ChevronRightIcon sx={styles.icon} /> : null}
+                slots={{ endIcon: node.subdirectoriesCount > 0 ? CustomEndIcon : undefined }}
                 sx={{ content: styles.treeItemContent }}
             >
                 {Array.isArray(node.children)
@@ -222,14 +227,13 @@ export default function DirectoryTreeView({
     };
 
     return (
-        <TreeView
+        <SimpleTreeView
             sx={styles.treeViewRoot}
-            defaultCollapseIcon={<ExpandMoreIcon sx={styles.icon} />}
-            defaultExpandIcon={<ChevronRightIcon sx={styles.icon} />}
-            expanded={expanded}
-            selected={selectedDirectory ? selectedDirectory.elementUuid : null}
+            expandedItems={expanded}
+            selectedItems={selectedDirectory ? selectedDirectory.elementUuid : null}
+            slots={{ collapseIcon: CustomCollapseIcon, expandIcon: CustomEndIcon }}
         >
             {renderTree(mapDataRef.current?.[treeViewUuid])}
-        </TreeView>
+        </SimpleTreeView>
     );
 }
