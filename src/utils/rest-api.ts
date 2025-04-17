@@ -811,12 +811,15 @@ export const fetchConvertedCase = (
     formatParameters: unknown,
     abortController: AbortController
 ) =>
-    backendFetch(`${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}?format=${format}&fileName=${fileName}`, {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formatParameters),
-        signal: abortController.signal,
-    });
+    backendFetch(
+        `${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/cases/${caseUuid}/convert/${format}?fileName=${fileName}`,
+        {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formatParameters),
+            signal: abortController.signal,
+        }
+    );
 
 export const downloadCase = (caseUuid: string) =>
     backendFetch(`${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}`, {
