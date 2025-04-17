@@ -13,6 +13,7 @@ import {
     DriveFileMove as DriveFileMoveIcon,
     FileDownload,
     TableView as TableViewIcon,
+    DownloadForOffline,
 } from '@mui/icons-material';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { deleteElements, moveElementsToDirectory, PermissionType } from '../../utils/rest-api';
@@ -28,6 +29,8 @@ import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import { checkPermissionOnDirectory } from '../menus/menus-utils';
 import { handleDeleteError, handleMoveError } from '../utils/rest-errors';
+import { useParameterState } from '../dialogs/use-parameters-dialog';
+import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 
 export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
     selectedElements: ElementAttributes[];
@@ -42,6 +45,7 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
     const [deleteError, setDeleteError] = useState('');
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
     const [directoryWritable, setDirectoryWritable] = useState(false);
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     useEffect(() => {
         if (selectedDirectory !== null) {
@@ -91,8 +95,11 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
     }, [selectedElements]);
 
     const allowsExportCases = useMemo(
-        () => selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress,
-        [selectedElements, noCreationInProgress]
+        () =>
+            enableDeveloperMode &&
+            selectedElements.some((element) => element.type === ElementType.CASE) &&
+            noCreationInProgress,
+        [selectedElements, noCreationInProgress, enableDeveloperMode]
     );
 
     const handleDeleteElements = useCallback(
@@ -140,6 +147,15 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
                         callback: () => downloadElements(selectedElements),
                         icon: <FileDownload fontSize="small" />,
                         disabled: !allowsDownload,
+                    });
+                }
+
+                if (allowsExportCases) {
+                    toolbarItems.push({
+                        tooltipTextId: 'download.export.button',
+                        callback: () => handleOpenDialog(DialogsId.EXPORT),
+                        icon: <DownloadForOffline fontSize="small" />,
+                        disabled: !selectedElements.length || !allowsExportCases,
                     });
                 }
             }
