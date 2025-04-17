@@ -395,12 +395,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
     const allowsExportCase = useCallback(() => {
         // if selectedElements contains at least one case
-        return (
-            enableDeveloperMode &&
-            selectedElements.some((element) => element.type === ElementType.CASE) &&
-            noCreationInProgress()
-        );
-    }, [selectedElements, noCreationInProgress, enableDeveloperMode]);
+        return selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress();
+    }, [selectedElements, noCreationInProgress]);
 
     const allowsSpreadsheetCollection = useMemo(() => {
         return selectedElements.every((element) => ElementType.SPREADSHEET_CONFIG === element.type);
@@ -502,7 +498,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (allowsExportCase()) {
+        if (enableDeveloperMode && allowsExportCase()) {
             menuItems.push({
                 messageDescriptorId: 'download.export.button',
                 callback: () => handleOpenDialog(DialogsId.EXPORT),
@@ -567,6 +563,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         directoryReadable,
         directoryWritable,
         allowsExportCase,
+        enableDeveloperMode,
     ]);
 
     const renderDialog = () => {

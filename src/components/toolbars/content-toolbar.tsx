@@ -95,11 +95,8 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
     }, [selectedElements]);
 
     const allowsExportCases = useMemo(
-        () =>
-            enableDeveloperMode &&
-            selectedElements.some((element) => element.type === ElementType.CASE) &&
-            noCreationInProgress,
-        [selectedElements, noCreationInProgress, enableDeveloperMode]
+        () => selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress,
+        [selectedElements, noCreationInProgress]
     );
 
     const handleDeleteElements = useCallback(
@@ -149,8 +146,7 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
                         disabled: !allowsDownload,
                     });
                 }
-
-                if (allowsExportCases) {
+                if (enableDeveloperMode && allowsExportCases) {
                     toolbarItems.push({
                         tooltipTextId: 'download.export.button',
                         callback: () => handleOpenDialog(DialogsId.EXPORT),
@@ -181,6 +177,7 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         downloadElements,
         selectedElements,
         directoryWritable,
+        enableDeveloperMode,
     ]);
 
     const renderDialog = () => {
