@@ -70,7 +70,6 @@ import App from './app';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import messages_plugins from '../plugins/translations';
-import aggrid_locale_fr from '../translations/external/aggrid-locale-fr';
 import backend_locale_fr from '../translations/external/backend-locale-fr';
 import backend_locale_en from '../translations/external/backend-locale-en';
 import { store } from '../redux/store';
@@ -237,7 +236,6 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...commonButtonFr,
         ...backend_locale_fr,
         ...elementSearchFr,
-        ...aggrid_locale_fr, // Only the French locale is needed
         ...directoryItemsInputFr,
         ...filterFr,
         ...filterExpertFr,

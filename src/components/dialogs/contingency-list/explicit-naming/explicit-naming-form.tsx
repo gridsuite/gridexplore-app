@@ -12,6 +12,7 @@ import { CustomAgGridTable, FieldConstants } from '@gridsuite/commons-ui';
 import { ColDef, SuppressKeyboardEventParams } from 'ag-grid-community';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { makeDefaultRowData } from '../contingency-list-utils';
+import { AggridLocales } from '../../../../translations/not-intl/aggrid-locales';
 
 const suppressKeyboardEvent = (params: SuppressKeyboardEventParams) => {
     const { key } = params.event;
@@ -116,6 +117,7 @@ export default function ExplicitNamingForm() {
                     maxHeight: 'unset',
                 },
             }}
+            overrideLocales={AggridLocales}
         />
     );
 }
