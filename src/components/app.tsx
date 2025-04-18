@@ -15,6 +15,7 @@ import {
     getPreLoginPath,
     GsLangUser,
     initializeAuthenticationProd,
+    NotificationsUrlKeys,
     useNotificationsListener,
     UserManagerState,
     useSnackMessage,
@@ -36,7 +37,6 @@ import DirectoryContent from './directory-content';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
 import { AppDispatch } from '../redux/store';
 import { AppState } from '../redux/types';
-import { NotificationUrlKeys } from '../utils/notificationsProvider-utils';
 
 export default function App() {
     const { snackError } = useSnackMessage();
@@ -110,7 +110,7 @@ export default function App() {
         [updateParams, snackError]
     );
 
-    useNotificationsListener(NotificationUrlKeys.CONFIG, {
+    useNotificationsListener(NotificationsUrlKeys.CONFIG, {
         listenerCallbackMessage: getConfigParameter,
     });
 
