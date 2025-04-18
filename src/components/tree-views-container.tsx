@@ -12,6 +12,7 @@ import {
     ElementType,
     fetchDirectoryContent,
     fetchRootFolders,
+    NotificationsUrlKeys,
     useNotificationsListener,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -32,7 +33,6 @@ import * as constants from '../utils/UIconstants';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 import { AppState, IDirectory, ITreeData, UploadingElement } from '../redux/types';
 import { buildPathToFromMap, updatedTree } from './treeview-utils';
-import { NotificationUrlKeys } from '../utils/notificationsProvider-utils';
 
 const initialMousePosition = {
     mouseX: null,
@@ -446,7 +446,7 @@ export default function TreeViewsContainer() {
         [dispatch, handleUserMessage]
     );
 
-    useNotificationsListener(NotificationUrlKeys.DIRECTORY, {
+    useNotificationsListener(NotificationsUrlKeys.DIRECTORY, {
         listenerCallbackMessage: onUpdateDirectories,
     });
 
