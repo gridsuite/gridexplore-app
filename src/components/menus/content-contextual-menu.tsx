@@ -14,6 +14,7 @@ import {
     ContentCopyRounded as ContentCopyRoundedIcon,
     Delete as DeleteIcon,
     DoNotDisturbAlt as DoNotDisturbAltIcon,
+    DownloadForOffline,
     DriveFileMove as DriveFileMoveIcon,
     FileCopy as FileCopyIcon,
     FileCopyTwoTone as FileCopyTwoToneIcon,
@@ -56,7 +57,7 @@ import { useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
-import { PARAM_LANGUAGE } from '../../utils/config-params';
+import { PARAM_LANGUAGE, PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import {
     generateGenericPermissionErrorMessages,
     generateRenameErrorMessages,
@@ -89,6 +90,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const [deleteError, setDeleteError] = useState('');
     const [directoryWritable, setDirectoryWritable] = useState(false);
     const [directoryReadable, setDirectoryReadable] = useState(false);
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const { snackError } = useSnackMessage();
 
@@ -391,6 +393,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
 
+    const allowsExportCase = useCallback(() => {
+        // if selectedElements contains at least one case
+        return selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress();
+    }, [selectedElements, noCreationInProgress]);
+
     const allowsSpreadsheetCollection = useMemo(() => {
         return selectedElements.every((element) => ElementType.SPREADSHEET_CONFIG === element.type);
     }, [selectedElements]);
@@ -491,6 +498,14 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
+        if (enableDeveloperMode && allowsExportCase()) {
+            menuItems.push({
+                messageDescriptorId: 'download.export.button',
+                callback: () => handleOpenDialog(DialogsId.EXPORT),
+                icon: <DownloadForOffline fontSize="small" />,
+            });
+        }
+
         if (allowsSpreadsheetCollection) {
             menuItems.push({
                 messageDescriptorId: 'createSpreadsheetCollection',
@@ -547,6 +562,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         selectedElements,
         directoryReadable,
         directoryWritable,
+        allowsExportCase,
+        enableDeveloperMode,
     ]);
 
     const renderDialog = () => {
