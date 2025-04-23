@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setReorderedColumns } from '../redux/actions';
 import { defaultColumnDefinition } from './utils/directory-content-utils';
 import { AppState } from '../redux/types';
+import { AGGRID_LOCALES } from '../translations/not-intl/aggrid-locales';
 
 export interface DirectoryContentTableProps
     extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
@@ -139,6 +140,7 @@ export function DirectoryContentTable({
             getRowStyle={getCustomRowStyle}
             // We set a custom className for rows in order to easily determine if a context menu event is happening on a row or not
             rowClass={CUSTOM_ROW_CLASS}
+            overrideLocales={AGGRID_LOCALES}
         />
     );
 }
