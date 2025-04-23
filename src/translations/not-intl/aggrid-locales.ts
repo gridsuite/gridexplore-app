@@ -7,11 +7,9 @@
 import { AgGridLocales, LANG_ENGLISH, LANG_FRENCH } from '@gridsuite/commons-ui';
 
 // At the moment, only the French locale is needed
-export const AggridLocales = {
+export const AGGRID_LOCALES = {
     [LANG_FRENCH]: {
         noRowsToShow: 'Aucune Donnée',
-        thousandSeparator: ' ',
-        decimalSeparator: ',',
     },
     [LANG_ENGLISH]: {
         noRowsToShow: 'No data',
