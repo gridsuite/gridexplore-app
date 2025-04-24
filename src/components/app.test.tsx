@@ -30,6 +30,7 @@ afterEach(() => {
 
 it('renders', async () => {
     const root = createRoot(container!);
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () =>
         root.render(
             <IntlProvider locale="en">

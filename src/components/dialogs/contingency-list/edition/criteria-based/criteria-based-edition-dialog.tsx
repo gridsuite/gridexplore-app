@@ -17,7 +17,6 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
-import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/types';
 import {
@@ -27,7 +26,11 @@ import {
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import { setItemSelectionForCopy } from '../../../../../redux/actions';
 import { useParameterState } from '../../../use-parameters-dialog';
-import { CriteriaBasedEditionFormData } from '../../../../../utils/rest-api';
+import {
+    CriteriaBasedEditionFormData,
+    getContingencyList,
+    saveCriteriaBasedContingencyList,
+} from '../../../../../utils/rest-api';
 import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
 
 const schema = yup.object().shape({
