@@ -12,7 +12,6 @@ import {
     logout,
     TopBar,
     UserManagerState,
-    useGlobalAnnouncement,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -49,8 +48,6 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
     const [enableDeveloperModeLocal, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const searchInputRef = useRef<any | null>(null);
-
-    const announcementInfos = useGlobalAnnouncement(user);
 
     useEffect(() => {
         if (user !== null) {
@@ -93,7 +90,6 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
             language={languageLocal}
             globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
             additionalModulesPromise={getServersInfos as () => Promise<GridSuiteModule[]>}
-            announcementInfos={announcementInfos}
         >
             {user && <SearchBar inputRef={searchInputRef} />}
         </TopBar>

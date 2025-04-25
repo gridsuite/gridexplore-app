@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
+    AnnouncementNotification,
     AuthenticationRouter,
     CardErrorBoundary,
     getComputedLanguage,
@@ -180,6 +181,7 @@ export default function App() {
             }}
         >
             <AppTopBar userManagerInstance={userManager.instance} />
+            <AnnouncementNotification user={user} />
             <CardErrorBoundary>
                 <div
                     style={{
