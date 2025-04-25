@@ -35,6 +35,7 @@ export const DialogsId = {
     RENAME_DIRECTORY: 'rename_directory',
     DELETE_DIRECTORY: 'delete_directory',
     DIRECTORY_PROPERTIES: 'directory_properties',
+    EDIT_PARAMETERS: 'edit_parameters',
     NONE: 'none',
 };
 
