@@ -221,8 +221,8 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...descriptionEn,
         ...equipmentsEn,
         ...csvEn,
-        ...messages_plugins.en, // keep it at the end to allow translation overwriting
         ...parametersEn,
+        ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
         ...messages_fr,
@@ -245,8 +245,8 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...descriptionFr,
         ...equipmentsFr,
         ...csvFr,
-        ...messages_plugins.fr, // keep it at the end to allow translation overwriting
         ...parametersFr,
+        ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
 
