@@ -48,6 +48,8 @@ import {
     networkModificationsFr,
     multipleSelectionDialogEn,
     multipleSelectionDialogFr,
+    parametersEn,
+    parametersFr,
     SnackbarProvider,
     tableEn,
     tableFr,
@@ -219,6 +221,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...descriptionEn,
         ...equipmentsEn,
         ...csvEn,
+        ...parametersEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -242,6 +245,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...descriptionFr,
         ...equipmentsFr,
         ...csvFr,
+        ...parametersFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

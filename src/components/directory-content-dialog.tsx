@@ -22,6 +22,7 @@ import {
     ExpertFilterEditionDialog,
     ExplicitNamingFilterEditionDialog,
     isStudyMetadata,
+    LoadFlowParametersEditionDialog,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
@@ -69,6 +70,9 @@ function DirectoryContentDialog(
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
+    const enableDeveloperMode = useSelector((state: AppState) => state.enableDeveloperMode);
+    const user = useSelector((state: AppState) => state.user);
+
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [elementName, setElementName] = useState('');
 
@@ -148,6 +152,14 @@ function DirectoryContentDialog(
         setElementName('');
     }, [setActiveElement, setOpenDialog]);
 
+    const [currentParametersId, setCurrentParametersId] = useState<UUID>();
+    const handleCloseParametersDialog = useCallback(() => {
+        setOpenDialog(constants.DialogsId.NONE);
+        setCurrentParametersId(undefined);
+        setActiveElement(undefined);
+        setElementName('');
+    }, [setActiveElement, setOpenDialog]);
+
     useImperativeHandle(
         refApi,
         () => ({
@@ -202,6 +214,10 @@ function DirectoryContentDialog(
                                 setCurrentNetworkModificationId(event.data.elementUuid);
                                 setOpenDialog(subtype);
                             }
+                            break;
+                        case ElementType.LOADFLOW_PARAMETERS:
+                            setCurrentParametersId(event.data.elementUuid);
+                            setOpenDialog(constants.DialogsId.EDIT_PARAMETERS);
                             break;
                         default:
                             break;
@@ -320,6 +336,21 @@ function DirectoryContentDialog(
                 activeDirectory={activeDirectory}
                 language={languageLocal}
                 description={activeElement.description}
+            />
+        );
+    }
+    if (currentParametersId !== undefined && activeElement) {
+        return (
+            <LoadFlowParametersEditionDialog
+                id={currentParametersId}
+                open
+                onClose={handleCloseParametersDialog}
+                titleId="editParameters"
+                name={elementName}
+                description={activeElement.description}
+                user={user}
+                language={languageLocal}
+                enableDeveloperMode={enableDeveloperMode}
             />
         );
     }
