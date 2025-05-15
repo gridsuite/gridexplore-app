@@ -19,7 +19,6 @@ import {
 } from '@gridsuite/commons-ui';
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
-import { User } from 'oidc-client';
 import { UUID } from 'crypto';
 import { getAppName, PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME } from './config-params';
 import { store } from '../redux/store';
@@ -28,7 +27,7 @@ import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 import { AppState } from '../redux/types';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
-import { HTTP_FORBIDDEN, HTTP_OK } from './UIconstants';
+import { HTTP_OK } from './UIconstants';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/config`;
@@ -153,34 +152,6 @@ const getContingencyUriParamType = (contingencyListType: string | null | undefin
             return null;
     }
 };
-
-export function fetchValidateUser(user: User) {
-    const sub = user?.profile?.sub;
-    if (!sub) {
-        return Promise.reject(new Error(`Error : Fetching access for missing user.profile.sub : ${user}`));
-    }
-
-    console.info(`Fetching access for user...`);
-    const CheckAccessUrl = `${PREFIX_USER_ADMIN_SERVER_QUERIES}/v1/users/${sub}`;
-    console.debug(CheckAccessUrl);
-
-    return backendFetch(
-        CheckAccessUrl,
-        {
-            method: 'head',
-        },
-        user?.id_token
-    )
-        .then((response) => {
-            return response.status === HTTP_OK;
-        })
-        .catch((error) => {
-            if (error.status === HTTP_FORBIDDEN) {
-                return false;
-            }
-            throw error;
-        });
-}
 
 export function fetchIdpSettings() {
     return fetch('idpSettings.json').then((res) => res.json());
