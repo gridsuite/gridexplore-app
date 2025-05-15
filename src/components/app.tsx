@@ -9,12 +9,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
+    AnnouncementNotification,
     AuthenticationRouter,
     CardErrorBoundary,
     getComputedLanguage,
     getPreLoginPath,
     GsLangUser,
     initializeAuthenticationProd,
+    NotificationsUrlKeys,
     useNotificationsListener,
     UserManagerState,
     useSnackMessage,
@@ -36,7 +38,6 @@ import DirectoryContent from './directory-content';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
 import { AppDispatch } from '../redux/store';
 import { AppState } from '../redux/types';
-import { NotificationUrlKeys } from '../utils/notificationsProvider-utils';
 
 export default function App() {
     const { snackError } = useSnackMessage();
@@ -110,7 +111,7 @@ export default function App() {
         [updateParams, snackError]
     );
 
-    useNotificationsListener(NotificationUrlKeys.CONFIG, {
+    useNotificationsListener(NotificationsUrlKeys.CONFIG, {
         listenerCallbackMessage: getConfigParameter,
     });
 
@@ -180,6 +181,7 @@ export default function App() {
             }}
         >
             <AppTopBar userManagerInstance={userManager.instance} />
+            <AnnouncementNotification user={user} />
             <CardErrorBoundary>
                 <div
                     style={{
