@@ -20,5 +20,4 @@ export const ContingencyListType = {
         id: 'IDENTIFIERS',
         label: 'contingencyList.explicitNaming',
     },
-    SCRIPT: { id: 'SCRIPT', label: 'contingencyList.script' },
 };

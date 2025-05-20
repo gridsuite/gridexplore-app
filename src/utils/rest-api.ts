@@ -142,8 +142,6 @@ export function backendFetchText(url: Url, init: InitRequest) {
 
 const getContingencyUriParamType = (contingencyListType: string | null | undefined) => {
     switch (contingencyListType) {
-        case ContingencyListType.SCRIPT.id:
-            return CONTINGENCY_ENDPOINTS.SCRIPT_CONTINGENCY_LISTS;
         case ContingencyListType.CRITERIA_BASED.id:
             return CONTINGENCY_ENDPOINTS.FORM_CONTINGENCY_LISTS;
         case ContingencyListType.EXPLICIT_NAMING.id:
@@ -625,25 +623,6 @@ export function saveCriteriaBasedContingencyList(id: string, form: CriteriaBased
             equipmentType,
             nominalVoltage1: criteriaBased?.nominalVoltage1 ?? -1,
         }),
-    });
-}
-
-/**
- * Saves a script contingency list
- * @returns {Promise<Response>}
- */
-export function saveScriptContingencyList(scriptContingencyList: Script, name: string, description: string) {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('name', name);
-    urlSearchParams.append('description', description);
-    urlSearchParams.append('contingencyListType', ContingencyListType.SCRIPT.id);
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/contingency-lists/${
-        scriptContingencyList.id
-    }?${urlSearchParams.toString()}`;
-    return backendFetch(url, {
-        method: 'put',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(scriptContingencyList),
     });
 }
 
