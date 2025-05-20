@@ -349,6 +349,7 @@ function DirectoryContentDialog(
                 name={elementName}
                 description={activeElement.description}
                 user={user}
+                activeDirectory={activeDirectory}
                 language={languageLocal}
                 enableDeveloperMode={enableDeveloperMode}
             />
