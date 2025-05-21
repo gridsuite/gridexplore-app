@@ -351,9 +351,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         () =>
             selectedElements.length === 1 &&
             selectedElements[0].type === ElementType.CASE &&
-            selectedElements[0].hasMetadata &&
-            directoryWritable,
-        [selectedElements, directoryWritable]
+            selectedElements[0].hasMetadata,
+        [selectedElements]
     );
 
     const allowsCopyContingencyToScript = useCallback(
