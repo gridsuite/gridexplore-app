@@ -14,7 +14,6 @@ import {
     unscrollableDialogStyles,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import ScriptInputForm from '../../script/script-input-form';
 import { AppState } from '../../../../../redux/types';
 
 export default function ScriptEditionForm() {
@@ -32,7 +31,6 @@ export default function ScriptEditionForm() {
             <Box sx={unscrollableDialogStyles.unscrollableHeader}>
                 <DescriptionField />
             </Box>
-            <ScriptInputForm />
         </>
     );
 }
