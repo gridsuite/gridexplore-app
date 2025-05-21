@@ -85,7 +85,6 @@
     "NETWORK_VISUALIZATIONS_PARAMETERS": "Settings (Network visualizations)",
     "DIAGRAM_CONFIG": "Network area diagram",
     "contingencyList.criteriaBased": "Criteria based",
-    "contingencyList.script": "Script",
     "contingencyList.explicitNaming": "Explicit naming",
     "distributionKey": "Distribution key",
     "CSVFileCommentContingencyList1": "# Use \"|\" as a separator if a contingency contains several equipments",

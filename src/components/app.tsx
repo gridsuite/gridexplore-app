@@ -24,13 +24,7 @@ import {
 import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
 import { selectComputedLanguage, selectEnableDeveloperMode, selectLanguage, selectTheme } from '../redux/actions';
-import {
-    ConfigParameters,
-    fetchConfigParameter,
-    fetchConfigParameters,
-    fetchIdpSettings,
-    fetchValidateUser,
-} from '../utils/rest-api';
+import { ConfigParameters, fetchConfigParameter, fetchConfigParameters, fetchIdpSettings } from '../utils/rest-api';
 import { APP_NAME, COMMON_APP_NAME, PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import AppTopBar from './app-top-bar';
 import TreeViewsContainer from './tree-views-container';
@@ -137,7 +131,6 @@ export default function App() {
                         dispatch,
                         initialMatchSilentRenewCallbackUrl != null,
                         fetchIdpSettings,
-                        fetchValidateUser,
                         initialMatchSigninCallbackUrl != null
                     ),
                     error: null,

@@ -36,7 +36,6 @@ export type ContingencyListFormData = {
         [FieldConstants.EQUIPMENT_IDS]?: (string | null | undefined)[];
     }[];
     [FieldConstants.CONTINGENCY_LIST_TYPE]?: string | null;
-    [FieldConstants.SCRIPT]?: string | null;
     [FieldConstants.EQUIPMENT_TYPE]?: string | null;
     [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
 };
@@ -60,7 +59,6 @@ export const getContingencyListEmptyFormData = (name = '') => ({
     [FieldConstants.DESCRIPTION]: '',
     [FieldConstants.EQUIPMENT_TABLE]: makeDefaultTableRows(),
     [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
-    [FieldConstants.SCRIPT]: '',
     [FieldConstants.EQUIPMENT_TYPE]: null,
     ...getCriteriaBasedFormData(),
 });
@@ -93,7 +91,6 @@ export const getExplicitNamingFormDataFromFetchedElement = (response: any, name:
 };
 
 export const getScriptFormDataFromFetchedElement = (response: any, name: string, description: string) => ({
-    [FieldConstants.SCRIPT]: response.script,
     [FieldConstants.NAME]: name,
     [FieldConstants.DESCRIPTION]: description,
 });
@@ -117,9 +114,6 @@ export const getFormContent = (
                 nominalVoltage1: criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE_1],
                 nominalVoltage2: criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE_2],
             };
-        }
-        case ContingencyListType.SCRIPT.id: {
-            return { script: contingencyList[FieldConstants.SCRIPT] };
         }
         default: {
             console.info(`Unknown contingency list type '${contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE]}'`);

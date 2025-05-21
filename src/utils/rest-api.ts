@@ -19,7 +19,6 @@ import {
 } from '@gridsuite/commons-ui';
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
-import { User } from 'oidc-client';
 import { UUID } from 'crypto';
 import { getAppName, PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME } from './config-params';
 import { store } from '../redux/store';
@@ -28,7 +27,7 @@ import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 import { AppState } from '../redux/types';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
-import { HTTP_FORBIDDEN, HTTP_OK } from './UIconstants';
+import { HTTP_OK } from './UIconstants';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/config`;
@@ -143,8 +142,6 @@ export function backendFetchText(url: Url, init: InitRequest) {
 
 const getContingencyUriParamType = (contingencyListType: string | null | undefined) => {
     switch (contingencyListType) {
-        case ContingencyListType.SCRIPT.id:
-            return CONTINGENCY_ENDPOINTS.SCRIPT_CONTINGENCY_LISTS;
         case ContingencyListType.CRITERIA_BASED.id:
             return CONTINGENCY_ENDPOINTS.FORM_CONTINGENCY_LISTS;
         case ContingencyListType.EXPLICIT_NAMING.id:
@@ -153,34 +150,6 @@ const getContingencyUriParamType = (contingencyListType: string | null | undefin
             return null;
     }
 };
-
-export function fetchValidateUser(user: User) {
-    const sub = user?.profile?.sub;
-    if (!sub) {
-        return Promise.reject(new Error(`Error : Fetching access for missing user.profile.sub : ${user}`));
-    }
-
-    console.info(`Fetching access for user...`);
-    const CheckAccessUrl = `${PREFIX_USER_ADMIN_SERVER_QUERIES}/v1/users/${sub}`;
-    console.debug(CheckAccessUrl);
-
-    return backendFetch(
-        CheckAccessUrl,
-        {
-            method: 'head',
-        },
-        user?.id_token
-    )
-        .then((response) => {
-            return response.status === HTTP_OK;
-        })
-        .catch((error) => {
-            if (error.status === HTTP_FORBIDDEN) {
-                return false;
-            }
-            throw error;
-        });
-}
 
 export function fetchIdpSettings() {
     return fetch('idpSettings.json').then((res) => res.json());
@@ -654,25 +623,6 @@ export function saveCriteriaBasedContingencyList(id: string, form: CriteriaBased
             equipmentType,
             nominalVoltage1: criteriaBased?.nominalVoltage1 ?? -1,
         }),
-    });
-}
-
-/**
- * Saves a script contingency list
- * @returns {Promise<Response>}
- */
-export function saveScriptContingencyList(scriptContingencyList: Script, name: string, description: string) {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('name', name);
-    urlSearchParams.append('description', description);
-    urlSearchParams.append('contingencyListType', ContingencyListType.SCRIPT.id);
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/contingency-lists/${
-        scriptContingencyList.id
-    }?${urlSearchParams.toString()}`;
-    return backendFetch(url, {
-        method: 'put',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(scriptContingencyList),
     });
 }
 

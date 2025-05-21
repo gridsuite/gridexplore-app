@@ -32,7 +32,6 @@ import { getFilterById, updateElement } from '../utils/rest-api';
 import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import CompositeModificationDialog from './dialogs/network-modification/composite-modification/composite-modification-dialog';
 import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
-import ScriptEditionDialog from './dialogs/contingency-list/edition/script/script-edition-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import { setActiveDirectory, setItemSelectionForCopy } from '../redux/actions';
 import * as constants from '../utils/UIconstants';
@@ -143,15 +142,6 @@ function DirectoryContentDialog(
         setElementName('');
     }, [setActiveElement, setOpenDialog]);
 
-    /* Script contingency list dialog: window status value for editing a script contingency list */
-    const [currentScriptContingencyListId, setCurrentScriptContingencyListId] = useState<UUID>();
-    const handleCloseScriptContingency = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
-        setCurrentScriptContingencyListId(undefined);
-        setActiveElement(undefined);
-        setElementName('');
-    }, [setActiveElement, setOpenDialog]);
-
     const [currentParametersId, setCurrentParametersId] = useState<UUID>();
     const handleCloseParametersDialog = useCallback(() => {
         setOpenDialog(constants.DialogsId.NONE);
@@ -191,9 +181,6 @@ function DirectoryContentDialog(
                         case ElementType.CONTINGENCY_LIST:
                             if (subtype === ContingencyListType.CRITERIA_BASED.id) {
                                 setCurrentFiltersContingencyListId(event.data.elementUuid);
-                                setOpenDialog(subtype);
-                            } else if (subtype === ContingencyListType.SCRIPT.id) {
-                                setCurrentScriptContingencyListId(event.data.elementUuid);
                                 setOpenDialog(subtype);
                             } else if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
                                 setCurrentExplicitNamingContingencyListId(event.data.elementUuid);
@@ -275,20 +262,7 @@ function DirectoryContentDialog(
             />
         );
     }
-    if (currentScriptContingencyListId !== undefined && activeElement) {
-        return (
-            <ScriptEditionDialog
-                open
-                titleId="editContingencyList"
-                contingencyListId={currentScriptContingencyListId}
-                contingencyListType={ContingencyListType.SCRIPT.id}
-                onClose={handleCloseScriptContingency}
-                name={elementName}
-                broadcastChannel={broadcastChannel}
-                description={activeElement.description}
-            />
-        );
-    }
+
     if (currentExplicitNamingContingencyListId !== undefined && activeElement) {
         return (
             <ExplicitNamingEditionDialog
