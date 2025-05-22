@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { type SyntheticEvent, useEffect, useState } from 'react';
+import { type SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Divider, List, ListItem } from '@mui/material';
 import { useForm } from 'react-hook-form';
@@ -26,14 +26,6 @@ import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
-
-const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
-});
-
-const emptyFormData = (name?: string) => ({
-    [FieldConstants.NAME]: name,
-});
 
 interface FormData {
     [FieldConstants.NAME]: string;
@@ -64,8 +56,21 @@ export default function CompositeModificationDialog({
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
     const dispatch = useDispatch();
 
+    const schema = useMemo(
+        () =>
+            yup.object().shape({
+                [FieldConstants.NAME]: yup
+                    .string()
+                    .trim()
+                    .required(intl.formatMessage({ id: 'nameEmpty' })),
+            }),
+        [intl]
+    );
+
     const methods = useForm<FormData>({
-        defaultValues: emptyFormData(name),
+        defaultValues: {
+            [FieldConstants.NAME]: name,
+        },
         resolver: yupResolver(schema),
     });
 

@@ -7,11 +7,11 @@
 import { useForm } from 'react-hook-form';
 import { Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import {
     CustomMuiDialog,
     DescriptionField,
-    ElementAttributes,
+    type ElementAttributes,
     ElementType,
     ErrorInput,
     FieldConstants,
@@ -19,26 +19,26 @@ import {
     isObjectEmpty,
     keyGenerator,
     ModifyElementSelection,
-    Parameter,
+    type Parameter,
     useConfidentialityWarning,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { UUID } from 'crypto';
+import type { UUID } from 'crypto';
 import UploadNewCase from '../commons/upload-new-case';
 import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
 import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import ImportParametersSection from './importParametersSection';
 import { addUploadingElement, removeUploadingElement, setActiveDirectory } from '../../../redux/actions';
 import {
-    createStudyDialogFormValidationSchema,
-    CreateStudyDialogFormValues,
+    type CreateStudyDialogFormValues,
     getCreateStudyDialogFormDefaultValues,
+    getCreateStudyDialogFormValidationSchema,
 } from './create-study-dialog-utils';
 import PrefilledNameInput from '../commons/prefilled-name-input';
 import { handleMaxElementsExceededError, handleNotAllowedError } from '../../utils/rest-errors';
-import { AppState, UploadingElement } from '../../../redux/types';
+import type { AppState, UploadingElement } from '../../../redux/types';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -83,6 +83,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
 
     const { elementUuid, elementName } = providedExistingCase || {};
 
+    const createStudyDialogFormValidationSchema = useMemo(() => getCreateStudyDialogFormValidationSchema(intl), [intl]);
     const createStudyFormMethods = useForm<CreateStudyDialogFormValues>({
         defaultValues: getCreateStudyDialogFormDefaultValues({
             directory: activeDirectory,

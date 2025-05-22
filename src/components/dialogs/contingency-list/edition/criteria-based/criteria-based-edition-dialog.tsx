@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { useIntl } from 'react-intl';
 import {
     CustomMuiDialog,
     FieldConstants,
@@ -16,7 +17,7 @@ import {
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppState } from '../../../../../redux/types';
@@ -29,13 +30,6 @@ import { setItemSelectionForCopy } from '../../../../../redux/actions';
 import { useParameterState } from '../../../use-parameters-dialog';
 import { type CriteriaBasedEditionFormData } from '../../../../../utils/rest-api';
 import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
-
-const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
-    [FieldConstants.EQUIPMENT_TYPE]: yup.string().required(),
-    [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
-    ...getCriteriaBasedSchema(),
-});
 
 export interface CriteriaBasedEditionDialogProps {
     contingencyListId: string;
@@ -63,6 +57,22 @@ export default function CriteriaBasedEditionDialog({
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const dispatch = useDispatch();
+    const intl = useIntl();
+
+    const schema = useMemo(
+        () =>
+            yup.object().shape({
+                [FieldConstants.NAME]: yup
+                    .string()
+                    .trim()
+                    .required(intl.formatMessage({ id: 'nameEmpty' })),
+                [FieldConstants.EQUIPMENT_TYPE]: yup.string().required(),
+                [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
+                ...getCriteriaBasedSchema(),
+            }),
+        [intl]
+    );
+
     const methods = useForm<CriteriaBasedEditionFormData>({
         defaultValues: getContingencyListEmptyFormData(name),
         resolver: yupResolver<CriteriaBasedEditionFormData>(schema),

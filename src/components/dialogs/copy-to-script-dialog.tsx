@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,14 +16,6 @@ import * as yup from 'yup';
 import { getNameCandidate } from '../../utils/rest-api';
 import type { AppState } from '../../redux/types';
 import { handleGenericTxtError } from '../utils/rest-errors';
-
-const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
-});
-
-const emptyFormData = {
-    [FieldConstants.NAME]: '',
-};
 
 export interface CopyToScriptDialogProps {
     id: string;
@@ -64,8 +56,22 @@ export default function CopyToScriptDialog({
     const [loading, setLoading] = useState(false);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
+
+    const schema = useMemo(
+        () =>
+            yup.object().shape({
+                [FieldConstants.NAME]: yup
+                    .string()
+                    .trim()
+                    .required(intl.formatMessage({ id: 'nameEmpty' })),
+            }),
+        [intl]
+    );
+
     const methods = useForm<FormData>({
-        defaultValues: emptyFormData,
+        defaultValues: {
+            [FieldConstants.NAME]: '',
+        },
         resolver: yupResolver(schema),
     });
 

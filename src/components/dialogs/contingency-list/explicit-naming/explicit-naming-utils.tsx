@@ -5,24 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { type IntlShape } from 'react-intl';
 import * as yup from 'yup';
 import type { ArraySchema } from 'yup';
 import { FieldConstants } from '@gridsuite/commons-ui';
 import { ContingencyListType } from '../../../../utils/elementType';
 
-const getExplicitNamingConditionSchema = (schema: ArraySchema<any, any, any, any>) =>
-    schema
+function getExplicitNamingConditionSchema(intl: IntlShape, schema: ArraySchema<any, any, any, any>) {
+    return schema
         .min(1, 'contingencyTableContainAtLeastOneRowError')
         .test(
             'rowWithoutName',
-            'contingencyTablePartiallyDefinedError',
+            intl.formatMessage({ id: 'contingencyTablePartiallyDefinedError' }),
             (array) => !array.some((row: any) => !row[FieldConstants.CONTINGENCY_NAME]?.trim())
         )
         .test(
             'rowWithoutEquipments',
-            'contingencyTablePartiallyDefinedError',
+            intl.formatMessage({ id: 'contingencyTablePartiallyDefinedError' }),
             (array) => !array.some((row: any) => !row[FieldConstants.EQUIPMENT_IDS]?.length)
         );
+}
 
 const getSchema = () =>
     yup
@@ -35,15 +37,17 @@ const getSchema = () =>
         ) // we remove empty lines
         .compact((row) => !row[FieldConstants.CONTINGENCY_NAME] && !row[FieldConstants.EQUIPMENT_IDS]?.length);
 
-export const getExplicitNamingSchema = () => ({
-    [FieldConstants.EQUIPMENT_TABLE]: getSchema().when([FieldConstants.CONTINGENCY_LIST_TYPE], {
-        is: ContingencyListType.EXPLICIT_NAMING.id,
-        then: (schema) => getExplicitNamingConditionSchema(schema),
-    }),
-});
-
-export const getExplicitNamingEditSchema = () => {
+export function getExplicitNamingSchema(intl: IntlShape) {
     return {
-        [FieldConstants.EQUIPMENT_TABLE]: getExplicitNamingConditionSchema(getSchema()),
+        [FieldConstants.EQUIPMENT_TABLE]: getSchema().when([FieldConstants.CONTINGENCY_LIST_TYPE], {
+            is: ContingencyListType.EXPLICIT_NAMING.id,
+            then: (schema) => getExplicitNamingConditionSchema(intl, schema),
+        }),
     };
-};
+}
+
+export function getExplicitNamingEditSchema(intl: IntlShape) {
+    return {
+        [FieldConstants.EQUIPMENT_TABLE]: getExplicitNamingConditionSchema(intl, getSchema()),
+    };
+}

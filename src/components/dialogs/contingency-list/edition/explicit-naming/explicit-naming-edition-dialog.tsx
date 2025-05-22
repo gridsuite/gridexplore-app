@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { useIntl } from 'react-intl';
 import {
     CustomMuiDialog,
     FieldConstants,
@@ -15,7 +16,7 @@ import {
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
 import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -37,13 +38,6 @@ interface ExplicitNamingEditionFormData {
         [FieldConstants.EQUIPMENT_IDS]?: (string | null | undefined)[];
     }[];
 }
-
-const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
-    [FieldConstants.EQUIPMENT_TYPE]: yup.string().nullable(),
-    [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
-    ...getExplicitNamingEditSchema(),
-});
 
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
 
@@ -72,6 +66,22 @@ export default function ExplicitNamingEditionDialog({
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const dispatch = useDispatch();
+    const intl = useIntl();
+
+    const schema = useMemo(
+        () =>
+            yup.object().shape({
+                [FieldConstants.NAME]: yup
+                    .string()
+                    .trim()
+                    .required(intl.formatMessage({ id: 'nameEmpty' })),
+                [FieldConstants.EQUIPMENT_TYPE]: yup.string().nullable(),
+                [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
+                ...getExplicitNamingEditSchema(intl),
+            }),
+        [intl]
+    );
+
     const methods = useForm({
         defaultValues: emptyFormData(name),
         resolver: yupResolver(schema),

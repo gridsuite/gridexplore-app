@@ -8,6 +8,7 @@
 import { type ElementAttributes, FieldConstants, MAX_CHAR_DESCRIPTION, type Parameter } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import type { UUID } from 'crypto';
+import { IntlShape } from 'react-intl';
 
 export const getCreateStudyDialogFormDefaultValues = ({
     // @ts-expect-error how react-hook-form manage strings like UUIDs?
@@ -33,17 +34,21 @@ export const getCreateStudyDialogFormDefaultValues = ({
     [FieldConstants.CASE_NAME]: '',
 });
 
-export const createStudyDialogFormValidationSchema = yup.object().shape({
-    [FieldConstants.STUDY_NAME]: yup.string().trim().required('nameEmpty'),
-    [FieldConstants.FORMATTED_CASE_PARAMETERS]: yup.mixed<Parameter[]>().required(),
-    [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
-    [FieldConstants.CURRENT_PARAMETERS]: yup.mixed<Record<string, string>>().required(),
-    [FieldConstants.CASE_UUID]: yup.string<UUID>().nullable().uuid().required(),
-    [FieldConstants.CASE_FILE]: yup.mixed<ElementAttributes>().nullable().required(),
-    [FieldConstants.DIRECTORY]: yup.string<UUID>().uuid().required(),
-    [FieldConstants.CASE_FORMAT]: yup.string().optional(),
-    [FieldConstants.CASE_NAME]: yup.string().optional(),
-});
+export const getCreateStudyDialogFormValidationSchema = (intl: IntlShape) =>
+    yup.object().shape({
+        [FieldConstants.STUDY_NAME]: yup
+            .string()
+            .trim()
+            .required(intl.formatMessage({ id: 'nameEmpty' })),
+        [FieldConstants.FORMATTED_CASE_PARAMETERS]: yup.mixed<Parameter[]>().required(),
+        [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
+        [FieldConstants.CURRENT_PARAMETERS]: yup.mixed<Record<string, string>>().required(),
+        [FieldConstants.CASE_UUID]: yup.string<UUID>().nullable().uuid().required(),
+        [FieldConstants.CASE_FILE]: yup.mixed<ElementAttributes>().nullable().required(),
+        [FieldConstants.DIRECTORY]: yup.string<UUID>().uuid().required(),
+        [FieldConstants.CASE_FORMAT]: yup.string().optional(),
+        [FieldConstants.CASE_NAME]: yup.string().optional(),
+    });
 
 export interface CreateStudyDialogFormValues {
     [FieldConstants.STUDY_NAME]: string;
