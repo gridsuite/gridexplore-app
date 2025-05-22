@@ -6,10 +6,11 @@
  */
 
 import * as yup from 'yup';
+import type { ArraySchema } from 'yup';
 import { FieldConstants } from '@gridsuite/commons-ui';
 import { ContingencyListType } from '../../../../utils/elementType';
 
-const getExplicitNamingConditionSchema = (schema: yup.ArraySchema<any, any, any, any>) =>
+const getExplicitNamingConditionSchema = (schema: ArraySchema<any, any, any, any>) =>
     schema
         .min(1, 'contingencyTableContainAtLeastOneRowError')
         .test(

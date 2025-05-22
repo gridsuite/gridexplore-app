@@ -6,6 +6,7 @@
  */
 
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 import { type Option } from '@gridsuite/commons-ui';
 import type { UUID } from 'crypto';
 
@@ -38,7 +39,7 @@ export const schema = yup.object().shape({
     [WRITE_GROUPS]: yup.array().of(groupSchema),
 });
 
-export type PermissionForm = yup.InferType<typeof schema>;
+export type PermissionForm = InferType<typeof schema>;
 
 export const emptyForm: PermissionForm = {
     [READ_ALL_USERS]: false,
