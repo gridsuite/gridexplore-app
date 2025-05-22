@@ -39,8 +39,6 @@ const PREFIX_FILTERS_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/filter/v1/fi
 const PREFIX_STUDY_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study`;
 const PREFIX_SPREADSHEET_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study-config`;
 
-export type Script = { id: string; script: string | null | undefined };
-
 export type KeyOfWithoutIndexSignature<T> = {
     // copy every declared property from T but remove index signatures
     [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
@@ -650,79 +648,12 @@ export function saveExplicitNamingContingencyList(
 }
 
 /**
- * Replace form contingency list with script contingency list
- * @returns {Promise<Response>}
- */
-export function replaceFormContingencyListWithScript(id: string, parentDirectoryUuid: UUID) {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
-
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${
-        CONTINGENCY_ENDPOINTS.FORM_CONTINGENCY_LISTS
-    }/${encodeURIComponent(id)}/replace-with-script?${urlSearchParams.toString()}`;
-
-    return backendFetch(url, {
-        method: 'post',
-    });
-}
-
-/**
- * Save new script contingency list from form contingency list
- * @returns {Promise<Response>}
- */
-export function newScriptFromFiltersContingencyList(id: string, newName: string, parentDirectoryUuid: UUID) {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
-
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${
-        CONTINGENCY_ENDPOINTS.FORM_CONTINGENCY_LISTS
-    }/${encodeURIComponent(id)}/new-script/${encodeURIComponent(newName)}?${urlSearchParams.toString()}`;
-
-    return backendFetch(url, {
-        method: 'post',
-    });
-}
-
-/**
  * Get filter by id
  * @returns {Promise<Response>}
  */
 export function getFilterById(id: string) {
     const url = `${PREFIX_FILTERS_QUERIES}/${id}`;
     return backendFetchJson(url, { method: 'get' });
-}
-
-/**
- * Replace filter with script filter
- * @returns {Promise<Response>}
- */
-export function replaceFiltersWithScript(id: string, parentDirectoryUuid: UUID) {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
-
-    const url =
-        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/filters/${encodeURIComponent(id)}/replace-with-script` +
-        `?${urlSearchParams.toString()}`;
-
-    return backendFetch(url, {
-        method: 'post',
-    });
-}
-
-/**
- * Save new script from filters
- * @returns {Promise<Response>}
- */
-export function newScriptFromFilter(id: string, newName: string, parentDirectoryUuid: UUID) {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/filters/${encodeURIComponent(
-        id
-    )}/new-script/${encodeURIComponent(newName)}?${urlSearchParams.toString()}`;
-
-    return backendFetch(url, {
-        method: 'post',
-    });
 }
 
 export function getCaseImportParameters(caseUuid: UUID) {

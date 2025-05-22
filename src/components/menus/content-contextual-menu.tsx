@@ -16,7 +16,6 @@ import {
     DoNotDisturbAlt as DoNotDisturbAltIcon,
     DownloadForOffline,
     DriveFileMove as DriveFileMoveIcon,
-    FileCopy as FileCopyIcon,
     FileCopyTwoTone as FileCopyTwoToneIcon,
     FileDownload,
     InsertDriveFile as InsertDriveFileIcon,
@@ -32,8 +31,6 @@ import {
 } from '@gridsuite/commons-ui';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
-import ReplaceWithScriptDialog from '../dialogs/replace-with-script-dialog';
-import CopyToScriptDialog from '../dialogs/copy-to-script-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
 import { DialogsId } from '../../utils/UIconstants';
 import {
@@ -42,14 +39,10 @@ import {
     duplicateSpreadsheetConfig,
     duplicateSpreadsheetConfigCollection,
     moveElementsToDirectory,
-    newScriptFromFilter,
-    newScriptFromFiltersContingencyList,
     PermissionType,
     renameElement,
-    replaceFiltersWithScript,
-    replaceFormContingencyListWithScript,
 } from '../../utils/rest-api';
-import { ContingencyListType, FilterType } from '../../utils/elementType';
+import { FilterType } from '../../utils/elementType';
 import CommonContextualMenu, { CommonContextualMenuProps } from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
@@ -59,7 +52,6 @@ import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { PARAM_LANGUAGE, PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import {
-    generateGenericPermissionErrorMessages,
     generateRenameErrorMessages,
     handleDeleteError,
     handleDuplicateError,
@@ -292,34 +284,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         generateRenameErrorMessages(intl)
     );
 
-    const [filtersReplaceWithScriptCB] = useDeferredFetch(
-        replaceFiltersWithScript,
-        handleCloseDialog,
-        generateGenericPermissionErrorMessages(intl),
-        handleGenericTxtError
-    );
-
-    const [newScriptFromFiltersContingencyListCB] = useDeferredFetch(
-        newScriptFromFiltersContingencyList,
-        handleCloseDialog,
-        generateGenericPermissionErrorMessages(intl),
-        handleGenericTxtError
-    );
-
-    const [replaceFormContingencyListWithScriptCB] = useDeferredFetch(
-        replaceFormContingencyListWithScript,
-        handleCloseDialog,
-        generateGenericPermissionErrorMessages(intl),
-        handleGenericTxtError
-    );
-
-    const [newScriptFromFilterCB] = useDeferredFetch(
-        newScriptFromFilter,
-        handleCloseDialog,
-        generateGenericPermissionErrorMessages(intl),
-        handleGenericTxtError
-    );
-
     const noCreationInProgress = useCallback(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
 
     const allowsDuplicateAndCopy = useCallback(() => {
@@ -354,24 +318,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             selectedElements[0].hasMetadata,
         [selectedElements]
     );
-
-    const allowsCopyContingencyToScript = useCallback(
-        () =>
-            selectedElements.length === 1 &&
-            selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id &&
-            directoryWritable,
-        [selectedElements, directoryWritable]
-    );
-
-    const allowsReplaceContingencyWithScript = useCallback(() => {
-        return (
-            selectedElements.length === 1 &&
-            selectedElements[0].type === ElementType.CONTINGENCY_LIST &&
-            selectedElements[0].subtype === ContingencyListType.CRITERIA_BASED.id &&
-            directoryWritable
-        );
-    }, [selectedElements, directoryWritable]);
 
     const allowsConvertFilterIntoExplicitNaming = useCallback(
         () =>
@@ -475,17 +421,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (allowsCopyContingencyToScript()) {
-            menuItems.push({ isDivider: true });
-            menuItems.push({
-                messageDescriptorId: 'copyToScript',
-                callback: () => {
-                    handleOpenDialog(DialogsId.COPY_FILTER_TO_SCRIPT_CONTINGENCY);
-                },
-                icon: <FileCopyIcon fontSize="small" />,
-            });
-        }
-
         if (allowsDownload()) {
             menuItems.push({
                 messageDescriptorId: 'download.button',
@@ -515,16 +450,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (allowsReplaceContingencyWithScript()) {
-            menuItems.push({
-                messageDescriptorId: 'replaceWithScript',
-                callback: () => {
-                    handleOpenDialog(DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY);
-                },
-                icon: <InsertDriveFileIcon fontSize="small" />,
-            });
-        }
-
         if (allowsConvertFilterIntoExplicitNaming()) {
             menuItems.push({
                 messageDescriptorId: 'convertFilterIntoExplicitNaming',
@@ -546,12 +471,10 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return menuItems;
     }, [
         allowsConvertFilterIntoExplicitNaming,
-        allowsCopyContingencyToScript,
         allowsCreateNewStudyFromCase,
         allowsDownload,
         allowsSpreadsheetCollection,
         allowsDuplicateAndCopy,
-        allowsReplaceContingencyWithScript,
         copyItem,
         downloadElements,
         duplicateItem,
@@ -617,60 +540,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         onExport={handleConvertCases}
                     />
                 );
-            case DialogsId.REPLACE_FILTER_BY_SCRIPT_CONTINGENCY:
-                return (
-                    <ReplaceWithScriptDialog
-                        id={activeElement ? activeElement.elementUuid : ''}
-                        open
-                        onClose={handleCloseDialog}
-                        // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
-                        onClick={(id) => replaceFormContingencyListWithScriptCB(id, selectedDirectory?.elementUuid)}
-                        title={intl.formatMessage({ id: 'replaceList' })}
-                    />
-                );
-            case DialogsId.COPY_FILTER_TO_SCRIPT_CONTINGENCY:
-                return (
-                    <CopyToScriptDialog
-                        id={activeElement ? activeElement.elementUuid : ''}
-                        open
-                        onClose={handleCloseDialog}
-                        onValidate={(id, newName) =>
-                            // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
-                            newScriptFromFiltersContingencyListCB(id, newName, selectedDirectory?.elementUuid)
-                        }
-                        currentName={activeElement ? activeElement.elementName : ''}
-                        title="copyToScriptList"
-                        // @ts-expect-error TODO: manage undefined case
-                        directoryUuid={selectedDirectory?.elementUuid}
-                        elementType={activeElement?.type}
-                    />
-                );
-            case DialogsId.REPLACE_FILTER_BY_SCRIPT:
-                return (
-                    <ReplaceWithScriptDialog
-                        id={activeElement ? activeElement.elementUuid : ''}
-                        open
-                        onClose={handleCloseDialog}
-                        // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
-                        onClick={(id) => filtersReplaceWithScriptCB(id, selectedDirectory?.elementUuid)}
-                        title={intl.formatMessage({ id: 'replaceList' })}
-                    />
-                );
-            case DialogsId.COPY_FILTER_TO_SCRIPT:
-                return (
-                    <CopyToScriptDialog
-                        id={activeElement ? activeElement.elementUuid : ''}
-                        open
-                        onClose={handleCloseDialog}
-                        // @ts-expect-error TODO TS2345: Type undefined is not assignable to type UUID
-                        onValidate={(id, newName) => newScriptFromFilterCB(id, newName, selectedDirectory?.elementUuid)}
-                        currentName={activeElement ? activeElement.elementName : ''}
-                        title="copyToScriptList"
-                        // @ts-expect-error TODO: manage undefined case
-                        directoryUuid={selectedDirectory?.elementUuid}
-                        elementType={activeElement?.type}
-                    />
-                );
+
             case DialogsId.CONVERT_TO_EXPLICIT_NAMING_FILTER:
                 return (
                     <FilterCreationDialog
