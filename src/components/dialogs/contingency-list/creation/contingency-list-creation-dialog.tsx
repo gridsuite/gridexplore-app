@@ -12,22 +12,22 @@ import {
     getCriteriaBasedSchema,
     MAX_CHAR_DESCRIPTION,
     useSnackMessage,
-    yupConfig as yup,
 } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { createContingencyList } from '../../../../utils/rest-api';
 import ContingencyListCreationForm from './contingency-list-creation-form';
 import {
-    ContingencyListFormData,
-    ContingencyListFormDataWithRequiredCriteria,
+    type ContingencyListFormData,
+    type ContingencyListFormDataWithRequiredCriteria,
     getContingencyListEmptyFormData,
     getFormContent,
 } from '../contingency-list-utils';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { useParameterState } from '../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
-import { AppState } from '../../../../redux/types';
+import type { AppState } from '../../../../redux/types';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-utils';
 import { handleNotAllowedError } from '../../../utils/rest-errors';
 

@@ -20,6 +20,7 @@ import {
     useNotificationsListener,
     UserManagerState,
     useSnackMessage,
+    useYupIntl,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
@@ -35,6 +36,7 @@ import { AppState } from '../redux/types';
 
 export default function App() {
     const { snackError } = useSnackMessage();
+    useYupIntl();
 
     const user = useSelector((state: AppState) => state.user);
 

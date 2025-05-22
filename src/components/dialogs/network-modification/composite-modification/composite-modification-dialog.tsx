@@ -4,25 +4,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { type SyntheticEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
+import { Box, Divider, List, ListItem } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { List, ListItem } from '@mui/material';
 import {
     CustomMuiDialog,
     FieldConstants,
-    NetworkModificationMetadata,
+    type NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
     unscrollableDialogStyles,
     useModificationLabelComputer,
     useSnackMessage,
-    yupConfig as yup,
 } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AppState } from '../../../../redux/types';
+import type { AppState } from '../../../../redux/types';
 import { useParameterState } from '../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';

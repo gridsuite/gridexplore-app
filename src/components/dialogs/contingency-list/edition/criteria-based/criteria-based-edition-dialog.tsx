@@ -12,14 +12,14 @@ import {
     MAX_CHAR_DESCRIPTION,
     NO_ITEM_SELECTION_FOR_COPY,
     useSnackMessage,
-    yupConfig as yup,
 } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
 import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/types';
+import type { AppState } from '../../../../../redux/types';
 import {
     getContingencyListEmptyFormData,
     getCriteriaBasedFormDataFromFetchedElement,
@@ -27,7 +27,7 @@ import {
 import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import { setItemSelectionForCopy } from '../../../../../redux/actions';
 import { useParameterState } from '../../../use-parameters-dialog';
-import { CriteriaBasedEditionFormData } from '../../../../../utils/rest-api';
+import { type CriteriaBasedEditionFormData } from '../../../../../utils/rest-api';
 import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
 
 const schema = yup.object().shape({

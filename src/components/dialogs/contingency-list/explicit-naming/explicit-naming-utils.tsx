@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FieldConstants, yupConfig as yup } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
+import { FieldConstants } from '@gridsuite/commons-ui';
 import { ContingencyListType } from '../../../../utils/elementType';
 
 const getExplicitNamingConditionSchema = (schema: yup.ArraySchema<any, any, any, any>) =>

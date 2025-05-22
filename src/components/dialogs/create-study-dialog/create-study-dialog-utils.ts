@@ -5,14 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    ElementAttributes,
-    FieldConstants,
-    MAX_CHAR_DESCRIPTION,
-    Parameter,
-    yupConfig as yup,
-} from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import { type ElementAttributes, FieldConstants, MAX_CHAR_DESCRIPTION, type Parameter } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
+import type { UUID } from 'crypto';
 
 export const getCreateStudyDialogFormDefaultValues = ({
     // @ts-expect-error how react-hook-form manage strings like UUIDs?

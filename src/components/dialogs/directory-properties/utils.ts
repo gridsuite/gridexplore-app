@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Option, yupConfig as yup } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import * as yup from 'yup';
+import { type Option } from '@gridsuite/commons-ui';
+import type { UUID } from 'crypto';
 
 export const READ_ALL_USERS = 'readAllUsers';
 export const READ_GROUPS = 'readGroups';

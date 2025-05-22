@@ -11,8 +11,8 @@ import {
     MAX_CHAR_DESCRIPTION,
     NO_ITEM_SELECTION_FOR_COPY,
     useSnackMessage,
-    yupConfig as yup,
 } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
@@ -25,7 +25,7 @@ import {
 } from '../../contingency-list-utils';
 import ExplicitNamingEditionForm from './explicit-naming-edition-form';
 import { setItemSelectionForCopy } from '../../../../../redux/actions';
-import { AppState } from '../../../../../redux/types';
+import type { AppState } from '../../../../../redux/types';
 import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-utils';
 
 interface ExplicitNamingEditionFormData {

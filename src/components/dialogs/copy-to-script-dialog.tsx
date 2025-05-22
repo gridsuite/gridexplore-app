@@ -9,18 +9,12 @@ import { useIntl } from 'react-intl';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CircularProgress, Grid } from '@mui/material';
-import {
-    CustomMuiDialog,
-    ElementType,
-    FieldConstants,
-    UniqueNameInput,
-    useSnackMessage,
-    yupConfig as yup,
-} from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import { CustomMuiDialog, ElementType, FieldConstants, UniqueNameInput, useSnackMessage } from '@gridsuite/commons-ui';
+import type { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
+import * as yup from 'yup';
 import { getNameCandidate } from '../../utils/rest-api';
-import { AppState } from '../../redux/types';
+import type { AppState } from '../../redux/types';
 import { handleGenericTxtError } from '../utils/rest-errors';
 
 const schema = yup.object().shape({
