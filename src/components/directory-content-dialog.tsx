@@ -313,7 +313,7 @@ function DirectoryContentDialog(
             />
         );
     }
-    if (currentParametersId !== undefined && activeElement) {
+    if (currentParametersId !== undefined && activeElement && activeDirectory) {
         return (
             <LoadFlowParametersEditionDialog
                 id={currentParametersId}
