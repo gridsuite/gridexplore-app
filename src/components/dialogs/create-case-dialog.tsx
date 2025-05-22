@@ -5,8 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useIntl } from 'react-intl';
 import { Grid } from '@mui/material';
+import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -18,21 +21,18 @@ import {
     FieldErrorAlert,
     isObjectEmpty,
     keyGenerator,
+    MAX_CHAR_DESCRIPTION,
     useConfidentialityWarning,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { createCase } from '../../../utils/rest-api';
-import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
-import { addUploadingElement, removeUploadingElement } from '../../../redux/actions';
-import UploadNewCase from '../commons/upload-new-case';
-import {
-    createCaseDialogFormValidationSchema,
-    getCreateCaseDialogFormValidationDefaultValues,
-} from './create-case-dialog-utils';
-import PrefilledNameInput from '../commons/prefilled-name-input';
-import { handleMaxElementsExceededError, handleNotAllowedError } from '../../utils/rest-errors';
-import { AppDispatch } from '../../../redux/store';
-import { AppState, UploadingElement } from '../../../redux/types';
+import { createCase } from '../../utils/rest-api';
+import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../utils/UIconstants';
+import { addUploadingElement, removeUploadingElement } from '../../redux/actions';
+import UploadNewCase from './commons/upload-new-case';
+import PrefilledNameInput from './commons/prefilled-name-input';
+import { handleMaxElementsExceededError, handleNotAllowedError } from '../utils/rest-errors';
+import type { AppDispatch } from '../../redux/store';
+import type { AppState, UploadingElement } from '../../redux/types';
 
 interface IFormData {
     [FieldConstants.CASE_NAME]: string;
@@ -49,9 +49,27 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
     const confidentialityWarningKey = useConfidentialityWarning();
+    const intl = useIntl();
+
+    const createCaseDialogFormValidationSchema = useMemo(
+        () =>
+            yup.object().shape({
+                [FieldConstants.CASE_NAME]: yup
+                    .string()
+                    .trim()
+                    .required(intl.formatMessage({ id: 'nameEmpty' })),
+                [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
+                [FieldConstants.CASE_FILE]: yup.mixed<File>().nullable().required(),
+            }),
+        [intl]
+    );
 
     const createCaseFormMethods = useForm<IFormData>({
-        defaultValues: getCreateCaseDialogFormValidationDefaultValues(),
+        defaultValues: {
+            [FieldConstants.CASE_NAME]: '',
+            [FieldConstants.DESCRIPTION]: '',
+            [FieldConstants.CASE_FILE]: null,
+        },
         resolver: yupResolver<IFormData>(createCaseDialogFormValidationSchema),
     });
 

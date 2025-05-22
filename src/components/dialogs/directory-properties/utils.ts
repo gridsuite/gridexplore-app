@@ -5,8 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Option, yupConfig as yup } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import * as yup from 'yup';
+import type { InferType } from 'yup';
+import { type Option } from '@gridsuite/commons-ui';
+import type { UUID } from 'crypto';
 
 export const READ_ALL_USERS = 'readAllUsers';
 export const READ_GROUPS = 'readGroups';
@@ -37,7 +39,7 @@ export const schema = yup.object().shape({
     [WRITE_GROUPS]: yup.array().of(groupSchema),
 });
 
-export type PermissionForm = yup.InferType<typeof schema>;
+export type PermissionForm = InferType<typeof schema>;
 
 export const emptyForm: PermissionForm = {
     [READ_ALL_USERS]: false,

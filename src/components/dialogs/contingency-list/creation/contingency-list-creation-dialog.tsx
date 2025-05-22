@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { useMemo } from 'react';
+import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import {
     CustomMuiDialog,
@@ -12,37 +14,24 @@ import {
     getCriteriaBasedSchema,
     MAX_CHAR_DESCRIPTION,
     useSnackMessage,
-    yupConfig as yup,
 } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { createContingencyList } from '../../../../utils/rest-api';
 import ContingencyListCreationForm from './contingency-list-creation-form';
 import {
-    ContingencyListFormData,
-    ContingencyListFormDataWithRequiredCriteria,
+    type ContingencyListFormData,
+    type ContingencyListFormDataWithRequiredCriteria,
     getContingencyListEmptyFormData,
     getFormContent,
 } from '../contingency-list-utils';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { useParameterState } from '../../use-parameters-dialog';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
-import { AppState } from '../../../../redux/types';
+import type { AppState } from '../../../../redux/types';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-utils';
 import { handleNotAllowedError } from '../../../utils/rest-errors';
-
-const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
-    [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
-    [FieldConstants.CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
-    [FieldConstants.EQUIPMENT_TYPE]: yup.string().when([FieldConstants.CONTINGENCY_LIST_TYPE], {
-        is: ContingencyListType.CRITERIA_BASED.id,
-        then: (schemaThen) => schemaThen.required(),
-        otherwise: (schemaOtherwise) => schemaOtherwise.nullable(),
-    }),
-    ...getExplicitNamingSchema(),
-    ...getCriteriaBasedSchema(),
-});
 
 const emptyFormData = getContingencyListEmptyFormData();
 
@@ -59,8 +48,28 @@ export default function ContingencyListCreationDialog({
 }: Readonly<ContingencyListCreationDialogProps>) {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const { snackError } = useSnackMessage();
-
+    const intl = useIntl();
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
+
+    const schema = useMemo(
+        () =>
+            yup.object().shape({
+                [FieldConstants.NAME]: yup
+                    .string()
+                    .trim()
+                    .required(intl.formatMessage({ id: 'nameEmpty' })),
+                [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
+                [FieldConstants.CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
+                [FieldConstants.EQUIPMENT_TYPE]: yup.string().when([FieldConstants.CONTINGENCY_LIST_TYPE], {
+                    is: ContingencyListType.CRITERIA_BASED.id,
+                    then: (schemaThen) => schemaThen.required(),
+                    otherwise: (schemaOtherwise) => schemaOtherwise.nullable(),
+                }),
+                ...getExplicitNamingSchema(intl),
+                ...getCriteriaBasedSchema(),
+            }),
+        [intl]
+    );
 
     const methods = useForm<ContingencyListFormData>({
         defaultValues: emptyFormData,

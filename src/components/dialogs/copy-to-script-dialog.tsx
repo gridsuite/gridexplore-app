@@ -4,32 +4,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CircularProgress, Grid } from '@mui/material';
-import {
-    CustomMuiDialog,
-    ElementType,
-    FieldConstants,
-    UniqueNameInput,
-    useSnackMessage,
-    yupConfig as yup,
-} from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import { CustomMuiDialog, ElementType, FieldConstants, UniqueNameInput, useSnackMessage } from '@gridsuite/commons-ui';
+import type { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
+import * as yup from 'yup';
 import { getNameCandidate } from '../../utils/rest-api';
-import { AppState } from '../../redux/types';
+import type { AppState } from '../../redux/types';
 import { handleGenericTxtError } from '../utils/rest-errors';
-
-const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
-});
-
-const emptyFormData = {
-    [FieldConstants.NAME]: '',
-};
 
 export interface CopyToScriptDialogProps {
     id: string;
@@ -70,8 +56,22 @@ export default function CopyToScriptDialog({
     const [loading, setLoading] = useState(false);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
+
+    const schema = useMemo(
+        () =>
+            yup.object().shape({
+                [FieldConstants.NAME]: yup
+                    .string()
+                    .trim()
+                    .required(intl.formatMessage({ id: 'nameEmpty' })),
+            }),
+        [intl]
+    );
+
     const methods = useForm<FormData>({
-        defaultValues: emptyFormData,
+        defaultValues: {
+            [FieldConstants.NAME]: '',
+        },
         resolver: yupResolver(schema),
     });
 
