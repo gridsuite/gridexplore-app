@@ -23,6 +23,7 @@ import {
     ExplicitNamingFilterEditionDialog,
     isStudyMetadata,
     LoadFlowParametersEditionDialog,
+    NetworkVisualizationsParametersEditionDialog,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
@@ -143,9 +144,11 @@ function DirectoryContentDialog(
     }, [setActiveElement, setOpenDialog]);
 
     const [currentParametersId, setCurrentParametersId] = useState<UUID>();
+    const [currentParametersType, setCurrentParametersType] = useState<ElementType>();
     const handleCloseParametersDialog = useCallback(() => {
         setOpenDialog(constants.DialogsId.NONE);
         setCurrentParametersId(undefined);
+        setCurrentParametersType(undefined);
         setActiveElement(undefined);
         setElementName('');
     }, [setActiveElement, setOpenDialog]);
@@ -203,7 +206,9 @@ function DirectoryContentDialog(
                             }
                             break;
                         case ElementType.LOADFLOW_PARAMETERS:
+                        case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                             setCurrentParametersId(event.data.elementUuid);
+                            setCurrentParametersType(event.data.type);
                             setOpenDialog(constants.DialogsId.EDIT_PARAMETERS);
                             break;
                         default:
@@ -314,20 +319,37 @@ function DirectoryContentDialog(
         );
     }
     if (currentParametersId !== undefined && activeElement && activeDirectory) {
-        return (
-            <LoadFlowParametersEditionDialog
-                id={currentParametersId}
-                open
-                onClose={handleCloseParametersDialog}
-                titleId="editParameters"
-                name={elementName}
-                description={activeElement.description}
-                user={user}
-                activeDirectory={activeDirectory}
-                language={languageLocal}
-                enableDeveloperMode={enableDeveloperMode}
-            />
-        );
+        if (currentParametersType === ElementType.LOADFLOW_PARAMETERS) {
+            return (
+                <LoadFlowParametersEditionDialog
+                    id={currentParametersId}
+                    open
+                    onClose={handleCloseParametersDialog}
+                    titleId="editParameters"
+                    name={elementName}
+                    description={activeElement.description}
+                    user={user}
+                    activeDirectory={activeDirectory}
+                    language={languageLocal}
+                    enableDeveloperMode={enableDeveloperMode}
+                />
+            );
+        }
+        if (currentParametersType === ElementType.NETWORK_VISUALIZATIONS_PARAMETERS) {
+            return (
+                <NetworkVisualizationsParametersEditionDialog
+                    id={currentParametersId}
+                    open
+                    onClose={handleCloseParametersDialog}
+                    titleId="editParameters"
+                    name={elementName}
+                    description={activeElement.description}
+                    user={user}
+                    activeDirectory={activeDirectory}
+                    language={languageLocal}
+                />
+            );
+        }
     }
 }
 
