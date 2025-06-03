@@ -267,7 +267,7 @@ export default function DirectoryContent() {
                 // ContentToolbar needs to be outside the DirectoryContentTable container otherwise it
                 // creates a visual offset rendering the last elements of a full table inaccessible
                 rows && rows.length > 0 && (
-                    <div style={{ ...styles.toolBarContainer }}>
+                    <Box flexShrink={0} sx={styles.toolBarContainer}>
                         <ContentToolbar selectedElements={checkedRows} />
                         <Button
                             variant="contained"
@@ -278,10 +278,17 @@ export default function DirectoryContent() {
                         >
                             <FormattedMessage id="createElement" />
                         </Button>
-                    </div>
+                    </Box>
                 )
             }
-            <Grid item sx={styles.highlightedElementAnimation as SxProps} xs={12} onContextMenu={onContextMenu}>
+            <Box
+                width="100%"
+                flexGrow={1}
+                minHeight={0}
+                overflow="auto"
+                sx={styles.highlightedElementAnimation as SxProps}
+                onContextMenu={onContextMenu}
+            >
                 {/* eslint-disable no-nested-ternary -- TODO split into sub components */}
                 {
                     // Here we wait for Metadata for the folder content
@@ -316,7 +323,7 @@ export default function DirectoryContent() {
                         />
                     )
                 }
-            </Grid>
+            </Box>
             <Box onMouseDown={handleBoxDownClick}>
                 {activeElement && (
                     <ContentContextualMenu
