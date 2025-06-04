@@ -22,7 +22,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
-import { Grid } from '@mui/material';
+import { Box } from '@mui/material';
 import { selectComputedLanguage, selectEnableDeveloperMode, selectLanguage, selectTheme } from '../redux/actions';
 import { ConfigParameters, fetchConfigParameter, fetchConfigParameters, fetchIdpSettings } from '../utils/rest-api';
 import { APP_NAME, COMMON_APP_NAME, PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
@@ -165,59 +165,38 @@ export default function App() {
         return undefined;
     }, [user, dispatch, updateParams, snackError]);
 
+    // We use <Box flex=.../> instead of <Grid/> because flex rules were too complexes or conflicts with MUI grid rules
     return (
-        <div
-            className="singlestretch-child"
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-            }}
-        >
-            <AppTopBar userManagerInstance={userManager.instance} />
-            <AnnouncementNotification user={user} />
-            <CardErrorBoundary>
-                <div
-                    style={{
-                        flexGrow: 1,
-                        /* autosizer (used in virtual table) can return wrong size
-                        (off by 1) and it causes scrollbar to blink
-                        * */
-                        overflow: 'hidden',
-                        marginTop: '20px',
-                    }}
-                >
+        <Box display="flex" flexDirection="column" width="100%" height="100%">
+            <Box flexShrink={0}>
+                <AppTopBar userManagerInstance={userManager.instance} />
+            </Box>
+            <Box flexShrink={0}>
+                <AnnouncementNotification user={user} sx={{ marginBottom: '0 !important' }} />
+            </Box>
+            <Box marginTop={1} flexGrow={1} minHeight={0} display="flex">
+                <CardErrorBoundary>
                     {user !== null ? (
                         <Routes>
                             <Route
                                 path="/"
                                 element={
-                                    <Grid container style={{ height: '100%' }}>
-                                        <Grid
-                                            item
-                                            xs={12}
-                                            sm={3}
-                                            style={{
-                                                borderRight: '1px solid rgba(81, 81, 81, 1)',
-                                                height: '100%',
-                                                overflow: 'auto',
-                                                display: 'flex',
-                                            }}
+                                    <>
+                                        <Box
+                                            width="30%"
+                                            height="100%"
+                                            overflow="auto"
+                                            style={{ borderRight: '1px solid rgb(81, 81, 81)' }}
                                         >
                                             <TreeViewsContainer />
-                                        </Grid>
-                                        <Grid item xs={12} sm={9}>
-                                            <div
-                                                style={{
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    height: '100%',
-                                                }}
-                                            >
+                                        </Box>
+                                        <Box width="70%" height="100%" display="flex" flexDirection="column">
+                                            <Box width="100%" flexShrink={0}>
                                                 <DirectoryBreadcrumbs />
-                                                <DirectoryContent />
-                                            </div>
-                                        </Grid>
-                                    </Grid>
+                                            </Box>
+                                            <DirectoryContent />
+                                        </Box>
+                                    </>
                                 }
                             />
                             <Route
@@ -248,8 +227,8 @@ export default function App() {
                             location={location}
                         />
                     )}
-                </div>
-            </CardErrorBoundary>
-        </div>
+                </CardErrorBoundary>
+            </Box>
+        </Box>
     );
 }

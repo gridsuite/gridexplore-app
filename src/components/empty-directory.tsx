@@ -22,7 +22,7 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        marginTop: theme.spacing(20),
+        marginTop: theme.spacing(20), // TODO: replace by margin auto or flex to center in parent
     }),
     button: (theme: any) => ({
         marginTop: theme.spacing(2),
