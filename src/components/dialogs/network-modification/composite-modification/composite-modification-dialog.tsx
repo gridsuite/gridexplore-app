@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -44,7 +44,7 @@ interface FormData {
 interface CompositeModificationDialogProps {
     compositeModificationId: string;
     open: boolean;
-    onClose: (event?: SyntheticEvent) => void;
+    onClose: () => void;
     titleId: string;
     name: string;
     broadcastChannel: BroadcastChannel;
@@ -122,10 +122,6 @@ export default function CompositeModificationDialog({
             .finally(() => setIsFetching(false));
     }, [compositeModificationId, name, snackError]);
 
-    const closeAndClear = (event?: SyntheticEvent) => {
-        onClose(event);
-    };
-
     const onSubmit = (formData: FormData) => {
         saveCompositeModification(compositeModificationId, formData[FieldConstants.NAME])
             .then(() => {
@@ -133,7 +129,7 @@ export default function CompositeModificationDialog({
                     dispatch(setItemSelectionForCopy(NO_ITEM_SELECTION_FOR_COPY));
                     broadcastChannel.postMessage({ NO_ITEM_SELECTION_FOR_COPY });
                 }
-                closeAndClear();
+                onClose();
             })
             .catch((errorMessage) => {
                 snackError({
@@ -147,7 +143,7 @@ export default function CompositeModificationDialog({
     return (
         <CustomMuiDialog
             open={open}
-            onClose={closeAndClear}
+            onClose={onClose}
             titleId={titleId}
             onSave={onSubmit}
             removeOptional
