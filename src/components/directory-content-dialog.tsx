@@ -24,6 +24,7 @@ import {
     isStudyMetadata,
     LoadFlowParametersEditionDialog,
     NetworkVisualizationsParametersEditionDialog,
+    ShortCircuitParametersEditionDialog,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
@@ -207,6 +208,7 @@ function DirectoryContentDialog(
                             break;
                         case ElementType.LOADFLOW_PARAMETERS:
                         case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
+                        case ElementType.SHORT_CIRCUIT_PARAMETERS:
                             setCurrentParametersId(event.data.elementUuid);
                             setCurrentParametersType(event.data.type);
                             setOpenDialog(constants.DialogsId.EDIT_PARAMETERS);
@@ -338,6 +340,21 @@ function DirectoryContentDialog(
         if (currentParametersType === ElementType.NETWORK_VISUALIZATIONS_PARAMETERS) {
             return (
                 <NetworkVisualizationsParametersEditionDialog
+                    id={currentParametersId}
+                    open
+                    onClose={handleCloseParametersDialog}
+                    titleId="editParameters"
+                    name={elementName}
+                    description={activeElement.description}
+                    user={user}
+                    activeDirectory={activeDirectory}
+                    language={languageLocal}
+                />
+            );
+        }
+        if (currentParametersType === ElementType.SHORT_CIRCUIT_PARAMETERS) {
+            return (
+                <ShortCircuitParametersEditionDialog
                     id={currentParametersId}
                     open
                     onClose={handleCloseParametersDialog}
